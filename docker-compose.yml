@@ -1,0 +1,33 @@
+services:
+  igrp-application-center:
+    image: registry.nosi.cv/igrp/igrp-application-center:latest
+    hostname: igrp-application-center
+    labels:
+      type: 'frontend'
+      name: 'application-center'
+    # env_file:
+    #   - .igrp.platform.env
+    environment:
+      - KEYCLOAK_ISSUER=https://accounts-stage.inss.gw/realms/igrp
+      - KEYCLOAK_CLIENT_ID=access-management
+      - KEYCLOAK_CLIENT_SECRET=vbBjOQcIhG897ZIRtKa7NHDy9sJNZY07
+      - NEXTAUTH_URL=http://application-center:3000
+      - NEXTAUTH_SECRET=uUb44RSVTl+XzkpQt7W/lfRzGChdpb5rguUPh+Tb52w=
+      - APP_MANAGER_API=http://igrp-gateway:8080/api-gateway/access-management
+      - NEXTAUTH_COOKIE_DOMAIN=localhost
+      - NODE_ENV=production
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    ports:
+      - '3001:3000'
+    # depends_on:
+    #   igrp-access-management:
+    #     condition: service_healthy
+    # tmpfs:
+    #   - /tmp
+    #   - /app/.next

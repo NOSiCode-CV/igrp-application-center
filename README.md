@@ -1,3 +1,1 @@
-# iGRP Application Center
-
-iGRP Application Center
+## @igrp/applications-center
