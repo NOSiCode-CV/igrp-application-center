@@ -1,9 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { PermissionArgs } from './permissions-schemas';
-import { PermissionFilters, UpdatePermissionRequest } from '@igrp/platform-access-management-client-ts';
-import { createPermission, deletePermission, getPermissions, getRolesByPermissionName, updatePermission } from '@/actions/permission';
+import {
+  PermissionFilters,
+  UpdatePermissionRequest,
+} from '@igrp/platform-access-management-client-ts';
+import {
+  createPermission,
+  deletePermission,
+  getPermissions,
+  getRolesByPermissionName,
+  updatePermission,
+} from '@/actions/permission';
 import { RoleArgs } from '../roles/role-schemas';
-
 
 export const usePermissions = (params: PermissionFilters) => {
   return useQuery<PermissionArgs[]>({
@@ -23,7 +31,6 @@ export const useCreatePermission = () => {
     },
   });
 };
-
 
 export const useUpdatePermission = () => {
   const queryClient = useQueryClient();
@@ -55,4 +62,4 @@ export const useRolesPermission = (name: string) => {
     queryKey: ['permissions'],
     queryFn: () => getRolesByPermissionName(name),
   });
-}
+};

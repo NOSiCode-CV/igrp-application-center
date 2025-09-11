@@ -1,7 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { IGRPBadge, IGRPButtonPrimitive, IGRPDropdownMenuCheckboxItemPrimitive, IGRPDropdownMenuContentPrimitive, IGRPDropdownMenuItemPrimitive, IGRPDropdownMenuLabelPrimitive, IGRPDropdownMenuPrimitive, IGRPDropdownMenuSeparatorPrimitive, IGRPDropdownMenuTriggerPrimitive, IGRPIcon, IGRPInputPrimitive, IGRPTableBodyPrimitive, IGRPTableCellPrimitive, IGRPTableHeaderPrimitive, IGRPTableHeadPrimitive, IGRPTablePrimitive, IGRPTableRowPrimitive, useIGRPToast } from '@igrp/igrp-framework-react-design-system';
+import {
+  IGRPBadge,
+  IGRPButtonPrimitive,
+  IGRPDropdownMenuCheckboxItemPrimitive,
+  IGRPDropdownMenuContentPrimitive,
+  IGRPDropdownMenuItemPrimitive,
+  IGRPDropdownMenuLabelPrimitive,
+  IGRPDropdownMenuPrimitive,
+  IGRPDropdownMenuSeparatorPrimitive,
+  IGRPDropdownMenuTriggerPrimitive,
+  IGRPIcon,
+  IGRPInputPrimitive,
+  IGRPTableBodyPrimitive,
+  IGRPTableCellPrimitive,
+  IGRPTableHeaderPrimitive,
+  IGRPTableHeadPrimitive,
+  IGRPTablePrimitive,
+  IGRPTableRowPrimitive,
+} from '@igrp/igrp-framework-react-design-system';
 
 import { ButtonLink } from '@/components/button-link';
 import { usePermissions, useRolesPermission } from '../use-permission';
@@ -14,14 +32,14 @@ interface PermissionListProps {
   departmentCode: string;
 }
 
-export function PermissionList({
-  departmentCode,
-}: PermissionListProps) {
+export function PermissionList({ departmentCode }: PermissionListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [openFormDialog, setOpenFormDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedPermission, setSelectedPermission] = useState<PermissionArgs | undefined>(undefined);
-  const [permissionToDelete, setPermissionToDelete] = useState<string | null> (null);
+  const [selectedPermission, setSelectedPermission] = useState<PermissionArgs | undefined>(
+    undefined,
+  );
+  const [permissionToDelete, setPermissionToDelete] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
 
   const { data: permissions, isLoading, error } = usePermissions({ departmentCode });
@@ -60,9 +78,9 @@ export function PermissionList({
     setOpenFormDialog(true);
   };
 
-  const handleRoleCount = (name: string) => {
-    const { data: permissions, isLoading, error } = useRolesPermission(name);
-  }
+  // const handleRoleCount = (name: string) => {
+  //   const { data: permissions, isLoading, error } = useRolesPermission(name);
+  // };
 
   const permissionEmpty = permissions?.length === 0;
 
@@ -130,7 +148,9 @@ export function PermissionList({
                       checked={statusFilter.includes(value)}
                       onCheckedChange={(checked) => {
                         setStatusFilter(
-                          checked ? [...statusFilter, value] : statusFilter.filter((s) => s !== value),
+                          checked
+                            ? [...statusFilter, value]
+                            : statusFilter.filter((s) => s !== value),
                         );
                       }}
                     >
@@ -170,31 +190,33 @@ export function PermissionList({
           ) : permissionEmpty ? (
             <div className='text-center py-6 text-muted-foreground'>
               Nenhum perfil encontrado{' '}
-              {searchTerm ? 'Tente ajustar a sua pesquisa.' : 'Adicione uma permissão para começar.'}
+              {searchTerm
+                ? 'Tente ajustar a sua pesquisa.'
+                : 'Adicione uma permissão para começar.'}
             </div>
           ) : (
-            <div className="w-full min-w-0">
-              <div className="rounded-md border overflow-x-auto">
-                <IGRPTablePrimitive className="min-w-full">
+            <div className='w-full min-w-0'>
+              <div className='rounded-md border overflow-x-auto'>
+                <IGRPTablePrimitive className='min-w-full'>
                   <IGRPTableHeaderPrimitive>
                     <IGRPTableRowPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                      <IGRPTableHeadPrimitive className='whitespace-nowrap'>
                         Permissão
                       </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                      <IGRPTableHeadPrimitive className='whitespace-nowrap'>
                         Descrição
                       </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                      <IGRPTableHeadPrimitive className='whitespace-nowrap'>
                         Estado
                       </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                      <IGRPTableHeadPrimitive className='whitespace-nowrap'>
                         Nro. de Perfis
                       </IGRPTableHeadPrimitive>
                       <IGRPTableHeadPrimitive className='w-24' />
                     </IGRPTableRowPrimitive>
                   </IGRPTableHeaderPrimitive>
                   <IGRPTableBodyPrimitive>
-                    {filteredPermissions?.map((permssion, i) => (
+                    {filteredPermissions?.map((permssion) => (
                       <IGRPTableRowPrimitive key={permssion.id}>
                         <IGRPTableCellPrimitive className='font-medium whitespace-nowrap'>
                           {permssion.name}
@@ -230,15 +252,13 @@ export function PermissionList({
                             </IGRPDropdownMenuTriggerPrimitive>
                             <IGRPDropdownMenuContentPrimitive align='end'>
                               <IGRPDropdownMenuLabelPrimitive>Ações</IGRPDropdownMenuLabelPrimitive>
-                              <IGRPDropdownMenuItemPrimitive
-                                onSelect={() => handleEdit(permssion)}
-                              >
+                              <IGRPDropdownMenuItemPrimitive onSelect={() => handleEdit(permssion)}>
                                 <IGRPIcon
                                   iconName='Pencil'
                                   className='mr-1 size-4'
                                 />
                                 Editar
-                              </IGRPDropdownMenuItemPrimitive>                              
+                              </IGRPDropdownMenuItemPrimitive>
                               <IGRPDropdownMenuSeparatorPrimitive />
                               <IGRPDropdownMenuItemPrimitive
                                 onClick={() => handleDelete(permssion.name)}
@@ -269,7 +289,7 @@ export function PermissionList({
         departmentCode={departmentCode}
         permission={selectedPermission}
       />
-      
+
       {permissionToDelete && (
         <PermissionDeleteDialog
           open={openDeleteDialog}

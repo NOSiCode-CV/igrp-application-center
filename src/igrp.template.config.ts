@@ -6,7 +6,7 @@ import { getMockMenus } from '@/temp/menus/use-mock-menus';
 import { getMockMenusFooter } from '@/temp/menus/use-mock-menus-footer';
 import { getMockUser } from '@/temp/users/use-mock-user';
 
-export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigArgs>{
+export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigArgs> {
   const user = getMockUser().mockUser;
   const menu = getMockMenus().mockMenus;
   const footerMwnu = getMockMenusFooter().mockMenusFooter;

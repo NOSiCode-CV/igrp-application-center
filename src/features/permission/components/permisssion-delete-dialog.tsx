@@ -40,13 +40,13 @@ export function PermissionDeleteDialog({
       igrpToast({
         type: 'success',
         title: 'Permissão Eliminado',
-        description: `Permissão '${permissionToDelete}' foi eliminado com sucesso.`
+        description: `Permissão '${permissionToDelete}' foi eliminado com sucesso.`,
       });
     } catch (error) {
       igrpToast({
         type: 'error',
         title: 'Erro ao eliminar.',
-        description: (error as Error).message        
+        description: (error as Error).message,
       });
     } finally {
       setTimeout(() => {
@@ -76,7 +76,7 @@ export function PermissionDeleteDialog({
               <IGRPDialogTitlePrimitive>Confirmação</IGRPDialogTitlePrimitive>
             </div>
             <IGRPDialogDescriptionPrimitive className='flex flex-col items-center text-base text-balance text-foreground mx-auto'>
-              <div> 
+              <div>
                 <span>
                   Esta ação é irreversível. O menu e todos os seus dados serão eliminados
                   permanentemente. Para confirmar, escreva
@@ -85,7 +85,7 @@ export function PermissionDeleteDialog({
                   {permissionToDelete}
                 </span>{' '}
                 abaixo:
-              </div>              
+              </div>
             </IGRPDialogDescriptionPrimitive>
           </IGRPDialogHeaderPrimitive>
         </div>

@@ -1,5 +1,3 @@
 export function PermissionsCheckList() {
-  return(
-    <div>Lista de Permissões</div>
-  )
+  return <div>Lista de Permissões</div>;
 }

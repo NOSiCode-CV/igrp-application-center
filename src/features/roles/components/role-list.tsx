@@ -1,52 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-// import { useForm } from 'react-hook-form';
-// import { zodResolver } from '@hookform/resolvers/zod';
 import {
   IGRPButtonPrimitive,
   IGRPInputPrimitive,
-  // IGRPLabelPrimitive,
   IGRPTablePrimitive,
   IGRPTableBodyPrimitive,
   IGRPTableCellPrimitive,
   IGRPTableHeadPrimitive,
   IGRPTableHeaderPrimitive,
   IGRPTableRowPrimitive,
-  // IGRPBadgePrimitive,
-  // IGRPDialogPrimitive,
-  // IGRPDialogContentPrimitive,
-  // IGRPDialogDescriptionPrimitive,
-  // IGRPDialogFooterPrimitive,
-  // IGRPDialogHeaderPrimitive,
-  // IGRPDialogTitlePrimitive,
   IGRPDropdownMenuPrimitive,
   IGRPDropdownMenuContentPrimitive,
   IGRPDropdownMenuItemPrimitive,
   IGRPDropdownMenuLabelPrimitive,
   IGRPDropdownMenuSeparatorPrimitive,
   IGRPDropdownMenuTriggerPrimitive,
-  // IGRPFormPrimitive,
-  // IGRPFormControlPrimitive,
-  // IGRPFormDescriptionPrimitive,
-  // IGRPFormFieldPrimitive,
-  // IGRPFormItemPrimitive,
-  // IGRPFormLabelPrimitive,
-  // useIGRPToast,
   IGRPIcon,
-  // IGRPDialogTriggerPrimitive,
-  // IGRPFormMessagePrimitive,
-  IGRPCardPrimitive,
-  IGRPCardHeaderPrimitive,
-  IGRPCardTitlePrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardContentPrimitive,
 } from '@igrp/igrp-framework-react-design-system';
 import { useRoles } from '../use-roles';
 import { ButtonLink } from '@/components/button-link';
-import { AppCenterLoading } from '@/components/loading';
-// import { useCurrentUser } from '@/features/users/use-users';
-// import { IGRPUserDTO } from '@igrp/platform-access-management-client-ts';
 import { RoleFormDialog } from './role-form-dialog';
 import { RoleDeleteDialog } from './role-delete-dialog';
 import { RoleArgs } from '../role-schemas';
@@ -73,7 +46,7 @@ export function RolesList({ departmentCode, username }: RolesListProps) {
   const handleDelete = (name: string) => {
     setRoleToDelete({ name });
     setOpenDeleteDialog(true);
-  };  
+  };
 
   const handleEdit = (role: RoleArgs) => {
     setSelectedRole(role);
@@ -105,9 +78,7 @@ export function RolesList({ departmentCode, username }: RolesListProps) {
           <div className='flex items-center justify-between'>
             <div>
               <div className='leading-none font-semibold'>Perfis</div>
-              <div className='text-muted-foreground text-sm'>
-                Gerir e reorganizar os perfis.
-              </div>
+              <div className='text-muted-foreground text-sm'>Gerir e reorganizar os perfis.</div>
             </div>
             {!roleEmpty && (
               <div className='flex justify-end'>
@@ -141,13 +112,13 @@ export function RolesList({ departmentCode, username }: RolesListProps) {
 
           {isLoading ? (
             <div className='grid gap-4 animate-pulse'>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div
-            key={i}
-            className='h-12 rounded-lg bg-muted'
-          />
-        ))}
-      </div>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className='h-12 rounded-lg bg-muted'
+                />
+              ))}
+            </div>
           ) : roleEmpty ? (
             <div className='text-center py-6 text-muted-foreground'>
               Nenhum perfil encontrado{' '}
@@ -186,18 +157,14 @@ export function RolesList({ departmentCode, username }: RolesListProps) {
                           </IGRPDropdownMenuTriggerPrimitive>
                           <IGRPDropdownMenuContentPrimitive align='end'>
                             <IGRPDropdownMenuLabelPrimitive>Ações</IGRPDropdownMenuLabelPrimitive>
-                            <IGRPDropdownMenuItemPrimitive
-                              onSelect={() => handleEdit(role)}
-                            >
+                            <IGRPDropdownMenuItemPrimitive onSelect={() => handleEdit(role)}>
                               <IGRPIcon
                                 iconName='Pencil'
                                 className='mr-1 size-4'
                               />
                               Editar
                             </IGRPDropdownMenuItemPrimitive>
-                            <IGRPDropdownMenuItemPrimitive 
-                              onSelect={() => void(0)}
-                            >
+                            <IGRPDropdownMenuItemPrimitive onSelect={() => void 0}>
                               <IGRPIcon
                                 iconName='ShieldCheck'
                                 className='mr-1 size-4'
@@ -231,7 +198,7 @@ export function RolesList({ departmentCode, username }: RolesListProps) {
         open={openFormDialog}
         onOpenChange={setOpenFormDialog}
         departmentCode={departmentCode}
-        role={selectedRole}        
+        role={selectedRole}
       />
 
       {roleToDelete && (

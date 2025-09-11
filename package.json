@@ -52,6 +52,7 @@
     "eslint-config-next": "15.5.2",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.4",
+    "nanoid": "^5.1.5",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2"

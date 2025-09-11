@@ -235,7 +235,8 @@ export function DepartmentList() {
                               <IGRPIcon
                                 iconName='Eye'
                                 className='mr-1 size-4'
-                              />Ver
+                              />
+                              Ver
                             </Link>
                           </IGRPDropdownMenuItemPrimitive>
                           <IGRPDropdownMenuItemPrimitive
@@ -247,7 +248,8 @@ export function DepartmentList() {
                             <IGRPIcon
                               iconName='Pencil'
                               className='mr-1 size-4'
-                            />Editar
+                            />
+                            Editar
                           </IGRPDropdownMenuItemPrimitive>
                           <IGRPDropdownMenuSeparatorPrimitive />
                           <IGRPDropdownMenuItemPrimitive
@@ -257,7 +259,8 @@ export function DepartmentList() {
                             <IGRPIcon
                               iconName='Trash'
                               className='mr-1 size-4'
-                            />Eliminar
+                            />
+                            Eliminar
                           </IGRPDropdownMenuItemPrimitive>
                         </IGRPDropdownMenuContentPrimitive>
                       </IGRPDropdownMenuPrimitive>

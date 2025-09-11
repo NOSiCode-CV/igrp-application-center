@@ -6,7 +6,6 @@ import { IGRPAuthCarousel, IGRPAuthForm } from '@igrp/framework-next-ui';
 const { sliderPosition, texts } = loginConfig;
 const { logo, name } = siteConfig;
 
-
 export default async function AuthPage() {
   return (
     <section className='flex min-h-screen flex-col md:flex-row'>
@@ -19,7 +18,11 @@ export default async function AuthPage() {
       >
         <IGRPAuthCarousel carouselItems={carouselItems} />
       </div>
-      <IGRPAuthForm texts={texts} logo={logo} name={name} />
+      <IGRPAuthForm
+        texts={texts}
+        logo={logo}
+        name={name}
+      />
     </section>
   );
 }

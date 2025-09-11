@@ -57,7 +57,7 @@ export function RoleFormDialog({
   const { mutateAsync: createRole, isPending: isCreating } = useCreateRole();
   const { mutateAsync: updateRole, isPending: isUpdating } = useUpdateRole();
 
-  const isEdit = !!role
+  const isEdit = !!role;
 
   const form = useForm<CreateRoleArgs>({
     resolver: zodResolver(createRoleSchema),
@@ -160,7 +160,7 @@ export function RoleFormDialog({
                   <IGRPFormControlPrimitive>
                     <IGRPInputPrimitive
                       placeholder='Identificador único do perfil'
-                      required                      
+                      required
                       className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                       {...field}
                     />
@@ -183,7 +183,7 @@ export function RoleFormDialog({
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                       name={field.name}
-                      ref={field.ref}                      
+                      ref={field.ref}
                       className='resize-none placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                     />
                   </IGRPFormControlPrimitive>
@@ -201,7 +201,7 @@ export function RoleFormDialog({
                     <IGRPFormLabelPrimitive>Perfil Pai</IGRPFormLabelPrimitive>
                     <IGRPSelectPrimitive
                       onValueChange={(v) => field.onChange(v === '' ? null : v)}
-                      value={field.value ?? ''}                      
+                      value={field.value ?? ''}
                     >
                       <IGRPFormControlPrimitive>
                         <IGRPSelectTriggerPrimitive className='w-full truncate'>
@@ -234,7 +234,7 @@ export function RoleFormDialog({
                     <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
                     <IGRPSelectPrimitive
                       onValueChange={field.onChange}
-                      value={field.value}                      
+                      value={field.value}
                     >
                       <IGRPFormControlPrimitive>
                         <IGRPSelectTriggerPrimitive className='w-full truncate'>
@@ -276,8 +276,7 @@ export function RoleFormDialog({
                     : 'Atualizar'
                   : isCreating
                     ? 'Guardando...'
-                    : 'Adicionar'
-                }
+                    : 'Adicionar'}
               </IGRPButtonPrimitive>
             </IGRPDialogFooterPrimitive>
           </form>

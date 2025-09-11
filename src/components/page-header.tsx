@@ -24,9 +24,7 @@ export function PageHeader({
           {showBackButton && <BackButton href={linkBackButton} />}
 
           <div className='flex flex-col min-w-0'>
-            <h2 className='text-2xl font-bold tracking-tight truncate'>
-              {title}
-            </h2>
+            <h2 className='text-2xl font-bold tracking-tight truncate'>{title}</h2>
 
             {description && <p className='text-muted-foreground text-sm'>{description}</p>}
           </div>

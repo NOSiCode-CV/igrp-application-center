@@ -1,10 +1,14 @@
 'use server';
 
-import { getIGRPAccessClient } from "@igrp/framework-next";
-import { refreshAccessClient } from "./igrp/auth";
-import { CreatePermissionRequest, PermissionFilters, UpdatePermissionRequest } from "@igrp/platform-access-management-client-ts";
-import { PermissionArgs } from "@/features/permission/permissions-schemas";
-import { RoleArgs } from "@/features/roles/role-schemas";
+import { getIGRPAccessClient } from '@igrp/framework-next';
+import { refreshAccessClient } from './igrp/auth';
+import {
+  CreatePermissionRequest,
+  PermissionFilters,
+  UpdatePermissionRequest,
+} from '@igrp/platform-access-management-client-ts';
+import { PermissionArgs } from '@/features/permission/permissions-schemas';
+import { RoleArgs } from '@/features/roles/role-schemas';
 
 export async function getPermissions(params: PermissionFilters) {
   await refreshAccessClient();
@@ -12,7 +16,7 @@ export async function getPermissions(params: PermissionFilters) {
 
   try {
     const result = await client.permissions.getPermissions(params);
-    return (result.data) as PermissionArgs[];
+    return result.data as PermissionArgs[];
   } catch (error) {
     console.error('[permissions]: Erro ao carregar lista de permissões.:', error);
     throw error;
@@ -64,7 +68,7 @@ export async function getRolesByPermissionName(name: string) {
 
   try {
     const result = await client.permissions.getRolesByPermissionName(name);
-    return (result.data) as RoleArgs[];
+    return result.data as RoleArgs[];
   } catch (error) {
     console.error('[permission in roles]: Erro ao carregar lista de perfís.:', error);
     throw error;

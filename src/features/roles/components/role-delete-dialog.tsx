@@ -22,11 +22,7 @@ interface RoleDeleteDialogProps {
   roleToDelete: { name: string };
 }
 
-export function RoleDeleteDialog({
-  open,
-  onOpenChange,
-  roleToDelete,
-}: RoleDeleteDialogProps) {
+export function RoleDeleteDialog({ open, onOpenChange, roleToDelete }: RoleDeleteDialogProps) {
   const [confirmation, setConfirmation] = useState('');
   const { igrpToast } = useIGRPToast();
 
@@ -78,7 +74,7 @@ export function RoleDeleteDialog({
               <IGRPDialogTitlePrimitive>Confirmação</IGRPDialogTitlePrimitive>
             </div>
             <IGRPDialogDescriptionPrimitive className='flex flex-col items-center text-base text-balance text-foreground mx-auto'>
-              <div> 
+              <div>
                 <span>
                   Esta ação é irreversível. O menu e todos os seus dados serão eliminados
                   permanentemente. Para confirmar, escreva
@@ -87,7 +83,7 @@ export function RoleDeleteDialog({
                   {roleToDelete.name}
                 </span>{' '}
                 abaixo:
-              </div>              
+              </div>
             </IGRPDialogDescriptionPrimitive>
           </IGRPDialogHeaderPrimitive>
         </div>

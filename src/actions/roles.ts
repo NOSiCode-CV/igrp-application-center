@@ -15,7 +15,7 @@ export async function getRoles(params: RoleFilters) {
 
   try {
     const result = await client.roles.getRoles(params);
-    return (result.data) as RoleArgs[];
+    return result.data as RoleArgs[];
   } catch (error) {
     console.error('[roles] Não foi possível obter lista de dados dos perfis:', error);
     throw error;

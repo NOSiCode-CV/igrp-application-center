@@ -50,7 +50,7 @@ export function PermissionFormDialog({
   open,
   onOpenChange,
   departmentCode,
-  permission
+  permission,
 }: PermissionCreateDialogProps) {
   const { igrpToast } = useIGRPToast();
 
@@ -92,7 +92,6 @@ export function PermissionFormDialog({
   const onSubmit = async (values: PermissionArgs) => {
     try {
       if (permission) {
-
         const parsed = updatePermissionSchema.parse({
           ...values,
         } as UpdatePermissionArgs);
@@ -122,15 +121,13 @@ export function PermissionFormDialog({
           description: 'Permissão criada com sucesso.',
         });
       }
-
     } catch (error) {
       igrpToast({
         type: 'error',
         title: 'Não foi possível criar a permissão.',
         description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.',
       });
-    }
-    finally {
+    } finally {
       form.reset();
       onOpenChange(false);
     }
@@ -140,11 +137,12 @@ export function PermissionFormDialog({
     <IGRPDialogPrimitive
       open={open}
       onOpenChange={onOpenChange}
-    >    
+    >
       <IGRPDialogContentPrimitive className='md:min-w-2xl'>
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive>
-          {isEdit ? 'Editar Permissão' : 'Adicionar Permissão'}</IGRPDialogTitlePrimitive>          
+            {isEdit ? 'Editar Permissão' : 'Adicionar Permissão'}
+          </IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
 
         <IGRPFormPrimitive {...form}>
@@ -163,7 +161,7 @@ export function PermissionFormDialog({
                   <IGRPFormControlPrimitive>
                     <IGRPInputPrimitive
                       placeholder='Identificador único do permissão'
-                      required                      
+                      required
                       className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                       disabled={isEdit}
                       {...field}
@@ -195,45 +193,44 @@ export function PermissionFormDialog({
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                       name={field.name}
-                      ref={field.ref}                 
+                      ref={field.ref}
                     />
                   </IGRPFormControlPrimitive>
                   <IGRPFormMessagePrimitive />
                 </IGRPFormItemPrimitive>
               )}
-            />            
+            />
 
             <IGRPFormFieldPrimitive
-                            control={form.control}
-                            name='status'
-                            render={({ field }) => (
-                              <IGRPFormItemPrimitive>
-                                <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                                <IGRPSelectPrimitive
-                                  onValueChange={field.onChange}
-                                  value={field.value}                      
-                                >
-                                  <IGRPFormControlPrimitive>
-                                    <IGRPSelectTriggerPrimitive className='w-full truncate'>
-                                      <IGRPSelectValuePrimitive placeholder='Selecionar estado' />
-                                    </IGRPSelectTriggerPrimitive>
-                                  </IGRPFormControlPrimitive>
-                                  <IGRPSelectContentPrimitive>
-                                    {STATUS_OPTIONS.map((status) => (
-                                      <IGRPSelectItemPrimitive
-                                        key={status.value}
-                                        value={status.value}
-                                      >
-                                        {status.label}
-                                      </IGRPSelectItemPrimitive>
-                                    ))}
-                                  </IGRPSelectContentPrimitive>
-                                </IGRPSelectPrimitive>
-                                <IGRPFormMessagePrimitive />
-                              </IGRPFormItemPrimitive>
-                            )}
-                          />
-                        
+              control={form.control}
+              name='status'
+              render={({ field }) => (
+                <IGRPFormItemPrimitive>
+                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+                  <IGRPSelectPrimitive
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <IGRPFormControlPrimitive>
+                      <IGRPSelectTriggerPrimitive className='w-full truncate'>
+                        <IGRPSelectValuePrimitive placeholder='Selecionar estado' />
+                      </IGRPSelectTriggerPrimitive>
+                    </IGRPFormControlPrimitive>
+                    <IGRPSelectContentPrimitive>
+                      {STATUS_OPTIONS.map((status) => (
+                        <IGRPSelectItemPrimitive
+                          key={status.value}
+                          value={status.value}
+                        >
+                          {status.label}
+                        </IGRPSelectItemPrimitive>
+                      ))}
+                    </IGRPSelectContentPrimitive>
+                  </IGRPSelectPrimitive>
+                  <IGRPFormMessagePrimitive />
+                </IGRPFormItemPrimitive>
+              )}
+            />
 
             <IGRPDialogFooterPrimitive className='pt-4'>
               <IGRPButtonPrimitive
@@ -253,8 +250,7 @@ export function PermissionFormDialog({
                     : 'Atualizar'
                   : isCreating
                     ? 'Guardando...'
-                    : 'Adicionar'
-                }
+                    : 'Adicionar'}
               </IGRPButtonPrimitive>
             </IGRPDialogFooterPrimitive>
           </form>
