@@ -22,7 +22,7 @@ import {
 } from '@igrp/igrp-framework-react-design-system';
 
 import { ButtonLink } from '@/components/button-link';
-import { usePermissions, useRolesPermission } from '../use-permission';
+import { usePermissions } from '../use-permission';
 import { STATUS_OPTIONS } from '@/lib/constants';
 import { PermissionArgs } from '../permissions-schemas';
 import { PermissionFormDialog } from './permisssion-form-dialog';
