@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import {
-  IGRPBadge,
+  cn,
+  IGRPBadgePrimitive,
   IGRPButtonPrimitive,
   IGRPDropdownMenuCheckboxItemPrimitive,
   IGRPDropdownMenuContentPrimitive,
@@ -22,11 +23,12 @@ import {
 } from '@igrp/igrp-framework-react-design-system';
 
 import { ButtonLink } from '@/components/button-link';
-import { usePermissions } from '../use-permission';
+import { usePermissions, useRolesPermission } from '../use-permission';
 import { STATUS_OPTIONS } from '@/lib/constants';
 import { PermissionArgs } from '../permissions-schemas';
 import { PermissionFormDialog } from './permisssion-form-dialog';
 import { PermissionDeleteDialog } from './permisssion-delete-dialog';
+import { showStatus, statusClass } from '@/lib/utils';
 
 interface PermissionListProps {
   departmentCode: string;
@@ -78,9 +80,9 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
     setOpenFormDialog(true);
   };
 
-  // const handleRoleCount = (name: string) => {
-  //   const { data: permissions, isLoading, error } = useRolesPermission(name);
-  // };
+  const handleRoleCount = (name: string) => {
+    const { data: permissions, isLoading, error } = useRolesPermission(name);
+  };
 
   const permissionEmpty = permissions?.length === 0;
 
@@ -216,7 +218,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                     </IGRPTableRowPrimitive>
                   </IGRPTableHeaderPrimitive>
                   <IGRPTableBodyPrimitive>
-                    {filteredPermissions?.map((permssion) => (
+                    {filteredPermissions?.map((permssion, i) => (
                       <IGRPTableRowPrimitive key={permssion.id}>
                         <IGRPTableCellPrimitive className='font-medium whitespace-nowrap'>
                           {permssion.name}
@@ -225,12 +227,11 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                           {permssion.description || 'N/A'}
                         </IGRPTableCellPrimitive>
                         <IGRPTableCellPrimitive className='whitespace-nowrap'>
-                          <IGRPBadge
-                            variant='solid'
-                            color={permssion.status === 'ACTIVE' ? 'success' : 'destructive'}
+                          <IGRPBadgePrimitive
+                            className={cn(statusClass(permssion.status), 'capitalize')}
                           >
-                            {permssion.status}
-                          </IGRPBadge>
+                            {showStatus(permssion.status)}
+                          </IGRPBadgePrimitive>
                         </IGRPTableCellPrimitive>
                         <IGRPTableCellPrimitive className='whitespace-nowrap'>
                           {permssion.description || 'N/A'}

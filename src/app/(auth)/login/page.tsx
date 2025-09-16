@@ -1,12 +1,15 @@
+import { IGRPAuthCarousel, IGRPAuthForm } from '@igrp/framework-next-ui';
+
 import { loginConfig, carouselItems } from '@/config/login';
 import { siteConfig } from '@/config/site';
 import { cn } from '@/lib/utils';
-import { IGRPAuthCarousel, IGRPAuthForm } from '@igrp/framework-next-ui';
 
 const { sliderPosition, texts } = loginConfig;
 const { logo, name } = siteConfig;
 
-export default async function AuthPage() {
+export default async function AuthPage({ searchParams }: { searchParams: PageProps<'/login'>['searchParams'] }) {
+  const { callbackUrl } = await searchParams
+
   return (
     <section className='flex min-h-screen flex-col md:flex-row'>
       <div
@@ -22,6 +25,7 @@ export default async function AuthPage() {
         texts={texts}
         logo={logo}
         name={name}
+        callbackUrl={callbackUrl as string}
       />
     </section>
   );

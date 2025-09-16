@@ -17,7 +17,7 @@ export async function getRoles(params: RoleFilters) {
     const result = await client.roles.getRoles(params);
     return result.data as RoleArgs[];
   } catch (error) {
-    console.error('[roles] Não foi possível obter lista de dados dos perfis:', error);
+    console.error('[roles] Não foi possível obter lista de dados dos perfís:', error);
     throw error;
   }
 }
@@ -57,6 +57,19 @@ export async function deleteRole(name: string) {
     return result.data;
   } catch (error) {
     console.error('[delete-role] Não foi possível eliminar perfil:', error);
+    throw error;
+  }
+}
+
+export async function getRoleByName(name: string) {
+  await refreshAccessClient();
+  const client = await getIGRPAccessClient();
+
+  try {
+    const result = await client.roles.getRoleByName(name);
+    return result.data as RoleArgs;
+  } catch (error) {
+    console.error('[role-by-name] Não foi possível obter dado do perfil.:', error);
     throw error;
   }
 }

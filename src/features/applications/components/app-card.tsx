@@ -10,7 +10,7 @@ import {
 } from '@igrp/igrp-framework-react-design-system';
 import { IGRPApplicationArgs } from '@igrp/framework-next-types';
 
-import { cn, statusClass } from '@/lib/utils';
+import { cn, showStatus, statusClass } from '@/lib/utils';
 import { ButtonTooltip } from '@/components/button-tooltip';
 import { formatSlug } from '@/features/applications/app-utils';
 import { ROUTES } from '@/lib/constants';
@@ -51,7 +51,7 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
       <IGRPCardFooterPrimitive className='flex items-center justify-between px-4'>
         <div className='flex items-center'>
           <IGRPBadgePrimitive className={cn(statusClass(status), 'capitalize')}>
-            {status.toLowerCase()}
+            {showStatus(status)}
           </IGRPBadgePrimitive>
         </div>
         <div className='flex items-center gap-1'>
