@@ -3,10 +3,6 @@
 import {
   IGRPCardPrimitive,
   IGRPCardContentPrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardHeaderPrimitive,
-  IGRPCardTitlePrimitive,
-  IGRPSeparatorPrimitive,
   cn,
   IGRPBadgePrimitive,
   IGRPDialogPrimitive,
@@ -14,8 +10,6 @@ import {
   IGRPDialogHeaderPrimitive,
   IGRPDialogTitlePrimitive,
 } from '@igrp/igrp-framework-react-design-system';
-import { AppCenterNotFound } from '@/components/not-found';
-import { CopyToClipboard } from '@/components/copy-to-clipboard';
 import { showStatus, statusClass } from '@/lib/utils';
 import { PermissionsCheckList } from '@/features/permission/components/permissions-checklist';
 import { RoleArgs } from '../role-schemas';
@@ -27,13 +21,7 @@ interface RoleDetailsProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function RoleDetails({ 
-  departmentCode, 
-  role,
-  open,
-  onOpenChange
- }: RoleDetailsProps) {     
-
+export function RoleDetails({ departmentCode, role, open, onOpenChange }: RoleDetailsProps) {
   const { description, parentName, status, name } = role;
 
   return (
@@ -44,23 +32,21 @@ export function RoleDetails({
     >
       <IGRPDialogContentPrimitive className='md:min-w-2xl'>
         <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive>
-            Adicionar ou Remover Permissões
-          </IGRPDialogTitlePrimitive>
+          <IGRPDialogTitlePrimitive>Adicionar ou Remover Permissões</IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
 
         <div className='flex-1 min-w-0 overflow-x-hidden'>
           <section className='space-y-10 max-w-full'>
-            <div className='flex flex-col gap-6'>  
+            <div className='flex flex-col gap-6'>
               <div className='flex flex-col gap-8 animate-fade-in motion-reduce:hidden'>
-                <IGRPCardPrimitive className='overflow-hidden gap-3 py-6'>                  
+                <IGRPCardPrimitive className='overflow-hidden gap-3 py-6'>
                   <IGRPCardContentPrimitive>
                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm'>
                       <div className='flex items-center gap-4'>
                         <div className='flex flex-col'>
                           <h3 className='font-normal text-muted-foreground'>Nome</h3>
                           <p className='font-medium text-base'>{name}</p>
-                        </div>                        
+                        </div>
                       </div>
 
                       <div>
@@ -72,7 +58,7 @@ export function RoleDetails({
                         <div>
                           <h3 className='font-normal text-muted-foreground'>Código departamento</h3>
                           <p className='font-medium'>{departmentCode}</p>
-                        </div>                        
+                        </div>
                       </div>
 
                       {parentName && (

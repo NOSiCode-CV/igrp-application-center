@@ -7,8 +7,12 @@ import { cn } from '@/lib/utils';
 const { sliderPosition, texts } = loginConfig;
 const { logo, name } = siteConfig;
 
-export default async function AuthPage({ searchParams }: { searchParams: PageProps<'/login'>['searchParams'] }) {
-  const { callbackUrl } = await searchParams
+export default async function AuthPage({
+  searchParams,
+}: {
+  searchParams: PageProps<'/login'>['searchParams'];
+}) {
+  const { callbackUrl } = await searchParams;
 
   return (
     <section className='flex min-h-screen flex-col md:flex-row'>

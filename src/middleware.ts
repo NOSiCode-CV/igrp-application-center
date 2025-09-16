@@ -5,7 +5,7 @@ const PUBLIC_PATHS = ['/login', '/logout', '/api/auth'];
 
 function isPublicPath(pathname: string) {
   return (
-    PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/')) ||
+    PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/')) ||
     pathname.startsWith('/api/auth/') ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/static/') ||
@@ -18,10 +18,7 @@ export async function middleware(request: NextRequest) {
 
   if (isPublicPath(pathname)) return NextResponse.next();
 
-  const possibleCookieNames = [
-    '__Secure-next-auth.session-token',
-    'next-auth.session-token',
-  ];
+  const possibleCookieNames = ['__Secure-next-auth.session-token', 'next-auth.session-token'];
 
   let token = null;
   for (const name of possibleCookieNames) {

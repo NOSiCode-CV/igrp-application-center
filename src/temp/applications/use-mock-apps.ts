@@ -4,4 +4,4 @@ export function getMockApps() {
   return {
     mockApps: IGRP_MOCK_APPS_DATA,
   };
-};
+}

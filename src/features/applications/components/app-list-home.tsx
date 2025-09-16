@@ -25,7 +25,7 @@ export function ApplicationsListHome() {
       </AppCenterNotFound>
     );
   }
-  
+
   const activeApps = applications.filter((app) => app.status === 'ACTIVE').slice(0, 6);
 
   return (

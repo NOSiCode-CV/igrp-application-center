@@ -3,7 +3,7 @@ import { usePermissions } from '../use-permission';
 import {
   cn,
   IGRPBadgePrimitive,
-  IGRPCheckboxPrimitive,  
+  IGRPCheckboxPrimitive,
   IGRPIcon,
   IGRPInputPrimitive,
   IGRPTableBodyPrimitive,
@@ -31,7 +31,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
     );
   }
 
-  const activePrmissions = permissions?.filter(perm => perm.status === statusSchema.enum.ACTIVE);
+  const activePrmissions = permissions?.filter((perm) => perm.status === statusSchema.enum.ACTIVE);
 
   const filteredPermissions = activePrmissions?.filter(
     (perm) =>
@@ -57,7 +57,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>          
+          </div>
         </div>
 
         {isLoading ? (
@@ -80,7 +80,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
               <IGRPTablePrimitive className='min-w-full'>
                 <IGRPTableHeaderPrimitive>
                   <IGRPTableRowPrimitive>
-                    <IGRPTableHeadPrimitive className="h-11">
+                    <IGRPTableHeadPrimitive className='h-11'>
                       <IGRPCheckboxPrimitive id={id} />
                     </IGRPTableHeadPrimitive>
                     <IGRPTableHeadPrimitive className='whitespace-nowrap'>
@@ -95,7 +95,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
                   </IGRPTableRowPrimitive>
                 </IGRPTableHeaderPrimitive>
                 <IGRPTableBodyPrimitive>
-                  {filteredPermissions?.map((permssion, i) => (
+                  {filteredPermissions?.map((permssion) => (
                     <IGRPTableRowPrimitive key={permssion.id}>
                       <IGRPTableCellPrimitive>
                         <IGRPCheckboxPrimitive id={permssion.name} />

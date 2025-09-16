@@ -176,7 +176,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
     };
   });
 
-
   const departmentOptions = departments.map((department) => {
     return {
       value: department.code,
