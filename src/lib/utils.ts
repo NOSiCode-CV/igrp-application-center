@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { STATUS_OPTIONS } from './constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -41,7 +42,7 @@ export function lowerCaseWithSpace(v: string | null | undefined) {
   return typeof v === 'string' ? v.toLowerCase().replace(/_/g, ' ') : (v ?? null);
 }
 
-export const formatDate = (dateString: string) => {
+export function formatDate(dateString: string) {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat('pt-PT', {
     year: 'numeric',
@@ -50,4 +51,9 @@ export const formatDate = (dateString: string) => {
     hour: '2-digit',
     minute: '2-digit',
   }).format(date);
-};
+}
+
+export function showStatus(status: string) {
+  if (status == null || status === undefined) return null;
+  return STATUS_OPTIONS.find((s) => s.value === status)?.label;
+}

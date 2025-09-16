@@ -57,7 +57,7 @@ export function DepartmentDetails({ code }: { code: string }) {
     );
   }
 
-  const { name, description, status } = department;
+  const { name, description, status, parent_code: parent } = department;
 
   let parentName;
 

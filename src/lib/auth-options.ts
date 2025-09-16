@@ -2,36 +2,58 @@ import type { NextAuthOptions, Session, TokenSet } from '@igrp/framework-next-au
 import type { JWT } from '@igrp/framework-next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
+const isProd = process.env.NODE_ENV === 'production';
+const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
+
 export const authOptions: NextAuthOptions = {
   providers: [
     KeycloakProvider({
-      clientId: process.env.KEYCLOAK_CLIENT_ID || '',
-      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || '',
-      issuer: process.env.KEYCLOAK_ISSUER || '',
+      clientId: process.env.KEYCLOAK_CLIENT_ID!,
+      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET!,
+      issuer: process.env.KEYCLOAK_ISSUER!,
     }),
   ],
+
   secret: process.env.NEXTAUTH_SECRET,
+
   session: {
     strategy: 'jwt',
-    maxAge: 4 * 60 * 60, // 4 hours
+    // maxAge: 4 * 60 * 60, // 4 hours
+    maxAge: 60,
   },
-  // useSecureCookies: process.env.NODE_ENV === 'production',
+
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
-        path: '/',
-        // secure: process.env.NODE_ENV === 'production',
-        secure: true,
-        domain: process.env.IGRP_NEXTAUTH_CALLBACK || '',
+        path: '/',        
+        secure: isProd,
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
   },
+
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, user, account, profile }) {
       if (account) {
+        if (user && !('user' in token)) {
+          token.user = {
+            id:
+              token.sub ??
+              user.id ??
+              undefined,
+            name:
+              user.name ??
+              profile?.name ??
+              null,
+            email:
+              user.email ??
+              profile?.email ??
+              null,
+          };
+        }
         token.idToken = account.id_token;
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
@@ -40,14 +62,14 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      if (token.expiresAt && Date.now() < token.expiresAt * 1000 - 60 * 1000) {
+      if (token.expiresAt && Date.now() < token.expiresAt * 1000 - 60_000) {
         return token;
       }
 
       try {
         if (!token.refreshToken) {
           console.error('No refresh token available for refresh.');
-          return { ...token, error: 'RefreshAccessTokenError' as const };
+          return { ...token, error: 'RefreshAccessTokenError' };
         }
 
         const response = await requestRefreshOfAccessToken(token);
@@ -60,6 +82,7 @@ export const authOptions: NextAuthOptions = {
 
         const updatedToken: JWT = {
           ...token,
+          user: token.user,
           idToken: tokens.id_token,
           accessToken: tokens.access_token,
           expiresAt: Math.floor(Date.now() / 1000 + Number(tokens.expires_in)),
@@ -69,9 +92,9 @@ export const authOptions: NextAuthOptions = {
         return updatedToken;
       } catch (error) {
         console.error('Error refreshing access token', error);
-        return { ...token, error: 'RefreshAccessTokenError' as const };
+        return { ...token, error: 'RefreshAccessTokenError' };
       }
-    },
+    },    
     async session({ session, token }) {
       session.user = token.user as Session['user'];
       session.accessToken = token.accessToken;
@@ -81,6 +104,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
   events: {
     async signOut({ token }) {
       if (token) {
@@ -106,31 +130,40 @@ async function requestRefreshOfAccessToken(token: JWT) {
   }
 
   return await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      client_id: process.env.KEYCLOAK_CLIENT_ID,
-      client_secret: process.env.KEYCLOAK_CLIENT_SECRET,
-      grant_type: 'refresh_token',
-      refresh_token: token.refreshToken! as string,
-    }),
     method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      client_id: process.env.KEYCLOAK_CLIENT_ID!,
+      client_secret: process.env.KEYCLOAK_CLIENT_SECRET!,
+      grant_type: 'refresh_token',
+      refresh_token: String(token.refreshToken)
+    }),
+    
   });
 }
 
 async function doFinalSignoutHandshake(jwt: JWT) {
+  const issuer = process.env.KEYCLOAK_ISSUER;
   const { idToken } = jwt;
 
-  if (idToken && process.env.KEYCLOAK_ISSUER) {
+  if (idToken && issuer) {
+    const postLogoutRedirectUri = process.env.NEXTAUTH_URL
+    ? `${process.env.NEXTAUTH_URL}/login`
+    : undefined;
+
     try {
+      const body = new URLSearchParams({ id_token_hint: idToken });
+      if (postLogoutRedirectUri) {
+        body.append('post_logout_redirect_uri', postLogoutRedirectUri);
+      }
+
       const params = new URLSearchParams();
       params.append('id_token_hint', idToken as string);
 
-      const response = await fetch(
-        `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/logout?${params.toString()}`,
-        { method: 'GET' },
-      );
+      const response = await fetch(`${issuer}/protocol/openid-connect/logout`, {        
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
       console.log('Completed post-logout handshake', response.status, response.statusText);
     } catch (e) {
       console.error(
@@ -140,7 +173,6 @@ async function doFinalSignoutHandshake(jwt: JWT) {
     }
   } else {
     if (!idToken) console.warn('No idToken found for Keycloak post-logout handshake.');
-    if (!process.env.KEYCLOAK_ISSUER)
-      console.warn('KEYCLOAK_ISSUER not set for post-logout handshake.');
+    if (!issuer) console.warn('KEYCLOAK_ISSUER not set for post-logout handshake.');
   }
 }

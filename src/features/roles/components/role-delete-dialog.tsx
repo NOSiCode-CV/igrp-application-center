@@ -19,7 +19,7 @@ import { useDeleteRole } from '../use-roles';
 interface RoleDeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  roleToDelete: { name: string };
+  roleToDelete: string;
 }
 
 export function RoleDeleteDialog({ open, onOpenChange, roleToDelete }: RoleDeleteDialogProps) {
@@ -28,15 +28,15 @@ export function RoleDeleteDialog({ open, onOpenChange, roleToDelete }: RoleDelet
 
   const { mutateAsync: deleteRole } = useDeleteRole();
 
-  const isConfirmed = confirmation === roleToDelete.name;
+  const isConfirmed = confirmation === roleToDelete;
 
   async function confirmDelete() {
     try {
-      await deleteRole(roleToDelete.name);
+      await deleteRole(roleToDelete);
       igrpToast({
         type: 'success',
         title: 'Role Eliminado',
-        description: `Role '${roleToDelete.name}' foi eliminado com sucesso.`,
+        description: `Role '${roleToDelete}' foi eliminado com sucesso.`,
         duration: 4000,
       });
     } catch (error) {
@@ -80,7 +80,7 @@ export function RoleDeleteDialog({ open, onOpenChange, roleToDelete }: RoleDelet
                   permanentemente. Para confirmar, escreva
                 </span>{' '}
                 <span className='font-semibold italic bg-emerald-50bg-destructive/20 dark:bg-destructive/50 dark:text-white p-0.5 rounded-sm '>
-                  {roleToDelete.name}
+                  {roleToDelete}
                 </span>{' '}
                 abaixo:
               </div>
@@ -99,7 +99,7 @@ export function RoleDeleteDialog({ open, onOpenChange, roleToDelete }: RoleDelet
             id='confirmation'
             value={confirmation}
             onChange={(e) => setConfirmation(e.target.value)}
-            placeholder={`Digite '${roleToDelete.name}' para confirmação`}
+            placeholder={`Digite '${roleToDelete}' para confirmação`}
             className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
             required
           />
