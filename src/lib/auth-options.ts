@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
     // maxAge: 4 * 60 * 60, // 4 hours
-    maxAge: 60,
+    maxAge: 60 * 5,
   },
 
   cookies: {
@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      if (token.expiresAt && Date.now() < token.expiresAt * 1000 - 60_000) {
+      if (token.expiresAt && (Date.now() < token.expiresAt * 1000 - 60_000)) {
         return token;
       }
 

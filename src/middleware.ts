@@ -38,18 +38,21 @@ export async function middleware(request: NextRequest) {
 
   const now = Math.floor(Date.now() / 1000);
   const skew = 60;
+
+  const n = now + skew;
+  
   const nextAuthExp = typeof token.exp === 'number' ? token.exp : undefined;
   console.log({ nextAuthExp });
   console.log({ tokenExp: token.exp });
-
+  console.log({ validNow: n });
   const providerExp = typeof token.expiresAt === 'number' ? token.expiresAt : undefined;
   console.log({ providerExp });
   console.log({ tokenExpiresAt: token.expiresAt });
 
-  const sessionExpired = nextAuthExp !== undefined && nextAuthExp <= now + skew;
+  const sessionExpired = nextAuthExp !== undefined && nextAuthExp < now + skew;
   console.log({ sessionExpired });
 
-  const providerExpired = providerExp !== undefined && providerExp <= now + skew;
+  const providerExpired = providerExp !== undefined && providerExp < now + skew;
   console.log({ providerExpired });
 
   const refreshFailed = token.error === 'RefreshAccessTokenError';
