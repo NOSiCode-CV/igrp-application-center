@@ -30,8 +30,6 @@ export async function middleware(request: NextRequest) {
     if (token) break;
   }
 
-  console.log({ token })
-
   if (!token) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', request.url);
@@ -41,10 +39,19 @@ export async function middleware(request: NextRequest) {
   const now = Math.floor(Date.now() / 1000);
   const skew = 60;
   const nextAuthExp = typeof token.exp === 'number' ? token.exp : undefined;
+  console.log({ nextAuthExp });
+  console.log({ tokenExp: token.exp });
+
   const providerExp = typeof token.expiresAt === 'number' ? token.expiresAt : undefined;
+  console.log({ providerExp });
+  console.log({ tokenExpiresAt: token.expiresAt });
 
   const sessionExpired = nextAuthExp !== undefined && nextAuthExp <= now + skew;
+  console.log({ sessionExpired });
+
   const providerExpired = providerExp !== undefined && providerExp <= now + skew;
+  console.log({ providerExpired });
+
   const refreshFailed = token.error === 'RefreshAccessTokenError';
 
   if (sessionExpired || providerExpired || refreshFailed) {
