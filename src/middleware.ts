@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const now = Math.floor(Date.now() / 1000);
-  const skew = 60;
+  const skew = 0;
   const nextAuthExp = typeof token.exp === 'number' ? token.exp : undefined;
   const providerExp = typeof token.expiresAt === 'number' ? token.expiresAt : undefined;
 
