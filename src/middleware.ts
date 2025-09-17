@@ -30,6 +30,8 @@ export async function middleware(request: NextRequest) {
     if (token) break;
   }
 
+  console.log({ token })
+
   if (!token) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', request.url);
