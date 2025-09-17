@@ -135,7 +135,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
     if (payload.type === appTypeCrud.enum.EXTERNAL) delete payload.slug;
     delete payload.image;
 
-    console.log({ payload });
     try {
       if (application) {
         const payloadData = mapperUpdateApplication(payload);
@@ -176,8 +175,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
       label: user.name,
     };
   });
-
-  console.log({ departments });
 
   const departmentOptions = departments.map((department) => {
     return {

@@ -17,7 +17,7 @@ export async function getRoles(params: RoleFilters) {
     const result = await client.roles.getRoles(params);
     return result.data as RoleArgs[];
   } catch (error) {
-    console.error('[roles] Não foi possível obter lista de dados dos perfis:', error);
+    console.error('[roles] Não foi possível obter lista de dados dos perfís:', error);
     throw error;
   }
 }
@@ -61,40 +61,15 @@ export async function deleteRole(name: string) {
   }
 }
 
-// export async function getRolePermissions(roleId: number) {
-//   if (!roleId) {
-//     throw new Error('Role ID is required');
-//   }
+export async function getRoleByName(name: string) {
+  await refreshAccessClient();
+  const client = await getIGRPAccessClient();
 
-//   return callApi<Permission[]>(`/api/roles/${roleId}/permissions`);
-// }
-
-// export async function addRolePermissions(roleId: number, permissions: string[]) {
-//   if (!roleId) {
-//     throw new Error('Role ID is required');
-//   }
-
-//   if (!permissions || permissions.length === 0) {
-//     throw new Error('Permissions are required');
-//   }
-
-//   return callApi<void>(`/api/roles/${roleId}/addPermissions`, {
-//     method: 'POST',
-//     body: JSON.stringify(permissions),
-//   });
-// }
-
-// export async function removeRolePermissions(roleId: number, permissions: string[]) {
-//   if (!roleId) {
-//     throw new Error('Role ID is required');
-//   }
-
-//   if (!permissions || permissions.length === 0) {
-//     throw new Error('Permissions are required');
-//   }
-
-//   return callApi<void>(`/api/roles/${roleId}/removePermissions`, {
-//     method: 'POST',
-//     body: JSON.stringify(permissions),
-//   });
-// }
+  try {
+    const result = await client.roles.getRoleByName(name);
+    return result.data as RoleArgs;
+  } catch (error) {
+    console.error('[role-by-name] Não foi possível obter dado do perfil.:', error);
+    throw error;
+  }
+}

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getRoles, createRole, updateRole, deleteRole } from '@/actions/roles';
+import { getRoles, createRole, updateRole, deleteRole, getRoleByName } from '@/actions/roles';
 import { RoleArgs } from './role-schemas';
 import { RoleFilters, UpdateRoleRequest } from '@igrp/platform-access-management-client-ts';
 
@@ -47,38 +47,10 @@ export const useDeleteRole = () => {
   });
 };
 
-// export const useRolePermissions = (roleId: number) => {
-//   return useQuery({
-//     queryKey: ['roles', roleId, 'permissions'],
-//     queryFn: () => getRolePermissions(roleId),
-//     enabled: !!roleId,
-//   });
-// };
-
-// export const useAddRolePermissions = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: ({ roleId, permissions }: { roleId: number; permissions: any[] }) =>
-//       addRolePermissions(roleId, permissions),
-//     onSuccess: (_, variables) => {
-//       queryClient.invalidateQueries({
-//         queryKey: ['roles', variables.roleId, 'permissions'],
-//       });
-//     },
-//   });
-// };
-
-// export const useRemoveRolePermissions = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: ({ roleId, permissions }: { roleId: number; permissions: any[] }) =>
-//       removeRolePermissions(roleId, permissions),
-//     onSuccess: (_, variables) => {
-//       queryClient.invalidateQueries({
-//         queryKey: ['roles', variables.roleId, 'permissions'],
-//       });
-//     },
-//   });
-// };
+export const useRoleByName = (name: string) => {
+  return useQuery<RoleArgs>({
+    queryKey: ['roleByName', name.toLowerCase()] as const,
+    queryFn: () => getRoleByName(name),
+    enabled: !!name,
+  });
+};

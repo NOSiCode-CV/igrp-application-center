@@ -95,23 +95,20 @@ export function MenuFormDialog({
   const { mutateAsync: createMenuAsync } = useCreateMenu();
   const { mutate: updateMenu } = useUpdateMenu();
 
-  const baseDefaults = {
-    name: '',
-    code: '',
-    type: menuTypeSchema.enum.MENU_PAGE,
-    position: 0,
-    icon: 'AppWindow',
-    status: statusSchema.enum.ACTIVE,
-    target: menuTargetSchema.enum._self,
-    url: '',
-    parentCode: '',
-    applicationCode: appCode,
-    pageSlug: '',
-  } as const;
-
   const form = useForm<FormValues>({
     resolver: zodResolver(createMenuSchema),
-    defaultValues: baseDefaults satisfies FormValues,
+    defaultValues: {
+      code: '',
+      type: menuTypeSchema.enum.MENU_PAGE,
+      position: 0,
+      icon: 'AppWindow',
+      status: statusSchema.enum.ACTIVE,
+      target: menuTargetSchema.enum._self,
+      url: '',
+      parentCode: '',
+      applicationCode: appCode,
+      pageSlug: '',
+    },
   });
 
   useEffect(() => {
@@ -133,11 +130,19 @@ export function MenuFormDialog({
       } as FormValues);
     } else {
       form.reset({
-        ...baseDefaults,
+        code: '',
+        type: menuTypeSchema.enum.MENU_PAGE,
+        position: 0,
+        icon: 'AppWindow',
+        status: statusSchema.enum.ACTIVE,
+        target: menuTargetSchema.enum._self,
+        url: '',
+        parentCode: '',
         applicationCode: appCode,
+        pageSlug: '',
       } as FormValues);
     }
-  }, [open, menu, appCode, form, baseDefaults]);
+  }, [open, menu, appCode, form]);
 
   useEffect(() => {
     if (openIconPicker) {
@@ -178,7 +183,6 @@ export function MenuFormDialog({
   async function onSubmit(values: MenuArgs) {
     const payload: OnSaveMenu = { ...values, applicationCode: appCode };
     const code = menu?.code ?? '';
-    console.log({ payload });
 
     setIsLoading(true);
 

@@ -1,9 +1,7 @@
-import { IGRPMenuItemArgs } from '@igrp/framework-next-types';
 import { IGRP_DEFAULT_MENU } from './menus';
 
-export const getMockMenus = (appCode?: string): { mockMenus: IGRPMenuItemArgs[] } => {
-  console.log({ appCode });
+export function getMockMenus() {
   return {
     mockMenus: IGRP_DEFAULT_MENU,
   };
-};
+}

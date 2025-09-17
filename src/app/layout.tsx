@@ -1,6 +1,4 @@
 import '@/styles/globals.css';
-import '@igrp/framework-next-ui/dist/styles.css';
-import '@igrp/igrp-framework-react-design-system/dist/styles.css';
 
 import type { Metadata, Viewport } from 'next';
 import { IGRPRootLayout } from '@igrp/framework-next';
@@ -10,8 +8,8 @@ import { configLayout } from '@/actions/igrp/layout';
 import { createConfig } from '@/igrp.template.config';
 
 export const metadata: Metadata = {
-  title: 'IGRP | Applications Center',
-  description: 'IGRP | Applications Center',
+  title: 'IGRP | Centro de Aplicações',
+  description: 'IIGRP | Centro de Aplicações',
   icons: { icon: '/igrp/logo-no-text.png' },
 };
 

@@ -26,8 +26,6 @@ export function ApplicationsListHome() {
     );
   }
 
-  console.log({ applications, isLoading, error });
-
   const activeApps = applications.filter((app) => app.status === 'ACTIVE').slice(0, 6);
 
   return (

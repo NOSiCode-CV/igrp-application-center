@@ -7,7 +7,7 @@ import { Session } from '@igrp/framework-next-auth';
 import { authOptions } from '@/lib/auth-options';
 
 export async function serverSession() {
-  const apiManagement = process.env.IGRP_APP_MANAGER_API ?? '';
+  const apiManagement = process.env.IGRP_APP_MANAGER_API || '';
 
   try {
     if (!process.env.NEXTAUTH_SECRET) {
