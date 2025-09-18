@@ -10,6 +10,7 @@ export async function GET() {
     const url = buildKeycloakEndSessionUrl(jwtLike);
     return NextResponse.json({ url });
   } catch (e) {
+    console.error(e);
     return NextResponse.json({ url: `${process.env.NEXTAUTH_URL || ''}/login` }, { status: 200 });
   }
 }

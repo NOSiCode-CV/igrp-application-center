@@ -95,7 +95,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
                   </IGRPTableRowPrimitive>
                 </IGRPTableHeaderPrimitive>
                 <IGRPTableBodyPrimitive>
-                  {filteredPermissions?.map((permssion, i) => (
+                  {filteredPermissions?.map((permssion) => (
                     <IGRPTableRowPrimitive key={permssion.id}>
                       <IGRPTableCellPrimitive>
                         <IGRPCheckboxPrimitive id={permssion.name} />

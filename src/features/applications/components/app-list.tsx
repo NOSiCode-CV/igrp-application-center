@@ -38,9 +38,9 @@ export function ApplicationList() {
     );
   }
 
-  const allApps = applications.filter((app) => app.type !== 'SYSTEM');
+  // const allApps = applications.filter((app) => app.type !== 'SYSTEM');
 
-  const filteredApps = allApps.filter((app) => {
+  const filteredApps = applications.filter((app) => {
     const matchesSearch =
       app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||

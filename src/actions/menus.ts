@@ -5,7 +5,7 @@ import {
   MenuFilters,
   UpdateMenuRequest,
 } from '@igrp/platform-access-management-client-ts';
-import { igrpGetAccessClient, igrpResetAccessClient } from '@igrp/framework-next';
+import { igrpGetAccessClient } from '@igrp/framework-next';
 
 import {} from './igrp/auth';
 import { mapperListMenusCRUD, mapperMenuCRUD } from '@/features/menus/menu-mapper';

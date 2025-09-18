@@ -45,7 +45,7 @@ const columns: ColumnDef<PermissionArgs>[] = [
           table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-IGRPlabelPrimitive='Select all'
+        aria-label='Select all'
         className='ring ring-current/50'
       />
     ),
@@ -53,7 +53,7 @@ const columns: ColumnDef<PermissionArgs>[] = [
       <IGRPCheckboxPrimitive
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-IGRPlabelPrimitive='Select row'
+        aria-label='Select row'
         className='ring ring-current/50'
       />
     ),
@@ -95,19 +95,6 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
 
   const { data: permissions, isLoading, error } = usePermissions({ departmentCode });
 
-  if (error) {
-    return (
-      <div className='rounded-md border py-6'>
-        <p className='text-center'>Ocorreu um erro ao carregar permissões.</p>
-        <p className='text-center'>{error.message}</p>
-      </div>
-    );
-  }
-
-  useEffect(() => {
-    setData(permissions || []);
-  }, [permissions]);
-
   const table = useReactTable({
     data,
     columns,
@@ -120,6 +107,19 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
       pagination,
     },
   });
+
+  useEffect(() => {
+    setData(permissions || []);
+  }, [permissions]);
+
+  if (error) {
+    return (
+      <div className='rounded-md border py-6'>
+        <p className='text-center'>Ocorreu um erro ao carregar permissões.</p>
+        <p className='text-center'>{error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className='space-y-4'>
@@ -253,7 +253,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
                       className='disabled:pointer-events-none disabled:opacity-50'
                       onClick={() => table.firstPage()}
                       disabled={!table.getCanPreviousPage()}
-                      aria-IGRPlabelPrimitive='Go to first page'
+                      aria-label='Go to first page'
                     >
                       <IGRPIcon iconName='ChevronFirst' />
                     </IGRPButtonPrimitive>
@@ -266,7 +266,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
                       className='disabled:pointer-events-none disabled:opacity-50'
                       onClick={() => table.previousPage()}
                       disabled={!table.getCanPreviousPage()}
-                      aria-IGRPlabelPrimitive='Go to previous page'
+                      aria-label='Go to previous page'
                     >
                       <IGRPIcon iconName='ChevronLeft' />
                     </IGRPButtonPrimitive>
@@ -279,7 +279,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
                       className='disabled:pointer-events-none disabled:opacity-50'
                       onClick={() => table.nextPage()}
                       disabled={!table.getCanNextPage()}
-                      aria-IGRPlabelPrimitive='Go to next page'
+                      aria-label='Go to next page'
                     >
                       <IGRPIcon iconName='ChevronRight' />
                     </IGRPButtonPrimitive>
@@ -292,7 +292,7 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
                       className='disabled:pointer-events-none disabled:opacity-50'
                       onClick={() => table.lastPage()}
                       disabled={!table.getCanNextPage()}
-                      aria-IGRPlabelPrimitive='Go to last page'
+                      aria-label='Go to last page'
                     >
                       <IGRPIcon iconName='ChevronLast' />
                     </IGRPButtonPrimitive>
