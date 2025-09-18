@@ -4,4 +4,4 @@ export function getMockUser() {
   return {
     mockUser: IGRP_MOCK_USER,
   };
-};
+}

@@ -7,9 +7,8 @@ import {
 } from '@igrp/platform-access-management-client-ts';
 import { igrpGetAccessClient, igrpResetAccessClient } from '@igrp/framework-next';
 
-import {  } from './igrp/auth';
+import {} from './igrp/auth';
 import { mapperListMenusCRUD, mapperMenuCRUD } from '@/features/menus/menu-mapper';
-
 
 export async function getMenus(params?: MenuFilters) {
   // igrpResetAccessClient();

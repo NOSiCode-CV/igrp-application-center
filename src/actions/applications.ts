@@ -1,6 +1,10 @@
 'use server';
 
-import { mapperApplications, igrpGetAccessClient, igrpResetAccessClient } from '@igrp/framework-next';
+import {
+  mapperApplications,
+  igrpGetAccessClient,
+  igrpResetAccessClient,
+} from '@igrp/framework-next';
 import {
   CreateApplicationRequest,
   UpdateApplicationRequest,

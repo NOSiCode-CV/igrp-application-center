@@ -50,17 +50,17 @@ export async function getSession() {
   if (isPreviewMode) return (session = null);
 
   try {
-    session = await serverSession(); 
+    session = await serverSession();
     if (!session) return session;
 
     const now = Math.floor(Date.now() / 1000) + 60;
 
-    const providerExp = typeof session.expiresAt === 'number' ? session.expiresAt : undefined; 
+    const providerExp = typeof session.expiresAt === 'number' ? session.expiresAt : undefined;
     const providerExpired = providerExp !== undefined && providerExp < now;
     const refreshFailed = session.error === 'RefreshAccessTokenError';
 
     if (providerExpired || refreshFailed) {
-      const logout = process.env.IGRP_LOGOUT_URL || '/logout'
+      const logout = process.env.IGRP_LOGOUT_URL || '/logout';
       redirect(logout);
     }
   } catch (error) {

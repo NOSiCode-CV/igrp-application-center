@@ -1,7 +1,7 @@
 'use server';
 
 import { igrpGetAccessClient, igrpResetAccessClient } from '@igrp/framework-next';
-import {  } from './igrp/auth';
+import {} from './igrp/auth';
 import { UserFilters } from '@igrp/platform-access-management-client-ts';
 
 export async function getUsers(params?: UserFilters) {

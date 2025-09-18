@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "@igrp/framework-next-auth";
-import { authOptions, buildKeycloakEndSessionUrl } from "@/lib/auth-options";
+import { NextResponse } from 'next/server';
+import { getServerSession } from '@igrp/framework-next-auth';
+import { authOptions, buildKeycloakEndSessionUrl } from '@/lib/auth-options';
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -10,9 +10,6 @@ export async function GET() {
     const url = buildKeycloakEndSessionUrl(jwtLike);
     return NextResponse.json({ url });
   } catch (e) {
-    return NextResponse.json(
-      { url: `${process.env.NEXTAUTH_URL || ''}/login` },
-      { status: 200 }
-    );
+    return NextResponse.json({ url: `${process.env.NEXTAUTH_URL || ''}/login` }, { status: 200 });
   }
 }

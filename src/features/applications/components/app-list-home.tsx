@@ -26,7 +26,8 @@ export function ApplicationsListHome() {
     );
   }
 
-  const activeApps = applications.filter((app) => app.status === 'ACTIVE').slice(0, 6);
+  const filteredApps = applications.filter((app) => app.type !== 'SYSTEM');
+  const activeApps = filteredApps.filter((app) => app.status === 'ACTIVE').slice(0, 6);
 
   return (
     <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>

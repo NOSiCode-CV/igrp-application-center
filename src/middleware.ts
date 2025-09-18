@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', request.url);
     return NextResponse.redirect(loginUrl);
-  }    
+  }
 
   if (token.error === 'RefreshAccessTokenError') {
     return NextResponse.redirect(new URL('/logout', request.url));
