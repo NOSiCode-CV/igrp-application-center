@@ -16,6 +16,3 @@ export const STATUS_OPTIONS = [
 ] as const;
 
 export const OPEN_TYPE_VIEW = 'view';
-
-export const COOKIE_NAME_PROD = '__Secure-next-auth.session-token';
-export const COOKIE_NAME_DEV = 'next-auth.session-token';

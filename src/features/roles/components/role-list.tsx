@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   IGRPButtonPrimitive,
   IGRPInputPrimitive,
@@ -18,6 +19,7 @@ import {
   IGRPDropdownMenuTriggerPrimitive,
   IGRPIcon,
   IGRPDropdownMenuCheckboxItemPrimitive,
+  IGRPBadge,
   IGRPBadgePrimitive,
   cn,
 } from '@igrp/igrp-framework-react-design-system';
@@ -26,7 +28,7 @@ import { ButtonLink } from '@/components/button-link';
 import { RoleFormDialog } from './role-form-dialog';
 import { RoleDeleteDialog } from './role-delete-dialog';
 import { RoleArgs } from '../role-schemas';
-import { STATUS_OPTIONS } from '@/lib/constants';
+import { ROUTES, STATUS_OPTIONS } from '@/lib/constants';
 import { showStatus, statusClass } from '@/lib/utils';
 import { RoleDetails } from './role-permissions-dialog';
 
@@ -43,6 +45,8 @@ export function RolesList({ departmentCode, username }: RolesListProps) {
   const [selectedRole, setSelectedRole] = useState<RoleArgs | undefined>(undefined);
   const [roleToDelete, setRoleToDelete] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+
+  const router = useRouter();
 
   const { data: roles, isLoading, error: error } = useRoles({ departmentCode, username });
 

@@ -1,7 +1,7 @@
 'use server';
 
-import { refreshAccessClient } from './igrp/auth';
-import { getIGRPAccessClient } from '@igrp/framework-next';
+import {  } from './igrp/auth';
+import { igrpGetAccessClient, igrpResetAccessClient } from '@igrp/framework-next';
 import {
   CreateRoleRequest,
   RoleFilters,
@@ -10,8 +10,8 @@ import {
 import { RoleArgs } from '@/features/roles/role-schemas';
 
 export async function getRoles(params: RoleFilters) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.roles.getRoles(params);
@@ -23,8 +23,8 @@ export async function getRoles(params: RoleFilters) {
 }
 
 export async function createRole(roleData: CreateRoleRequest) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.roles.createRole(roleData);
@@ -36,8 +36,8 @@ export async function createRole(roleData: CreateRoleRequest) {
 }
 
 export async function updateRole(name: string, roleData: UpdateRoleRequest) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.roles.updateRole(name, roleData);
@@ -49,8 +49,8 @@ export async function updateRole(name: string, roleData: UpdateRoleRequest) {
 }
 
 export async function deleteRole(name: string) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.roles.deleteRole(name);
@@ -62,8 +62,8 @@ export async function deleteRole(name: string) {
 }
 
 export async function getRoleByName(name: string) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.roles.getRoleByName(name);

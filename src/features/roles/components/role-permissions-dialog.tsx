@@ -3,6 +3,10 @@
 import {
   IGRPCardPrimitive,
   IGRPCardContentPrimitive,
+  IGRPCardDescriptionPrimitive,
+  IGRPCardHeaderPrimitive,
+  IGRPCardTitlePrimitive,
+  IGRPSeparatorPrimitive,
   cn,
   IGRPBadgePrimitive,
   IGRPDialogPrimitive,
@@ -10,6 +14,8 @@ import {
   IGRPDialogHeaderPrimitive,
   IGRPDialogTitlePrimitive,
 } from '@igrp/igrp-framework-react-design-system';
+import { AppCenterNotFound } from '@/components/not-found';
+import { CopyToClipboard } from '@/components/copy-to-clipboard';
 import { showStatus, statusClass } from '@/lib/utils';
 import { PermissionsCheckList } from '@/features/permission/components/permissions-checklist';
 import { RoleArgs } from '../role-schemas';

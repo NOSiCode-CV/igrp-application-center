@@ -7,7 +7,6 @@ declare module 'next-auth' {
     idToken?: string;
     error?: string;
     expiresAt?: number;
-    forceLogout?: boolean;
     user?: {
       id?: string;
     } & DefaultSession['user'];
@@ -21,7 +20,11 @@ declare module 'next-auth/jwt' {
     idToken?: string;
     expiresAt?: number;
     error?: 'RefreshAccessTokenError' | string;
-    forceLogout?: boolean;
-    user?: NextAuthUser;
+    user?: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    } & NextAuthUser;
   }
 }

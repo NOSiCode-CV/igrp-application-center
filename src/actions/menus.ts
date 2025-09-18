@@ -5,14 +5,15 @@ import {
   MenuFilters,
   UpdateMenuRequest,
 } from '@igrp/platform-access-management-client-ts';
-import { getIGRPAccessClient } from '@igrp/framework-next';
+import { igrpGetAccessClient, igrpResetAccessClient } from '@igrp/framework-next';
 
-import { refreshAccessClient } from './igrp/auth';
+import {  } from './igrp/auth';
 import { mapperListMenusCRUD, mapperMenuCRUD } from '@/features/menus/menu-mapper';
 
+
 export async function getMenus(params?: MenuFilters) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.menus.getMenus({ ...params });
@@ -25,8 +26,8 @@ export async function getMenus(params?: MenuFilters) {
 }
 
 export async function createMenu(menu: CreateMenuRequest) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.menus.createMenu(menu);
@@ -39,8 +40,8 @@ export async function createMenu(menu: CreateMenuRequest) {
 }
 
 export async function updateMenu(code: string, updated: UpdateMenuRequest) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.menus.updateMenu(code, updated);
@@ -53,8 +54,8 @@ export async function updateMenu(code: string, updated: UpdateMenuRequest) {
 }
 
 export async function deleteMenu(code: string) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.menus.deleteMenu(code);

@@ -1,8 +1,8 @@
 'use server';
 
-import { resetIGRPAccessClientConfig, setIGRPAccessClientConfig } from '@igrp/framework-next';
-import { getServerSession as getNextAuthServerSession } from '@igrp/framework-next-auth';
-import { Session } from '@igrp/framework-next-auth';
+import { redirect } from 'next/navigation';
+import { igrpResetAccessClientConfig, igrpSetAccessClientConfig } from '@igrp/framework-next';
+import { getServerSession, type Session } from '@igrp/framework-next-auth';
 
 import { authOptions } from '@/lib/auth-options';
 
@@ -11,7 +11,7 @@ export async function serverSession() {
 
   try {
     if (!process.env.NEXTAUTH_SECRET) {
-      console.warn('Warning: NEXTAUTH_SECRET is not set. This is required for production.');
+      console.warn('NEXTAUTH_SECRET is not set. This is required for production.');
       if (process.env.NODE_ENV === 'production') {
         throw new Error('NEXTAUTH_SECRET must be set in production');
       }
@@ -26,13 +26,15 @@ export async function serverSession() {
       throw new Error('One or more Keycloak environment variables are missing.');
     }
 
-    const session = await getNextAuthServerSession(authOptions);
+    const session = await getServerSession(authOptions);
 
     if (session !== null) {
-      setIGRPAccessClientConfig({
-        token: session.accessToken || '',
+      igrpSetAccessClientConfig({
+        token: session.accessToken as string,
         baseUrl: apiManagement,
       });
+
+      igrpResetAccessClientConfig();
     }
     return session;
   } catch (error) {
@@ -48,18 +50,23 @@ export async function getSession() {
   if (isPreviewMode) return (session = null);
 
   try {
-    session = await serverSession();
-    console.log("::: SESSION :::");
-    console.warn({ session });
+    session = await serverSession(); 
+    if (!session) return session;
+
+    const now = Math.floor(Date.now() / 1000) + 60;
+
+    const providerExp = typeof session.expiresAt === 'number' ? session.expiresAt : undefined; 
+    const providerExpired = providerExp !== undefined && providerExp < now;
+    const refreshFailed = session.error === 'RefreshAccessTokenError';
+
+    if (providerExpired || refreshFailed) {
+      const logout = process.env.IGRP_LOGOUT_URL || '/logout'
+      redirect(logout);
+    }
   } catch (error) {
     console.error('Failed to get session in layout:', error);
     session = null;
   }
 
   return session;
-}
-
-export async function refreshAccessClient() {
-  resetIGRPAccessClientConfig();
-  await serverSession();
 }
