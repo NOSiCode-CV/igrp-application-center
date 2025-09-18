@@ -38,6 +38,8 @@ export function ApplicationList() {
     );
   }
 
+  // const allApps = applications.filter((app) => app.type !== 'SYSTEM');
+
   const filteredApps = applications.filter((app) => {
     const matchesSearch =
       app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||

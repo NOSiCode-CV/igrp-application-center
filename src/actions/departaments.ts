@@ -1,17 +1,16 @@
 'use server';
 
-import { getIGRPAccessClient } from '@igrp/framework-next';
+import { igrpGetAccessClient } from '@igrp/framework-next';
 import {
   CreateDepartmentRequest,
   UpdateDepartmentRequest,
 } from '@igrp/platform-access-management-client-ts';
 
-import { refreshAccessClient } from './igrp/auth';
 import { DepartmentArgs } from '@/features/departments/dept-schemas';
 
 export async function getDepartments() {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.departments.getDepartments();
@@ -23,8 +22,8 @@ export async function getDepartments() {
 }
 
 export async function createDepartment(departmentData: CreateDepartmentRequest) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.departments.createDepartment(departmentData);
@@ -36,8 +35,8 @@ export async function createDepartment(departmentData: CreateDepartmentRequest) 
 }
 
 export async function updateDepartment(code: string, data: UpdateDepartmentRequest) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.departments.updateDepartment(code, data);
@@ -49,8 +48,8 @@ export async function updateDepartment(code: string, data: UpdateDepartmentReque
 }
 
 export async function deleteDepartment(code: string) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.departments.deleteDepartment(code);
@@ -62,8 +61,8 @@ export async function deleteDepartment(code: string) {
 }
 
 export async function getDepartmentByCode(code: string) {
-  await refreshAccessClient();
-  const client = await getIGRPAccessClient();
+  // igrpResetAccessClient();
+  const client = await igrpGetAccessClient();
 
   try {
     const result = await client.departments.getDepartmentByCode(code);

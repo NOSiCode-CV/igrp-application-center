@@ -16,7 +16,7 @@ import {
   IGRPButtonPrimitive,
   IGRPCheckboxPrimitive,
   IGRPIcon,
-  // IGRPLabelPrimitive,
+  IGRPLabelPrimitive,
   IGRPPaginationContentPrimitive,
   IGRPPaginationItemPrimitive,
   IGRPPaginationPrimitive,
@@ -190,12 +190,12 @@ export function PermissionsCheckList({ departmentCode }: { departmentCode: strin
           <div className='flex items-center justify-between gap-8'>
             {/* Results per page */}
             <div className='flex items-center gap-3'>
-              <label
+              <IGRPLabelPrimitive
                 htmlFor={id}
                 className='max-sm:sr-only'
               >
                 Rows per page
-              </label>
+              </IGRPLabelPrimitive>
               <IGRPSelectPrimitive
                 value={table.getState().pagination.pageSize.toString()}
                 onValueChange={(value) => {

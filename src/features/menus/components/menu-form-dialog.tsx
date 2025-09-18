@@ -98,6 +98,7 @@ export function MenuFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(createMenuSchema),
     defaultValues: {
+      name: '',
       code: '',
       type: menuTypeSchema.enum.MENU_PAGE,
       position: 0,
@@ -108,7 +109,7 @@ export function MenuFormDialog({
       parentCode: '',
       applicationCode: appCode,
       pageSlug: '',
-    },
+    } satisfies FormValues,
   });
 
   useEffect(() => {
@@ -130,6 +131,7 @@ export function MenuFormDialog({
       } as FormValues);
     } else {
       form.reset({
+        name: '',
         code: '',
         type: menuTypeSchema.enum.MENU_PAGE,
         position: 0,
