@@ -1,9 +1,10 @@
 import type { NextAuthOptions, Session, TokenSet } from '@igrp/framework-next-auth';
 import type { JWT } from '@igrp/framework-next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
+import { COOKIE_NAME_DEV, COOKIE_NAME_PROD } from './constants';
 
 const isProd = process.env.NODE_ENV === 'production';
-const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
+const cookieDomain = process.env.IGRP_COOKIE_DOMAIN || undefined;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,12 +20,12 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
     // maxAge: 4 * 60 * 60, // 4 hours
-    maxAge: 60 * 5,
+    maxAge: 60,
   },
 
   cookies: {
     sessionToken: {
-      name: isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      name: isProd ? COOKIE_NAME_PROD : COOKIE_NAME_DEV,
       options: {
         httpOnly: true,
         sameSite: 'lax',
@@ -49,11 +50,12 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.expiresAt = account.expires_at;
+
         delete token.error;
         return token;
       }
 
-      if (token.expiresAt && (Date.now() < token.expiresAt * 1000 - 60_000)) {
+      if (token.expiresAt && Date.now() < token.expiresAt * 1000 - 60_000) {
         return token;
       }
 

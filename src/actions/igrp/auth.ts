@@ -49,6 +49,8 @@ export async function getSession() {
 
   try {
     session = await serverSession();
+    console.log("::: SESSION :::");
+    console.warn({ session });
   } catch (error) {
     console.error('Failed to get session in layout:', error);
     session = null;

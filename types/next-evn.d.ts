@@ -7,7 +7,7 @@ namespace NodeJS {
     NEXTAUTH_SECRET: string;
     IGRP_APP_MANAGER_API: string;
     IGRP_APP_CODE: string;
-    IGRP_NEXTAUTH_CALLBACK: string;
+    IGRP_COOKIE_DOMAIN: string;
     IGRP_LOGIN_URL: string;
     IGRP_LOGOUT_URL: string;
     IGRP_APP_NAME_DESCRIPTION: string;
