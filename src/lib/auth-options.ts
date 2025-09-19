@@ -18,8 +18,7 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    // maxAge: 4 * 60 * 60, // 4 hours
-    maxAge: 60,
+    maxAge: 8 * 60 * 60, // 8 hours
   },
 
   cookies: {
@@ -36,6 +35,15 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
+    // async redirect({ url, baseUrl }) {
+    //   const forced = process.env.NEXTAUTH_URL || baseUrl;
+    //   try {
+    //     return new URL(url, forced).toString();
+    //   } catch {
+    //     return forced;
+    //   }
+    // },
+
     async jwt({ token, user, account, profile }) {
       if (account) {
         if (user && !('user' in token)) {
@@ -78,7 +86,7 @@ export const authOptions: NextAuthOptions = {
           idToken: tokens.id_token,
           accessToken: tokens.access_token,
           expiresAt: Math.floor(Date.now() / 1000 + Number(tokens.expires_in)),
-          refreshToken: tokens.refresh_token ?? token.refreshToken,
+          refreshToken: tokens.refresh_token || token.refreshToken,
           error: undefined,
         };
         return updatedToken;
