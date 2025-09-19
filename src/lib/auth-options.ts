@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        //secure: isProd,
+        secure: isProd,
         ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
@@ -40,12 +40,7 @@ export const authOptions: NextAuthOptions = {
       console.log({ url, baseUrl });
       console.log({ nextauthUrl: process.env.NEXTAUTH_URL});
       const forced = process.env.NEXTAUTH_URL ?? baseUrl;
-      try {
-        const strForced = new URL(url, forced).toString();
-        return strForced;
-      } catch {
-        return forced;
-      }
+      return forced;     
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
