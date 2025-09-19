@@ -9,9 +9,7 @@ import { RoleArgs } from '@/features/roles/role-schemas';
 import { getClientAccess } from './access-client';
 
 export async function getRoles(params: RoleFilters) {
-  
-    const client = await getClientAccess();
-  
+  const client = await getClientAccess();
 
   try {
     const result = await client.roles.getRoles(params);
@@ -23,8 +21,7 @@ export async function getRoles(params: RoleFilters) {
 }
 
 export async function createRole(roleData: CreateRoleRequest) {
-    const client = await getClientAccess();
-
+  const client = await getClientAccess();
 
   try {
     const result = await client.roles.createRole(roleData);
@@ -36,7 +33,7 @@ export async function createRole(roleData: CreateRoleRequest) {
 }
 
 export async function updateRole(name: string, roleData: UpdateRoleRequest) {
-    const client = await getClientAccess();
+  const client = await getClientAccess();
 
   try {
     const result = await client.roles.updateRole(name, roleData);

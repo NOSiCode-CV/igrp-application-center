@@ -10,7 +10,7 @@ import { RoleArgs } from '@/features/roles/role-schemas';
 import { getClientAccess } from './access-client';
 
 export async function getPermissions(params: PermissionFilters) {
-  const client = await getClientAccess();  
+  const client = await getClientAccess();
 
   try {
     const result = await client.permissions.getPermissions(params);
@@ -22,7 +22,7 @@ export async function getPermissions(params: PermissionFilters) {
 }
 
 export async function createPermission(permission: CreatePermissionRequest) {
-  const client = await getClientAccess();  
+  const client = await getClientAccess();
 
   try {
     const result = await client.permissions.createPermission(permission);
@@ -34,7 +34,7 @@ export async function createPermission(permission: CreatePermissionRequest) {
 }
 
 export async function updatePermission(name: string, permission: UpdatePermissionRequest) {
-  const client = await getClientAccess();  
+  const client = await getClientAccess();
 
   try {
     const result = await client.permissions.updatePermission(name, permission);
@@ -46,7 +46,7 @@ export async function updatePermission(name: string, permission: UpdatePermissio
 }
 
 export async function deletePermission(name: string) {
-  const client = await getClientAccess();  
+  const client = await getClientAccess();
 
   try {
     const result = await client.permissions.deletePermission(name);
@@ -58,7 +58,7 @@ export async function deletePermission(name: string) {
 }
 
 export async function getRolesByPermissionName(name: string) {
-  const client = await getClientAccess();  
+  const client = await getClientAccess();
 
   try {
     const result = await client.permissions.getRolesByPermissionName(name);

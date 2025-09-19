@@ -1,7 +1,11 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { igrpGetAccessClient, igrpResetAccessClientConfig, igrpSetAccessClientConfig } from '@igrp/framework-next';
+import {
+  igrpGetAccessClient,
+  igrpResetAccessClientConfig,
+  igrpSetAccessClientConfig,
+} from '@igrp/framework-next';
 import { getServerSession, type Session } from '@igrp/framework-next-auth';
 
 import { authOptions } from '@/lib/auth-options';

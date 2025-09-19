@@ -10,7 +10,7 @@ import { getClientAccess } from './access-client';
 
 export async function getDepartments() {
   const client = await getClientAccess();
-  
+
   try {
     const result = await client.departments.getDepartments();
     return result.data as DepartmentArgs[];
@@ -22,7 +22,6 @@ export async function getDepartments() {
 
 export async function createDepartment(departmentData: CreateDepartmentRequest) {
   const client = await getClientAccess();
-
 
   try {
     const result = await client.departments.createDepartment(departmentData);
