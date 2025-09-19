@@ -35,15 +35,15 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-     async redirect({ url, baseUrl }) {
-      const forced = process.env.NEXTAUTH_URL || baseUrl;
-      try { 
-        return new URL(url, forced).toString(); 
-      } catch { 
-        return forced;
-      }
-    },
- 
+    // async redirect({ url, baseUrl }) {
+    //   const forced = process.env.NEXTAUTH_URL || baseUrl;
+    //   try {
+    //     return new URL(url, forced).toString();
+    //   } catch {
+    //     return forced;
+    //   }
+    // },
+
     async jwt({ token, user, account, profile }) {
       if (account) {
         if (user && !('user' in token)) {
