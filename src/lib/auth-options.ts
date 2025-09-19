@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         //secure: isProd,
-        //...(cookieDomain ? { domain: cookieDomain } : {}),
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
   },
