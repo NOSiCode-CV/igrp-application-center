@@ -37,6 +37,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {      
       const forced = process.env.NEXTAUTH_URL ?? baseUrl;
+      console.log({ url })
+      console.log({ baseUrl })
+      console.log({ forced })
       return forced;     
     },
     async jwt({ token, user, account, profile }) {
