@@ -29,7 +29,7 @@ export const authOptions: NextAuthOptions = {
         sameSite: 'lax',
         path: '/',
         //secure: isProd,
-        //...(cookieDomain ? { domain: cookieDomain } : {}),
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
   },
@@ -38,6 +38,7 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       console.log(':: redirect callbacks ::');
       console.log({ url, baseUrl });
+      console.log({ nextauthUrl: process.env.NEXTAUTH_URL});
       const forced = process.env.NEXTAUTH_URL ?? baseUrl;
       try {
         const strForced = new URL(url, forced).toString();
