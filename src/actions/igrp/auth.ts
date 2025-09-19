@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { igrpResetAccessClientConfig, igrpSetAccessClientConfig } from '@igrp/framework-next';
+import { igrpGetAccessClient, igrpResetAccessClientConfig, igrpSetAccessClientConfig } from '@igrp/framework-next';
 import { getServerSession, type Session } from '@igrp/framework-next-auth';
 
 import { authOptions } from '@/lib/auth-options';
@@ -33,8 +33,6 @@ export async function serverSession() {
         token: session.accessToken as string,
         baseUrl: apiManagement,
       });
-
-      igrpResetAccessClientConfig();
     }
     return session;
   } catch (error) {
