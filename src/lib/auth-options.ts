@@ -28,24 +28,16 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        //secure: isProd,
+        secure: isProd,
         ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
   },
 
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      console.log(':: redirect callbacks ::');
-      console.log({ url, baseUrl });
-      console.log({ nextauthUrl: process.env.NEXTAUTH_URL});
+    async redirect({ url, baseUrl }) {      
       const forced = process.env.NEXTAUTH_URL ?? baseUrl;
-      try {
-        const strForced = new URL(url, forced).toString();
-        return strForced;
-      } catch {
-        return forced;
-      }
+      return forced;     
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
