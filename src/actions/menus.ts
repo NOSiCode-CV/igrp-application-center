@@ -11,7 +11,7 @@ import { mapperListMenusCRUD, mapperMenuCRUD } from '@/features/menus/menu-mappe
 import { getClientAccess } from './access-client';
 
 export async function getMenus(params?: MenuFilters) {
-  const client = await getClientAccess();  
+  const client = await getClientAccess();
 
   try {
     const result = await client.menus.getMenus({ ...params });
