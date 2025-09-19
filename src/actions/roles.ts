@@ -1,17 +1,17 @@
 'use server';
 
-import {} from './igrp/auth';
-import { igrpGetAccessClient } from '@igrp/framework-next';
 import {
   CreateRoleRequest,
   RoleFilters,
   UpdateRoleRequest,
 } from '@igrp/platform-access-management-client-ts';
 import { RoleArgs } from '@/features/roles/role-schemas';
+import { getClientAccess } from './access-client';
 
 export async function getRoles(params: RoleFilters) {
-  // igrpResetAccessClient();
-  const client = await igrpGetAccessClient();
+  
+    const client = await getClientAccess();
+  
 
   try {
     const result = await client.roles.getRoles(params);
@@ -23,8 +23,8 @@ export async function getRoles(params: RoleFilters) {
 }
 
 export async function createRole(roleData: CreateRoleRequest) {
-  // igrpResetAccessClient();
-  const client = await igrpGetAccessClient();
+    const client = await getClientAccess();
+
 
   try {
     const result = await client.roles.createRole(roleData);
@@ -36,8 +36,7 @@ export async function createRole(roleData: CreateRoleRequest) {
 }
 
 export async function updateRole(name: string, roleData: UpdateRoleRequest) {
-  // igrpResetAccessClient();
-  const client = await igrpGetAccessClient();
+    const client = await getClientAccess();
 
   try {
     const result = await client.roles.updateRole(name, roleData);
@@ -49,8 +48,7 @@ export async function updateRole(name: string, roleData: UpdateRoleRequest) {
 }
 
 export async function deleteRole(name: string) {
-  // igrpResetAccessClient();
-  const client = await igrpGetAccessClient();
+  const client = await getClientAccess();
 
   try {
     const result = await client.roles.deleteRole(name);
@@ -62,8 +60,7 @@ export async function deleteRole(name: string) {
 }
 
 export async function getRoleByName(name: string) {
-  // igrpResetAccessClient();
-  const client = await igrpGetAccessClient();
+  const client = await getClientAccess();
 
   try {
     const result = await client.roles.getRoleByName(name);

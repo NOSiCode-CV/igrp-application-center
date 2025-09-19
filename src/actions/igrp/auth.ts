@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { igrpSetAccessClientConfig } from '@igrp/framework-next';
+import { igrpGetAccessClient, igrpResetAccessClientConfig, igrpSetAccessClientConfig } from '@igrp/framework-next';
 import { getServerSession, type Session } from '@igrp/framework-next-auth';
 
 import { authOptions } from '@/lib/auth-options';
@@ -33,8 +33,6 @@ export async function serverSession() {
         token: session.accessToken as string,
         baseUrl: apiManagement,
       });
-
-     // igrpResetAccessClientConfig();
     }
     return session;
   } catch (error) {
@@ -50,17 +48,17 @@ export async function getSession() {
   if (isPreviewMode) return (session = null);
 
   try {
-    session = await serverSession(); 
+    session = await serverSession();
     if (!session) return session;
 
     const now = Math.floor(Date.now() / 1000) + 60;
 
-    const providerExp = typeof session.expiresAt === 'number' ? session.expiresAt : undefined; 
+    const providerExp = typeof session.expiresAt === 'number' ? session.expiresAt : undefined;
     const providerExpired = providerExp !== undefined && providerExp < now;
     const refreshFailed = session.error === 'RefreshAccessTokenError';
 
     if (providerExpired || refreshFailed) {
-      const logout = process.env.IGRP_LOGOUT_URL || '/logout'
+      const logout = process.env.IGRP_LOGOUT_URL || '/logout';
       redirect(logout);
     }
   } catch (error) {

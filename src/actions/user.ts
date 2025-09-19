@@ -1,12 +1,10 @@
 'use server';
 
-import { igrpGetAccessClient } from '@igrp/framework-next';
-import {} from './igrp/auth';
 import { UserFilters } from '@igrp/platform-access-management-client-ts';
+import { getClientAccess } from './access-client';
 
 export async function getUsers(params?: UserFilters) {
-  // igrpResetAccessClient();
-  const client = await igrpGetAccessClient();
+  const client = await getClientAccess();  
 
   try {
     const result = await client.users.getUsers(params);
@@ -18,8 +16,7 @@ export async function getUsers(params?: UserFilters) {
 }
 
 export async function getCurrentUser() {
-  // igrpResetAccessClient();
-  const client = await igrpGetAccessClient();
+  const client = await getClientAccess();  
 
   try {
     const result = await client.users.getCurrentUser();
