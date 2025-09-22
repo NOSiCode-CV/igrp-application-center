@@ -29,8 +29,14 @@ export async function middleware(request: NextRequest) {
     if (token) break;
   }
 
+  console.log({ token });
+
   if (!token) {
+    console.log("Sem token")
     const loginUrl = new URL('/login', request.url);
+    console.log({ loginUrl })
+    console.log({ requestURL:request.url })
+
     loginUrl.searchParams.set('callbackUrl', request.url);
     return NextResponse.redirect(loginUrl);
   }

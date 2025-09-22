@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
       const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
       const forced = NEXTAUTH_URL ?? baseUrl;
 
+      console.log(' ::: redirect keycloack config :::');
       console.log({ NEXTAUTH_URL });
       console.log({ url });
       console.log({ baseUrl });
