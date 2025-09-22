@@ -14,6 +14,8 @@ export default async function AuthPage({
 }) {
   const { callbackUrl } = await searchParams;
 
+  console.log({ callbackUrl })
+
   return (
     <section className='flex min-h-screen flex-col md:flex-row'>
       <div

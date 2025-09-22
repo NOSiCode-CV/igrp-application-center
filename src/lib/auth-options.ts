@@ -35,35 +35,35 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
-      const forced = NEXTAUTH_URL ?? baseUrl;
+    // async redirect({ url, baseUrl }) {
+    //   const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
+    //   const forced = NEXTAUTH_URL ?? baseUrl;
 
-      console.log({ NEXTAUTH_URL });
-      console.log({ url });
-      console.log({ baseUrl });
-      console.log({ forced });
+    //   console.log({ NEXTAUTH_URL });
+    //   console.log({ url });
+    //   console.log({ baseUrl });
+    //   console.log({ forced });
 
-      if (url.startsWith('/')) {
-        console.log(' url start with /');
-        const u = new URL(url, forced).toString();
-        console.log({ url: u });
-        return u;
-      }
+    //   if (url.startsWith('/')) {
+    //     console.log(' url start with /');
+    //     const u = new URL(url, forced).toString();
+    //     console.log({ url: u });
+    //     return u;
+    //   }
 
-      try {
-        const u = new URL(url);
-        const f = new URL(forced);
-        console.log({ u, f });
-        const origin = u.origin === f.origin;
-        console.log({ origin });
-        return origin ? url : f.toString();
-      } catch {
-        console.log('catch return forced');
-        console.log({ forced });
-        return forced;
-      }
-    },
+    //   try {
+    //     const u = new URL(url);
+    //     const f = new URL(forced);
+    //     console.log({ u, f });
+    //     const origin = u.origin === f.origin;
+    //     console.log({ origin });
+    //     return origin ? url : f.toString();
+    //   } catch {
+    //     console.log('catch return forced');
+    //     console.log({ forced });
+    //     return forced;
+    //   }
+    // },
     async jwt({ token, user, account, profile }) {
       if (account) {
         if (user && !('user' in token)) {

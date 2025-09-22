@@ -9,6 +9,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const layoutConfig = await configLayout();
   const config = await createConfig(layoutConfig);
 
+  // TDOD: see to move this to the root-layout
   const { layout, previewMode, loginUrl, logoutUrl } = config;
   const { session } = layout ?? {};
 
