@@ -1,6 +1,7 @@
 import type { NextAuthOptions, Session, TokenSet } from '@igrp/framework-next-auth';
 import type { JWT } from '@igrp/framework-next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
+import { redirect as nextRedirect } from 'next/navigation';
 
 const isProd = process.env.NODE_ENV === 'production';
 const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
@@ -35,35 +36,35 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    // async redirect({ url, baseUrl }) {
-    //   const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
-    //   const forced = NEXTAUTH_URL ?? baseUrl;
+    async redirect({ url, baseUrl }) {
+      const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
+      const forced = NEXTAUTH_URL ?? baseUrl;
 
-    //   console.log({ NEXTAUTH_URL });
-    //   console.log({ url });
-    //   console.log({ baseUrl });
-    //   console.log({ forced });
+      console.log({ NEXTAUTH_URL });
+      console.log({ url });
+      console.log({ baseUrl });
+      console.log({ forced });
 
-    //   if (url.startsWith('/')) {
-    //     console.log(' url start with /');
-    //     const u = new URL(url, forced).toString();
-    //     console.log({ url: u });
-    //     return u;
-    //   }
+      if (url.startsWith('/')) {
+        console.log(' url start with /');
+        const u = new URL(url, forced).toString();
+        console.log({ url: u });
+        return u;
+      }
 
-    //   try {
-    //     const u = new URL(url);
-    //     const f = new URL(forced);
-    //     console.log({ u, f });
-    //     const origin = u.origin === f.origin;
-    //     console.log({ origin });
-    //     return origin ? url : f.toString();
-    //   } catch {
-    //     console.log('catch return forced');
-    //     console.log({ forced });
-    //     return forced;
-    //   }
-    // },
+      try {
+        const u = new URL(url);
+        const f = new URL(forced);
+        console.log({ u, f });
+        const origin = u.origin === f.origin;
+        console.log({ origin });
+        return origin ? url : f.toString();
+      } catch {
+        console.log('catch return forced');
+        console.log({ forced });
+        return forced;
+      }
+    },
     async jwt({ token, user, account, profile }) {
       if (account) {
         if (user && !('user' in token)) {
@@ -163,7 +164,12 @@ export function buildKeycloakEndSessionUrl(jwt: JWT) {
     : undefined;
 
   const url = new URL(`${issuer}/protocol/openid-connect/logout`);
-  if (idToken) url.searchParams.set('id_token_hint', idToken);
+  if (!idToken) {
+    console.error('No your or not login, available for logout.');
+    const loginUrl = process.env.IGRP_LOGIN_URL || '/login'
+    nextRedirect(loginUrl);
+  }
+  url.searchParams.set('id_token_hint', idToken);
   if (postLogoutRedirectUri)
     url.searchParams.set('post_logout_redirect_uri', postLogoutRedirectUri);
 
