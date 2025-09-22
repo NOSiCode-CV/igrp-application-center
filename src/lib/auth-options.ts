@@ -35,8 +35,10 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async redirect({ url, baseUrl }) {      
-      const forced = process.env.NEXTAUTH_URL ?? baseUrl;
+    async redirect({ url, baseUrl }) {   
+      const NEXTAUTH_URL = process.env.NEXTAUTH_URL; 
+      const forced = NEXTAUTH_URL ?? baseUrl;
+      console.log({ NEXTAUTH_URL })
       console.log({ url })
       console.log({ baseUrl })
       console.log({ forced })
