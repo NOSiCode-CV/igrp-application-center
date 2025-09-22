@@ -3,7 +3,7 @@ import type { JWT } from '@igrp/framework-next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
 const isProd = process.env.NODE_ENV === 'production';
-const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
+// const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -28,21 +28,39 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: isProd,
-        ...(cookieDomain ? { domain: cookieDomain } : {}),
+        // secure: isProd,
+        // ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
   },
 
   callbacks: {
-    async redirect({ url, baseUrl }) {   
-      const NEXTAUTH_URL = process.env.NEXTAUTH_URL; 
-      const forced = NEXTAUTH_URL ?? baseUrl;
-      console.log({ NEXTAUTH_URL })
-      console.log({ url })
-      console.log({ baseUrl })
-      console.log({ forced })
-      return forced;     
+    async redirect({ url, baseUrl }) {
+      const forced = process.env.NEXTAUTH_URL ?? baseUrl;
+
+      console.log({ url });
+      console.log({ baseUrl });
+      console.log({ forced });
+
+      if (url.startsWith('/')) {
+        console.log(' url start with /');
+        const u = new URL(url, forced).toString();
+        console.log({ url: u });
+        return u;
+      }
+
+      try {
+        const u = new URL(url);
+        const f = new URL(forced);
+        console.log({ u, f });
+        const origin = u.origin === f.origin;
+        console.log({ origin });
+        return origin ? url : f.toString();
+      } catch {
+        console.log('catch return forced');
+        console.log({ forced });
+        return forced;
+      }
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
