@@ -3,7 +3,7 @@ import type { JWT } from '@igrp/framework-next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 
 const isProd = process.env.NODE_ENV === 'production';
-// const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
+const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -18,7 +18,7 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: 8 * 60 * 60, // 8 hours
+    maxAge: 4 * 60 * 60, // 4 hours
   },
 
   cookies: {
@@ -28,8 +28,8 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        // secure: isProd,
-        // ...(cookieDomain ? { domain: cookieDomain } : {}),
+        secure: isProd,
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
   },
