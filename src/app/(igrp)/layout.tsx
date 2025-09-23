@@ -22,21 +22,15 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   const baseUrl = process.env.NEXTAUTH_URL;
 
-  console.log(" ::: Root Layout ::: ")
-
-  console.log({ baseUrl })
+  const urlLogin = loginUrl ?? '/login';
+  const urlLogout = logoutUrl ?? '/logout';
 
   const loginPath = new URL(loginUrl || '/', baseUrl).pathname;
 
-  console.log({ loginPath })
-
   const isAlreadyOnLogin = currentPath.startsWith(loginPath);
 
-  if (!previewMode && session === null && loginUrl && !isAlreadyOnLogin) {
-    console.log({ logoutUrl })
-    console.log({ loginUrl })
-
-    redirect(logoutUrl || loginUrl);
+  if (!previewMode && session === null && urlLogin && !isAlreadyOnLogin) {
+    redirect(urlLogin || urlLogout);
   }
 
   return <IGRPLayout config={config}>{children}</IGRPLayout>;
