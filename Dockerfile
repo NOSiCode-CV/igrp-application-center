@@ -1,49 +1,51 @@
 FROM node:22-alpine AS base
 
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1
 
+RUN apk add --no-cache libc6-compat libstdc++ dumb-init
 WORKDIR /app
+RUN corepack enable
 
+FROM base AS deps
+WORKDIR /app
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc ./
-
-RUN \
-  if [ -f yarn.lock ]; then yarn; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
+RUN --mount=type=cache,target=/root/.npm \
+    --mount=type=cache,target=/root/.yarn \
+    --mount=type=cache,target=/root/.pnpm \
+    sh -lc '\
+      if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
+      elif [ -f package-lock.json ]; then npm ci; \
+      elif [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; \
+      else echo "Lockfile not found." && exit 1; fi \
+    '
 
 FROM base AS builder
 WORKDIR /app
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
+RUN sh -lc '\
+  if [ -f yarn.lock ]; then yarn build; \
   elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+  elif [ -f pnpm-lock.yaml ]; then pnpm run build; \
+  else echo "Lockfile not found." && exit 1; fi \
+'
 
 FROM base AS runner
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    PORT=3000 \
+    HOSTNAME=0.0.0.0
 WORKDIR /app
+RUN apk add --no-cache libc6-compat libstdc++ dumb-init
 
-ENV NODE_ENV=production
-
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001 -G nodejs
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
-
 EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "server.js"]
