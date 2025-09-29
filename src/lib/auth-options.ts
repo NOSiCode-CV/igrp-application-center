@@ -3,10 +3,8 @@ import type { JWT } from '@igrp/framework-next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
 import { redirect as nextRedirect } from 'next/navigation';
 
-
 const isProd = process.env.NODE_ENV === 'production';
 const cookieDomain = (process.env.IGRP_NEXTAUTH_CALLBACK ?? '').trim() || undefined;
-
 
 const isHttps = (process.env.NEXTAUTH_URL ?? '').startsWith('https://');
 const secureCookie = isProd && isHttps;
@@ -14,18 +12,14 @@ const secureCookie = isProd && isHttps;
 const COOKIE_DOMAIN = (() => {
   if (!isProd || !cookieDomain) return undefined;
   let host = cookieDomain;
-  try { if (host.includes('://')) host = new URL(host).hostname; } catch { }
+  try {
+    if (host.includes('://')) host = new URL(host).hostname;
+  } catch {}
   host = host.split('/')[0].split(':')[0];
-  if (
-    !host ||
-    host === 'localhost' ||
-    !host.includes('.') ||
-    /^\d+\.\d+\.\d+\.\d+$/.test(host)
-  ) return undefined;
+  if (!host || host === 'localhost' || !host.includes('.') || /^\d+\.\d+\.\d+\.\d+$/.test(host))
+    return undefined;
   return host;
 })();
-
-
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -53,7 +47,9 @@ export const authOptions: NextAuthOptions = {
     sessionToken: {
       name: secureCookie ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       options: {
-        httpOnly: true, sameSite: 'lax', path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
         secure: secureCookie,
         ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
       },
@@ -62,7 +58,9 @@ export const authOptions: NextAuthOptions = {
     state: {
       name: secureCookie ? '__Secure-next-auth.state' : 'next-auth.state',
       options: {
-        httpOnly: true, sameSite: 'lax', path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
         secure: secureCookie,
         ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
       },
@@ -71,7 +69,9 @@ export const authOptions: NextAuthOptions = {
     pkceCodeVerifier: {
       name: secureCookie ? '__Secure-next-auth.pkce.code_verifier' : 'next-auth.pkce.code_verifier',
       options: {
-        httpOnly: true, sameSite: 'lax', path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
         secure: secureCookie,
         ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
       },
@@ -202,7 +202,7 @@ export function buildKeycloakEndSessionUrl(jwt: JWT) {
   const url = new URL(`${issuer}/protocol/openid-connect/logout`);
   if (!idToken) {
     console.error('No your or not login, available for logout.');
-    const loginUrl = process.env.IGRP_LOGIN_URL || '/login'
+    const loginUrl = process.env.IGRP_LOGIN_URL || '/login';
     nextRedirect(loginUrl);
   }
   url.searchParams.set('id_token_hint', idToken);
