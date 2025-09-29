@@ -1,9 +1,31 @@
 import type { NextAuthOptions, Session, TokenSet } from '@igrp/framework-next-auth';
 import type { JWT } from '@igrp/framework-next-auth/jwt';
 import KeycloakProvider from 'next-auth/providers/keycloak';
+import { redirect as nextRedirect } from 'next/navigation';
+
 
 const isProd = process.env.NODE_ENV === 'production';
-const cookieDomain = process.env.IGRP_NEXTAUTH_CALLBACK || undefined;
+const cookieDomain = (process.env.IGRP_NEXTAUTH_CALLBACK ?? '').trim() || undefined;
+
+
+const isHttps = (process.env.NEXTAUTH_URL ?? '').startsWith('https://');
+const secureCookie = isProd && isHttps;
+
+const COOKIE_DOMAIN = (() => {
+  if (!isProd || !cookieDomain) return undefined;
+  let host = cookieDomain;
+  try { if (host.includes('://')) host = new URL(host).hostname; } catch { }
+  host = host.split('/')[0].split(':')[0];
+  if (
+    !host ||
+    host === 'localhost' ||
+    !host.includes('.') ||
+    /^\d+\.\d+\.\d+\.\d+$/.test(host)
+  ) return undefined;
+  return host;
+})();
+
+
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -11,6 +33,12 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.KEYCLOAK_CLIENT_ID!,
       clientSecret: process.env.KEYCLOAK_CLIENT_SECRET!,
       issuer: process.env.KEYCLOAK_ISSUER!,
+      authorization: {
+        params: {
+          redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/keycloak`,
+        },
+      },
+      checks: ['pkce', 'state'],
     }),
   ],
 
@@ -18,26 +46,60 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: 8 * 60 * 60, // 8 hours
+    maxAge: 4 * 60 * 60, // 4 hours
   },
 
   cookies: {
     sessionToken: {
-      name: isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      name: secureCookie ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: isProd,
-        ...(cookieDomain ? { domain: cookieDomain } : {}),
+        httpOnly: true, sameSite: 'lax', path: '/',
+        secure: secureCookie,
+        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
       },
     },
-  },
 
+    state: {
+      name: secureCookie ? '__Secure-next-auth.state' : 'next-auth.state',
+      options: {
+        httpOnly: true, sameSite: 'lax', path: '/',
+        secure: secureCookie,
+        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+      },
+    },
+
+    pkceCodeVerifier: {
+      name: secureCookie ? '__Secure-next-auth.pkce.code_verifier' : 'next-auth.pkce.code_verifier',
+      options: {
+        httpOnly: true, sameSite: 'lax', path: '/',
+        secure: secureCookie,
+        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+      },
+    },
+
+    csrfToken: {
+      name: secureCookie ? '__Host-next-auth.csrf-token' : 'next-auth.csrf-token',
+      options: { httpOnly: false, sameSite: 'lax', path: '/', secure: secureCookie },
+    },
+    callbackUrl: {
+      name: secureCookie ? '__Host-next-auth.callback-url' : 'next-auth.callback-url',
+      options: { httpOnly: false, sameSite: 'lax', path: '/', secure: secureCookie },
+    },
+  },
   callbacks: {
-    async redirect({ url, baseUrl }) {      
-      const forced = process.env.NEXTAUTH_URL ?? baseUrl;
-      return forced;     
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return url;
+      try {
+        const u = new URL(url);
+        const b = new URL(baseUrl);
+        if (u.origin !== b.origin) {
+          return `${b.origin}${u.pathname}${u.search}${u.hash}`;
+        }
+        return u.toString();
+      } catch {
+        if (url.startsWith('/')) return url;
+        return baseUrl;
+      }
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
@@ -138,7 +200,12 @@ export function buildKeycloakEndSessionUrl(jwt: JWT) {
     : undefined;
 
   const url = new URL(`${issuer}/protocol/openid-connect/logout`);
-  if (idToken) url.searchParams.set('id_token_hint', idToken);
+  if (!idToken) {
+    console.error('No your or not login, available for logout.');
+    const loginUrl = process.env.IGRP_LOGIN_URL || '/login'
+    nextRedirect(loginUrl);
+  }
+  url.searchParams.set('id_token_hint', idToken);
   if (postLogoutRedirectUri)
     url.searchParams.set('post_logout_redirect_uri', postLogoutRedirectUri);
 
