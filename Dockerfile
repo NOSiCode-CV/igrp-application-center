@@ -10,9 +10,9 @@ RUN corepack enable
 FROM base AS deps
 WORKDIR /app
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc ./
-RUN --mount=type=cache,target=/root/.npm \
-    --mount=type=cache,target=/root/.yarn \
-    --mount=type=cache,target=/root/.pnpm \
+RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
+    --mount=type=cache,id=yarn-cache,target=/root/.yarn \
+    --mount=type=cache,id=pnpm-cache,target=/root/.pnpm \
     sh -lc '\
       if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
       elif [ -f package-lock.json ]; then npm ci; \
