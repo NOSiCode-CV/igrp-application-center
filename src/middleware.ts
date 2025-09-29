@@ -30,8 +30,19 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!token) {
-    const loginUrl = new URL('/login', request.url);  
-    loginUrl.searchParams.set('callbackUrl', request.url);
+    let publicOrigin = (process.env.NEXTAUTH_URL || '').replace(/\/$/, '');
+
+    if (!publicOrigin) {
+      const xfHost  = request.headers.get('x-forwarded-host') || request.headers.get('host') || '';
+      const xfProto = request.headers.get('x-forwarded-proto') || 'http';
+      if (xfHost) publicOrigin = `${xfProto}://${xfHost}`;
+    }
+
+    const path = request.nextUrl.pathname + request.nextUrl.search + request.nextUrl.hash;
+    const cb = publicOrigin ? (publicOrigin + path) : (path.startsWith('/') ? path : '/');
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
+    loginUrl.search = '?callbackUrl=' + encodeURIComponent(cb);
     return NextResponse.redirect(loginUrl);
   }
 
