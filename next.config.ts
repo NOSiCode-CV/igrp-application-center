@@ -2,6 +2,9 @@ import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   // uncomment this line when you build this build,
+
+  basePath: process.env.IGRP_APP_BASE_PATH || '',
+  
   output: 'standalone',
 
   images: {
