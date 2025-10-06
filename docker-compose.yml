@@ -18,7 +18,6 @@ services:
       - IGRP_PREVIEW_MODE=false
       - IGRP_LOGIN_URL=/login
       - IGRP_LOGOUT_URL=/logout
-      - IGRP_APP_NAME_DESCRIPTION=IGRP
       - NODE_ENV=production
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
