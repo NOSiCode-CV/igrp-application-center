@@ -14,7 +14,7 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
 
   return igrpBuildConfig({
     appCode: process.env.IGRP_APP_CODE || '',
-    previewMode: false,
+    previewMode: process.env.IGRP_PREVIEW_MODE === 'true' ? true : false,
     layoutMockData: {
       getHeaderData: async () => ({
         user: user,
@@ -49,9 +49,7 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
       position: 'bottom-right',
       richColors: true,
       closeButton: true,
-    },
-    loginUrl: process.env.IGRP_LOGIN_URL || '',
-    logoutUrl: process.env.IGRP_LOGOUT_URL || '',
+    },    
     showSettings: true,
   });
 }
