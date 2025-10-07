@@ -58,7 +58,7 @@ export async function getSession() {
     const refreshFailed = session.error === 'RefreshAccessTokenError';
 
     if (providerExpired || refreshFailed) {
-      const logout = process.env.IGRP_LOGOUT_URL || '/logout';
+      const logout = '/logout';
       redirect(logout);
     }
   } catch (error) {
