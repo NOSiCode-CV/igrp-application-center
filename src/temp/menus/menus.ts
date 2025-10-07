@@ -14,7 +14,7 @@ export const IGRP_DEFAULT_MENU: IGRPMenuItemArgs[] = [
     pageSlug: 'meu-menu-test',
     parentCode: null,
     applicationCode: 'APP_TEST_1',
-    permissions: [],
+    roles: [],
   },
   {
     id: 46,
@@ -29,7 +29,7 @@ export const IGRP_DEFAULT_MENU: IGRPMenuItemArgs[] = [
     pageSlug: null,
     parentCode: null,
     applicationCode: 'APP_TEST_1',
-    permissions: [],
+    roles: [],
   },
   {
     id: 47,
@@ -44,7 +44,7 @@ export const IGRP_DEFAULT_MENU: IGRPMenuItemArgs[] = [
     pageSlug: null,
     parentCode: null,
     applicationCode: 'APP_TEST_1',
-    permissions: [],
+    roles: [],
   },
   {
     id: 45,
@@ -60,7 +60,7 @@ export const IGRP_DEFAULT_MENU: IGRPMenuItemArgs[] = [
     parentCode: 'TEST_MENU_GRUPO',
     applicationCode: 'APP_TEST_1',
     createdBy: 'ea274d21-2386-470f-b597-9af8cbd56651',
-    permissions: [],
+    roles: [],
   },
   {
     id: 49,
@@ -75,6 +75,6 @@ export const IGRP_DEFAULT_MENU: IGRPMenuItemArgs[] = [
     pageSlug: 'test-external-page',
     parentCode: 'TEST_PAGINA_EXTERNA',
     applicationCode: 'APP_TEST_1',
-    permissions: [],
+    roles: [],
   },
 ];

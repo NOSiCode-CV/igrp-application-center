@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { APPLICATIONS_TYPES_EXCLUDE } from './app-utils';
-import { fileWithPreviewSchema } from '@/schemas/file';
+import { fileWithPreviewSchema } from '@/features/files/files-schema';
 import { statusSchema } from '@/schemas/global';
 
 export const appTypeCrud = z.enum(APPLICATIONS_TYPES_EXCLUDE);
@@ -18,7 +18,7 @@ export const applicationSchema = z
     url: z.string().optional(),
     description: z.string().min(5, 'Descrição é obrigatória'),
     status: statusSchema,
-    departmentCode: z.string().min(3, 'Departamento é obrigatório'),
+    departments: z.array(z.string()).min(1, 'Departamento é obrigatório'),
     picture: z.string().optional(),
     image: fileWithPreviewSchema.nullable().optional(),
   })

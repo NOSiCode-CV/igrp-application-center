@@ -11,7 +11,7 @@ import {
 import { IGRPApplicationArgs } from '@igrp/framework-next-types';
 
 import { cn, showStatus, statusClass } from '@/lib/utils';
-import { ButtonTooltip } from '@/components/button-tooltip';
+import { ButtonLinkTooltip } from '@/components/button-link-tooltip';
 import { formatSlug } from '@/features/applications/app-utils';
 import { ROUTES } from '@/lib/constants';
 
@@ -22,7 +22,7 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
   const href = slug ? formatSlug(slug) : url;
 
   return (
-    <IGRPCardPrimitive className='overflow-hidden card-hover gap-3 pt-4 pb-2 justify-between'>
+    <IGRPCardPrimitive className='@container/card overflow-hidden card-hover gap-3 py-4 justify-between'>
       <IGRPCardHeaderPrimitive className='px-4 pb-0'>
         <div className='flex items-start justify-between'>
           <div className='flex items-start'>
@@ -55,17 +55,17 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
           </IGRPBadgePrimitive>
         </div>
         <div className='flex items-center gap-1'>
-          <ButtonTooltip
-            href={`${ROUTES.APPS}/${code}`}
+          <ButtonLinkTooltip
+            href={`${ROUTES.APPLICATIONS}/${code}`}
             icon='Eye'
             label='Ver'
           />
-          <ButtonTooltip
-            href={`${ROUTES.APPS}/${code}/editar`}
+          <ButtonLinkTooltip
+            href={`${ROUTES.APPLICATIONS}/${code}/${ROUTES.EDIT}`}
             icon='SquarePen'
             label='Editar'
           />
-          <ButtonTooltip
+          <ButtonLinkTooltip
             href={href || ''}
             icon='ExternalLink'
             label='Abrir'

@@ -12,7 +12,7 @@ export const IGRP_MOCK_APPS_DATA: IGRPApplicationArgs[] = [
     picture: '',
     url: null,
     slug: 'test-1',
-    departmentCode: 'DEPT_IGRP',
+    departments: ['DEPT_IGRP'],
   },
   {
     id: 36,
@@ -25,6 +25,6 @@ export const IGRP_MOCK_APPS_DATA: IGRPApplicationArgs[] = [
     picture: '',
     url: null,
     slug: 'test-2',
-    departmentCode: 'DEPT_IGRP',
+    departments: ['DEPT_IGRP'],
   },
 ];

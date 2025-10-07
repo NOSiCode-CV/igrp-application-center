@@ -21,7 +21,9 @@
       "@/*": ["./src/*"],
       "@igrp/template-config": ["./src/igrp.template.config.ts"]
     },
-    "composite": true
+    "composite": true,
+    //"incremental": true
+    "incremental": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

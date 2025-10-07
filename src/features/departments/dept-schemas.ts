@@ -8,9 +8,9 @@ export const departmentSchema = z
     code: z
       .string()
       .regex(/^[A-Z0-9_]+$/, 'O código deve conter maiusculas, números e sublinhados')
-      .min(3, 'Código é obrigatório'),
+      .min(5, 'Código é obrigatório'),
     name: trimmed.min(3, 'Nome é obrigatório (min 3 carateres)'),
-    description: z.string().nullable().optional(),
+    description: z.string().min(5, 'Descrição é obrigatória'),
     status: statusSchema,
     parent_code: trimmed.optional(),
   })
@@ -18,9 +18,7 @@ export const departmentSchema = z
 
 export type DepartmentArgs = z.infer<typeof departmentSchema>;
 
-export const createDepartmentSchema = departmentSchema.omit({ id: true, status: true }).extend({
-  description: emptyToNull.optional(),
-});
+export const createDepartmentSchema = departmentSchema.omit({ id: true, status: true });
 
 export type CreateDepartment = z.infer<typeof createDepartmentSchema>;
 
@@ -36,11 +34,11 @@ export const updateDepartmentSchema = departmentSchema
 
 export type UpdateDepartment = z.infer<typeof updateDepartmentSchema>;
 
-export const normalizeDeptartment = (data: Partial<DepartmentArgs>) => {
+export const normalizeDeptartment = (data: DepartmentArgs) => {
   return {
     code: data.code?.trim(),
     name: data.name,
-    description: data.description ?? null,
+    description: data.description,
     status: data.status as DepartmentStatus,
     parent_code: data.parent_code,
   };

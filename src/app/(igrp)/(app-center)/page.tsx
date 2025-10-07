@@ -13,7 +13,7 @@ export default function Home() {
         showActions
       >
         <ButtonLink
-          href={ROUTES.APPS}
+          href={ROUTES.APPLICATIONS}
           label='Gerir Aplicação'
           icon='AppWindow'
           variant='outline'

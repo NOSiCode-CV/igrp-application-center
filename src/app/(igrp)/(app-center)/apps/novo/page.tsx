@@ -10,7 +10,7 @@ export default function NewApplicationPage() {
       <PageHeader
         title='Criar Aplicação'
         showBackButton
-        linkBackButton={ROUTES.APPS}
+        linkBackButton={ROUTES.APPLICATIONS}
       />
 
       <ApplicationForm />

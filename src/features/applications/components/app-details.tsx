@@ -68,10 +68,10 @@ export function ApplicationDetails({ code }: { code: string }) {
           <PageHeader
             title={app.name}
             showBackButton
-            linkBackButton={ROUTES.APPS}
+            linkBackButton={ROUTES.APPLICATIONS}
           >
             <ButtonLink
-              href={`${ROUTES.APPS}/${code}/editar`}
+              href={`${ROUTES.APPLICATIONS}/${code}/${ROUTES.EDIT}`}
               label='Editar Aplicação'
               icon='EditPencil'
             />

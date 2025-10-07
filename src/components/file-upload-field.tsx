@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
 import {
   IGRPButtonPrimitive,
   IGRPFormControlPrimitive,
@@ -11,10 +10,10 @@ import {
   IGRPIcon,
 } from '@igrp/igrp-framework-react-design-system';
 
-import { useFileUpload } from '@/hooks/use-file-upload';
+import { useFileUpload, type FileWithPreview } from '../features/files/use-file-upload';
 
-import type { FileWithPreview, FileMetadata } from '@/schemas/file';
 import Image from 'next/image';
+import { useEffect, useMemo } from 'react';
 
 export interface FileUploadFieldProps {
   value?: FileWithPreview | null;
@@ -33,7 +32,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
     value,
     onChange,
     maxSizeMB = 1,
-    accept = 'image/svg+xml,image/png,image/jpeg,image/jpg,image/webp',
+    accept = 'image/svg+xml,image/png,image/jpeg,image/jpg,image/webp,image/gif',
     label,
     description,
     placeholder = 'Arraste sua imagem',
@@ -43,23 +42,8 @@ export function FileUploadField(props: FileUploadFieldProps) {
 
   const maxSize = maxSizeMB * 1024 * 1024;
 
-  const isControlled = Object.prototype.hasOwnProperty.call(props, 'value');
-
-  const initialFile: FileMetadata | null = useMemo(() => {
-    if (!value) return null;
-    return value.file instanceof File
-      ? {
-          id: value.id,
-          name: value.file.name,
-          size: value.file.size,
-          type: value.file.type,
-          url: value.preview ?? '',
-        }
-      : value.file;
-  }, [value]);
-
   const [
-    { file, isDragging, errors },
+    { files, isDragging, errors },
     {
       handleDragEnter,
       handleDragLeave,
@@ -68,38 +52,62 @@ export function FileUploadField(props: FileUploadFieldProps) {
       openFileDialog,
       removeFile,
       getInputProps,
-      setFile,
+      clearFiles,
     },
   ] = useFileUpload({
     accept,
     maxSize,
-    initialFile,
-    onFileChange: onChange, // for controlled, this notifies parent
-    onFileAdded: () => {},
   });
 
-  // Keep internal state in sync with controlled value
+  const current = useMemo<FileWithPreview | null>(() => {
+    if (value) return value;
+    const f = files[0];
+    return f
+      ? ({
+          id: f.id,
+          file: f.file,
+          preview: f.preview,
+        } as FileWithPreview)
+      : null;
+  }, [value, files]);
+
+  const previewUrl = current?.preview || null;
+  const fileName = current?.file.name || null;
+
   useEffect(() => {
-    if (!isControlled) return;
-
-    // Parent cleared value → clear internal file
-    if (!value && file) {
-      removeFile();
-      return;
+    if (!onChange) return;
+    // If the form already controls a value, we only emit when the user selected
+    // something new from the hook (files[0]).
+    const f = current || files[0];
+    if (f) {
+      onChange({
+        id: f.id,
+        file: f.file,
+        preview: f.preview,
+      } as FileWithPreview);
     }
+    // If there are no files and no external value, emit null
+    if (!f && !value) onChange(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [files]); // intentionally not depending on value/onChange to avoid loops
 
-    // Parent set/changed value → mirror it internally
-    if (value) {
-      const currentId = file?.id;
-      if (currentId !== value.id) {
-        // setFile accepts File | FileMetadata (based on your hook)
-        setFile(value.file instanceof File ? value.file : value.file);
+  // 2) When the external form value is cleared (e.g. reset), clear the hook UI
+  useEffect(() => {
+    if (!value) {
+      try {
+        clearFiles?.(); // if your hook supports it
+      } catch {
+        // safe no-op if not available
       }
     }
-  }, [isControlled, value, file, removeFile, setFile]);
+  }, [value, clearFiles]);
 
-  const previewUrl = file?.preview ?? null;
-  const fileName = file?.file instanceof File ? file.file.name : (file?.file?.name ?? null);
+  const handleRemove = () => {
+    // Remove from hook (if present)
+    if (files[0]?.id) removeFile(files[0].id);
+    // Also clear controlled value
+    onChange?.(null);
+  };
 
   return (
     <IGRPFormItemPrimitive>
@@ -128,8 +136,10 @@ export function FileUploadField(props: FileUploadFieldProps) {
                 <div className='absolute inset-0 flex items-center justify-center p-4'>
                   <Image
                     src={previewUrl || '/igrp/placeholder.svg'}
-                    alt={fileName || 'Atualizar imagem'}
+                    alt={fileName || 'Atualizar Imagem'}
                     className='mx-auto max-h-full rounded object-contain'
+                    sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                    fill
                   />
                 </div>
               ) : (
@@ -145,8 +155,8 @@ export function FileUploadField(props: FileUploadFieldProps) {
                   </div>
                   <p className='mb-1.5 text-sm font-medium'>{placeholder}</p>
                   <p className='text-muted-foreground text-xs'>
-                    {accept.includes('image') ? 'SVG, PNG, JPG ou WEBP' : 'Selecionar imagem'} (max.{' '}
-                    {maxSizeMB} MB)
+                    {accept.includes('image') ? 'SVG, PNG, JPG, GIF ou WEBP' : 'Selecionar imagem'}{' '}
+                    (max. {maxSizeMB} MB)
                   </p>
                   <IGRPButtonPrimitive
                     type='button'
@@ -171,13 +181,12 @@ export function FileUploadField(props: FileUploadFieldProps) {
                 <button
                   type='button'
                   className='focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]'
-                  onClick={() => removeFile()}
+                  onClick={handleRemove}
                   aria-label='Remove file'
                 >
                   <IGRPIcon
                     iconName='X'
                     className='size-4'
-                    aria-hidden='true'
                   />
                 </button>
               </div>

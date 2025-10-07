@@ -33,7 +33,7 @@ export default function EditApplicationPage({ params }: { params: Promise<{ code
       <PageHeader
         title='Editar Aplicação'
         showBackButton
-        linkBackButton={`${ROUTES.APPS}/${code}`}
+        linkBackButton={`${ROUTES.APPLICATIONS}/${code}`}
       />
 
       <ApplicationForm application={data} />

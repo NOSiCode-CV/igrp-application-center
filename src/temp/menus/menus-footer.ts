@@ -11,6 +11,6 @@ export const IGRP_DEFAULT_MENU_FOOTER: IGRPMenuItemArgs[] = [
     url: '/system-settings',
     applicationCode: 'APP_IGRP_CENTER',
     code: 'MENU_IGRP_SETTINGS',
-    permissions: [],
+    roles: [],
   },
 ];

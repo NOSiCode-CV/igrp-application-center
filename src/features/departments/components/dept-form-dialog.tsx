@@ -95,32 +95,29 @@ export function DepartmentCreateDialog({
   const isLoading = isCreating || isUpdating;
 
   const onSubmit = async (values: DepartmentArgs) => {
+    const payload = normalizeDeptartment(values);
+
     try {
       if (department) {
-        const paylod = normalizeDeptartment(values);
-        await updateDepartment({ code: department.code, data: paylod });
+        await updateDepartment({ code: department.code, data: payload });
       } else {
-        await createDepartment(values);
+        await createDepartment(payload);
       }
 
       igrpToast({
         type: 'success',
         title: 'Departamento',
         description: `O departamento foi ${department ? 'atualizado' : 'criado'} com sucesso.`,
-        duration: 4000,
       });
     } catch (error) {
       igrpToast({
         type: 'error',
         title: `Não foi possível ${department ? 'atualizar' : 'criar'} departamento.`,
         description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.',
-        duration: 4000,
       });
     } finally {
-      setTimeout(() => {
-        form.reset();
-        onOpenChange(false);
-      }, 2500);
+      form.reset();
+      onOpenChange(false);
     }
   };
 
@@ -181,6 +178,7 @@ export function DepartmentCreateDialog({
                     <IGRPFormControlPrimitive>
                       <IGRPInputPrimitive
                         placeholder='DEPT_CODE'
+                        required
                         {...field}
                         onFocus={() => form.trigger('code')}
                         className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
@@ -197,10 +195,13 @@ export function DepartmentCreateDialog({
               name='description'
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Descrição</IGRPFormLabelPrimitive>
+                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                    Descrição
+                  </IGRPFormLabelPrimitive>
                   <IGRPFormControlPrimitive>
                     <IGRPTextAreaPrimitive
                       placeholder='Breve descrição do departamento'
+                      required
                       rows={2}
                       value={field.value ?? ''}
                       onChange={field.onChange}

@@ -13,7 +13,7 @@ const mapMenuCRUD = (menu: MenuEntryDTO): IGRPMenuCRUDArgs => ({
   url: menu.url,
   pageSlug: menu.pageSlug,
   applicationCode: menu.applicationCode,
-  permissions: menu.permissions,
+  roles: menu.roles,
   parentCode: menu.parentCode,
 });
 

@@ -170,7 +170,7 @@ export function MenuFormDialog({
     const q = query.trim().toLowerCase();
     if (!q) return items;
     return items.filter(
-      (o) => o.value.toLowerCase().includes(q) || o.label.toLowerCase().includes(q),
+      (o) => String(o.value).toLowerCase().includes(q) || o.label.toLowerCase().includes(q),
     );
   }, [query, items]);
 
@@ -635,7 +635,7 @@ export function MenuFormDialog({
                               {currentIcon ? (
                                 <div className='flex items-center gap-2'>
                                   <IGRPIcon
-                                    iconName={currentIcon.value}
+                                    iconName={String(currentIcon.value)}
                                     className='size-4'
                                   />
                                   <span>{currentIcon.label}</span>
@@ -727,7 +727,7 @@ export function MenuFormDialog({
                                             >
                                               <div className='flex gap-2'>
                                                 {/* Keep the SVG small; this component should be memoized */}
-                                                <IGRPIcon iconName={iconData.value} />
+                                                <IGRPIcon iconName={String(iconData.value)} />
                                                 <span>{iconData.label}</span>
                                               </div>
                                               <IGRPIcon

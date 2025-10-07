@@ -12,7 +12,7 @@ import {
   IGRPTabItem,
 } from '@igrp/igrp-framework-react-design-system';
 import { PageHeader } from '@/components/page-header';
-import { RolesList } from '../../roles/components/role-list';
+// import { RolesList } from '../../roles/components/role-list';
 import { ROUTES } from '@/lib/constants';
 import { useDepartmentByCode } from '../use-departments';
 import { AppCenterLoading } from '@/components/loading';
@@ -66,16 +66,16 @@ export function DepartmentDetails({ code }: { code: string }) {
   parentName = parentDept?.name;
 
   const tabs: IGRPTabItem[] = [
-    {
-      label: 'Perfis (Roles)',
-      value: 'roles',
-      content: (
-        <RolesList
-          departmentCode={code}
-          username={currentUser.username}
-        />
-      ),
-    },
+    // {
+    //   label: 'Perfis (Roles)',
+    //   value: 'roles',
+    //   content: (
+    //     <RolesList
+    //       departmentCode={code}
+    //       username={currentUser.username}
+    //     />
+    //   ),
+    // },
     {
       label: 'Permissões',
       value: 'permissions',
@@ -152,7 +152,7 @@ export function DepartmentDetails({ code }: { code: string }) {
         </div>
 
         <IGRPTabs
-          defaultValue='roles'
+          defaultValue='permissions'
           items={tabs}
           className='min-w-0'
           tabContentClassName='px-0'

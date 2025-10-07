@@ -1,7 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  useForm,
+  useFormContext,
+  useController,
+  type FieldValues,
+  type FieldPath,
+} from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import {
@@ -15,7 +21,6 @@ import {
   IGRPFormLabelPrimitive,
   IGRPFormControlPrimitive,
   IGRPFormMessagePrimitive,
-  IGRPFormDescriptionPrimitive,
   IGRPInputPrimitive,
   IGRPSelectPrimitive,
   IGRPSelectContentPrimitive,
@@ -24,6 +29,17 @@ import {
   IGRPTextAreaPrimitive,
   useIGRPToast,
   IGRPButton,
+  IGRPPopoverPrimitive,
+  IGRPPopoverTriggerPrimitive,
+  IGRPPopoverContentPrimitive,
+  IGRPCommandPrimitive,
+  IGRPCommandInputPrimitive,
+  IGRPCommandListPrimitive,
+  IGRPCommandGroupPrimitive,
+  IGRPCommandItemPrimitive,
+  IGRPBadgePrimitive,
+  IGRPButtonPrimitive,
+  IGRPIcon,
 } from '@igrp/igrp-framework-react-design-system';
 import { IGRPApplicationArgs } from '@igrp/framework-next-types';
 
@@ -43,8 +59,187 @@ import {
 import { useUsers } from '@/features/users/use-users';
 import { useDepartments } from '@/features/departments/use-departments';
 import { APPLICATIONS_TYPES_FILTERED } from '../app-utils';
-import { mapperUpdateApplication } from '../app-mapper';
 import { statusSchema } from '@/schemas/global';
+import { useUploadFiles } from '@/features/files/use-files';
+import { mapperUpdateApplication } from '../app-mapper';
+
+/* =========================
+   Departments field pieces
+   ========================= */
+
+type Option = { value: string; label: string };
+
+function toggleInArray(arr: string[] | undefined, value: string) {
+  const next = new Set(arr ?? []);
+  next.has(value) ? next.delete(value) : next.add(value);
+  return Array.from(next);
+}
+
+function removeFromArray(arr: string[] | undefined, value: string) {
+  return (arr ?? []).filter((v) => v !== value);
+}
+
+function DepartmentsPicker({
+  value,
+  onChange,
+  options,
+  disabled,
+  error,
+}: {
+  value?: string[];
+  onChange: (next: string[]) => void;
+  options: Option[];
+  disabled?: boolean;
+  error?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = useMemo(() => new Set(value ?? []), [value]);
+  const count = value?.length ?? 0;
+  const getLabel = (code: string) => options.find((o) => o.value === code)?.label ?? code;
+
+  return (
+    <IGRPFormItemPrimitive>
+      <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+        Departamentos
+      </IGRPFormLabelPrimitive>
+
+      {/* Selected badges */}
+      <div className='flex flex-wrap gap-2 mb-2'>
+        {count > 0 ? (
+          (value ?? []).map((code) => (
+            <IGRPBadgePrimitive
+              key={code}
+              variant='outline'
+              className='gap-1'
+            >
+              {getLabel(code)}
+              <button
+                type='button'
+                aria-label='Remover departamento'
+                className='ml-1 inline-flex items-center'
+                onClick={() => onChange(removeFromArray(value, code))}
+                disabled={disabled}
+              >
+                <IGRPIcon
+                  iconName='X'
+                  className='h-3 w-3'
+                />
+              </button>
+            </IGRPBadgePrimitive>
+          ))
+        ) : (
+          <span className='text-muted-foreground text-sm'>Nenhum selecionado</span>
+        )}
+      </div>
+
+      {/* Popover + searchable list */}
+      <IGRPPopoverPrimitive
+        open={open}
+        onOpenChange={setOpen}
+      >
+        <IGRPPopoverTriggerPrimitive asChild>
+          <IGRPButtonPrimitive
+            type='button'
+            variant='outline'
+            disabled={disabled}
+            className='w-full justify-between'
+          >
+            <span>{count > 0 ? `Selecionados (${count})` : 'Selecionar departamentos'}</span>
+            <IGRPIcon iconName={open ? 'ChevronUp' : 'ChevronDown'} />
+          </IGRPButtonPrimitive>
+        </IGRPPopoverTriggerPrimitive>
+
+        <IGRPPopoverContentPrimitive
+          className='p-0 w-[--radix-popover-trigger-width] min-w-64'
+          align='start'
+        >
+          <IGRPCommandPrimitive>
+            <IGRPCommandInputPrimitive placeholder='Procurar departamento...' />
+            <IGRPCommandListPrimitive className='max-h-64'>
+              <IGRPCommandGroupPrimitive heading='Departamentos'>
+                {options.map((opt) => {
+                  const isSelected = selected.has(opt.value);
+                  return (
+                    <IGRPCommandItemPrimitive
+                      key={opt.value}
+                      onSelect={() => onChange(toggleInArray(value, opt.value))}
+                      className='flex items-center gap-2 cursor-pointer'
+                    >
+                      <IGRPIcon
+                        iconName={isSelected ? 'Check' : 'Circle'}
+                        className='h-4 w-4 opacity-70'
+                      />
+                      <span className='truncate'>{opt.label}</span>
+                    </IGRPCommandItemPrimitive>
+                  );
+                })}
+              </IGRPCommandGroupPrimitive>
+            </IGRPCommandListPrimitive>
+
+            <div className='flex items-center justify-between p-2 border-t'>
+              <IGRPButtonPrimitive
+                type='button'
+                variant='ghost'
+                className='text-xs'
+                onClick={() => onChange([])}
+                disabled={disabled || count === 0}
+              >
+                Limpar seleção
+              </IGRPButtonPrimitive>
+              <IGRPButtonPrimitive
+                type='button'
+                size='sm'
+                onClick={() => setOpen(false)}
+              >
+                Concluir
+              </IGRPButtonPrimitive>
+            </div>
+          </IGRPCommandPrimitive>
+        </IGRPPopoverContentPrimitive>
+      </IGRPPopoverPrimitive>
+
+      {error ? <p className='text-destructive'>{error}</p> : <IGRPFormMessagePrimitive />}
+    </IGRPFormItemPrimitive>
+  );
+}
+
+export function DepartmentsField<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  name = 'departments' as TName,
+  options,
+  disabled,
+}: {
+  name?: TName;
+  options: Option[];
+  disabled?: boolean;
+}) {
+  const { control } = useFormContext<TFieldValues>();
+  const { field, fieldState } = useController<TFieldValues, TName>({ control, name });
+
+  const value = Array.isArray(field.value) ? (field.value as string[]) : [];
+
+  return (
+    <IGRPFormFieldPrimitive
+      control={control}
+      name={name}
+      render={() => (
+        <DepartmentsPicker
+          value={value}
+          onChange={(next) => field.onChange(next)}
+          options={options}
+          disabled={disabled}
+          error={fieldState.error?.message}
+        />
+      )}
+    />
+  );
+}
+
+/* =========================
+   Main form
+   ========================= */
 
 export function ApplicationForm({ application }: { application?: IGRPApplicationArgs }) {
   const router = useRouter();
@@ -59,6 +254,7 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
 
   const { mutateAsync: addApplication } = useCreateApplication();
   const { mutateAsync: updateApplication } = useUpdateApplication();
+  const { mutateAsync: uploadFile } = useUploadFiles();
 
   const form = useForm<ApplicationArgs>({
     resolver: zodResolver(applicationSchema),
@@ -72,7 +268,7 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
       url: '',
       picture: '',
       status: statusSchema.enum.ACTIVE,
-      departmentCode: '',
+      departments: [],
       image: null,
     },
     mode: 'onChange',
@@ -93,7 +289,7 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
       type: application.type || appTypeCrud.enum.INTERNAL,
       picture: application.picture || '',
       status: application.status || statusSchema.enum.ACTIVE,
-      departmentCode: application.departmentCode || '',
+      departments: application.departments || [],
       image: null,
     };
 
@@ -123,13 +319,13 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
   const onSubmit = async (values: ApplicationArgs) => {
     const payload = { ...values };
 
-    // const file = values.image?.file;
-    // const imageFile =
-    //   file instanceof File
-    //     ? file
-    //     : file?.file instanceof File
-    //       ? file.file
-    //       : undefined;
+    const file = values.image?.file as File;
+
+    if (file) {
+      const options = { folder: values.code };
+      const result = await uploadFile({ file, options });
+      payload.picture = result;
+    }
 
     if (payload.type === appTypeCrud.enum.INTERNAL) delete payload.url;
     if (payload.type === appTypeCrud.enum.EXTERNAL) delete payload.slug;
@@ -148,18 +344,17 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
         type: 'success',
         title: `${application ? ' Atualização' : 'Criação'} concluída`,
         description: `A aplicação foi ${application ? ' atualizada' : 'criada'} com sucesso!`,
-        duration: 3500,
       });
-
-      setTimeout(() => {
-        router.push(`${ROUTES.APPS}/${payload.code}`);
-      }, 4000);
     } catch (error) {
       igrpToast({
         type: 'error',
         title: 'Não foi possível concluir a operação.',
         description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.',
       });
+    } finally {
+      setTimeout(() => {
+        router.push(`${ROUTES.APPLICATIONS}/${payload.code}`);
+      }, 4000);
     }
   };
 
@@ -169,21 +364,17 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
   if (userError) throw userError;
   if (departmentError) throw departmentError;
 
-  const userOptions = users.map((user) => {
-    return {
-      value: user.username,
-      label: user.name,
-    };
-  });
+  const userOptions = users.map((user) => ({
+    value: user.username,
+    label: user.name,
+  }));
 
-  const departmentOptions = departments.map((department) => {
-    return {
-      value: department.code,
-      label: department.name,
-    };
-  });
+  const departmentOptions: Option[] = departments.map((department) => ({
+    value: department.code,
+    label: department.name,
+  }));
 
-  const disabledFields = application ? true : false;
+  const disabledFields = !!application;
 
   const disabledBtn =
     form.formState.isSubmitting ||
@@ -218,9 +409,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
                         className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                       />
                     </IGRPFormControlPrimitive>
-                    <IGRPFormDescriptionPrimitive>
-                      O nome da sua aplicação.
-                    </IGRPFormDescriptionPrimitive>
                     <IGRPFormMessagePrimitive />
                   </IGRPFormItemPrimitive>
                 )}
@@ -243,9 +431,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
                         className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                       />
                     </IGRPFormControlPrimitive>
-                    <IGRPFormDescriptionPrimitive>
-                      Permite letras maiúsculas, números e sublinhados.
-                    </IGRPFormDescriptionPrimitive>
                     <IGRPFormMessagePrimitive />
                   </IGRPFormItemPrimitive>
                 )}
@@ -281,62 +466,19 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
                     </IGRPSelectPrimitive>
 
                     {userError ? (
-                      <p className='text-destructive'>{userError}</p>
+                      <p className='text-destructive'>{String(userError)}</p>
                     ) : (
-                      <>
-                        <IGRPFormDescriptionPrimitive>
-                          O Responsável pela criação.
-                        </IGRPFormDescriptionPrimitive>
-                        <IGRPFormMessagePrimitive />
-                      </>
+                      <IGRPFormMessagePrimitive />
                     )}
                   </IGRPFormItemPrimitive>
                 )}
               />
 
-              <IGRPFormFieldPrimitive
-                control={form.control}
-                name='departmentCode'
-                render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                      Departamento
-                    </IGRPFormLabelPrimitive>
-                    <IGRPSelectPrimitive
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <IGRPFormControlPrimitive>
-                        <IGRPSelectTriggerPrimitive
-                          className='w-full truncate'
-                          disabled={disabledFields}
-                        >
-                          <IGRPSelectValuePrimitive placeholder='Selecione o departamento' />
-                        </IGRPSelectTriggerPrimitive>
-                      </IGRPFormControlPrimitive>
-                      <IGRPSelectContentPrimitive>
-                        {departmentOptions.map((department) => (
-                          <IGRPSelectItemPrimitive
-                            key={department.value}
-                            value={department.value}
-                          >
-                            {department.label}
-                          </IGRPSelectItemPrimitive>
-                        ))}
-                      </IGRPSelectContentPrimitive>
-                    </IGRPSelectPrimitive>
-                    {departmentError ? (
-                      <p className='text-destructive'>{departmentError}</p>
-                    ) : (
-                      <>
-                        <IGRPFormDescriptionPrimitive>
-                          Departemento para aplicação.
-                        </IGRPFormDescriptionPrimitive>
-                        <IGRPFormMessagePrimitive />
-                      </>
-                    )}
-                  </IGRPFormItemPrimitive>
-                )}
+              {/* ✅ Refactored departments field (no hooks in callback) */}
+              <DepartmentsField
+                name='departments'
+                options={departmentOptions}
+                disabled={disabledFields}
               />
 
               <IGRPFormFieldPrimitive
@@ -370,9 +512,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
                         ))}
                       </IGRPSelectContentPrimitive>
                     </IGRPSelectPrimitive>
-                    <IGRPFormDescriptionPrimitive>
-                      O tipo de aplicação.
-                    </IGRPFormDescriptionPrimitive>
                     <IGRPFormMessagePrimitive />
                   </IGRPFormItemPrimitive>
                 )}
@@ -395,7 +534,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
                           className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                         />
                       </IGRPFormControlPrimitive>
-                      <IGRPFormDescriptionPrimitive>O URL interno.</IGRPFormDescriptionPrimitive>
                       <IGRPFormMessagePrimitive />
                     </IGRPFormItemPrimitive>
                   )}
@@ -419,9 +557,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
                           className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                         />
                       </IGRPFormControlPrimitive>
-                      <IGRPFormDescriptionPrimitive>
-                        URL da aplicação externa.
-                      </IGRPFormDescriptionPrimitive>
                       <IGRPFormMessagePrimitive />
                     </IGRPFormItemPrimitive>
                   )}
@@ -464,9 +599,6 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
                         className='resize-none placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
                       />
                     </IGRPFormControlPrimitive>
-                    <IGRPFormDescriptionPrimitive>
-                      Uma breve descrição da sua aplicação.
-                    </IGRPFormDescriptionPrimitive>
                     <IGRPFormMessagePrimitive />
                   </IGRPFormItemPrimitive>
                 )}
@@ -477,7 +609,7 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
           <IGRPCardFooterPrimitive className='justify-end pt-6 gap-3 flex-col sm:flex-row'>
             <IGRPButton
               variant='outline'
-              onClick={() => router.push(ROUTES.APPS)}
+              onClick={() => router.push(ROUTES.APPLICATIONS)}
               type='button'
               disabled={disabledBtn}
               showIcon
@@ -494,7 +626,7 @@ export function ApplicationForm({ application }: { application?: IGRPApplication
               iconPlacement='end'
               loading={isLoading}
               iconName='Check'
-              className='gap-1 w-full sm:max-w-36'
+              className='gap-1 w-full sm|max-w-36'
             >
               {submitLblBtn}
             </IGRPButton>

@@ -1,44 +1,22 @@
-import Link from 'next/link';
 import {
-  IGRPButtonPrimitive,
   IGRPTooltipPrimitive,
   IGRPTooltipContentPrimitive,
   IGRPTooltipProviderPrimitive,
   IGRPTooltipTriggerPrimitive,
-  IGRPIcon,
+  IGRPButton,
 } from '@igrp/igrp-framework-react-design-system';
 
-import { cn } from '@/lib/utils';
+type ButtonTooltipProps = React.ComponentProps<typeof IGRPButton> & {
+  children: React.ReactNode;
+  label?: string;
+};
 
-interface ButtonTooltipProps {
-  href: string;
-  icon: React.ComponentProps<typeof IGRPIcon>['iconName'];
-  label: string;
-  className?: string;
-}
-// TODO: aria accessibility
-// TODO: messages
-export function ButtonTooltip({ href, icon, label, className }: ButtonTooltipProps) {
+export function ButtonTooltip({ children, label, ...props }: ButtonTooltipProps) {
   return (
     <IGRPTooltipProviderPrimitive>
       <IGRPTooltipPrimitive>
         <IGRPTooltipTriggerPrimitive asChild>
-          <IGRPButtonPrimitive
-            variant='ghost'
-            size='icon'
-            className={cn(
-              'hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50',
-              className,
-            )}
-            asChild
-          >
-            <Link href={href}>
-              <IGRPIcon
-                iconName={icon}
-                strokeWidth={2}
-              />
-            </Link>
-          </IGRPButtonPrimitive>
+          <IGRPButton {...props}>{children}</IGRPButton>
         </IGRPTooltipTriggerPrimitive>
         <IGRPTooltipContentPrimitive>
           <p>{label}</p>

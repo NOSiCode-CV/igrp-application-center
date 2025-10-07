@@ -21,7 +21,7 @@ const mapApplication = (app: ApplicationDTO): IGRPApplicationArgs => ({
   picture: app.picture,
   url: app.url || undefined,
   slug: app.slug || undefined,
-  departmentCode: app.departmentCode,
+  departments: app.departments,
   createdBy: app.createdBy || undefined,
   createdDate: app.createdDate || undefined,
   lastModifiedBy: app.lastModifiedBy || undefined,
