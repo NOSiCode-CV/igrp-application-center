@@ -49,7 +49,7 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
       position: 'bottom-right',
       richColors: true,
       closeButton: true,
-    },    
+    },
     showSettings: true,
   });
 }
