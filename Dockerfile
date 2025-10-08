@@ -6,7 +6,8 @@ WORKDIR /app
 
 FROM base AS deps
 COPY package.json .npmrc ./
-COPY pnpm-lock.yaml ./ 
+COPY pnpm-lock.yaml ./
+RUN node -v && pnpm -v
 RUN if [ -f pnpm-lock.yaml ]; then \
     echo "Using frozen lockfile" && pnpm i --frozen-lockfile; \
   else \
