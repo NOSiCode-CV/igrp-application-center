@@ -12,6 +12,19 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
   const footerMwnu = getMockMenusFooter().mockMenusFooter;
   const apps = getMockApps().mockApps;
 
+  const basePath = () => {
+    const _b = process.env.IGRP_BASE_PATH || '';
+
+    if (_b) {
+      if (_b.startsWith('/') && _b.endsWith('/')) return `${_b}api/auth`;
+      if (_b.startsWith('/') && !_b.endsWith('/')) return `${_b}/api/auth/`;
+      if (!_b.startsWith('/') && _b.endsWith('/')) return `/${_b}api/auth`;
+      return `${_b}/api/auth`;
+    } 
+
+    return '/'
+  }
+
   return igrpBuildConfig({
     appCode: process.env.IGRP_APP_CODE || '',
     previewMode: process.env.IGRP_PREVIEW_MODE === 'true' ? true : false,
@@ -54,7 +67,7 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
     sessionArgs: {
       refetchInterval: 5 * 60,
       refetchOnWindowFocus: true,
-      basePath: process.env.NEXTAUTH_URL || '/',
+      basePath: basePath(),
     },
   });
 }
