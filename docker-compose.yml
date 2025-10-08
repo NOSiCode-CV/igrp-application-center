@@ -8,16 +8,14 @@ services:
     env_file:
       - .env
     environment:
-      - KEYCLOAK_ISSUER=https://keycloak-demoigrp.nosi.cv/realms/igrp
+      - KEYCLOAK_ISSUER=https://demoigrp.nosi.cv/auth/realms/igrp
       - KEYCLOAK_CLIENT_ID=access-management
       - KEYCLOAK_CLIENT_SECRET=vbBjOQcIhG897ZIRtKa7NHDy9sJNZY07
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=uUb44RSVTl+XzkpQt7W/lfRzGChdpb5rguUPh+Tb52w=
-      - IGRP_APP_MANAGER_API=https://user-manager-demoigrp.nosi.cv
-      - IGRP_APP_CODE=APP_IGRP
+      - GRP_APP_MANAGER_API=https://api-demoigrp.nosi.cv/igrp-access-management
+      - IGRP_APP_CODE=APP_IGRP_CENTER
       - IGRP_PREVIEW_MODE=false
-      - IGRP_LOGIN_URL=/login
-      - IGRP_LOGOUT_URL=/logout
       - NODE_ENV=production
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']

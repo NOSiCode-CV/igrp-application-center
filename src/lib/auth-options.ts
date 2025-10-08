@@ -4,22 +4,9 @@ import KeycloakProvider from 'next-auth/providers/keycloak';
 import { redirect as nextRedirect } from 'next/navigation';
 
 const isProd = process.env.NODE_ENV === 'production';
-const cookieDomain = (process.env.IGRP_NEXTAUTH_CALLBACK ?? '').trim() || undefined;
-
-const isHttps = (process.env.NEXTAUTH_URL ?? '').startsWith('https://');
-const secureCookie = isProd && isHttps;
-
-const COOKIE_DOMAIN = (() => {
-  if (!isProd || !cookieDomain) return undefined;
-  let host = cookieDomain;
-  try {
-    if (host.includes('://')) host = new URL(host).hostname;
-  } catch {}
-  host = host.split('/')[0].split(':')[0];
-  if (!host || host === 'localhost' || !host.includes('.') || /^\d+\.\d+\.\d+\.\d+$/.test(host))
-    return undefined;
-  return host;
-})();
+const baseUrl = process.env.NEXTAUTH_URL ?? '';
+const url = new URL(baseUrl);
+const cookieDomain = isProd && url.hostname !== 'localhost' ? url.hostname : undefined;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,12 +14,6 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.KEYCLOAK_CLIENT_ID!,
       clientSecret: process.env.KEYCLOAK_CLIENT_SECRET!,
       issuer: process.env.KEYCLOAK_ISSUER!,
-      authorization: {
-        params: {
-          redirect_uri: `${process.env.NEXTAUTH_URL}/api/auth/callback/keycloak`,
-        },
-      },
-      checks: ['pkce', 'state'],
     }),
   ],
 
@@ -45,60 +26,34 @@ export const authOptions: NextAuthOptions = {
 
   cookies: {
     sessionToken: {
-      name: secureCookie ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      name: isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: secureCookie,
-        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
+        secure: isProd,
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
-    },
-
-    state: {
-      name: secureCookie ? '__Secure-next-auth.state' : 'next-auth.state',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: secureCookie,
-        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
-      },
-    },
-
-    pkceCodeVerifier: {
-      name: secureCookie ? '__Secure-next-auth.pkce.code_verifier' : 'next-auth.pkce.code_verifier',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: secureCookie,
-        ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
-      },
-    },
-
-    csrfToken: {
-      name: secureCookie ? '__Host-next-auth.csrf-token' : 'next-auth.csrf-token',
-      options: { httpOnly: false, sameSite: 'lax', path: '/', secure: secureCookie },
-    },
-    callbackUrl: {
-      name: secureCookie ? '__Host-next-auth.callback-url' : 'next-auth.callback-url',
-      options: { httpOnly: false, sameSite: 'lax', path: '/', secure: secureCookie },
     },
   },
+
   callbacks: {
     async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) return url;
+      const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
+      const forced = NEXTAUTH_URL ?? baseUrl;
+
+      if (url.startsWith('/')) {
+        const u = new URL(url, forced).toString();
+        return u;
+      }
+
       try {
         const u = new URL(url);
-        const b = new URL(baseUrl);
-        if (u.origin !== b.origin) {
-          return `${b.origin}${u.pathname}${u.search}${u.hash}`;
-        }
-        return u.toString();
+        const f = new URL(forced);
+        const origin = u.origin === f.origin;
+        return origin ? url : f.toString();
       } catch {
-        if (url.startsWith('/')) return url;
-        return baseUrl;
+        return forced;
       }
     },
     async jwt({ token, user, account, profile }) {
@@ -195,14 +150,14 @@ export function buildKeycloakEndSessionUrl(jwt: JWT) {
   if (!issuer) throw new Error('KEYCLOAK_ISSUER not set');
 
   const idToken = jwt?.idToken as string | undefined;
+  const loginUrl = '/login';
   const postLogoutRedirectUri = process.env.NEXTAUTH_URL
-    ? `${process.env.NEXTAUTH_URL}/login`
+    ? `${process.env.NEXTAUTH_URL}${loginUrl}`
     : undefined;
 
   const url = new URL(`${issuer}/protocol/openid-connect/logout`);
   if (!idToken) {
-    console.error('No your or not login, available for logout.');
-    const loginUrl = process.env.IGRP_LOGIN_URL || '/login';
+    console.error('No your or not login, available for logout.');    
     nextRedirect(loginUrl);
   }
   url.searchParams.set('id_token_hint', idToken);
