@@ -12,17 +12,13 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
   const footerMwnu = getMockMenusFooter().mockMenusFooter;
   const apps = getMockApps().mockApps;
 
-  const basePath = () => {
-    const _b = process.env.IGRP_BASE_PATH || '';
-
-    if (_b) {
-      if (_b.startsWith('/') && _b.endsWith('/')) return `${_b}api/auth`;
-      if (_b.startsWith('/') && !_b.endsWith('/')) return `${_b}/api/auth/`;
-      if (!_b.startsWith('/') && _b.endsWith('/')) return `/${_b}api/auth`;
-      return `${_b}/api/auth`;
-    } 
-
-    return '/'
+  function basePath(bp: string) {
+    if (!bp) return '/';
+    
+    if (bp.startsWith('/') && bp.endsWith('/')) return `${bp}api/auth`;
+    if (bp.startsWith('/') && !bp.endsWith('/')) return `${bp}/api/auth/`;
+    if (!bp.startsWith('/') && bp.endsWith('/')) return `/${bp}api/auth`;
+    return `${bp}/api/auth`;    
   }
 
   return igrpBuildConfig({
@@ -67,7 +63,7 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
     sessionArgs: {
       refetchInterval: 5 * 60,
       refetchOnWindowFocus: true,
-      basePath: basePath(),
+      basePath: basePath(process.env.IGRP_APP_BASE_PATH || ''),
     },
   });
 }
