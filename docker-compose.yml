@@ -13,7 +13,7 @@ services:
       - KEYCLOAK_CLIENT_SECRET=vbBjOQcIhG897ZIRtKa7NHDy9sJNZY07
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=uUb44RSVTl+XzkpQt7W/lfRzGChdpb5rguUPh+Tb52w=
-      - GRP_APP_MANAGER_API=https://api-demoigrp.nosi.cv/igrp-access-management
+      - IGRP_APP_MANAGER_API=https://api-demoigrp.nosi.cv/igrp-access-management
       - IGRP_APP_CODE=APP_IGRP_CENTER
       - IGRP_PREVIEW_MODE=false
       - NODE_ENV=production
