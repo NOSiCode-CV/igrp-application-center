@@ -12,8 +12,9 @@ export async function GET() {
   } catch (e) {
     console.error(e);
     const NEXTAUTH_URL = process.env.NEXTAUTH_URL || '';
+    const basePath = process.env.IGRP_APP_BASE_PATH || '';
     const loginUrl = '/login';
-    return NextResponse.json({ url: `${NEXTAUTH_URL}${loginUrl}` }, { status: 200 });
+    return NextResponse.json({ url: `${NEXTAUTH_URL}${basePath}${loginUrl}` }, { status: 200 });
   }
 }
 

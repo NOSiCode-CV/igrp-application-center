@@ -35,26 +35,14 @@ export const authOptions: NextAuthOptions = {
         ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
-  },
+  },  
 
   callbacks: {
     async redirect({ url, baseUrl }) {
-      const NEXTAUTH_URL = process.env.NEXTAUTH_URL;
-      const forced = NEXTAUTH_URL ?? baseUrl;
+      const basePath = process.env.IGRP_APP_BASE_PATH;
 
-      if (url.startsWith('/')) {
-        const u = new URL(url, forced).toString();
-        return u;
-      }
-
-      try {
-        const u = new URL(url);
-        const f = new URL(forced);
-        const origin = u.origin === f.origin;
-        return origin ? url : f.toString();
-      } catch {
-        return forced;
-      }
+      return url.startsWith('/') ? `${baseUrl}${basePath}${url}` : url;       
+      
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
@@ -116,6 +104,10 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
+  pages: {
+    signIn: "/api/auth/signin",
+  },
 };
 
 export async function requestRefreshOfAccessToken(token: JWT) {
@@ -151,8 +143,9 @@ export function buildKeycloakEndSessionUrl(jwt: JWT) {
 
   const idToken = jwt?.idToken as string | undefined;
   const loginUrl = '/login';
+  const basePath = process.env.IGRP_APP_BASE_PATH || '';
   const postLogoutRedirectUri = process.env.NEXTAUTH_URL
-    ? `${process.env.NEXTAUTH_URL}${loginUrl}`
+    ? `${process.env.NEXTAUTH_URL}${basePath}${loginUrl}`
     : undefined;
 
   const url = new URL(`${issuer}/protocol/openid-connect/logout`);
