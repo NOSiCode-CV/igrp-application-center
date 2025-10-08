@@ -39,9 +39,18 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async redirect({ url, baseUrl }) {
-      const basePath = process.env.IGRP_APP_BASE_PATH;
+      const basePath = process.env.IGRP_APP_BASE_PATH || '';
+      if (url.startsWith('/')) return `${baseUrl}${basePath}${url}`;
 
-      return url.startsWith('/') ? `${baseUrl}${basePath}${url}` : url;
+      if (url.startsWith(baseUrl)) {
+        const hasBasePath = baseUrl.includes(basePath);
+        if (hasBasePath) return url;
+
+        const _url = url.replace(baseUrl, '');
+        return `${baseUrl}${basePath}${_url}`;
+      }
+
+      return `${baseUrl}${basePath}`;
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
