@@ -1,0 +1,20 @@
+services:
+  igrp-application-center-dev:
+    build:
+      context: ../../
+      dockerfile: docker/development/Dockerfile
+    image: igrp-app-center-dev
+    env_file:
+      - .env
+    environment:
+      - KEYCLOAK_ISSUER=https://demoigrp.nosi.cv/auth/realms/igrp
+      - KEYCLOAK_CLIENT_ID=access-management
+      - KEYCLOAK_CLIENT_SECRET=vbBjOQcIhG897ZIRtKa7NHDy9sJNZY07
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=uUb44RSVTl+XzkpQt7W/lfRzGChdpb5rguUPh+Tb52w=
+      - IGRP_APP_MANAGER_API=https://api-demoigrp.nosi.cv/igrp-access-management
+      - IGRP_APP_CODE=APP_IGRP_CENTER
+      - IGRP_PREVIEW_MODE=false
+      - NODE_ENV=production
+    ports:
+      - "3001:3000"
