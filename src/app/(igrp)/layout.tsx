@@ -12,7 +12,7 @@ export default async function IGRPRootLayout({
   const config = await createConfig(layoutConfig);
 
   // const { layout, previewMode } = config;
-  // const { session } = layout ?? {};  
+  // const { session } = layout ?? {};
 
   // const baseUrl =  process.env.NEXTAUTH_URL || 'http://localhost:3000';
   // const basePath = process.env.IGRP_APP_BASE_PATH || '';

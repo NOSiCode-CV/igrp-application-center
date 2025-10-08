@@ -14,11 +14,11 @@ export function createConfig(config: IGRPLayoutConfigArgs): Promise<IGRPConfigAr
 
   function basePath(bp: string) {
     if (!bp) return '/';
-    
+
     if (bp.startsWith('/') && bp.endsWith('/')) return `${bp}api/auth`;
     if (bp.startsWith('/') && !bp.endsWith('/')) return `${bp}/api/auth/`;
     if (!bp.startsWith('/') && bp.endsWith('/')) return `/${bp}api/auth`;
-    return `${bp}/api/auth`;    
+    return `${bp}/api/auth`;
   }
 
   return igrpBuildConfig({

@@ -35,14 +35,13 @@ export const authOptions: NextAuthOptions = {
         ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
-  },  
+  },
 
   callbacks: {
     async redirect({ url, baseUrl }) {
       const basePath = process.env.IGRP_APP_BASE_PATH;
 
-      return url.startsWith('/') ? `${baseUrl}${basePath}${url}` : url;       
-      
+      return url.startsWith('/') ? `${baseUrl}${basePath}${url}` : url;
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
@@ -106,7 +105,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: "/api/auth/signin",
+    signIn: '/api/auth/signin',
   },
 };
 
@@ -150,7 +149,7 @@ export function buildKeycloakEndSessionUrl(jwt: JWT) {
 
   const url = new URL(`${issuer}/protocol/openid-connect/logout`);
   if (!idToken) {
-    console.error('No your or not login, available for logout.');    
+    console.error('No your or not login, available for logout.');
     nextRedirect(loginUrl);
   }
   url.searchParams.set('id_token_hint', idToken);
