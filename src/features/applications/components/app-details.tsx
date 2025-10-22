@@ -18,8 +18,7 @@ import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import { PageHeader } from "@/components/page-header";
 import { useApplicationByCode } from "@/features/applications/use-applications";
-// import { MenuList } from "@/features/menus/components/menu-list";
-// import { PermissionAppList } from '@/features/permission/components/permission-app-list';
+import { MenuList } from "@/features/menus/components/menu-list";
 import { ROUTES } from "@/lib/constants";
 import { formatDate, statusClass } from "@/lib/utils";
 
@@ -52,16 +51,11 @@ export function ApplicationDetails({ code }: { code: string }) {
   const slugValue = type === "INTERNAL" ? slug : url;
 
   const tabItems: IGRPTabItem[] = [
-    // {
-    //   label: 'Menus',
-    //   value: 'menus',
-    //   content: <MenuList app={app} />,
-    // },
-    // {
-    //   label: 'Permissões',
-    //   value: 'permissions',
-    //   content: <PermissionAppList appCode={app.code}  appName={app.name} />,
-    // }
+    {
+      label: 'Menus',
+      value: 'menus',
+      content: <MenuList app={app} />,
+    },    
   ];
 
   return (
