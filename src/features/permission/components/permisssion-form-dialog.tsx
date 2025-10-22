@@ -1,43 +1,43 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IGRPDialogPrimitive,
+  IGRPButtonPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogFooterPrimitive,
   IGRPDialogHeaderPrimitive,
+  IGRPDialogPrimitive,
   IGRPDialogTitlePrimitive,
-  IGRPButtonPrimitive,
-  IGRPFormPrimitive,
   IGRPFormControlPrimitive,
   IGRPFormDescriptionPrimitive,
   IGRPFormFieldPrimitive,
   IGRPFormItemPrimitive,
   IGRPFormLabelPrimitive,
+  IGRPFormMessagePrimitive,
+  IGRPFormPrimitive,
   IGRPInputPrimitive,
-  IGRPTextAreaPrimitive,
-  IGRPSelectPrimitive,
   IGRPSelectContentPrimitive,
   IGRPSelectItemPrimitive,
+  IGRPSelectPrimitive,
   IGRPSelectTriggerPrimitive,
   IGRPSelectValuePrimitive,
-  IGRPFormMessagePrimitive,
+  IGRPTextAreaPrimitive,
   useIGRPToast,
-} from '@igrp/igrp-framework-react-design-system';
+} from "@igrp/igrp-framework-react-design-system";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 import {
-  CreatePermissionArgs,
+  type CreatePermissionArgs,
   normalizePermission,
-  PermissionArgs,
+  type PermissionArgs,
   permissionFormSchema,
   permissionStatusSchema,
-  UpdatePermissionArgs,
+  type UpdatePermissionArgs,
   updatePermissionSchema,
-} from '@/features/permission/permissions-schemas';
-import { useCreatePermission, useUpdatePermission } from '../use-permission';
-import { STATUS_OPTIONS } from '@/lib/constants';
+} from "@/features/permission/permissions-schemas";
+import { STATUS_OPTIONS } from "@/lib/constants";
+import { useCreatePermission, useUpdatePermission } from "../use-permission";
 
 interface PermissionCreateDialogProps {
   open: boolean;
@@ -54,16 +54,18 @@ export function PermissionFormDialog({
 }: PermissionCreateDialogProps) {
   const { igrpToast } = useIGRPToast();
 
-  const { mutateAsync: createPermission, isPending: isCreating } = useCreatePermission();
-  const { mutateAsync: updatePermission, isPending: isUpdating } = useUpdatePermission();
+  const { mutateAsync: createPermission, isPending: isCreating } =
+    useCreatePermission();
+  const { mutateAsync: updatePermission, isPending: isUpdating } =
+    useUpdatePermission();
 
   const isEdit = !!permission;
 
   const form = useForm<PermissionArgs>({
     resolver: zodResolver(permissionFormSchema),
     defaultValues: {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       departmentCode: departmentCode,
       status: permissionStatusSchema.enum.ACTIVE,
     },
@@ -74,15 +76,15 @@ export function PermissionFormDialog({
 
     if (permission) {
       form.reset({
-        name: permission.name ?? '',
+        name: permission.name ?? "",
         description: permission.description ?? null,
-        departmentCode: departmentCode ?? '',
+        departmentCode: departmentCode ?? "",
         status: permission.status || permissionStatusSchema.enum.ACTIVE,
       } as PermissionArgs);
     } else {
       form.reset({
-        name: '',
-        description: '',
+        name: "",
+        description: "",
         departmentCode,
         status: permissionStatusSchema.enum.ACTIVE,
       } as PermissionArgs);
@@ -101,14 +103,14 @@ export function PermissionFormDialog({
         await updatePermission({ name: permission.name, data: payload });
 
         igrpToast({
-          type: 'success',
-          title: 'Atualizar Permissão',
-          description: 'Permissão foi atualizado com sucesso.',
+          type: "success",
+          title: "Atualizar Permissão",
+          description: "Permissão foi atualizado com sucesso.",
         });
       } else {
         const payload: CreatePermissionArgs = {
           name: values.name,
-          description: values.description || '',
+          description: values.description || "",
           departmentCode: values.departmentCode,
           status: values.status,
         };
@@ -116,16 +118,19 @@ export function PermissionFormDialog({
         await createPermission(payload);
 
         igrpToast({
-          type: 'success',
-          title: 'Permissão Criada',
-          description: 'Permissão criada com sucesso.',
+          type: "success",
+          title: "Permissão Criada",
+          description: "Permissão criada com sucesso.",
         });
       }
     } catch (error) {
       igrpToast({
-        type: 'error',
-        title: 'Não foi possível criar a permissão.',
-        description: error instanceof Error ? error.message : 'Ocorreu um erro desconhecido.',
+        type: "error",
+        title: "Não foi possível criar a permissão.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro desconhecido.",
       });
     } finally {
       form.reset();
@@ -134,25 +139,22 @@ export function PermissionFormDialog({
   };
 
   return (
-    <IGRPDialogPrimitive
-      open={open}
-      onOpenChange={onOpenChange}
-    >
-      <IGRPDialogContentPrimitive className='md:min-w-2xl'>
+    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
+      <IGRPDialogContentPrimitive className="md:min-w-2xl">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive>
-            {isEdit ? 'Editar Permissão' : 'Adicionar Permissão'}
+            {isEdit ? "Editar Permissão" : "Adicionar Permissão"}
           </IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
 
         <IGRPFormPrimitive {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className='flex flex-col gap-4'
+            className="flex flex-col gap-4"
           >
             <IGRPFormFieldPrimitive
               control={form.control}
-              name='name'
+              name="name"
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
                   <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
@@ -160,15 +162,16 @@ export function PermissionFormDialog({
                   </IGRPFormLabelPrimitive>
                   <IGRPFormControlPrimitive>
                     <IGRPInputPrimitive
-                      placeholder='Identificador único do permissão'
+                      placeholder="Identificador único do permissão"
                       required
-                      className='placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
+                      className="placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30"
                       disabled={isEdit}
                       {...field}
                     />
                   </IGRPFormControlPrimitive>
                   <IGRPFormDescriptionPrimitive>
-                    Apenas são permitidas letras minúsculas, números, underscore (_) e hífen (-).
+                    Apenas são permitidas letras minúsculas, números, underscore
+                    (_) e hífen (-).
                   </IGRPFormDescriptionPrimitive>
                   <IGRPFormMessagePrimitive />
                 </IGRPFormItemPrimitive>
@@ -177,7 +180,7 @@ export function PermissionFormDialog({
 
             <IGRPFormFieldPrimitive
               control={form.control}
-              name='description'
+              name="description"
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
                   <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
@@ -185,11 +188,11 @@ export function PermissionFormDialog({
                   </IGRPFormLabelPrimitive>
                   <IGRPFormControlPrimitive>
                     <IGRPTextAreaPrimitive
-                      placeholder='Breve descrição do perfil'
+                      placeholder="Breve descrição do perfil"
                       required
-                      className='resize-none placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30'
+                      className="resize-none placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30"
                       rows={2}
-                      value={field.value ?? ''}
+                      value={field.value ?? ""}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                       name={field.name}
@@ -203,7 +206,7 @@ export function PermissionFormDialog({
 
             <IGRPFormFieldPrimitive
               control={form.control}
-              name='status'
+              name="status"
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
                   <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
@@ -212,8 +215,8 @@ export function PermissionFormDialog({
                     value={field.value}
                   >
                     <IGRPFormControlPrimitive>
-                      <IGRPSelectTriggerPrimitive className='w-full truncate'>
-                        <IGRPSelectValuePrimitive placeholder='Selecionar estado' />
+                      <IGRPSelectTriggerPrimitive className="w-full truncate">
+                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
                       </IGRPSelectTriggerPrimitive>
                     </IGRPFormControlPrimitive>
                     <IGRPSelectContentPrimitive>
@@ -232,25 +235,25 @@ export function PermissionFormDialog({
               )}
             />
 
-            <IGRPDialogFooterPrimitive className='pt-4'>
+            <IGRPDialogFooterPrimitive className="pt-4">
               <IGRPButtonPrimitive
-                type='button'
-                variant='outline'
+                type="button"
+                variant="outline"
                 onClick={() => onOpenChange(false)}
               >
                 Cancelar
               </IGRPButtonPrimitive>
               <IGRPButtonPrimitive
-                type='submit'
+                type="submit"
                 disabled={isCreating || isUpdating}
               >
                 {isEdit
                   ? isUpdating
-                    ? 'Atualizando...'
-                    : 'Atualizar'
+                    ? "Atualizando..."
+                    : "Atualizar"
                   : isCreating
-                    ? 'Guardando...'
-                    : 'Adicionar'}
+                    ? "Guardando..."
+                    : "Adicionar"}
               </IGRPButtonPrimitive>
             </IGRPDialogFooterPrimitive>
           </form>

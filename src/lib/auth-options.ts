@@ -1,9 +1,13 @@
-import type { NextAuthOptions, Session, TokenSet } from '@igrp/framework-next-auth';
-import type { JWT } from '@igrp/framework-next-auth/jwt';
-import KeycloakProvider from 'next-auth/providers/keycloak';
+import type {
+  NextAuthOptions,
+  Session,
+  TokenSet,
+} from "@igrp/framework-next-auth";
+import type { JWT } from "@igrp/framework-next-auth/jwt";
+import KeycloakProvider from "next-auth/providers/keycloak";
 
-const isProd = process.env.NODE_ENV === 'production';
-const baseUrl = process.env.NEXTAUTH_URL ?? '';
+const isProd = process.env.NODE_ENV === "production";
+const baseUrl = process.env.NEXTAUTH_URL ?? "";
 
 // According to NextAuth.js docs: https://next-auth.js.org/getting-started/client#custom-base-path
 //
@@ -18,7 +22,7 @@ const baseUrl = process.env.NEXTAUTH_URL ?? '';
 // Validation checks removed - console logging disabled
 
 // Validate and fix invalid URLs (like 0.0.0.0)
-const validBaseUrl = baseUrl.includes('0.0.0.0')
+const validBaseUrl = baseUrl.includes("0.0.0.0")
   ? process.env.IGRP_APP_CENTER_URL || baseUrl
   : baseUrl;
 
@@ -29,54 +33,58 @@ const cookieDomain = undefined;
 export const authOptions: NextAuthOptions = {
   providers: [
     KeycloakProvider({
-      clientId: process.env.KEYCLOAK_CLIENT_ID || '',
-      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || '',
-      issuer: process.env.KEYCLOAK_ISSUER || '',
+      clientId: process.env.KEYCLOAK_CLIENT_ID || "",
+      clientSecret: process.env.KEYCLOAK_CLIENT_SECRET || "",
+      issuer: process.env.KEYCLOAK_ISSUER || "",
     }),
   ],
 
   secret: process.env.NEXTAUTH_SECRET,
 
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
     maxAge: 4 * 60 * 60, // 4 hours
   },
 
   cookies: {
     sessionToken: {
-      name: isProd ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      name: isProd
+        ? "__Secure-next-auth.session-token"
+        : "next-auth.session-token",
       options: {
         httpOnly: true,
-        sameSite: 'lax',
-        path: process.env.IGRP_APP_BASE_PATH || '/',
+        sameSite: "lax",
+        path: process.env.IGRP_APP_BASE_PATH || "/",
         secure: isProd,
         ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
   },
 
-
   callbacks: {
     async redirect({ url, baseUrl: nextAuthBaseUrl }) {
-      const basePath = process.env.IGRP_APP_BASE_PATH || '';
+      const basePath = process.env.IGRP_APP_BASE_PATH || "";
       // Use validBaseUrl instead of baseUrl to handle 0.0.0.0
       // Important: When using custom basePath, validBaseUrl already includes basePath + /api/auth
       // Example: https://apisix.zingdevelopers.com/igrp-application-center/api/auth
       const baseUrl = validBaseUrl || nextAuthBaseUrl;
 
       // Extract the domain without /api/auth for building redirect URLs
-      const baseDomain = baseUrl.replace('/api/auth', '');
+      const baseDomain = baseUrl.replace("/api/auth", "");
 
       // CRITICAL FIX: Detect and fix URLs with duplicated basePath
       // NextAuth sometimes creates URLs like: /basePath/basePath/ or /basePath/api/auth/basePath/
       if (basePath) {
         // Fix pattern 1: /basePath/api/auth/basePath/ -> /basePath/api/auth/
-        if (url.includes(basePath + '/api/auth' + basePath)) {
-          url = url.replace(basePath + '/api/auth' + basePath, basePath + '/api/auth');
+        if (url.includes(`${basePath}/api/auth${basePath}`)) {
+          url = url.replace(
+            `${basePath}/api/auth${basePath}`,
+            `${basePath}/api/auth`,
+          );
         }
         // Fix pattern 2: /basePath/basePath/ -> /basePath/
-        else if (url.includes(basePath + basePath + '/')) {
-          url = url.replace(basePath + basePath + '/', basePath + '/');
+        else if (url.includes(`${basePath + basePath}/`)) {
+          url = url.replace(`${basePath + basePath}/`, `${basePath}/`);
         }
         // Fix pattern 3: domain.com/basePath/basePath -> domain.com/basePath/
         else if (url.includes(basePath + basePath)) {
@@ -85,7 +93,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Handle relative paths (e.g., "/", "/dashboard")
-      if (url.startsWith('/')) {
+      if (url.startsWith("/")) {
         // Check if the relative path already has basePath
         if (basePath && url.startsWith(basePath)) {
           return `${baseDomain}${url}`;
@@ -94,7 +102,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Handle full URLs
-      if (url.startsWith('http')) {
+      if (url.startsWith("http")) {
         try {
           const urlObj = new URL(url);
           const pathname = urlObj.pathname;
@@ -112,7 +120,7 @@ export const authOptions: NextAuthOptions = {
           // External URL, return as-is
           return url;
         } catch (error) {
-          console.error(':: AUTH REDIRECT - Error parsing URL:', error);
+          console.error(":: AUTH REDIRECT - Error parsing URL:", error);
           return url;
         }
       }
@@ -122,7 +130,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user, account, profile }) {
       if (account) {
-        if (user && !('user' in token)) {
+        if (user && !("user" in token)) {
           token.user = {
             id: token.sub ?? user.id ?? undefined,
             name: user.name ?? profile?.name ?? null,
@@ -145,7 +153,7 @@ export const authOptions: NextAuthOptions = {
 
       try {
         if (!token.refreshToken) {
-          return { ...token, error: 'RefreshAccessTokenError' };
+          return { ...token, error: "RefreshAccessTokenError" };
         }
 
         const response = await requestRefreshOfAccessToken(token);
@@ -165,12 +173,12 @@ export const authOptions: NextAuthOptions = {
         };
         return updatedToken;
       } catch (error) {
-        console.error(':: AUTH JWT - Error refreshing access token:', error);
-        return { ...token, error: 'RefreshAccessTokenError' };
+        console.error(":: AUTH JWT - Error refreshing access token:", error);
+        return { ...token, error: "RefreshAccessTokenError" };
       }
     },
     async session({ session, token }) {
-      session.user = token.user as Session['user'];
+      session.user = token.user as Session["user"];
       session.accessToken = token.accessToken;
       session.error = token.error;
       session.expiresAt = token.expiresAt;
@@ -179,8 +187,8 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: '/login',
-    error: '/login',
+    signIn: "/login",
+    error: "/login",
   },
 };
 
@@ -190,28 +198,31 @@ export async function requestRefreshOfAccessToken(token: JWT) {
     !process.env.KEYCLOAK_CLIENT_ID ||
     !process.env.KEYCLOAK_CLIENT_SECRET
   ) {
-    throw new Error('Missing Keycloak configuration for token refresh.');
+    throw new Error("Missing Keycloak configuration for token refresh.");
   }
 
   if (!token.refreshToken) {
-    throw new Error('Missing refresh token.');
+    throw new Error("Missing refresh token.");
   }
 
-  return await fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      client_id: process.env.KEYCLOAK_CLIENT_ID!,
-      client_secret: process.env.KEYCLOAK_CLIENT_SECRET!,
-      grant_type: 'refresh_token',
-      refresh_token: String(token.refreshToken),
-    }),
-  });
+  return await fetch(
+    `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: process.env.KEYCLOAK_CLIENT_ID,
+        client_secret: process.env.KEYCLOAK_CLIENT_SECRET,
+        grant_type: "refresh_token",
+        refresh_token: String(token.refreshToken),
+      }),
+    },
+  );
 }
 
 export async function buildKeycloakEndSessionUrl(jwt: JWT): Promise<string> {
   const issuer = process.env.KEYCLOAK_ISSUER;
-  if (!issuer) throw new Error('KEYCLOAK_ISSUER not set');
+  if (!issuer) throw new Error("KEYCLOAK_ISSUER not set");
 
   // Build URL safely - issuer is already checked above
   const url = new URL(`${issuer}/protocol/openid-connect/logout`);
@@ -229,12 +240,12 @@ export async function buildKeycloakEndSessionUrl(jwt: JWT): Promise<string> {
       }
     } catch (error) {
       // Silently handle error
-      console.error(':: AUTH LOGOUT - Error refreshing access token:', error);
+      console.error(":: AUTH LOGOUT - Error refreshing access token:", error);
     }
   }
 
   if (idToken) {
-    url.searchParams.set('id_token_hint', idToken);
+    url.searchParams.set("id_token_hint", idToken);
   }
 
   // TEMPORARY: Removed post_logout_redirect_uri because it's not configured in Keycloak

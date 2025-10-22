@@ -1,5 +1,12 @@
-import type { ApiResponse, MenuEntryDTO } from '@igrp/platform-access-management-client-ts';
-import type { IGRPStatus, IGRPMenuCRUDArgs, IGRPTargetType } from '@igrp/framework-next-types';
+import type {
+  IGRPMenuCRUDArgs,
+  IGRPStatus,
+  IGRPTargetType,
+} from "@igrp/framework-next-types";
+import type {
+  ApiResponse,
+  MenuEntryDTO,
+} from "@igrp/platform-access-management-client-ts";
 
 const mapMenuCRUD = (menu: MenuEntryDTO): IGRPMenuCRUDArgs => ({
   id: menu.id as number,
@@ -17,11 +24,15 @@ const mapMenuCRUD = (menu: MenuEntryDTO): IGRPMenuCRUDArgs => ({
   parentCode: menu.parentCode,
 });
 
-export const mapperMenuCRUD = (menu: ApiResponse<MenuEntryDTO>): IGRPMenuCRUDArgs => {
+export const mapperMenuCRUD = (
+  menu: ApiResponse<MenuEntryDTO>,
+): IGRPMenuCRUDArgs => {
   if (!menu.data) return {} as IGRPMenuCRUDArgs;
   return mapMenuCRUD(menu.data);
 };
-export const mapperListMenusCRUD = (menus: ApiResponse<MenuEntryDTO[]>): IGRPMenuCRUDArgs[] => {
+export const mapperListMenusCRUD = (
+  menus: ApiResponse<MenuEntryDTO[]>,
+): IGRPMenuCRUDArgs[] => {
   if (!menus.data) return [];
   return menus.data.map(mapMenuCRUD);
 };

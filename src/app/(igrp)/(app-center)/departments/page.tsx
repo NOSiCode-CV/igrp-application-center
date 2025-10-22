@@ -1,7 +1,7 @@
-import { DepartmentList } from '@/features/departments/components/dept-list';
+import { DepartmentList } from "@/features/departments/components/dept-list";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export default function DepartmentsPage() {
+export default function DepartmentListPage() {
   return <DepartmentList />;
 }

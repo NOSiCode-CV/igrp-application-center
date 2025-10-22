@@ -1,8 +1,8 @@
 export interface Resource {
   id: number;
   name: string;
-  type: 'API' | 'PAGE' | 'COMPONENT';
-  status: 'ACTIVE' | 'INACTIVE';
+  type: "API" | "PAGE" | "COMPONENT";
+  status: "ACTIVE" | "INACTIVE";
   applicationId: number;
   items: ResourceItem[];
   externalId?: string;
@@ -26,23 +26,33 @@ export interface ResourceItem {
 
 export interface CreateResourceDto {
   name: string;
-  type: 'API' | 'PAGE' | 'COMPONENT';
-  status?: 'ACTIVE' | 'INACTIVE';
+  type: "API" | "PAGE" | "COMPONENT";
+  status?: "ACTIVE" | "INACTIVE";
   applicationId: number;
   items?: Omit<
     ResourceItem,
-    'id' | 'resourceId' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'
+    | "id"
+    | "resourceId"
+    | "createdBy"
+    | "createdDate"
+    | "lastModifiedBy"
+    | "lastModifiedDate"
   >[];
   externalId?: string;
 }
 
 export interface UpdateResourceDto {
   name?: string;
-  type?: 'API' | 'PAGE' | 'COMPONENT';
-  status?: 'ACTIVE' | 'INACTIVE';
+  type?: "API" | "PAGE" | "COMPONENT";
+  status?: "ACTIVE" | "INACTIVE";
   items?: Omit<
     ResourceItem,
-    'id' | 'resourceId' | 'createdBy' | 'createdDate' | 'lastModifiedBy' | 'lastModifiedDate'
+    | "id"
+    | "resourceId"
+    | "createdBy"
+    | "createdDate"
+    | "lastModifiedBy"
+    | "lastModifiedDate"
   >[];
   externalId?: string;
 }

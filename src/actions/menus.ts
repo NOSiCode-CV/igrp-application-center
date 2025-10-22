@@ -1,14 +1,15 @@
-'use server';
+"use server";
 
-import {
+import type {
   CreateMenuRequest,
   MenuFilters,
   UpdateMenuRequest,
-} from '@igrp/platform-access-management-client-ts';
-
-import {} from './igrp/auth';
-import { mapperListMenusCRUD, mapperMenuCRUD } from '@/features/menus/menu-mapper';
-import { getClientAccess } from './access-client';
+} from "@igrp/platform-access-management-client-ts";
+import {
+  mapperListMenusCRUD,
+  mapperMenuCRUD,
+} from "@/features/menus/menu-mapper";
+import { getClientAccess } from "./access-client";
 
 export async function getMenus(params?: MenuFilters) {
   const client = await getClientAccess();
@@ -18,7 +19,10 @@ export async function getMenus(params?: MenuFilters) {
     const menus = mapperListMenusCRUD(result);
     return menus;
   } catch (error) {
-    console.error('[menus-get]: Erro ao carregar os menus da aplicação.:', error);
+    console.error(
+      "[menus-get]: Erro ao carregar os menus da aplicação.:",
+      error,
+    );
     throw error;
   }
 }
@@ -31,7 +35,7 @@ export async function createMenu(menu: CreateMenuRequest) {
     const app = mapperMenuCRUD(result);
     return app;
   } catch (error) {
-    console.error('menu-create] Não foi possível criar menu:', error);
+    console.error("menu-create] Não foi possível criar menu:", error);
     throw error;
   }
 }
@@ -44,7 +48,7 @@ export async function updateMenu(code: string, updated: UpdateMenuRequest) {
     const app = mapperMenuCRUD(result);
     return app;
   } catch (error) {
-    console.error('[menu-update] Não foi possível atualizar menu:', error);
+    console.error("[menu-update] Não foi possível atualizar menu:", error);
     throw error;
   }
 }
@@ -56,7 +60,7 @@ export async function deleteMenu(code: string) {
     const result = await client.menus.deleteMenu(code);
     return result;
   } catch (error) {
-    console.error('[menu-update] Não foi possível eleiminar menu:', error);
+    console.error("[menu-update] Não foi possível eleiminar menu:", error);
     throw error;
   }
 }

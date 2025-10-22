@@ -1,4 +1,4 @@
-import { IGRP_DEFAULT_MENU } from './menus';
+import { IGRP_DEFAULT_MENU } from "./menus";
 
 export function getMockMenus() {
   return {

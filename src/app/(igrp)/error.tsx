@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { IGRPGlobalError } from '@igrp/framework-next-ui';
+import { IGRPGlobalError } from "@igrp/framework-next-ui";
 
 export default function Error({
   error,
@@ -9,10 +9,5 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return (
-    <IGRPGlobalError
-      error={error}
-      reset={reset}
-    />
-  );
+  return <IGRPGlobalError error={error} reset={reset} />;
 }

@@ -1,19 +1,21 @@
-import { Status } from '@igrp/platform-access-management-client-ts';
-import { z } from 'zod';
+import type { Status } from "@igrp/platform-access-management-client-ts";
+import { z } from "zod";
 
-export const permissionStatusSchema = z.enum(['ACTIVE', 'INACTIVE']);
+export const permissionStatusSchema = z.enum(["ACTIVE", "INACTIVE"]);
 
 export const permissionFormSchema = z.object({
   id: z.number().optional(),
   name: z
     .string()
-    .min(3, 'Nome é obrigatório (min 3 carateres)')
+    .min(3, "Nome é obrigatório (min 3 carateres)")
     .regex(
       /^[a-z0-9_-]+$/,
-      'Apenas são permitidas letras minúsculas, números, underscore (_) e hífen (-).',
+      "Apenas são permitidas letras minúsculas, números, underscore (_) e hífen (-).",
     ),
   description: z.string().optional().nullable(),
-  departmentCode: z.string().min(5, 'Código de departamento é obrigatório (min 4 carateres)'),
+  departmentCode: z
+    .string()
+    .min(5, "Código de departamento é obrigatório (min 4 carateres)"),
   status: permissionStatusSchema,
 });
 
@@ -27,7 +29,7 @@ export const updatePermissionSchema = permissionFormSchema
   .omit({ id: true })
   .partial()
   .refine((val) => Object.keys(val).length > 0, {
-    message: 'É necessário fornecer pelo menos um campo para atualização.',
+    message: "É necessário fornecer pelo menos um campo para atualização.",
   });
 
 export type UpdatePermissionArgs = z.infer<typeof updatePermissionSchema>;

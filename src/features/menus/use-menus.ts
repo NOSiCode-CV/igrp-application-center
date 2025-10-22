@@ -1,11 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { IGRPMenuCRUDArgs } from '@igrp/framework-next-types';
-import { MenuFilters, UpdateMenuRequest } from '@igrp/platform-access-management-client-ts';
+import type { IGRPMenuCRUDArgs } from "@igrp/framework-next-types";
+import type {
+  MenuFilters,
+  UpdateMenuRequest,
+} from "@igrp/platform-access-management-client-ts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { createMenu, deleteMenu, getMenus, updateMenu } from '@/actions/menus';
+import { createMenu, deleteMenu, getMenus, updateMenu } from "@/actions/menus";
 
 export const useMenus = (params?: MenuFilters) => {
-  const key = ['menus', params?.applicationCode ?? null] as const;
+  const key = ["menus", params?.applicationCode ?? null] as const;
 
   return useQuery<IGRPMenuCRUDArgs[]>({
     queryKey: key,
@@ -20,15 +23,15 @@ export const useCreateMenu = () => {
   return useMutation({
     mutationFn: createMenu,
     onSuccess: (newMenu) => {
-      queryClient.invalidateQueries({ queryKey: ['menus'] });
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
       if (newMenu.applicationCode) {
         queryClient.invalidateQueries({
-          queryKey: ['menus', 'application', newMenu.applicationCode],
+          queryKey: ["menus", "application", newMenu.applicationCode],
         });
       }
       if (newMenu.parentCode) {
         queryClient.invalidateQueries({
-          queryKey: ['menus', 'parent', newMenu.parentCode],
+          queryKey: ["menus", "parent", newMenu.parentCode],
         });
       }
     },
@@ -42,16 +45,16 @@ export const useUpdateMenu = () => {
     mutationFn: ({ code, data }: { code: string; data: UpdateMenuRequest }) =>
       updateMenu(code, data),
     onSuccess: (updatedMenu, { code }) => {
-      queryClient.invalidateQueries({ queryKey: ['menus'] });
-      queryClient.invalidateQueries({ queryKey: ['menus', code] });
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
+      queryClient.invalidateQueries({ queryKey: ["menus", code] });
       if (updatedMenu.applicationCode) {
         queryClient.invalidateQueries({
-          queryKey: ['menus', 'application', updatedMenu.applicationCode],
+          queryKey: ["menus", "application", updatedMenu.applicationCode],
         });
       }
       if (updatedMenu.parentCode) {
         queryClient.invalidateQueries({
-          queryKey: ['menus', 'parent', updatedMenu.parentCode],
+          queryKey: ["menus", "parent", updatedMenu.parentCode],
         });
       }
     },
@@ -64,10 +67,10 @@ export const useDeleteMenu = () => {
   return useMutation({
     mutationFn: deleteMenu,
     onSuccess: (_, deletedCode) => {
-      queryClient.invalidateQueries({ queryKey: ['menus'] });
-      queryClient.removeQueries({ queryKey: ['menus', deletedCode] });
-      queryClient.invalidateQueries({ queryKey: ['menus', 'application'] });
-      queryClient.invalidateQueries({ queryKey: ['menus', 'parent'] });
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
+      queryClient.removeQueries({ queryKey: ["menus", deletedCode] });
+      queryClient.invalidateQueries({ queryKey: ["menus", "application"] });
+      queryClient.invalidateQueries({ queryKey: ["menus", "parent"] });
     },
   });
 };

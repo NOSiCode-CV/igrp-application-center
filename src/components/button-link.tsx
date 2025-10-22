@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import Link, { useLinkStatus } from 'next/link';
 import {
   IGRPButtonPrimitive,
-  IGRPIconProps,
   IGRPIcon,
-} from '@igrp/igrp-framework-react-design-system';
-import { cn } from '@/lib/utils';
+  type IGRPIconProps,
+} from "@igrp/igrp-framework-react-design-system";
+import Link, { useLinkStatus } from "next/link";
+import { cn } from "@/lib/utils";
 
 type IGRPBtnProps = React.ComponentProps<typeof IGRPButtonPrimitive>;
 
 export interface ButtonLinkProps extends React.ComponentProps<typeof Link> {
   label?: string;
-  icon: IGRPIconProps['iconName'];
+  icon: IGRPIconProps["iconName"];
   iconClassName?: string;
-  variant?: IGRPBtnProps['variant'];
+  variant?: IGRPBtnProps["variant"];
   btnClassName?: string;
 }
 
@@ -29,14 +29,11 @@ export function ButtonLink({
   return (
     <IGRPButtonPrimitive
       asChild
-      variant={variant || 'default'}
+      variant={variant || "default"}
       className={btnClassName}
     >
       <Link {...props}>
-        <LinkLoadingIndicator
-          iconName={icon}
-          iconClassName={iconClassName}
-        />
+        <LinkLoadingIndicator iconName={icon} iconClassName={iconClassName} />
         {label}
       </Link>
     </IGRPButtonPrimitive>
@@ -44,29 +41,32 @@ export function ButtonLink({
 }
 
 interface LinkLoadingIndicatorProps {
-  iconName: IGRPIconProps['iconName'];
+  iconName: IGRPIconProps["iconName"];
   iconClassName?: string;
 }
 
-function LinkLoadingIndicator({ iconName, iconClassName }: LinkLoadingIndicatorProps) {
+function LinkLoadingIndicator({
+  iconName,
+  iconClassName,
+}: LinkLoadingIndicatorProps) {
   const { pending } = useLinkStatus();
 
-  const valid = iconName !== null && iconName !== undefined && iconName !== '';
+  const valid = iconName !== null && iconName !== undefined && iconName !== "";
 
   return (
     <>
       {valid ? (
         <IGRPIcon
-          iconName={pending ? 'LoaderCircle' : iconName}
+          iconName={pending ? "LoaderCircle" : iconName}
           strokeWidth={2}
-          className={cn(iconClassName, pending && 'animate-spin')}
+          className={cn(iconClassName, pending && "animate-spin")}
         />
       ) : (
         pending && (
           <IGRPIcon
-            iconName='LoaderCircle'
+            iconName="LoaderCircle"
             strokeWidth={2}
-            className={cn(iconClassName, pending && 'animate-spin')}
+            className={cn(iconClassName, pending && "animate-spin")}
           />
         )
       )}
