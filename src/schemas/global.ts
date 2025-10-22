@@ -1,6 +1,6 @@
-import z from 'zod';
+import z from "zod";
 
-export const statusSchema = z.enum(['ACTIVE', 'INACTIVE', 'DELETED']);
+export const statusSchema = z.enum(["ACTIVE", "INACTIVE", "DELETED"]);
 
 export type StatusArgs = z.infer<typeof statusSchema>;
 

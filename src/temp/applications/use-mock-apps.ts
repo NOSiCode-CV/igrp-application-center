@@ -1,4 +1,4 @@
-import { IGRP_MOCK_APPS_DATA } from './apps';
+import { IGRP_MOCK_APPS_DATA } from "./apps";
 
 export function getMockApps() {
   return {

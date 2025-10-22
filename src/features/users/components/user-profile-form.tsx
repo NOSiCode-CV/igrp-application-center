@@ -11,7 +11,6 @@
 //   IGRPCardPrimitive,
 //   IGRPCardContentPrimitive,
 //   IGRPCardDescriptionPrimitive,
-//   IGRPCardFooterPrimitive,
 //   IGRPCardHeaderPrimitive,
 //   IGRPCardTitlePrimitive,
 //   IGRPFormPrimitive,
@@ -27,40 +26,26 @@
 // } from '@igrp/igrp-framework-react-design-system';
 
 // import { BackButton } from '@/components/back-button';
-// import {
-//   useCurrentUser,
-//   useUpdateUser,
-//   // useUserImage,
-//   // useUserSignature
-// } from '@/features/users/use-users';
-// import { userSchema } from '@/features/users/user';
-// import { UserProps } from '@/features/users/types';
-// import { ProfileImageUpload } from '@/features/users/components/profile-image-upload';
-// import { ProfileSignature } from '@/features/users/components/profile-signature';
+
 // import { ROUTES } from '@/lib/constants';
+// import { useCurrentUser } from '../use-users';
+// import { UpdateUserArgs, UpdateUserSchema } from '../user-schema';
 
 // export function ProfileUserForm() {
 //   const router = useRouter();
 //   const { igrpToast } = useIGRPToast();
 
 //   const { data: user, isLoading, error } = useCurrentUser();
-//   const { mutateAsync: updateUser } = useUpdateUser();
-//   // const { data: getImage } = useUserImage()
-//   // const { data: getSignature } = useUserSignature()
 
-//   const form = useForm<z.infer<typeof userSchema>>({
-//     resolver: zodResolver(userSchema),
+//   const form = useForm<z.infer<typeof UpdateUserSchema>>({
+//     resolver: zodResolver(UpdateUserSchema),
 //   });
 
 //   useEffect(() => {
 //     if (user) {
-//       const defaultValues: Partial<UserProps> = {
-//         igrpUsername: user.igrpUsername ?? '',
-//         fullname: user.fullname ?? undefined,
+//       const defaultValues: UpdateUserArgs = {
 //         email: user.email ?? '',
-//         signature: user.signature ?? undefined,
-//         image: user.image ?? undefined,
-//         status: user.status ?? 'ACTIVE',
+//         name: user.name ?? '',
 //       };
 
 //       form.reset(defaultValues);
@@ -70,7 +55,7 @@
 //   if (isLoading && !user) return <div>Loading user...</div>;
 //   if (error) throw error;
 
-//   async function onSubmit(values: z.infer<typeof userSchema>) {
+//   async function onSubmit(values: z.infer<typeof UpdateUserSchema>) {
 //     const formData = new FormData();
 //     formData.append('fullname', values.fullname || '');
 //     formData.append('email', values.email);

@@ -1,16 +1,21 @@
-import { z } from 'zod';
-import { MenuType, Status } from '@igrp/platform-access-management-client-ts';
-import { nullIfEmpty } from '@/lib/utils';
-import { statusSchema } from '@/schemas/global';
+import type {
+  MenuType,
+  Status,
+} from "@igrp/platform-access-management-client-ts";
+import { z } from "zod";
+import { nullIfEmpty } from "@/lib/utils";
+import { statusSchema } from "@/schemas/global";
 
-export const menuTypeSchema = z.enum(['MENU_PAGE', 'EXTERNAL_PAGE', 'FOLDER']);
+export const menuTypeSchema = z.enum(["MENU_PAGE", "EXTERNAL_PAGE", "FOLDER"]);
 
-export const menuTargetSchema = z.enum(['_self', '_blank']);
+export const menuTargetSchema = z.enum(["_self", "_blank"]);
 
 export const menuSchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(3, 'Nome é obrigatório'),
-  code: z.string().regex(/^[A-Z0-9_]+$/, 'Permite letras maiúsculas, números e sublinhados.'),
+  name: z.string().min(3, "Nome é obrigatório"),
+  code: z
+    .string()
+    .regex(/^[A-Z0-9_]+$/, "Permite letras maiúsculas, números e sublinhados."),
   type: menuTypeSchema,
   position: z.number().min(0),
   icon: z.string().optional(),
@@ -33,15 +38,15 @@ export const folderMenuSchema = menuSchema.extend({
 
 export const menuPageSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.MENU_PAGE),
-  pageSlug: z.string().min(3, 'Url relátivo é obrigatório'),
+  pageSlug: z.string().min(3, "Url relátivo é obrigatório"),
 });
 
 export const externalPageSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.EXTERNAL_PAGE),
-  url: z.string().url('URL é obrigatório'),
+  url: z.string().url("URL é obrigatório"),
 });
 
-export const createMenuSchema = z.discriminatedUnion('type', [
+export const createMenuSchema = z.discriminatedUnion("type", [
   folderMenuSchema,
   menuPageSchema,
   externalPageSchema,
@@ -65,7 +70,7 @@ export function normalizeMenu(values: CreateMenu | UpdateMenu) {
     name: values.name,
     type: values.type as MenuType,
     position: values.position,
-    icon: values.icon || '',
+    icon: values.icon || "",
     status: values.status as Status,
     applicationCode: values.applicationCode,
     parentCode: nullIfEmpty(values.parentCode),

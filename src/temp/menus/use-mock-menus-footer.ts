@@ -1,4 +1,4 @@
-import { IGRP_DEFAULT_MENU_FOOTER } from './menus-footer';
+import { IGRP_DEFAULT_MENU_FOOTER } from "./menus-footer";
 
 export function getMockMenusFooter() {
   return {

@@ -1,4 +1,4 @@
-import { IGRP_MOCK_USER } from './user';
+import { IGRP_MOCK_USER } from "./user";
 
 export function getMockUser() {
   return {

@@ -6,6 +6,12 @@ import {
   IGRPBadgePrimitive,
   IGRPButtonPrimitive,
   IGRPCheckboxPrimitive,
+  IGRPCommandEmptyPrimitive,
+  IGRPCommandGroupPrimitive,
+  IGRPCommandInputPrimitive,
+  IGRPCommandItemPrimitive,
+  IGRPCommandListPrimitive,
+  IGRPCommandPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogHeaderPrimitive,
   IGRPDialogPrimitive,
@@ -16,6 +22,9 @@ import {
   IGRPPaginationContentPrimitive,
   IGRPPaginationItemPrimitive,
   IGRPPaginationPrimitive,
+  IGRPPopoverContentPrimitive,
+  IGRPPopoverPrimitive,
+  IGRPPopoverTriggerPrimitive,
   IGRPSelectContentPrimitive,
   IGRPSelectItemPrimitive,
   IGRPSelectPrimitive,
@@ -43,18 +52,19 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { PermissionLoading } from "@/features/permission/components/permission-loading";
-import type { PermissionArgs } from "@/features/permission/permissions-schemas";
-import { usePermissions } from "@/features/permission/use-permission";
+import { useDepartments } from "@/features/departments/use-departments";
 import type { RoleArgs } from "@/features/roles/role-schemas";
-import { showStatus, statusClass } from "@/lib/utils";
+import { useRoles } from "@/features/roles/use-roles";
 import {
-  useAddPermissionsToRole,
-  usePermissionsByRoleByName,
-  useRemovePermissionsFromRole,
-} from "../use-roles";
+  useAddUserRole,
+  useRemoveUserRole,
+  useUserRoles,
+} from "@/features/users/use-users";
+import { showStatus, statusClass } from "@/lib/utils";
 
-const multiColumnFilterFn: FilterFn<PermissionArgs> = (
+const norm = (s: string) => s.trim().toLowerCase();
+
+const multiColumnFilterFn: FilterFn<RoleArgs> = (
   row,
   _columnId,
   filterValue,
@@ -64,11 +74,11 @@ const multiColumnFilterFn: FilterFn<PermissionArgs> = (
     .trim();
   if (!term) return true;
   const name = String(row.original?.name ?? "").toLowerCase();
-  const desc = String(row.original?.description ?? "").toLowerCase();
+  const desc = String((row.original as any)?.description ?? "").toLowerCase();
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<PermissionArgs>[] = [
+const columns: ColumnDef<RoleArgs>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -124,14 +134,9 @@ const columns: ColumnDef<PermissionArgs>[] = [
   },
 ];
 
-const norm = (s: string) => s.trim().toLowerCase();
-
-function diffPermissions(
-  selected: PermissionArgs[],
-  existing: PermissionArgs[],
-) {
-  const selectedNorm = new Set(selected.map((p) => norm(p.name)));
-  const existingNorm = new Set(existing.map((p) => norm(p.name)));
+function diffRoles(selected: RoleArgs[], existing: RoleArgs[]) {
+  const selectedNorm = new Set(selected.map((r) => norm(r.name)));
+  const existingNorm = new Set(existing.map((r) => norm(r.name)));
 
   const toAddNorm = Array.from(selectedNorm).filter(
     (n) => !existingNorm.has(n),
@@ -140,33 +145,65 @@ function diffPermissions(
     (n) => !selectedNorm.has(n),
   );
 
-  const selectedByNorm = new Map(selected.map((p) => [norm(p.name), p.name]));
-  const existingByNorm = new Map(existing.map((p) => [norm(p.name), p.name]));
+  const selectedByNorm = new Map(selected.map((r) => [norm(r.name), r.name]));
+  const existingByNorm = new Map(existing.map((r) => [norm(r.name), r.name]));
 
   return {
-    toAdd: toAddNorm.map((n) => selectedByNorm.get(n)).filter(Boolean),
+    toAdd: toAddNorm.map((n) => selectedByNorm.get(n)!).filter(Boolean),
     toRemove: toRemoveNorm.map((n) => existingByNorm.get(n)!).filter(Boolean),
   };
 }
 
-interface RoleDetailsProps {
-  departmentCode: string;
-  role: RoleArgs;
+type UserRolesDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
+  username: string;
+};
 
-export function RoleDetails({
-  departmentCode,
-  role,
+export function UserRolesDialog({
   open,
   onOpenChange,
-}: RoleDetailsProps) {
+  username,
+}: UserRolesDialogProps) {
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
 
-  const [data, setData] = useState<PermissionArgs[]>([]);
+  // Department selector
+  const {
+    data: depts,
+    isLoading: deptsLoading,
+    error: deptsError,
+  } = useDepartments();
+  const [deptPopoverOpen, setDeptPopoverOpen] = useState(false);
+  const [departmentCode, setDepartmentCode] = useState<string | undefined>(
+    undefined,
+  );
+
+  const deptName = (code?: string) =>
+    depts?.find((d) => d.code === code)?.name ?? code ?? "";
+
+  const handleSelectDept = (code: string) => {
+    setDepartmentCode(code);
+    setDeptPopoverOpen(false);
+  };
+
+  // Roles for selected department
+  const {
+    data: roles,
+    isLoading,
+    error,
+  } = useRoles({ departmentCode, enabled: !!departmentCode });
+
+  // All roles the user currently has (likely across departments)
+  const {
+    data: userRoles,
+    isLoading: isLoadingUserRoles,
+    error: errorUserRoles,
+    refetch: refetchUserRoles,
+  } = useUserRoles(username);
+
+  const [data, setData] = useState<RoleArgs[]>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
@@ -174,37 +211,46 @@ export function RoleDetails({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const {
-    data: permissions,
-    isLoading,
-    error,
-  } = usePermissions({ departmentCode });
-  const {
-    data: permissionByRole,
-    isLoading: isLoadingPermissionsByRole,
-    error: errorPermissionsByRole,
-  } = usePermissionsByRoleByName(role.name);
+  const getRowKey = (r: RoleArgs) => String((r as any).id ?? r.name);
 
-  const { mutateAsync: addPermissions, isPending: isAdding } =
-    useAddPermissionsToRole();
-  const { mutateAsync: removePermissions, isPending: isRemoving } =
-    useRemovePermissionsFromRole();
+  // Only consider user roles that belong to the currently visible department roles
+  const roleNameSet = useMemo(
+    () => new Set((roles ?? []).map((r) => norm(r.name))),
+    [roles],
+  );
+  const userRolesInDept = useMemo(
+    () => (userRoles ?? []).filter((r) => roleNameSet.has(norm(r.name))),
+    [userRoles, roleNameSet],
+  );
 
-  const getRowKey = (r: PermissionArgs) => String(r.id ?? r.name);
-
+  // Preselect by user's existing roles IN THIS DEPARTMENT
   const preselectedKeys = useMemo(() => {
-    const list = Array.isArray(permissionByRole) ? permissionByRole : [];
-    return new Set<string>(list.map((p) => getRowKey(p)));
-  }, [permissionByRole]);
+    const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
+    return new Set<string>(list.map((r) => getRowKey(r)));
+  }, [userRolesInDept]);
 
+  // Reset on close
   useEffect(() => {
-    setData(permissions ?? []);
-    setRowSelection({});
-  }, [permissions]);
+    if (!open) {
+      setDepartmentCode(undefined);
+      setRowSelection({});
+      setData([]);
+      setColumnFilters([]);
+      setPagination({ pageIndex: 0, pageSize: 5 });
+    }
+  }, [open]);
 
+  // When roles or department changes: set data and clear selection
+  useEffect(() => {
+    setData(roles ?? []);
+    setRowSelection({});
+    // reset pagination on dept change for UX
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  }, [roles, departmentCode]);
+
+  // Sync selection with user's roles in dept
   useEffect(() => {
     if (!data?.length) return;
-
     const next: RowSelectionState = {};
     for (const row of data) {
       const key = getRowKey(row);
@@ -221,9 +267,7 @@ export function RoleDetails({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
     getRowId: (row) => getRowKey(row),
-
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
@@ -233,25 +277,27 @@ export function RoleDetails({
 
   const selectedRows = table.getSelectedRowModel().rows;
   const selectedData = selectedRows.map((r) => r.original);
-  const existing = permissionByRole ?? [];
+  const existing = userRolesInDept ?? [];
 
   const { toAdd, toRemove } = useMemo(
-    () => diffPermissions(selectedData, existing),
+    () => diffRoles(selectedData, existing),
     [selectedData, existing],
   );
 
   const hasChanges = toAdd.length > 0 || toRemove.length > 0;
 
-  if (error) {
-    return (
-      <div className="rounded-md border py-6">
-        <p className="text-center">Ocorreu um erro ao carregar permissões.</p>
-        <p className="text-center">{error.message}</p>
-      </div>
-    );
-  }
+  const { mutateAsync: addUserRole, isPending: isAdding } = useAddUserRole();
+  const { mutateAsync: removeUserRole, isPending: isRemoving } =
+    useRemoveUserRole();
 
   async function onSubmit() {
+    if (!departmentCode) {
+      igrpToast({
+        type: "warning",
+        title: "Selecione um departamento primeiro.",
+      });
+      return;
+    }
     if (!hasChanges) {
       igrpToast({
         type: "info",
@@ -262,24 +308,25 @@ export function RoleDetails({
     }
 
     try {
-      // if (toAdd.length) {
-      //   await addPermissions({ name: role.name, permissionNames: toAdd });
-      // }
-      // if (toRemove.length) {
-      //   await removePermissions({ name: role.name, permissionNames: toRemove });
-      // }
+      if (toAdd.length) {
+        await addUserRole({ username, roleNames: toAdd });
+      }
+      if (toRemove.length) {
+        await removeUserRole({ username, roleNames: toRemove });
+      }
 
       igrpToast({
         type: "success",
-        title: "Permissões atualizadas",
+        title: "Perfis atualizados",
         description: `+${toAdd.length} adicionada(s), -${toRemove.length} removida(s).`,
       });
 
+      await refetchUserRoles();
       onOpenChange(false);
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Falha ao atualizar permissões",
+        title: "Falha ao atualizar perfis",
         description:
           error instanceof Error
             ? error.message
@@ -288,26 +335,89 @@ export function RoleDetails({
     }
   }
 
-  if (errorPermissionsByRole) {
-    igrpToast({
-      type: "error",
-      title: "Perfil tem permissões associadas, mas não foram carregadas.",
-    });
-    return <PermissionLoading />;
-  }
+  const loading = (departmentCode ? isLoading : false) || isLoadingUserRoles;
+  const err = error || errorUserRoles;
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal>
       <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive className="text-base">
-            Adicionar ou Remover Permissões de{" "}
-            <IGRPBadge>{role.name}</IGRPBadge>
+            Adicionar ou Remover Perfis de <IGRPBadge>{username}</IGRPBadge>
           </IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
-          <section className="space-y-10 max-w-full">
+          <section className="space-y-8 max-w-full">
+            {/* Department selector */}
+            <div className="space-y-2 px-3">
+              <label className="text-sm font-medium">Departamento</label>
+              <IGRPPopoverPrimitive
+                open={deptPopoverOpen}
+                onOpenChange={setDeptPopoverOpen}
+              >
+                <IGRPPopoverTriggerPrimitive asChild>
+                  <IGRPButtonPrimitive
+                    variant="outline"
+                    role="combobox"
+                    className={cn(
+                      "w-full justify-between",
+                      !departmentCode && "text-muted-foreground",
+                    )}
+                    disabled={
+                      deptsLoading || !!deptsError || (depts?.length ?? 0) === 0
+                    }
+                  >
+                    {deptsLoading
+                      ? "A carregar departamentos..."
+                      : departmentCode
+                        ? deptName(departmentCode)
+                        : deptsError
+                          ? "Erro ao carregar departamentos"
+                          : (depts?.length ?? 0) === 0
+                            ? "Sem departamentos"
+                            : "Selecionar departamento"}
+                    <IGRPIcon
+                      iconName="ChevronsUpDown"
+                      className="ml-2 h-4 w-4 opacity-50"
+                    />
+                  </IGRPButtonPrimitive>
+                </IGRPPopoverTriggerPrimitive>
+
+                <IGRPPopoverContentPrimitive className="w-[--radix-popover-trigger-width] p-0">
+                  <IGRPCommandPrimitive>
+                    <IGRPCommandInputPrimitive placeholder="Procurar departamento..." />
+                    <IGRPCommandListPrimitive>
+                      <IGRPCommandEmptyPrimitive>
+                        Nenhum departamento encontrado.
+                      </IGRPCommandEmptyPrimitive>
+                      <IGRPCommandGroupPrimitive>
+                        {depts?.map((dept) => (
+                          <IGRPCommandItemPrimitive
+                            key={dept.code}
+                            value={dept.code}
+                            onSelect={(v) => handleSelectDept(v)}
+                          >
+                            <IGRPIcon
+                              iconName="Check"
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                departmentCode === dept.code
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                            {dept.name}
+                          </IGRPCommandItemPrimitive>
+                        ))}
+                      </IGRPCommandGroupPrimitive>
+                    </IGRPCommandListPrimitive>
+                  </IGRPCommandPrimitive>
+                </IGRPPopoverContentPrimitive>
+              </IGRPPopoverPrimitive>
+            </div>
+
+            {/* Filter + Toolbar */}
             <div className="flex flex-col gap-4">
               <div className="relative px-3 py-4">
                 <IGRPInputPrimitive
@@ -327,19 +437,19 @@ export function RoleDetails({
                   placeholder="Filtar por nome..."
                   type="text"
                   aria-label="Filtar por nome"
+                  disabled={!departmentCode}
                 />
                 <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
                   <IGRPIcon iconName="ListFilter" />
                 </div>
                 {Boolean(table.getColumn("name")?.getFilterValue()) && (
                   <button
-                    className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                    className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px]"
                     aria-label="Clear filter"
                     onClick={() => {
                       table.getColumn("name")?.setFilterValue("");
                       inputRef.current?.focus();
                     }}
-                    type="button"
                   >
                     <IGRPIcon iconName="CircleX" />
                   </button>
@@ -348,14 +458,20 @@ export function RoleDetails({
 
               <div className="flex items-center justify-between gap-3 px-3">
                 <IGRPBadgePrimitive>
-                  {selectedRows.length} selecionado(s)
+                  {table.getSelectedRowModel().rows.length} selecionado(s)
                 </IGRPBadgePrimitive>
 
                 <div className="flex gap-2">
                   <IGRPButtonPrimitive
                     variant="default"
                     onClick={onSubmit}
-                    disabled={!hasChanges || isAdding || isRemoving}
+                    disabled={
+                      !departmentCode ||
+                      !(toAdd.length || toRemove.length) ||
+                      loading ||
+                      isAdding ||
+                      isRemoving
+                    }
                     size="sm"
                   >
                     Guardar
@@ -363,11 +479,13 @@ export function RoleDetails({
 
                   <IGRPButtonPrimitive
                     variant="outline"
-                    disabled={selectedRows.length === 0}
+                    disabled={table.getSelectedRowModel().rows.length === 0}
                     onClick={() => setRowSelection({})}
                     size="sm"
                     className={
-                      selectedRows.length === 0 ? "hidden" : "inline-flex"
+                      table.getSelectedRowModel().rows.length === 0
+                        ? "hidden"
+                        : "inline-flex"
                     }
                   >
                     Limpar seleção
@@ -375,11 +493,27 @@ export function RoleDetails({
                 </div>
               </div>
 
-              {isLoading || isLoadingPermissionsByRole ? (
-                <PermissionLoading />
+              {/* Table */}
+              {!departmentCode ? (
+                <div className="rounded-md border py-10 text-center text-muted-foreground mx-3">
+                  Selecione um departamento para listar os perfis.
+                </div>
+              ) : loading ? (
+                <div className="rounded-md border py-6 text-center mx-3">
+                  A carregar perfis...
+                </div>
+              ) : err ? (
+                <div className="rounded-md border py-6 mx-3">
+                  <p className="text-center">
+                    Ocorreu um erro a carregar perfis do utilizador.
+                  </p>
+                  <p className="text-center">
+                    {(err as any)?.message ?? String(err)}
+                  </p>
+                </div>
               ) : (
                 <>
-                  <div className="bg-background overflow-hidden rounded-md border">
+                  <div className="bg-background overflow-hidden rounded-md border mx-3">
                     <IGRPTablePrimitive className="table-fixed">
                       <IGRPTableHeaderPrimitive>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -436,7 +570,8 @@ export function RoleDetails({
                     </IGRPTablePrimitive>
                   </div>
 
-                  <div className="flex items-center justify-between gap-8">
+                  {/* Pagination */}
+                  <div className="flex items-center justify-between gap-8 px-3">
                     <div className="flex items-center justify-end gap-3">
                       <IGRPLabelPrimitive
                         htmlFor={`${id}-per-page`}

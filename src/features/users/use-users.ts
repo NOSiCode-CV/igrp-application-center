@@ -1,87 +1,101 @@
-import { useQuery } from '@tanstack/react-query';
-import { getCurrentUser, getUsers } from '@/actions/user';
-import { IGRPUserDTO } from '@igrp/platform-access-management-client-ts';
+import type {
+  CreateUserRequest,
+  IGRPUserDTO,
+  RoleDTO,
+  UserFilters,
+} from "@igrp/platform-access-management-client-ts";
+import {
+  useMutation,
+  useQueries,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  addRolesToUser,
+  getCurrentUser,
+  getUserRoles,
+  getUsers,
+  inviteUser,
+} from "@/actions/user";
 
-export const useUsers = () => {
+export const useUsers = (params?: UserFilters, ids?: number[]) => {
   return useQuery<IGRPUserDTO[]>({
-    queryKey: ['users'],
-    queryFn: () => getUsers(),
+    queryKey: ["users"],
+    queryFn: () => getUsers(params, ids),
   });
 };
 
 export const useCurrentUser = () => {
   return useQuery<IGRPUserDTO>({
-    queryKey: ['current-user'],
+    queryKey: ["current-user"],
     queryFn: async () => getCurrentUser(),
   });
 };
 
-// export const useDeleteUser = () => {
-//   const queryClient = useQueryClient();
+export const useInviteUser = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: async (username: string) => deleteUser(username),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ['users'] });
-//     },
-//   });
-// };
+  return useMutation({
+    mutationFn: async ({ user }: { user: CreateUserRequest }) =>
+      inviteUser(user),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      await queryClient.refetchQueries({ queryKey: ["users"] });
+    },
+  });
+};
 
-// export const useApps = () => {
-//   return useQuery<OptionsProps[]>({
-//     queryKey: ['user-apps'],
-//     queryFn: () => getApps(),
-//   });
-// };
+export const useAddUserRole = () => {
+  const queryClient = useQueryClient();
 
-// export const useRoles = (appCode?: string, departmentCode?: string) => {
-//   return useQuery<string[]>({
-//     queryKey: ['user-roles', appCode, departmentCode],
-//     queryFn: () => getRoles(appCode, departmentCode),
-//     enabled: !!appCode && !!departmentCode,
-//   });
-// };
+  return useMutation({
+    mutationFn: async ({
+      username,
+      roleNames,
+    }: {
+      username: string;
+      roleNames: string[];
+    }) => addRolesToUser(username, roleNames),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      await queryClient.refetchQueries({ queryKey: ["users"] });
+    },
+  });
+};
 
-// export function useInviteUser() {
-//   const queryClient = useQueryClient();
+export const useRemoveUserRole = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: (params: InviteUserProps) => inviteUser(params),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ['users'] });
-//     },
-//   });
-// }
+  return useMutation({
+    mutationFn: async ({
+      username,
+      roleNames,
+    }: {
+      username: string;
+      roleNames: string[];
+    }) => addRolesToUser(username, roleNames),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users", "userRoles"] });
+      await queryClient.refetchQueries({ queryKey: ["users", "userRoles"] });
+    },
+  });
+};
 
-// export function useRolesFromUser(id?: string) {
-//   return useQuery<string[]>({
-//     queryKey: ['user-roles-from', id],
-//     queryFn: () => getRolesFromUser(id),
-//     enabled: !!id,
-//   });
-// }
+// TODO: this is not working
+export const useUserRoles = (username?: string) => {
+  return useQuery<RoleDTO[]>({
+    queryKey: ["userRoles", username],
+    queryFn: () => getUserRoles(username ?? ""),
+    enabled: !!username,
+  });
+};
 
-// export function useUpdateUser() {
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: async (formData: FormData) => updateUserProfile(formData),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ['current-user', 'users'] });
-//     },
-//   });
-// }
-
-// export const useUserImage = () => {
-//   return useQuery<UserPropsImage>({
-//     queryKey: ['current-user-img'],
-//     queryFn: () => getUserImage(),
-//   });
-// };
-
-// export const useUserSignature = () => {
-//   return useQuery<UserPropsImage>({
-//     queryKey: ['current-user-sig'],
-//     queryFn: () => getUserSignature(),
-//   });
-// };
+export const useUserRolesMulti = (usernames: string[]) => {
+  return useQueries({
+    queries: usernames.map((u) => ({
+      queryKey: ["userRoles", u],
+      queryFn: () => getUserRoles(u),
+      enabled: !!u,
+    })),
+  });
+};
