@@ -1,8 +1,8 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { igrpSetAccessClientConfig } from "@igrp/framework-next";
 import { getServerSession, type Session } from "@igrp/framework-next-auth";
+import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth-options";
 
@@ -51,7 +51,7 @@ export async function getSession() {
   let session: Session | null;
   const isPreviewMode = process.env.IGRP_PREVIEW_MODE === "true";
 
-  if (isPreviewMode) return (session = null);
+  if (isPreviewMode) return null;
 
   try {
     session = await serverSession();

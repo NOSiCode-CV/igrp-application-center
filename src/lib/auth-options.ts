@@ -76,15 +76,15 @@ export const authOptions: NextAuthOptions = {
       // NextAuth sometimes creates URLs like: /basePath/basePath/ or /basePath/api/auth/basePath/
       if (basePath) {
         // Fix pattern 1: /basePath/api/auth/basePath/ -> /basePath/api/auth/
-        if (url.includes(basePath + "/api/auth" + basePath)) {
+        if (url.includes(`${basePath}/api/auth${basePath}`)) {
           url = url.replace(
-            basePath + "/api/auth" + basePath,
-            basePath + "/api/auth",
+            `${basePath}/api/auth${basePath}`,
+            `${basePath}/api/auth`,
           );
         }
         // Fix pattern 2: /basePath/basePath/ -> /basePath/
-        else if (url.includes(basePath + basePath + "/")) {
-          url = url.replace(basePath + basePath + "/", basePath + "/");
+        else if (url.includes(`${basePath + basePath}/`)) {
+          url = url.replace(`${basePath + basePath}/`, `${basePath}/`);
         }
         // Fix pattern 3: domain.com/basePath/basePath -> domain.com/basePath/
         else if (url.includes(basePath + basePath)) {
@@ -211,8 +211,8 @@ export async function requestRefreshOfAccessToken(token: JWT) {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
-        client_id: process.env.KEYCLOAK_CLIENT_ID!,
-        client_secret: process.env.KEYCLOAK_CLIENT_SECRET!,
+        client_id: process.env.KEYCLOAK_CLIENT_ID,
+        client_secret: process.env.KEYCLOAK_CLIENT_SECRET,
         grant_type: "refresh_token",
         refresh_token: String(token.refreshToken),
       }),
