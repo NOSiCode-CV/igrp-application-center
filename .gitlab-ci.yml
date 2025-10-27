@@ -11,9 +11,9 @@ variables:
   IMAGE_NAME: igrp-application-center
   IMAGE_NAME_FULL: "$DOCKER_REGISTRY/$DOCKER_PROJECT/$IMAGE_NAME"
   IMAGE_TAG: latest
-   # Default environment variables (can be overridden per environment)
-  NEXT_PUBLIC_BASE_PATH: "$NEXT_PUBLIC_BASE_PATH"
-  NEXT_PUBLIC_ALLOWED_DOMAINS: "$NEXT_PUBLIC_ALLOWED_DOMAINS"
+  # Default environment variables (can be overridden per environment)
+  NEXT_PUBLIC_BASE_PATH: ""
+  NEXT_PUBLIC_ALLOWED_DOMAINS: ""
   
 stages:
   - build
