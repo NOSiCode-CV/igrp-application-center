@@ -4,6 +4,11 @@ Variáveis de ambiente:
     -igrp.template.config.ts
 -NEXTAUTH_URL_INTERNAL - new variable to set the internal url of the app
 
+Added variables IGRP_APP_BASE_PATH and NEXT_PUBLIC_BASE_PATH
+.gitlab-ci.yml
+Dockerfile
+
+
 Changes File
     -src/middleware.ts
     -src/lib/auth-options.ts
@@ -11,5 +16,7 @@ Changes File
     -src/actions/igrp/layout.ts
     -src/app/layout.tsx
     -src/app/(igrp)/layout.tsx
+
 New File
     -lib/auth-helpers.ts
+
