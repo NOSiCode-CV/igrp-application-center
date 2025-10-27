@@ -6,6 +6,7 @@ import { IGRP_META_THEME_COLORS } from "@igrp/igrp-framework-react-design-system
 
 import { configLayout } from "@/actions/igrp/layout";
 import { createConfig } from "@/igrp.template.config";
+import { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
 
 export const metadata: Metadata = {
   title: "IGRP | Centro de Aplicações",
@@ -21,7 +22,7 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const layoutConfig = await configLayout();
-  const config = await createConfig(layoutConfig);
+  const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs);
 
   return <IGRPRootLayout config={config}>{children}</IGRPRootLayout>;
 }
