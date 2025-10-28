@@ -1,22 +1,20 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next';
 
-const basePath = process.env.IGRP_APP_BASE_PATH || "";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 // Função para parsear domains de variável de ambiente
 const getRemotePatterns = () => {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const patterns: any[] = [];
 
   // Adicionar domains extras via env (separados por vírgula)
   // Ex: NEXT_PUBLIC_ALLOWED_DOMAINS=example.com,cdn.example.com
-  const extraDomains =
-    process.env.NEXT_PUBLIC_ALLOWED_DOMAINS?.split(",") || [];
+  const extraDomains = process.env.NEXT_PUBLIC_ALLOWED_DOMAINS?.split(',') || [];
 
   extraDomains.forEach((domain) => {
     const trimmedDomain = domain.trim();
     if (trimmedDomain) {
       patterns.push({
-        protocol: "https" as const,
+        protocol: 'https' as const,
         hostname: trimmedDomain,
       });
     }
