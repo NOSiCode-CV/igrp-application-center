@@ -20,3 +20,5 @@ Changes File
 New File
     -lib/auth-helpers.ts
 
+Remove end-session-url route implementation from the auth API
+
