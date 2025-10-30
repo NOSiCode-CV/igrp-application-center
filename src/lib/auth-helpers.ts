@@ -1,6 +1,6 @@
-import { NextApiRequest } from 'next';
-import { getToken, JWT } from 'next-auth/jwt';
+import type { NextApiRequest } from 'next';
 import { cookies } from 'next/headers';
+import { getToken, type JWT } from 'next-auth/jwt';
 
 export async function getAccessToken() {
   const cookieStore = await cookies();

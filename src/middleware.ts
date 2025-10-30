@@ -1,11 +1,11 @@
+import { type NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { NextRequest, NextResponse } from 'next/server';
 
 const PUBLIC_PATHS = ['/login', '/logout', '/api/auth'];
 
 function isPublicPath(pathname: string) {
   return (
-    PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/')) ||
+    PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`)) ||
     pathname.startsWith('/api/auth/') ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/static/') ||
