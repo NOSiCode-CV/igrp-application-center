@@ -6,19 +6,21 @@ const NameSchema = z
   .trim()
   .min(3, "Nome deve ter mínimo 3 caracteres")
   .max(120);
+
 const UsernameSchema = z
   .string()
   .trim()
   .min(3, "Username deve ter mínimo 3 caracteres")
   .max(50);
-const EmailSchema = z.string().trim().email().max(254);
+
+const EmailSchema = z.email({ message: "Email inválido" }).max(254);
 
 export const UserSchema = z.object({
   id: z.number().int().positive().optional(),
   name: NameSchema,
   username: UsernameSchema,
   email: EmailSchema,
-  status: statusSchema.optional(),
+  status: statusSchema,
   picture: z.string().optional(),
   signature: z.string().optional(),
 });
@@ -38,6 +40,7 @@ export const FormUserSchema = z.object({
   username: UsernameSchema.optional(),
   email: EmailSchema,
 });
+
 export type FormUserArgs = z.infer<typeof FormUserSchema>;
 
 export const formSchema = z.object({

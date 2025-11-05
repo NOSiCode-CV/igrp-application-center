@@ -5,7 +5,7 @@ import type {
   RoleFilters,
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
-import type { PermissionArgs } from "@/features/permission/permissions-schemas";
+import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { getClientAccess } from "./access-client";
 
@@ -53,15 +53,15 @@ export async function updateRole(name: string, roleData: UpdateRoleRequest) {
   }
 }
 
-export async function deleteRole(name: string) {
-  const client = await getClientAccess();
 
+export async function deleteRole(code: string) {
+  const client = await getClientAccess();
   try {
-    const result = await client.roles.deleteRole(name);
-    return result.data;
+    await client.roles.deleteRole(code);
+    return { success: true };
   } catch (error) {
     console.error(
-      `[delete-role] Não foi possível eliminar perfil ${name}:`,
+      `[delete-role] Não foi possível eliminar perfil ${code}:`,
       error,
     );
     throw error;

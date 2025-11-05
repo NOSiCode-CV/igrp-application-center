@@ -12,7 +12,7 @@ export const menuTargetSchema = z.enum(["_self", "_blank"]);
 
 export const menuSchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(3, "Nome é obrigatório"),
+  name: z.string().min(5, "Nome deve ter no mínimo 5 caracteres"),
   code: z
     .string()
     .regex(/^[A-Z0-9_]+$/, "Permite letras maiúsculas, números e sublinhados."),

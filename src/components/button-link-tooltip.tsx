@@ -1,45 +1,35 @@
 import {
-  IGRPButtonPrimitive,
-  IGRPIcon,
   IGRPTooltipContentPrimitive,
   IGRPTooltipPrimitive,
   IGRPTooltipProviderPrimitive,
   IGRPTooltipTriggerPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
-import Link from "next/link";
 
-import { cn } from "@/lib/utils";
+import { ButtonLink } from "./button-link";
 
-interface ButtonLinkTooltipProps {
-  href: string;
-  icon: React.ComponentProps<typeof IGRPIcon>["iconName"];
-  label: string;
-  className?: string;
-}
-// TODO: instead to use ButtonPrimitive to use ButtonLink
+interface ButtonLinkTooltipProps
+  extends React.ComponentProps<typeof ButtonLink> {}
+
 export function ButtonLinkTooltip({
   href,
-  icon,
   label,
-  className,
+  size,
+  ...props
 }: ButtonLinkTooltipProps) {
   return (
     <IGRPTooltipProviderPrimitive>
       <IGRPTooltipPrimitive>
         <IGRPTooltipTriggerPrimitive asChild>
-          <IGRPButtonPrimitive
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50",
-              className,
-            )}
-            asChild
-          >
-            <Link href={href}>
-              <IGRPIcon iconName={icon} strokeWidth={2} />
-            </Link>
-          </IGRPButtonPrimitive>
+          <ButtonLink
+            href={href}
+            label={
+              size === "icon" || size === "icon-lg" || size === "icon-sm"
+                ? ""
+                : label
+            }
+            size={size}
+            {...props}
+          />
         </IGRPTooltipTriggerPrimitive>
         <IGRPTooltipContentPrimitive>
           <p>{label}</p>

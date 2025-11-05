@@ -1,4 +1,4 @@
-import { IGRPMenuItemArgs } from "@igrp/framework-next-types";
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 
 export const IGRP_DEFAULT_MENU_FOOTER: IGRPMenuItemArgs[] = [
   {

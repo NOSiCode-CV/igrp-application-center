@@ -60,7 +60,7 @@ import {
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
-import { showStatus, statusClass } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utils";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -124,7 +124,7 @@ const columns: ColumnDef<RoleArgs>[] = [
     accessorKey: "status",
     cell: ({ row }) => (
       <IGRPBadgePrimitive
-        className={cn(statusClass(row.getValue("status")), "capitalize")}
+        className={cn(getStatusColor(row.getValue("status")), "capitalize")}
       >
         {showStatus(row.getValue("status"))}
       </IGRPBadgePrimitive>
@@ -339,11 +339,14 @@ export function UserRolesDialog({
   const err = error || errorUserRoles;
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal>
+    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal={false}>
       <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive className="text-base">
-            Adicionar ou Remover Perfis de <IGRPBadge>{username}</IGRPBadge>
+            Adicionar ou Remover Perfis de{" "}
+            <IGRPBadge variant="solid" color="primary">
+              {username}
+            </IGRPBadge>
           </IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
 

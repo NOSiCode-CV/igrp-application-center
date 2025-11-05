@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { STATUS_OPTIONS } from "./constants";
 
@@ -6,9 +6,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function statusClass(status: string) {
+export function getStatusColor(status: string) {
   return status === "ACTIVE" ? "status-active" : "status-inactive";
 }
+
+export function statusClass(status: string): import("clsx").ClassValue {
+    if (!status) return "bg-gray-100 text-gray-800";
+
+    switch (status.toLowerCase().trim()) {
+      case "ACTIVE":
+        return "bg-emerald-100 text-emerald-800";
+      case "INATIVE":
+        return "bg-yellow-100 text-yellow-800";
+      case "DELETED":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  }
 
 export function getInitials(username: string) {
   const parts = username.split(/[\s._-]+/).filter(Boolean);

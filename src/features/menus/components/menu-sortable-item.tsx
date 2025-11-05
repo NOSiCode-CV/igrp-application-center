@@ -1,5 +1,3 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import type { IGRPMenuCRUDArgs } from "@igrp/framework-next-types";
 import {
   IGRPBadgePrimitive,
@@ -14,6 +12,7 @@ import {
 import { useState } from "react";
 import { cn, lowerCaseWithSpace } from "@/lib/utils";
 import { menuTypeSchema } from "../menu-schemas";
+import { useRoles } from "@/features/roles/use-roles";
 
 interface SortableItemProps {
   menuCode: string;
@@ -22,9 +21,11 @@ interface SortableItemProps {
   onView: (menu: IGRPMenuCRUDArgs) => void;
   onEdit: (menu: IGRPMenuCRUDArgs) => void;
   onDelete?: (code: string, name: string) => void;
+  onAddPermissions: (code: string) => void;
   depth?: number;
   isChild?: boolean;
   subMenus?: IGRPMenuCRUDArgs[];
+  //app: { code: string };
 }
 
 export function SortableItem({
@@ -34,31 +35,16 @@ export function SortableItem({
   onView,
   onEdit,
   onDelete,
+  onAddPermissions,
   depth = 0,
   isChild = false,
-  subMenus,
+  subMenus
 }: SortableItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: menuCode,
-      data: {
-        type: "menu-item",
-        parent: menu.parentCode,
-        isChild,
-      },
-    });
   const [isExpanded, setIsExpanded] = useState(true);
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
 
   return (
     <>
       <div
-        ref={setNodeRef}
-        style={style}
         className={cn(
           "flex items-center justify-between p-3 border-b last:border-0",
           isChild && "pl-6 bg-muted/20",
@@ -88,14 +74,12 @@ export function SortableItem({
           )}
 
           <IGRPButtonPrimitive
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 rounded-md hover:bg-muted"
+            className="p-1 rounded-md hover:bg-muted"
             variant="ghost"
             size="icon"
           >
             <IGRPIcon
-              iconName="GripVertical"
+              iconName="Menu"
               className="size-4 text-primary"
               strokeWidth={2}
             />
@@ -147,6 +131,7 @@ export function SortableItem({
                 />
                 Editar
               </IGRPDropdownMenuItemPrimitive>
+              
               <IGRPDropdownMenuSeparatorPrimitive />
               <IGRPDropdownMenuItemPrimitive
                 variant="destructive"
@@ -174,6 +159,7 @@ export function SortableItem({
               code={code}
               onEdit={onEdit}
               onDelete={onDelete}
+              onAddPermissions={onAddPermissions}
               depth={depth + 1}
               isChild={true}
               onView={onView}

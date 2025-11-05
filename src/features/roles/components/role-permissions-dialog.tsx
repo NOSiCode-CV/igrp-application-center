@@ -43,11 +43,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { PermissionLoading } from "@/features/permission/components/permission-loading";
-import type { PermissionArgs } from "@/features/permission/permissions-schemas";
-import { usePermissions } from "@/features/permission/use-permission";
+
+import { PermissionLoading } from "@/features/permissions/components/permission-loading";
+import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
+import { usePermissions } from "@/features/permissions/use-permission";
 import type { RoleArgs } from "@/features/roles/role-schemas";
-import { showStatus, statusClass } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utils";
 import {
   useAddPermissionsToRole,
   usePermissionsByRoleByName,
@@ -114,7 +115,7 @@ const columns: ColumnDef<PermissionArgs>[] = [
     accessorKey: "status",
     cell: ({ row }) => (
       <IGRPBadgePrimitive
-        className={cn(statusClass(row.getValue("status")), "capitalize")}
+        className={cn(getStatusColor(row.getValue("status")), "capitalize")}
       >
         {showStatus(row.getValue("status"))}
       </IGRPBadgePrimitive>
@@ -262,12 +263,15 @@ export function RoleDetails({
     }
 
     try {
-      // if (toAdd.length) {
-      //   await addPermissions({ name: role.name, permissionNames: toAdd });
-      // }
-      // if (toRemove.length) {
-      //   await removePermissions({ name: role.name, permissionNames: toRemove });
-      // }
+      if (toAdd.length) {
+        await addPermissions({
+          name: role.name,
+          permissionNames: toAdd as string[],
+        });
+      }
+      if (toRemove.length) {
+        await removePermissions({ name: role.name, permissionNames: toRemove });
+      }
 
       igrpToast({
         type: "success",
@@ -314,7 +318,7 @@ export function RoleDetails({
                   id={`${id}-input`}
                   ref={inputRef}
                   className={cn(
-                    "peer ps-9 border-foreground/30 focus-visible:ring-[2px] focus-visible:ring-foreground/30 focus-visible:border-foreground/30",
+                    "peer ps-9 border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:border-foreground/30",
                     Boolean(table.getColumn("name")?.getFilterValue()) &&
                       "pe-9",
                   )}
@@ -436,13 +440,13 @@ export function RoleDetails({
                     </IGRPTablePrimitive>
                   </div>
 
-                  <div className="flex items-center justify-between gap-8">
-                    <div className="flex items-center justify-end gap-3">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center grow justify-end gap-3">
                       <IGRPLabelPrimitive
                         htmlFor={`${id}-per-page`}
                         className="max-sm:sr-only"
                       >
-                        Rows per page
+                        Registos por página
                       </IGRPLabelPrimitive>
                       <IGRPSelectPrimitive
                         value={table.getState().pagination.pageSize.toString()}
@@ -469,7 +473,7 @@ export function RoleDetails({
                       </IGRPSelectPrimitive>
                     </div>
 
-                    <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
+                    <div className="text-muted-foreground flex text-sm whitespace-nowrap">
                       <p
                         className="text-muted-foreground text-sm whitespace-nowrap"
                         aria-live="polite"
@@ -489,7 +493,7 @@ export function RoleDetails({
                             table.getRowCount(),
                           )}
                         </span>{" "}
-                        of{" "}
+                        de{" "}
                         <span className="text-foreground">
                           {table.getRowCount().toString()}
                         </span>

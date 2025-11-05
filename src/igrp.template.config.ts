@@ -28,7 +28,7 @@ export function createConfig(
 
   return igrpBuildConfig({
     appCode: process.env.IGRP_APP_CODE || "",
-    previewMode: process.env.IGRP_PREVIEW_MODE === "true",
+    previewMode: process.env.IGRP_PREVIEW_MODE  === "true",
     layoutMockData: {
       getHeaderData: async () => ({
         user: user,
@@ -45,7 +45,7 @@ export function createConfig(
         defaultOpen: true,
         showAppSwitcher: true,
         apps: apps,
-        appCenterUrl: process.env.IGRP_APP_CENTER_URL || "",
+        appCenterUrl: process.env.NEXT_IGRP_APP_CENTER_URL || "",
       }),
     },
     font: fontVariables,

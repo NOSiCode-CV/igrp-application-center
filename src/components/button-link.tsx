@@ -14,8 +14,10 @@ export interface ButtonLinkProps extends React.ComponentProps<typeof Link> {
   label?: string;
   icon: IGRPIconProps["iconName"];
   iconClassName?: string;
+  customIcon?: React.ReactNode;
   variant?: IGRPBtnProps["variant"];
   btnClassName?: string;
+  size?: IGRPBtnProps["size"];
 }
 
 export function ButtonLink({
@@ -24,6 +26,7 @@ export function ButtonLink({
   iconClassName,
   variant,
   btnClassName,
+  size,
   ...props
 }: ButtonLinkProps) {
   return (
@@ -31,6 +34,7 @@ export function ButtonLink({
       asChild
       variant={variant || "default"}
       className={btnClassName}
+      size={size}
     >
       <Link {...props}>
         <LinkLoadingIndicator iconName={icon} iconClassName={iconClassName} />
@@ -43,11 +47,13 @@ export function ButtonLink({
 interface LinkLoadingIndicatorProps {
   iconName: IGRPIconProps["iconName"];
   iconClassName?: string;
+  //                      customIcon?: React.ReactNode;
 }
 
 function LinkLoadingIndicator({
   iconName,
   iconClassName,
+  // customIcon = undefined,
 }: LinkLoadingIndicatorProps) {
   const { pending } = useLinkStatus();
 

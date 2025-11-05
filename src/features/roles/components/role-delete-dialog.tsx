@@ -44,6 +44,7 @@ export function RoleDeleteDialog({
         duration: 4000,
       });
     } catch (error) {
+      console.log("Erro ao eliminar role:", error);
       igrpToast({
         type: "error",
         title: "Erro ao eliminar.",
@@ -101,7 +102,7 @@ export function RoleDeleteDialog({
             value={confirmation}
             onChange={(e) => setConfirmation(e.target.value)}
             placeholder={`Digite '${roleToDelete}' para confirmação`}
-            className="placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30"
+            className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
             required
           />
         </div>

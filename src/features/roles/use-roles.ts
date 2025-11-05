@@ -12,7 +12,7 @@ import {
   getRoles,
   updateRole,
 } from "@/actions/roles";
-import type { PermissionArgs } from "../permission/permissions-schemas";
+import type { PermissionArgs } from "../permissions/permissions-schemas";
 import type { RoleArgs } from "./role-schemas";
 
 type RoleFiltersArgs = RoleFilters & {
@@ -66,7 +66,7 @@ export const useDeleteRole = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (name: string) => deleteRole(name),
+    mutationFn: (code: string) => deleteRole(code),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["roles"] });
       await queryClient.refetchQueries({ queryKey: ["roles"] });

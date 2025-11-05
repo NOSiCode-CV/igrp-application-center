@@ -1,5 +1,5 @@
+import type { IGRPOptionsProps } from "@igrp/igrp-framework-react-design-system";
 import { statusSchema } from "@/schemas/global";
-import { IGRPOptionsProps } from "@igrp/igrp-framework-react-design-system";
 
 export const ROUTES = {
   APPLICATIONS: "/applications",
@@ -14,6 +14,6 @@ export const ROUTES = {
 export const STATUS_OPTIONS: IGRPOptionsProps[] = [
   { value: statusSchema.enum.ACTIVE, label: "Ativo" },
   { value: statusSchema.enum.INACTIVE, label: "Inativo" },
-];
+] as const;
 
 export const OPEN_TYPE_VIEW = "view";

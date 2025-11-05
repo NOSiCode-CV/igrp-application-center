@@ -12,7 +12,7 @@ import {
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { formatSlug } from "@/features/applications/app-utils";
 import { ROUTES } from "@/lib/constants";
-import { cn, showStatus, statusClass } from "@/lib/utils";
+import { cn, getStatusColor, showStatus } from "@/lib/utils";
 
 // TODO: see picture if exists
 
@@ -46,7 +46,9 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
       </IGRPCardContentPrimitive>
       <IGRPCardFooterPrimitive className="flex items-center justify-between px-4">
         <div className="flex items-center">
-          <IGRPBadgePrimitive className={cn(statusClass(status), "capitalize")}>
+          <IGRPBadgePrimitive
+            className={cn(getStatusColor(status), "capitalize")}
+          >
             {showStatus(status)}
           </IGRPBadgePrimitive>
         </div>
@@ -55,16 +57,25 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
             href={`${ROUTES.APPLICATIONS}/${code}`}
             icon="Eye"
             label="Ver"
+            size="icon"
+            variant="ghost"
+            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
           />
           <ButtonLinkTooltip
             href={`${ROUTES.APPLICATIONS}/${code}/${ROUTES.EDIT}`}
             icon="SquarePen"
             label="Editar"
+            size="icon"
+            variant="ghost"
+            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
           />
           <ButtonLinkTooltip
             href={href || ""}
             icon="ExternalLink"
             label="Abrir"
+            size="icon"
+            variant="ghost"
+            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
           />
         </div>
       </IGRPCardFooterPrimitive>

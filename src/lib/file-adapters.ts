@@ -1,6 +1,6 @@
 // lib/file-adapters.ts
 import { nanoid } from "nanoid";
-import type { FileWithPreview } from "@/schemas/file";
+import type { FileWithPreview } from "@/features/files/files-schema";
 
 export async function urlToFileWithPreview(
   url: string,

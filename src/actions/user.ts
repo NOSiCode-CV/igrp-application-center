@@ -2,6 +2,7 @@
 
 import type {
   CreateUserRequest,
+  UpdateUserRequest,
   UserFilters,
 } from "@igrp/platform-access-management-client-ts";
 import { getClientAccess } from "./access-client";
@@ -88,6 +89,18 @@ export async function getUserRoles(username: string) {
     return result.data;
   } catch (error) {
     console.error("[user-role] Erro ao obter perfís de utilizador:", error);
+    throw error;
+  }
+}
+
+export async function updateUser(username: string, user: UpdateUserRequest) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.updateUser(username, user);
+    return result.data;
+  } catch (error) {
+    console.error("[user-update] Erro ao editar utilizardor:", error);
     throw error;
   }
 }

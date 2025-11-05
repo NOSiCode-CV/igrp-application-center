@@ -21,6 +21,14 @@ export const usePermissions = (params: PermissionFilters) => {
   });
 };
 
+export function usePermissionsbyName(resourceName: any) {
+  return useQuery({
+    queryKey: ['permissions', resourceName],
+    queryFn: () => getPermissions(resourceName),
+    enabled: !!resourceName,
+  });
+}
+
 export const useCreatePermission = () => {
   const queryClient = useQueryClient();
 
