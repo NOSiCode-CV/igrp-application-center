@@ -1,5 +1,5 @@
 import { igrpBuildConfig } from "@igrp/framework-next";
-import {
+import type {
   IGRPConfigArgs,
   IGRPLayoutConfigArgs,
 } from "@igrp/framework-next-types";
@@ -28,7 +28,7 @@ export function createConfig(
 
   return igrpBuildConfig({
     appCode: process.env.IGRP_APP_CODE || "",
-    previewMode: process.env.IGRP_PREVIEW_MODE === "true" ? true : false,
+    previewMode: process.env.IGRP_PREVIEW_MODE === "true",
     layoutMockData: {
       getHeaderData: async () => ({
         user: user,

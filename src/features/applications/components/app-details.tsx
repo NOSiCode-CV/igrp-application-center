@@ -52,10 +52,10 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   const tabItems: IGRPTabItem[] = [
     {
-      label: 'Menus',
-      value: 'menus',
+      label: "Menus",
+      value: "menus",
       content: <MenuList app={app} />,
-    },    
+    },
   ];
 
   return (
