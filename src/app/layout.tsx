@@ -11,7 +11,7 @@ import { createConfig } from "@/igrp.template.config";
 
 export const metadata: Metadata = {
   title: "IGRP | Centro de Aplicações",
-  description: "IIGRP | Centro de Aplicações",
+  description: "IGRP | Centro de Aplicações",
   icons: { icon: "/igrp/logo-no-text.png" },
 };
 

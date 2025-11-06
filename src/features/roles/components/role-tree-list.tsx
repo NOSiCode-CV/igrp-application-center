@@ -42,7 +42,9 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
   const [openFormDialog, setOpenFormDialog] = useState(false);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<RoleArgs | undefined>(undefined);
+  const [selectedRole, setSelectedRole] = useState<RoleArgs | undefined>(
+    undefined,
+  );
   const [parentRoleName, setParentRoleName] = useState<string | null>(null);
   const [roleToDelete, setRoleToDelete] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
@@ -233,7 +235,11 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
           </div>
         ) : roleEmpty ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
-            <IGRPIcon iconName="UserLock" className="w-16 h-16 mb-4 opacity-30" strokeWidth={1.5} />
+            <IGRPIcon
+              iconName="UserLock"
+              className="w-16 h-16 mb-4 opacity-30"
+              strokeWidth={1.5}
+            />
             <p className="text-lg font-medium mb-2">Nenhum perfil criado</p>
             <p className="text-sm mb-4">Ainda não existem perfis criados.</p>
             {searchTerm ? (
@@ -267,8 +273,8 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
               </IGRPTableHeaderPrimitive>
               <IGRPTableBodyPrimitive>
                 {roleTree.map((role) => (
-                  <RoleTreeRow 
-                    key={role.id} 
+                  <RoleTreeRow
+                    key={role.id}
                     role={role}
                     handlePermissions={handlePermissions}
                     expandedRoles={expandedRoles}

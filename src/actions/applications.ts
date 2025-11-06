@@ -9,7 +9,9 @@ import type { ApplicationArgs } from "@/features/applications/app-schemas";
 import { getClientAccess } from "./access-client";
 import { MenuArgs } from "@/features/menus/menu-schemas";
 
-export async function getApplications(filters?: ApplicationFilters): Promise<ApplicationArgs[]> {
+export async function getApplications(
+  filters?: ApplicationFilters,
+): Promise<ApplicationArgs[]> {
   const client = await getClientAccess();
 
   try {
@@ -84,14 +86,14 @@ export async function getAvailableMenus(appCode: string) {
 }
 
 export async function addDepartmentsToApplication(
-  appCode: string, 
-  departmentIds: string[]
+  appCode: string,
+  departmentIds: string[],
 ) {
   const client = await getClientAccess();
   try {
     const result = await client.applications.addDepartmentsToApplication(
-      appCode, 
-      departmentIds
+      appCode,
+      departmentIds,
     );
     return result.data;
   } catch (error) {
@@ -104,14 +106,14 @@ export async function addDepartmentsToApplication(
 }
 
 export async function removeDepartmentsFromApplication(
-  appCode: string, 
-  departmentIds: string[]
+  appCode: string,
+  departmentIds: string[],
 ) {
   const client = await getClientAccess();
   try {
     const result = await client.applications.removeDepartmentsFromApplication(
-      appCode, 
-      departmentIds
+      appCode,
+      departmentIds,
     );
     return result.data;
   } catch (error) {

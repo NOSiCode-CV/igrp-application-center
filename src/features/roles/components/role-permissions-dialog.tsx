@@ -46,14 +46,18 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { PermissionLoading } from "@/features/permissions/components/permission-loading";
 import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
-import { usePermissions } from "@/features/permissions/use-permission";
+import {
+  usePermissions,
+  usePermissionsbyName,
+} from "@/features/permissions/use-permission";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { getStatusColor, showStatus } from "@/lib/utils";
 import {
   useAddPermissionsToRole,
-  usePermissionsByRoleByName,
+  usePermissionsByRoleByCode,
   useRemovePermissionsFromRole,
 } from "../use-roles";
+import { useResources } from "@/features/resources/use-resources";
 
 const multiColumnFilterFn: FilterFn<PermissionArgs> = (
   row,
@@ -174,17 +178,21 @@ export function RoleDetails({
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [resourceSelected, setResourceSelected] = useState<string>("");
+
+  const { data: resources, isLoading: resourcesLoading } = useResources();
 
   const {
     data: permissions,
     isLoading,
     error,
-  } = usePermissions({ departmentCode });
+  } = usePermissionsbyName({ resourceName: resourceSelected });
+
   const {
     data: permissionByRole,
     isLoading: isLoadingPermissionsByRole,
     error: errorPermissionsByRole,
-  } = usePermissionsByRoleByName(role.name);
+  } = usePermissionsByRoleByCode(role.code);
 
   const { mutateAsync: addPermissions, isPending: isAdding } =
     useAddPermissionsToRole();
@@ -313,7 +321,26 @@ export function RoleDetails({
         <div className="flex-1 min-w-0 overflow-x-hidden">
           <section className="space-y-10 max-w-full">
             <div className="flex flex-col gap-4">
-              <div className="relative px-3 py-4">
+              <IGRPSelectPrimitive
+                value={resourceSelected}
+                onValueChange={setResourceSelected}
+                disabled={resourcesLoading}
+              >
+                <IGRPSelectTriggerPrimitive className="w-[250px]">
+                  <IGRPSelectValuePrimitive placeholder="Selecione um recurso" />
+                </IGRPSelectTriggerPrimitive>
+                <IGRPSelectContentPrimitive>
+                  {resources?.map((resource) => (
+                    <IGRPSelectItemPrimitive
+                      key={resource.id}
+                      value={resource.name}
+                    >
+                      {resource.name}
+                    </IGRPSelectItemPrimitive>
+                  ))}
+                </IGRPSelectContentPrimitive>
+              </IGRPSelectPrimitive>
+              <div className="relative py-4">
                 <IGRPInputPrimitive
                   id={`${id}-input`}
                   ref={inputRef}
@@ -378,8 +405,18 @@ export function RoleDetails({
                   </IGRPButtonPrimitive>
                 </div>
               </div>
-
-              {isLoading || isLoadingPermissionsByRole ? (
+              {!resourceSelected ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <IGRPIcon
+                    iconName="ListFilter"
+                    className="size-12 mx-auto mb-4 opacity-50"
+                  />
+                  <p className="text-lg font-medium">Selecione um recurso</p>
+                  <p className="text-sm">
+                    Escolha um recurso para visualizar as permissões
+                  </p>
+                </div>
+              ) : isLoading || isLoadingPermissionsByRole ? (
                 <PermissionLoading />
               ) : (
                 <>

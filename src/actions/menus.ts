@@ -72,7 +72,10 @@ export async function removeRolesFromMenu(
 ): Promise<MenuEntryDTO> {
   const client = await getClientAccess();
   try {
-    const { data } = await client.menus.removeRolesFromMenu(menuCode, roleCodes);
+    const { data } = await client.menus.removeRolesFromMenu(
+      menuCode,
+      roleCodes,
+    );
     return data;
   } catch (error) {
     console.error(
@@ -89,10 +92,9 @@ export async function addRolesToMenu(
 ): Promise<MenuEntryDTO> {
   const client = await getClientAccess();
   try {
-    const {data} = await client.menus.addRolesToMenu(menuCode, roleCodes);
+    const { data } = await client.menus.addRolesToMenu(menuCode, roleCodes);
     return data;
-  }
-  catch (error) {
+  } catch (error) {
     console.error(
       "[menu-assign-roles] Não foi possível atribuir os papéis ao menu:",
       error,
@@ -107,7 +109,10 @@ export async function addDepartamentsToMenu(
 ): Promise<MenuEntryDTO> {
   const client = await getClientAccess();
   try {
-    const {data} = await client.menus.addDepartmentsToMenu(menuCode, departmentIds);
+    const { data } = await client.menus.addDepartmentsToMenu(
+      menuCode,
+      departmentIds,
+    );
     return data;
   } catch (error) {
     console.error(
@@ -124,7 +129,10 @@ export async function removeDepartamentsFromMenu(
 ): Promise<MenuEntryDTO> {
   const client = await getClientAccess();
   try {
-    const {data} = await client.menus.removeDepartmentsFromMenu(menuCode, departmentIds);
+    const { data } = await client.menus.removeDepartmentsFromMenu(
+      menuCode,
+      departmentIds,
+    );
     return data;
   } catch (error) {
     console.error(
@@ -139,7 +147,9 @@ export async function getMenusByDepartment(departmentCode: string) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.menus.getMenus({departmentCode: departmentCode});
+    const result = await client.menus.getMenus({
+      departmentCode: departmentCode,
+    });
     const menus = mapperListMenusCRUD(result);
     return menus;
   } catch (error) {

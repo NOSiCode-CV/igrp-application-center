@@ -1,5 +1,6 @@
 import type {
   IGRPMenuCRUDArgs,
+  IGRPMenuTypeCRUD,
   IGRPStatus,
   IGRPTargetType,
 } from "@igrp/framework-next-types";
@@ -12,7 +13,7 @@ const mapMenuCRUD = (menu: MenuEntryDTO): IGRPMenuCRUDArgs => ({
   id: menu.id as number,
   code: menu.code,
   name: menu.name,
-  type: menu.type,
+  type: menu.type as IGRPMenuTypeCRUD,
   position: menu.position,
   icon: menu.icon || undefined,
   status: menu.status as IGRPStatus,

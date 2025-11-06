@@ -38,7 +38,7 @@ export function SortableItem({
   onAddPermissions,
   depth = 0,
   isChild = false,
-  subMenus
+  subMenus,
 }: SortableItemProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -131,7 +131,7 @@ export function SortableItem({
                 />
                 Editar
               </IGRPDropdownMenuItemPrimitive>
-              
+
               <IGRPDropdownMenuSeparatorPrimitive />
               <IGRPDropdownMenuItemPrimitive
                 variant="destructive"

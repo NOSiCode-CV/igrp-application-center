@@ -59,13 +59,13 @@ export function MenuTreeRow({
     setMenuRoleAssignments((prev) => {
       const newMap = new Map(prev);
       const menuRoles = new Set(newMap.get(menuCode) || new Set<string>());
-      
+
       if (menuRoles.has(roleName)) {
         menuRoles.delete(roleName);
       } else {
         menuRoles.add(roleName);
       }
-      
+
       newMap.set(menuCode, menuRoles);
       return newMap;
     });
@@ -88,7 +88,7 @@ export function MenuTreeRow({
                   iconName="ChevronRight"
                   className={cn(
                     "w-4 h-4 transition-transform",
-                    isExpanded && "rotate-90"
+                    isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
                 />

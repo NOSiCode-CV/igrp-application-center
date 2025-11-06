@@ -10,11 +10,9 @@ export const roleSchema = z.object({
     .max(50, "Nome deve ter no máximo 50 caracteres")
     .regex(
       /^[A-Za-z0-9_-]+$/,
-      "Nome deve conter apenas letras, números, hífens e underscores"
+      "Nome deve conter apenas letras, números, hífens e underscores",
     ),
-  code: z
-      .string()
-      .min(5, "Código é obrigatório"),  
+  code: z.string().min(5, "Código é obrigatório"),
   description: z.string().optional().nullable(),
   departmentCode: z
     .string()

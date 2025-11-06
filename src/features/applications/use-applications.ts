@@ -1,5 +1,8 @@
 // import type { IGRPApplicationArgs } from "@igrp/framework-next-types";
-import type { ApplicationFilters, UpdateApplicationRequest } from "@igrp/platform-access-management-client-ts";
+import type {
+  ApplicationFilters,
+  UpdateApplicationRequest,
+} from "@igrp/platform-access-management-client-ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -56,21 +59,25 @@ export const useUpdateApplication = () => {
   });
 };
 
-
 export const useApplicationAvailableMenus = (code?: string) => {
   return useQuery<MenuArgs[]>({
     queryKey: ["application-available-menus", code],
     queryFn: () => getAvailableMenus(code!),
     enabled: !!code,
   });
-}
+};
 
 export const useAddDepartmentsToApplication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ appCode, departmentIds }: { appCode: string; departmentIds: string[] }) =>
-      addDepartmentsToApplication(appCode, departmentIds),
+    mutationFn: ({
+      appCode,
+      departmentIds,
+    }: {
+      appCode: string;
+      departmentIds: string[];
+    }) => addDepartmentsToApplication(appCode, departmentIds),
     onSuccess: (_, { appCode }) => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       queryClient.invalidateQueries({ queryKey: ["applications", appCode] });
@@ -82,8 +89,13 @@ export const useRemoveDepartmentsFromApplication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ appCode, departmentIds }: { appCode: string; departmentIds: string[] }) =>
-      removeDepartmentsFromApplication(appCode, departmentIds),
+    mutationFn: ({
+      appCode,
+      departmentIds,
+    }: {
+      appCode: string;
+      departmentIds: string[];
+    }) => removeDepartmentsFromApplication(appCode, departmentIds),
     onSuccess: (_, { appCode }) => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       queryClient.invalidateQueries({ queryKey: ["applications", appCode] });

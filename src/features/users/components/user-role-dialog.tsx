@@ -219,14 +219,14 @@ export function UserRolesDialog({
     [roles],
   );
   const userRolesInDept = useMemo(
-    () => (userRoles ?? []).filter((r) => roleNameSet.has(norm(r.name))),
+    () => (userRoles ?? []).filter((r) => roleNameSet.has(norm(r.name ?? ""))),
     [userRoles, roleNameSet],
   );
 
   // Preselect by user's existing roles IN THIS DEPARTMENT
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
-    return new Set<string>(list.map((r) => getRowKey(r)));
+    return new Set<string>(list.map((r) => getRowKey(r as any)));
   }, [userRolesInDept]);
 
   // Reset on close
@@ -280,7 +280,7 @@ export function UserRolesDialog({
   const existing = userRolesInDept ?? [];
 
   const { toAdd, toRemove } = useMemo(
-    () => diffRoles(selectedData, existing),
+    () => diffRoles(selectedData, existing as RoleArgs[]),
     [selectedData, existing],
   );
 

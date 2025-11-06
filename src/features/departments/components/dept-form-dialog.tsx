@@ -36,10 +36,7 @@ import {
   departmentSchema,
   normalizeDeptartment,
 } from "../dept-schemas";
-import {
-  useCreateDepartment,
-  useUpdateDepartment,
-} from "../use-departments";
+import { useCreateDepartment, useUpdateDepartment } from "../use-departments";
 
 interface DepartmentCreateDialogProps {
   open: boolean;
@@ -148,14 +145,14 @@ export function DepartmentFormDialog({
   const titleTxt = department
     ? "Editar Departamento"
     : isSubDepartment
-    ? "Criar Sub Departamento"
-    : "Criar Novo Departamento";
+      ? "Criar Sub Departamento"
+      : "Criar Novo Departamento";
 
   const descriptionTxt = department
     ? "Atualizar Departamento"
     : isSubDepartment
-    ? "Criar um novo sub departamento"
-    : "Criar um novo departamento";
+      ? "Criar um novo sub departamento"
+      : "Criar um novo departamento";
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal={false}>

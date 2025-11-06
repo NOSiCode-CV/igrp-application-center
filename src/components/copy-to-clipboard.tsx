@@ -72,7 +72,7 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
             >
               <IGRPIcon
                 iconName="Check"
-                className="stroke-primary size"
+                className="stroke-primary"
                 aria-hidden="true"
                 strokeWidth={2}
               />

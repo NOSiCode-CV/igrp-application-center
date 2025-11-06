@@ -1,4 +1,7 @@
-import type { MenuEntryDTO, UpdateDepartmentRequest } from "@igrp/platform-access-management-client-ts";
+import type {
+  MenuEntryDTO,
+  UpdateDepartmentRequest,
+} from "@igrp/platform-access-management-client-ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addApplicationsToDepartment,
@@ -91,13 +94,13 @@ export const useDepartmentAvailableApps = (code?: string) => {
     queryFn: () => getAvailableApplications(code!),
     enabled: !!code,
   });
-}
+};
 
 export const useAddApplicationsToDepartment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      code, 
+      code,
       appCodes,
     }: {
       code: string;
@@ -105,28 +108,28 @@ export const useAddApplicationsToDepartment = () => {
     }) => addApplicationsToDepartment(code, appCodes),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["departments"] });
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ["applications", { departmentCode: variables.code }] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["applications", { departmentCode: variables.code }],
       });
-    
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-available-apps", variables.code] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["department-available-apps", variables.code],
       });
-      
+
       await queryClient.refetchQueries({
         queryKey: ["departments"],
         exact: true,
       });
     },
   });
-}
+};
 
 export const useRemoveApplicationsFromDepartment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      code, 
+      code,
       appCodes,
     }: {
       code: string;
@@ -134,22 +137,22 @@ export const useRemoveApplicationsFromDepartment = () => {
     }) => removeApplicationsFromDepartment(code, appCodes),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["departments"] });
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ["applications", { departmentCode: variables.code }] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["applications", { departmentCode: variables.code }],
       });
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-available-apps", variables.code] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["department-available-apps", variables.code],
       });
-      
+
       await queryClient.refetchQueries({
         queryKey: ["departments"],
         exact: true,
       });
     },
   });
-}
+};
 
 export const useDepartmentAvailableMenus = (code?: string) => {
   return useQuery<MenuEntryDTO[]>({
@@ -157,13 +160,13 @@ export const useDepartmentAvailableMenus = (code?: string) => {
     queryFn: () => getAvailableMenus(code!),
     enabled: !!code,
   });
-}
+};
 
 export const useAddMenusToDepartment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      code, 
+      code,
       menuCodes,
     }: {
       code: string;
@@ -171,28 +174,28 @@ export const useAddMenusToDepartment = () => {
     }) => addMenusToDepartment(code, menuCodes),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["departments"] });
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-menus", variables.code] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["department-menus", variables.code],
       });
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-available-menus", variables.code] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["department-available-menus", variables.code],
       });
-      
+
       await queryClient.refetchQueries({
         queryKey: ["departments"],
         exact: true,
       });
     },
   });
-}
+};
 
 export const useRemoveMenusFromDepartment = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      code, 
+      code,
       menuCodes,
     }: {
       code: string;
@@ -200,19 +203,19 @@ export const useRemoveMenusFromDepartment = () => {
     }) => removeMenusFromDepartment(code, menuCodes),
     onSuccess: async (_, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["departments"] });
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-menus", variables.code] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["department-menus", variables.code],
       });
-      
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-available-menus", variables.code] 
+
+      await queryClient.invalidateQueries({
+        queryKey: ["department-available-menus", variables.code],
       });
-      
+
       await queryClient.refetchQueries({
         queryKey: ["departments"],
         exact: true,
       });
     },
   });
-}
+};

@@ -204,7 +204,9 @@ export function MenuFormDialog({
 
         setMenus((prevMenus) =>
           prevMenus.map((menu) =>
-            menu.code === code ? { ...menu, ...update } : menu,
+            menu.code === code
+              ? ({ ...menu, ...update } as IGRPMenuCRUDArgs)
+              : menu,
           ),
         );
 

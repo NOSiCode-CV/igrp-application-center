@@ -11,19 +11,19 @@ export function getStatusColor(status: string) {
 }
 
 export function statusClass(status: string): import("clsx").ClassValue {
-    if (!status) return "bg-gray-100 text-gray-800";
+  if (!status) return "bg-gray-100 text-gray-800";
 
-    switch (status.toLowerCase().trim()) {
-      case "ACTIVE":
-        return "bg-emerald-100 text-emerald-800";
-      case "INATIVE":
-        return "bg-yellow-100 text-yellow-800";
-      case "DELETED":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
+  switch (status.toLowerCase().trim()) {
+    case "ACTIVE":
+      return "bg-emerald-100 text-emerald-800";
+    case "INATIVE":
+      return "bg-yellow-100 text-yellow-800";
+    case "DELETED":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-gray-100 text-gray-800";
   }
+}
 
 export function getInitials(username: string) {
   const parts = username.split(/[\s._-]+/).filter(Boolean);

@@ -10,13 +10,15 @@ import {
   IGRPTooltipPrimitive,
   IGRPTooltipTriggerPrimitive,
   IGRPTooltipContentPrimitive,
-  IGRPTooltipProviderPrimitive
+  IGRPTooltipProviderPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 
 import React, { useState } from "react";
 import type { DepartmentArgs } from "../dept-schemas";
 
-type DepartmentWithChildren = DepartmentArgs & { children?: DepartmentWithChildren[] };
+type DepartmentWithChildren = DepartmentArgs & {
+  children?: DepartmentWithChildren[];
+};
 
 const DepartmentTreeItem = ({
   dept,
@@ -60,11 +62,11 @@ const DepartmentTreeItem = ({
           "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm border border-accent text-sm transition-all cursor-pointer",
           isSelected
             ? "bg-primary/10 text-primary font-medium"
-            : "text-foreground hover:bg-accent/50"
+            : "text-foreground hover:bg-accent/50",
         )}
         onClick={() => {
-            if (hasChildren) toggleExpand(dept.code);
-          }}
+          if (hasChildren) toggleExpand(dept.code);
+        }}
         style={{ paddingLeft: `${level * 1.5 + 0.75}rem` }}
       >
         <button className="w-4 h-4 flex items-center justify-center shrink-0">
@@ -73,7 +75,7 @@ const DepartmentTreeItem = ({
               iconName="ChevronRight"
               className={cn(
                 "w-3.5 h-3.5 transition-transform",
-                isExpanded && "rotate-90"
+                isExpanded && "rotate-90",
               )}
               strokeWidth={2}
             />
@@ -86,7 +88,11 @@ const DepartmentTreeItem = ({
           onClick={() => setSelectedDeptCode(dept.code)}
           className="flex items-center gap-2 flex-1 min-w-0"
         >
-          <IGRPIcon iconName={isExpanded ? "FolderOpen" : "Folder" } className="w-4 h-4 shrink-0" strokeWidth={2} />
+          <IGRPIcon
+            iconName={isExpanded ? "FolderOpen" : "Folder"}
+            className="w-4 h-4 shrink-0"
+            strokeWidth={2}
+          />
           <span className="flex-1 text-left truncate font-medium">
             {dept.name}
           </span>
@@ -102,7 +108,11 @@ const DepartmentTreeItem = ({
                   onClick={() => handleCreateSubDept(dept.code)}
                 >
                   <span className="sr-only">Criar Sub-departamento</span>
-                  <IGRPIcon iconName="Plus" className="w-4 h-4" strokeWidth={2} />
+                  <IGRPIcon
+                    iconName="Plus"
+                    className="w-4 h-4"
+                    strokeWidth={2}
+                  />
                 </IGRPButtonPrimitive>
               </IGRPTooltipTriggerPrimitive>
               <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
@@ -119,18 +129,32 @@ const DepartmentTreeItem = ({
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
               >
                 <span className="sr-only">Abrir menu</span>
-                <IGRPIcon iconName="EllipsisVertical" className="w-4 h-4" strokeWidth={2} />
+                <IGRPIcon
+                  iconName="EllipsisVertical"
+                  className="w-4 h-4"
+                  strokeWidth={2}
+                />
               </IGRPButtonPrimitive>
             </IGRPDropdownMenuTriggerPrimitive>
 
             <IGRPDropdownMenuContentPrimitive align="end">
               <IGRPDropdownMenuItemPrimitive onClick={() => handleEdit(dept)}>
-                <IGRPIcon iconName="Pencil" className="w-4 h-4 mr-2" strokeWidth={2} />
+                <IGRPIcon
+                  iconName="Pencil"
+                  className="w-4 h-4 mr-2"
+                  strokeWidth={2}
+                />
                 Editar
               </IGRPDropdownMenuItemPrimitive>
 
-              <IGRPDropdownMenuItemPrimitive onClick={() => handleCreateSubDept(dept.code)}>
-                <IGRPIcon iconName="FolderPlus" className="w-4 h-4 mr-2" strokeWidth={2} />
+              <IGRPDropdownMenuItemPrimitive
+                onClick={() => handleCreateSubDept(dept.code)}
+              >
+                <IGRPIcon
+                  iconName="FolderPlus"
+                  className="w-4 h-4 mr-2"
+                  strokeWidth={2}
+                />
                 Criar Sub-departamento
               </IGRPDropdownMenuItemPrimitive>
 
@@ -140,7 +164,11 @@ const DepartmentTreeItem = ({
                 variant="destructive"
                 onClick={() => handleDelete(dept.code, dept.name)}
               >
-                <IGRPIcon iconName="Trash" className="w-4 h-4 mr-2" strokeWidth={2} />
+                <IGRPIcon
+                  iconName="Trash"
+                  className="w-4 h-4 mr-2"
+                  strokeWidth={2}
+                />
                 Eliminar
               </IGRPDropdownMenuItemPrimitive>
             </IGRPDropdownMenuContentPrimitive>
@@ -148,8 +176,7 @@ const DepartmentTreeItem = ({
         </div>
       </div>
 
-      {
-        hasChildren &&
+      {hasChildren &&
         isExpanded &&
         dept.children?.map((child) => (
           <DepartmentTreeItem
@@ -164,8 +191,7 @@ const DepartmentTreeItem = ({
             expandedDepts={expandedDepts}
             setExpandedDepts={setExpandedDepts}
           />
-        ))
-      }
+        ))}
     </div>
   );
 };
