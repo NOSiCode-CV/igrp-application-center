@@ -12,7 +12,6 @@ export const DEPT_OPTIONS = (
     label: String(d.name),
   }));
 
-
 export const buildMenuTree = (menus: MenuEntryDTO[]): MenuWithChildren[] => {
   const map = new Map<string, MenuWithChildren>();
   const roots: MenuWithChildren[] = [];

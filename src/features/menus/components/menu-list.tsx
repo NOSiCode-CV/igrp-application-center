@@ -28,7 +28,6 @@ import { MenuFormDialog } from "./menu-form-dialog";
 import { SortableItem } from "./menu-sortable-item";
 
 export function MenuList({ app }: { app: IGRPApplicationArgs }) {
-
   const { code } = app;
   const {
     data: appMenus,
@@ -87,7 +86,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
   };
 
   const handlePermissions = (code: string) => {
-      setOpenFormDialog(false);
+    setOpenFormDialog(false);
   };
 
   const filteredMenus = menus.filter(

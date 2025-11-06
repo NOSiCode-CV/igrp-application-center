@@ -25,7 +25,11 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useEffect } from "react";
-import { useAddApplicationsToDepartment, useDepartmentAvailableApps, useRemoveApplicationsFromDepartment } from "../../use-departments";
+import {
+  useAddApplicationsToDepartment,
+  useDepartmentAvailableApps,
+  useRemoveApplicationsFromDepartment,
+} from "../../use-departments";
 import { useApplications } from "@/features/applications/use-applications";
 
 interface ManageAppsModalProps {
@@ -34,22 +38,26 @@ interface ManageAppsModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ManageAppsModal({ 
+export function ManageAppsModal({
   departmentCode,
   open,
-  onOpenChange
+  onOpenChange,
 }: ManageAppsModalProps) {
   const { igrpToast } = useIGRPToast();
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [appsToAdd, setAppsToAdd] = useState<Set<string>>(new Set());
   const [appsToRemove, setAppsToRemove] = useState<Set<string>>(new Set());
 
-  const { data: availableApps, isLoading: loadingAvailable } = useDepartmentAvailableApps(departmentCode || "");
-  const { data: assignedApps, isLoading: loadingAssigned } = useApplications({ departmentCode: departmentCode || "" });
+  const { data: availableApps, isLoading: loadingAvailable } =
+    useDepartmentAvailableApps(departmentCode || "");
+  const { data: assignedApps, isLoading: loadingAssigned } = useApplications({
+    departmentCode: departmentCode || "",
+  });
   const addApplicationsMutation = useAddApplicationsToDepartment();
   const removeApplicationsMutation = useRemoveApplicationsFromDepartment();
-  const saving = addApplicationsMutation.isPending || removeApplicationsMutation.isPending;
+  const saving =
+    addApplicationsMutation.isPending || removeApplicationsMutation.isPending;
   const loading = loadingAvailable || loadingAssigned;
 
   useEffect(() => {
@@ -60,11 +68,13 @@ export function ManageAppsModal({
     }
   }, [open]);
 
-  const assignedCodes = new Set(assignedApps?.map(app => app.code) || []);
-  const appsNotAssigned = (availableApps || []).filter(app => !assignedCodes.has(app.code));
+  const assignedCodes = new Set(assignedApps?.map((app) => app.code) || []);
+  const appsNotAssigned = (availableApps || []).filter(
+    (app) => !assignedCodes.has(app.code),
+  );
 
   const toggleAppToAdd = (appCode: string) => {
-    setAppsToAdd(prev => {
+    setAppsToAdd((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(appCode)) {
         newSet.delete(appCode);
@@ -76,7 +86,7 @@ export function ManageAppsModal({
   };
 
   const toggleAppToRemove = (appCode: string) => {
-    setAppsToRemove(prev => {
+    setAppsToRemove((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(appCode)) {
         newSet.delete(appCode);
@@ -96,7 +106,7 @@ export function ManageAppsModal({
           addApplicationsMutation.mutateAsync({
             code: departmentCode,
             appCodes: Array.from(appsToAdd),
-          })
+          }),
         );
       }
 
@@ -105,7 +115,7 @@ export function ManageAppsModal({
           removeApplicationsMutation.mutateAsync({
             code: departmentCode,
             appCodes: Array.from(appsToRemove),
-          })
+          }),
         );
       }
 
@@ -127,13 +137,13 @@ export function ManageAppsModal({
       });
 
       onOpenChange(false);
-      
     } catch (error) {
       console.error("Erro:", error);
       igrpToast({
         type: "error",
         title: "Erro ao salvar",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   };
@@ -163,7 +173,11 @@ export function ManageAppsModal({
       <IGRPDialogContentPrimitive className="max-w-3xl! max-h-[90vh] overflow-hidden flex flex-col">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive className="flex items-center gap-2">
-            <IGRPIcon iconName="AppWindow" className="w-5 h-5" strokeWidth={2} />
+            <IGRPIcon
+              iconName="AppWindow"
+              className="w-5 h-5"
+              strokeWidth={2}
+            />
             Gerenciar Aplicações
           </IGRPDialogTitlePrimitive>
           <IGRPDialogDescriptionPrimitive>
@@ -187,7 +201,10 @@ export function ManageAppsModal({
           </div>
         </div>
 
-        <IGRPTabsPrimitive defaultValue="add" className="flex-1 flex flex-col overflow-hidden">
+        <IGRPTabsPrimitive
+          defaultValue="add"
+          className="flex-1 flex flex-col overflow-hidden"
+        >
           <IGRPTabsListPrimitive className="grid w-full grid-cols-2">
             <IGRPTabsTriggerPrimitive value="add" className="gap-2">
               <IGRPIcon iconName="Plus" className="w-4 h-4" strokeWidth={2} />
@@ -199,7 +216,10 @@ export function ManageAppsModal({
             </IGRPTabsTriggerPrimitive>
           </IGRPTabsListPrimitive>
 
-          <IGRPTabsContentPrimitive value="add" className="flex-1 overflow-y-auto mt-4">
+          <IGRPTabsContentPrimitive
+            value="add"
+            className="flex-1 overflow-y-auto mt-4"
+          >
             {loading ? (
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -208,10 +228,16 @@ export function ManageAppsModal({
               </div>
             ) : filteredNotAssigned.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <IGRPIcon iconName="AppWindow" className="w-12 h-12 mb-3 opacity-30" strokeWidth={1.5} />
+                <IGRPIcon
+                  iconName="AppWindow"
+                  className="w-12 h-12 mb-3 opacity-30"
+                  strokeWidth={1.5}
+                />
                 <p className="font-medium">Nenhuma aplicação disponível</p>
                 <p className="text-sm">
-                  {searchTerm ? "Tente ajustar os termos de pesquisa" : "Todas as aplicações já estão adicionadas"}
+                  {searchTerm
+                    ? "Tente ajustar os termos de pesquisa"
+                    : "Todas as aplicações já estão adicionadas"}
                 </p>
               </div>
             ) : (
@@ -221,10 +247,12 @@ export function ManageAppsModal({
                     <IGRPTableRowPrimitive>
                       <IGRPTableHeadPrimitive className="w-12 text-center" />
                       <IGRPTableHeadPrimitive>Aplicação</IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="w-32">Tipo</IGRPTableHeadPrimitive>
+                      <IGRPTableHeadPrimitive className="w-32">
+                        Tipo
+                      </IGRPTableHeadPrimitive>
                     </IGRPTableRowPrimitive>
                   </IGRPTableHeaderPrimitive>
-                  
+
                   <IGRPTableBodyPrimitive>
                     {filteredNotAssigned.map((app) => (
                       <IGRPTableRowPrimitive key={app.code}>
@@ -236,16 +264,18 @@ export function ManageAppsModal({
                             />
                           </div>
                         </IGRPTableCellPrimitive>
-                        
+
                         <IGRPTableCellPrimitive>
                           <div className="flex items-start gap-3">
-                            <IGRPIcon 
+                            <IGRPIcon
                               iconName="AppWindow"
-                              className="w-5 h-5 text-primary shrink-0 mt-0.5" 
+                              className="w-5 h-5 text-primary shrink-0 mt-0.5"
                               strokeWidth={2}
                             />
                             <div className="min-w-0">
-                              <div className="font-medium truncate">{app.name}</div>
+                              <div className="font-medium truncate">
+                                {app.name}
+                              </div>
                               {app.description && (
                                 <div className="text-xs whitespace-pre-line! text-muted-foreground mt-1 line-clamp-2">
                                   {app.description}
@@ -254,9 +284,12 @@ export function ManageAppsModal({
                             </div>
                           </div>
                         </IGRPTableCellPrimitive>
-                        
+
                         <IGRPTableCellPrimitive>
-                          <IGRPBadgePrimitive variant="secondary" className="text-xs">
+                          <IGRPBadgePrimitive
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {app.type}
                           </IGRPBadgePrimitive>
                         </IGRPTableCellPrimitive>
@@ -268,7 +301,10 @@ export function ManageAppsModal({
             )}
           </IGRPTabsContentPrimitive>
 
-          <IGRPTabsContentPrimitive value="remove" className="flex-1 overflow-y-auto mt-4">
+          <IGRPTabsContentPrimitive
+            value="remove"
+            className="flex-1 overflow-y-auto mt-4"
+          >
             {loading ? (
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -277,10 +313,16 @@ export function ManageAppsModal({
               </div>
             ) : filteredAssigned.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <IGRPIcon iconName="AppWindow" className="w-12 h-12 mb-3 opacity-30" strokeWidth={1.5} />
+                <IGRPIcon
+                  iconName="AppWindow"
+                  className="w-12 h-12 mb-3 opacity-30"
+                  strokeWidth={1.5}
+                />
                 <p className="font-medium">Nenhuma aplicação adicionada</p>
                 <p className="text-sm">
-                  {searchTerm ? "Tente ajustar os termos de pesquisa" : "Não há aplicações para remover"}
+                  {searchTerm
+                    ? "Tente ajustar os termos de pesquisa"
+                    : "Não há aplicações para remover"}
                 </p>
               </div>
             ) : (
@@ -290,10 +332,12 @@ export function ManageAppsModal({
                     <IGRPTableRowPrimitive>
                       <IGRPTableHeadPrimitive className="w-12 text-center" />
                       <IGRPTableHeadPrimitive>Aplicação</IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="w-32">Tipo</IGRPTableHeadPrimitive>
+                      <IGRPTableHeadPrimitive className="w-32">
+                        Tipo
+                      </IGRPTableHeadPrimitive>
                     </IGRPTableRowPrimitive>
                   </IGRPTableHeaderPrimitive>
-                  
+
                   <IGRPTableBodyPrimitive>
                     {filteredAssigned.map((app) => (
                       <IGRPTableRowPrimitive key={app.code}>
@@ -301,20 +345,24 @@ export function ManageAppsModal({
                           <div className="flex items-center justify-center">
                             <IGRPCheckboxPrimitive
                               checked={appsToRemove.has(app.code)}
-                              onCheckedChange={() => toggleAppToRemove(app.code)}
+                              onCheckedChange={() =>
+                                toggleAppToRemove(app.code)
+                              }
                             />
                           </div>
                         </IGRPTableCellPrimitive>
-                        
+
                         <IGRPTableCellPrimitive>
                           <div className="flex items-start gap-3">
-                            <IGRPIcon 
+                            <IGRPIcon
                               iconName="AppWindow"
-                              className="w-5 h-5 text-primary shrink-0 mt-0.5" 
+                              className="w-5 h-5 text-primary shrink-0 mt-0.5"
                               strokeWidth={2}
                             />
                             <div className="min-w-0">
-                              <div className="font-medium truncate">{app.name}</div>
+                              <div className="font-medium truncate">
+                                {app.name}
+                              </div>
                               {app.description && (
                                 <div className="text-xs whitespace-pre-line! text-muted-foreground mt-1 line-clamp-2">
                                   {app.description}
@@ -323,9 +371,12 @@ export function ManageAppsModal({
                             </div>
                           </div>
                         </IGRPTableCellPrimitive>
-                        
+
                         <IGRPTableCellPrimitive>
-                          <IGRPBadgePrimitive variant="secondary" className="text-xs">
+                          <IGRPBadgePrimitive
+                            variant="secondary"
+                            className="text-xs"
+                          >
                             {app.type}
                           </IGRPBadgePrimitive>
                         </IGRPTableCellPrimitive>
@@ -345,7 +396,7 @@ export function ManageAppsModal({
             {appsToRemove.size > 0 && `${appsToRemove.size} para remover`}
             {!hasChanges && "Nenhuma alteração"}
           </div>
-          
+
           <div className="flex gap-2">
             <IGRPButtonPrimitive
               variant="outline"
@@ -354,7 +405,7 @@ export function ManageAppsModal({
             >
               Cancelar
             </IGRPButtonPrimitive>
-            
+
             <IGRPButtonPrimitive
               onClick={handleSave}
               disabled={saving || !hasChanges}
@@ -362,12 +413,20 @@ export function ManageAppsModal({
             >
               {saving ? (
                 <>
-                  <IGRPIcon iconName="Loader" className="w-4 h-4 animate-spin" strokeWidth={2} />
+                  <IGRPIcon
+                    iconName="Loader"
+                    className="w-4 h-4 animate-spin"
+                    strokeWidth={2}
+                  />
                   Salvando...
                 </>
               ) : (
                 <>
-                  <IGRPIcon iconName="Check" className="w-4 h-4" strokeWidth={2} />
+                  <IGRPIcon
+                    iconName="Check"
+                    className="w-4 h-4"
+                    strokeWidth={2}
+                  />
                   Salvar Alterações
                 </>
               )}

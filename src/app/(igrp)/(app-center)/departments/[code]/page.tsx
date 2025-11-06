@@ -8,7 +8,6 @@ export default async function DepartmentDetailsPage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
-  console.log({ code })
   // return <DepartmentDetails code={code} />;
-  return null
+  return null;
 }

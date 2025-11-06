@@ -49,7 +49,8 @@ export function DepartmentListTree() {
   const [showAppsModal, setShowAppsModal] = useState(false);
 
   const { data: departments, isLoading, error } = useDepartments();
-  const { data: selectedDepartment, isLoading: isLoadSelectedDep } = useDepartmentByCode(selectedDeptCode || "");
+  const { data: selectedDepartment, isLoading: isLoadSelectedDep } =
+    useDepartmentByCode(selectedDeptCode || "");
 
   const buildTree = (depts: DepartmentArgs[]): DepartmentWithChildren[] => {
     const map = new Map<string, DepartmentWithChildren>();
@@ -107,7 +108,7 @@ export function DepartmentListTree() {
 
   const filterTree = (
     depts: DepartmentWithChildren[],
-    term: string
+    term: string,
   ): DepartmentWithChildren[] => {
     if (!term) return depts;
 
@@ -142,42 +143,32 @@ export function DepartmentListTree() {
     {
       label: "Perfis (Roles)",
       value: "roles",
-      content: (
-        <RolesListTree departmentCode={selectedDeptCode ?? ""} />
-      ),
+      content: <RolesListTree departmentCode={selectedDeptCode ?? ""} />,
     },
     {
       label: "Permissões",
       value: "permissions",
-      content: (
-        <PermissionList
-          departmentCode={selectedDeptCode ?? ""}
-        />
-      ),
+      content: <PermissionList departmentCode={selectedDeptCode ?? ""} />,
     },
     {
       label: "Menus",
       value: "menus",
-      content: (
-        <MenuPermissions
-          departmentCode={selectedDeptCode ?? ""}
-        />
-      ),
-    }
+      content: <MenuPermissions departmentCode={selectedDeptCode ?? ""} />,
+    },
   ];
 
   return (
     <div className="flex flex-col h-screen  overflow-hidden">
-
       <div className="flex h-screen">
         <div className="w-80 flex border-r pr-2 border-accent flex-col">
-
           <div className="flex flex-col min-w-0">
             <h2 className="text-2xl font-bold tracking-tight truncate">
               Gestão de Departamentos
             </h2>
 
-            <p className="text-muted-foreground text-sm mb-4">Ver e gerir todos os departamentos do sistema.</p>
+            <p className="text-muted-foreground text-sm mb-4">
+              Ver e gerir todos os departamentos do sistema.
+            </p>
 
             <ButtonLink
               onClick={handleOpenCreate}
@@ -223,9 +214,9 @@ export function DepartmentListTree() {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {isLoadSelectedDep &&
+          {isLoadSelectedDep && (
             <AppCenterLoading descrption="Carregando departamentos..." />
-          }
+          )}
           {!isLoadSelectedDep && selectedDepartment ? (
             <div className="container mx-auto px-6">
               <IGRPBreadcrumbPrimitive>
@@ -245,11 +236,9 @@ export function DepartmentListTree() {
                   <IGRPBreadcrumbItemPrimitive className="text-xs">
                     {selectedDepartment.name}
                   </IGRPBreadcrumbItemPrimitive>
-
                 </IGRPBreadcrumbListPrimitive>
               </IGRPBreadcrumbPrimitive>
               <div className="flex items-start justify-between mb-6">
-
                 <div>
                   <div className="flex items-center gap-3">
                     <h1 className="text-2xl mt-2 font-bold">
@@ -275,7 +264,7 @@ export function DepartmentListTree() {
                           "px-2.5 py-1 rounded-md text-xs font-medium",
                           selectedDepartment.status === "ACTIVE"
                             ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            : "bg-red-100 text-red-700",
                         )}
                       >
                         {selectedDepartment.status === "ACTIVE"
@@ -285,10 +274,7 @@ export function DepartmentListTree() {
                     )}
 
                     {!selectedDepartment?.parent_code && (
-                      <IGRPBadge
-                        variant="outline"
-                        color="primary"
-                      >
+                      <IGRPBadge variant="outline" color="primary">
                         Departamento Pai
                       </IGRPBadge>
                     )}
@@ -300,7 +286,9 @@ export function DepartmentListTree() {
                     <CopyToClipboard value={selectedDepartment?.code || ""} />
                   </div>
 
-                  <p className="text-muted-foreground text-sm">{selectedDepartment?.description || "Sem descrição."}</p>
+                  <p className="text-muted-foreground text-sm">
+                    {selectedDepartment?.description || "Sem descrição."}
+                  </p>
                 </div>
 
                 <div className="flex flex-row justify-between gap-2">
@@ -309,7 +297,11 @@ export function DepartmentListTree() {
                     variant="outline"
                     className="cursor-pointer"
                   >
-                    <IGRPIcon iconName="Pencil" className="w-4 h-4" strokeWidth={2} />
+                    <IGRPIcon
+                      iconName="Pencil"
+                      className="w-4 h-4"
+                      strokeWidth={2}
+                    />
                     Editar
                   </IGRPButtonPrimitive>
 
@@ -318,7 +310,11 @@ export function DepartmentListTree() {
                     onClick={() => setShowAppsModal(true)}
                     className="gap-2 cursor-pointer"
                   >
-                    <IGRPIcon iconName="AppWindow" className="w-4 h-4" strokeWidth={2} />
+                    <IGRPIcon
+                      iconName="AppWindow"
+                      className="w-4 h-4"
+                      strokeWidth={2}
+                    />
                     Gerenciar Apps
                   </IGRPButtonPrimitive>
                 </div>
@@ -373,7 +369,6 @@ export function DepartmentListTree() {
         open={showAppsModal}
         onOpenChange={setShowAppsModal}
       />
-
     </div>
   );
 }

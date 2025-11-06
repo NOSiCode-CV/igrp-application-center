@@ -23,18 +23,17 @@ export function RoleTreeRow({
   handleNewSubRole,
   handleEdit,
   handleDelete,
-  toggleExpand
+  toggleExpand,
 }: {
   role: RoleWithChildren;
   level?: number;
-    handlePermissions: (role: RoleWithChildren) => void;
-    expandedRoles: Set<string>;
-    handleNewSubRole: (role: RoleWithChildren) => void;
-    handleEdit: (role: RoleWithChildren) => void;
-    handleDelete: (roleCode: string) => void;
-    toggleExpand: (roleCode: string) => void;
+  handlePermissions: (role: RoleWithChildren) => void;
+  expandedRoles: Set<string>;
+  handleNewSubRole: (role: RoleWithChildren) => void;
+  handleEdit: (role: RoleWithChildren) => void;
+  handleDelete: (roleCode: string) => void;
+  toggleExpand: (roleCode: string) => void;
 }) {
-    
   const hasChildren = role.children && role.children.length > 0;
   const isExpanded = expandedRoles.has(role.code);
 
@@ -55,7 +54,7 @@ export function RoleTreeRow({
                   iconName="ChevronRight"
                   className={cn(
                     "w-4 h-4 transition-transform",
-                    isExpanded && "rotate-90"
+                    isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
                 />
@@ -150,9 +149,9 @@ export function RoleTreeRow({
       {hasChildren &&
         isExpanded &&
         role.children?.map((child) => (
-          <RoleTreeRow 
-            key={child.code} 
-            role={child} 
+          <RoleTreeRow
+            key={child.code}
+            role={child}
             level={level + 1}
             handlePermissions={handlePermissions}
             expandedRoles={expandedRoles}

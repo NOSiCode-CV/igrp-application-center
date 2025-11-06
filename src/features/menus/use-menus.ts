@@ -5,7 +5,17 @@ import type {
 } from "@igrp/platform-access-management-client-ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { addDepartamentsToMenu, addRolesToMenu, createMenu, deleteMenu, getMenus, getMenusByDepartment, removeDepartamentsFromMenu, removeRolesFromMenu, updateMenu } from "@/actions/menus";
+import {
+  addDepartamentsToMenu,
+  addRolesToMenu,
+  createMenu,
+  deleteMenu,
+  getMenus,
+  getMenusByDepartment,
+  removeDepartamentsFromMenu,
+  removeRolesFromMenu,
+  updateMenu,
+} from "@/actions/menus";
 
 export const useMenus = (params?: MenuFilters) => {
   const key = ["menus", params?.applicationCode ?? null] as const;
@@ -79,16 +89,17 @@ export function useAddRolesToMenu() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ menuCode, roleCodes }: any) => addRolesToMenu(menuCode, roleCodes),
+    mutationFn: ({ menuCode, roleCodes }: any) =>
+      addRolesToMenu(menuCode, roleCodes),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ["department-menus"] 
+      queryClient.invalidateQueries({
+        queryKey: ["department-menus"],
       });
-      queryClient.invalidateQueries({ 
-        queryKey: ["app-menus"] 
+      queryClient.invalidateQueries({
+        queryKey: ["app-menus"],
       });
-      queryClient.invalidateQueries({ 
-        queryKey: ["menu", variables.menuCode] 
+      queryClient.invalidateQueries({
+        queryKey: ["menu", variables.menuCode],
       });
     },
     onError: (error) => {
@@ -104,14 +115,14 @@ export function useRemoveRolesFromMenu() {
     mutationFn: ({ menuCode, roleCodes }: any) =>
       removeRolesFromMenu(menuCode, roleCodes),
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ["department-menus"] 
+      queryClient.invalidateQueries({
+        queryKey: ["department-menus"],
       });
-      queryClient.invalidateQueries({ 
-        queryKey: ["app-menus"] 
+      queryClient.invalidateQueries({
+        queryKey: ["app-menus"],
       });
-      queryClient.invalidateQueries({ 
-        queryKey: ["menu", variables.menuCode] 
+      queryClient.invalidateQueries({
+        queryKey: ["menu", variables.menuCode],
       });
     },
     onError: (error) => {
@@ -124,8 +135,13 @@ export const useAddDepartmentsToMenu = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ menuCode, departmentIds }: { menuCode: string; departmentIds: string[] }) =>
-      addDepartamentsToMenu(menuCode, departmentIds),
+    mutationFn: ({
+      menuCode,
+      departmentIds,
+    }: {
+      menuCode: string;
+      departmentIds: string[];
+    }) => addDepartamentsToMenu(menuCode, departmentIds),
     onSuccess: (_, { menuCode }) => {
       queryClient.invalidateQueries({ queryKey: ["menus"] });
       queryClient.invalidateQueries({ queryKey: ["menus", menuCode] });
@@ -137,8 +153,13 @@ export const useRemoveDepartmentsFromMenu = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ menuCode, departmentIds }: { menuCode: string; departmentIds: string[] }) =>
-      removeDepartamentsFromMenu(menuCode, departmentIds),
+    mutationFn: ({
+      menuCode,
+      departmentIds,
+    }: {
+      menuCode: string;
+      departmentIds: string[];
+    }) => removeDepartamentsFromMenu(menuCode, departmentIds),
     onSuccess: (_, { menuCode }) => {
       queryClient.invalidateQueries({ queryKey: ["menus"] });
       queryClient.invalidateQueries({ queryKey: ["menus", menuCode] });

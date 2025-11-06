@@ -20,7 +20,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@igrp/template-config": ["./src/igrp.template.config.ts"]
-    },    
+    },
+    "incremental": true
   },
   "include": [
     "next-env.d.ts",

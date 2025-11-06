@@ -110,7 +110,10 @@ export async function addApplicationsToDepartment(
 ) {
   const client = await getClientAccess();
   try {
-    const result = await client.departments.addApplicationsToDepartment(code, appCodes);
+    const result = await client.departments.addApplicationsToDepartment(
+      code,
+      appCodes,
+    );
     return result.data;
   } catch (error) {
     console.error(
@@ -127,7 +130,10 @@ export async function removeApplicationsFromDepartment(
 ) {
   const client = await getClientAccess();
   try {
-    const result = await client.departments.removeApplicationsToDepartment(code, appCodes);
+    const result = await client.departments.removeApplicationsToDepartment(
+      code,
+      appCodes,
+    );
     return result.data;
   } catch (error) {
     console.error(
@@ -156,7 +162,10 @@ export async function getAvailableMenus(code: string) {
 export async function addMenusToDepartment(code: string, menuCodes: string[]) {
   const client = await getClientAccess();
   try {
-    const result = await client.departments.addMenusToDepartment(code, menuCodes);
+    const result = await client.departments.addMenusToDepartment(
+      code,
+      menuCodes,
+    );
     return result.data;
   } catch (error) {
     console.error(
@@ -167,10 +176,16 @@ export async function addMenusToDepartment(code: string, menuCodes: string[]) {
   }
 }
 
-export async function removeMenusFromDepartment(code: string, menuCodes: string[]) {
+export async function removeMenusFromDepartment(
+  code: string,
+  menuCodes: string[],
+) {
   const client = await getClientAccess();
   try {
-    const result = await client.departments.removeMenusToDepartment(code, menuCodes);
+    const result = await client.departments.removeMenusToDepartment(
+      code,
+      menuCodes,
+    );
     return result.data;
   } catch (error) {
     console.error(

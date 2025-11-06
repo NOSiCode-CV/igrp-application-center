@@ -152,8 +152,8 @@ export function RoleFormDialog({
   const titleText = isEdit
     ? "Editar Perfil"
     : isSubRole
-    ? "Criar Sub Perfil"
-    : "Adicionar Perfil";
+      ? "Criar Sub Perfil"
+      : "Adicionar Perfil";
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal>
@@ -183,7 +183,6 @@ export function RoleFormDialog({
                       onChange={setDefaultFromName}
                       disabled={isLoading}
                       className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
-                      
                     />
                   </IGRPFormControlPrimitive>
                   <IGRPFormMessagePrimitive />
@@ -244,9 +243,7 @@ export function RoleFormDialog({
                 name="parentCode"
                 render={({ field }) => (
                   <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>
-                      Perfil Pai
-                    </IGRPFormLabelPrimitive>
+                    <IGRPFormLabelPrimitive>Perfil Pai</IGRPFormLabelPrimitive>
                     <IGRPFormControlPrimitive>
                       <IGRPInputPrimitive
                         {...field}

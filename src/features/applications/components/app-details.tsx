@@ -22,7 +22,7 @@ import { MenuList } from "@/features/menus/components/menu-list";
 import { ROUTES } from "@/lib/constants";
 import { formatDate, getStatusColor } from "@/lib/utils";
 
-// TOD: implement upload app image
+// TODO: implement upload app image
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { data: app, isLoading, error } = useApplicationByCode(code);

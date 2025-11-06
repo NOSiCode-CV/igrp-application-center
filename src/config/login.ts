@@ -1,6 +1,6 @@
 export const loginConfig = {
   texts: {
-    welcome: "Bem-vindo ao IGRP",
+    welcome: "Benvindo ao IGRP",
     description: "Introduza as suas credenciais para aceder.",
     loginButton: "Login Now",
     copyright: "Desenvolvido por",
