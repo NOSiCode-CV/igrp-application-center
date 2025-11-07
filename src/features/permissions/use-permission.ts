@@ -16,10 +16,19 @@ import type { PermissionArgs } from "./permissions-schemas";
 
 export const usePermissions = (params: PermissionFilters) => {
   return useQuery<PermissionArgs[]>({
-    queryKey: ["permissions"],
+    queryKey: ["permissions", params],
     queryFn: () => getPermissions(params),
+    enabled: !!params?.resourceName,
   });
 };
+
+export function usePermissionsbyName(params: PermissionFilters) {
+  return useQuery({
+    queryKey: ["permissions", params],
+    queryFn: () => getPermissions(params),
+    enabled: !!params.resourceName,
+  });
+}
 
 export const useCreatePermission = () => {
   const queryClient = useQueryClient();

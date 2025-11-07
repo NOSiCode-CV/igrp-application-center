@@ -5,7 +5,7 @@ import type {
   PermissionFilters,
   UpdatePermissionRequest,
 } from "@igrp/platform-access-management-client-ts";
-import type { PermissionArgs } from "@/features/permission/permissions-schemas";
+import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { getClientAccess } from "./access-client";
 

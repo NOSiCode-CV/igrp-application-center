@@ -5,7 +5,7 @@ import type {
   RoleFilters,
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
-import type { PermissionArgs } from "@/features/permission/permissions-schemas";
+import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { getClientAccess } from "./access-client";
 
@@ -53,26 +53,25 @@ export async function updateRole(name: string, roleData: UpdateRoleRequest) {
   }
 }
 
-export async function deleteRole(name: string) {
+export async function deleteRole(code: string) {
   const client = await getClientAccess();
-
   try {
-    const result = await client.roles.deleteRole(name);
-    return result.data;
+    await client.roles.deleteRole(code);
+    return { success: true };
   } catch (error) {
     console.error(
-      `[delete-role] Não foi possível eliminar perfil ${name}:`,
+      `[delete-role] Não foi possível eliminar perfil ${code}:`,
       error,
     );
     throw error;
   }
 }
 
-export async function getRoleByName(name: string) {
+export async function getRoleByCode(name: string) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.roles.getRoleByName(name);
+    const result = await client.roles.getRoleByCode(name);
     return result.data as RoleArgs;
   } catch (error) {
     console.error(
@@ -130,11 +129,11 @@ export async function removePermissionsFromRole(
   }
 }
 
-export async function getPermissionsByRoleName(name: string) {
+export async function getPermissionsByRoleCode(name: string) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.roles.getPermissionsByRoleName(name);
+    const result = await client.roles.getPermissionsByRoleCode(name);
     return result.data as PermissionArgs[];
   } catch (error) {
     console.error(

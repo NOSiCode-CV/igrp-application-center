@@ -20,9 +20,9 @@ import { PageHeader } from "@/components/page-header";
 import { useApplicationByCode } from "@/features/applications/use-applications";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { ROUTES } from "@/lib/constants";
-import { formatDate, statusClass } from "@/lib/utils";
+import { formatDate, getStatusColor } from "@/lib/utils";
 
-// TOD: implement upload app image
+// TODO: implement upload app image
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { data: app, isLoading, error } = useApplicationByCode(code);
@@ -52,10 +52,10 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   const tabItems: IGRPTabItem[] = [
     {
-      label: 'Menus',
-      value: 'menus',
+      label: "Menus",
+      value: "menus",
       content: <MenuList app={app} />,
-    },    
+    },
   ];
 
   return (
@@ -109,7 +109,9 @@ export function ApplicationDetails({ code }: { code: string }) {
               </div>
               <div>
                 <h3 className="font-normal text-muted-foreground">Estado</h3>
-                <IGRPBadgePrimitive className={statusClass(status || "ACTIVE")}>
+                <IGRPBadgePrimitive
+                  className={getStatusColor(status || "ACTIVE")}
+                >
                   {status}
                 </IGRPBadgePrimitive>
               </div>

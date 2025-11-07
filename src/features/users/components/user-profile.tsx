@@ -191,14 +191,16 @@ export function UserProfile() {
                               </div>
                               <div>
                                 <p className="capitalize">
-                                  {handleName(role.description || role.name)}
+                                  {handleName(
+                                    role.description || role.name || "",
+                                  )}
                                 </p>
                               </div>
                             </div>
                             <IGRPButtonPrimitive
                               variant="outline"
                               size="sm"
-                              onClick={() => handleRevokeRole(role.name)}
+                              onClick={() => handleRevokeRole(role.name || "")}
                             >
                               Revogar
                             </IGRPButtonPrimitive>

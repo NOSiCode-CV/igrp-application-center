@@ -28,10 +28,13 @@ import {
   IGRPPopoverContentPrimitive,
   IGRPPopoverPrimitive,
   IGRPPopoverTriggerPrimitive,
-  IGRPSeparatorPrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect, useState } from "react";
+import type {
+  CreateUserRequest,
+  Status,
+} from "@igrp/platform-access-management-client-ts";
+import { useEffect, useMemo, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useDepartments } from "@/features/departments/use-departments";
 import { useRoles } from "@/features/roles/use-roles";
@@ -54,7 +57,7 @@ const EMPTY_USER: FormUserArgs = { name: "", email: "" };
 
 function deriveUsernameFromEmail(email: string) {
   const local = email.split("@")[0].trim();
-  return local.slice(0, 50);
+  return local.slice(0, 254);
 }
 
 export function UserInviteDialog({
@@ -102,7 +105,7 @@ export function UserInviteDialog({
   } = useDepartments();
   const {
     data: roles,
-    // isLoading: rolesLoading,
+    isLoading: rolesLoading,
     error: rolesError,
   } = useRoles({ departmentCode: selectedDeptCode });
 
@@ -124,47 +127,57 @@ export function UserInviteDialog({
     } else {
       igrpToast({
         type: "warning",
-        title: "Complete o utilizador atual antes de adicionar outro.",
+        title:
+          "Complete as informações do utilizador atual antes de adicionar outro.",
       });
     }
   };
 
+  const parentValue = form.watch("departmentCode");
+
+  const parentSelected = useMemo(
+    () => depts?.find((o) => o.code === parentValue) ?? null,
+    [parentValue, depts],
+  );
+
   const onSubmit = async (values: FormSchema) => {
-    // const { users, roleNames } = values;
-    // const inviteAll = Promise.all(
-    //   users.map(async (raw) => {
-    //     const username = deriveUsernameFromEmail(raw.email);
-    //     const userPayload: CreateUserArgs = {
-    //       name: raw.name.trim(),
-    //       username,
-    //       email: raw.email.trim(),
-    //       status: statusSchema.enum.ACTIVE,
-    //     };
-    //     const created = await userInvite({ user: userPayload });
-    //     const finalUsername = (created as any)?.username ?? username;
-    //     if (finalUsername && roleNames?.length) {
-    //       await addUserRole({ username: finalUsername, roleNames });
-    //     }
-    //     return finalUsername;
-    //   }),
-    // );
-    // igrpToast({
-    //   promise: inviteAll,
-    //   loading: `A convidar ${users.length} utilizador${users.length > 1 ? "es" : ""}...`,
-    //   success: `Convite enviado para ${users.length} utilizador${users.length > 1 ? "es" : ""}!`,
-    //   error: (err) => `Falha ao convidar: ${String(err)}`,
-    // });
-    // try {
-    //   await inviteAll;
-    //   form.reset({
-    //     users: [EMPTY_USER],
-    //     departmentCode: undefined,
-    //     roleNames: [],
-    //   });
-    //   onOpenChange(false);
-    // } catch (error) {
-    //   console.warn(error);
-    // }
+    const { users, roleNames } = values;
+    const inviteAll = Promise.all(
+      users.map(async (raw) => {
+        const username = deriveUsernameFromEmail(raw.email);
+        const userPayload: CreateUserRequest = {
+          name: raw.name.trim(),
+          username,
+          email: raw.email.trim(),
+          status: statusSchema.enum.ACTIVE as Status,
+        };
+
+        console.log({ userPayload });
+        const created = await userInvite({ user: userPayload });
+        const finalUsername = (created as any)?.username ?? username;
+        if (finalUsername && roleNames?.length) {
+          await addUserRole({ username: finalUsername, roleNames });
+        }
+        return finalUsername;
+      }),
+    );
+    igrpToast({
+      promise: inviteAll,
+      loading: `A convidar ${users.length} utilizador${users.length > 1 ? "es" : ""}...`,
+      success: `Convite enviado para ${users.length} utilizador${users.length > 1 ? "es" : ""}!`,
+      error: (err) => `Falha ao convidar: ${String(err)}`,
+    });
+    try {
+      await inviteAll;
+      form.reset({
+        users: [EMPTY_USER],
+        departmentCode: undefined,
+        roleNames: [],
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.warn(error);
+    }
   };
 
   return (
@@ -175,8 +188,7 @@ export function UserInviteDialog({
             Convidar Utilizador(es)
           </IGRPDialogTitlePrimitive>
           <IGRPDialogDescriptionPrimitive>
-            Envie convites para múltiplos utilizadores. Todos poderão partilhar
-            o mesmo departamento e os mesmos roles atribuídos.
+            Envie convites para múltiplos utilizadores.
           </IGRPDialogDescriptionPrimitive>
         </IGRPDialogHeaderPrimitive>
 
@@ -186,9 +198,10 @@ export function UserInviteDialog({
             className="flex flex-col gap-6"
           >
             <div className="flex flex-col gap-4">
-              <IGRPCardPrimitive>
+              <IGRPCardPrimitive className="py-3">
                 <IGRPCardContentPrimitive className="flex flex-col gap-4">
                   <h3 className="text-sm font-medium">Utilizador(es)</h3>
+
                   {fields.map((field, index) => (
                     <div key={field.id} className="flex gap-2">
                       <IGRPFormFieldPrimitive
@@ -231,7 +244,6 @@ export function UserInviteDialog({
                         )}
                       />
 
-                      {/* Remove */}
                       <div className="flex flex-col gap-2">
                         <IGRPFormLabelPrimitive className="invisible">
                           Remover
@@ -256,7 +268,6 @@ export function UserInviteDialog({
                     variant="outline"
                     size="sm"
                     onClick={handleAddRow}
-                    className="mt-2"
                   >
                     <IGRPIcon
                       iconName="CirclePlus"
@@ -268,115 +279,140 @@ export function UserInviteDialog({
                 </IGRPCardContentPrimitive>
               </IGRPCardPrimitive>
 
-              <IGRPSeparatorPrimitive />
-
-              <IGRPCardPrimitive>
-                <IGRPCardContentPrimitive className="space-y-4">
-                  <h3 className="text-sm font-medium">Permissões</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Selecione o departamento e roles para todos os convidados.
-                  </p>
+              <IGRPCardPrimitive className="py-3">
+                <IGRPCardContentPrimitive className="flex flex-col gap-4">
+                  <div>
+                    <h3 className="text-sm font-medium">Prefís</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Selecione o departamento e roles para todos os convidados.
+                    </p>
+                  </div>
 
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="departmentCode"
                     render={({ field }) => {
+                      const placeholder = "Selecionar departamento…";
                       const isDeptDisabled =
                         deptLoading ||
                         !!deptError ||
                         (depts?.length ?? 0) === 0;
+
                       return (
-                        <IGRPFormItemPrimitive className="flex flex-col">
+                        <IGRPFormItemPrimitive>
                           <IGRPFormLabelPrimitive>
                             Departamento
                           </IGRPFormLabelPrimitive>
+
                           <IGRPPopoverPrimitive
                             open={openDepts}
-                            onOpenChange={setOpenDepts}
+                            onOpenChange={(next) => {
+                              setOpenDepts(next);
+                            }}
                           >
                             <IGRPPopoverTriggerPrimitive asChild>
-                              <IGRPFormControlPrimitive>
-                                <IGRPButtonPrimitive
-                                  variant="outline"
-                                  role="combobox"
-                                  disabled={isDeptDisabled}
-                                  className={cn(
-                                    "w-full justify-between",
-                                    !field.value && "text-muted-foreground",
-                                  )}
-                                >
-                                  {deptLoading ? (
-                                    <span className="flex items-center gap-2">
-                                      <IGRPIcon
-                                        iconName="Loader"
-                                        className="animate-spin h-4 w-4 mr-2"
-                                        strokeWidth={2}
-                                      />
-                                      A carregar departamentos...
-                                    </span>
-                                  ) : field.value ? (
-                                    depts?.find((d) => d.code === field.value)
-                                      ?.name
-                                  ) : deptError ? (
-                                    "Erro ao carregar departamentos"
-                                  ) : isDeptDisabled ? (
-                                    "Sem departamentos"
-                                  ) : (
-                                    "Selecionar departamento"
-                                  )}
-                                  {!deptLoading && (
-                                    <IGRPIcon
-                                      iconName="ChevronsUpDown"
-                                      className="ml-2 shrink-0 opacity-50"
-                                      strokeWidth={2}
-                                    />
-                                  )}
-                                </IGRPButtonPrimitive>
-                              </IGRPFormControlPrimitive>
+                              <IGRPButtonPrimitive
+                                type="button"
+                                variant="outline"
+                                disabled={isDeptDisabled}
+                                className={cn(
+                                  "w-full justify-between",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                                aria-expanded={openDepts}
+                              >
+                                <span className="truncate">
+                                  {parentSelected
+                                    ? parentSelected.name
+                                    : placeholder}
+                                </span>
+                                <IGRPIcon
+                                  iconName={
+                                    openDepts ? "ChevronUp" : "ChevronDown"
+                                  }
+                                />
+                              </IGRPButtonPrimitive>
                             </IGRPPopoverTriggerPrimitive>
-                            <IGRPPopoverContentPrimitive className="w-[--radix-popover-trigger-width] p-0">
+
+                            <IGRPPopoverContentPrimitive
+                              className="p-0 w-[--radix-popover-trigger-width] min-w-64"
+                              align="start"
+                            >
                               <IGRPCommandPrimitive>
                                 <IGRPCommandInputPrimitive placeholder="Procurar departamento..." />
-                                <IGRPCommandListPrimitive>
-                                  <IGRPCommandEmptyPrimitive>
-                                    Nenhum departamento encontrado.
+                                <IGRPCommandListPrimitive className="max-h-64">
+                                  <IGRPCommandEmptyPrimitive className="py-4 text-center text-sm text-foreground">
+                                    Departamento não encontrado.
                                   </IGRPCommandEmptyPrimitive>
-                                  <IGRPCommandGroupPrimitive>
-                                    {depts?.map((dept) => (
-                                      <IGRPCommandItemPrimitive
-                                        value={dept.code}
-                                        key={dept.code}
-                                        onSelect={() => {
-                                          form.setValue(
-                                            "departmentCode",
-                                            dept.code,
-                                            {
-                                              shouldValidate: true,
-                                            },
-                                          );
-                                          form.setValue("roleNames", [], {
+
+                                  <IGRPCommandItemPrimitive
+                                    key="__none__"
+                                    onSelect={() => {
+                                      field.onChange("");
+                                      setOpenDepts(false);
+                                    }}
+                                    aria-selected={!field.value}
+                                    className="flex items-center gap-2"
+                                  >
+                                    {!field.value ? (
+                                      <IGRPIcon
+                                        iconName="Check"
+                                        className="size-4 shrink-0"
+                                      />
+                                    ) : (
+                                      <span className="w-4" />
+                                    )}
+                                    <span className="truncate">Nenhum</span>
+                                  </IGRPCommandItemPrimitive>
+
+                                  {depts?.map((opt) => (
+                                    <IGRPCommandItemPrimitive
+                                      key={opt.code}
+                                      onSelect={() => {
+                                        form.setValue(
+                                          "departmentCode",
+                                          opt.code,
+                                          {
                                             shouldValidate: true,
-                                          });
-                                          setOpenDepts(false);
-                                        }}
-                                      >
+                                          },
+                                        );
+                                        form.setValue("roleNames", [], {
+                                          shouldValidate: true,
+                                        });
+                                        setOpenDepts(false);
+                                      }}
+                                      aria-selected={field.value === opt.code}
+                                      className="flex items-center gap-2"
+                                    >
+                                      {field.value === opt.code ? (
                                         <IGRPIcon
                                           iconName="Check"
-                                          className={cn(
-                                            "mr-2",
-                                            dept.code === field.value
-                                              ? "opacity-100"
-                                              : "opacity-0",
-                                          )}
+                                          className="size-4 shrink-0"
                                         />
-                                        {dept.name}
-                                      </IGRPCommandItemPrimitive>
-                                    ))}
-                                  </IGRPCommandGroupPrimitive>
+                                      ) : (
+                                        <span className="w-4" />
+                                      )}
+                                      <span className="truncate">
+                                        {opt.name}
+                                      </span>
+                                    </IGRPCommandItemPrimitive>
+                                  ))}
                                 </IGRPCommandListPrimitive>
+
+                                <div className="flex items-center justify-between px-2 py-3 border-t">
+                                  <IGRPButtonPrimitive
+                                    type="button"
+                                    className="text-xs"
+                                    onClick={() => field.onChange("")}
+                                    disabled={!field.value}
+                                  >
+                                    Limpar
+                                  </IGRPButtonPrimitive>
+                                </div>
                               </IGRPCommandPrimitive>
                             </IGRPPopoverContentPrimitive>
                           </IGRPPopoverPrimitive>
+
                           <IGRPFormMessagePrimitive>
                             {deptError ? deptError.message : null}
                           </IGRPFormMessagePrimitive>
@@ -554,7 +590,7 @@ export function UserInviteDialog({
                 Cancelar
               </IGRPButtonPrimitive>
               <IGRPButtonPrimitive type="submit" disabled={btnDisabled}>
-                {isInviting ? "A enviar convites..." : "Enviar convites"}
+                {isInviting ? "A enviar convites..." : "Convidar"}
               </IGRPButtonPrimitive>
             </IGRPDialogFooterPrimitive>
           </form>

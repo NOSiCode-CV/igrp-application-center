@@ -126,7 +126,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
                 "data-[disabled=true]:cursor-not-allowed has-[input:focus]:border-ring",
                 "has-[input:focus]:ring-ring/50 relative flex flex-col items-center justify-center",
                 "overflow-hidden rounded-xl border border-dashed transition-colors",
-                "has-[input:focus]:ring-[2px] min-h-25",
+                "has-[input:focus]:ring-2 min-h-25",
               )}
             >
               <input

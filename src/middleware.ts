@@ -1,15 +1,15 @@
-import { type NextRequest, NextResponse } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { type NextRequest, NextResponse } from "next/server";
+import { getToken } from "next-auth/jwt";
 
-const PUBLIC_PATHS = ['/login', '/logout', '/api/auth'];
+const PUBLIC_PATHS = ["/login", "/logout", "/api/auth"];
 
 function isPublicPath(pathname: string) {
   return (
     PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`)) ||
-    pathname.startsWith('/api/auth/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/static/') ||
-    pathname.includes('.')
+    pathname.startsWith("/api/auth/") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/static/") ||
+    pathname.includes(".")
   );
 }
 
@@ -19,9 +19,11 @@ export async function middleware(request: NextRequest) {
   if (isPublicPath(pathname)) return NextResponse.next();
 
   const token = await getToken({ req: request });
-  
-  if (token?.error === 'RefreshAccessTokenError') {
-    return NextResponse.redirect(new URL('/login', process.env.NEXTAUTH_URL_INTERNAL ?? request.url));
+
+  if (token?.error === "RefreshAccessTokenError") {
+    return NextResponse.redirect(
+      new URL("/login", process.env.NEXTAUTH_URL_INTERNAL ?? request.url),
+    );
   }
 
   return NextResponse.next();
@@ -29,5 +31,5 @@ export async function middleware(request: NextRequest) {
 
 // adictional paths for apps, is used as subdomains
 export const config = {
-  matcher: ['/', '/((?!api|apps|health|_next|favicon.ico|.*\\..*).*)'],
+  matcher: ["/", "/((?!api|apps|health|_next|favicon.ico|.*\\..*).*)"],
 };

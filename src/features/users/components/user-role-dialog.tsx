@@ -60,7 +60,7 @@ import {
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
-import { showStatus, statusClass } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utils";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -124,7 +124,7 @@ const columns: ColumnDef<RoleArgs>[] = [
     accessorKey: "status",
     cell: ({ row }) => (
       <IGRPBadgePrimitive
-        className={cn(statusClass(row.getValue("status")), "capitalize")}
+        className={cn(getStatusColor(row.getValue("status")), "capitalize")}
       >
         {showStatus(row.getValue("status"))}
       </IGRPBadgePrimitive>
@@ -219,14 +219,14 @@ export function UserRolesDialog({
     [roles],
   );
   const userRolesInDept = useMemo(
-    () => (userRoles ?? []).filter((r) => roleNameSet.has(norm(r.name))),
+    () => (userRoles ?? []).filter((r) => roleNameSet.has(norm(r.name ?? ""))),
     [userRoles, roleNameSet],
   );
 
   // Preselect by user's existing roles IN THIS DEPARTMENT
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
-    return new Set<string>(list.map((r) => getRowKey(r)));
+    return new Set<string>(list.map((r) => getRowKey(r as any)));
   }, [userRolesInDept]);
 
   // Reset on close
@@ -280,7 +280,7 @@ export function UserRolesDialog({
   const existing = userRolesInDept ?? [];
 
   const { toAdd, toRemove } = useMemo(
-    () => diffRoles(selectedData, existing),
+    () => diffRoles(selectedData, existing as RoleArgs[]),
     [selectedData, existing],
   );
 
@@ -339,11 +339,14 @@ export function UserRolesDialog({
   const err = error || errorUserRoles;
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal>
+    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal={false}>
       <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive className="text-base">
-            Adicionar ou Remover Perfis de <IGRPBadge>{username}</IGRPBadge>
+            Adicionar ou Remover Perfis de{" "}
+            <IGRPBadge variant="solid" color="primary">
+              {username}
+            </IGRPBadge>
           </IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
 

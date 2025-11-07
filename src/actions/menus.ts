@@ -2,6 +2,7 @@
 
 import type {
   CreateMenuRequest,
+  MenuEntryDTO,
   MenuFilters,
   UpdateMenuRequest,
 } from "@igrp/platform-access-management-client-ts";
@@ -61,6 +62,101 @@ export async function deleteMenu(code: string) {
     return result;
   } catch (error) {
     console.error("[menu-update] Não foi possível eleiminar menu:", error);
+    throw error;
+  }
+}
+
+export async function removeRolesFromMenu(
+  menuCode: string,
+  roleCodes: string[],
+): Promise<MenuEntryDTO> {
+  const client = await getClientAccess();
+  try {
+    const { data } = await client.menus.removeRolesFromMenu(
+      menuCode,
+      roleCodes,
+    );
+    return data;
+  } catch (error) {
+    console.error(
+      "[menu-remove-roles] Não foi possível remover os papéis do menu:",
+      error,
+    );
+    throw error;
+  }
+}
+
+export async function addRolesToMenu(
+  menuCode: string,
+  roleCodes: string[],
+): Promise<MenuEntryDTO> {
+  const client = await getClientAccess();
+  try {
+    const { data } = await client.menus.addRolesToMenu(menuCode, roleCodes);
+    return data;
+  } catch (error) {
+    console.error(
+      "[menu-assign-roles] Não foi possível atribuir os papéis ao menu:",
+      error,
+    );
+    throw error;
+  }
+}
+
+export async function addDepartamentsToMenu(
+  menuCode: string,
+  departmentIds: string[],
+): Promise<MenuEntryDTO> {
+  const client = await getClientAccess();
+  try {
+    const { data } = await client.menus.addDepartmentsToMenu(
+      menuCode,
+      departmentIds,
+    );
+    return data;
+  } catch (error) {
+    console.error(
+      "[menu-assign-departments] Não foi possível atribuir os departamentos ao menu:",
+      error,
+    );
+    throw error;
+  }
+}
+
+export async function removeDepartamentsFromMenu(
+  menuCode: string,
+  departmentIds: string[],
+): Promise<MenuEntryDTO> {
+  const client = await getClientAccess();
+  try {
+    const { data } = await client.menus.removeDepartmentsFromMenu(
+      menuCode,
+      departmentIds,
+    );
+    return data;
+  } catch (error) {
+    console.error(
+      "[menu-remove-departments] Não foi possível remover os departamentos do menu:",
+      error,
+    );
+    throw error;
+  }
+}
+
+export async function getMenusByDepartment(departmentCode: string) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.menus.getMenus({
+      departmentCode: departmentCode,
+    });
+    const menus = mapperListMenusCRUD(result);
+    return menus;
+  } catch (error) {
+    console.error(
+      "[menus-by-department] Erro ao carregar os menus da aplicação.:",
+      error,
+    );
     throw error;
   }
 }

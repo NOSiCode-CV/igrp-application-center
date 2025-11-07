@@ -13,6 +13,11 @@ import {
   IGRPDropdownMenuTriggerPrimitive,
   IGRPIcon,
   IGRPInputPrimitive,
+  IGRPSelectContentPrimitive,
+  IGRPSelectItemPrimitive,
+  IGRPSelectPrimitive,
+  IGRPSelectTriggerPrimitive,
+  IGRPSelectValuePrimitive,
   IGRPSkeletonPrimitive,
   IGRPTableBodyPrimitive,
   IGRPTableCellPrimitive,
@@ -25,11 +30,12 @@ import { useState } from "react";
 
 import { ButtonLink } from "@/components/button-link";
 import { STATUS_OPTIONS } from "@/lib/constants";
-import { showStatus, statusClass } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utils";
 import type { PermissionArgs } from "../permissions-schemas";
-import { usePermissions } from "../use-permission";
+import { usePermissionsbyName } from "../use-permission";
 import { PermissionDeleteDialog } from "./permisssion-delete-dialog";
 import { PermissionFormDialog } from "./permisssion-form-dialog";
+import { useResources } from "@/features/resources/use-resources";
 
 interface PermissionListProps {
   departmentCode: string;
@@ -45,13 +51,17 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   const [permissionToDelete, setPermissionToDelete] = useState<string | null>(
     null,
   );
+
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [resourceSelected, setResourceSelected] = useState<string>("");
+
+  const { data: resources, isLoading: resourcesLoading } = useResources();
 
   const {
     data: permissions,
     isLoading,
     error,
-  } = usePermissions({ departmentCode });
+  } = usePermissionsbyName({ resourceName: resourceSelected });
 
   if (error) {
     return (
@@ -92,7 +102,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
 
   return (
     <>
-      <div className="flex flex-col gap-6 py-4 px-3 min-w-0">
+      <div className="flex flex-col gap-6 min-w-0">
         <div>
           <div className="flex items-center justify-between">
             <div className="min-w-0">
@@ -101,8 +111,8 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 Gerir e reorganizar os permissões.
               </div>
             </div>
-            {!permissionEmpty && (
-              <div className="flex justify-end flex-shrink-0">
+            {resourceSelected && !permissionEmpty && (
+              <div className="flex justify-end shrink-0">
                 <ButtonLink
                   onClick={handleNewpermssion}
                   icon="UserLock"
@@ -116,7 +126,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row items-start gap-4 w-full min-w-0">
-            <div className="relative w-full max-w-sm">
+            <div className="relative w-full max-w-full">
               <IGRPIcon
                 iconName="Search"
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
@@ -129,57 +139,92 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex flex-wrap gap-2 flex-shirnk-0">
-              <IGRPDropdownMenuPrimitive>
-                <IGRPDropdownMenuTriggerPrimitive asChild>
-                  <IGRPButtonPrimitive variant="outline" className="gap-2">
-                    <IGRPIcon iconName="ListFilter" strokeWidth={2} />
-                    Estado{" "}
-                    {statusFilter.length > 0 && `(${statusFilter.length})`}
-                  </IGRPButtonPrimitive>
-                </IGRPDropdownMenuTriggerPrimitive>
-                <IGRPDropdownMenuContentPrimitive
-                  align="start"
-                  className="w-40"
-                >
-                  <IGRPDropdownMenuSeparatorPrimitive />
-                  {STATUS_OPTIONS.map(({ value, label }) => (
-                    <IGRPDropdownMenuCheckboxItemPrimitive
-                      key={value}
-                      checked={statusFilter.includes(value)}
-                      onCheckedChange={(checked) => {
-                        setStatusFilter(
-                          checked
-                            ? [...statusFilter, value]
-                            : statusFilter.filter((s) => s !== value),
-                        );
-                      }}
+            <IGRPSelectPrimitive
+              value={resourceSelected}
+              onValueChange={setResourceSelected}
+              disabled={resourcesLoading}
+            >
+              <IGRPSelectTriggerPrimitive className="w-[250px]">
+                <IGRPSelectValuePrimitive placeholder="Selecione um recurso" />
+              </IGRPSelectTriggerPrimitive>
+              <IGRPSelectContentPrimitive>
+                {resources?.map((resource) => (
+                  <IGRPSelectItemPrimitive
+                    key={resource.id}
+                    value={resource.name}
+                  >
+                    {resource.name}
+                  </IGRPSelectItemPrimitive>
+                ))}
+              </IGRPSelectContentPrimitive>
+            </IGRPSelectPrimitive>
+
+            {resourceSelected && (
+              <>
+                <div className="flex flex-wrap gap-2 flex-shirnk-0">
+                  <IGRPDropdownMenuPrimitive>
+                    <IGRPDropdownMenuTriggerPrimitive asChild>
+                      <IGRPButtonPrimitive variant="outline" className="gap-2">
+                        <IGRPIcon iconName="ListFilter" strokeWidth={2} />
+                        Estado{" "}
+                        {statusFilter.length > 0 && `(${statusFilter.length})`}
+                      </IGRPButtonPrimitive>
+                    </IGRPDropdownMenuTriggerPrimitive>
+                    <IGRPDropdownMenuContentPrimitive
+                      align="start"
+                      className="w-40"
                     >
-                      {label}
-                    </IGRPDropdownMenuCheckboxItemPrimitive>
-                  ))}
-                  {statusFilter.length > 0 && (
-                    <>
                       <IGRPDropdownMenuSeparatorPrimitive />
-                      <IGRPDropdownMenuItemPrimitive
-                        onClick={() => setStatusFilter([])}
-                        className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                      >
-                        <IGRPIcon
-                          iconName="X"
-                          className="mr-1"
-                          strokeWidth={2}
-                        />
-                        Limpar
-                      </IGRPDropdownMenuItemPrimitive>
-                    </>
-                  )}
-                </IGRPDropdownMenuContentPrimitive>
-              </IGRPDropdownMenuPrimitive>
-            </div>
+                      {STATUS_OPTIONS.map(({ value, label }) => (
+                        <IGRPDropdownMenuCheckboxItemPrimitive
+                          key={value}
+                          checked={statusFilter.includes(value)}
+                          onCheckedChange={(checked) => {
+                            setStatusFilter(
+                              checked
+                                ? [...statusFilter, value]
+                                : statusFilter.filter((s) => s !== value),
+                            );
+                          }}
+                        >
+                          {label}
+                        </IGRPDropdownMenuCheckboxItemPrimitive>
+                      ))}
+                      {statusFilter.length > 0 && (
+                        <>
+                          <IGRPDropdownMenuSeparatorPrimitive />
+                          <IGRPDropdownMenuItemPrimitive
+                            onClick={() => setStatusFilter([])}
+                            className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                          >
+                            <IGRPIcon
+                              iconName="X"
+                              className="mr-1"
+                              strokeWidth={2}
+                            />
+                            Limpar
+                          </IGRPDropdownMenuItemPrimitive>
+                        </>
+                      )}
+                    </IGRPDropdownMenuContentPrimitive>
+                  </IGRPDropdownMenuPrimitive>
+                </div>
+              </>
+            )}
           </div>
 
-          {isLoading ? (
+          {!resourceSelected ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <IGRPIcon
+                iconName="ListFilter"
+                className="size-12 mx-auto mb-4 opacity-50"
+              />
+              <p className="text-lg font-medium">Selecione um recurso</p>
+              <p className="text-sm">
+                Escolha um recurso para visualizar as permissões
+              </p>
+            </div>
+          ) : isLoading ? (
             <div className="grid gap-4 animate-pulse">
               {Array.from({ length: 5 }).map((_, i) => (
                 <IGRPSkeletonPrimitive
@@ -236,7 +281,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                         <IGRPTableCellPrimitive className="whitespace-nowrap">
                           <IGRPBadgePrimitive
                             className={cn(
-                              statusClass(permssion.status),
+                              getStatusColor(permssion.status),
                               "capitalize",
                             )}
                           >

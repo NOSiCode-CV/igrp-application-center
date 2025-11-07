@@ -1,10 +1,11 @@
 import { IGRPLayout } from "@igrp/framework-next";
+import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
+import { createConfig } from "@igrp/template-config";
+
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { configLayout } from "@/actions/igrp/layout";
-import { createConfig } from "@igrp/template-config";
-import { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
-import { headers } from "next/headers";
 
 export default async function IGRPRootLayout({
   children,

@@ -1,14 +1,13 @@
 import {
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPIcon,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPLabelPrimitive,
-  IGRPInputPrimitive,
-  IGRPDialogFooterPrimitive,
   IGRPButtonPrimitive,
+  IGRPDialogContentPrimitive,
+  IGRPDialogDescriptionPrimitive,
+  IGRPDialogFooterPrimitive,
+  IGRPDialogHeaderPrimitive,
+  IGRPDialogPrimitive,
+  IGRPIcon,
+  IGRPInputPrimitive,
+  IGRPLabelPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useId, useState } from "react";
 
@@ -19,6 +18,9 @@ interface IGRPDialogDeleteProps {
   confirmDelete(): Promise<void>;
   description?: string;
   label?: string;
+  labelBtnCancel?: string;
+  labelBtnDelete?: string;
+  textHeader?: string;
 }
 
 function IGRPDialogDelete({
@@ -28,6 +30,9 @@ function IGRPDialogDelete({
   confirmDelete,
   description,
   label = "Escreva",
+  labelBtnCancel = "Cancelar",
+  labelBtnDelete = "Eliminar",
+  textHeader = "Confirmação Final",
 }: IGRPDialogDeleteProps) {
   const id = useId();
   const [confirmation, setConfirmation] = useState("");
@@ -38,30 +43,23 @@ function IGRPDialogDelete({
     <span>
       Esta ação é irreversível. Todos os dados serão eliminados permanentemente.
       Para confirmar, escreva{" "}
-      <span className="text-destructive focus:bg-destructive/10 dark:focus:bg-destructive/20 focus:text-destructive">
-        {toDelete.name}.
-      </span>
+      <span className="font-semibold">{toDelete.name}.</span>
     </span>
   );
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
       <IGRPDialogContentPrimitive>
-        <div className="flex flex-col items-center gap-2">
-          <div
-            className="flex size-9 shrink-0 items-center justify-center rounded-full border border-destructive/30"
-            aria-hidden="true"
-          >
+        <div className="flex flex-col gap-4 bg-destructive/10 p-4 rounded-lg mt-3">
+          <div className="flex items-center">
             <IGRPIcon
               iconName="CircleAlert"
-              className="opacity-80 size-4 text-destructive"
+              className="text-destructive size-6 me-2"
             />
+            <span>{textHeader}</span>
           </div>
           <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive className="sm:text-center">
-              Confirmação Final.
-            </IGRPDialogTitlePrimitive>
-            <IGRPDialogDescriptionPrimitive className="sm:text-center">
+            <IGRPDialogDescriptionPrimitive className="text-foreground text-base">
               {description ? description : RenderDes}
             </IGRPDialogDescriptionPrimitive>
           </IGRPDialogHeaderPrimitive>
@@ -80,7 +78,7 @@ function IGRPDialogDelete({
               value={confirmation}
               onChange={(e) => setConfirmation(e.target.value)}
               placeholder={`Digite '${toDelete.name}' para confirmação`}
-              className="placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30"
+              className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
               required
             />
           </div>
@@ -94,14 +92,14 @@ function IGRPDialogDelete({
             }}
             type="button"
           >
-            Cancelar
+            {labelBtnCancel}
           </IGRPButtonPrimitive>
           <IGRPButtonPrimitive
             variant="destructive"
             onClick={confirmDelete}
             disabled={!isConfirmed}
           >
-            Eliminar
+            {labelBtnDelete}
           </IGRPButtonPrimitive>
         </IGRPDialogFooterPrimitive>
       </IGRPDialogContentPrimitive>

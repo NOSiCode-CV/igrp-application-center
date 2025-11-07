@@ -1,21 +1,5 @@
 "use client";
 
-import {
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import type {
   IGRPApplicationArgs,
   IGRPMenuCRUDArgs,
@@ -44,8 +28,6 @@ import { MenuFormDialog } from "./menu-form-dialog";
 import { SortableItem } from "./menu-sortable-item";
 
 export function MenuList({ app }: { app: IGRPApplicationArgs }) {
-  const { igrpToast } = useIGRPToast();
-
   const { code } = app;
   const {
     data: appMenus,
@@ -75,13 +57,6 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     }
   }, [appMenus]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
   if (isLoading) return <AppCenterLoading descrption="A carregar menus..." />;
 
   if (errorGetMenus) {
@@ -110,51 +85,10 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     setDeleteDialogOpen(true);
   };
 
-  const handleDragEnd = async (e: DragEndEvent) => {
-    const { active, over } = e;
-
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = menus.findIndex((item) => item.id === active.id);
-    const newIndex = menus.findIndex((item) => item.id === over.id);
-
-    const activeItem = menus[oldIndex];
-    const overItem = menus[newIndex];
-
-    if (!activeItem || !overItem) return;
-
-    if (activeItem.parentCode !== overItem.parentCode) {
-      igrpToast({
-        type: "warning",
-        title: "Ordenação invalida",
-        description: "Não pode mover itens entre diferentes grupos.",
-      });
-      return;
-    }
-
-    const newMenus = arrayMove(menus, oldIndex, newIndex);
-    setMenus(newMenus);
-
-    try {
-      // updateIndex(activeItem.id as number, newIndex)
-      igrpToast({
-        type: "success",
-        title: "Ordem de menu atualizada",
-        description: "The menu order has been successfully updated.",
-      });
-    } catch (error) {
-      setMenus(menus);
-      igrpToast({
-        type: "error",
-        title: "Error updating menu order",
-        description: (error as Error).message,
-      });
-    }
+  const handlePermissions = (code: string) => {
+    setOpenFormDialog(false);
   };
 
-  // const updateIndex = (menuId: number, position: number) => {
-  //   changeOrder({ id: menuId, position })
-  // }
   const filteredMenus = menus.filter(
     (menu) => menu.status !== statusSchema.enum.DELETED,
   );
@@ -212,37 +146,29 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
                 </IGRPButtonPrimitive>
               </div>
             ) : (
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-                modifiers={[restrictToVerticalAxis]}
-              >
-                <SortableContext
-                  items={allMenuCode}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {filteredMenus.map((menu) => {
-                    if (menu.parentCode) return null;
-                    const childMenus = filteredMenus.filter(
-                      (m) => m.parentCode === menu.code,
-                    );
+              <div>
+                {filteredMenus.map((menu) => {
+                  if (menu.parentCode) return null;
+                  const childMenus = filteredMenus.filter(
+                    (m) => m.parentCode === menu.code,
+                  );
 
-                    return (
-                      <SortableItem
-                        key={menu.id}
-                        menuCode={menu.code}
-                        menu={menu}
-                        code={code}
-                        onView={handleView}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        subMenus={childMenus}
-                      />
-                    );
-                  })}
-                </SortableContext>
-              </DndContext>
+                  return (
+                    <SortableItem
+                      //app={app}
+                      key={menu.id}
+                      menuCode={menu.code}
+                      menu={menu}
+                      code={code}
+                      onView={handleView}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onAddPermissions={handlePermissions}
+                      subMenus={childMenus}
+                    />
+                  );
+                })}
+              </div>
             )}
           </div>
         </IGRPCardContentPrimitive>

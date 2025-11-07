@@ -8,5 +8,6 @@ export default async function ApplicationDetailsPage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
+
   return <ApplicationDetails code={code} />;
 }

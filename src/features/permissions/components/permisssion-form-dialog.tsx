@@ -35,7 +35,7 @@ import {
   permissionStatusSchema,
   type UpdatePermissionArgs,
   updatePermissionSchema,
-} from "@/features/permission/permissions-schemas";
+} from "@/features/permissions/permissions-schemas";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { useCreatePermission, useUpdatePermission } from "../use-permission";
 

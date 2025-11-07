@@ -5,7 +5,17 @@ import type {
 } from "@igrp/platform-access-management-client-ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { createMenu, deleteMenu, getMenus, updateMenu } from "@/actions/menus";
+import {
+  addDepartamentsToMenu,
+  addRolesToMenu,
+  createMenu,
+  deleteMenu,
+  getMenus,
+  getMenusByDepartment,
+  removeDepartamentsFromMenu,
+  removeRolesFromMenu,
+  updateMenu,
+} from "@/actions/menus";
 
 export const useMenus = (params?: MenuFilters) => {
   const key = ["menus", params?.applicationCode ?? null] as const;
@@ -75,76 +85,92 @@ export const useDeleteMenu = () => {
   });
 };
 
-// export const useMenuByCode = (code: string) => {
-//   return useQuery<IGRPMenuItemArgs>({
-//     queryKey: ['menus', code],
-//     queryFn: () => getMenuByCode(code),
-//     enabled: !!code,
-//   });
-// };
+export function useAddRolesToMenu() {
+  const queryClient = useQueryClient();
 
-// export const useMenusByApplication = (applicationId: number) => {
-//   return useQuery<IGRPMenuItemArgs[]>({
-//     queryKey: ['menus', 'application', applicationId],
-//     queryFn: () => getMenusByApplication(applicationId),
-//     enabled: !!applicationId,
-//   });
-// };
+  return useMutation({
+    mutationFn: ({ menuCode, roleCodes }: any) =>
+      addRolesToMenu(menuCode, roleCodes),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["department-menus"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["app-menus"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", variables.menuCode],
+      });
+    },
+    onError: (error) => {
+      console.error("[useAddRolesToMenu] Erro ao adicionar roles:", error);
+    },
+  });
+}
 
-// export const useSubMenus = (parentId: number) => {
-//   return useQuery<IGRPMenuItemArgs[]>({
-//     queryKey: ['menus', 'parent', parentId],
-//     queryFn: () => getSubMenus(parentId),
-//     enabled: !!parentId,
-//   });
-// };
+export function useRemoveRolesFromMenu() {
+  const queryClient = useQueryClient();
 
-// export const useUpdateMenuPosition = () => {};
+  return useMutation({
+    mutationFn: ({ menuCode, roleCodes }: any) =>
+      removeRolesFromMenu(menuCode, roleCodes),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["department-menus"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["app-menus"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", variables.menuCode],
+      });
+    },
+    onError: (error) => {
+      console.error("[useRemoveRolesFromMenu] Erro ao remover roles:", error);
+    },
+  });
+}
 
-// export const useUpdateMenuStatus = () => {
-//   const queryClient = useQueryClient();
+export const useAddDepartmentsToMenu = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: ({ id, status }: { id: number; status: 'ACTIVE' | 'INACTIVE' }) =>
-//       updateMenuStatus(id, status),
-//     onSuccess: (updatedMenu, { id }) => {
-//       queryClient.invalidateQueries({ queryKey: ['menus'] });
-//       queryClient.invalidateQueries({ queryKey: ['menus', id] });
-//       if (updatedMenu.applicationId) {
-//         queryClient.invalidateQueries({
-//           queryKey: ['menus', 'application', updatedMenu.applicationId],
-//         });
-//       }
-//       if (updatedMenu.parentId) {
-//         queryClient.invalidateQueries({
-//           queryKey: ['menus', 'parent', updatedMenu.parentId],
-//         });
-//       }
-//     },
-//   });
-// };
+  return useMutation({
+    mutationFn: ({
+      menuCode,
+      departmentIds,
+    }: {
+      menuCode: string;
+      departmentIds: string[];
+    }) => addDepartamentsToMenu(menuCode, departmentIds),
+    onSuccess: (_, { menuCode }) => {
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
+      queryClient.invalidateQueries({ queryKey: ["menus", menuCode] });
+    },
+  });
+};
 
-// export const useUpdateMenu = () => {
-//   const queryClient = useQueryClient();
+export const useRemoveDepartmentsFromMenu = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-// -   mutationFn: ({ code, data }: { code: string; data: Partial<IGRPMenuItemArgs> }) => updateMenu(id, data),
-// -   onSuccess: (updatedMenu, { code }) => {
-// +   mutationFn: ({ id, data }: { id: number; data: Partial<IGRPMenuItemArgs> }) => updateMenu(id, data),
-// +   onSuccess: (updatedMenu, { id }) => {
-//       queryClient.invalidateQueries({ queryKey: ['menus'] });
-// -     queryClient.invalidateQueries({ queryKey: ['menus', code] });
-// +     queryClient.invalidateQueries({ queryKey: ['menus', id] });
-//       if (updatedMenu.applicationCode) {
-//         queryClient.invalidateQueries({
-//           queryKey: ['menus', 'application', updatedMenu.applicationCode],
-//         });
-//       }
-//       if (updatedMenu.parentCode) {
-//         queryClient.invalidateQueries({
-//           queryKey: ['menus', 'parent', updatedMenu.parentCode],
-//         });
-//       }
-//     },
-//   });
-// };
+  return useMutation({
+    mutationFn: ({
+      menuCode,
+      departmentIds,
+    }: {
+      menuCode: string;
+      departmentIds: string[];
+    }) => removeDepartamentsFromMenu(menuCode, departmentIds),
+    onSuccess: (_, { menuCode }) => {
+      queryClient.invalidateQueries({ queryKey: ["menus"] });
+      queryClient.invalidateQueries({ queryKey: ["menus", menuCode] });
+    },
+  });
+};
+
+export const useDepartmentMenus = (departmentCode?: string) => {
+  return useQuery<IGRPMenuCRUDArgs[]>({
+    queryKey: ["department-menus", departmentCode],
+    queryFn: () => getMenusByDepartment(departmentCode!),
+    enabled: !!departmentCode,
+  });
+};
