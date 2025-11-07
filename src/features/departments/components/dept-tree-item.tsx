@@ -137,8 +137,13 @@ const DepartmentTreeItem = ({
               </IGRPButtonPrimitive>
             </IGRPDropdownMenuTriggerPrimitive>
 
-            <IGRPDropdownMenuContentPrimitive align="end">
-              <IGRPDropdownMenuItemPrimitive onClick={() => handleEdit(dept)}>
+            <IGRPDropdownMenuContentPrimitive onCloseAutoFocus={(e) => e.preventDefault()} align="end">
+              <IGRPDropdownMenuItemPrimitive 
+              onSelect={(e) => {
+                  e.stopPropagation();
+                  handleEdit(dept);
+                }}
+              >
                 <IGRPIcon
                   iconName="Pencil"
                   className="w-4 h-4 mr-2"
@@ -148,7 +153,10 @@ const DepartmentTreeItem = ({
               </IGRPDropdownMenuItemPrimitive>
 
               <IGRPDropdownMenuItemPrimitive
-                onClick={() => handleCreateSubDept(dept.code)}
+                onSelect={(e) => {
+                  e.stopPropagation();
+                  handleCreateSubDept(dept.code);
+                }}
               >
                 <IGRPIcon
                   iconName="FolderPlus"

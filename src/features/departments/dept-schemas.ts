@@ -11,7 +11,7 @@ export const departmentSchema = z
         /^[A-Z0-9_]+$/,
         "O código deve conter maiusculas, números e sublinhados",
       )
-      .min(5, "Código é obrigatório"),
+      .min(3, "Código é obrigatório (min 3 carateres)"),
     name: trimmed.min(3, "Nome é obrigatório (min 3 carateres)"),
     description: z.string().min(5, "Descrição é obrigatória"),
     status: statusSchema,

@@ -155,7 +155,7 @@ export function DepartmentFormDialog({
       : "Criar um novo departamento";
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal={false}>
+    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
       <IGRPDialogContentPrimitive>
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive>{titleTxt}</IGRPDialogTitlePrimitive>
