@@ -137,9 +137,12 @@ const DepartmentTreeItem = ({
               </IGRPButtonPrimitive>
             </IGRPDropdownMenuTriggerPrimitive>
 
-            <IGRPDropdownMenuContentPrimitive onCloseAutoFocus={(e) => e.preventDefault()} align="end">
-              <IGRPDropdownMenuItemPrimitive 
-              onSelect={(e) => {
+            <IGRPDropdownMenuContentPrimitive
+              onCloseAutoFocus={(e) => e.preventDefault()}
+              align="end"
+            >
+              <IGRPDropdownMenuItemPrimitive
+                onSelect={(e) => {
                   e.stopPropagation();
                   handleEdit(dept);
                 }}
