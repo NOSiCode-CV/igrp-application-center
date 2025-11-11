@@ -68,7 +68,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const removeRolesMutation = useRemoveRolesFromMenu();
   const saving = addRolesMutation.isPending || removeRolesMutation.isPending;
 
-  // Selecionar automaticamente a primeira aplicação
   useEffect(() => {
     if (assignedApps && assignedApps.length > 0 && !selectedApp) {
       const sortedApps = [...assignedApps].sort((a, b) =>
@@ -150,7 +149,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   };
 
   const filteredByApp = selectedApp
-    ? (menus || []).filter((menu) => menu.applicationCode === selectedApp)
+    ? (menus || []).filter((menu) => menu.application.code === selectedApp)
     : menus || [];
 
   const filteredMenus = filteredByApp.filter((menu) => {
@@ -163,7 +162,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
   const menuTree = buildMenuTree(filteredMenus as MenuWithChildren[]);
 
-  // Calcular estado do checkbox da coluna (todos, alguns ou nenhum)
   const getColumnCheckState = (roleCode: string) => {
     const visibleMenuCodes = filteredMenus.map((m) => m.code);
     const menusWithRole = visibleMenuCodes.filter((code) =>
@@ -175,7 +173,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     return "indeterminate";
   };
 
-  // Toggle todos os menus para um role específico
   const toggleAllMenusForRole = (roleCode: string) => {
     const visibleMenuCodes = filteredMenus.map((m) => m.code);
     const currentState = getColumnCheckState(roleCode);
@@ -187,10 +184,8 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         const currentRoles = new Set(newMap.get(menuCode) || []);
 
         if (currentState === true) {
-          // Se todos estão marcados, desmarcar todos
           currentRoles.delete(roleCode);
         } else {
-          // Se nenhum ou alguns estão marcados, marcar todos
           currentRoles.add(roleCode);
         }
 
@@ -232,7 +227,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     }
   );
 
-  // Ordenar aplicações alfabeticamente
   const sortedApps = useMemo(() => {
     if (!assignedApps) return [];
     return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));

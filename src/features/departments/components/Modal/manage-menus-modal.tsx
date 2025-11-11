@@ -273,7 +273,7 @@ export function ManageMenusModal({
           )}
         >
           <div className="flex items-center gap-3 p-3">
-            {hasChildren ? (
+            {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
                 className="w-8 h-8 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
@@ -287,8 +287,6 @@ export function ManageMenusModal({
                   strokeWidth={2}
                 />
               </button>
-            ) : (
-              <div className="shrink-0" />
             )}
 
             <div
@@ -313,7 +311,7 @@ export function ManageMenusModal({
                   variant={isAssigned ? "default" : "secondary"}
                   className="text-[10px] px-1.5 py-0.5 shrink-0"
                 >
-                  {menu.applicationCode}
+                  {menu.application.code}
                 </IGRPBadgePrimitive>
               </div>
               {menu.url && (
