@@ -338,8 +338,9 @@ export function DepartmentFormDialog({
                       form.handleSubmit(onSubmit)();
                     }}
                   >
-                    Guardar e Novo
                     <IGRPIcon iconName="Save" className="size-4" />
+                    Guardar e Novo
+                    
                   </IGRPButtonPrimitive>
                 )}
 
@@ -348,8 +349,9 @@ export function DepartmentFormDialog({
                   disabled={isLoading}
                   onClick={form.handleSubmit(onSubmit)}
                 >
-                  {isLoading ? "Guardando..." : "Guardar"}
                   <IGRPIcon iconName="Save" className="size-4" />
+                  {isLoading ? "Guardando..." : "Guardar"}
+                  
                 </IGRPButtonPrimitive>
               </div>
             </IGRPDialogFooterPrimitive>

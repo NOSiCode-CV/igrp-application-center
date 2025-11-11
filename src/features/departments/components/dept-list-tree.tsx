@@ -14,7 +14,7 @@ import {
   IGRPTabItem,
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
@@ -131,6 +131,11 @@ export function DepartmentListTree() {
       })
       .filter(Boolean) as DepartmentWithChildren[];
   };
+
+  useEffect(() => {
+    departments && setSelectedDeptCode(departments[0]?.code)
+  }, [departments])
+  
 
   if (isLoading || !departments) {
     return <AppCenterLoading descrption="Carregando departamentos..." />;
