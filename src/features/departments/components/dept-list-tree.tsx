@@ -3,6 +3,7 @@
 import {
   cn,
   IGRPBadge,
+  IGRPBadgePrimitive,
   IGRPBreadcrumbItemPrimitive,
   IGRPBreadcrumbListPrimitive,
   IGRPBreadcrumbPrimitive,
@@ -28,6 +29,7 @@ import { RolesListTree } from "@/features/roles/components/role-tree-list";
 import { MenuPermissions } from "./dept-menu";
 import { useRoles } from "@/features/roles/use-roles";
 import { ManageAppsModal } from "./Modal/manage-apps-modal";
+import { getStatusColor } from "@/lib/utils";
 
 export type DepartmentWithChildren = DepartmentArgs & {
   children?: DepartmentWithChildren[];
@@ -108,7 +110,7 @@ export function DepartmentListTree() {
 
   const filterTree = (
     depts: DepartmentWithChildren[],
-    term: string,
+    term: string
   ): DepartmentWithChildren[] => {
     if (!term) return depts;
 
@@ -219,65 +221,20 @@ export function DepartmentListTree() {
           )}
           {!isLoadSelectedDep && selectedDepartment ? (
             <div className="container mx-auto px-6">
-              <IGRPBreadcrumbPrimitive>
-                <IGRPBreadcrumbListPrimitive>
-                  <IGRPBreadcrumbItemPrimitive className="text-xs">
-                    Departamentos
-                  </IGRPBreadcrumbItemPrimitive>
-                  {selectedDepartment?.parent_code && (
-                    <>
-                      <IGRPBreadcrumbSeparatorPrimitive />
-                      <IGRPBreadcrumbItemPrimitive className="text-xs">
-                        {selectedDepartment.parent_code}
-                      </IGRPBreadcrumbItemPrimitive>
-                    </>
-                  )}
-                  <IGRPBreadcrumbSeparatorPrimitive />
-                  <IGRPBreadcrumbItemPrimitive className="text-xs">
-                    {selectedDepartment.name}
-                  </IGRPBreadcrumbItemPrimitive>
-                </IGRPBreadcrumbListPrimitive>
-              </IGRPBreadcrumbPrimitive>
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-2xl mt-2 font-bold">
+                  <div className="flex items-center justify-center gap-3">
+                    <h1 className="text-2xl font-bold">
                       {selectedDepartment.name}
                     </h1>
 
-                    {IGRPBadge ? (
-                      <IGRPBadge
-                        variant="solid"
-                        color={
-                          selectedDepartment.status === "ACTIVE"
-                            ? "success"
-                            : "destructive"
-                        }
-                      >
-                        {selectedDepartment.status === "ACTIVE"
-                          ? "Ativo"
-                          : "Inativo"}
-                      </IGRPBadge>
-                    ) : (
-                      <span
-                        className={cn(
-                          "px-2.5 py-1 rounded-md text-xs font-medium",
-                          selectedDepartment.status === "ACTIVE"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700",
-                        )}
-                      >
-                        {selectedDepartment.status === "ACTIVE"
-                          ? "Ativo"
-                          : "Inativo"}
-                      </span>
-                    )}
-
-                    {!selectedDepartment?.parent_code && (
-                      <IGRPBadge variant="outline" color="primary">
-                        Departamento Pai
-                      </IGRPBadge>
-                    )}
+                    <IGRPBadgePrimitive
+                      className={getStatusColor(
+                        selectedDepartment.status || "ACTIVE"
+                      )}
+                    >
+                      {selectedDepartment.status}
+                    </IGRPBadgePrimitive>
                   </div>
                   <div className="flex items-center">
                     <span className="text-muted-foreground text-xs">

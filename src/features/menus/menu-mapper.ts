@@ -20,20 +20,20 @@ const mapMenuCRUD = (menu: MenuEntryDTO): IGRPMenuCRUDArgs => ({
   target: menu.target as IGRPTargetType,
   url: menu.url,
   pageSlug: menu.pageSlug,
-  applicationCode: menu.applicationCode,
+  application: { code: menu.application.code },
   roles: menu.roles,
-  parentCode: menu.parentCode,
+  parent: { code: menu.parent.code} ,
 });
 
 export const mapperMenuCRUD = (
   menu: ApiResponse<MenuEntryDTO>,
 ): IGRPMenuCRUDArgs => {
   if (!menu.data) return {} as IGRPMenuCRUDArgs;
-  return mapMenuCRUD(menu.data);
+  return menu.data;
 };
 export const mapperListMenusCRUD = (
   menus: ApiResponse<MenuEntryDTO[]>,
 ): IGRPMenuCRUDArgs[] => {
   if (!menus.data) return [];
-  return menus.data.map(mapMenuCRUD);
+  return menus.data //.map(mapMenuCRUD);
 };

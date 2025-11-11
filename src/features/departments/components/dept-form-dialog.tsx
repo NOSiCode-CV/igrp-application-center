@@ -26,7 +26,7 @@ import {
   IGRPTextAreaPrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusSchema } from "@/schemas/global";
@@ -52,7 +52,7 @@ export function DepartmentFormDialog({
   parentDeptId,
 }: DepartmentCreateDialogProps) {
   const { igrpToast } = useIGRPToast();
-
+  const [shouldClose, setShouldClose] = useState(true);
   const { mutateAsync: createDepartment, isPending: isCreating } =
     useCreateDepartment();
   const { mutateAsync: updateDepartment, isPending: isUpdating } =
@@ -100,10 +100,15 @@ export function DepartmentFormDialog({
     if (!raw) return;
 
     if (!department) {
-      const code = `DEPT_${raw.replace(/\s+/g, "_").toUpperCase()}`.slice(
-        0,
-        30,
-      );
+      const ignoreWords = ["do", "da", "de", "dos", "das", "e", "o", "a"];
+      const words = raw.split(/\s+/);
+
+      const initials = words
+        .filter((word) => !ignoreWords.includes(word.toLowerCase()))
+        .map((word) => word.charAt(0).toUpperCase())
+        .join("");
+
+      const code = initials.slice(0, 30);
       form.setValue("code", code, { shouldValidate: true, shouldDirty: false });
     }
   }, [watchedName, form, department]);
@@ -123,15 +128,22 @@ export function DepartmentFormDialog({
       igrpToast({
         type: "success",
         title: "Departamento",
-        description: `O departamento foi ${department ? "atualizado" : "criado"} com sucesso.`,
+        description: `O departamento foi ${
+          department ? "atualizado" : "criado"
+        } com sucesso.`,
       });
 
       form.reset();
-      onOpenChange(false);
+
+      if (shouldClose) {
+        onOpenChange(false);
+      }
     } catch (error) {
       igrpToast({
         type: "error",
-        title: `Não foi possível ${department ? "atualizar" : "criar"} departamento.`,
+        title: `Não foi possível ${
+          department ? "atualizar" : "criar"
+        } departamento.`,
         description:
           error instanceof Error
             ? error.message
@@ -145,14 +157,14 @@ export function DepartmentFormDialog({
   const titleTxt = department
     ? "Editar Departamento"
     : isSubDepartment
-      ? "Criar Sub Departamento"
-      : "Criar Novo Departamento";
+    ? "Criar Sub Departamento"
+    : "Criar Novo Departamento";
 
   const descriptionTxt = department
     ? "Atualizar Departamento"
     : isSubDepartment
-      ? "Criar um novo sub departamento"
-      : "Criar um novo departamento";
+    ? "Criar um novo sub departamento"
+    : "Criar um novo departamento";
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
@@ -210,7 +222,7 @@ export function DepartmentFormDialog({
                       disabled={isLoading || !!department}
                       {...field}
                       onFocus={() => form.trigger("code")}
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                     />
                   </IGRPFormControlPrimitive>
                   <IGRPFormMessagePrimitive />
@@ -223,13 +235,12 @@ export function DepartmentFormDialog({
               name="description"
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                  <IGRPFormLabelPrimitive className="">
                     Descrição
                   </IGRPFormLabelPrimitive>
                   <IGRPFormControlPrimitive>
                     <IGRPTextAreaPrimitive
                       placeholder="Breve descrição do departamento"
-                      required
                       rows={2}
                       disabled={isLoading}
                       value={field.value ?? ""}
@@ -301,7 +312,7 @@ export function DepartmentFormDialog({
               />
             )}
 
-            <IGRPDialogFooterPrimitive className="pt-6">
+            <IGRPDialogFooterPrimitive className="pt-6 flex justify-between">
               <IGRPButton
                 variant="outline"
                 onClick={() => {
@@ -312,18 +323,35 @@ export function DepartmentFormDialog({
                 disabled={isLoading}
                 showIcon
                 iconPlacement="start"
-                iconName="Undo2"
+                iconName="X"
               >
                 Cancelar
               </IGRPButton>
-              <IGRPButtonPrimitive
-                type="button"
-                disabled={isLoading}
-                onClick={form.handleSubmit(onSubmit)}
-              >
-                {isLoading ? "Guardando..." : "Guardar"}
-                <IGRPIcon iconName="Check" className="size-4" />
-              </IGRPButtonPrimitive>
+              <div className="flex gap-1">
+                {!department && (
+                  <IGRPButtonPrimitive
+                    type="button"
+                    variant="outline"
+                    disabled={isLoading}
+                    onClick={() => {
+                      setShouldClose(false);
+                      form.handleSubmit(onSubmit)();
+                    }}
+                  >
+                    Guardar e Novo
+                    <IGRPIcon iconName="Save" className="size-4" />
+                  </IGRPButtonPrimitive>
+                )}
+
+                <IGRPButtonPrimitive
+                  type="button"
+                  disabled={isLoading}
+                  onClick={form.handleSubmit(onSubmit)}
+                >
+                  {isLoading ? "Guardando..." : "Guardar"}
+                  <IGRPIcon iconName="Save" className="size-4" />
+                </IGRPButtonPrimitive>
+              </div>
             </IGRPDialogFooterPrimitive>
           </form>
         </IGRPFormPrimitive>

@@ -10,19 +10,26 @@ import {
   IGRPDropdownMenuTriggerPrimitive,
   IGRPIcon,
   IGRPInputPrimitive,
+  IGRPDialogPrimitive,
+  IGRPDialogContentPrimitive,
+  IGRPDialogHeaderPrimitive,
+  IGRPDialogTitlePrimitive,
+  IGRPDialogTriggerPrimitive,
+  IGRPButton,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import { PageHeader } from "@/components/page-header";
 import { ApplicationCard } from "@/features/applications/components/app-card";
 import { useApplications } from "@/features/applications/use-applications";
-import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
+import { STATUS_OPTIONS } from "@/lib/constants";
+import { ApplicationCreateForm } from "./application-create-form";
 
 export function ApplicationList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
 
   const { data: applications, isLoading, error } = useApplications();
 
@@ -40,7 +47,7 @@ export function ApplicationList() {
     );
   }
 
-  const allApps = applications.filter((app) => app.type !== "SYSTEM");
+  const allApps = applications;
   const filteredApps = allApps.filter((app) => {
     const matchesSearch =
       app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,13 +70,22 @@ export function ApplicationList() {
         showActions
       >
         {!appEmpty && (
-          <ButtonLink
-            href={ROUTES.NEW_APPS}
-            label="Nova Aplicação"
-            icon="Grid2x2Plus"
-          />
+          <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
+            <IGRPDialogTriggerPrimitive asChild>
+              <IGRPButton showIcon iconName="Grid2x2Plus">
+                Nova Aplicação
+              </IGRPButton>
+            </IGRPDialogTriggerPrimitive>
+            <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <IGRPDialogHeaderPrimitive>
+                <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
+              </IGRPDialogHeaderPrimitive>
+              <ApplicationCreateForm onSuccess={() => setOpen(false)} />
+            </IGRPDialogContentPrimitive>
+          </IGRPDialogPrimitive>
         )}
       </PageHeader>
+
       <div className="flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
           <div className="relative w-full max-w-sm">
@@ -135,21 +151,27 @@ export function ApplicationList() {
 
         {filteredApps.length === 0 && allApps.length > 0 ? (
           <div className="text-center py-6 text-muted-foreground">
-            Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou
-            filtros.
+            Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou filtros.
           </div>
         ) : allApps.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
             <p className="mb-4">Nenhuma aplicação encontrada.</p>
-            <ButtonLink
-              href={ROUTES.NEW_APPS}
-              label="Criar Nova Aplicação"
-              icon="Grid2x2Plus"
-              variant="outline"
-            />
+            <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
+              <IGRPDialogTriggerPrimitive asChild>
+                <IGRPButton variant="outline" showIcon iconName="Grid2x2Plus">
+                  Criar Nova Aplicação
+                </IGRPButton>
+              </IGRPDialogTriggerPrimitive>
+              <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh] overflow-y-auto">
+                <IGRPDialogHeaderPrimitive>
+                  <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
+                </IGRPDialogHeaderPrimitive>
+                <ApplicationCreateForm onSuccess={() => setOpen(false)} />
+              </IGRPDialogContentPrimitive>
+            </IGRPDialogPrimitive>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredApps.map((app) => (
               <ApplicationCard key={app.id} app={app} />
             ))}

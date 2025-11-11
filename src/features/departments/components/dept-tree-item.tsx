@@ -13,7 +13,7 @@ import {
   IGRPTooltipProviderPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 
-import React, { useState } from "react";
+import React from "react";
 import type { DepartmentArgs } from "../dept-schemas";
 
 type DepartmentWithChildren = DepartmentArgs & {
@@ -44,6 +44,8 @@ const DepartmentTreeItem = ({
   const hasChildren = dept.children && dept.children.length > 0;
   const isExpanded = expandedDepts.has(dept.code);
   const isSelected = selectedDeptCode === dept.code;
+  console.log("de - ", dept?.status)
+  const isActive = dept.status === "ACTIVE";
 
   const toggleExpand = (code: string) => {
     const newExpanded = new Set(expandedDepts);
@@ -59,10 +61,12 @@ const DepartmentTreeItem = ({
     <div>
       <div
         className={cn(
-          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm border border-accent text-sm transition-all cursor-pointer",
+          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm border text-sm transition-all cursor-pointer",
           isSelected
-            ? "bg-primary/10 text-primary font-medium"
-            : "text-foreground hover:bg-accent/50",
+            ? "bg-primary/10 border-primary/30 text-primary font-medium"
+            : isActive
+              ? "border-accent text-foreground hover:bg-accent/50"
+              : "border-muted text-muted-foreground/70 hover:bg-muted/30",
         )}
         onClick={() => {
           if (hasChildren) toggleExpand(dept.code);
@@ -88,11 +92,19 @@ const DepartmentTreeItem = ({
           onClick={() => setSelectedDeptCode(dept.code)}
           className="flex items-center gap-2 flex-1 min-w-0"
         >
-          <IGRPIcon
-            iconName={isExpanded ? "FolderOpen" : "Folder"}
-            className="w-4 h-4 shrink-0"
-            strokeWidth={2}
-          />
+          <div className="relative">
+            <IGRPIcon
+              iconName={isExpanded ? "FolderOpen" : "Folder"}
+              className={cn(
+                "w-4 h-4 shrink-0",
+                !isActive && "opacity-50"
+              )}
+              strokeWidth={2}
+            />
+            {!isActive && (
+              <div className="absolute -right-0.5 -bottom-0.5 w-2 h-2 rounded-full bg-red-500/50 border border-background" />
+            )}
+          </div>
           <span className="flex-1 text-left truncate font-medium">
             {dept.name}
           </span>

@@ -19,16 +19,21 @@ const BaseApp = z
         /^[A-Z0-9_]+$/,
         "Deve conter apenas maiúsculas, números e sublinhados",
       )
-      .min(4, "Código deve ter no mínimo 4 caracteres"),
-    name: z.string().min(3, "Nome é obrigatório"),
+      .min(2, "Código deve ter no mínimo 2 caracteres"),
+    name: z.string().regex(
+        /^[a-zA-Z0-9\sÀ-ÿ]+$/,
+        "O nome não pode conter caracteres especiais"
+      ).min(2, "Nome é obrigatório"),
     status: statusSchema,
-    owner: z.string().min(3, "Proprietário é obrigatório"),
-    description: z.string().optional(),
+    owner: z.string().optional(),
+    description: z.string().regex(
+        /^[a-zA-Z0-9\sÀ-ÿ]+$/,
+        "A descrição não pode conter caracteres especiais"
+      ).optional(),
     picture: z.string().optional(),
     type: types,
     url: z.string().url().optional(),
     slug: z.string().optional(),
-    departments: z.array(z.string()).min(1, "Departamento é obrigatório"),
     createdBy: z.string().optional(),
     createdDate: z.string().optional(),
     lastModifiedBy: z.string().optional(),
@@ -140,13 +145,10 @@ export function normalizeApplication(values: FormVals, isEdit: boolean) {
     code: values.code as string,
     name: values.name as string,
     type: values.type as ApplicationType,
+    status: values.status as Status,
     description: values.description ?? null,
     owner: values.owner as string,
     picture: values.picture ?? null,
-    departments: values.departments ?? [],
-    ...(isEdit && "status" in values && values.status
-      ? { status: values.status as Status }
-      : {}),
   };
 
   if (values.type === appTypeCrud.enum.INTERNAL) {

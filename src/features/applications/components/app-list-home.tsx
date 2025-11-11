@@ -25,7 +25,7 @@ export function ApplicationsListHome() {
     );
   }
 
-  const filteredApps = applications.filter((app) => app.type !== "SYSTEM");
+  const filteredApps = applications;
   const activeApps = filteredApps
     .filter((app) => app.status === "ACTIVE")
     .slice(0, 6);

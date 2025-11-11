@@ -112,7 +112,7 @@ export function MenuDeleteDialog({
             }}
             type="button"
           >
-            Cancelar
+            Cancelardds
           </IGRPButtonPrimitive>
           <IGRPButtonPrimitive
             variant="destructive"

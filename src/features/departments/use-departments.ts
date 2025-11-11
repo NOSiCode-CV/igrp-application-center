@@ -136,20 +136,28 @@ export const useRemoveApplicationsFromDepartment = () => {
       appCodes: string[];
     }) => removeApplicationsFromDepartment(code, appCodes),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ queryKey: ["departments"] });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["applications", { departmentCode: variables.code }],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["department-available-apps", variables.code],
+        }),
+        queryClient.invalidateQueries({ 
+          queryKey: ["departments"] 
+        }),
+      ]);
 
-      await queryClient.invalidateQueries({
-        queryKey: ["applications", { departmentCode: variables.code }],
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: ["department-available-apps", variables.code],
-      });
-
-      await queryClient.refetchQueries({
-        queryKey: ["departments"],
-        exact: true,
-      });
+      await Promise.all([
+        queryClient.refetchQueries({
+          queryKey: ["applications", { departmentCode: variables.code }],
+          type: 'active',
+        }),
+        queryClient.refetchQueries({
+          queryKey: ["department-available-apps", variables.code],
+          type: 'active',
+        }),
+      ]);
     },
   });
 };

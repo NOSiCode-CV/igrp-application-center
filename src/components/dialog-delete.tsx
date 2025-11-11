@@ -92,6 +92,11 @@ function IGRPDialogDelete({
             }}
             type="button"
           >
+            <IGRPIcon
+                  iconName="X"
+                  className=" size-4"
+                  strokeWidth={2}
+                />
             {labelBtnCancel}
           </IGRPButtonPrimitive>
           <IGRPButtonPrimitive
@@ -99,6 +104,11 @@ function IGRPDialogDelete({
             onClick={confirmDelete}
             disabled={!isConfirmed}
           >
+            <IGRPIcon
+                  iconName="Trash"
+                  className="size-4"
+                  strokeWidth={2}
+                />
             {labelBtnDelete}
           </IGRPButtonPrimitive>
         </IGRPDialogFooterPrimitive>
