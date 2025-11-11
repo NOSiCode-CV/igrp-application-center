@@ -1,4 +1,4 @@
-import type { IGRPMenuCRUDArgs } from "@igrp/framework-next-types";
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import type {
   MenuFilters,
   UpdateMenuRequest,
@@ -20,7 +20,7 @@ import {
 export const useMenus = (params?: MenuFilters) => {
   const key = ["menus", params?.applicationCode ?? null] as const;
 
-  return useQuery<IGRPMenuCRUDArgs[]>({
+  return useQuery<IGRPMenuItemArgs[]>({
     queryKey: key,
     queryFn: () => getMenus(params),
     enabled: !!params?.applicationCode,
@@ -34,14 +34,14 @@ export const useCreateMenu = () => {
     mutationFn: createMenu,
     onSuccess: (newMenu) => {
       queryClient.invalidateQueries({ queryKey: ["menus"] });
-      if (newMenu.applicationCode) {
+      if (newMenu.application) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "application", newMenu.applicationCode],
+          queryKey: ["menus", "application", newMenu.application],
         });
       }
-      if (newMenu.parentCode) {
+      if (newMenu.parent) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "parent", newMenu.parentCode],
+          queryKey: ["menus", "parent", newMenu.parent],
         });
       }
     },
@@ -57,14 +57,14 @@ export const useUpdateMenu = () => {
     onSuccess: (updatedMenu, { code }) => {
       queryClient.invalidateQueries({ queryKey: ["menus"] });
       queryClient.invalidateQueries({ queryKey: ["menus", code] });
-      if (updatedMenu.applicationCode) {
+      if (updatedMenu.application) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "application", updatedMenu.applicationCode],
+          queryKey: ["menus", "application", updatedMenu.application],
         });
       }
-      if (updatedMenu.parentCode) {
+      if (updatedMenu.parent) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "parent", updatedMenu.parentCode],
+          queryKey: ["menus", "parent", updatedMenu.parent],
         });
       }
     },
@@ -168,7 +168,7 @@ export const useRemoveDepartmentsFromMenu = () => {
 };
 
 export const useDepartmentMenus = (departmentCode?: string) => {
-  return useQuery<IGRPMenuCRUDArgs[]>({
+  return useQuery<IGRPMenuItemArgs[]>({
     queryKey: ["department-menus", departmentCode],
     queryFn: () => getMenusByDepartment(departmentCode!),
     enabled: !!departmentCode,

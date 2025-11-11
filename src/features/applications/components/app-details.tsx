@@ -2,8 +2,6 @@
 
 import {
   IGRPBadgePrimitive,
-  IGRPTabs,
-  type IGRPTabItem,
   IGRPDialogPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogHeaderPrimitive,
@@ -40,14 +38,6 @@ export function ApplicationDetails({ code }: { code: string }) {
     );
   }
 
-  const tabItems: IGRPTabItem[] = [
-    {
-      label: "Menus",
-      value: "menus",
-      content: <MenuList app={app} />,
-    },
-  ];
-
   return (
     <section>
       <div className="flex items-start justify-between mb-6">
@@ -71,7 +61,7 @@ export function ApplicationDetails({ code }: { code: string }) {
 
         <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
           <IGRPDialogTriggerPrimitive asChild>
-            <IGRPButton showIcon iconName="Pencil">
+            <IGRPButton showIcon variant="outline" iconName="Pencil">
               Editar
             </IGRPButton>
           </IGRPDialogTriggerPrimitive>
@@ -84,7 +74,7 @@ export function ApplicationDetails({ code }: { code: string }) {
         </IGRPDialogPrimitive>
       </div>
 
-      <IGRPTabs defaultValue="menus" className="flex flex-col gap-4" items={tabItems} />
+      <MenuList app={app} />
     </section>
   );
 }

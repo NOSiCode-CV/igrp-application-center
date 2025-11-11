@@ -1,8 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { IGRPMenuCRUDArgs } from "@igrp/framework-next-types";
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPCommandEmptyPrimitive,
   IGRPCommandGroupPrimitive,
@@ -67,10 +68,10 @@ export const LUCIDE_ICON_OPTIONS: IGRPOptionsProps[] = (
 interface MenuFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  setMenus: React.Dispatch<React.SetStateAction<IGRPMenuCRUDArgs[]>>;
-  menu?: IGRPMenuCRUDArgs;
-  groupMenus: IGRPMenuCRUDArgs[]; // Grupos
-  folderMenus: IGRPMenuCRUDArgs[]; // Pastas
+  setMenus: React.Dispatch<React.SetStateAction<IGRPMenuItemArgs[]>>;
+  menu?: IGRPMenuItemArgs;
+  groupMenus: IGRPMenuItemArgs[]; // Grupos
+  folderMenus: IGRPMenuItemArgs[]; // Pastas
   appCode: string;
   openType?: "edit" | "view";
 }
@@ -117,14 +118,11 @@ export function MenuFormDialog({
   const menuType = form.watch("type");
   const selectedIcon = form.watch("icon");
 
-  // Determinar opções de parent baseado no tipo
   const parentOptions = useMemo(() => {
     if (menuType === "FOLDER") {
-      // Pasta pode pertencer a um grupo
       return groupMenus;
     }
     if (menuType === "MENU_PAGE" || menuType === "EXTERNAL_PAGE") {
-      // Páginas podem pertencer a pastas
       return folderMenus;
     }
     return [];
@@ -148,7 +146,7 @@ export function MenuFormDialog({
         target: menu.target ?? menuTargetSchema.enum._self,
         url: menu.url ?? "",
         parent: menu.parent ?? undefined,
-        application: {code: menu.applicationCode ?? appCode },
+        application: menu.application ?? appCode ,
         pageSlug: menu.pageSlug ?? "",
       } as FormValues);
     } else {
@@ -227,7 +225,7 @@ export function MenuFormDialog({
         setMenus((prevMenus) =>
           prevMenus.map((menu) =>
             menu.code === code
-              ? ({ ...menu, ...update } as IGRPMenuCRUDArgs)
+              ? ({ ...menu, ...update } as IGRPMenuItemArgs)
               : menu,
           ),
         );
@@ -293,7 +291,6 @@ export function MenuFormDialog({
 
   const handleTypeSelect = (type: string) => {
     form.setValue("type", type as any);
-    // Limpar parent ao mudar tipo
     form.setValue("parent", undefined);
     setStep("form");
   };
@@ -340,13 +337,15 @@ export function MenuFormDialog({
               disabled={openType === "view"}
             />
             <div className="flex justify-end gap-2 mt-6">
-              <IGRPButtonPrimitive
+              <IGRPButton
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                showIcon
+                iconName="X"
               >
                 Cancelar
-              </IGRPButtonPrimitive>
+              </IGRPButton>
             </div>
           </div>
         ) : (
@@ -357,7 +356,6 @@ export function MenuFormDialog({
                 className="flex flex-col gap-4 py-2"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Nome */}
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="name"
@@ -380,7 +378,6 @@ export function MenuFormDialog({
                     )}
                   />
 
-                  {/* Código */}
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="code"
@@ -402,7 +399,6 @@ export function MenuFormDialog({
                     )}
                   />
 
-                  {/* Estado */}
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="status"
@@ -438,7 +434,6 @@ export function MenuFormDialog({
                     )}
                   />
 
-                  {/* Ícone */}
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="icon"
@@ -582,7 +577,6 @@ export function MenuFormDialog({
                     )}
                   />
 
-                  {/* Campos específicos por tipo */}
                   {isMenuPage && (
                     <>
                       <IGRPFormFieldPrimitive
@@ -764,7 +758,6 @@ export function MenuFormDialog({
                     />
                   )}
 
-                  {/* Posição */}
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="position"
@@ -791,17 +784,18 @@ export function MenuFormDialog({
 
                 <IGRPDialogFooterPrimitive className="mt-4">
                   {!menu && step === "form" && (
-                    <IGRPButtonPrimitive
+                    <IGRPButton
                       type="button"
                       variant="ghost"
                       onClick={handleBack}
                       disabled={isLoading}
+                      iconName="ChevronLeft"
+                      className="size-4 mr-1"
                     >
-                      <IGRPIcon iconName="ChevronLeft" className="size-4 mr-1" />
                       Voltar
-                    </IGRPButtonPrimitive>
+                    </IGRPButton>
                   )}
-                  <IGRPButtonPrimitive
+                  <IGRPButton
                     type="button"
                     variant="outline"
                     onClick={() => {
@@ -809,18 +803,20 @@ export function MenuFormDialog({
                       setStep("type");
                       onOpenChange(false);
                     }}
+                    iconName="X"
+                    showIcon
                     disabled={isLoading}
                   >
                     Cancelar
-                  </IGRPButtonPrimitive>
+                  </IGRPButton>
                   {openType !== "view" && (
-                    <IGRPButtonPrimitive type="submit" disabled={isLoading}>
+                    <IGRPButton iconName="Save" showIcon type="submit" disabled={isLoading}>
                       {isLoading
                         ? "Guardando..."
                         : menu
                           ? "Atualizar"
                           : "Criar Menu"}
-                    </IGRPButtonPrimitive>
+                    </IGRPButton>
                   )}
                 </IGRPDialogFooterPrimitive>
               </form>

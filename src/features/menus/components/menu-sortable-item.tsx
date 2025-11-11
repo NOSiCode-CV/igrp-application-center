@@ -1,5 +1,4 @@
-
-import type { IGRPMenuCRUDArgs } from "@igrp/framework-next-types";
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
   IGRPBadgePrimitive,
   IGRPButtonPrimitive,
@@ -14,38 +13,35 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 interface SortableMenuItemProps {
-  menu: IGRPMenuCRUDArgs;
-  onView: (menu: IGRPMenuCRUDArgs) => void;
-  onEdit: (menu: IGRPMenuCRUDArgs) => void;
+  menu: IGRPMenuItemArgs;
+  onView: (menu: IGRPMenuItemArgs) => void;
+  onEdit: (menu: IGRPMenuItemArgs) => void;
   onDelete?: (code: string, name: string) => void;
   depth?: number;
   isChild?: boolean;
-  subMenus?: IGRPMenuCRUDArgs[];
-  allMenus?: IGRPMenuCRUDArgs[];
+  subMenus?: IGRPMenuItemArgs[];
+  allMenus?: IGRPMenuItemArgs[];
 }
 
 const MENU_TYPE_CONFIG = {
   GROUP: {
     icon: "FolderTree" as const,
     label: "Grupo",
-    color: "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30",
   },
   FOLDER: {
     icon: "Folder" as const,
     label: "Pasta",
-    color: "text-amber-600 bg-amber-100 dark:bg-amber-900/30",
   },
   MENU_PAGE: {
     icon: "FileText" as const,
     label: "Página",
-    color: "text-blue-600 bg-blue-100 dark:bg-blue-900/30",
   },
   EXTERNAL_PAGE: {
     icon: "ExternalLink" as const,
     label: "Externo",
-    color: "text-purple-600 bg-purple-100 dark:bg-purple-900/30",
   },
 } as const;
 
@@ -70,7 +66,11 @@ export function SortableMenuItem({
     isDragging,
   } = useSortable({
     id: menu.code,
-    data: { menu },
+    data: {
+      menu,
+      depth,
+      parentCode: menu.parent?.code ?? null,
+    },
   });
 
   const style = {
@@ -81,13 +81,21 @@ export function SortableMenuItem({
   const typeConfig = MENU_TYPE_CONFIG[menu.type] || MENU_TYPE_CONFIG.MENU_PAGE;
   const hasChildren = subMenus && subMenus.length > 0;
 
+  const sortedSubMenus = subMenus
+    ? [...subMenus].sort((a: any, b: any) => {
+        const aOrder = a.position ?? a.sortOrder ?? 0;
+        const bOrder = b.position ?? b.sortOrder ?? 0;
+        return aOrder - bOrder;
+      })
+    : [];
+
   return (
     <>
       <div
         ref={setNodeRef}
         style={{
           ...style,
-          paddingLeft: `${(depth + 1) * 1.5}rem`,
+          paddingLeft: `${(depth + 1) * 0.5}rem`,
         }}
         className={cn(
           "group relative flex items-center justify-between border-b last:border-0 bg-background transition-all",
@@ -95,10 +103,6 @@ export function SortableMenuItem({
           isChild && "bg-muted/30",
         )}
       >
-        {isChild && (
-          <div className="absolute left-4 top-0 bottom-0 w-px bg-border" />
-        )}
-
         <div className="flex items-center gap-3 flex-1 py-3">
           {hasChildren ? (
             <IGRPButtonPrimitive
@@ -147,19 +151,20 @@ export function SortableMenuItem({
                 </IGRPBadgePrimitive>
               )}
             </div>
-            <p className="text-sm text-muted-foreground truncate">
-              {menu.pageSlug || menu.url || "Sem URL"}
-            </p>
+            {typeConfig?.label === "Página" && (
+              <p className="text-sm text-muted-foreground truncate">
+                {menu.pageSlug || menu.url || "Sem URL"}
+              </p>
+            )}
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-md", typeConfig.color)}>
+            <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-md")}>
               <IGRPIcon
                 iconName={typeConfig.icon}
                 className="size-3.5"
                 strokeWidth={2}
               />
-              <span className="text-xs font-medium">{typeConfig.label}</span>
             </div>
 
             <IGRPDropdownMenuPrimitive>
@@ -193,27 +198,31 @@ export function SortableMenuItem({
       </div>
 
       {isExpanded && hasChildren && (
-        <div>
-          {subMenus.map((child) => {
-            const childSubMenus = allMenus?.filter(
-              (m) => m.parent?.code === child.code
-            ) || [];
+        <SortableContext
+          items={sortedSubMenus.map((m) => m.code)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div>
+            {sortedSubMenus.map((child) => {
+              const childSubMenus =
+                allMenus?.filter((m) => m.parent?.code === child.code) || [];
 
-            return (
-              <SortableMenuItem
-                key={child.code}
-                menu={child}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onView={onView}
-                depth={depth + 1}
-                isChild={true}
-                subMenus={childSubMenus}
-                allMenus={allMenus}
-              />
-            );
-          })}
-        </div>
+              return (
+                <SortableMenuItem
+                  key={child.code}
+                  menu={child}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onView={onView}
+                  depth={depth + 1}
+                  isChild={true}
+                  subMenus={childSubMenus}
+                  allMenus={allMenus}
+                />
+              );
+            })}
+          </div>
+        </SortableContext>
       )}
     </>
   );
