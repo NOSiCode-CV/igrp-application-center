@@ -17,11 +17,7 @@ export default function Home() {
           variant="outline"
         />
 
-        <ButtonLink
-          href={ROUTES.NEW_APPS}
-          label="Nova Aplicação"
-          icon="LayoutGrid"
-        />
+       
       </PageHeader>
 
       <ApplicationsListHome />

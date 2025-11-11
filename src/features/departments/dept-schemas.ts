@@ -20,10 +20,10 @@ export const departmentSchema = z
   ),
     description: z
       .string()
-      .regex(
-        /^[a-zA-Z0-9\sÀ-ÿ]+$/,
-        "A descrição não pode conter caracteres especiais"
-      )
+      // .regex(
+      //   /^[a-zA-Z0-9\sÀ-ÿ]+$/,
+      //   "A descrição não pode conter caracteres especiais"
+      // )
       .optional()
       .nullable(),
     status: statusSchema,
