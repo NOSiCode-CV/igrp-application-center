@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { IGRPGlobalError } from "@igrp/framework-next-ui";
+import { IGRPGlobalError } from '@igrp/framework-next-ui';
 
-export default function GloabalError({
+export default function GlobalError({
   error,
   reset,
 }: {
