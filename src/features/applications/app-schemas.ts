@@ -149,6 +149,7 @@ export function normalizeApplication(values: FormVals, isEdit: boolean) {
     description: values.description ?? null,
     owner: values.owner as string,
     picture: values.picture ?? null,
+    departments: []
   };
 
   if (values.type === appTypeCrud.enum.INTERNAL) {

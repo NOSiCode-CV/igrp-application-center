@@ -1,4 +1,3 @@
-// menu-schemas.ts
 
 import type { MenuType, Status } from "@igrp/platform-access-management-client-ts";
 import { z } from "zod";
@@ -8,13 +7,11 @@ export const menuTypeSchema = z.enum(["GROUP", "FOLDER", "MENU_PAGE", "EXTERNAL_
 
 export const menuTargetSchema = z.enum(["_self", "_blank"]);
 
-// Schema para o parent
 export const parentSchema = z.object({
   code: z.string(),
   description: z.string(),
 }).optional();
 
-// Schema para application
 export const applicationSchema = z.object({
   code: z.string(),
 });

@@ -140,8 +140,8 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             <IGRPFormItemPrimitive>
               <IGRPFormLabelPrimitive>Proprietário</IGRPFormLabelPrimitive>
               <IGRPSelectPrimitive onValueChange={field.onChange} value={field.value}>
-                <IGRPFormControlPrimitive>
-                  <IGRPSelectTriggerPrimitive>
+                <IGRPFormControlPrimitive  className="w-full">
+                  <IGRPSelectTriggerPrimitive >
                     <IGRPSelectValuePrimitive placeholder="Selecione" />
                   </IGRPSelectTriggerPrimitive>
                 </IGRPFormControlPrimitive>
@@ -165,7 +165,7 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             <IGRPFormItemPrimitive>
               <IGRPFormLabelPrimitive>Tipo</IGRPFormLabelPrimitive>
               <IGRPSelectPrimitive onValueChange={field.onChange} value={field.value}>
-                <IGRPFormControlPrimitive>
+                <IGRPFormControlPrimitive  className="w-full">
                   <IGRPSelectTriggerPrimitive>
                     <IGRPSelectValuePrimitive />
                   </IGRPSelectTriggerPrimitive>

@@ -18,6 +18,7 @@ import { useApplicationByCode } from "@/features/applications/use-applications";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { getStatusColor } from "@/lib/utils";
 import { ApplicationEditForm } from "./app-edit-form";
+import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { data: app, isLoading, error } = useApplicationByCode(code);
@@ -65,11 +66,13 @@ export function ApplicationDetails({ code }: { code: string }) {
               Editar
             </IGRPButton>
           </IGRPDialogTriggerPrimitive>
-          <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh]">
+            
             <IGRPDialogHeaderPrimitive>
               <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
             </IGRPDialogHeaderPrimitive>
             <ApplicationEditForm application={app} onSuccess={() => setOpen(false)} />
+         
           </IGRPDialogContentPrimitive>
         </IGRPDialogPrimitive>
       </div>

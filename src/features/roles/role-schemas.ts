@@ -12,7 +12,7 @@ export const roleSchema = z.object({
       /^[A-Za-z0-9_-]+$/,
       "Nome deve conter apenas letras, números, hífens e underscores",
     ),
-  code: z.string().min(5, "Código é obrigatório"),
+  code: z.string().min(2, "Código é obrigatório , minimo 2 caracteres"),
   description: z.string().optional().nullable(),
   departmentCode: z
     .string()

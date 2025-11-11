@@ -117,8 +117,8 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     const activeMenu = active.data.current?.menu as IGRPMenuItemArgs;
     const overMenu = over.data.current?.menu as IGRPMenuItemArgs;
 
-    const activeParentCode = activeMenu.parent?.code ?? null;
-    const overParentCode = overMenu.parent?.code ?? null;
+    const activeParentCode = activeMenu.parentCode ?? null;
+    const overParentCode = overMenu.parentCode ?? null;
 
     if (activeParentCode !== overParentCode) {
       igrpToast({
@@ -131,10 +131,10 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
 
     const parentCode = activeParentCode;
     const siblings = menus.filter(
-      (m) => (m.parent?.code ?? null) === parentCode
+      (m) => (m.parentCode ?? null) === parentCode
     );
     const otherMenus = menus.filter(
-      (m) => (m.parent?.code ?? null) !== parentCode
+      (m) => (m.parentCode ?? null) !== parentCode
     );
 
     const oldIndex = siblings.findIndex((item) => item.code === active.id);
@@ -159,13 +159,13 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
             code: menu.code,
             data: {
               name: menu.name,
-              type: menu.type,
+              //type: menu.type,
               icon: menu.icon,
-              status: menu.status,
+              //status: menu.status,
               url: menu.url,
               pageSlug: menu.pageSlug,
-              parentCode: menu.parent?.code,
-              applicationCode: menu.application,
+              parentCode: menu.parentCode,
+              applicationCode: menu.applicationCode,
               sortOrder: index,
               position: index,
             },
@@ -205,12 +205,12 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
   console.log("filteredMenus - ", filteredMenus)
 
   const groupMenus = filteredMenus.filter(
-    (menu) => !menu.parent?.code && menu.type === "GROUP",
+    (menu) => !menu.parentCode && menu.type === "GROUP",
   );
 
   const folderMenus = filteredMenus.filter((menu) => menu.type === "FOLDER");
 
-  const rootMenus = filteredMenus.filter((menu) => !menu.parent?.code);
+  const rootMenus = filteredMenus.filter((menu) => !menu.parentCode);
   const menuEmpty = filteredMenus.length === 0;
 
   return (
@@ -283,7 +283,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
               <div>
                 {rootMenus.map((menu) => {
                   const childMenus = filteredMenus.filter(
-                    (m) => m.parent?.code === menu.code,
+                    (m) => m.parentCode === menu.code,
                   );
 
                   return (

@@ -54,6 +54,7 @@ export function DepartmentListTree() {
   const { data: selectedDepartment, isLoading: isLoadSelectedDep } =
     useDepartmentByCode(selectedDeptCode || "");
 
+
   const buildTree = (depts: DepartmentArgs[]): DepartmentWithChildren[] => {
     const map = new Map<string, DepartmentWithChildren>();
     const roots: DepartmentWithChildren[] = [];
@@ -64,8 +65,8 @@ export function DepartmentListTree() {
 
     depts.forEach((dept) => {
       const node = map.get(dept.code)!;
-      if (dept.parent_code) {
-        const parent = map.get(dept.parent_code);
+      if (dept.parentCode) {
+        const parent = map.get(dept.parentCode);
         if (parent) {
           parent.children!.push(node);
         } else {
@@ -113,7 +114,7 @@ export function DepartmentListTree() {
     term: string
   ): DepartmentWithChildren[] => {
     if (!term) return depts;
-
+console.log("dept - ", depts)
     return depts
       .map((dept) => {
         const matchesCurrent =
@@ -142,7 +143,6 @@ export function DepartmentListTree() {
   }
 
   if (error) throw error;
-
   const departmentTree = buildTree(departments);
   const filteredTree = filterTree(departmentTree, searchTerm);
 

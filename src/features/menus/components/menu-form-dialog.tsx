@@ -145,10 +145,10 @@ export function MenuFormDialog({
         status: menu.status ?? statusSchema.enum.ACTIVE,
         target: menu.target ?? menuTargetSchema.enum._self,
         url: menu.url ?? "",
-        parent: menu.parent ?? undefined,
-        application: menu.application ?? appCode ,
+        parent: menu.parentCode ?? undefined,
+        application: menu.applicationCode ?? appCode,
         pageSlug: menu.pageSlug ?? "",
-      } as FormValues);
+      } as unknown as FormValues);
     } else {
       form.reset({
         name: "",
@@ -355,7 +355,7 @@ export function MenuFormDialog({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-4 py-2"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2! gap-4">
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="name"
@@ -483,7 +483,7 @@ export function MenuFormDialog({
                                 {!ready && (
                                   <div className="absolute right-2 top-1/2 -translate-y-1/2">
                                     <IGRPIcon
-                                      iconName="Loader"
+                                      iconName="LoaderCircle"
                                       className="size-4 animate-spin"
                                     />
                                   </div>

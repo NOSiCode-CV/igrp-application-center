@@ -34,14 +34,14 @@ export const useCreateMenu = () => {
     mutationFn: createMenu,
     onSuccess: (newMenu) => {
       queryClient.invalidateQueries({ queryKey: ["menus"] });
-      if (newMenu.application) {
+      if (newMenu.applicationCode) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "application", newMenu.application],
+          queryKey: ["menus", "application", newMenu.applicationCode],
         });
       }
-      if (newMenu.parent) {
+      if (newMenu.parentCode) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "parent", newMenu.parent],
+          queryKey: ["menus", "parent", newMenu.parentCode],
         });
       }
     },
@@ -57,14 +57,14 @@ export const useUpdateMenu = () => {
     onSuccess: (updatedMenu, { code }) => {
       queryClient.invalidateQueries({ queryKey: ["menus"] });
       queryClient.invalidateQueries({ queryKey: ["menus", code] });
-      if (updatedMenu.application) {
+      if (updatedMenu.applicationCode) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "application", updatedMenu.application],
+          queryKey: ["menus", "application", updatedMenu.applicationCode],
         });
       }
-      if (updatedMenu.parent) {
+      if (updatedMenu.parentCode) {
         queryClient.invalidateQueries({
-          queryKey: ["menus", "parent", updatedMenu.parent],
+          queryKey: ["menus", "parent", updatedMenu.parentCode],
         });
       }
     },

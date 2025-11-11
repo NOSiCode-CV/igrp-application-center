@@ -149,7 +149,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   };
 
   const filteredByApp = selectedApp
-    ? (menus || []).filter((menu) => menu.application.code === selectedApp)
+    ? (menus || []).filter((menu) => menu.applicationCode === selectedApp)
     : menus || [];
 
   const filteredMenus = filteredByApp.filter((menu) => {
@@ -449,12 +449,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   {sortedApps.find((app) => app.code === selectedApp)?.name ||
                     selectedApp}
                 </IGRPBadgePrimitive>
-                <button
-                  onClick={() => setSelectedApp("")}
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Limpar
-                </button>
+                
               </div>
             )}
 
@@ -575,7 +570,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   {saving ? (
                     <>
                       <IGRPIcon
-                        iconName="Loader"
+                        iconName="LoaderCircle"
                         className="w-4 h-4 animate-spin"
                         strokeWidth={2}
                       />

@@ -51,7 +51,7 @@ export function MenuTypeSelector({
       value={value}
       onValueChange={onChange}
       disabled={disabled}
-      className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      className="grid grid-cols-1 md:grid-cols-2! gap-4"
     >
       {MENU_TYPES.map((type) => (
         <label key={type.value} className="cursor-pointer">

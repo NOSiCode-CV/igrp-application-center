@@ -27,7 +27,7 @@ export const departmentSchema = z
       .optional()
       .nullable(),
     status: statusSchema,
-    parent_code: trimmed.optional(),
+    parentCode: trimmed.optional(),
   })
   .strict();
 
@@ -58,6 +58,6 @@ export const normalizeDeptartment = (data: DepartmentArgs) => {
     name: data.name,
     description: data.description,
     status: data.status as DepartmentStatus,
-    parent_code: data.parent_code,
+    parentCode: data.parentCode,
   };
 };

@@ -44,7 +44,7 @@ const DepartmentTreeItem = ({
   const hasChildren = dept.children && dept.children.length > 0;
   const isExpanded = expandedDepts.has(dept.code);
   const isSelected = selectedDeptCode === dept.code;
-  console.log("de - ", dept?.status)
+
   const isActive = dept.status === "ACTIVE";
 
   const toggleExpand = (code: string) => {

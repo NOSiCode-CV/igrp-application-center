@@ -52,7 +52,7 @@ export function DepartmentFormDialog({
   parentDeptId,
 }: DepartmentCreateDialogProps) {
   const { igrpToast } = useIGRPToast();
-  const [shouldClose, setShouldClose] = useState(true);
+  const [shouldClose, setShouldClose] = useState(false);
   const { mutateAsync: createDepartment, isPending: isCreating } =
     useCreateDepartment();
   const { mutateAsync: updateDepartment, isPending: isUpdating } =
@@ -63,7 +63,7 @@ export function DepartmentFormDialog({
     code: "",
     description: "",
     status: statusSchema.enum.ACTIVE,
-    parent_code: "",
+    parentCode: "",
   };
 
   const form = useForm<DepartmentArgs>({
@@ -80,12 +80,12 @@ export function DepartmentFormDialog({
         code: department.code ?? "",
         description: department.description ?? "",
         status: department.status ?? statusSchema.enum.ACTIVE,
-        parent_code: department.parent_code ?? "",
+        parentCode: department.parentCode ?? "",
       });
     } else {
       form.reset({
         ...defaultValues,
-        parent_code: parentDeptId ?? "",
+        parentCode: parentDeptId ?? "",
       });
     }
   }, [open, department, parentDeptId, form]);
@@ -116,41 +116,45 @@ export function DepartmentFormDialog({
   const isLoading = isCreating || isUpdating;
 
   const onSubmit = async (values: DepartmentArgs) => {
-    const payload = normalizeDeptartment(values);
+  const payload = normalizeDeptartment(values);
 
-    try {
-      if (department) {
-        await updateDepartment({ code: department.code, data: payload });
-      } else {
-        await createDepartment(payload);
-      }
+  try {
+    if (department) {
+      await updateDepartment({ code: department.code, data: payload });
+    } else {
+      await createDepartment(payload);
+    }
 
-      igrpToast({
-        type: "success",
-        title: "Departamento",
-        description: `O departamento foi ${
-          department ? "atualizado" : "criado"
-        } com sucesso.`,
-      });
+    igrpToast({
+      type: "success",
+      title: "Departamento",
+      description: `O departamento foi ${
+        department ? "atualizado" : "criado"
+      } com sucesso.`,
+    });
 
-      form.reset();
-
-      if (shouldClose) {
-        onOpenChange(false);
-      }
-    } catch (error) {
-      igrpToast({
-        type: "error",
-        title: `Não foi possível ${
-          department ? "atualizar" : "criar"
-        } departamento.`,
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+    if (shouldClose) {
+      onOpenChange(false);
+      form.reset(); 
+    } else {
+      form.reset({
+        ...defaultValues,
+        parentCode: parentDeptId ?? "",
       });
     }
-  };
+  } catch (error) {
+    igrpToast({
+      type: "error",
+      title: `Não foi possível ${
+        department ? "atualizar" : "criar"
+      } departamento.`,
+      description:
+        error instanceof Error
+          ? error.message
+          : "Ocorreu um erro desconhecido.",
+    });
+  }
+};
 
   const isSubDepartment = Boolean(parentDeptId);
 
@@ -259,7 +263,7 @@ export function DepartmentFormDialog({
             {isSubDepartment && (
               <IGRPFormFieldPrimitive
                 control={form.control}
-                name="parent_code"
+                name="parentCode"
                 render={({ field }) => (
                   <IGRPFormItemPrimitive>
                     <IGRPFormLabelPrimitive>
@@ -339,19 +343,20 @@ export function DepartmentFormDialog({
                     }}
                   >
                     <IGRPIcon iconName="Save" className="size-4" />
-                    Guardar e Novo
-                    
+                    {isLoading ? "Guardando..." : "Guardar e Novo" }
                   </IGRPButtonPrimitive>
                 )}
 
                 <IGRPButtonPrimitive
                   type="button"
                   disabled={isLoading}
-                  onClick={form.handleSubmit(onSubmit)}
+                  onClick={() => {
+                    setShouldClose(true);
+                    form.handleSubmit(onSubmit)()
+                  }}
                 >
                   <IGRPIcon iconName="Save" className="size-4" />
                   {isLoading ? "Guardando..." : "Guardar"}
-                  
                 </IGRPButtonPrimitive>
               </div>
             </IGRPDialogFooterPrimitive>
