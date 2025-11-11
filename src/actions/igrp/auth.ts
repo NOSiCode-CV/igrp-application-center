@@ -47,31 +47,31 @@ export async function serverSession() {
   }
 }
 
-export async function getSession() {
-  let session: Session | null;
-  const isPreviewMode = process.env.IGRP_PREVIEW_MODE === "true";
+// export async function getSession() {
+//   let session: Session | null;
+//   const isPreviewMode = process.env.IGRP_PREVIEW_MODE === "true";
 
-  if (isPreviewMode) return null;
+//   if (isPreviewMode) return null;
 
-  try {
-    session = await serverSession();
-    if (!session) return session;
+//   try {
+//     session = await serverSession();
+//     if (!session) return session;
 
-    const now = Math.floor(Date.now() / 1000) + 60;
+//     const now = Math.floor(Date.now() / 1000) + 60;
 
-    const providerExp =
-      typeof session.expiresAt === "number" ? session.expiresAt : undefined;
-    const providerExpired = providerExp !== undefined && providerExp < now;
-    const refreshFailed = session.error === "RefreshAccessTokenError";
+//     const providerExp =
+//       typeof session.expiresAt === "number" ? session.expiresAt : undefined;
+//     const providerExpired = providerExp !== undefined && providerExp < now;
+//     const refreshFailed = session.error === "RefreshAccessTokenError";
 
-    if (providerExpired || refreshFailed) {
-      const logout = "/logout";
-      redirect(logout);
-    }
-  } catch (error) {
-    console.error("Failed to get session in layout:", error);
-    session = null;
-  }
+//     if (providerExpired || refreshFailed) {
+//       const logout = "/logout";
+//       redirect(logout);
+//     }
+//   } catch (error) {
+//     console.error("Failed to get session in layout:", error);
+//     session = null;
+//   }
 
-  return session;
-}
+//   return session;
+// }
