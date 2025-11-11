@@ -26,7 +26,7 @@ const getRemotePatterns = () => {
 };
 
 const nextConfig: NextConfig = {
-  // output: "standalone",
+  output: "standalone",
   basePath: basePath,
   images: {
     remotePatterns: getRemotePatterns(),
