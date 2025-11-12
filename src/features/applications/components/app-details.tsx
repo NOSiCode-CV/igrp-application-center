@@ -51,28 +51,28 @@ export function ApplicationDetails({ code }: { code: string }) {
     );
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    // Preview local
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+  //   // Preview local
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     setPreviewUrl(reader.result as string);
+  //   };
+  //   reader.readAsDataURL(file);
 
-    try {
-      await uploadPicture.mutateAsync(file);
-      refetch();
-      setPreviewUrl(null);
-    } catch (err) {
-      console.error("Erro ao fazer upload:", err);
-      setPreviewUrl(null);
-    }
-  };
+  //   try {
+  //     await uploadPicture.mutateAsync(file);
+  //     refetch();
+  //     setPreviewUrl(null);
+  //   } catch (err) {
+  //     console.error("Erro ao fazer upload:", err);
+  //     setPreviewUrl(null);
+  //   }
+  // };
 
-  const pictureUrl = previewUrl || app.pictureUrl || null;
+  // const pictureUrl = previewUrl || app.pictureUrl || null;
 
   return (
     <section>
@@ -80,7 +80,7 @@ export function ApplicationDetails({ code }: { code: string }) {
       <div className="flex items-start mt-4 justify-between mb-6">
         <div className="flex items-start gap-4">
           
-          <div className="relative group">
+          {/* <div className="relative group">
             <IGRPButton
               variant="ghost"
               size="icon"
@@ -111,7 +111,7 @@ export function ApplicationDetails({ code }: { code: string }) {
               onChange={handleFileChange}
               className="hidden"
             />
-          </div> */}
+          </div> */} 
 
           <div>
             <div className="flex items-center gap-3">
