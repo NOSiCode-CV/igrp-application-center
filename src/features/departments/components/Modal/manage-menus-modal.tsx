@@ -38,6 +38,7 @@ import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { buildMenuTree } from "../../dept-lib";
 import { getMenuIcon } from "@/lib/utils";
 import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
+import { useApplications } from "@/features/applications/use-applications";
 
 interface ManageMenusModalProps {
   departmentCode: string;
@@ -72,6 +73,10 @@ export function ManageMenusModal({
     useDepartmentMenus(departmentCode || "");
   const addMenusMutation = useAddMenusToDepartment();
   const removeMenusMutation = useRemoveMenusFromDepartment();
+
+  const { data: assignedApps, isLoading: loadingApps } = useApplications({
+    departmentCode: departmentCode || "",
+  });
 
   const loading = loadingAvailable || loadingAssigned;
 
@@ -123,8 +128,6 @@ export function ManageMenusModal({
       .sort((a, b) => a.name.localeCompare(b.name, "pt"));
   }, [allMenus]);
 
-  console.log("appsFroallMenusmMenus - ", allMenus)
-
   useEffect(() => {
     if (open && appsFromMenus.length > 0 && !selectedApp) {
       setSelectedApp(appsFromMenus[0].code);
@@ -136,6 +139,15 @@ export function ManageMenusModal({
       setSearchTerm("");
     }
   }, [open]);
+
+  useEffect(() => {
+    if (assignedApps && assignedApps.length > 0 && !selectedApp) {
+      const sortedApps = [...assignedApps].sort((a, b) =>
+        a.name.localeCompare(b.name, "pt")
+      );
+      setSelectedApp(sortedApps[0].code);
+    }
+  }, [assignedApps, selectedApp]);
 
   const toggleExpand = (menuCode: string) => {
     setExpandedMenus((prev) => {
@@ -366,6 +378,13 @@ export function ManageMenusModal({
     );
   };
 
+  const sortedApps = useMemo(() => {
+    if (!assignedApps) return [];
+    return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
+  }, [assignedApps]);
+
+  console.log("sortedApps - ", sortedApps)
+
   return (
     <>
       <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
@@ -404,7 +423,7 @@ export function ManageMenusModal({
                   <IGRPSelectValuePrimitive placeholder="Todas aplicações" />
                 </IGRPSelectTriggerPrimitive>
                 <IGRPSelectContentPrimitive>
-                  {appsFromMenus.map((app) => (
+                  {sortedApps.map((app) => (
                     <IGRPSelectItemPrimitive key={app.code} value={app.code}>
                       <div className="flex items-center gap-2">
                         <IGRPIcon

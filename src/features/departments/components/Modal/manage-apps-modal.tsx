@@ -279,7 +279,7 @@ export function ManageAppsModal({
                                 : "text-muted-foreground"
                             )}
                           >
-                            {app.isAssigned ? "Adicionada" : "Disponível"}
+                            {app.isAssigned ? "Adicionado" : "Disponível"}
                           </span>
                           {app.isAssigned && (
                             <div className="flex items-center gap-1 text-[10px] text-primary/70">
@@ -295,7 +295,7 @@ export function ManageAppsModal({
                           }
                           disabled={processingApp !== null}
                           className={cn(
-                            "data-[state=checked]:bg-green-200",
+                            "data-[state=checked]:bg-emerald-500",
                             processingApp === app.code && "opacity-50"
                           )}
                         />

@@ -59,7 +59,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     departmentCode || ""
   );
 
-  console.log("menus - ", menus)
   const { data: roles, isLoading: isLoadingRoles } = useRoles({
     departmentCode: departmentCode || "",
   });
@@ -198,8 +197,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
       return newMap;
     });
   };
-
-  
 
   const hasChanges = Array.from(menuRoleAssignments.entries()).some(
     ([menuCode, currentRoles]) => {
