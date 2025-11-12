@@ -117,6 +117,19 @@ export const useAddApplicationsToDepartment = () => {
         queryKey: ["department-available-apps", variables.code],
       });
 
+       await queryClient.invalidateQueries({
+        queryKey: ["department-available-menus", variables.code],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["department-menus", variables.code],
+      });
+
+      await queryClient.refetchQueries({
+        queryKey: ["departments"],
+        exact: true,
+      });
+
       await queryClient.refetchQueries({
         queryKey: ["departments"],
         exact: true,
@@ -147,6 +160,12 @@ export const useRemoveApplicationsFromDepartment = () => {
           queryKey: ["departments"] 
         }),
       ]);
+      queryClient.invalidateQueries({
+          queryKey: ["department-available-menus", variables.code],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["department-menus", variables.code],
+        }),
 
       await Promise.all([
         queryClient.refetchQueries({
