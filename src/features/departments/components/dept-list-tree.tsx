@@ -167,10 +167,10 @@ export function DepartmentListTree() {
 
   return (
     <div className="flex flex-col overflow-hidden">
-      <div className="flex h-svh">
-        <div className="w-80 flex border-r pr-2 border-accent flex-col">
+      <div className="flex h-">
+        <div className="w-80 flex pr-2 border-accent flex-col">
           <div className="flex flex-col min-w-0">
-            <h2 className="text-2xl font-bold tracking-tight truncate">
+            <h2 className="text-xl font-bold tracking-tight truncate">
               Gestão de Departamentos
             </h2>
 
@@ -225,12 +225,12 @@ export function DepartmentListTree() {
           {isLoadSelectedDep && (
             <AppCenterLoading descrption="Carregando departamentos..." />
           )}
-          {!isLoadSelectedDep && selectedDepartment ? (
+          {!isLoadSelectedDep && selectedDepartment && (
             <div className="container mx-auto px-6">
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <div className="flex items-center justify-center gap-3">
-                    <h1 className="text-2xl font-bold">
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-xl font-bold">
                       {selectedDepartment.name}
                     </h1>
 
@@ -288,24 +288,6 @@ export function DepartmentListTree() {
                 items={tabs}
                 className="min-w-0"
                 tabContentClassName="px-0"
-              />
-            </div>
-          ) : (
-            <div className="text-center py-6 text-muted-foreground">
-              <IGRPIcon
-                iconName="FolderTree"
-                className="w-16 h-16 mx-auto mb-4 opacity-50"
-              />
-              <div className="py-2">
-                Escolha um departamento na lista para ver os detalhes
-              </div>
-
-              <ButtonLink
-                onClick={handleOpenCreate}
-                icon="Plus"
-                href="#"
-                label="Novo Departamento"
-                variant="outline"
               />
             </div>
           )}

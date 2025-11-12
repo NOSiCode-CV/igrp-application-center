@@ -144,15 +144,14 @@ export function UserInviteDialog({
     const { users, roleNames } = values;
     const inviteAll = Promise.all(
       users.map(async (raw) => {
-        const username = deriveUsernameFromEmail(raw.email);
+        const username = raw.email;
         const userPayload: CreateUserRequest = {
           name: raw.name.trim(),
-          username,
+          username: raw.name.trim(),
           email: raw.email.trim(),
           status: statusSchema.enum.ACTIVE as Status,
         };
 
-        console.log({ userPayload });
         const created = await userInvite({ user: userPayload });
         const finalUsername = (created as any)?.username ?? username;
         if (finalUsername && roleNames?.length) {
@@ -282,7 +281,7 @@ export function UserInviteDialog({
               <IGRPCardPrimitive className="py-3">
                 <IGRPCardContentPrimitive className="flex flex-col gap-4">
                   <div>
-                    <h3 className="text-sm font-medium">Prefís</h3>
+                    <h3 className="text-sm font-medium">Perfis</h3>
                     <p className="text-sm text-muted-foreground mb-4">
                       Selecione o departamento e roles para todos os convidados.
                     </p>
@@ -430,10 +429,10 @@ export function UserInviteDialog({
                         !selectedDeptCode || (roles?.length ?? 0) === 0;
                       const selected = new Set(field.value ?? ([] as string[]));
 
-                      const toggle = (name: string) => {
+                      const toggle = (code: string) => {
                         const next = new Set(selected);
-                        if (next.has(name)) next.delete(name);
-                        else next.add(name);
+                        if (next.has(code)) next.delete(code);
+                        else next.add(code);
                         form.setValue("roleNames", Array.from(next), {
                           shouldValidate: true,
                           shouldDirty: true,
@@ -499,10 +498,10 @@ export function UserInviteDialog({
                                   </IGRPCommandEmptyPrimitive>
                                   <IGRPCommandGroupPrimitive>
                                     {roles?.map((role) => {
-                                      const checked = selected.has(role.name);
+                                      const checked = selected.has(role.code);
                                       return (
                                         <IGRPCommandItemPrimitive
-                                          key={role.name}
+                                          key={role.code}
                                           value={role.name}
                                           onSelect={(val) => {
                                             toggle(val);

@@ -2,6 +2,7 @@
 
 import type { UploadFileOptions } from "@igrp/platform-access-management-client-ts";
 import { getClientAccess } from "./access-client";
+import { headers } from "next/headers";
 
 export async function getFileUrl(path: string) {
   const client = await getClientAccess();
@@ -20,9 +21,7 @@ export async function uploadPublicFile(
   options: UploadFileOptions,
 ) {
   const client = await getClientAccess();
-
-  // console.log({ file, options });
-
+  
   try {
     const result = await client.files.uploadPublicFile(file, options);
     return result.data;
@@ -34,6 +33,7 @@ export async function uploadPublicFile(
     throw error;
   }
 }
+
 export async function uploadPrivateFile(
   file: File | Blob,
   options: UploadFileOptions,

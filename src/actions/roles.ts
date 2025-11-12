@@ -56,9 +56,13 @@ export async function updateRole(name: string, roleData: UpdateRoleRequest) {
 export async function deleteRole(code: string) {
   const client = await getClientAccess();
   try {
-    await client.roles.deleteRole(code);
-    return { success: true };
-  } catch (error) {
+    const result = await client.roles.deleteRole(code);
+    console.log("result - ", result)
+    return result;
+  } catch (error: any) {
+    if (error?.status === 204 || error?.status === 0) {
+      return { success: true, code };
+    }
     console.error(
       `[delete-role] Não foi possível eliminar perfil ${code}:`,
       error,

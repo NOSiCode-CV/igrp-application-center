@@ -66,10 +66,13 @@ export const useDeleteRole = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (code: string) => deleteRole(code),
+    mutationFn: deleteRole,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["roles"] });
-      await queryClient.refetchQueries({ queryKey: ["roles"] });
+      await queryClient.refetchQueries({
+        queryKey: ["roles"],
+        exact: true,
+      });
     },
   });
 };

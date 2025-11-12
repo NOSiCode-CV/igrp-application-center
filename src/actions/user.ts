@@ -52,8 +52,6 @@ export async function inviteUser(user: CreateUserRequest) {
 export async function addRolesToUser(username: string, roleNames: string[]) {
   const client = await getClientAccess();
 
-  // console.log({ username, roleNames });
-
   try {
     const result = await client.users.addRolesToUser(username, roleNames);
     return result.data;

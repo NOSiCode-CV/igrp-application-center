@@ -31,7 +31,7 @@ export function RoleDeleteDialog({
   const [confirmation, setConfirmation] = useState("");
   const { igrpToast } = useIGRPToast();
 
-  const { mutateAsync: deleteRole } = useDeleteRole();
+  const { mutateAsync: deleteRole, isPending } = useDeleteRole();
 
   const isConfirmed = confirmation === roleToDelete;
 
@@ -122,12 +122,15 @@ export function RoleDeleteDialog({
           </IGRPButton>
           <IGRPButton
             variant="destructive"
-            onClick={confirmDelete}
-            disabled={!isConfirmed}
+            onClick={() => {
+              confirmDelete(),
+              setConfirmation("")
+            }}
+            disabled={!isConfirmed || isPending}
             showIcon
             iconName="Trash"
           >
-            Eliminar
+            {isPending ? "Aguarde..." : "Eliminar"}
           </IGRPButton>
         </IGRPDialogFooterPrimitive>
       </IGRPDialogContentPrimitive>

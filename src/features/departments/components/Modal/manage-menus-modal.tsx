@@ -123,6 +123,8 @@ export function ManageMenusModal({
       .sort((a, b) => a.name.localeCompare(b.name, "pt"));
   }, [allMenus]);
 
+  console.log("appsFroallMenusmMenus - ", allMenus)
+
   useEffect(() => {
     if (open && appsFromMenus.length > 0 && !selectedApp) {
       setSelectedApp(appsFromMenus[0].code);
