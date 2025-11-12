@@ -52,13 +52,11 @@ export function RoleFormDialog({
   departmentCode,
   role,
   parentRoleName,
-  roles,
 }: RoleFormDialogProps) {
   const { mutateAsync: createRole, isPending: isCreating } = useCreateRole();
   const { mutateAsync: updateRole, isPending: isUpdating } = useUpdateRole();
 
   const { igrpToast } = useIGRPToast();
-
   const isEdit = !!role;
   const isSubRole = !!parentRoleName;
 
@@ -165,7 +163,9 @@ export function RoleFormDialog({
 
         <IGRPFormPrimitive {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, (errors) => {
+      console.error("Form validation errors:", errors);
+    })}
             className="flex flex-col gap-4"
           >
             <IGRPFormFieldPrimitive
@@ -259,39 +259,37 @@ export function RoleFormDialog({
                 )}
               />
             )}
-
-            {role && (
-              <IGRPFormFieldPrimitive
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                    <IGRPSelectPrimitive
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <IGRPFormControlPrimitive>
-                        <IGRPSelectTriggerPrimitive className="w-full truncate">
-                          <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                        </IGRPSelectTriggerPrimitive>
-                      </IGRPFormControlPrimitive>
-                      <IGRPSelectContentPrimitive>
-                        {STATUS_OPTIONS.map((status) => (
-                          <IGRPSelectItemPrimitive
-                            key={status.value}
-                            value={status.value}
-                          >
-                            {status.label}
-                          </IGRPSelectItemPrimitive>
-                        ))}
-                      </IGRPSelectContentPrimitive>
-                    </IGRPSelectPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
-                )}
-              />
-            )}
+            
+            <IGRPFormFieldPrimitive
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <IGRPFormItemPrimitive>
+                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+                  <IGRPSelectPrimitive
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <IGRPFormControlPrimitive>
+                      <IGRPSelectTriggerPrimitive className="w-full truncate">
+                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
+                      </IGRPSelectTriggerPrimitive>
+                    </IGRPFormControlPrimitive>
+                    <IGRPSelectContentPrimitive>
+                      {STATUS_OPTIONS.map((status) => (
+                        <IGRPSelectItemPrimitive
+                          key={status.value}
+                          value={status.value}
+                        >
+                          {status.label}
+                        </IGRPSelectItemPrimitive>
+                      ))}
+                    </IGRPSelectContentPrimitive>
+                  </IGRPSelectPrimitive>
+                  <IGRPFormMessagePrimitive />
+                </IGRPFormItemPrimitive>
+              )}
+            />
 
             <IGRPDialogFooterPrimitive className="pt-4">
               <IGRPButton

@@ -244,7 +244,6 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                 icon="UserLock"
                 href="#"
                 label="Novo Perfil"
-                variant="outline"
               />
             )}
           </div>

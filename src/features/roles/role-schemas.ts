@@ -16,7 +16,7 @@ export const roleSchema = z.object({
   description: z.string().optional().nullable(),
   departmentCode: z
     .string()
-    .min(4, "Código de departamento é obrigatório (min 4 carateres)"),
+    .min(1, "Código de departamento é obrigatório (min 1 carateres)"),
   parentCode: z.string().optional().nullable(),
   status: statusSchema,
 });
