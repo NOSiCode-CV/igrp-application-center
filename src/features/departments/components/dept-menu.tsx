@@ -36,12 +36,13 @@ import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { useState, useEffect, useMemo } from "react";
 import { ManageMenusModal } from "./Modal/manage-menus-modal";
 import { buildMenuTree } from "../dept-lib";
+import MenuTreeRow from "./menu-tree-row";
 
 interface MenuPermissionsProps {
   departmentCode: string;
 }
 
-type MenuWithChildren = MenuEntryDTO & { children?: MenuWithChildren[] };
+export type MenuWithChildren = MenuEntryDTO & { children?: MenuWithChildren[] };
 
 export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const { igrpToast } = useIGRPToast();
@@ -51,12 +52,13 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const [menuRoleAssignments, setMenuRoleAssignments] = useState<
     Map<string, Set<string>>
   >(new Map());
-  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
   const [showMenusModal, setShowMenusModal] = useState(false);
 
   const { data: menus, isLoading: loading } = useDepartmentMenus(
     departmentCode || ""
   );
+
+  console.log("menus - ", menus)
   const { data: roles, isLoading: isLoadingRoles } = useRoles({
     departmentCode: departmentCode || "",
   });
@@ -196,21 +198,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     });
   };
 
-  const toggleMenuRole = (menuCode: string, roleCode: string) => {
-    setMenuRoleAssignments((prev) => {
-      const newMap = new Map(prev);
-      const currentRoles = new Set(newMap.get(menuCode) || []);
-
-      if (currentRoles.has(roleCode)) {
-        currentRoles.delete(roleCode);
-      } else {
-        currentRoles.add(roleCode);
-      }
-
-      newMap.set(menuCode, currentRoles);
-      return newMap;
-    });
-  };
+  
 
   const hasChanges = Array.from(menuRoleAssignments.entries()).some(
     ([menuCode, currentRoles]) => {
@@ -232,107 +220,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
   }, [assignedApps]);
 
-  const getMenuIcon = (type: string) => {
-    switch (type) {
-      case "FOLDER":
-        return "Folder";
-      case "EXTERNAL_PAGE":
-        return "ExternalLink";
-      case "MENU_PAGE":
-        return "FileText";
-      default:
-        return "FileText";
-    }
-  };
-
-  const toggleExpand = (menuCode: string) => {
-    setExpandedMenus((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(menuCode)) {
-        newSet.delete(menuCode);
-      } else {
-        newSet.add(menuCode);
-      }
-      return newSet;
-    });
-  };
-
-  const MenuTreeRow = ({
-    menu,
-    level = 0,
-  }: {
-    menu: MenuWithChildren;
-    level?: number;
-  }) => {
-    const hasChildren = menu.children && menu.children.length > 0;
-    const isExpanded = expandedMenus.has(menu.code);
-
-    return (
-      <>
-        <IGRPTableRowPrimitive className={cn(level > 0 && "bg-muted/20")}>
-          <IGRPTableCellPrimitive>
-            <div
-              className="flex items-center gap-2"
-              style={{ paddingLeft: `${level * 1.5}rem` }}
-            >
-              {hasChildren ? (
-                <button
-                  onClick={() => toggleExpand(menu.code)}
-                  className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
-                >
-                  <IGRPIcon
-                    iconName="ChevronRight"
-                    className={cn(
-                      "w-4 h-4 transition-transform",
-                      isExpanded && "rotate-90"
-                    )}
-                    strokeWidth={2}
-                  />
-                </button>
-              ) : (
-                <div className="w-5 shrink-0" />
-              )}
-
-              <IGRPIcon
-                iconName={getMenuIcon(menu.type)}
-                className="w-4 h-4 text-primary shrink-0"
-                strokeWidth={2}
-              />
-
-              <div className="min-w-0 flex-1">
-                <div className="font-medium truncate">{menu.name}</div>
-                {menu.url && (
-                  <div className="text-xs text-muted-foreground truncate">
-                    {menu.url}
-                  </div>
-                )}
-              </div>
-            </div>
-          </IGRPTableCellPrimitive>
-
-          {roles?.map((role) => (
-            <IGRPTableCellPrimitive
-              key={role.name}
-              className="text-center border-l"
-            >
-              <div className="flex items-center justify-center">
-                <IGRPCheckboxPrimitive
-                  checked={menuRoleAssignments.get(menu.code)?.has(role.name)}
-                  onCheckedChange={() => toggleMenuRole(menu.code, role.name)}
-                />
-              </div>
-            </IGRPTableCellPrimitive>
-          ))}
-        </IGRPTableRowPrimitive>
-
-        {hasChildren &&
-          isExpanded &&
-          menu.children?.map((child) => (
-            <MenuTreeRow key={child.code} menu={child} level={level + 1} />
-          ))}
-      </>
-    );
-  };
+console.log("roles - ", roles)
 
   return (
     <>
@@ -478,25 +366,25 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                 <IGRPTooltipTriggerPrimitive asChild>
                                   <button
                                     onClick={() =>
-                                      toggleAllMenusForRole(role.name)
+                                      toggleAllMenusForRole(role.code)
                                     }
                                     className="group flex items-center gap-1 hover:bg-primary/10 px-2 py-1 rounded transition-colors"
                                     
                                   >
                                     <IGRPIcon
                                       iconName={
-                                        getColumnCheckState(role.name) === true
+                                        getColumnCheckState(role.code) === true
                                           ? "Check"
-                                          : getColumnCheckState(role.name) ===
+                                          : getColumnCheckState(role.code) ===
                                             "indeterminate"
-                                          ? "MinusSquare"
+                                          ? "Check"
                                           : "Square"
                                       }
                                       className={cn(
                                         "w-4 h-4 transition-colors",
-                                        getColumnCheckState(role.name) === true
+                                        getColumnCheckState(role.code) === true
                                           ? "text-primary"
-                                          : getColumnCheckState(role.name) ===
+                                          : getColumnCheckState(role.code) ===
                                             "indeterminate"
                                           ? "text-primary/60"
                                           : "text-muted-foreground group-hover:text-primary"
@@ -528,7 +416,13 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
                 <IGRPTableBodyPrimitive>
                   {menuTree.map((menu) => (
-                    <MenuTreeRow key={menu.code} menu={menu} />
+                    <MenuTreeRow
+                      setMenuRoleAssignments={setMenuRoleAssignments}  
+                      key={menu.code} 
+                      menu={menu}
+                      roles={roles}
+                      menuRoleAssignments={menuRoleAssignments}
+                    />
                   ))}
                 </IGRPTableBodyPrimitive>
               </IGRPTablePrimitive>
@@ -541,7 +435,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               </div>
 
               <div className="flex gap-2">
-                <IGRPButtonPrimitive
+                {/* <IGRPButtonPrimitive
                   variant="outline"
                   onClick={() => {
                     if (menus) {
@@ -560,7 +454,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     strokeWidth={2}
                   />
                   Cancelar
-                </IGRPButtonPrimitive>
+                </IGRPButtonPrimitive> */}
 
                 <IGRPButtonPrimitive
                   onClick={handleSave}
@@ -574,7 +468,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                         className="w-4 h-4 animate-spin"
                         strokeWidth={2}
                       />
-                      Salvando...
+                      Guardando...
                     </>
                   ) : (
                     <>
@@ -583,7 +477,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                         className="w-4 h-4"
                         strokeWidth={2}
                       />
-                      Salvar Permissões
+                      Guardar Permissões
                     </>
                   )}
                 </IGRPButtonPrimitive>

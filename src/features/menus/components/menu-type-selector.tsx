@@ -2,8 +2,6 @@
 
 import {
   IGRPCardPrimitive,
-  IGRPRadioGroupItemPrimitive,
-  IGRPRadioGroupPrimitive,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import { menuTypeSchema } from "@/features/menus/menu-schemas";
@@ -47,21 +45,24 @@ export function MenuTypeSelector({
   disabled,
 }: MenuTypeSelectorProps) {
   return (
-    <IGRPRadioGroupPrimitive
-      value={value}
-      onValueChange={onChange}
-      disabled={disabled}
-      className="grid grid-cols-1 md:grid-cols-2! gap-4"
-    >
+    <div className="grid grid-cols-1 gap-4">
       {MENU_TYPES.map((type) => (
-        <label key={type.value} className="cursor-pointer">
-          <IGRPRadioGroupItemPrimitive
-            value={type.value}
-            id={type.value}
-            className="peer sr-only"
-          />
-          <IGRPCardPrimitive className="peer-data-[state=checked]:border-primary peer-data-[state=checked]:ring-2 peer-data-[state=checked]:ring-primary/20 hover:border-primary/50 transition-all">
-            <div className="p-4 flex flex-col items-center text-center gap-3">
+        <button
+          key={type.value}
+          type="button"
+          onClick={() => !disabled && onChange(type.value)}
+          disabled={disabled}
+          className={`
+            text-left rounded-lg border-2 p-0 transition-all
+            ${value === type.value
+              ? "border-primary ring-2 ring-primary/20"
+              : "border-transparent hover:border-primary/50"
+            }
+            ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+          `}
+        >
+          <IGRPCardPrimitive className="py-2 border-0">
+            <div className="p-3 flex flex-row items-center gap-3">
               <div className="p-3 rounded-full bg-primary/10">
                 <IGRPIcon
                   iconName={type.icon}
@@ -77,8 +78,8 @@ export function MenuTypeSelector({
               </div>
             </div>
           </IGRPCardPrimitive>
-        </label>
+        </button>
       ))}
-    </IGRPRadioGroupPrimitive>
+    </div>
   );
 }

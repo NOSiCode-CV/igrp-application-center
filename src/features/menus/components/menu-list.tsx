@@ -31,11 +31,7 @@ import { statusSchema } from "@/schemas/global";
 import { MenuDeleteDialog } from "./menu-delete-dialog";
 import { MenuFormDialog } from "./menu-form-dialog";
 import { SortableMenuItem } from "./menu-sortable-item";
-
-interface IExtendedMenuArgs extends IGRPMenuItemArgs {
-  sortOrder?: string;
-}
-
+import { MenuType, Status } from "@igrp/platform-access-management-client-ts";
 
 export function MenuList({ app }: { app: IGRPApplicationArgs }) {
   const { code } = app;
@@ -44,7 +40,6 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     isLoading,
     error: errorGetMenus,
   } = useMenus({ applicationCode: code });
-
 
   const [menus, setMenus] = useState<IGRPMenuItemArgs[]>([]);
   const [openFormDialog, setOpenFormDialog] = useState(false);
@@ -159,14 +154,14 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
             code: menu.code,
             data: {
               name: menu.name,
-              //type: menu.type,
               icon: menu.icon,
-              //status: menu.status,
+              code: menu.code,
+              type: menu.type as MenuType,
+              status: menu.status as Status,
               url: menu.url,
               pageSlug: menu.pageSlug,
               parentCode: menu.parentCode,
               applicationCode: menu.applicationCode,
-              sortOrder: index,
               position: index,
             },
           })
@@ -202,8 +197,6 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     (menu) => menu.status !== statusSchema.enum.DELETED,
   );
 
-  console.log("filteredMenus - ", filteredMenus)
-
   const groupMenus = filteredMenus.filter(
     (menu) => !menu.parentCode && menu.type === "GROUP",
   );
@@ -212,7 +205,6 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
 
   const rootMenus = filteredMenus.filter((menu) => !menu.parentCode);
   const menuEmpty = filteredMenus.length === 0;
-
   return (
     <div className="pt-6">
       <div className="flex items-center justify-between">
@@ -225,7 +217,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
           </IGRPCardDescriptionPrimitive>
         </div>
         {!menuEmpty && (
-          <div className="flex justify-end">
+          <div className="mb-3 flex justify-end">
             <ButtonLink
               onClick={() => {
                 setSelectedMenu(undefined);
@@ -240,7 +232,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
         )}
       </div>
 
-      <div className="rounded-md border">
+      <div className=" border">
         {menuEmpty ? (
           <div className="text-center py-12 px-4">
             <div className="flex justify-center mb-4">

@@ -165,8 +165,8 @@ console.log("dept - ", depts)
   ];
 
   return (
-    <div className="flex flex-col h-screen  overflow-hidden">
-      <div className="flex h-screen">
+    <div className="flex flex-col overflow-hidden">
+      <div className="flex h-svh">
         <div className="w-80 flex border-r pr-2 border-accent flex-col">
           <div className="flex flex-col min-w-0">
             <h2 className="text-2xl font-bold tracking-tight truncate">

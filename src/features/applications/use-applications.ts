@@ -16,6 +16,7 @@ import {
 } from "@/actions/applications";
 import type { ApplicationArgs } from "./app-schemas";
 import { MenuArgs } from "../menus/menu-schemas";
+import { IGRPApplicationArgs } from "@igrp/framework-next-types";
 
 export const useApplications = (filters?: ApplicationFilters) => {
   return useQuery<ApplicationArgs[]>({
@@ -25,7 +26,7 @@ export const useApplications = (filters?: ApplicationFilters) => {
 };
 
 export const useApplicationByCode = (code: string) => {
-  return useQuery<ApplicationArgs>({
+  return useQuery<IGRPApplicationArgs>({
     queryKey: ["applications", code],
     queryFn: () => getApplicationByCode(code),
   });

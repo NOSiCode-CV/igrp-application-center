@@ -74,3 +74,17 @@ export function showStatus(status: string) {
   if (status == null || status === undefined) return null;
   return STATUS_OPTIONS.find((s) => s.value === status)?.label;
 }
+
+
+ export const getMenuIcon = (type: string) => {
+    switch (type) {
+      case "FOLDER":
+        return "Folder";
+      case "EXTERNAL_PAGE":
+        return "ExternalLink";
+      case "MENU_PAGE":
+        return "FileText";
+      default:
+        return "FileText";
+    }
+  };

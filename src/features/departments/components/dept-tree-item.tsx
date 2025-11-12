@@ -61,12 +61,12 @@ const DepartmentTreeItem = ({
     <div>
       <div
         className={cn(
-          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm border text-sm transition-all cursor-pointer",
+          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm text-sm transition-all cursor-pointer",
           isSelected
-            ? "bg-primary/10 border-primary/30 text-primary font-medium"
+            ? "bg-accent/50 text-primary font-medium"
             : isActive
-              ? "border-accent text-foreground hover:bg-accent/50"
-              : "border-muted text-muted-foreground/70 hover:bg-muted/30",
+              ? "border-accent text-foreground bg-accent/20"
+              : "border-accent text-foreground bg-accent/20",
         )}
         onClick={() => {
           if (hasChildren) toggleExpand(dept.code);

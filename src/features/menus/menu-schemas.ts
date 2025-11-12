@@ -7,14 +7,8 @@ export const menuTypeSchema = z.enum(["GROUP", "FOLDER", "MENU_PAGE", "EXTERNAL_
 
 export const menuTargetSchema = z.enum(["_self", "_blank"]);
 
-export const parentSchema = z.object({
-  code: z.string(),
-  description: z.string(),
-}).optional();
-
-export const applicationSchema = z.object({
-  code: z.string(),
-});
+export const parentSchema = z.string().optional();
+export const applicationSchema = z.string();
 
 export const menuSchema = z.object({
   id: z.number().optional(),
@@ -28,9 +22,9 @@ export const menuSchema = z.object({
   status: statusSchema,
   target: menuTargetSchema.optional(),
   url: z.string().optional().nullable(),
-  parent: parentSchema,
+  parentCode: parentSchema,
   pageSlug: z.string().optional().nullable(),
-  application: applicationSchema,
+  applicationCode: applicationSchema,
   createdBy: z.string().optional(),
   createdDate: z.string().optional(),
   lastModifiedBy: z.string().optional(),
@@ -38,29 +32,25 @@ export const menuSchema = z.object({
   permissions: z.array(z.string()).optional(),
 });
 
-// Schema para GROUP
 export const groupMenuSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.GROUP),
-  parent: z.undefined(),
+  parentCode: z.undefined(),
 });
 
-// Schema para FOLDER
 export const folderMenuSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.FOLDER),
-  parent: parentSchema,
+  parentCode: parentSchema,
 });
 
-// Schema para MENU_PAGE
 export const menuPageSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.MENU_PAGE),
   pageSlug: z.string().min(3, "URL relativo é obrigatório"),
-  parent: parentSchema,
+  parentCode: parentSchema,
 });
 
-// Schema para EXTERNAL_PAGE
 export const externalPageSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.EXTERNAL_PAGE),
-  url: z.string().url("URL é obrigatório"),
+  url: z.url("URL é obrigatório"),
   parent: parentSchema,
 });
 
@@ -84,9 +74,7 @@ export const updateMenuSchema = menuSchema
   });
 
 export function normalizeMenu(values: CreateMenu | UpdateMenu) {
-  const cleanParent = values.parent?.code 
-    ? { code: values.parent.code, description: values.parent.description }
-    : undefined;
+  const cleanParent = values.parentCode 
 
   const common = {
     code: values.code,
@@ -95,7 +83,8 @@ export function normalizeMenu(values: CreateMenu | UpdateMenu) {
     position: values.position,
     icon: values.icon || "",
     status: values.status as Status,
-    application: { code: values.application.code },
+    applicationCode: values.applicationCode,
+    parentCode: values.parentCode,
     permissions: values.permissions ?? [],
   };
 

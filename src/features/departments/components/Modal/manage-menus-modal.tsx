@@ -36,6 +36,7 @@ import {
 import { useDepartmentMenus } from "@/features/menus/use-menus";
 import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { buildMenuTree } from "../../dept-lib";
+import { getMenuIcon } from "@/lib/utils";
 
 interface ManageMenusModalProps {
   departmentCode: string;
@@ -237,19 +238,6 @@ export function ManageMenusModal({
     return buildMenuTree(filteredMenus);
   }, [filteredMenus]);
 
-  const getMenuIcon = (type: string) => {
-    switch (type) {
-      case "FOLDER":
-        return "Folder";
-      case "EXTERNAL_PAGE":
-        return "ExternalLink";
-      case "MENU_PAGE":
-        return "FileText";
-      default:
-        return "FileText";
-    }
-  };
-
   const MenuTreeItem = ({
     menu,
     level = 0,
@@ -311,7 +299,7 @@ export function ManageMenusModal({
                   variant={isAssigned ? "default" : "secondary"}
                   className="text-[10px] px-1.5 py-0.5 shrink-0"
                 >
-                  {menu.application.code}
+                  {menu.applicationCode}
                 </IGRPBadgePrimitive>
               </div>
               {menu.url && (

@@ -43,7 +43,7 @@ const MENU_TYPE_CONFIG = {
     icon: "ExternalLink" as const,
     label: "Externo",
   },
-} as const;
+} as any;
 
 export function SortableMenuItem({
   menu,
@@ -69,7 +69,7 @@ export function SortableMenuItem({
     data: {
       menu,
       depth,
-      parentCode: menu.parent?.code ?? null,
+      parentCode: menu.parentCode ?? null,
     },
   });
 
@@ -95,10 +95,10 @@ export function SortableMenuItem({
         ref={setNodeRef}
         style={{
           ...style,
-          paddingLeft: `${(depth + 1) * 0.5}rem`,
+          //paddingLeft: `${(depth + 1) * 0.5}rem`,
         }}
         className={cn(
-          "group relative flex items-center justify-between border-b last:border-0 bg-background transition-all",
+          "group relative flex pl-3 items-center justify-between border-b last:border-0 bg-background transition-all",
           isDragging && "opacity-50 z-50",
           isChild && "bg-muted/30",
         )}
@@ -136,7 +136,7 @@ export function SortableMenuItem({
 
           <div className="flex items-center justify-center size-8 rounded-md bg-primary/10 shrink-0">
             <IGRPIcon
-              iconName={menu.icon || "AppWindow"}
+              iconName={menu?.icon === 'null' ? 'AppWindow' : menu.icon || "AppWindow"}
               className="size-4 text-primary"
               strokeWidth={2}
             />
@@ -158,7 +158,7 @@ export function SortableMenuItem({
             )}
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 mr-3 shrink-0">
             <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-md")}>
               <IGRPIcon
                 iconName={typeConfig.icon}
@@ -205,7 +205,7 @@ export function SortableMenuItem({
           <div>
             {sortedSubMenus.map((child) => {
               const childSubMenus =
-                allMenus?.filter((m) => m.parent?.code === child.code) || [];
+                allMenus?.filter((m) => m.parentCode === child.code) || [];
 
               return (
                 <SortableMenuItem

@@ -8,6 +8,7 @@ import type {
 import type { ApplicationArgs } from "@/features/applications/app-schemas";
 import { getClientAccess } from "./access-client";
 import { MenuArgs } from "@/features/menus/menu-schemas";
+import { IGRPApplicationArgs } from "@igrp/framework-next-types";
 
 export async function getApplications(
   filters?: ApplicationFilters,
@@ -25,12 +26,12 @@ export async function getApplications(
 
 export async function getApplicationByCode(
   appCode: string,
-): Promise<ApplicationArgs> {
+): Promise<IGRPApplicationArgs> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.getApplications({ code: appCode });
-    return result.data[0] as ApplicationArgs;
+    return result.data[0] as IGRPApplicationArgs;
   } catch (error) {
     console.error(
       "[app-by-code] Não foi possível obter os dados da aplicação:",

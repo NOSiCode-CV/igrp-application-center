@@ -5,31 +5,45 @@ import {
   IGRPTableCellPrimitive,
   IGRPTableRowPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
+import { useState } from "react";
 import { MenuWithChildren } from "./dept-menu";
 import { getMenuIcon } from "@/lib/utils";
 
-export function MenuTreeRow({
+const MenuTreeRow = ({
   menu,
   level = 0,
-  menuRoleAssignments,
   setMenuRoleAssignments,
   roles,
-  expandedMenus,
-  setExpandedMenus,
+  menuRoleAssignments,
 }: {
   menu: MenuWithChildren;
-  menuRoleAssignments: Map<string, Set<string>>;
   level?: number;
   setMenuRoleAssignments: React.Dispatch<
     React.SetStateAction<Map<string, Set<string>>>
   >;
-  roles?: { name: string }[];
-  expandedMenus: Set<string>;
-  setExpandedMenus: React.Dispatch<React.SetStateAction<Set<string>>>;
-}) {
+  roles?: { name: string, code: string }[];
+  menuRoleAssignments: Map<string, Set<string>>;
+}) => {
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
+
   const hasChildren = menu.children && menu.children.length > 0;
   const isExpanded = expandedMenus.has(menu.code);
-  const assignedRoles = menuRoleAssignments.get(menu.code) || new Set<string>();
+
+  const toggleMenuRole = (menuCode: string, roleCode: string) => {
+    setMenuRoleAssignments((prev) => {
+      const newMap = new Map(prev);
+      const currentRoles = new Set(newMap.get(menuCode) || []);
+
+      if (currentRoles.has(roleCode)) {
+        currentRoles.delete(roleCode);
+      } else {
+        currentRoles.add(roleCode);
+      }
+
+      newMap.set(menuCode, currentRoles);
+      return newMap;
+    });
+  };
 
   const toggleExpand = (menuCode: string) => {
     setExpandedMenus((prev) => {
@@ -40,22 +54,6 @@ export function MenuTreeRow({
         newSet.add(menuCode);
       }
       return newSet;
-    });
-  };
-
-  const toggleRoleForMenu = (menuCode: string, roleName: string) => {
-    setMenuRoleAssignments((prev) => {
-      const newMap = new Map(prev);
-      const menuRoles = new Set(newMap.get(menuCode) || new Set<string>());
-
-      if (menuRoles.has(roleName)) {
-        menuRoles.delete(roleName);
-      } else {
-        menuRoles.add(roleName);
-      }
-
-      newMap.set(menuCode, menuRoles);
-      return newMap;
     });
   };
 
@@ -76,7 +74,7 @@ export function MenuTreeRow({
                   iconName="ChevronRight"
                   className={cn(
                     "w-4 h-4 transition-transform",
-                    isExpanded && "rotate-90",
+                    isExpanded && "rotate-90"
                   )}
                   strokeWidth={2}
                 />
@@ -89,7 +87,7 @@ export function MenuTreeRow({
               strokeWidth={2}
             />
 
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="font-medium truncate">{menu.name}</div>
               {menu.url && (
                 <div className="text-xs text-muted-foreground truncate">
@@ -101,12 +99,15 @@ export function MenuTreeRow({
         </IGRPTableCellPrimitive>
 
         {roles?.map((role) => (
-          <IGRPTableCellPrimitive key={role.name} className="text-center">
+          <IGRPTableCellPrimitive
+            key={role.name}
+            className="text-center border-l"
+          >
             <div className="flex items-center justify-center">
-              <IGRPCheckboxPrimitive
-                checked={assignedRoles.has(role.name)}
-                onCheckedChange={() => toggleRoleForMenu(menu.code, role.name)}
-              />
+            <IGRPCheckboxPrimitive
+  checked={menuRoleAssignments.get(menu.code)?.has(role.code) ?? false}
+  onCheckedChange={() => toggleMenuRole(menu.code, role.code)}
+/>
             </div>
           </IGRPTableCellPrimitive>
         ))}
@@ -115,17 +116,17 @@ export function MenuTreeRow({
       {hasChildren &&
         isExpanded &&
         menu.children?.map((child) => (
-          <MenuTreeRow
-            key={child.code}
-            menu={child}
+          <MenuTreeRow 
+            key={child.code} 
+            menu={child} 
             level={level + 1}
-            menuRoleAssignments={menuRoleAssignments}
             setMenuRoleAssignments={setMenuRoleAssignments}
-            roles={roles || []}
-            expandedMenus={expandedMenus}
-            setExpandedMenus={setExpandedMenus}
+            roles={roles}
+            menuRoleAssignments={menuRoleAssignments}
           />
         ))}
     </>
   );
-}
+};
+
+export default MenuTreeRow;

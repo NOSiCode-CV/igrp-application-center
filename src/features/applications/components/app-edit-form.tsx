@@ -31,12 +31,13 @@ import { useUpdateApplication } from "@/features/applications/use-applications";
 import { useUsers } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
+import { IGRPApplicationArgs } from "@igrp/framework-next-types";
 
 export function ApplicationEditForm({
   application,
   onSuccess,
 }: {
-  application: ApplicationArgs;
+  application: IGRPApplicationArgs;
   onSuccess: () => void;
 }) {
   const { igrpToast } = useIGRPToast();
