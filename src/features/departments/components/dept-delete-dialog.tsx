@@ -16,7 +16,7 @@ export function DepartmentDeleteDialog({
   deptToDelete,
 }: DepartmentDeleteDialogProps) {
   const { igrpToast } = useIGRPToast();
-  const { mutateAsync: deleteDepartment } = useDeleteDepartment();
+  const { mutateAsync: deleteDepartment, isPending: isDeleting } = useDeleteDepartment();
 
   async function confirmDelete() {
     try {
@@ -45,6 +45,7 @@ export function DepartmentDeleteDialog({
       onOpenChange={onOpenChange}
       toDelete={deptToDelete}
       confirmDelete={confirmDelete}
+      isDeleting={isDeleting}
       label="Nome Departamento"
     />
   );

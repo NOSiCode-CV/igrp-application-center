@@ -114,7 +114,7 @@ export function DepartmentListTree() {
     term: string
   ): DepartmentWithChildren[] => {
     if (!term) return depts;
-console.log("dept - ", depts)
+    
     return depts
       .map((dept) => {
         const matchesCurrent =

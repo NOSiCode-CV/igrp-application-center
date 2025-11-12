@@ -92,6 +92,13 @@ export function DepartmentFormDialog({
 
   const watchedName = form.watch("name");
 
+useEffect(() => {
+  if (!open) {
+    form.reset(defaultValues);
+    form.clearErrors();
+  }
+}, [open, form]);
+
   useEffect(() => {
     const codeDirty = !!form.formState.dirtyFields?.code;
     if (codeDirty) return;
@@ -116,45 +123,45 @@ export function DepartmentFormDialog({
   const isLoading = isCreating || isUpdating;
 
   const onSubmit = async (values: DepartmentArgs) => {
-  const payload = normalizeDeptartment(values);
+    const payload = normalizeDeptartment(values);
 
-  try {
-    if (department) {
-      await updateDepartment({ code: department.code, data: payload });
-    } else {
-      await createDepartment(payload);
-    }
+    try {
+      if (department) {
+        await updateDepartment({ code: department.code, data: payload });
+      } else {
+        await createDepartment(payload);
+      }
 
-    igrpToast({
-      type: "success",
-      title: "Departamento",
-      description: `O departamento foi ${
-        department ? "atualizado" : "criado"
-      } com sucesso.`,
-    });
+      igrpToast({
+        type: "success",
+        title: "Departamento",
+        description: `O departamento foi ${
+          department ? "atualizado" : "criado"
+        } com sucesso.`,
+      });
 
-    if (shouldClose) {
-      onOpenChange(false);
-      form.reset(); 
-    } else {
-      form.reset({
-        ...defaultValues,
-        parentCode: parentDeptId ?? "",
+      if (shouldClose) {
+        onOpenChange(false);
+        form.reset();
+      } else {
+        form.reset({
+          ...defaultValues,
+          parentCode: parentDeptId ?? "",
+        });
+      }
+    } catch (error) {
+      igrpToast({
+        type: "error",
+        title: `Não foi possível ${
+          department ? "atualizar" : "criar"
+        } departamento.`,
+        description:
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro desconhecido.",
       });
     }
-  } catch (error) {
-    igrpToast({
-      type: "error",
-      title: `Não foi possível ${
-        department ? "atualizar" : "criar"
-      } departamento.`,
-      description:
-        error instanceof Error
-          ? error.message
-          : "Ocorreu um erro desconhecido.",
-    });
-  }
-};
+  };
 
   const isSubDepartment = Boolean(parentDeptId);
 
@@ -331,29 +338,26 @@ export function DepartmentFormDialog({
               >
                 Cancelar
               </IGRPButton>
+
               <div className="flex gap-1">
                 {!department && (
                   <IGRPButtonPrimitive
-                    type="button"
+                    type="submit"
                     variant="outline"
                     disabled={isLoading}
-                    onClick={() => {
-                      setShouldClose(false);
-                      form.handleSubmit(onSubmit)();
-                    }}
+                    onClick={() => setShouldClose(false)}
+                    className="flex items-center gap-1"
                   >
                     <IGRPIcon iconName="Save" className="size-4" />
-                    {isLoading ? "Guardando..." : "Guardar e Novo" }
+                    {isLoading ? "Guardando..." : "Guardar e Novo"}
                   </IGRPButtonPrimitive>
                 )}
 
                 <IGRPButtonPrimitive
-                  type="button"
+                  type="submit"
                   disabled={isLoading}
-                  onClick={() => {
-                    setShouldClose(true);
-                    form.handleSubmit(onSubmit)()
-                  }}
+                  onClick={() => setShouldClose(true)}
+                  className="flex items-center gap-1"
                 >
                   <IGRPIcon iconName="Save" className="size-4" />
                   {isLoading ? "Guardando..." : "Guardar"}

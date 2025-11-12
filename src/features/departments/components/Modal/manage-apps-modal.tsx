@@ -29,6 +29,7 @@ import {
   useRemoveApplicationsFromDepartment,
 } from "../../use-departments";
 import { useApplications } from "@/features/applications/use-applications";
+import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 
 interface ManageAppsModalProps {
   departmentCode: string;
@@ -198,7 +199,7 @@ export function ManageAppsModal({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <ScrollArea className="h-96 w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -227,7 +228,7 @@ export function ManageAppsModal({
                   <div
                     key={app.code}
                     className={cn(
-                      "group relative rounded-lg border transition-all duration-200",
+                      "group relative rounded-lg border",
                       app.isAssigned
                         ? "bg-primary/5 border-primary/20 hover:border-primary/40 hover:bg-primary/10"
                         : "bg-muted/30 border-muted hover:border-accent hover:bg-muted/50"
@@ -317,7 +318,7 @@ export function ManageAppsModal({
                 ))}
               </div>
             )}
-          </div>
+          </ScrollArea>
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">

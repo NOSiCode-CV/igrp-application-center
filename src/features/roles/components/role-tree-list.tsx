@@ -30,6 +30,7 @@ import { RoleDeleteDialog } from "./role-delete-dialog";
 import { RoleFormDialog } from "./role-form-dialog";
 import { RoleDetails } from "./role-permissions-dialog";
 import { RoleTreeRow } from "./role.tree-row";
+import { AppCenterLoading } from "@/components/loading";
 
 interface RolesListProps {
   departmentCode: string;
@@ -225,14 +226,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
         </div>
 
         {isLoading ? (
-          <div className="grid gap-4 animate-pulse">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <IGRPSkeletonPrimitive
-                key={i}
-                className="h-12 rounded-lg bg-muted"
-              />
-            ))}
-          </div>
+          <AppCenterLoading descrption="Carregando Roles..." />
         ) : roleEmpty ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon

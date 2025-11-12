@@ -37,6 +37,7 @@ import { useDepartmentMenus } from "@/features/menus/use-menus";
 import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { buildMenuTree } from "../../dept-lib";
 import { getMenuIcon } from "@/lib/utils";
+import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 
 interface ManageMenusModalProps {
   departmentCode: string;
@@ -366,7 +367,7 @@ export function ManageMenusModal({
   return (
     <>
       <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-        <IGRPDialogContentPrimitive className="max-w-4xl! max-h-[85vh] overflow-hidden flex flex-col">
+        <IGRPDialogContentPrimitive className="max-w-3xl! max-h-[85vh] overflow-hidden flex flex-col">
           <IGRPDialogHeaderPrimitive>
             <IGRPDialogTitlePrimitive className="flex items-center gap-2">
               <IGRPIcon iconName="Menu" className="w-5 h-5" strokeWidth={2} />
@@ -418,7 +419,7 @@ export function ManageMenusModal({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <ScrollArea className="h-96 w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -446,7 +447,7 @@ export function ManageMenusModal({
                 ))}
               </div>
             )}
-          </div>
+          </ScrollArea>
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">

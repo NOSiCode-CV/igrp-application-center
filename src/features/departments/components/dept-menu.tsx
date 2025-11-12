@@ -37,6 +37,7 @@ import { useState, useEffect, useMemo } from "react";
 import { ManageMenusModal } from "./Modal/manage-menus-modal";
 import { buildMenuTree } from "../dept-lib";
 import MenuTreeRow from "./menu-tree-row";
+import { AppCenterLoading } from "@/components/loading";
 
 interface MenuPermissionsProps {
   departmentCode: string;
@@ -220,8 +221,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
   }, [assignedApps]);
 
-console.log("roles - ", roles)
-
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -294,11 +293,7 @@ console.log("roles - ", roles)
         </div>
 
         {loading || isLoadingRoles ? (
-          <div className="space-y-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <IGRPSkeletonPrimitive key={i} className="h-14 rounded-lg" />
-            ))}
-          </div>
+           <AppCenterLoading descrption="A carregar menus..." />
         ) : menuTree.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon
