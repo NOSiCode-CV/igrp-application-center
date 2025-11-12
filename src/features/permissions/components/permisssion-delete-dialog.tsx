@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogDescriptionPrimitive,
@@ -104,23 +105,27 @@ export function PermissionDeleteDialog({
           />
         </div>
         <IGRPDialogFooterPrimitive className="flex flex-col">
-          <IGRPButtonPrimitive
+          <IGRPButton
             variant="outline"
             onClick={() => {
               onOpenChange(false);
               setConfirmation("");
             }}
             type="button"
+            showIcon
+            iconName="X"
           >
             Cancelar
-          </IGRPButtonPrimitive>
-          <IGRPButtonPrimitive
+          </IGRPButton>
+          <IGRPButton
             variant="destructive"
             onClick={confirmDelete}
             disabled={!isConfirmed}
+            showIcon
+            iconName="Trash"
           >
             Eliminar
-          </IGRPButtonPrimitive>
+          </IGRPButton>
         </IGRPDialogFooterPrimitive>
       </IGRPDialogContentPrimitive>
     </IGRPDialogPrimitive>

@@ -36,7 +36,7 @@ const DepartmentTreeItem = ({
   setSelectedDeptCode: React.Dispatch<React.SetStateAction<string | null>>;
   selectedDeptCode: string | null;
   handleEdit: (dept: DepartmentWithChildren) => void;
-  handleCreateSubDept: (parentCode: string) => void;
+  handleCreateSubDept: (parentCode: any) => void;
   handleDelete: (code: string, name: string) => void;
   expandedDepts: Set<string>;
   setExpandedDepts: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -117,7 +117,7 @@ const DepartmentTreeItem = ({
                 <IGRPButtonPrimitive
                   variant="ghost"
                   className="h-6 w-6 p-0"
-                  onClick={() => handleCreateSubDept(dept.code)}
+                  onClick={() => handleCreateSubDept(dept)}
                 >
                   <span className="sr-only">Criar Sub-departamento</span>
                   <IGRPIcon
@@ -170,7 +170,7 @@ const DepartmentTreeItem = ({
               <IGRPDropdownMenuItemPrimitive
                 onSelect={(e) => {
                   e.stopPropagation();
-                  handleCreateSubDept(dept.code);
+                  handleCreateSubDept(dept);
                 }}
               >
                 <IGRPIcon

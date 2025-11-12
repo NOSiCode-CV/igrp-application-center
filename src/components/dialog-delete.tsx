@@ -103,7 +103,10 @@ function IGRPDialogDelete({
           </IGRPButtonPrimitive>
           <IGRPButtonPrimitive
             variant="destructive"
-            onClick={confirmDelete}
+            onClick={() => {
+              confirmDelete(),
+              setConfirmation("");
+            }}
             disabled={!isConfirmed || isDeleting}
           >
             <IGRPIcon

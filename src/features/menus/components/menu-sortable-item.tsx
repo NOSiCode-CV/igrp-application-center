@@ -95,7 +95,7 @@ export function SortableMenuItem({
         ref={setNodeRef}
         style={{
           ...style,
-          //paddingLeft: `${(depth + 1) * 0.5}rem`,
+          paddingLeft: `${(depth + 1) * 1.5}rem`,
         }}
         className={cn(
           "group relative flex pl-3 items-center justify-between border-b last:border-0 bg-background transition-all",

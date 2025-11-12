@@ -726,9 +726,10 @@ export function MenuFormDialog({
                                   </IGRPCommandEmptyPrimitive>
                                   <IGRPCommandGroupPrimitive>
                                     <IGRPCommandItemPrimitive
-                                      onSelect={() =>
-                                        form.setValue("parentCode", undefined)
-                                      }
+                                      onSelect={() => {
+                                        field.onChange(""); 
+                                        form.setValue("parentCode", "" as any);
+                                      }}
                                     >
                                       Nenhum (Raiz)
                                       <IGRPIcon
@@ -743,9 +744,9 @@ export function MenuFormDialog({
                                     {parentOptions.map((menu) => (
                                       <IGRPCommandItemPrimitive
                                         key={menu.code}
-                                        onSelect={() =>
-                                          form.setValue("parentCode", menu.code)
-                                        }
+                                        onSelect={() => {
+      field.onChange(menu.code); 
+    }}
                                       >
                                         <IGRPIcon
                                           iconName={menu.icon || "Folder"}

@@ -41,7 +41,8 @@ export function DepartmentListTree() {
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentDept, setCurrentDept] = useState<DepartmentArgs | null>(null);
-  const [parentDeptId, setParentDeptId] = useState<string | null>(null);
+  const [parentDeptId, setParentDeptId] = useState<DepartmentArgs | null>(null);
+  // const [parentDeptName, setParentDeptName] = useState<string | null>(null);
   const [deptToDelete, setDeptToDelete] = useState<{
     code: string;
     name: string;
@@ -102,7 +103,7 @@ export function DepartmentListTree() {
     setOpenFormDialog(true);
   };
 
-  const handleCreateSubDept = (parentCode: string) => {
+  const handleCreateSubDept = (parentCode: any) => {
     setDeptToDelete(null);
     setCurrentDept(null);
     setParentDeptId(parentCode);

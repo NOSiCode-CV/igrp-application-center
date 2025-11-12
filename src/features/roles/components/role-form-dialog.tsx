@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogFooterPrimitive,
@@ -293,17 +294,21 @@ export function RoleFormDialog({
             )}
 
             <IGRPDialogFooterPrimitive className="pt-4">
-              <IGRPButtonPrimitive
+              <IGRPButton
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                showIcon
+                iconPlacement="start"
+                iconName="X"
               >
                 Cancelar
-              </IGRPButtonPrimitive>
+              </IGRPButton>
               <IGRPButtonPrimitive
                 type="submit"
                 disabled={isCreating || isUpdating}
               >
+                <IGRPIcon iconName="Save" className="size-4" />
                 {isEdit
                   ? isUpdating
                     ? "Atualizando..."

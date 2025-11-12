@@ -30,7 +30,6 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusSchema } from "@/schemas/global";
-import { DEPT_OPTIONS } from "../dept-lib";
 import {
   type DepartmentArgs,
   departmentSchema,
@@ -42,7 +41,7 @@ interface DepartmentCreateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   department: DepartmentArgs | null;
-  parentDeptId?: string | null;
+  parentDeptId?: DepartmentArgs | null;
 }
 
 export function DepartmentFormDialog({
@@ -85,7 +84,7 @@ export function DepartmentFormDialog({
     } else {
       form.reset({
         ...defaultValues,
-        parentCode: parentDeptId ?? "",
+        parentCode: parentDeptId?.code?? "",
       });
     }
   }, [open, department, parentDeptId, form]);
@@ -146,7 +145,7 @@ useEffect(() => {
       } else {
         form.reset({
           ...defaultValues,
-          parentCode: parentDeptId ?? "",
+          parentCode: parentDeptId?.code ?? "",
         });
       }
     } catch (error) {
@@ -163,7 +162,7 @@ useEffect(() => {
     }
   };
 
-  const isSubDepartment = Boolean(parentDeptId);
+  const isSubDepartment = Boolean(parentDeptId?.code);
 
   const titleTxt = department
     ? "Editar Departamento"
@@ -279,6 +278,7 @@ useEffect(() => {
                     <IGRPFormControlPrimitive>
                       <IGRPInputPrimitive
                         {...field}
+                        value={parentDeptId?.description || ""}
                         disabled
                         placeholder="Departamento pai"
                         className="bg-muted border-primary/30"
