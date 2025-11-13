@@ -200,7 +200,7 @@ export function UserProfile() {
                             <IGRPButtonPrimitive
                               variant="outline"
                               size="sm"
-                              onClick={() => handleRevokeRole(role.name || "")}
+                              onClick={() => handleRevokeRole(role.code || "")}
                             >
                               Revogar
                             </IGRPButtonPrimitive>

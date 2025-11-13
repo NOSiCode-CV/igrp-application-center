@@ -798,8 +798,10 @@ export function MenuFormDialog({
                   />
                 </div>
 
-                <IGRPDialogFooterPrimitive className="mt-4">
-                  {!menu && step === "form" && (
+                <IGRPDialogFooterPrimitive className="mt-4 gap-2">
+                  {/* <div className="flex gap-2 justify-between"> */}
+                  <div className="flex-1">
+                    {!menu && step === "form" && (
                     <IGRPButton
                       type="button"
                       variant="ghost"
@@ -811,7 +813,9 @@ export function MenuFormDialog({
                       Voltar
                     </IGRPButton>
                   )}
-                  <IGRPButton
+                  </div>
+                  <div className="flex gap-1.5">
+                    <IGRPButton
                     type="button"
                     variant="outline"
                     onClick={() => {
@@ -839,6 +843,8 @@ export function MenuFormDialog({
                         : "Criar Menu"}
                     </IGRPButton>
                   )}
+                  </div>
+                  {/* </div> */}
                 </IGRPDialogFooterPrimitive>
               </form>
             </IGRPFormPrimitive>

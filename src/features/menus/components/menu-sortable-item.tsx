@@ -93,17 +93,29 @@ export function SortableMenuItem({
     <>
       <div
         ref={setNodeRef}
-        style={{
-          ...style,
-          paddingLeft: `${(depth + 1) * 1.5}rem`,
-        }}
+        style={style}
         className={cn(
-          "group relative flex pl-3 items-center justify-between border-b last:border-0 bg-background transition-all",
+          "group relative flex items-center justify-between border-b last:border-b-0 bg-background transition-all",
           isDragging && "opacity-50 z-50",
           isChild && "bg-muted/30",
         )}
       >
-        <div className="flex items-center gap-3 flex-1 py-3">
+        <div className="flex items-center gap-3 flex-1 py-3 pl-3">
+          <button
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md shrink-0"
+            type="button"
+          >
+            <IGRPIcon
+              iconName="GripVertical"
+              className="size-4 text-muted-foreground"
+              strokeWidth={2}
+            />
+          </button>
+
+          {/* <div style={{ width: `${depth * 1.5}rem` }} className="shrink-0" /> */}
+          
           {hasChildren ? (
             <IGRPButtonPrimitive
               variant="ghost"
@@ -121,23 +133,10 @@ export function SortableMenuItem({
             <div className="w-7 shrink-0" />
           )}
 
-          <button
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md shrink-0"
-            type="button"
-          >
+          <div className="flex items-center justify-center size-8 rounded-md bg-muted shrink-0">
             <IGRPIcon
-              iconName="GripVertical"
+              iconName={typeConfig.icon}
               className="size-4 text-muted-foreground"
-              strokeWidth={2}
-            />
-          </button>
-
-          <div className="flex items-center justify-center size-8 rounded-md bg-primary/10 shrink-0">
-            <IGRPIcon
-              iconName={menu?.icon === 'null' ? 'AppWindow' : menu.icon || "AppWindow"}
-              className="size-4 text-primary"
               strokeWidth={2}
             />
           </div>
@@ -159,14 +158,6 @@ export function SortableMenuItem({
           </div>
 
           <div className="flex items-center gap-3 mr-3 shrink-0">
-            <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-md")}>
-              <IGRPIcon
-                iconName={typeConfig.icon}
-                className="size-3.5"
-                strokeWidth={2}
-              />
-            </div>
-
             <IGRPDropdownMenuPrimitive>
               <IGRPDropdownMenuTriggerPrimitive asChild>
                 <IGRPButtonPrimitive variant="ghost" className="h-8 w-8 p-0">
