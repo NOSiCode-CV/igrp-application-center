@@ -176,6 +176,8 @@ useEffect(() => {
     ? "Criar um novo sub departamento"
     : "Criar um novo departamento";
 
+    console.log("parentDeptId - ", parentDeptId)
+
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
       <IGRPDialogContentPrimitive>
@@ -278,7 +280,7 @@ useEffect(() => {
                     <IGRPFormControlPrimitive>
                       <IGRPInputPrimitive
                         {...field}
-                        value={parentDeptId?.description || ""}
+                        value={parentDeptId?.name || parentDeptId?.description || parentDeptId?.code || ""}
                         disabled
                         placeholder="Departamento pai"
                         className="bg-muted border-primary/30"
