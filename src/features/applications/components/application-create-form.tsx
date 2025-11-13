@@ -31,7 +31,7 @@ import { useCreateApplication } from "@/features/applications/use-applications";
 import { useDepartments } from "@/features/departments/use-departments";
 import { DEPT_OPTIONS } from "@/features/departments/dept-lib";
 import { useUsers } from "@/features/users/use-users";
-import { ROUTES } from "@/lib/constants";
+import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
 
 export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) {
@@ -92,11 +92,11 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
     }
   };
 
-  const departmentOptions = departments ? DEPT_OPTIONS(departments) : [];
-
   return (
     <IGRPFormPrimitive {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+      console.error("Form validation errors:", errors);
+    })} className="space-y-4">
         <IGRPFormFieldPrimitive
           control={form.control}
           name="name"
@@ -228,6 +228,37 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             </IGRPFormItemPrimitive>
           )}
         />
+
+<IGRPFormFieldPrimitive
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <IGRPFormItemPrimitive>
+                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+                  <IGRPSelectPrimitive
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <IGRPFormControlPrimitive>
+                      <IGRPSelectTriggerPrimitive className="w-full truncate">
+                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
+                      </IGRPSelectTriggerPrimitive>
+                    </IGRPFormControlPrimitive>
+                    <IGRPSelectContentPrimitive>
+                      {STATUS_OPTIONS.map((status) => (
+                        <IGRPSelectItemPrimitive
+                          key={status.value}
+                          value={status.value}
+                        >
+                          {status.label}
+                        </IGRPSelectItemPrimitive>
+                      ))}
+                    </IGRPSelectContentPrimitive>
+                  </IGRPSelectPrimitive>
+                  <IGRPFormMessagePrimitive />
+                </IGRPFormItemPrimitive>
+              )}
+            />
 
         <div className="flex justify-end gap-2 pt-4">
           <IGRPButton type="button" showIcon iconName="X" variant="outline" onClick={onSuccess}>
