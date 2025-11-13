@@ -15,6 +15,7 @@ import {
   IGRPSelectValuePrimitive,
   IGRPSelectContentPrimitive,
   IGRPSelectItemPrimitive,
+  IGRPButton,
 } from "@igrp/igrp-framework-react-design-system";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "@/features/users/use-users";
@@ -126,16 +127,18 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
               />
 
         <div className="flex justify-end gap-3">
-          <IGRPButtonPrimitive
+          <IGRPButton
             type="button"
             variant="outline"
             onClick={onSuccess}
+            showIcon
+            iconName="X"
           >
             Cancelar
-          </IGRPButtonPrimitive>
-          <IGRPButtonPrimitive type="submit" disabled={updateUser.isPending}>
-            {updateUser.isPending ? "Salvando..." : "Salvar"}
-          </IGRPButtonPrimitive>
+          </IGRPButton>
+          <IGRPButton showIcon iconName="Save" type="submit" disabled={updateUser.isPending}>
+            {updateUser.isPending ? "Gravando..." : "Gravar"}
+          </IGRPButton>
         </div>
       </form>
     </IGRPFormPrimitive>
