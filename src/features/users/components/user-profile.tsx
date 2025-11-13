@@ -8,17 +8,19 @@ import {
   IGRPCardPrimitive,
   IGRPCardTitlePrimitive,
   IGRPIcon,
-  IGRPTabsContentPrimitive,
-  IGRPTabsListPrimitive,
-  IGRPTabsPrimitive,
-  IGRPTabsTriggerPrimitive,
   IGRPUserAvatar,
   useIGRPToast,
+  IGRPDialogPrimitive,
+  IGRPDialogContentPrimitive,
+  IGRPDialogHeaderPrimitive,
+  IGRPDialogTitlePrimitive,
+  IGRPDialogTriggerPrimitive,
+  IGRPButton,
+  cn,
 } from "@igrp/igrp-framework-react-design-system";
-import { ButtonLink } from "@/components/button-link";
+import { useState, useRef, useEffect } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import { PageHeader } from "@/components/page-header";
 import {
   useCurrentUser,
   useRemoveUserRole,
@@ -26,14 +28,46 @@ import {
 } from "@/features/users/use-users";
 import { ROUTES } from "@/lib/constants";
 import { getInitials } from "@/lib/utils";
+import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
+import { BackButton } from "@/components/back-button";
+import { UserEditForm } from "./user-edit-form";
 
 export function UserProfile() {
-  const { data: user, isLoading, error: userError } = useCurrentUser();
+  const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
   const { data: userRoles } = useUserRoles(user?.username);
-
   const { mutateAsync: removeUserRole } = useRemoveUserRole();
-
   const { igrpToast } = useIGRPToast();
+
+  const [open, setOpen] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const signatureInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadFile = useUploadPublicFiles();
+  const [uploadedAvatarPath, setUploadedAvatarPath] = useState<string | null>(
+    null
+  );
+  const [uploadedSignaturePath, setUploadedSignaturePath] = useState<
+    string | null
+  >(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
+
+  const { data: avatarUrl } = useFiles(uploadedAvatarPath || "");
+  const { data: signatureUrl } = useFiles(uploadedSignaturePath || "");
+
+  useEffect(() => {
+    if (avatarUrl) {
+      setAvatarPreview(avatarUrl.url);
+      setUploadedAvatarPath(null);
+    }
+  }, [avatarUrl]);
+
+  useEffect(() => {
+    if (signatureUrl) {
+      setSignaturePreview(signatureUrl.url);
+      setUploadedSignaturePath(null);
+    }
+  }, [signatureUrl]);
 
   if (isLoading && !user) {
     return <AppCenterLoading descrption="Carregando utilizador..." />;
@@ -51,8 +85,7 @@ export function UserProfile() {
   }
 
   const handleName = (value: string) => {
-    const SENTINEL = "§§§"; // safe placeholder
-
+    const SENTINEL = "§§§";
     return value
       .replace(/iGRP/g, SENTINEL)
       .replace(/[_\-.]+/g, " ")
@@ -86,135 +119,226 @@ export function UserProfile() {
     }
   };
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const result = await uploadFile.mutateAsync({
+        file,
+        options: {
+          folder: `users/${user.username}/avatar`,
+        },
+      });
+
+      setUploadedAvatarPath(result);
+      refetch();
+      igrpToast({
+        type: "success",
+        title: "Avatar atualizado com sucesso",
+        duration: 4000,
+      });
+    } catch (err) {
+      igrpToast({
+        type: "error",
+        title: "Erro ao atualizar avatar",
+        description: (err as Error).message,
+        duration: 4000,
+      });
+    }
+  };
+
+  const handleSignatureChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const result = await uploadFile.mutateAsync({
+        file,
+        options: {
+          folder: `users/${user.username}/signature`,
+        },
+      });
+
+      setUploadedSignaturePath(result);
+      refetch();
+      igrpToast({
+        type: "success",
+        title: "Assinatura atualizada com sucesso",
+        duration: 4000,
+      });
+    } catch (err) {
+      igrpToast({
+        type: "error",
+        title: "Erro ao atualizar assinatura",
+        description: (err as Error).message,
+        duration: 4000,
+      });
+    }
+  };
+
+  const currentAvatarUrl = avatarPreview || user.picture || null;
+  const currentSignatureUrl = signaturePreview || user.signature || null;
+
   return (
     <div className="flex flex-col gap-10 animate-fade-in">
-      <PageHeader
-        title="Perfil do Utilizador"
-        showBackButton
-        linkBackButton={ROUTES.USERS}
-        showActions
-      >
-        <ButtonLink
-          href={`${ROUTES.USER_PROFILE}/${ROUTES.EDIT}`}
-          icon="UserPen"
-          label="Editar"
-        />
-      </PageHeader>
+      <div className="flex items-start mt-4 justify-between">
+        <div className="flex items-start gap-4">
+          <div
+            className="relative group cursor-pointer"
+            onClick={() => avatarInputRef.current?.click()}
+          >
+            <IGRPUserAvatar
+              alt={user.name}
+              image={currentAvatarUrl}
+              fallbackContent={getInitials(user.name)}
+              className="size-20 bg-white/50 transition-all duration-300 group-hover:brightness-75"
+              fallbackClass="text-2xl"
+            />
 
-      <div className="flex flex-col gap-6">
-        <IGRPCardPrimitive>
-          <IGRPCardHeaderPrimitive>
-            <IGRPCardTitlePrimitive>
-              Informações do Utilizador
-            </IGRPCardTitlePrimitive>
-            <IGRPCardDescriptionPrimitive>
-              Informação Básica
-            </IGRPCardDescriptionPrimitive>
-          </IGRPCardHeaderPrimitive>
-          <IGRPCardContentPrimitive>
-            <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 text-sm gap-4">
-              <div>
-                <dt className="font-medium text-muted-foreground">
-                  Nome Completo
-                </dt>
-                <dd>{user.name}</dd>
-              </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">Username</dt>
-                <dd>{user.username}</dd>
-              </div>
-              <div>
-                <dt className="font-medium text-muted-foreground">Email</dt>
-                <dd>{user.email}</dd>
-              </div>
-              <div className="flex flex-col gap-3">
-                <dt className="font-medium text-muted-foreground">Avatar</dt>
-                <dd>
-                  <IGRPUserAvatar
-                    alt={user.name}
-                    fallbackContent={getInitials(user.name)}
-                    className="size-12 bg-white/50"
-                    fallbackClass="text-base"
-                  />
-                </dd>
-              </div>
-              <div className="flex flex-col gap-3">
-                <dt className="font-medium text-muted-foreground">
-                  Assinatura
-                </dt>
-                <dd>
-                  {/* {getSignature?.link ? (
-                          <Image
-                            src={getSignature.link}
-                            alt='Signature preview'
-                            className='object-contain h-30 max-w-50 w-full bg-white/80 rounded-md'
-                            width={300}
-                            height={100}
-                          />
-                        ) : (
-                          'N/A'
-                        )} */}
-                </dd>
-              </div>
-            </dl>
-          </IGRPCardContentPrimitive>
-        </IGRPCardPrimitive>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <IGRPIcon
+                iconName={uploadFile.isPending ? "LoaderCircle" : "Camera"}
+                className={cn(
+                  "w-6 h-6 text-white",
+                  uploadFile.isPending && "animate-spin"
+                )}
+              />
+            </div>
 
-        {userRoles && userRoles.length > 0 && (
-          <div className="flex flex-col gap-6">
-            <IGRPTabsPrimitive defaultValue="permissions" className="w-full">
-              <IGRPTabsListPrimitive className="dark:bg-slate-900/50">
-                <IGRPTabsTriggerPrimitive
-                  value="permissions"
-                  className="dark:data-[state=active]:bg-slate-800 dark:data-[state=active]:text-white"
-                >
-                  Permissões
-                </IGRPTabsTriggerPrimitive>
-              </IGRPTabsListPrimitive>
-
-              {userRoles && userRoles.length > 0 && (
-                <IGRPTabsContentPrimitive value="permissions" className="mt-4">
-                  <IGRPCardPrimitive className="py-3">
-                    <IGRPCardContentPrimitive>
-                      <div className="space-y-4">
-                        {userRoles.map((role) => (
-                          <div
-                            key={role.id}
-                            className="flex items-center justify-between rounded-lg border-b p-4"
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className="rounded-full bg-primary/10 p-2">
-                                <IGRPIcon
-                                  iconName="Shield"
-                                  className="text-primary"
-                                />
-                              </div>
-                              <div>
-                                <p className="capitalize">
-                                  {handleName(
-                                    role.description || role.name || "",
-                                  )}
-                                </p>
-                              </div>
-                            </div>
-                            <IGRPButtonPrimitive
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleRevokeRole(role.code || "")}
-                            >
-                              Revogar
-                            </IGRPButtonPrimitive>
-                          </div>
-                        ))}
-                      </div>
-                    </IGRPCardContentPrimitive>
-                  </IGRPCardPrimitive>
-                </IGRPTabsContentPrimitive>
-              )}
-            </IGRPTabsPrimitive>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+              disabled={uploadFile.isPending}
+            />
           </div>
-        )}
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <BackButton href={ROUTES.USERS} />
+              <h1 className="text-xl font-bold">{user.name}</h1>
+            </div>
+            <div className="flex flex-col gap-1">
+              <p className="text-muted-foreground text-sm">{user.email}</p>
+              <p className="text-muted-foreground text-xs">@{user.username}</p>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <dt className="font-medium text-muted-foreground text-xs">
+                Assinatura
+              </dt>
+              <dd>
+                <div
+                  className="relative group cursor-pointer inline-block"
+                  onClick={() => signatureInputRef.current?.click()}
+                >
+                  {currentSignatureUrl ? (
+                    <div className="relative">
+                      <img
+                        src={currentSignatureUrl}
+                        alt="Assinatura"
+                        className="object-contain h-20 max-w-xs bg-white/80 rounded-md transition-all duration-300 group-hover:brightness-75"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <IGRPIcon
+                          iconName={
+                            uploadFile.isPending ? "LoaderCircle" : "Camera"
+                          }
+                          className={cn(
+                            "w-6 h-6 text-white",
+                            uploadFile.isPending && "animate-spin"
+                          )}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-20 w-40 bg-muted/50 rounded-md border-2 border-dashed border-muted-foreground/25 hover:border-primary/50 transition-colors">
+                      <div className="flex flex-col items-center gap-1">
+                        <IGRPIcon
+                          iconName="Upload"
+                          className="w-6 h-6 text-muted-foreground"
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          Carregar
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  <input
+                    ref={signatureInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSignatureChange}
+                    className="hidden"
+                    disabled={uploadFile.isPending}
+                  />
+                </div>
+              </dd>
+            </div>
+          </div>
+        </div>
+
+        <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
+          <IGRPDialogTriggerPrimitive asChild>
+            <IGRPButton showIcon variant="outline" iconName="Pencil">
+              Editar
+            </IGRPButton>
+          </IGRPDialogTriggerPrimitive>
+          <IGRPDialogContentPrimitive className="max-w-2xl">
+            <IGRPDialogHeaderPrimitive>
+              <IGRPDialogTitlePrimitive>Editar Perfil</IGRPDialogTitlePrimitive>
+            </IGRPDialogHeaderPrimitive>
+            <UserEditForm user={user} onSuccess={() => setOpen(false)} />
+          </IGRPDialogContentPrimitive>
+        </IGRPDialogPrimitive>
       </div>
+
+      {userRoles && userRoles.length > 0 && (
+        <div>
+          <h2 className="text-xl font-bold my-3">Permissões do Utilizador</h2>
+
+          <div className="grid gap-3">
+            {userRoles.map((role) => (
+              <div
+                key={role.id}
+                className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="rounded-full bg-primary/10 p-2.5">
+                    <IGRPIcon
+                      iconName="Shield"
+                      className="text-primary size-5"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="font-medium capitalize">
+                      {handleName(role.description || role.name || "")}
+                    </p>
+                    {role.code && (
+                      <p className="text-xs text-muted-foreground">
+                        {role.code}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <IGRPButtonPrimitive
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRevokeRole(role.code || "")}
+                >
+                  Revogar
+                </IGRPButtonPrimitive>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

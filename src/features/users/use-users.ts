@@ -17,6 +17,7 @@ import {
   getUserRoles,
   getUsers,
   inviteUser,
+  removeRolesFromUser,
   updateUser,
 } from "@/actions/user";
 
@@ -75,7 +76,7 @@ export const useRemoveUserRole = () => {
     }: {
       username: string;
       roleNames: string[];
-    }) => addRolesToUser(username, roleNames),
+    }) => removeRolesFromUser(username, roleNames),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users", "userRoles"] });
       await queryClient.refetchQueries({ queryKey: ["users", "userRoles"] });
@@ -83,7 +84,6 @@ export const useRemoveUserRole = () => {
   });
 };
 
-// TODO: this is not working
 export const useUserRoles = (username?: string) => {
   return useQuery<RoleDTO[]>({
     queryKey: ["userRoles", username],
