@@ -181,6 +181,8 @@ export function UserList() {
     const email = String(row.getValue("email"));
     const username = String(row.getValue("username"));
 
+    const state = String(row.getValue("status"));
+
     return (
       <IGRPDropdownMenuPrimitive>
         <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
@@ -188,14 +190,15 @@ export function UserList() {
         </IGRPDropdownMenuTriggerPrimitive>
 
         <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
-          <IGRPDropdownMenuItemPrimitive
+          {state === "ACTIVE" && <IGRPDropdownMenuItemPrimitive
             onSelect={() => setAssignRolesFor({ open: true, username, email })}
           >
             <IGRPIcon iconName="ShieldUser" />
             <span>Associar Perfís</span>
           </IGRPDropdownMenuItemPrimitive>
+          }
 
-          {!isCurrentUser(email) && (
+          {!isCurrentUser(email) && state === "ACTIVE" && (
             <>
               <IGRPDropdownMenuSeparatorPrimitive />
 

@@ -24,8 +24,8 @@ function buildRoleHierarchy(roles: RoleDTO[]): RoleNode[] {
 
   roles.forEach((role) => {
     const node = roleMap.get(role.code)!;
-    if (role.parentName && roleMap.has(role.parentName)) {
-      const parent = roleMap.get(role.parentName)!;
+    if (role.parentCode && roleMap.has(role.parentCode)) {
+      const parent = roleMap.get(role.parentCode)!;
       parent.children.push(node);
     } else {
       rootRoles.push(node);
@@ -149,10 +149,10 @@ function UserRoleItem({ role, level }: UserRoleItemProps) {
                   {role.permissions.length === 1 ? "permissão" : "permissões"}
                 </span>
               </div>
-              {role.parentName && (
+              {role.parentCode && (
                 <div className="text-xs">
                   Associados:{" "}
-                  <span className="font-mono">{role.parentName}</span>
+                  <span className="font-mono">{role.parentCode}</span>
                 </div>
               )}
             </div>
