@@ -5,19 +5,18 @@ import type {
   CreateApplicationRequest,
   UpdateApplicationRequest,
 } from "@igrp/platform-access-management-client-ts";
-import type { ApplicationArgs } from "@/features/applications/app-schemas";
 import { getClientAccess } from "./access-client";
 import { MenuArgs } from "@/features/menus/menu-schemas";
 import { IGRPApplicationArgs } from "@igrp/framework-next-types";
 
 export async function getApplications(
   filters?: ApplicationFilters,
-): Promise<ApplicationArgs[]> {
+): Promise<IGRPApplicationArgs[]> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.getApplications(filters);
-    return result.data as ApplicationArgs[];
+    return result.data as IGRPApplicationArgs[];
   } catch (error) {
     console.error("[apps] Não foi possível obter os dados:", error);
     throw error;
@@ -46,7 +45,7 @@ export async function createApplication(application: CreateApplicationRequest) {
 
   try {
     const result = await client.applications.createApplication(application);
-    return result.data as ApplicationArgs;
+    return result.data as IGRPApplicationArgs;
   } catch (error) {
     console.error("[app-create] Não foi possível criar à aplicação:", error);
     throw error;
@@ -61,7 +60,7 @@ export async function updateApplication(
 
   try {
     const result = await client.applications.updateApplication(code, updated);
-    return result.data as ApplicationArgs;
+    return result.data as IGRPApplicationArgs;
   } catch (error) {
     console.error(
       "[app-update] Não foi possível atualizar à aplicação:",

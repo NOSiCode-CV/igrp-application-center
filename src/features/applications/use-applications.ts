@@ -1,4 +1,3 @@
-// import type { IGRPApplicationArgs } from "@igrp/framework-next-types";
 import type {
   ApplicationFilters,
   UpdateApplicationRequest,
@@ -14,12 +13,11 @@ import {
   removeDepartmentsFromApplication,
   updateApplication,
 } from "@/actions/applications";
-import type { ApplicationArgs } from "./app-schemas";
 import { MenuArgs } from "../menus/menu-schemas";
 import { IGRPApplicationArgs } from "@igrp/framework-next-types";
 
 export const useApplications = (filters?: ApplicationFilters) => {
-  return useQuery<ApplicationArgs[]>({
+  return useQuery<IGRPApplicationArgs[]>({
     queryKey: ["applications", filters],
     queryFn: () => getApplications(filters),
   });

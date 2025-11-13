@@ -37,7 +37,7 @@ export type UpdateUserArgs = z.infer<typeof UpdateUserSchema>;
 
 export const FormUserSchema = z.object({
   name: NameSchema,
-  username: UsernameSchema.optional(),
+  username: UsernameSchema,
   email: EmailSchema,
 });
 

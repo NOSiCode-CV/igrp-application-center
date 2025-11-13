@@ -20,7 +20,7 @@ export function ApplicationsListHome() {
         title="Nenhuma aplicação encontrada."
       >
         Clique em &nbsp;
-        <span className="font-semibold">“Nova Aplicação”</span>
+        <span className="font-semibold">“Gerir Aplicação”</span>
       </AppCenterNotFound>
     );
   }

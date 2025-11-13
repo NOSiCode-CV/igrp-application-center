@@ -42,7 +42,6 @@ import { cn } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
 import { useAddUserRole, useInviteUser } from "../use-users";
 import {
-  type CreateUserArgs,
   type FormSchema,
   type FormUserArgs,
   formSchema,
@@ -53,12 +52,7 @@ interface UserInviteDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const EMPTY_USER: FormUserArgs = { name: "", email: "" };
-
-function deriveUsernameFromEmail(email: string) {
-  const local = email.split("@")[0].trim();
-  return local.slice(0, 254);
-}
+const EMPTY_USER: FormUserArgs = { name: "", email: "", username: "" };
 
 export function UserInviteDialog({
   open,
@@ -120,6 +114,7 @@ export function UserInviteDialog({
         ? true
         : await form.trigger([
             `users.${lastIndex}.name`,
+            `users.${lastIndex}.username`,
             `users.${lastIndex}.email`,
           ]);
     if (ok) {
@@ -144,10 +139,10 @@ export function UserInviteDialog({
     const { users, roleNames } = values;
     const inviteAll = Promise.all(
       users.map(async (raw) => {
-        const username = raw.email;
+        const username = raw.username;
         const userPayload: CreateUserRequest = {
           name: raw.name.trim(),
-          username: raw.name.trim(),
+          username: raw.username.trim(),
           email: raw.email.trim(),
           status: statusSchema.enum.ACTIVE as Status,
         };
@@ -209,11 +204,31 @@ export function UserInviteDialog({
                         render={({ field }) => (
                           <IGRPFormItemPrimitive className="flex flex-col">
                             <IGRPFormLabelPrimitive>
-                              Nome
+                              Nome Completo
                             </IGRPFormLabelPrimitive>
                             <IGRPFormControlPrimitive>
                               <IGRPInputPrimitive
                                 placeholder="Nome completo"
+                                {...field}
+                                value={field.value ?? ""}
+                              />
+                            </IGRPFormControlPrimitive>
+                            <IGRPFormMessagePrimitive />
+                          </IGRPFormItemPrimitive>
+                        )}
+                      />
+                      
+                      <IGRPFormFieldPrimitive
+                        control={form.control}
+                        name={`users.${index}.username`}
+                        render={({ field }) => (
+                          <IGRPFormItemPrimitive className="flex flex-col">
+                            <IGRPFormLabelPrimitive>
+                              Nome do Usuario
+                            </IGRPFormLabelPrimitive>
+                            <IGRPFormControlPrimitive>
+                              <IGRPInputPrimitive
+                                placeholder="Nome de usuario"
                                 {...field}
                                 value={field.value ?? ""}
                               />
