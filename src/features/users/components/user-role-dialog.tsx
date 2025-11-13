@@ -4,6 +4,7 @@ import {
   cn,
   IGRPBadge,
   IGRPBadgePrimitive,
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPCheckboxPrimitive,
   IGRPCommandEmptyPrimitive,
@@ -135,8 +136,8 @@ const columns: ColumnDef<RoleArgs>[] = [
 ];
 
 function diffRoles(selected: RoleArgs[], existing: RoleArgs[]) {
-  const selectedNorm = new Set(selected.map((r) => norm(r.name)));
-  const existingNorm = new Set(existing.map((r) => norm(r.name)));
+  const selectedNorm = new Set(selected.map((r) => norm(r.code)));
+  const existingNorm = new Set(existing.map((r) => norm(r.code)));
 
   const toAddNorm = Array.from(selectedNorm).filter(
     (n) => !existingNorm.has(n),
@@ -145,8 +146,8 @@ function diffRoles(selected: RoleArgs[], existing: RoleArgs[]) {
     (n) => !selectedNorm.has(n),
   );
 
-  const selectedByNorm = new Map(selected.map((r) => [norm(r.name), r.name]));
-  const existingByNorm = new Map(existing.map((r) => [norm(r.name), r.name]));
+  const selectedByNorm = new Map(selected.map((r) => [norm(r.code), r.code]));
+  const existingByNorm = new Map(existing.map((r) => [norm(r.code), r.code]));
 
   return {
     toAdd: toAddNorm.map((n) => selectedByNorm.get(n)!).filter(Boolean),
@@ -169,7 +170,6 @@ export function UserRolesDialog({
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
 
-  // Department selector
   const {
     data: depts,
     isLoading: deptsLoading,
@@ -188,14 +188,12 @@ export function UserRolesDialog({
     setDeptPopoverOpen(false);
   };
 
-  // Roles for selected department
   const {
     data: roles,
     isLoading,
     error,
   } = useRoles({ departmentCode, enabled: !!departmentCode });
 
-  // All roles the user currently has (likely across departments)
   const {
     data: userRoles,
     isLoading: isLoadingUserRoles,
@@ -213,7 +211,6 @@ export function UserRolesDialog({
 
   const getRowKey = (r: RoleArgs) => String((r as any).id ?? r.name);
 
-  // Only consider user roles that belong to the currently visible department roles
   const roleNameSet = useMemo(
     () => new Set((roles ?? []).map((r) => norm(r.name))),
     [roles],
@@ -223,13 +220,11 @@ export function UserRolesDialog({
     [userRoles, roleNameSet],
   );
 
-  // Preselect by user's existing roles IN THIS DEPARTMENT
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
     return new Set<string>(list.map((r) => getRowKey(r as any)));
   }, [userRolesInDept]);
 
-  // Reset on close
   useEffect(() => {
     if (!open) {
       setDepartmentCode(undefined);
@@ -240,15 +235,12 @@ export function UserRolesDialog({
     }
   }, [open]);
 
-  // When roles or department changes: set data and clear selection
   useEffect(() => {
     setData(roles ?? []);
     setRowSelection({});
-    // reset pagination on dept change for UX
     setPagination((p) => ({ ...p, pageIndex: 0 }));
   }, [roles, departmentCode]);
 
-  // Sync selection with user's roles in dept
   useEffect(() => {
     if (!data?.length) return;
     const next: RowSelectionState = {};
@@ -277,6 +269,8 @@ export function UserRolesDialog({
 
   const selectedRows = table.getSelectedRowModel().rows;
   const selectedData = selectedRows.map((r) => r.original);
+
+  console.log("selectedData - ", selectedData)
   const existing = userRolesInDept ?? [];
 
   const { toAdd, toRemove } = useMemo(
@@ -343,7 +337,7 @@ export function UserRolesDialog({
       <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive className="text-base">
-            Adicionar ou Remover Perfis de{" "}
+            Adicionar ou Remover Perfis de &nbsp;
             <IGRPBadge variant="solid" color="primary">
               {username}
             </IGRPBadge>
@@ -352,82 +346,16 @@ export function UserRolesDialog({
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
           <section className="space-y-8 max-w-full">
-            {/* Department selector */}
-            <div className="space-y-2 px-3">
-              <label className="text-sm font-medium">Departamento</label>
-              <IGRPPopoverPrimitive
-                open={deptPopoverOpen}
-                onOpenChange={setDeptPopoverOpen}
-              >
-                <IGRPPopoverTriggerPrimitive asChild>
-                  <IGRPButtonPrimitive
-                    variant="outline"
-                    role="combobox"
-                    className={cn(
-                      "w-full justify-between",
-                      !departmentCode && "text-muted-foreground",
-                    )}
-                    disabled={
-                      deptsLoading || !!deptsError || (depts?.length ?? 0) === 0
-                    }
-                  >
-                    {deptsLoading
-                      ? "A carregar departamentos..."
-                      : departmentCode
-                        ? deptName(departmentCode)
-                        : deptsError
-                          ? "Erro ao carregar departamentos"
-                          : (depts?.length ?? 0) === 0
-                            ? "Sem departamentos"
-                            : "Selecionar departamento"}
-                    <IGRPIcon
-                      iconName="ChevronsUpDown"
-                      className="ml-2 h-4 w-4 opacity-50"
-                    />
-                  </IGRPButtonPrimitive>
-                </IGRPPopoverTriggerPrimitive>
+           
 
-                <IGRPPopoverContentPrimitive className="w-[--radix-popover-trigger-width] p-0">
-                  <IGRPCommandPrimitive>
-                    <IGRPCommandInputPrimitive placeholder="Procurar departamento..." />
-                    <IGRPCommandListPrimitive>
-                      <IGRPCommandEmptyPrimitive>
-                        Nenhum departamento encontrado.
-                      </IGRPCommandEmptyPrimitive>
-                      <IGRPCommandGroupPrimitive>
-                        {depts?.map((dept) => (
-                          <IGRPCommandItemPrimitive
-                            key={dept.code}
-                            value={dept.code}
-                            onSelect={(v) => handleSelectDept(v)}
-                          >
-                            <IGRPIcon
-                              iconName="Check"
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                departmentCode === dept.code
-                                  ? "opacity-100"
-                                  : "opacity-0",
-                              )}
-                            />
-                            {dept.name}
-                          </IGRPCommandItemPrimitive>
-                        ))}
-                      </IGRPCommandGroupPrimitive>
-                    </IGRPCommandListPrimitive>
-                  </IGRPCommandPrimitive>
-                </IGRPPopoverContentPrimitive>
-              </IGRPPopoverPrimitive>
-            </div>
-
-            {/* Filter + Toolbar */}
             <div className="flex flex-col gap-4">
-              <div className="relative px-3 py-4">
+              <div className="flex gap-2 ">
+                <div className="relative flex-1">
                 <IGRPInputPrimitive
                   id={`${id}-input`}
                   ref={inputRef}
                   className={cn(
-                    "peer ps-9 border-foreground/30 focus-visible:ring-[2px] focus-visible:ring-foreground/30 focus-visible:border-foreground/30",
+                    "peer ps-9 border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:border-foreground/30",
                     Boolean(table.getColumn("name")?.getFilterValue()) &&
                       "pe-9",
                   )}
@@ -457,56 +385,86 @@ export function UserRolesDialog({
                     <IGRPIcon iconName="CircleX" />
                   </button>
                 )}
-              </div>
-
-              <div className="flex items-center justify-between gap-3 px-3">
-                <IGRPBadgePrimitive>
-                  {table.getSelectedRowModel().rows.length} selecionado(s)
-                </IGRPBadgePrimitive>
-
-                <div className="flex gap-2">
-                  <IGRPButtonPrimitive
-                    variant="default"
-                    onClick={onSubmit}
-                    disabled={
-                      !departmentCode ||
-                      !(toAdd.length || toRemove.length) ||
-                      loading ||
-                      isAdding ||
-                      isRemoving
-                    }
-                    size="sm"
-                  >
-                    Guardar
-                  </IGRPButtonPrimitive>
-
-                  <IGRPButtonPrimitive
-                    variant="outline"
-                    disabled={table.getSelectedRowModel().rows.length === 0}
-                    onClick={() => setRowSelection({})}
-                    size="sm"
-                    className={
-                      table.getSelectedRowModel().rows.length === 0
-                        ? "hidden"
-                        : "inline-flex"
-                    }
-                  >
-                    Limpar seleção
-                  </IGRPButtonPrimitive>
                 </div>
+
+                <div className="space-y-2">
+                <IGRPPopoverPrimitive
+                  open={deptPopoverOpen}
+                  onOpenChange={setDeptPopoverOpen}
+                >
+                  <IGRPPopoverTriggerPrimitive asChild>
+                    <IGRPButtonPrimitive
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-full justify-between",
+                        !departmentCode && "text-muted-foreground",
+                      )}
+                      disabled={
+                        deptsLoading || !!deptsError || (depts?.length ?? 0) === 0
+                      }
+                    >
+                      {deptsLoading
+                        ? "A carregar departamentos..."
+                        : departmentCode
+                          ? deptName(departmentCode)
+                          : deptsError
+                            ? "Erro ao carregar departamentos"
+                            : (depts?.length ?? 0) === 0
+                              ? "Sem departamentos"
+                              : "Selecionar departamento"}
+                      <IGRPIcon
+                        iconName="ChevronsUpDown"
+                        className="ml-2 h-4 w-4 opacity-50"
+                      />
+                    </IGRPButtonPrimitive>
+                  </IGRPPopoverTriggerPrimitive>
+
+                  <IGRPPopoverContentPrimitive className="w-[--radix-popover-trigger-width] p-0">
+                    <IGRPCommandPrimitive>
+                      <IGRPCommandInputPrimitive placeholder="Procurar departamento..." />
+                      <IGRPCommandListPrimitive>
+                        <IGRPCommandEmptyPrimitive>
+                          Nenhum departamento encontrado.
+                        </IGRPCommandEmptyPrimitive>
+                        <IGRPCommandGroupPrimitive>
+                          {depts?.map((dept) => (
+                            <IGRPCommandItemPrimitive
+                              key={dept.code}
+                              value={dept.code}
+                              onSelect={(v) => handleSelectDept(v)}
+                            >
+                              <IGRPIcon
+                                iconName="Check"
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  departmentCode === dept.code
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
+                              {dept.name}
+                            </IGRPCommandItemPrimitive>
+                          ))}
+                        </IGRPCommandGroupPrimitive>
+                      </IGRPCommandListPrimitive>
+                    </IGRPCommandPrimitive>
+                  </IGRPPopoverContentPrimitive>
+                </IGRPPopoverPrimitive>
+              </div>
               </div>
 
-              {/* Table */}
+             
               {!departmentCode ? (
-                <div className="rounded-md border py-10 text-center text-muted-foreground mx-3">
+                <div className="rounded-md border py-10 text-center text-muted-foreground ">
                   Selecione um departamento para listar os perfis.
                 </div>
               ) : loading ? (
-                <div className="rounded-md border py-6 text-center mx-3">
+                <div className="rounded-md border py-6 text-center ">
                   A carregar perfis...
                 </div>
               ) : err ? (
-                <div className="rounded-md border py-6 mx-3">
+                <div className="rounded-md border py-6 ">
                   <p className="text-center">
                     Ocorreu um erro a carregar perfis do utilizador.
                   </p>
@@ -516,7 +474,7 @@ export function UserRolesDialog({
                 </div>
               ) : (
                 <>
-                  <div className="bg-background overflow-hidden rounded-md border mx-3">
+                  <div className="bg-background overflow-hidden rounded-md border ">
                     <IGRPTablePrimitive className="table-fixed">
                       <IGRPTableHeaderPrimitive>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -573,8 +531,7 @@ export function UserRolesDialog({
                     </IGRPTablePrimitive>
                   </div>
 
-                  {/* Pagination */}
-                  <div className="flex items-center justify-between gap-8 px-3">
+                  <div className="flex items-center justify-between gap-8">
                     <div className="flex items-center justify-end gap-3">
                       <IGRPLabelPrimitive
                         htmlFor={`${id}-per-page`}
@@ -691,7 +648,50 @@ export function UserRolesDialog({
                   </div>
                 </>
               )}
+
+               <div className="flex items-center justify-between gap-3">
+                <IGRPBadgePrimitive>
+                  {table.getSelectedRowModel().rows.length} selecionado(s)
+                </IGRPBadgePrimitive>
+
+                <div className="flex gap-2">
+                  
+                  <IGRPButton
+                    variant="outline"
+                    disabled={table.getSelectedRowModel().rows.length === 0}
+                    onClick={() => setRowSelection({})}
+                    size="sm"
+                    className={
+                      table.getSelectedRowModel().rows.length === 0
+                        ? "hidden"
+                        : "inline-flex"
+                    }
+                    showIcon
+                    iconName="X"
+                  >
+                    Limpar
+                  </IGRPButton>
+                  <IGRPButton
+                    variant="default"
+                    onClick={onSubmit}
+                    disabled={
+                      !departmentCode ||
+                      !(toAdd.length || toRemove.length) ||
+                      loading ||
+                      isAdding ||
+                      isRemoving
+                    }
+                    size="sm"
+                    iconName="Save"
+                    showIcon
+                  >
+                    {loading || isAdding || isRemoving ? "Guardando..." : "Guardar"}
+                  </IGRPButton>
+
+                </div>
+              </div>
             </div>
+            
           </section>
         </div>
       </IGRPDialogContentPrimitive>
