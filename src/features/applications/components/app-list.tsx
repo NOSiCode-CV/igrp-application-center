@@ -38,17 +38,17 @@ export function ApplicationList() {
 
   if (error) throw error;
 
-  if (!applications || applications.length === 0) {
-    return (
-      <AppCenterNotFound
-        iconName="AppWindow"
-        title="Nenhuma aplicação encontrada."
-      />
-    );
-  }
+  // if (!applications || applications.length === 0) {
+  //   return (
+  //     <AppCenterNotFound
+  //       iconName="AppWindow"
+  //       title="Nenhuma aplicação encontrada."
+  //     />
+  //   );
+  // }
 
   const allApps = applications;
-  const filteredApps = allApps.filter((app) => {
+  const filteredApps = allApps?.filter((app) => {
     const matchesSearch =
       app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,7 +60,7 @@ export function ApplicationList() {
     return matchesSearch && matchesStatus;
   });
 
-  const appEmpty = allApps.length === 0;
+  const appEmpty = allApps?.length === 0;
 
   return (
     <div className="flex flex-col gap-10 animate-fade-in">
@@ -69,7 +69,6 @@ export function ApplicationList() {
         description="Gerir Menus de Aplicações."
         showActions
       >
-        {!appEmpty && (
           <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
             <IGRPDialogTriggerPrimitive asChild>
               <IGRPButton showIcon iconName="Grid2x2Plus">
@@ -83,7 +82,7 @@ export function ApplicationList() {
               <ApplicationCreateForm onSuccess={() => setOpen(false)} />
             </IGRPDialogContentPrimitive>
           </IGRPDialogPrimitive>
-        )}
+        
       </PageHeader>
 
       <div className="flex flex-col gap-6">
@@ -149,11 +148,11 @@ export function ApplicationList() {
           </div>
         </div>
 
-        {filteredApps.length === 0 && allApps.length > 0 ? (
+        {filteredApps?.length === 0 && allApps && allApps.length > 0 ? (
           <div className="text-center py-6 text-muted-foreground">
             Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou filtros.
           </div>
-        ) : allApps.length === 0 ? (
+        ) : allApps && allApps.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
             <p className="mb-4">Nenhuma aplicação encontrada.</p>
             <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
@@ -172,7 +171,7 @@ export function ApplicationList() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredApps.map((app) => (
+            {filteredApps?.map((app) => (
               <ApplicationCard key={app.id} app={app} />
             ))}
           </div>

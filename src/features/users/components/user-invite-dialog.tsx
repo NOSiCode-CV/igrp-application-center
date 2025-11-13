@@ -197,12 +197,14 @@ export function UserInviteDialog({
                   <h3 className="text-sm font-medium">Utilizador(es)</h3>
 
                   {fields.map((field, index) => (
-                    <div key={field.id} className="flex gap-2">
+                    <div className="flex flex-col gap-2">
+                    <div className="flex w-full">
                       <IGRPFormFieldPrimitive
                         control={form.control}
                         name={`users.${index}.name`}
+                        
                         render={({ field }) => (
-                          <IGRPFormItemPrimitive className="flex flex-col">
+                          <IGRPFormItemPrimitive className="flex w-full flex-col">
                             <IGRPFormLabelPrimitive>
                               Nome Completo
                             </IGRPFormLabelPrimitive>
@@ -218,6 +220,8 @@ export function UserInviteDialog({
                         )}
                       />
                       
+                    </div>
+                    <div key={field.id} className="mt-3 flex justify-between gap-1">
                       <IGRPFormFieldPrimitive
                         control={form.control}
                         name={`users.${index}.username`}
@@ -274,6 +278,7 @@ export function UserInviteDialog({
                           <IGRPIcon iconName="Trash2" strokeWidth={2} />
                         </IGRPButtonPrimitive>
                       </div>
+                    </div>
                     </div>
                   ))}
 
