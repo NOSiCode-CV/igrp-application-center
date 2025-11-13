@@ -41,11 +41,7 @@ import { useRoles } from "@/features/roles/use-roles";
 import { cn } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
 import { useAddUserRole, useInviteUser } from "../use-users";
-import {
-  type FormSchema,
-  type FormUserArgs,
-  formSchema,
-} from "../user-schema";
+import { type FormSchema, type FormUserArgs, formSchema } from "../user-schema";
 
 interface UserInviteDialogProps {
   open: boolean;
@@ -132,46 +128,47 @@ export function UserInviteDialog({
 
   const parentSelected = useMemo(
     () => depts?.find((o) => o.code === parentValue) ?? null,
-    [parentValue, depts],
+    [parentValue, depts]
   );
 
   const onSubmit = async (values: FormSchema) => {
     const { users, roleNames } = values;
-    const inviteAll = Promise.all(
-      users.map(async (raw) => {
-        const username = raw.username;
-        const userPayload: CreateUserRequest = {
-          name: raw.name.trim(),
-          username: raw.username.trim(),
-          email: raw.email.trim(),
-          status: statusSchema.enum.ACTIVE as Status,
-        };
+    console.log("Roles Name - ", roleNames);
+    // const inviteAll = Promise.all(
+    //   users.map(async (raw) => {
+    //     const username = raw.username;
+    //     const userPayload: CreateUserRequest = {
+    //       name: raw.name.trim(),
+    //       username: raw.username.trim(),
+    //       email: raw.email.trim(),
+    //       status: statusSchema.enum.ACTIVE as Status,
+    //     };
 
-        const created = await userInvite({ user: userPayload });
-        const finalUsername = (created as any)?.username ?? username;
-        if (finalUsername && roleNames?.length) {
-          await addUserRole({ username: finalUsername, roleNames });
-        }
-        return finalUsername;
-      }),
-    );
-    igrpToast({
-      promise: inviteAll,
-      loading: `A convidar ${users.length} utilizador${users.length > 1 ? "es" : ""}...`,
-      success: `Convite enviado para ${users.length} utilizador${users.length > 1 ? "es" : ""}!`,
-      error: (err) => `Falha ao convidar: ${String(err)}`,
-    });
-    try {
-      await inviteAll;
-      form.reset({
-        users: [EMPTY_USER],
-        departmentCode: undefined,
-        roleNames: [],
-      });
-      onOpenChange(false);
-    } catch (error) {
-      console.warn(error);
-    }
+    //     const created = await userInvite({ user: userPayload });
+    //     const finalUsername = (created as any)?.username ?? username;
+    //     if (finalUsername && roleNames?.length) {
+    //       await addUserRole({ username: finalUsername, roleNames });
+    //     }
+    //     return finalUsername;
+    //   }),
+    // );
+    // igrpToast({
+    //   promise: inviteAll,
+    //   loading: `A convidar ${users.length} utilizador${users.length > 1 ? "es" : ""}...`,
+    //   success: `Convite enviado para ${users.length} utilizador${users.length > 1 ? "es" : ""}!`,
+    //   error: (err) => `Falha ao convidar: ${String(err)}`,
+    // });
+    // try {
+    //   await inviteAll;
+    //   form.reset({
+    //     users: [EMPTY_USER],
+    //     departmentCode: undefined,
+    //     roleNames: [],
+    //   });
+    //   onOpenChange(false);
+    // } catch (error) {
+    //   console.warn(error);
+    // }
   };
 
   return (
@@ -198,87 +195,88 @@ export function UserInviteDialog({
 
                   {fields.map((field, index) => (
                     <div className="flex flex-col gap-2">
-                    <div className="flex w-full">
-                      <IGRPFormFieldPrimitive
-                        control={form.control}
-                        name={`users.${index}.name`}
-                        
-                        render={({ field }) => (
-                          <IGRPFormItemPrimitive className="flex w-full flex-col">
-                            <IGRPFormLabelPrimitive>
-                              Nome Completo
-                            </IGRPFormLabelPrimitive>
-                            <IGRPFormControlPrimitive>
-                              <IGRPInputPrimitive
-                                placeholder="Nome completo"
-                                {...field}
-                                value={field.value ?? ""}
-                              />
-                            </IGRPFormControlPrimitive>
-                            <IGRPFormMessagePrimitive />
-                          </IGRPFormItemPrimitive>
-                        )}
-                      />
-                      
-                    </div>
-                    <div key={field.id} className="mt-3 flex justify-between gap-1">
-                      <IGRPFormFieldPrimitive
-                        control={form.control}
-                        name={`users.${index}.username`}
-                        render={({ field }) => (
-                          <IGRPFormItemPrimitive className="flex flex-col">
-                            <IGRPFormLabelPrimitive>
-                              Nome do Usuario
-                            </IGRPFormLabelPrimitive>
-                            <IGRPFormControlPrimitive>
-                              <IGRPInputPrimitive
-                                placeholder="Nome de usuario"
-                                {...field}
-                                value={field.value ?? ""}
-                              />
-                            </IGRPFormControlPrimitive>
-                            <IGRPFormMessagePrimitive />
-                          </IGRPFormItemPrimitive>
-                        )}
-                      />
-
-                      <IGRPFormFieldPrimitive
-                        control={form.control}
-                        name={`users.${index}.email`}
-                        render={({ field }) => (
-                          <IGRPFormItemPrimitive className="flex flex-col">
-                            <IGRPFormLabelPrimitive>
-                              Email
-                            </IGRPFormLabelPrimitive>
-                            <IGRPFormControlPrimitive>
-                              <IGRPInputPrimitive
-                                placeholder="user@example.com"
-                                {...field}
-                                value={field.value ?? ""}
-                              />
-                            </IGRPFormControlPrimitive>
-                            <IGRPFormMessagePrimitive />
-                          </IGRPFormItemPrimitive>
-                        )}
-                      />
-
-                      <div className="flex flex-col gap-2">
-                        <IGRPFormLabelPrimitive className="invisible">
-                          Remover
-                        </IGRPFormLabelPrimitive>
-                        <IGRPButtonPrimitive
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => remove(index)}
-                          disabled={fields.length === 1}
-                          aria-label="Remover utilizador"
-                          title="Remover utilizador"
-                        >
-                          <IGRPIcon iconName="Trash2" strokeWidth={2} />
-                        </IGRPButtonPrimitive>
+                      <div className="flex w-full">
+                        <IGRPFormFieldPrimitive
+                          control={form.control}
+                          name={`users.${index}.name`}
+                          render={({ field }) => (
+                            <IGRPFormItemPrimitive className="flex w-full flex-col">
+                              <IGRPFormLabelPrimitive>
+                                Nome Completo
+                              </IGRPFormLabelPrimitive>
+                              <IGRPFormControlPrimitive>
+                                <IGRPInputPrimitive
+                                  placeholder="Nome completo"
+                                  {...field}
+                                  value={field.value ?? ""}
+                                />
+                              </IGRPFormControlPrimitive>
+                              <IGRPFormMessagePrimitive />
+                            </IGRPFormItemPrimitive>
+                          )}
+                        />
                       </div>
-                    </div>
+                      <div
+                        key={field.id}
+                        className="mt-3 flex justify-between gap-1"
+                      >
+                        <IGRPFormFieldPrimitive
+                          control={form.control}
+                          name={`users.${index}.username`}
+                          render={({ field }) => (
+                            <IGRPFormItemPrimitive className="flex flex-col">
+                              <IGRPFormLabelPrimitive>
+                                Nome do Usuario
+                              </IGRPFormLabelPrimitive>
+                              <IGRPFormControlPrimitive>
+                                <IGRPInputPrimitive
+                                  placeholder="Nome de usuario"
+                                  {...field}
+                                  value={field.value ?? ""}
+                                />
+                              </IGRPFormControlPrimitive>
+                              <IGRPFormMessagePrimitive />
+                            </IGRPFormItemPrimitive>
+                          )}
+                        />
+
+                        <IGRPFormFieldPrimitive
+                          control={form.control}
+                          name={`users.${index}.email`}
+                          render={({ field }) => (
+                            <IGRPFormItemPrimitive className="flex flex-col">
+                              <IGRPFormLabelPrimitive>
+                                Email
+                              </IGRPFormLabelPrimitive>
+                              <IGRPFormControlPrimitive>
+                                <IGRPInputPrimitive
+                                  placeholder="user@example.com"
+                                  {...field}
+                                  value={field.value ?? ""}
+                                />
+                              </IGRPFormControlPrimitive>
+                              <IGRPFormMessagePrimitive />
+                            </IGRPFormItemPrimitive>
+                          )}
+                        />
+
+                        <div className="flex flex-col gap-2">
+                          <IGRPFormLabelPrimitive className="invisible">
+                            Remover
+                          </IGRPFormLabelPrimitive>
+                          <IGRPButtonPrimitive
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => remove(index)}
+                            disabled={fields.length === 1}
+                            aria-label="Remover utilizador"
+                            title="Remover utilizador"
+                          >
+                            <IGRPIcon iconName="Trash2" strokeWidth={2} />
+                          </IGRPButtonPrimitive>
+                        </div>
+                      </div>
                     </div>
                   ))}
 
@@ -336,7 +334,7 @@ export function UserInviteDialog({
                                 disabled={isDeptDisabled}
                                 className={cn(
                                   "w-full justify-between",
-                                  !field.value && "text-muted-foreground",
+                                  !field.value && "text-muted-foreground"
                                 )}
                                 aria-expanded={openDepts}
                               >
@@ -393,7 +391,7 @@ export function UserInviteDialog({
                                           opt.code,
                                           {
                                             shouldValidate: true,
-                                          },
+                                          }
                                         );
                                         form.setValue("roleNames", [], {
                                           shouldValidate: true,
@@ -440,17 +438,18 @@ export function UserInviteDialog({
                     }}
                   />
 
-                  {/* Roles (multi-select) */}
                   <IGRPFormFieldPrimitive
                     control={form.control}
                     name="roleNames"
                     render={({ field }) => {
                       const isDisabled =
                         !selectedDeptCode || (roles?.length ?? 0) === 0;
-                      const selected = new Set(field.value ?? ([] as string[]));
+                      const selectedCodes = new Set(
+                        field.value ?? ([] as string[])
+                      );
 
                       const toggle = (code: string) => {
-                        const next = new Set(selected);
+                        const next = new Set(selectedCodes);
                         if (next.has(code)) next.delete(code);
                         else next.add(code);
                         form.setValue("roleNames", Array.from(next), {
@@ -466,19 +465,24 @@ export function UserInviteDialog({
                         });
                       };
 
+                      const selectedRoleNames =
+                        roles
+                          ?.filter((role) => selectedCodes.has(role.code))
+                          .map((role) => role.name) ?? [];
+
                       const label =
-                        selected.size === 0
+                        selectedCodes.size === 0
                           ? isDisabled
                             ? "Selecione um departamento"
-                            : "Selecionar roles"
-                          : selected.size === 1
-                            ? Array.from(selected)[0]
-                            : `${selected.size} roles selecionados`;
+                            : "Selecionar perfis"
+                          : selectedCodes.size === 1
+                          ? selectedRoleNames[0]
+                          : `${selectedCodes.size} perfis selecionados`;
 
                       return (
                         <IGRPFormItemPrimitive className="flex flex-col">
                           <IGRPFormLabelPrimitive>
-                            Perfís
+                            Perfis
                           </IGRPFormLabelPrimitive>
                           <IGRPPopoverPrimitive
                             open={openRoles}
@@ -492,8 +496,8 @@ export function UserInviteDialog({
                                   disabled={isDisabled}
                                   className={cn(
                                     "w-full justify-between",
-                                    selected.size === 0 &&
-                                      "text-muted-foreground",
+                                    selectedCodes.size === 0 &&
+                                      "text-muted-foreground"
                                   )}
                                 >
                                   <span className="truncate">{label}</span>
@@ -518,14 +522,14 @@ export function UserInviteDialog({
                                   </IGRPCommandEmptyPrimitive>
                                   <IGRPCommandGroupPrimitive>
                                     {roles?.map((role) => {
-                                      const checked = selected.has(role.code);
+                                      const checked = selectedCodes.has(
+                                        role.code
+                                      );
                                       return (
                                         <IGRPCommandItemPrimitive
                                           key={role.code}
                                           value={role.name}
-                                          onSelect={(val) => {
-                                            toggle(val);
-                                          }}
+                                          onSelect={() => toggle(role.code)}
                                         >
                                           <IGRPIcon
                                             iconName="Check"
@@ -533,7 +537,7 @@ export function UserInviteDialog({
                                               "mr-2",
                                               checked
                                                 ? "opacity-100"
-                                                : "opacity-0",
+                                                : "opacity-0"
                                             )}
                                           />
                                           {role.name}
@@ -546,19 +550,11 @@ export function UserInviteDialog({
                                     <IGRPButtonPrimitive
                                       type="button"
                                       variant="ghost"
-                                      size="icon"
-                                      onClick={() => setOpenRoles(false)}
-                                      disabled={selected.size === 0}
-                                    >
-                                      <IGRPIcon iconName="CirclePlus" />
-                                    </IGRPButtonPrimitive>
-                                    <IGRPButtonPrimitive
-                                      type="button"
-                                      variant="ghost"
-                                      size="icon"
+                                      size="sm"
                                       onClick={clearAll}
+                                      disabled={selectedCodes.size === 0}
                                     >
-                                      <IGRPIcon iconName="CircleX" />
+                                      Limpar
                                     </IGRPButtonPrimitive>
                                   </div>
                                 </IGRPCommandListPrimitive>
@@ -570,25 +566,27 @@ export function UserInviteDialog({
                             {rolesError ? rolesError.message : null}
                           </IGRPFormMessagePrimitive>
 
-                          {selected.size > 0 && (
+                          {selectedRoleNames.length > 0 && (
                             <div className="mt-2 flex flex-wrap gap-2">
-                              {Array.from(selected).map((r) => (
-                                <span
-                                  key={r}
-                                  className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs"
-                                >
-                                  {r}
-                                  <button
-                                    type="button"
-                                    className="opacity-60 hover:opacity-100"
-                                    onClick={() => toggle(r)}
-                                    aria-label={`Remover ${r}`}
-                                    title={`Remover ${r}`}
+                              {roles
+                                ?.filter((role) => selectedCodes.has(role.code))
+                                .map((role) => (
+                                  <span
+                                    key={role.code}
+                                    className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs"
                                   >
-                                    ×
-                                  </button>
-                                </span>
-                              ))}
+                                    {role.name}
+                                    <button
+                                      type="button"
+                                      className="opacity-60 hover:opacity-100"
+                                      onClick={() => toggle(role.code)}
+                                      aria-label={`Remover ${role.name}`}
+                                      title={`Remover ${role.name}`}
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
                             </div>
                           )}
                         </IGRPFormItemPrimitive>

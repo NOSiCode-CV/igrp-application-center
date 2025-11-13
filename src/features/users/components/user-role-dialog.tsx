@@ -270,7 +270,6 @@ export function UserRolesDialog({
   const selectedRows = table.getSelectedRowModel().rows;
   const selectedData = selectedRows.map((r) => r.original);
 
-  console.log("selectedData - ", selectedData)
   const existing = userRolesInDept ?? [];
 
   const { toAdd, toRemove } = useMemo(
