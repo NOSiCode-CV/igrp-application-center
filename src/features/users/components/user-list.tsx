@@ -56,12 +56,12 @@ export function UserList() {
   const [assignRolesFor, setAssignRolesFor] = useState<{
     open: boolean;
     username: string | null;
+    id: number | null;
     email: string | null;
-  }>(() => ({ open: false, username: null, email: null }));
+  }>(() => ({ open: false, username: null, id: null, email: null }));
 
   const { data: users, isLoading, error } = useUsers();
   const { data: currentUser, isLoading: currentUserLoading } = useCurrentUser();
-
   useEffect(() => {
     setData(users ?? []);
   }, [users]);
@@ -99,42 +99,6 @@ export function UserList() {
       },
     },
     {
-      header: "Username",
-      accessorKey: "username",
-      cell: ({ row }) => {
-        const email = String(row.getValue("email"));
-        const username = String(row.getValue("username"));
-
-        return (
-          <>
-            {isCurrentUser(email) ? (
-              <div className="flex items-center gap-3">
-                <IGRPTooltipProviderPrimitive>
-                  <IGRPTooltipPrimitive>
-                    <IGRPTooltipTriggerPrimitive asChild>
-                      <ButtonLinkTooltip
-                        href={ROUTES.USER_PROFILE}
-                        className="underline underline-offset-2 hover:text-primary hover:no-underline"
-                        btnClassName="px-0 py-0 gap-1"
-                        label={username}
-                        icon="UserCheck"
-                        variant="link"
-                      />
-                    </IGRPTooltipTriggerPrimitive>
-                    <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
-                      Ver Perfil
-                    </IGRPTooltipContentPrimitive>
-                  </IGRPTooltipPrimitive>
-                </IGRPTooltipProviderPrimitive>
-              </div>
-            ) : (
-              username
-            )}
-          </>
-        );
-      },
-    },
-    {
       header: "Email",
       accessorKey: "email",
       cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
@@ -165,7 +129,7 @@ export function UserList() {
         <IGRPDataTableHeaderDefault title="Perfís" className="text-center" />
       ),
       cell: ({ row }) => (
-        <RolesCountCell username={String(row.getValue("username"))} />
+        <RolesCountCell id={Number(row.getValue("id"))} />
       ),
     },
     {
@@ -180,6 +144,7 @@ export function UserList() {
   function RowActions({ row }: { row: Row<IGRPUserDTO> }) {
     const email = String(row.getValue("email"));
     const username = String(row.getValue("username"));
+    const id = Number(row.getValue("id"))
 
     const state = String(row.getValue("status"));
 
@@ -191,7 +156,7 @@ export function UserList() {
 
         <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
           {state === "ACTIVE" && <IGRPDropdownMenuItemPrimitive
-            onSelect={() => setAssignRolesFor({ open: true, username, email })}
+            onSelect={() => setAssignRolesFor({ open: true, username, id, email })}
           >
             <IGRPIcon iconName="ShieldUser" />
             <span>Associar Perfís</span>
@@ -217,8 +182,8 @@ export function UserList() {
     );
   }
 
-  function RolesCountCell({ username }: { username: string }) {
-    const { data, isLoading, isError } = useUserRoles(username);
+  function RolesCountCell({ id }: { id: number }) {
+    const { data, isLoading, isError } = useUserRoles(id);
 
     if (isLoading) return <div>…</div>;
     if (isError) return <div>—</div>;
@@ -301,7 +266,7 @@ export function UserList() {
         clientFilters={filters}
         getRowCanExpand={(row) => Boolean(row.getValue("name"))}
         renderSubComponent={(row) => (
-          <UserRolesList username={row.original.username} />
+          <UserRolesList id={row.original.id} />
         )}
       />
 
@@ -318,7 +283,7 @@ export function UserList() {
           onOpenChange={(open) =>
             setAssignRolesFor({ ...assignRolesFor, open })
           }
-          username={assignRolesFor.username as string}
+          id={assignRolesFor.id as number}
         />
       )}
 

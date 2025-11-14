@@ -158,15 +158,15 @@ function diffRoles(selected: RoleArgs[], existing: RoleArgs[]) {
 type UserRolesDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  username: string;
+  id: number;
 };
 
 export function UserRolesDialog({
   open,
   onOpenChange,
-  username,
+  id,
 }: UserRolesDialogProps) {
-  const id = useId();
+  const idValue = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
 
@@ -199,7 +199,7 @@ export function UserRolesDialog({
     isLoading: isLoadingUserRoles,
     error: errorUserRoles,
     refetch: refetchUserRoles,
-  } = useUserRoles(username);
+  } = useUserRoles(id);
 
   const [data, setData] = useState<RoleArgs[]>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -302,10 +302,10 @@ export function UserRolesDialog({
 
     try {
       if (toAdd.length) {
-        await addUserRole({ username, roleNames: toAdd });
+        await addUserRole({ id, roleNames: toAdd });
       }
       if (toRemove.length) {
-        await removeUserRole({ username, roleNames: toRemove });
+        await removeUserRole({ id, roleNames: toRemove });
       }
 
       igrpToast({
@@ -336,22 +336,18 @@ export function UserRolesDialog({
       <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive className="text-base">
-            Adicionar ou Remover Perfis de &nbsp;
-            <IGRPBadge variant="solid" color="primary">
-              {username}
-            </IGRPBadge>
+            Adicionar ou Remover Perfis
           </IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
           <section className="space-y-8 max-w-full">
-           
 
             <div className="flex flex-col gap-4">
               <div className="flex gap-2 ">
                 <div className="relative flex-1">
                 <IGRPInputPrimitive
-                  id={`${id}-input`}
+                  id={`${idValue}-input`}
                   ref={inputRef}
                   className={cn(
                     "peer ps-9 border-foreground/30 focus-visible:ring-2 focus-visible:ring-foreground/30 focus-visible:border-foreground/30",
@@ -533,7 +529,7 @@ export function UserRolesDialog({
                   <div className="flex items-center justify-between gap-8">
                     <div className="flex items-center justify-end gap-3">
                       <IGRPLabelPrimitive
-                        htmlFor={`${id}-per-page`}
+                        htmlFor={`${idValue}-per-page`}
                         className="max-sm:sr-only"
                       >
                         Rows per page
@@ -545,7 +541,7 @@ export function UserRolesDialog({
                         }
                       >
                         <IGRPSelectTriggerPrimitive
-                          id={`${id}-per-page`}
+                          id={`${idValue}-per-page`}
                           className="w-fit whitespace-nowrap"
                         >
                           <IGRPSelectValuePrimitive placeholder="Select number of results" />

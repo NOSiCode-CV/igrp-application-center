@@ -36,12 +36,12 @@ function buildRoleHierarchy(roles: RoleDTO[]): RoleNode[] {
 }
 
 interface RolesListProps {
-  username: string;
+  id: number;
   level?: number;
 }
 
-export function UserRolesList({ username, level = 0 }: RolesListProps) {
-  const { data, isLoading, isError } = useUserRoles(username);
+export function UserRolesList({ id, level = 0 }: RolesListProps) {
+  const { data, isLoading, isError } = useUserRoles(id);
 
   if (isLoading) return <div>…</div>;
   if (isError) return <div>—</div>;

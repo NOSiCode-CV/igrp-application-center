@@ -33,12 +33,27 @@ import { UpdateUserArgs, UpdateUserSchema } from '../user-schema';
 import { updateUser } from '@/actions/user';
 import { ProfileImageUpload } from './user-profile-image-upload';
 import { ProfileSignature } from './user-profile-signature';
+import { AppCenterLoading } from '@/components/loading';
+import { AppCenterNotFound } from '@/components/not-found';
 
 export function ProfileUserForm() {
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
 
   const { data: user, isLoading, error } = useCurrentUser();
+
+  if (!user) {
+    return (
+      <AppCenterNotFound
+        iconName="User"
+        title="Nenhum utilizador encontrada."
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <AppCenterLoading descrption="Carregando profile..." />;
+  }
 
   const form = useForm<z.infer<typeof UpdateUserSchema>>({
     resolver: zodResolver(UpdateUserSchema),
@@ -55,9 +70,6 @@ export function ProfileUserForm() {
     }
   }, [user, form]);
 
-  if (isLoading && !user) return <div>Loading user...</div>;
-  if (error) throw error;
-
   async function onSubmit(values: z.infer<typeof UpdateUserSchema>) {
     const formData = new FormData();
     formData.append('fullname', values.name || '');
@@ -71,12 +83,12 @@ export function ProfileUserForm() {
       formData.append('signature', values.signature);
     }
 
-    await updateUser(user?.username ?? '', formData as any);
+    user && await updateUser(user.id, formData as any);
 
     igrpToast({
       type: 'success',
-      title: 'User updated',
-      description: 'The user has been updated successfully.',
+      title: 'Usuario Atualizado',
+      description: 'O Usuario foi atualizado com sucesso!',
       duration: 2000,
     });
 

@@ -20,14 +20,10 @@ import {
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
+import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
 type UserEditFormProps = {
-  user: {
-    name: string;
-    username: string;
-    status: string;
-    email: string;
-  };
+  user: IGRPUserDTO
   onSuccess: () => void;
 };
 
@@ -54,7 +50,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
   const onSubmit = async (data: FormData) => {
     try {
       await updateUser.mutateAsync({
-          username: user.username,
+          id: user.id,
           user: {
               name: data.name,
               username: user.username,

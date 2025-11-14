@@ -2,11 +2,6 @@
 
 import {
   IGRPButtonPrimitive,
-  IGRPCardContentPrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardHeaderPrimitive,
-  IGRPCardPrimitive,
-  IGRPCardTitlePrimitive,
   IGRPIcon,
   IGRPUserAvatar,
   useIGRPToast,
@@ -34,7 +29,17 @@ import { UserEditForm } from "./user-edit-form";
 
 export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
-  const { data: userRoles } = useUserRoles(user?.username);
+
+  if (!user) {
+    return (
+      <AppCenterNotFound
+        iconName="User"
+        title="Nenhum utilizador encontrada."
+      />
+    );
+  }
+
+  const { data: userRoles } = useUserRoles(user.id);
   const { mutateAsync: removeUserRole } = useRemoveUserRole();
   const { igrpToast } = useIGRPToast();
 
@@ -75,15 +80,6 @@ export function UserProfile() {
 
   if (userError) throw userError;
 
-  if (!user) {
-    return (
-      <AppCenterNotFound
-        iconName="User"
-        title="Nenhum utilizador encontrada."
-      />
-    );
-  }
-
   const handleName = (value: string) => {
     const SENTINEL = "§§§";
     return value
@@ -102,7 +98,7 @@ export function UserProfile() {
     if (!name) return;
 
     try {
-      await removeUserRole({ username: user.username, roleNames: [name] });
+      await removeUserRole({ id: user.id, roleNames: [name] });
       igrpToast({
         type: "success",
         title: "Perfil removido com sucesso.",
@@ -127,7 +123,7 @@ export function UserProfile() {
       const result = await uploadFile.mutateAsync({
         file,
         options: {
-          folder: `users/${user.username}/avatar`,
+          folder: `users/${user.id}/avatar`,
         },
       });
 
@@ -158,7 +154,7 @@ export function UserProfile() {
       const result = await uploadFile.mutateAsync({
         file,
         options: {
-          folder: `users/${user.username}/signature`,
+          folder: `users/${user.id}/signature`,
         },
       });
 

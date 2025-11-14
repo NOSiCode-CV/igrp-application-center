@@ -38,7 +38,6 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const { data: users } = useUsers();
-  const { data: departments } = useDepartments();
   const { mutateAsync: createApplication } = useCreateApplication();
 
   const form = useForm<CreateApplicationArgs>({
@@ -56,19 +55,6 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
   });
 
   const type = form.watch("type");
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
-    form.setValue("name", name);
-
-    if (form.getValues("slug") === "") {
-      const slug = name
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-");
-      form.setValue("slug", slug);
-    }
-  };
 
   const onSubmit = async (values: CreateApplicationArgs) => {
     try {
@@ -104,7 +90,7 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             <IGRPFormItemPrimitive>
               <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>Nome</IGRPFormLabelPrimitive>
               <IGRPFormControlPrimitive>
-                <IGRPInputPrimitive {...field} required onChange={handleNameChange} />
+                <IGRPInputPrimitive {...field} required />
               </IGRPFormControlPrimitive>
               <IGRPFormMessagePrimitive />
             </IGRPFormItemPrimitive>
@@ -147,7 +133,7 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
                 </IGRPFormControlPrimitive>
                 <IGRPSelectContentPrimitive>
                   {users?.map((user) => (
-                    <IGRPSelectItemPrimitive key={user.username} value={user.username}>
+                    <IGRPSelectItemPrimitive key={user.name} value={user.name}>
                       {user.name}
                     </IGRPSelectItemPrimitive>
                   ))}

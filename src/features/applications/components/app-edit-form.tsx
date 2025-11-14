@@ -142,8 +142,8 @@ export function ApplicationEditForm({
                 <IGRPSelectContentPrimitive>
                   {users?.map((user) => (
                     <IGRPSelectItemPrimitive
-                      key={user.username}
-                      value={user.username}
+                      key={user.name}
+                      value={user.name}
                     >
                       {user.name}
                     </IGRPSelectItemPrimitive>

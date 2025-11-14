@@ -110,7 +110,6 @@ export function UserInviteDialog({
         ? true
         : await form.trigger([
             `users.${lastIndex}.name`,
-            `users.${lastIndex}.username`,
             `users.${lastIndex}.email`,
           ]);
     if (ok) {
@@ -133,42 +132,39 @@ export function UserInviteDialog({
 
   const onSubmit = async (values: FormSchema) => {
     const { users, roleNames } = values;
-    console.log("Roles Name - ", roleNames);
-    // const inviteAll = Promise.all(
-    //   users.map(async (raw) => {
-    //     const username = raw.username;
-    //     const userPayload: CreateUserRequest = {
-    //       name: raw.name.trim(),
-    //       username: raw.username.trim(),
-    //       email: raw.email.trim(),
-    //       status: statusSchema.enum.ACTIVE as Status,
-    //     };
+    const inviteAll = Promise.all(
+      users.map(async (raw) => {
+        const userPayload: CreateUserRequest = {
+          name: raw.name.trim(),
+          email: raw.email.trim(),
+          status: statusSchema.enum.ACTIVE as Status,
+        };
 
-    //     const created = await userInvite({ user: userPayload });
-    //     const finalUsername = (created as any)?.username ?? username;
-    //     if (finalUsername && roleNames?.length) {
-    //       await addUserRole({ username: finalUsername, roleNames });
-    //     }
-    //     return finalUsername;
-    //   }),
-    // );
-    // igrpToast({
-    //   promise: inviteAll,
-    //   loading: `A convidar ${users.length} utilizador${users.length > 1 ? "es" : ""}...`,
-    //   success: `Convite enviado para ${users.length} utilizador${users.length > 1 ? "es" : ""}!`,
-    //   error: (err) => `Falha ao convidar: ${String(err)}`,
-    // });
-    // try {
-    //   await inviteAll;
-    //   form.reset({
-    //     users: [EMPTY_USER],
-    //     departmentCode: undefined,
-    //     roleNames: [],
-    //   });
-    //   onOpenChange(false);
-    // } catch (error) {
-    //   console.warn(error);
-    // }
+        const created = await userInvite({ user: userPayload });
+        const finalId = (created as any)?.id;
+        if (finalId && roleNames?.length) {
+          await addUserRole({ id: finalId, roleNames });
+        }
+        return finalId;
+      }),
+    );
+    igrpToast({
+      promise: inviteAll,
+      loading: `A convidar ${users.length} utilizador${users.length > 1 ? "es" : ""}...`,
+      success: `Convite enviado para ${users.length} utilizador${users.length > 1 ? "es" : ""}!`,
+      error: (err) => `Falha ao convidar: ${String(err)}`,
+    });
+    try {
+      await inviteAll;
+      form.reset({
+        users: [EMPTY_USER],
+        departmentCode: undefined,
+        roleNames: [],
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.warn(error);
+    }
   };
 
   return (
@@ -220,25 +216,6 @@ export function UserInviteDialog({
                         key={field.id}
                         className="mt-3 flex justify-between gap-1"
                       >
-                        <IGRPFormFieldPrimitive
-                          control={form.control}
-                          name={`users.${index}.username`}
-                          render={({ field }) => (
-                            <IGRPFormItemPrimitive className="flex flex-col">
-                              <IGRPFormLabelPrimitive>
-                                Nome do Usuario
-                              </IGRPFormLabelPrimitive>
-                              <IGRPFormControlPrimitive>
-                                <IGRPInputPrimitive
-                                  placeholder="Nome de usuario"
-                                  {...field}
-                                  value={field.value ?? ""}
-                                />
-                              </IGRPFormControlPrimitive>
-                              <IGRPFormMessagePrimitive />
-                            </IGRPFormItemPrimitive>
-                          )}
-                        />
 
                         <IGRPFormFieldPrimitive
                           control={form.control}

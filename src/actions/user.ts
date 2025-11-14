@@ -10,8 +10,6 @@ import { getClientAccess } from "./access-client";
 export async function getUsers(params?: UserFilters, ids?: number[]) {
   const client = await getClientAccess();
 
-  // console.log({ params, ids });
-
   try {
     const result = await client.users.getUsers(params, ids);
     return result.data;
@@ -49,11 +47,11 @@ export async function inviteUser(user: CreateUserRequest) {
   }
 }
 
-export async function addRolesToUser(username: string, roleNames: string[]) {
+export async function addRolesToUser(id: number, roleNames: string[]) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.addRolesToUser(username, roleNames);
+    const result = await client.users.addRolesToUser(id, roleNames);
     return result.data;
   } catch (error) {
     console.error(
@@ -65,13 +63,13 @@ export async function addRolesToUser(username: string, roleNames: string[]) {
 }
 
 export async function removeRolesFromUser(
-  username: string,
+  id: number,
   roleNames: string[],
 ) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.removeRolesFromUser(username, roleNames);
+    const result = await client.users.removeRolesFromUser(id, roleNames);
     return result.data;
   } catch (error) {
     console.error("[user-invite] Erro ao remover perfis ao utilizador:", error);
@@ -79,11 +77,11 @@ export async function removeRolesFromUser(
   }
 }
 
-export async function getUserRoles(username: string) {
+export async function getUserRoles(id: number) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.getUserRoles(username);
+    const result = await client.users.getUserRoles(id);
     return result.data;
   } catch (error) {
     console.error("[user-role] Erro ao obter perfís de utilizador:", error);
@@ -91,11 +89,11 @@ export async function getUserRoles(username: string) {
   }
 }
 
-export async function updateUser(username: string, user: UpdateUserRequest) {
+export async function updateUser(id: number, user: UpdateUserRequest) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.updateUser(username, user);
+    const result = await client.users.updateUser(id, user);
     return result.data;
   } catch (error) {
     console.error("[user-update] Erro ao editar utilizardor:", error);

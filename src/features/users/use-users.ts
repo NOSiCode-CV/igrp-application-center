@@ -53,12 +53,12 @@ export const useAddUserRole = () => {
 
   return useMutation({
     mutationFn: async ({
-      username,
+      id,
       roleNames,
     }: {
-      username: string;
+      id: number;
       roleNames: string[];
-    }) => addRolesToUser(username, roleNames),
+    }) => addRolesToUser(id, roleNames),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
@@ -71,12 +71,12 @@ export const useRemoveUserRole = () => {
 
   return useMutation({
     mutationFn: async ({
-      username,
+      id,
       roleNames,
     }: {
-      username: string;
+      id: number;
       roleNames: string[];
-    }) => removeRolesFromUser(username, roleNames),
+    }) => removeRolesFromUser(id, roleNames),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users", "userRoles"] });
       await queryClient.refetchQueries({ queryKey: ["users", "userRoles"] });
@@ -84,17 +84,18 @@ export const useRemoveUserRole = () => {
   });
 };
 
-export const useUserRoles = (username?: string) => {
+export const useUserRoles = (id: number) => {
   return useQuery<RoleDTO[]>({
-    queryKey: ["userRoles", username],
-    queryFn: () => getUserRoles(username ?? ""),
-    enabled: !!username,
+    queryKey: ["userRoles", id],
+    queryFn: () => getUserRoles(id),
+    enabled: !!id,
   });
 };
 
-export const useUserRolesMulti = (usernames: string[]) => {
+
+export const useUserRolesMulti = (id: number[]) => {
   return useQueries({
-    queries: usernames.map((u) => ({
+    queries: id.map((u) => ({
       queryKey: ["userRoles", u],
       queryFn: () => getUserRoles(u),
       enabled: !!u,
@@ -107,12 +108,12 @@ export const useUpdateUser = () => {
 
   return useMutation({
     mutationFn: async ({
-      username,
+      id,
       user,
     }: {
-      username: string;
+      id: number;
       user: UpdateUserRequest;
-    }) => updateUser(username, user),
+    }) => updateUser(id, user),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
