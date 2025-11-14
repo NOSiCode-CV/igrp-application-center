@@ -1,17 +1,45 @@
 'use client'
 import React from 'react'
-import { useUserRoles } from '../use-users';
-import { IGRPButtonPrimitive, IGRPIcon } from '@igrp/igrp-framework-react-design-system';
+import { useRemoveUserRole, useUserRoles } from '../use-users';
+import { IGRPButtonPrimitive, IGRPIcon, useIGRPToast } from '@igrp/igrp-framework-react-design-system';
 
-export default function UserRoleList({user, handleName, handleRevokeRole}: {
+export default function UserRoleList({ user, handleName }: {
   user: any
   handleName: any
-  handleRevokeRole: any
 }) {
-    const { data: userRoles } = useUserRoles(user.id);
+
+  const { igrpToast } = useIGRPToast();
+  const { data: userRoles } = useUserRoles(user.id);
+  const { mutateAsync: removeUserRole, isPending, variables } = useRemoveUserRole();
+
+  const handleRevokeRole = async (name: string) => {
+    if (!name) return;
+
+    try {
+      await removeUserRole({ id: user.id, roleNames: [name] });
+      igrpToast({
+        type: "success",
+        title: "Perfil removido com sucesso.",
+      });
+    } catch (error) {
+      igrpToast({
+        type: "error",
+        title: "Não foi possivel remover o perfil.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro desconhecido.",
+      });
+    }
+  };
+
+  const isRemovingRole = (roleCode: string) => {
+    return isPending && variables?.roleNames.includes(roleCode);
+  };
+
   return (
     <div>
-    {userRoles && userRoles.length > 0 && (
+      {userRoles && userRoles.length > 0 && (
         <div>
           <h2 className="text-xl font-bold my-3">Permissões do Utilizador</h2>
 
@@ -43,14 +71,15 @@ export default function UserRoleList({user, handleName, handleRevokeRole}: {
                   variant="outline"
                   size="sm"
                   onClick={() => handleRevokeRole(role.code || "")}
+                  disabled={isRemovingRole(role.code || "")}
                 >
-                  Revogar
+                  {isRemovingRole(role.code || "") ? "Aguarde..." : "Revogar"}
                 </IGRPButtonPrimitive>
               </div>
             ))}
           </div>
         </div>
       )}
-      </div>
+    </div>
   )
 }

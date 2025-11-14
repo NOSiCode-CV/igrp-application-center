@@ -21,10 +21,8 @@ import {
 import { useForm } from "react-hook-form";
 
 import {
-  type ApplicationArgs,
   UpdateApplicationSchema,
   type UpdateApplicationArgs,
-  appTypeCrud,
   normalizeApplication,
 } from "@/features/applications/app-schemas";
 import { useUpdateApplication } from "@/features/applications/use-applications";

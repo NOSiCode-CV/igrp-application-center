@@ -77,9 +77,9 @@ export const useRemoveUserRole = () => {
       id: number;
       roleNames: string[];
     }) => removeRolesFromUser(id, roleNames),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["users", "userRoles"] });
-      await queryClient.refetchQueries({ queryKey: ["users", "userRoles"] });
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ["userRoles", variables.id] });
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 };

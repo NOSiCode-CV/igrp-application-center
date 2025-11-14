@@ -175,7 +175,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
       });
     } catch (error) {
       console.error("Erro ao atualizar ordem:", error);
-      
+
       igrpToast({
         type: "error",
         title: "Erro ao salvar",
@@ -193,6 +193,21 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     }
   }
 
+  const handleAddChild = (parentMenu: IGRPMenuItemArgs) => {
+    setSelectedMenu({
+      ...parentMenu,
+      parentCode: parentMenu.code,
+      code: '',
+      name: '',
+      icon: '',
+      url: '',
+      pageSlug: '',
+      type: parentMenu.type === 'GROUP' ? 'FOLDER' : 'MENU_PAGE',
+    } as IGRPMenuItemArgs);
+    setOpenFormDialog(true);
+    setOpenTypeFormDialog(undefined);
+  };
+
   const filteredMenus = menus.filter(
     (menu) => menu.status !== statusSchema.enum.DELETED,
   );
@@ -205,6 +220,35 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
 
   const rootMenus = filteredMenus.filter((menu) => !menu.parentCode);
   const menuEmpty = filteredMenus.length === 0;
+
+  const handleAddInternalPage = (parentMenu: IGRPMenuItemArgs) => {
+    setSelectedMenu({
+      parentCode: parentMenu.code,
+      code: '',
+      name: '',
+      icon: 'AppWindow',
+      type: 'MENU_PAGE',
+      status: 'ACTIVE',
+      applicationCode: app.code,
+    } as IGRPMenuItemArgs);
+    setOpenFormDialog(true);
+    setOpenTypeFormDialog(undefined);
+  };
+
+  const handleAddExternalPage = (parentMenu: IGRPMenuItemArgs) => {
+    setSelectedMenu({
+      parentCode: parentMenu.code,
+      code: '',
+      name: '',
+      icon: 'AppWindow',
+      type: 'EXTERNAL_PAGE',
+      status: 'ACTIVE',
+      applicationCode: app.code,
+    } as IGRPMenuItemArgs);
+    setOpenFormDialog(true);
+    setOpenTypeFormDialog(undefined);
+  };
+
   return (
     <div className="pt-6">
       <div className="flex items-center justify-between">
@@ -284,9 +328,12 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
                       menu={menu}
                       onView={handleView}
                       onEdit={handleEdit}
+                      onAddChild={handleAddChild}
                       onDelete={handleDelete}
                       subMenus={childMenus}
                       allMenus={filteredMenus}
+                      onAddInternalPage={handleAddInternalPage}
+                      onAddExternalPage={handleAddExternalPage}
                     />
                   );
                 })}

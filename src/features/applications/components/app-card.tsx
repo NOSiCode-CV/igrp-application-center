@@ -30,6 +30,7 @@ import { ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ApplicationArgs } from "../app-schemas";
 import { ApplicationEditForm } from "./app-edit-form";
+import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
   const { name, code, status, description, slug, url } = app;
@@ -108,11 +109,11 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
       </IGRPCardPrimitive>
 
       <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh] overflow-y-auto">
+        <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh]">
           <IGRPDialogHeaderPrimitive>
             <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
           </IGRPDialogHeaderPrimitive>
-          <ApplicationEditForm application={app as ApplicationArgs} onSuccess={() => setOpen(false)} />
+          <ApplicationEditForm application={app} onSuccess={() => setOpen(false)} />
         </IGRPDialogContentPrimitive>
       </IGRPDialogPrimitive>
     </>

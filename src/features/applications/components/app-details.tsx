@@ -66,6 +66,8 @@ export function ApplicationDetails({ code }: { code: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+   
+
     try {
       const result = await uploadPicture.mutateAsync({
         file,

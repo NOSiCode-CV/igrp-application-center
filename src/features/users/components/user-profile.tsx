@@ -30,7 +30,6 @@ import UserRoleList from "./user-role-list";
 export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
 
-  const { mutateAsync: removeUserRole } = useRemoveUserRole();
   const { igrpToast } = useIGRPToast();
 
   const [open, setOpen] = useState(false);
@@ -93,26 +92,6 @@ export function UserProfile() {
       .join(" ");
   };
 
-  const handleRevokeRole = async (name: string) => {
-    if (!name) return;
-
-    try {
-      await removeUserRole({ id: user.id, roleNames: [name] });
-      igrpToast({
-        type: "success",
-        title: "Perfil removido com sucesso.",
-      });
-    } catch (error) {
-      igrpToast({
-        type: "error",
-        title: "Não foi possivel remover o perfil.",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
-      });
-    }
-  };
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -148,6 +127,7 @@ export function UserProfile() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    
 
     try {
       const result = await uploadFile.mutateAsync({
@@ -293,7 +273,7 @@ export function UserProfile() {
         </IGRPDialogPrimitive>
       </div>
 
-      <UserRoleList user={user} handleName={handleName} handleRevokeRole={handleRevokeRole} />
+      <UserRoleList user={user} handleName={handleName} />
     </div>
   );
 }

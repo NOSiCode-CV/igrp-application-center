@@ -180,6 +180,12 @@ export function UserRolesDialog({
     undefined,
   );
 
+  useEffect(() => {
+  if (open && depts?.length && !departmentCode) {
+    setDepartmentCode(depts[0].code);
+  }
+}, [open, depts, departmentCode]);
+
   const deptName = (code?: string) =>
     depts?.find((d) => d.code === code)?.name ?? code ?? "";
 

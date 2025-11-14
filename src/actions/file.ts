@@ -23,13 +23,7 @@ export async function uploadPublicFile(
   const client = await getClientAccess();
   
   try {
-    const result = await client.files.uploadPublicFile(file, options);
-    // const result = await client.files.uploadPublicFile(file, {
-    //   ...options,
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //   },
-    // });
+    const result = await client.files.uploadPublicFile(file, options, file?.type);
     return result.data;
   } catch (error) {
     console.error(

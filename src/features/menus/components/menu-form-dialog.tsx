@@ -35,6 +35,7 @@ import {
   IGRPRadioGroupItemPrimitive,
   IGRPRadioGroupPrimitive,
   IGRPScrollAreaPrimitive,
+  IGRPSwitchPrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -316,18 +317,20 @@ export function MenuFormDialog({
   const isExternalPage = menuType === menuTypeSchema.enum.EXTERNAL_PAGE;
   const showParentSelect = parentOptions.length > 0;
 
+  const dialogTitle = openType === 'view' 
+  ? 'Visualizar Menu'
+  : openType === 'edit'
+  ? 'Editar Menu'
+  : menu?.parentCode
+  ? menu.type === 'FOLDER' ? 'Adicionar Pasta' : 'Adicionar Menu'
+  : 'Novo Menu';
+
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
       <IGRPDialogContentPrimitive className="py-4 px-0 sm:min-w-2xl ">
         <IGRPDialogHeaderPrimitive className="px-6">
           <IGRPDialogTitlePrimitive>
-            {menu
-              ? openType === "view"
-                ? "Detalhes do Menu"
-                : "Editar Menu"
-              : step === "type"
-              ? "Escolher Tipo de Menu"
-              : "Criar Novo Menu"}
+            {dialogTitle}
           </IGRPDialogTitlePrimitive>
           <IGRPDialogDescriptionPrimitive>
             {menu
@@ -410,40 +413,33 @@ export function MenuFormDialog({
                     )}
                   />
 
-                  <IGRPFormFieldPrimitive
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <IGRPFormItemPrimitive>
-                        <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                          Estado
-                        </IGRPFormLabelPrimitive>
-                        <IGRPFormControlPrimitive>
-                          <IGRPRadioGroupPrimitive
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            className="flex gap-4"
-                            disabled={openType === "view"}
-                          >
-                            {STATUS_OPTIONS.map(({ value, label }) => (
-                              <IGRPFormItemPrimitive
-                                className="flex items-center space-x-2"
-                                key={value}
-                              >
-                                <IGRPFormControlPrimitive>
-                                  <IGRPRadioGroupItemPrimitive value={value} />
-                                </IGRPFormControlPrimitive>
-                                <IGRPFormLabelPrimitive className="font-normal">
-                                  {label}
-                                </IGRPFormLabelPrimitive>
-                              </IGRPFormItemPrimitive>
-                            ))}
-                          </IGRPRadioGroupPrimitive>
-                        </IGRPFormControlPrimitive>
-                        <IGRPFormMessagePrimitive />
-                      </IGRPFormItemPrimitive>
-                    )}
-                  />
+                
+<IGRPFormFieldPrimitive
+  control={form.control}
+  name="status"
+  render={({ field }) => (
+    <IGRPFormItemPrimitive>
+      <div className="flex items-center justify-between">
+        <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            {field.value === statusSchema.enum.ACTIVE ? "Ativo" : "Inativo"}
+          </span>
+          <IGRPSwitchPrimitive
+            checked={field.value === statusSchema.enum.ACTIVE}
+            onCheckedChange={(checked) =>
+              field.onChange(
+                checked ? statusSchema.enum.ACTIVE : statusSchema.enum.INACTIVE
+              )
+            }
+            disabled={openType === "view"}
+          />
+        </div>
+      </div>
+      <IGRPFormMessagePrimitive />
+    </IGRPFormItemPrimitive>
+  )}
+/>
 
                   <IGRPFormFieldPrimitive
                     control={form.control}
@@ -612,41 +608,31 @@ export function MenuFormDialog({
                       />
 
                       <IGRPFormFieldPrimitive
-                        control={form.control}
-                        name="target"
-                        render={({ field }) => (
-                          <IGRPFormItemPrimitive>
-                            <IGRPFormLabelPrimitive>
-                              Abrir em
-                            </IGRPFormLabelPrimitive>
-                            <IGRPFormControlPrimitive>
-                              <IGRPRadioGroupPrimitive
-                                onValueChange={field.onChange}
-                                value={field.value}
-                                className="flex gap-4"
-                                disabled={openType === "view"}
-                              >
-                                {menuTargetOptions.map(({ value, label }) => (
-                                  <IGRPFormItemPrimitive
-                                    className="flex items-center space-x-2"
-                                    key={value}
-                                  >
-                                    <IGRPFormControlPrimitive>
-                                      <IGRPRadioGroupItemPrimitive
-                                        value={value}
-                                      />
-                                    </IGRPFormControlPrimitive>
-                                    <IGRPFormLabelPrimitive className="font-normal">
-                                      {label}
-                                    </IGRPFormLabelPrimitive>
-                                  </IGRPFormItemPrimitive>
-                                ))}
-                              </IGRPRadioGroupPrimitive>
-                            </IGRPFormControlPrimitive>
-                            <IGRPFormMessagePrimitive />
-                          </IGRPFormItemPrimitive>
-                        )}
-                      />
+      control={form.control}
+      name="target"
+      render={({ field }) => (
+        <IGRPFormItemPrimitive>
+          <div className="flex items-center justify-between">
+            <IGRPFormLabelPrimitive>Abrir em nova aba</IGRPFormLabelPrimitive>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {field.value === menuTargetSchema.enum._blank ? "Sim" : "Não"}
+              </span>
+              <IGRPSwitchPrimitive
+                checked={field.value === menuTargetSchema.enum._blank}
+                onCheckedChange={(checked) =>
+                  field.onChange(
+                    checked ? menuTargetSchema.enum._blank : menuTargetSchema.enum._self
+                  )
+                }
+                disabled={openType === "view"}
+              />
+            </div>
+          </div>
+          <IGRPFormMessagePrimitive />
+        </IGRPFormItemPrimitive>
+      )}
+    />
                     </>
                   )}
 
@@ -655,7 +641,7 @@ export function MenuFormDialog({
                       control={form.control}
                       name="url"
                       render={({ field }) => (
-                        <IGRPFormItemPrimitive className="md:col-span-2">
+                        <IGRPFormItemPrimitive className="">
                           <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
                             URL Externa
                           </IGRPFormLabelPrimitive>
@@ -678,7 +664,7 @@ export function MenuFormDialog({
                       control={form.control}
                       name="parentCode"
                       render={({ field }) => (
-                        <IGRPFormItemPrimitive className="md:col-span-2">
+                        <IGRPFormItemPrimitive className="">
                           <IGRPFormLabelPrimitive>
                             {menuType === "FOLDER"
                               ? "Grupo (Opcional)"
@@ -774,7 +760,7 @@ export function MenuFormDialog({
                     />
                   )}
 
-                  <IGRPFormFieldPrimitive
+                  {/* <IGRPFormFieldPrimitive
                     control={form.control}
                     name="position"
                     render={({ field }) => (
@@ -795,7 +781,7 @@ export function MenuFormDialog({
                         <IGRPFormMessagePrimitive />
                       </IGRPFormItemPrimitive>
                     )}
-                  />
+                  /> */}
                 </div>
 
                 <IGRPDialogFooterPrimitive className="mt-4 gap-2">

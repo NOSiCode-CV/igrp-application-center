@@ -20,10 +20,14 @@ interface SortableMenuItemProps {
   onView: (menu: IGRPMenuItemArgs) => void;
   onEdit: (menu: IGRPMenuItemArgs) => void;
   onDelete?: (code: string, name: string) => void;
+  onAddChild?: (menu: IGRPMenuItemArgs) => void;
   depth?: number;
   isChild?: boolean;
   subMenus?: IGRPMenuItemArgs[];
   allMenus?: IGRPMenuItemArgs[];
+  appCode?: string;
+  onAddInternalPage: any
+  onAddExternalPage: any
 }
 
 const MENU_TYPE_CONFIG = {
@@ -50,10 +54,13 @@ export function SortableMenuItem({
   onView,
   onEdit,
   onDelete,
+  onAddChild,
   depth = 0,
   isChild = false,
   subMenus,
   allMenus,
+   onAddInternalPage,
+  onAddExternalPage,
 }: SortableMenuItemProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -83,10 +90,10 @@ export function SortableMenuItem({
 
   const sortedSubMenus = subMenus
     ? [...subMenus].sort((a: any, b: any) => {
-        const aOrder = a.position ?? a.sortOrder ?? 0;
-        const bOrder = b.position ?? b.sortOrder ?? 0;
-        return aOrder - bOrder;
-      })
+      const aOrder = a.position ?? a.sortOrder ?? 0;
+      const bOrder = b.position ?? b.sortOrder ?? 0;
+      return aOrder - bOrder;
+    })
     : [];
 
   return (
@@ -115,7 +122,7 @@ export function SortableMenuItem({
           </button>
 
           {/* <div style={{ width: `${depth * 1.5}rem` }} className="shrink-0" /> */}
-          
+
           {hasChildren ? (
             <IGRPButtonPrimitive
               variant="ghost"
@@ -175,6 +182,27 @@ export function SortableMenuItem({
                   Editar
                 </IGRPDropdownMenuItemPrimitive>
                 <IGRPDropdownMenuSeparatorPrimitive />
+                {menu.type === 'GROUP' && (
+                  <IGRPDropdownMenuItemPrimitive onClick={() => onAddChild?.(menu)} >
+                    <IGRPIcon iconName="FolderPlus" className="size-4" />
+                    Adicionar Pasta
+                  </IGRPDropdownMenuItemPrimitive>
+                )}
+
+                {menu.type === 'FOLDER' && (
+  <>
+    <IGRPDropdownMenuItemPrimitive onClick={() => onAddInternalPage?.(menu)}>
+      <IGRPIcon iconName="FileText" className="size-4 mr-2" />
+      Adicionar Página Interna
+    </IGRPDropdownMenuItemPrimitive>
+    
+    <IGRPDropdownMenuItemPrimitive onClick={() => onAddExternalPage?.(menu)}>
+      <IGRPIcon iconName="ExternalLink" className="size-4 mr-2" />
+      Adicionar Página Externa
+    </IGRPDropdownMenuItemPrimitive>
+  </>
+)}
+
                 <IGRPDropdownMenuItemPrimitive
                   variant="destructive"
                   onClick={() => onDelete?.(menu.code, menu.name)}
@@ -182,6 +210,7 @@ export function SortableMenuItem({
                   <IGRPIcon iconName="Trash" className="size-4 mr-2" strokeWidth={2} />
                   Eliminar
                 </IGRPDropdownMenuItemPrimitive>
+
               </IGRPDropdownMenuContentPrimitive>
             </IGRPDropdownMenuPrimitive>
           </div>
@@ -209,6 +238,8 @@ export function SortableMenuItem({
                   isChild={true}
                   subMenus={childSubMenus}
                   allMenus={allMenus}
+                  onAddExternalPage={onAddExternalPage}
+                  onAddInternalPage={onAddInternalPage}
                 />
               );
             })}
