@@ -81,8 +81,8 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
   return (
     <IGRPFormPrimitive {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
-      console.error("Form validation errors:", errors);
-    })} className="space-y-4">
+        console.error("Form validation errors:", errors);
+      })} className="space-y-4">
         <IGRPFormFieldPrimitive
           control={form.control}
           name="name"
@@ -126,7 +126,7 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             <IGRPFormItemPrimitive>
               <IGRPFormLabelPrimitive>Proprietário</IGRPFormLabelPrimitive>
               <IGRPSelectPrimitive onValueChange={field.onChange} value={field.value}>
-                <IGRPFormControlPrimitive  className="w-full">
+                <IGRPFormControlPrimitive className="w-full">
                   <IGRPSelectTriggerPrimitive >
                     <IGRPSelectValuePrimitive placeholder="Selecione" />
                   </IGRPSelectTriggerPrimitive>
@@ -151,7 +151,7 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             <IGRPFormItemPrimitive>
               <IGRPFormLabelPrimitive>Tipo</IGRPFormLabelPrimitive>
               <IGRPSelectPrimitive onValueChange={field.onChange} value={field.value}>
-                <IGRPFormControlPrimitive  className="w-full">
+                <IGRPFormControlPrimitive className="w-full">
                   <IGRPSelectTriggerPrimitive>
                     <IGRPSelectValuePrimitive />
                   </IGRPSelectTriggerPrimitive>
@@ -185,6 +185,7 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
           />
         )}
 
+
         {type === appTypeCrud.enum.EXTERNAL && (
           <IGRPFormFieldPrimitive
             control={form.control}
@@ -215,36 +216,38 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
           )}
         />
 
-<IGRPFormFieldPrimitive
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <IGRPFormControlPrimitive>
-                      <IGRPSelectTriggerPrimitive className="w-full truncate">
-                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                      </IGRPSelectTriggerPrimitive>
-                    </IGRPFormControlPrimitive>
-                    <IGRPSelectContentPrimitive>
-                      {STATUS_OPTIONS.map((status) => (
-                        <IGRPSelectItemPrimitive
-                          key={status.value}
-                          value={status.value}
-                        >
-                          {status.label}
-                        </IGRPSelectItemPrimitive>
-                      ))}
-                    </IGRPSelectContentPrimitive>
-                  </IGRPSelectPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
-              )}
-            />
+        <IGRPFormFieldPrimitive
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <IGRPFormItemPrimitive>
+              <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+              <IGRPSelectPrimitive
+                onValueChange={field.onChange}
+                value={field.value}
+                defaultValue="true"
+              >
+                <IGRPFormControlPrimitive>
+                  <IGRPSelectTriggerPrimitive className="w-full truncate">
+                    <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
+                  </IGRPSelectTriggerPrimitive>
+                </IGRPFormControlPrimitive>
+                <IGRPSelectContentPrimitive>
+                  {STATUS_OPTIONS.map((status) => (
+                    <IGRPSelectItemPrimitive
+                      key={status.value}
+                      value={status.value}
+                      defaultValue={"true"}
+                    >
+                      {status.label}
+                    </IGRPSelectItemPrimitive>
+                  ))}
+                </IGRPSelectContentPrimitive>
+              </IGRPSelectPrimitive>
+              <IGRPFormMessagePrimitive />
+            </IGRPFormItemPrimitive>
+          )}
+        />
 
         <div className="flex justify-end gap-2 pt-4">
           <IGRPButton type="button" showIcon iconName="X" variant="outline" onClick={onSuccess}>

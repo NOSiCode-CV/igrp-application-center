@@ -12,7 +12,7 @@ export const applicationSchema = z.string();
 
 export const menuSchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(5, "Nome deve ter no mínimo 5 caracteres"),
+  name: z.string().min(1, "Nome deve ter no mínimo 1 caracteres"),
   code: z
     .string()
     .regex(/^[A-Z0-9_]+$/, "Permite letras maiúsculas, números e sublinhados."),

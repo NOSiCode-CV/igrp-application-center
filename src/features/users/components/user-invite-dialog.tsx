@@ -48,7 +48,7 @@ interface UserInviteDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const EMPTY_USER: FormUserArgs = { name: "", email: "", username: "" };
+const EMPTY_USER: FormUserArgs = { name: "", email: "" };
 
 export function UserInviteDialog({
   open,
@@ -221,7 +221,7 @@ export function UserInviteDialog({
                           control={form.control}
                           name={`users.${index}.email`}
                           render={({ field }) => (
-                            <IGRPFormItemPrimitive className="flex flex-col">
+                            <IGRPFormItemPrimitive className="flex-1 flex-col">
                               <IGRPFormLabelPrimitive>
                                 Email
                               </IGRPFormLabelPrimitive>

@@ -25,6 +25,7 @@ import { ApplicationCard } from "@/features/applications/components/app-card";
 import { useApplications } from "@/features/applications/use-applications";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { ApplicationCreateForm } from "./application-create-form";
+import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 
 export function ApplicationList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,7 +76,7 @@ export function ApplicationList() {
                 Nova Aplicação
               </IGRPButton>
             </IGRPDialogTriggerPrimitive>
-            <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh] overflow-y-auto">
               <IGRPDialogHeaderPrimitive>
                 <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
               </IGRPDialogHeaderPrimitive>
@@ -161,11 +162,13 @@ export function ApplicationList() {
                   Criar Nova Aplicação
                 </IGRPButton>
               </IGRPDialogTriggerPrimitive>
-              <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh]">
+                <ScrollArea className="h-96 w-full ">
                 <IGRPDialogHeaderPrimitive>
                   <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
                 </IGRPDialogHeaderPrimitive>
                 <ApplicationCreateForm onSuccess={() => setOpen(false)} />
+                  </ScrollArea>
               </IGRPDialogContentPrimitive>
             </IGRPDialogPrimitive>
           </div>
