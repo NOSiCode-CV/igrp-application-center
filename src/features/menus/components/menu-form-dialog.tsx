@@ -258,16 +258,6 @@ export function MenuFormDialog({
     const name = e.target.value;
     form.setValue("name", name);
 
-    const currentPageSlug = form.getValues("pageSlug");
-    if (!menu || !currentPageSlug) {
-      const pageSlug = name
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-");
-
-      form.setValue("pageSlug", pageSlug as any);
-    }
-
     const currentCode = form.getValues("code");
     if (!menu || !currentCode) {
       const code = name

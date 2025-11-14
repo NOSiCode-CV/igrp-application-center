@@ -59,7 +59,7 @@ export function SortableMenuItem({
   isChild = false,
   subMenus,
   allMenus,
-   onAddInternalPage,
+  onAddInternalPage,
   onAddExternalPage,
 }: SortableMenuItemProps) {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -181,28 +181,28 @@ export function SortableMenuItem({
                   <IGRPIcon iconName="Pencil" className="size-4 mr-2" strokeWidth={2} />
                   Editar
                 </IGRPDropdownMenuItemPrimitive>
-                <IGRPDropdownMenuSeparatorPrimitive />
+
                 {menu.type === 'GROUP' && (
                   <IGRPDropdownMenuItemPrimitive onClick={() => onAddChild?.(menu)} >
-                    <IGRPIcon iconName="FolderPlus" className="size-4" />
+                    <IGRPIcon iconName="FolderPlus" className="size-4 mr-2" />
                     Adicionar Pasta
                   </IGRPDropdownMenuItemPrimitive>
                 )}
 
                 {menu.type === 'FOLDER' && (
-  <>
-    <IGRPDropdownMenuItemPrimitive onClick={() => onAddInternalPage?.(menu)}>
-      <IGRPIcon iconName="FileText" className="size-4 mr-2" />
-      Adicionar Página Interna
-    </IGRPDropdownMenuItemPrimitive>
-    
-    <IGRPDropdownMenuItemPrimitive onClick={() => onAddExternalPage?.(menu)}>
-      <IGRPIcon iconName="ExternalLink" className="size-4 mr-2" />
-      Adicionar Página Externa
-    </IGRPDropdownMenuItemPrimitive>
-  </>
-)}
+                  <>
+                    <IGRPDropdownMenuItemPrimitive onClick={() => onAddInternalPage?.(menu)}>
+                      <IGRPIcon iconName="FileText" className="size-4 mr-2" />
+                      Adicionar Página Interna
+                    </IGRPDropdownMenuItemPrimitive>
 
+                    <IGRPDropdownMenuItemPrimitive onClick={() => onAddExternalPage?.(menu)}>
+                      <IGRPIcon iconName="ExternalLink" className="size-4 mr-2" />
+                      Adicionar Página Externa
+                    </IGRPDropdownMenuItemPrimitive>
+                  </>
+                )}
+                <IGRPDropdownMenuSeparatorPrimitive />
                 <IGRPDropdownMenuItemPrimitive
                   variant="destructive"
                   onClick={() => onDelete?.(menu.code, menu.name)}
