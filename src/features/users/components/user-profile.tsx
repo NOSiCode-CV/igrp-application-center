@@ -19,27 +19,17 @@ import { AppCenterNotFound } from "@/components/not-found";
 import {
   useCurrentUser,
   useRemoveUserRole,
-  useUserRoles,
 } from "@/features/users/use-users";
 import { ROUTES } from "@/lib/constants";
 import { getInitials } from "@/lib/utils";
 import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
 import { BackButton } from "@/components/back-button";
 import { UserEditForm } from "./user-edit-form";
+import UserRoleList from "./user-role-list";
 
 export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
 
-  if (!user) {
-    return (
-      <AppCenterNotFound
-        iconName="User"
-        title="Nenhum utilizador encontrada."
-      />
-    );
-  }
-
-  const { data: userRoles } = useUserRoles(user.id);
   const { mutateAsync: removeUserRole } = useRemoveUserRole();
   const { igrpToast } = useIGRPToast();
 
@@ -74,8 +64,17 @@ export function UserProfile() {
     }
   }, [signatureUrl]);
 
-  if (isLoading && !user) {
+  if (isLoading) {
     return <AppCenterLoading descrption="Carregando utilizador..." />;
+  }
+  
+  if (!user) {
+    return (
+      <AppCenterNotFound
+        iconName="User"
+        title="Nenhum utilizador encontrada."
+      />
+    );
   }
 
   if (userError) throw userError;
@@ -221,7 +220,6 @@ export function UserProfile() {
             </div>
             <div className="flex flex-col gap-1">
               <p className="text-muted-foreground text-sm">{user.email}</p>
-              <p className="text-muted-foreground text-xs">@{user.username}</p>
             </div>
 
             <div className="flex flex-col gap-2">
@@ -295,46 +293,7 @@ export function UserProfile() {
         </IGRPDialogPrimitive>
       </div>
 
-      {userRoles && userRoles.length > 0 && (
-        <div>
-          <h2 className="text-xl font-bold my-3">Permissões do Utilizador</h2>
-
-          <div className="grid gap-3">
-            {userRoles.map((role) => (
-              <div
-                key={role.id}
-                className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-primary/10 p-2.5">
-                    <IGRPIcon
-                      iconName="Shield"
-                      className="text-primary size-5"
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="font-medium capitalize">
-                      {handleName(role.description || role.name || "")}
-                    </p>
-                    {role.code && (
-                      <p className="text-xs text-muted-foreground">
-                        {role.code}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <IGRPButtonPrimitive
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleRevokeRole(role.code || "")}
-                >
-                  Revogar
-                </IGRPButtonPrimitive>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <UserRoleList user={user} handleName={handleName} handleRevokeRole={handleRevokeRole} />
     </div>
   );
 }
