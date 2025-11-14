@@ -22,7 +22,7 @@ importers:
         version: 5.2.2(react-hook-form@7.66.0(react@19.2.0))
       '@igrp/framework-next':
         specifier: 0.1.0-beta.48
-        version: 0.1.0-beta.48(@igrp/platform-access-management-client-ts@0.1.0-beta.49)(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: 0.1.0-beta.48(@igrp/platform-access-management-client-ts@0.1.0-beta.50)(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@igrp/framework-next-auth':
         specifier: 0.1.0-beta.48
         version: 0.1.0-beta.48(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
@@ -36,8 +36,8 @@ importers:
         specifier: 0.1.0-beta.48
         version: 0.1.0-beta.48(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@igrp/platform-access-management-client-ts':
-        specifier: 0.1.0-beta.49
-        version: 0.1.0-beta.49
+        specifier: 0.1.0-beta.50
+        version: 0.1.0-beta.50
       '@tanstack/react-query':
         specifier: ^5.90.6
         version: 5.90.8(react@19.2.0)
@@ -256,8 +256,8 @@ packages:
       react: ^19.2.0
       react-dom: ^19.2.0
 
-  '@igrp/platform-access-management-client-ts@0.1.0-beta.49':
-    resolution: {integrity: sha512-W7LhkRq5a/zv2artEolp1Oy3UcWqZ7JKtLIefLhdmGAfoybxrIKZHUguui8gYI1VgXn8JWy+5PYevJ9sHeMP4A==}
+  '@igrp/platform-access-management-client-ts@0.1.0-beta.50':
+    resolution: {integrity: sha512-BHwXfUXhKvc1rHBIFqCSzUMVp0h+OytSX4vuWKSbFk3jOAP3jduHmMfsYDVpRG/fzQB1N+3XybuNKFrNMXdcZA==}
 
   '@img/colour@1.0.0':
     resolution: {integrity: sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==}
@@ -1946,12 +1946,12 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@igrp/framework-next@0.1.0-beta.48(@igrp/platform-access-management-client-ts@0.1.0-beta.49)(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@igrp/framework-next@0.1.0-beta.48(@igrp/platform-access-management-client-ts@0.1.0-beta.50)(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@igrp/framework-next-auth': 0.1.0-beta.48(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
       '@igrp/framework-next-types': 0.1.0-beta.48(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
       '@igrp/framework-next-ui': 0.1.0-beta.48(@types/react-dom@19.2.3(@types/react@19.2.4))(@types/react@19.2.4)(next-auth@4.24.13(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(next@15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@igrp/platform-access-management-client-ts': 0.1.0-beta.49
+      '@igrp/platform-access-management-client-ts': 0.1.0-beta.50
       clsx: 2.1.1
       next: 15.5.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       next-themes: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2019,7 +2019,7 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@igrp/platform-access-management-client-ts@0.1.0-beta.49': {}
+  '@igrp/platform-access-management-client-ts@0.1.0-beta.50': {}
 
   '@img/colour@1.0.0':
     optional: true
