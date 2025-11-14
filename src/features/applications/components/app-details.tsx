@@ -156,7 +156,7 @@ export function ApplicationDetails({ code }: { code: string }) {
               Editar
             </IGRPButton>
           </IGRPDialogTriggerPrimitive>
-          <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh]">
+          <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh]">
             <IGRPDialogHeaderPrimitive>
               <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
             </IGRPDialogHeaderPrimitive>

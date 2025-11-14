@@ -318,7 +318,7 @@ export function MenuFormDialog({
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPDialogContentPrimitive className="py-4 px-0 max-w-3xl">
+      <IGRPDialogContentPrimitive className="py-4 px-0 sm:min-w-2xl ">
         <IGRPDialogHeaderPrimitive className="px-6">
           <IGRPDialogTitlePrimitive>
             {menu

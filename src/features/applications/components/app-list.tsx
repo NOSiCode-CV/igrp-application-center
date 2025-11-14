@@ -70,20 +70,22 @@ export function ApplicationList() {
         description="Gerir Menus de Aplicações."
         showActions
       >
-          <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-            <IGRPDialogTriggerPrimitive asChild>
-              <IGRPButton showIcon iconName="Grid2x2Plus">
-                Nova Aplicação
-              </IGRPButton>
-            </IGRPDialogTriggerPrimitive>
-            <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh] overflow-y-auto">
-              <IGRPDialogHeaderPrimitive>
-                <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
-              </IGRPDialogHeaderPrimitive>
+        <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
+          <IGRPDialogTriggerPrimitive asChild>
+            <IGRPButton showIcon iconName="Grid2x2Plus">
+              Nova Aplicação
+            </IGRPButton>
+          </IGRPDialogTriggerPrimitive>
+          <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh]">
+            <IGRPDialogHeaderPrimitive>
+              <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
+            </IGRPDialogHeaderPrimitive>
+            
               <ApplicationCreateForm onSuccess={() => setOpen(false)} />
-            </IGRPDialogContentPrimitive>
-          </IGRPDialogPrimitive>
-        
+            
+          </IGRPDialogContentPrimitive>
+        </IGRPDialogPrimitive>
+
       </PageHeader>
 
       <div className="flex flex-col gap-6">
@@ -162,13 +164,12 @@ export function ApplicationList() {
                   Criar Nova Aplicação
                 </IGRPButton>
               </IGRPDialogTriggerPrimitive>
-              <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh]">
-                <ScrollArea className="h-96 w-full ">
+              <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh]">
+
                 <IGRPDialogHeaderPrimitive>
                   <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
                 </IGRPDialogHeaderPrimitive>
-                <ApplicationCreateForm onSuccess={() => setOpen(false)} />
-                  </ScrollArea>
+                  <ApplicationCreateForm onSuccess={() => setOpen(false)} />
               </IGRPDialogContentPrimitive>
             </IGRPDialogPrimitive>
           </div>

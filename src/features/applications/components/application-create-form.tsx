@@ -28,11 +28,10 @@ import {
   normalizeApplication,
 } from "@/features/applications/app-schemas";
 import { useCreateApplication } from "@/features/applications/use-applications";
-import { useDepartments } from "@/features/departments/use-departments";
-import { DEPT_OPTIONS } from "@/features/departments/dept-lib";
 import { useUsers } from "@/features/users/use-users";
 import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
+import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 
 export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) {
   const router = useRouter();
@@ -50,9 +49,11 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
       slug: "",
       url: "",
       description: "",
+      status: "ACTIVE",
       picture: "",
     },
   });
+
 
   const type = form.watch("type");
 
@@ -83,6 +84,8 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
       <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
         console.error("Form validation errors:", errors);
       })} className="space-y-4">
+        <ScrollArea className="h-[calc(90vh-120px)] w-full pr-4 space-y-4">
+          <div className="space-y-4">
         <IGRPFormFieldPrimitive
           control={form.control}
           name="name"
@@ -118,6 +121,7 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             </IGRPFormItemPrimitive>
           )}
         />
+       
 
         <IGRPFormFieldPrimitive
           control={form.control}
@@ -248,6 +252,8 @@ export function ApplicationCreateForm({ onSuccess }: { onSuccess: () => void }) 
             </IGRPFormItemPrimitive>
           )}
         />
+        </div>
+        </ScrollArea>
 
         <div className="flex justify-end gap-2 pt-4">
           <IGRPButton type="button" showIcon iconName="X" variant="outline" onClick={onSuccess}>

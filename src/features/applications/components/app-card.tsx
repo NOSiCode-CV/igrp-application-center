@@ -108,7 +108,7 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
       </IGRPCardPrimitive>
 
       <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-        <IGRPDialogContentPrimitive className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh] overflow-y-auto">
           <IGRPDialogHeaderPrimitive>
             <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
           </IGRPDialogHeaderPrimitive>

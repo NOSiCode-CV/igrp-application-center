@@ -168,7 +168,7 @@ export function ManageAppsModal({
   return (
     <>
       <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-        <IGRPDialogContentPrimitive className="max-w-3xl! max-h-[85vh] overflow-hidden flex flex-col">
+        <IGRPDialogContentPrimitive className="sm:min-w-2xl ! max-h-[85vh] overflow-hidden flex flex-col">
           <IGRPDialogHeaderPrimitive>
             <IGRPDialogTitlePrimitive className="flex items-center gap-2">
               <IGRPIcon

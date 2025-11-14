@@ -32,6 +32,7 @@ import { useUsers } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
 import { IGRPApplicationArgs } from "@igrp/framework-next-types";
+import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 
 export function ApplicationEditForm({
   application,
@@ -97,6 +98,8 @@ export function ApplicationEditForm({
   return (
     <IGRPFormPrimitive {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <ScrollArea className="h-[calc(90vh-120px)] w-full pr-4 space-y-4">
+          <div className="space-y-4">
         <IGRPFormFieldPrimitive
           control={form.control}
           name="name"
@@ -267,6 +270,9 @@ export function ApplicationEditForm({
             </IGRPFormItemPrimitive>
           )}
         />
+        </div>
+        </ScrollArea>
+        
 
         <div className="flex justify-end gap-2 pt-4">
           <IGRPButton type="button" showIcon iconName="X" variant="outline" onClick={onSuccess}>
