@@ -24,8 +24,7 @@ import { PageHeader } from "@/components/page-header";
 import { ApplicationCard } from "@/features/applications/components/app-card";
 import { useApplications } from "@/features/applications/use-applications";
 import { STATUS_OPTIONS } from "@/lib/constants";
-import { ApplicationCreateForm } from "./application-create-form";
-import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
+import { ApplicationForm } from "./app-form";
 
 export function ApplicationList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -81,7 +80,7 @@ export function ApplicationList() {
               <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
             </IGRPDialogHeaderPrimitive>
             
-              <ApplicationCreateForm onSuccess={() => setOpen(false)} />
+              <ApplicationForm onSuccess={() => setOpen(false)} />
             
           </IGRPDialogContentPrimitive>
         </IGRPDialogPrimitive>
@@ -169,7 +168,7 @@ export function ApplicationList() {
                 <IGRPDialogHeaderPrimitive>
                   <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
                 </IGRPDialogHeaderPrimitive>
-                  <ApplicationCreateForm onSuccess={() => setOpen(false)} />
+                  <ApplicationForm onSuccess={() => setOpen(false)} />
               </IGRPDialogContentPrimitive>
             </IGRPDialogPrimitive>
           </div>

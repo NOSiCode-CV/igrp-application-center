@@ -17,13 +17,23 @@ export async function getFileUrl(path: string) {
 }
 
 export async function uploadPublicFile(
-  file: File | Blob,
-  options: UploadFileOptions,
+  formData: FormData,
+  options: UploadFileOptions
 ) {
   const client = await getClientAccess();
+  const headersList = await headers();
+  const contentType = headersList.get('content-type') ?? '';
+  
+  const file = formData.get('file') as File | Blob;
+  
+  if (!file) {
+    throw new Error('Nenhum arquivo encontrado');
+  }
+
+  console.log("file - ", file)
   
   try {
-    const result = await client.files.uploadPublicFile(file, options, file?.type);
+    const result = await client.files.uploadPublicFile(file, options, contentType);
     return result.data;
   } catch (error) {
     console.error(
@@ -33,6 +43,62 @@ export async function uploadPublicFile(
     throw error;
   }
 }
+
+// export async function uploadPublicFile(
+//   file: File | Blob,
+//   options: UploadFileOptions
+// ) {
+//   const client = await getClientAccess();
+//   const headersList = await headers();
+//   const contentType = headersList.get('content-type');
+  
+//   console.log("contentType - ", contentType);
+  
+//   const formData = new FormData();
+//   formData.append('file', file);
+  
+//   // Object.entries(options).forEach(([key, value]) => {
+//   //   formData.append(key, String(value));
+//   // });
+  
+//   console.log("formData - ", formData);
+//   console.log("options - ", options);
+  
+//   try {
+//     const result = await client.files.uploadPublicFile(formData, options, contentType ?? '');
+//     return result.data;
+//   } catch (error) {
+//     console.error(
+//       "[files-upload-public] Não possivel carregar o ficheiro:",
+//       error,
+//     );
+//     throw error;
+//   }
+// }
+
+// export async function uploadPublicFile(
+//   file: File | Blob,
+//   options: UploadFileOptions
+// ) {
+//   const client = await getClientAccess();
+//   const headersList = await headers();
+//   const contentType = headersList.get('content-type');
+//   console.log("contentType - ", contentType)
+
+//   console.log("file - ", file)
+//   console.log("options - ", options)
+  
+//   try {
+//     const result = await client.files.uploadPublicFile(file, options, contentType ?? '');
+//     return result.data;
+//   } catch (error) {
+//     console.error(
+//       "[files-upload-public] Não possivel carregar o ficheiro:",
+//       error,
+//     );
+//     throw error;
+//   }
+// }
 
 export async function uploadPrivateFile(
   file: File | Blob,

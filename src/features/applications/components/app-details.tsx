@@ -23,10 +23,10 @@ import { AppCenterNotFound } from "@/components/not-found";
 import { useApplicationByCode } from "@/features/applications/use-applications";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { getStatusColor } from "@/lib/utils";
-import { ApplicationEditForm } from "./app-edit-form";
 import { BackButton } from "@/components/back-button";
 import { ROUTES } from "@/lib/constants";
 import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
+import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { igrpToast } = useIGRPToast();
@@ -62,38 +62,39 @@ export function ApplicationDetails({ code }: { code: string }) {
     );
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-   
+  const formData = new FormData();
+  formData.append('file', file);
 
-    try {
-      const result = await uploadPicture.mutateAsync({
-        file,
-        options: {
-          folder: code,
-        },
-      });
+  try {
+    const result = await uploadPicture.mutateAsync({
+      file: formData,
+      options: {
+        folder: code,
+      },
+    });
 
-      setUploadedFilePath(result);
-      refetch();
-      igrpToast({
-        type: "success",
-        title: "Upload Sucesso",
-        description: `A imagem foi carregada com sucesso`,
-        duration: 4000,
-      });
-    } catch (err) {
-      igrpToast({
-        type: "error",
-        title: "Erro no upload.",
-        description: (err as Error).message,
-        duration: 4000,
-      });
-      console.error("Erro ao fazer upload:", err);
-    }
-  };
+    setUploadedFilePath(result);
+    refetch();
+    igrpToast({
+      type: "success",
+      title: "Upload Sucesso",
+      description: `A imagem foi carregada com sucesso`,
+      duration: 4000,
+    });
+  } catch (err) {
+    igrpToast({
+      type: "error",
+      title: "Erro no upload.",
+      description: (err as Error).message,
+      duration: 4000,
+    });
+    console.error("Erro ao fazer upload:", err);
+  }
+};
 
   const pictureUrl = previewUrl || app.picture || null;
 
@@ -162,7 +163,7 @@ export function ApplicationDetails({ code }: { code: string }) {
             <IGRPDialogHeaderPrimitive>
               <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
             </IGRPDialogHeaderPrimitive>
-            <ApplicationEditForm application={app} onSuccess={() => setOpen(false)} />
+            <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
           </IGRPDialogContentPrimitive>
         </IGRPDialogPrimitive>
       </div>

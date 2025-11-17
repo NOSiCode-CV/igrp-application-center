@@ -163,9 +163,7 @@ export function RoleFormDialog({
 
         <IGRPFormPrimitive {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit, (errors) => {
-      console.error("Form validation errors:", errors);
-    })}
+            onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
             <IGRPFormFieldPrimitive

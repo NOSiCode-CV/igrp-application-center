@@ -150,7 +150,7 @@ export function SortableMenuItem({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h4 className="font-medium truncate">{menu.name}</h4>
+              <h4 className="text-sm font-medium truncate">{menu.name}</h4>
               {menu.status === "INACTIVE" && (
                 <IGRPBadgePrimitive variant="secondary" className="text-xs">
                   Inativo
@@ -158,7 +158,7 @@ export function SortableMenuItem({
               )}
             </div>
             {typeConfig?.label === "Página" && (
-              <p className="text-sm text-muted-foreground truncate">
+              <p className="text-xs text-muted-foreground truncate">
                 {menu.pageSlug || menu.url || "Sem URL"}
               </p>
             )}

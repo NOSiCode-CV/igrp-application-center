@@ -23,7 +23,7 @@ export const useUploadPublicFiles = () => {
       file,
       options,
     }: {
-      file: File | Blob;
+      file: FormData;
       options: UploadFileOptions;
     }) => uploadPublicFile(file, options),
     onSuccess: async () => {

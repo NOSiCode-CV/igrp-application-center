@@ -28,9 +28,7 @@ import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { formatSlug } from "@/features/applications/app-utils";
 import { ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
-import { ApplicationArgs } from "../app-schemas";
-import { ApplicationEditForm } from "./app-edit-form";
-import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { ApplicationForm } from "./app-form";
 
 export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
   const { name, code, status, description, slug, url } = app;
@@ -113,7 +111,7 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
           <IGRPDialogHeaderPrimitive>
             <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
           </IGRPDialogHeaderPrimitive>
-          <ApplicationEditForm application={app} onSuccess={() => setOpen(false)} />
+          <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
         </IGRPDialogContentPrimitive>
       </IGRPDialogPrimitive>
     </>
