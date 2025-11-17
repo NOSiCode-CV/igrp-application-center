@@ -32,8 +32,6 @@ import {
   IGRPPopoverContentPrimitive,
   IGRPPopoverPrimitive,
   IGRPPopoverTriggerPrimitive,
-  IGRPRadioGroupItemPrimitive,
-  IGRPRadioGroupPrimitive,
   IGRPScrollAreaPrimitive,
   IGRPSwitchPrimitive,
   useIGRPToast,
@@ -53,7 +51,6 @@ import {
   type UpdateMenu,
 } from "@/features/menus/menu-schemas";
 import { useCreateMenu, useUpdateMenu } from "@/features/menus/use-menus";
-import { STATUS_OPTIONS } from "@/lib/constants";
 import { cn, formatIconString } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
 
@@ -256,14 +253,13 @@ export function MenuFormDialog({
 
   const setDefaultFromName = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
-    form.setValue("name", name);
 
-    const currentCode = form.getValues("code");
-    if (!menu || !currentCode) {
+    if (openType !== "edit") {
       const code = name
         .toUpperCase()
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "_");
+      console.log("Código gerado:", code);
       form.setValue("code", code);
     }
   };
@@ -307,21 +303,22 @@ export function MenuFormDialog({
   const isExternalPage = menuType === menuTypeSchema.enum.EXTERNAL_PAGE;
   const showParentSelect = parentOptions.length > 0;
 
-  const dialogTitle = openType === 'view' 
-  ? 'Visualizar Menu'
-  : openType === 'edit'
-  ? 'Editar Menu'
-  : menu?.parentCode
-  ? menu.type === 'FOLDER' ? 'Adicionar Pasta' : 'Adicionar Menu'
-  : 'Novo Menu';
+  const dialogTitle =
+    openType === "view"
+      ? "Visualizar Menu"
+      : openType === "edit"
+      ? "Editar Menu"
+      : menu?.parentCode
+      ? menu.type === "FOLDER"
+        ? "Adicionar Pasta"
+        : "Adicionar Menu"
+      : "Novo Menu";
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
       <IGRPDialogContentPrimitive className="py-4 px-0 sm:min-w-2xl ">
         <IGRPDialogHeaderPrimitive className="px-6">
-          <IGRPDialogTitlePrimitive>
-            {dialogTitle}
-          </IGRPDialogTitlePrimitive>
+          <IGRPDialogTitlePrimitive>{dialogTitle}</IGRPDialogTitlePrimitive>
           <IGRPDialogDescriptionPrimitive>
             {menu
               ? openType === "view"
@@ -359,466 +356,474 @@ export function MenuFormDialog({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col gap-4 py-2"
               >
+                 
                 <div className="grid grid-cols-1 gap-4">
-                  <IGRPFormFieldPrimitive
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <IGRPFormItemPrimitive>
-                        <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                          Nome
-                        </IGRPFormLabelPrimitive>
-                        <IGRPFormControlPrimitive>
-                          <IGRPInputPrimitive
-                            placeholder="Nome do Menu"
-                            {...field}
-                            required
-                            onChange={setDefaultFromName}
-                            disabled={openType === "view"}
-                          />
-                        </IGRPFormControlPrimitive>
-                        <IGRPFormMessagePrimitive />
-                      </IGRPFormItemPrimitive>
-                    )}
-                  />
+  {/* Fieldset: Informações Gerais */}
+  <fieldset className="border border-accent p-4 rounded-md">
+    <legend className="text-base font-semibold px-2">Informações Gerais</legend>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between gap-4">
+        <IGRPFormFieldPrimitive
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <IGRPFormItemPrimitive className="w-full">
+              <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                Nome
+              </IGRPFormLabelPrimitive>
+              <IGRPInputPrimitive
+                className="w-full"
+                placeholder="Nome do Menu"
+                {...field}
+                required
+                onChange={(e) => {
+                  field.onChange(e);
+                  setDefaultFromName(e);
+                }}
+                disabled={openType === "view"}
+              />
+              <IGRPFormMessagePrimitive />
+            </IGRPFormItemPrimitive>
+          )}
+        />
 
-                  <IGRPFormFieldPrimitive
-                    control={form.control}
-                    name="code"
-                    render={({ field }) => (
-                      <IGRPFormItemPrimitive>
-                        <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                          Código
-                        </IGRPFormLabelPrimitive>
-                        <IGRPFormControlPrimitive>
-                          <IGRPInputPrimitive
-                            placeholder="CODIGO_MENU"
-                            {...field}
-                            pattern="^[A-Z0-9_]+$"
-                            disabled={openType === "view" || !!menu}
-                          />
-                        </IGRPFormControlPrimitive>
-                        <IGRPFormMessagePrimitive />
-                      </IGRPFormItemPrimitive>
-                    )}
-                  />
-
-                
-<IGRPFormFieldPrimitive
-  control={form.control}
-  name="status"
-  render={({ field }) => (
-    <IGRPFormItemPrimitive>
-      <div className="flex items-center justify-between">
-        <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            {field.value === statusSchema.enum.ACTIVE ? "Ativo" : "Inativo"}
-          </span>
-          <IGRPSwitchPrimitive
-            checked={field.value === statusSchema.enum.ACTIVE}
-            onCheckedChange={(checked) =>
-              field.onChange(
-                checked ? statusSchema.enum.ACTIVE : statusSchema.enum.INACTIVE
-              )
-            }
-            disabled={openType === "view"}
-          />
-        </div>
+        <IGRPFormFieldPrimitive
+          control={form.control}
+          name="code"
+          render={({ field }) => (
+            <IGRPFormItemPrimitive className="w-full">
+              <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                Código
+              </IGRPFormLabelPrimitive>
+              <IGRPFormControlPrimitive>
+                <IGRPInputPrimitive
+                  placeholder="CODIGO_MENU"
+                  {...field}
+                  pattern="^[A-Z0-9_]+$"
+                  disabled={openType === "view"}
+                />
+              </IGRPFormControlPrimitive>
+              <IGRPFormMessagePrimitive />
+            </IGRPFormItemPrimitive>
+          )}
+        />
       </div>
-      <IGRPFormMessagePrimitive />
-    </IGRPFormItemPrimitive>
-  )}
-/>
 
-                  <IGRPFormFieldPrimitive
-                    control={form.control}
-                    name="icon"
-                    render={({ field }) => (
-                      <IGRPFormItemPrimitive>
-                        <IGRPFormLabelPrimitive>Ícone</IGRPFormLabelPrimitive>
-                        <IGRPPopoverPrimitive
-                          open={openIconPicker}
-                          onOpenChange={setOpenIconPicker}
-                        >
-                          <IGRPPopoverTriggerPrimitive
-                            asChild
-                            disabled={openType === "view"}
-                          >
-                            <IGRPFormControlPrimitive>
-                              <IGRPButtonPrimitive
-                                variant="outline"
-                                role="combobox"
-                                className="justify-between"
-                              >
-                                {currentIcon ? (
-                                  <div className="flex items-center gap-2">
-                                    <IGRPIcon
-                                      iconName={String(currentIcon.value)}
-                                      className="size-4"
-                                    />
-                                    <span>{currentIcon.label}</span>
-                                  </div>
-                                ) : (
-                                  "Selecionar ícone..."
-                                )}
-                                <IGRPIcon iconName="ChevronsUpDown" />
-                              </IGRPButtonPrimitive>
-                            </IGRPFormControlPrimitive>
-                          </IGRPPopoverTriggerPrimitive>
-
-                          <IGRPPopoverContentPrimitive
-                            className="w-[--radix-popover-trigger-width] p-0"
-                            align="start"
-                          >
-                            <IGRPCommandPrimitive
-                              onValueChange={setQuery}
-                              filter={() => 1}
-                            >
-                              <div className="relative">
-                                <IGRPCommandInputPrimitive placeholder="Procurar ícone..." />
-                                {!ready && (
-                                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                                    <IGRPIcon
-                                      iconName="LoaderCircle"
-                                      className="size-4 animate-spin"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-
-                              {!ready ? (
-                                <IGRPCommandListPrimitive className="max-h-80">
-                                  <IGRPCommandGroupPrimitive>
-                                    {Array.from({ length: 10 }).map((_, i) => (
-                                      <div
-                                        key={i}
-                                        className="h-9 animate-pulse rounded-sm bg-foreground/5 mx-2 my-1"
-                                      />
-                                    ))}
-                                  </IGRPCommandGroupPrimitive>
-                                </IGRPCommandListPrimitive>
-                              ) : (
-                                <IGRPCommandListPrimitive
-                                  ref={parentRef}
-                                  className="max-h-80 overflow-auto"
-                                >
-                                  {filtered.length === 0 ? (
-                                    <IGRPCommandEmptyPrimitive>
-                                      Nenhum ícone encontrado.
-                                    </IGRPCommandEmptyPrimitive>
-                                  ) : (
-                                    <IGRPCommandGroupPrimitive>
-                                      <div
-                                        style={{
-                                          height: rowVirtualizer.getTotalSize(),
-                                          width: "100%",
-                                          position: "relative",
-                                        }}
-                                      >
-                                        {rowVirtualizer
-                                          .getVirtualItems()
-                                          .map((virtualRow) => {
-                                            const iconData =
-                                              filtered[virtualRow.index];
-                                            return (
-                                              <div
-                                                key={iconData.value}
-                                                style={{
-                                                  position: "absolute",
-                                                  top: 0,
-                                                  left: 0,
-                                                  width: "100%",
-                                                  transform: `translateY(${virtualRow.start}px)`,
-                                                }}
-                                              >
-                                                <IGRPCommandItemPrimitive
-                                                  value={`${iconData.value} ${iconData.label}`}
-                                                  onSelect={() => {
-                                                    field.onChange(
-                                                      iconData.value
-                                                    );
-                                                    setOpenIconPicker(false);
-                                                  }}
-                                                  className="gap-3"
-                                                >
-                                                  <IGRPIcon
-                                                    iconName={String(
-                                                      iconData.value
-                                                    )}
-                                                  />
-                                                  <span>{iconData.label}</span>
-                                                  <IGRPIcon
-                                                    iconName="Check"
-                                                    className={cn(
-                                                      "ml-auto opacity-0",
-                                                      iconData.value ===
-                                                        field.value &&
-                                                        "opacity-100"
-                                                    )}
-                                                  />
-                                                </IGRPCommandItemPrimitive>
-                                              </div>
-                                            );
-                                          })}
-                                      </div>
-                                    </IGRPCommandGroupPrimitive>
-                                  )}
-                                </IGRPCommandListPrimitive>
-                              )}
-                            </IGRPCommandPrimitive>
-                          </IGRPPopoverContentPrimitive>
-                        </IGRPPopoverPrimitive>
-                        <IGRPFormMessagePrimitive />
-                      </IGRPFormItemPrimitive>
+      <IGRPFormFieldPrimitive
+        control={form.control}
+        name="icon"
+        render={({ field }) => (
+          <IGRPFormItemPrimitive>
+            <IGRPFormLabelPrimitive>Ícone</IGRPFormLabelPrimitive>
+            <IGRPPopoverPrimitive
+              open={openIconPicker}
+              onOpenChange={setOpenIconPicker}
+            >
+              <IGRPPopoverTriggerPrimitive
+                asChild
+                disabled={openType === "view"}
+              >
+                <IGRPFormControlPrimitive>
+                  <IGRPButtonPrimitive
+                    variant="outline"
+                    role="combobox"
+                    className="justify-between"
+                  >
+                    {currentIcon ? (
+                      <div className="flex items-center gap-2">
+                        <IGRPIcon
+                          iconName={String(currentIcon.value)}
+                          className="size-4"
+                        />
+                        <span>{currentIcon.label}</span>
+                      </div>
+                    ) : (
+                      "Selecionar ícone..."
                     )}
-                  />
+                    <IGRPIcon iconName="ChevronsUpDown" />
+                  </IGRPButtonPrimitive>
+                </IGRPFormControlPrimitive>
+              </IGRPPopoverTriggerPrimitive>
 
-                  {isMenuPage && (
-                    <>
-                      <IGRPFormFieldPrimitive
-                        control={form.control}
-                        name="pageSlug"
-                        render={({ field }) => (
-                          <IGRPFormItemPrimitive>
-                            <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                              URL Relativo
-                            </IGRPFormLabelPrimitive>
-                            <IGRPFormControlPrimitive>
-                              <IGRPInputPrimitive
-                                placeholder="page-slug"
-                                {...field}
-                                value={field.value ?? ""}
-                                disabled={openType === "view"}
-                              />
-                            </IGRPFormControlPrimitive>
-                            <IGRPFormMessagePrimitive />
-                          </IGRPFormItemPrimitive>
-                        )}
-                      />
+              <IGRPPopoverContentPrimitive
+                className="w-[--radix-popover-trigger-width] p-0"
+                align="start"
+              >
+                <IGRPCommandPrimitive
+                  onValueChange={setQuery}
+                  filter={() => 1}
+                >
+                  <div className="relative">
+                    <IGRPCommandInputPrimitive placeholder="Procurar ícone..." />
+                    {!ready && (
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <IGRPIcon
+                          iconName="LoaderCircle"
+                          className="size-4 animate-spin"
+                        />
+                      </div>
+                    )}
+                  </div>
 
-                      <IGRPFormFieldPrimitive
-      control={form.control}
-      name="target"
-      render={({ field }) => (
-        <IGRPFormItemPrimitive>
-          <div className="flex items-center justify-between">
-            <IGRPFormLabelPrimitive>Abrir em nova aba</IGRPFormLabelPrimitive>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                {field.value === menuTargetSchema.enum._blank ? "Sim" : "Não"}
+                  {!ready ? (
+                    <IGRPCommandListPrimitive className="max-h-80">
+                      <IGRPCommandGroupPrimitive>
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="h-9 animate-pulse rounded-sm bg-foreground/5 mx-2 my-1"
+                          />
+                        ))}
+                      </IGRPCommandGroupPrimitive>
+                    </IGRPCommandListPrimitive>
+                  ) : (
+                    <IGRPCommandListPrimitive
+                      ref={parentRef}
+                      className="max-h-80 overflow-auto"
+                    >
+                      {filtered.length === 0 ? (
+                        <IGRPCommandEmptyPrimitive>
+                          Nenhum ícone encontrado.
+                        </IGRPCommandEmptyPrimitive>
+                      ) : (
+                        <IGRPCommandGroupPrimitive>
+                          <div
+                            style={{
+                              height: rowVirtualizer.getTotalSize(),
+                              width: "100%",
+                              position: "relative",
+                            }}
+                          >
+                            {rowVirtualizer
+                              .getVirtualItems()
+                              .map((virtualRow) => {
+                                const iconData =
+                                  filtered[virtualRow.index];
+                                return (
+                                  <div
+                                    key={iconData.value}
+                                    style={{
+                                      position: "absolute",
+                                      top: 0,
+                                      left: 0,
+                                      width: "100%",
+                                      transform: `translateY(${virtualRow.start}px)`,
+                                    }}
+                                  >
+                                    <IGRPCommandItemPrimitive
+                                      value={`${iconData.value} ${iconData.label}`}
+                                      onSelect={() => {
+                                        field.onChange(
+                                          iconData.value
+                                        );
+                                        setOpenIconPicker(false);
+                                      }}
+                                      className="gap-3"
+                                    >
+                                      <IGRPIcon
+                                        iconName={String(
+                                          iconData.value
+                                        )}
+                                      />
+                                      <span>{iconData.label}</span>
+                                      <IGRPIcon
+                                        iconName="Check"
+                                        className={cn(
+                                          "ml-auto opacity-0",
+                                          iconData.value ===
+                                            field.value &&
+                                            "opacity-100"
+                                        )}
+                                      />
+                                    </IGRPCommandItemPrimitive>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </IGRPCommandGroupPrimitive>
+                      )}
+                    </IGRPCommandListPrimitive>
+                  )}
+                </IGRPCommandPrimitive>
+              </IGRPPopoverContentPrimitive>
+            </IGRPPopoverPrimitive>
+            <IGRPFormMessagePrimitive />
+          </IGRPFormItemPrimitive>
+        )}
+      />
+
+      <IGRPFormFieldPrimitive
+        control={form.control}
+        name="status"
+        render={({ field }) => (
+          <IGRPFormItemPrimitive className="w-full">
+            <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+            <div className="flex items-center justify-between h-10 px-3 border border-input rounded-md bg-background">
+              <span className="text-sm">
+                {field.value === statusSchema.enum.ACTIVE
+                  ? "Ativo"
+                  : "Inativo"}
               </span>
               <IGRPSwitchPrimitive
-                checked={field.value === menuTargetSchema.enum._blank}
+                checked={field.value === statusSchema.enum.ACTIVE}
                 onCheckedChange={(checked) =>
                   field.onChange(
-                    checked ? menuTargetSchema.enum._blank : menuTargetSchema.enum._self
+                    checked
+                      ? statusSchema.enum.ACTIVE
+                      : statusSchema.enum.INACTIVE
                   )
                 }
                 disabled={openType === "view"}
               />
             </div>
-          </div>
-          <IGRPFormMessagePrimitive />
-        </IGRPFormItemPrimitive>
-      )}
-    />
-                    </>
-                  )}
+            <IGRPFormMessagePrimitive />
+          </IGRPFormItemPrimitive>
+        )}
+      />
+    </div>
+  </fieldset>
 
-                  {isExternalPage && (
-                    <IGRPFormFieldPrimitive
-                      control={form.control}
-                      name="url"
-                      render={({ field }) => (
-                        <IGRPFormItemPrimitive className="">
-                          <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                            URL Externa
-                          </IGRPFormLabelPrimitive>
-                          <IGRPFormControlPrimitive>
-                            <IGRPInputPrimitive
-                              placeholder="https://example.com"
-                              {...field}
-                              value={field.value ?? ""}
-                              disabled={openType === "view"}
-                            />
-                          </IGRPFormControlPrimitive>
-                          <IGRPFormMessagePrimitive />
-                        </IGRPFormItemPrimitive>
-                      )}
+  {(isMenuPage || isExternalPage) && (
+    <fieldset className="border border-accent p-4 rounded-md">
+      <legend className="text-base font-semibold px-2">Configurações de Página</legend>
+      <div className="flex flex-col gap-4">
+        {isMenuPage && (
+          <>
+            <IGRPFormFieldPrimitive
+              control={form.control}
+              name="pageSlug"
+              render={({ field }) => (
+                <IGRPFormItemPrimitive>
+                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                    URL Relativo
+                  </IGRPFormLabelPrimitive>
+                  <IGRPFormControlPrimitive>
+                    <IGRPInputPrimitive
+                      placeholder="page-slug"
+                      {...field}
+                      value={field.value ?? ""}
+                      disabled={openType === "view"}
                     />
-                  )}
+                  </IGRPFormControlPrimitive>
+                  <IGRPFormMessagePrimitive />
+                </IGRPFormItemPrimitive>
+              )}
+            />
 
-                  {showParentSelect && (
-                    <IGRPFormFieldPrimitive
-                      control={form.control}
-                      name="parentCode"
-                      render={({ field }) => (
-                        <IGRPFormItemPrimitive className="">
-                          <IGRPFormLabelPrimitive>
-                            {menuType === "FOLDER"
-                              ? "Grupo (Opcional)"
-                              : "Pasta (Opcional)"}
-                          </IGRPFormLabelPrimitive>
-                          <IGRPPopoverPrimitive>
-                            <IGRPPopoverTriggerPrimitive
-                              asChild
-                              disabled={openType === "view"}
-                            >
-                              <IGRPFormControlPrimitive>
-                                <IGRPButtonPrimitive
-                                  variant="outline"
-                                  role="combobox"
-                                  className="justify-between w-full"
-                                >
-                                  {field.value
-                                    ? parentOptions.find(
-                                        (m) => m.code === field.value
-                                      )?.name
-                                    : `Selecionar ${
-                                        menuType === "FOLDER"
-                                          ? "grupo"
-                                          : "pasta"
-                                      }...`}
-                                  <IGRPIcon iconName="ChevronsUpDown" />
-                                </IGRPButtonPrimitive>
-                              </IGRPFormControlPrimitive>
-                            </IGRPPopoverTriggerPrimitive>
-                            <IGRPPopoverContentPrimitive
-                              className="w-[--radix-popover-trigger-width] p-0"
-                              align="start"
-                            >
-                              <IGRPCommandPrimitive>
-                                <IGRPCommandInputPrimitive
-                                  placeholder={`Procurar ${
-                                    menuType === "FOLDER" ? "grupo" : "pasta"
-                                  }...`}
-                                />
-                                <IGRPCommandListPrimitive>
-                                  <IGRPCommandEmptyPrimitive>
-                                    Nenhum{" "}
-                                    {menuType === "FOLDER" ? "grupo" : "pasta"}{" "}
-                                    encontrado.
-                                  </IGRPCommandEmptyPrimitive>
-                                  <IGRPCommandGroupPrimitive>
-                                    <IGRPCommandItemPrimitive
-                                      onSelect={() => {
-                                        field.onChange(""); 
-                                        form.setValue("parentCode", "" as any);
-                                      }}
-                                    >
-                                      Nenhum (Raiz)
-                                      <IGRPIcon
-                                        iconName="Check"
-                                        className={cn(
-                                          "ml-auto opacity-0",
-                                          !field.value && "opacity-100"
-                                        )}
-                                      />
-                                    </IGRPCommandItemPrimitive>
-                                    <IGRPCommandSeparatorPrimitive />
-                                    {parentOptions.map((menu) => (
-                                      <IGRPCommandItemPrimitive
-                                        key={menu.code}
-                                        onSelect={() => {
-      field.onChange(menu.code); 
-    }}
-                                      >
-                                        <IGRPIcon
-                                          iconName={menu.icon || "Folder"}
-                                          className="mr-2 size-4"
-                                        />
-                                        {menu.name}
-                                        <IGRPIcon
-                                          iconName="Check"
-                                          className={cn(
-                                            "ml-auto opacity-0",
-                                            menu.code === field.value &&
-                                              "opacity-100"
-                                          )}
-                                        />
-                                      </IGRPCommandItemPrimitive>
-                                    ))}
-                                  </IGRPCommandGroupPrimitive>
-                                </IGRPCommandListPrimitive>
-                              </IGRPCommandPrimitive>
-                            </IGRPPopoverContentPrimitive>
-                          </IGRPPopoverPrimitive>
-                          <IGRPFormMessagePrimitive />
-                        </IGRPFormItemPrimitive>
-                      )}
-                    />
-                  )}
+            <IGRPFormFieldPrimitive
+              control={form.control}
+              name="target"
+              render={({ field }) => (
+                <IGRPFormItemPrimitive>
+                  <div className="flex items-center justify-between">
+                    <IGRPFormLabelPrimitive>
+                      Abrir em nova aba
+                    </IGRPFormLabelPrimitive>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">
+                        {field.value === menuTargetSchema.enum._blank
+                          ? "Sim"
+                          : "Não"}
+                      </span>
+                      <IGRPSwitchPrimitive
+                        checked={
+                          field.value === menuTargetSchema.enum._blank
+                        }
+                        onCheckedChange={(checked) =>
+                          field.onChange(
+                            checked
+                              ? menuTargetSchema.enum._blank
+                              : menuTargetSchema.enum._self
+                          )
+                        }
+                        disabled={openType === "view"}
+                      />
+                    </div>
+                  </div>
+                  <IGRPFormMessagePrimitive />
+                </IGRPFormItemPrimitive>
+              )}
+            />
+          </>
+        )}
 
-                  {/* <IGRPFormFieldPrimitive
-                    control={form.control}
-                    name="position"
-                    render={({ field }) => (
-                      <IGRPFormItemPrimitive>
-                        <IGRPFormLabelPrimitive>Posição</IGRPFormLabelPrimitive>
-                        <IGRPFormControlPrimitive>
-                          <IGRPInputPrimitive
-                            type="number"
-                            min="0"
-                            placeholder="0"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(parseInt(e.target.value, 10) || 0)
-                            }
-                            disabled={openType === "view"}
+        {isExternalPage && (
+          <IGRPFormFieldPrimitive
+            control={form.control}
+            name="url"
+            render={({ field }) => (
+              <IGRPFormItemPrimitive>
+                <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                  URL Externa
+                </IGRPFormLabelPrimitive>
+                <IGRPFormControlPrimitive>
+                  <IGRPInputPrimitive
+                    placeholder="https://example.com"
+                    {...field}
+                    value={field.value ?? ""}
+                    disabled={openType === "view"}
+                  />
+                </IGRPFormControlPrimitive>
+                <IGRPFormMessagePrimitive />
+              </IGRPFormItemPrimitive>
+            )}
+          />
+        )}
+      </div>
+    </fieldset>
+  )}
+
+  {showParentSelect && (
+    <fieldset className="border border-accent p-4 rounded-md">
+      <legend className="text-base font-semibold px-2">Hierarquia</legend>
+      <IGRPFormFieldPrimitive
+        control={form.control}
+        name="parentCode"
+        render={({ field }) => (
+          <IGRPFormItemPrimitive>
+            <IGRPFormLabelPrimitive>
+              {menuType === "FOLDER"
+                ? "Grupo (Opcional)"
+                : "Pasta (Opcional)"}
+            </IGRPFormLabelPrimitive>
+            <IGRPPopoverPrimitive>
+              <IGRPPopoverTriggerPrimitive
+                asChild
+                disabled={openType === "view"}
+              >
+                <IGRPFormControlPrimitive>
+                  <IGRPButtonPrimitive
+                    variant="outline"
+                    role="combobox"
+                    className="justify-between w-full"
+                  >
+                    {field.value
+                      ? parentOptions.find(
+                          (m) => m.code === field.value
+                        )?.name
+                      : `Selecionar ${
+                          menuType === "FOLDER"
+                            ? "grupo"
+                            : "pasta"
+                        }...`}
+                    <IGRPIcon iconName="ChevronsUpDown" />
+                  </IGRPButtonPrimitive>
+                </IGRPFormControlPrimitive>
+              </IGRPPopoverTriggerPrimitive>
+              <IGRPPopoverContentPrimitive
+                className="w-[--radix-popover-trigger-width] p-0"
+                align="start"
+              >
+                <IGRPCommandPrimitive>
+                  <IGRPCommandInputPrimitive
+                    placeholder={`Procurar ${
+                      menuType === "FOLDER" ? "grupo" : "pasta"
+                    }...`}
+                  />
+                  <IGRPCommandListPrimitive>
+                    <IGRPCommandEmptyPrimitive>
+                      Nenhum{" "}
+                      {menuType === "FOLDER" ? "grupo" : "pasta"}{" "}
+                      encontrado.
+                    </IGRPCommandEmptyPrimitive>
+                    <IGRPCommandGroupPrimitive>
+                      <IGRPCommandItemPrimitive
+                        onSelect={() => {
+                          field.onChange("");
+                          form.setValue("parentCode", "" as any);
+                        }}
+                      >
+                        Nenhum (Raiz)
+                        <IGRPIcon
+                          iconName="Check"
+                          className={cn(
+                            "ml-auto opacity-0",
+                            !field.value && "opacity-100"
+                          )}
+                        />
+                      </IGRPCommandItemPrimitive>
+                      <IGRPCommandSeparatorPrimitive />
+                      {parentOptions.map((menu) => (
+                        <IGRPCommandItemPrimitive
+                          key={menu.code}
+                          onSelect={() => {
+                            field.onChange(menu.code);
+                          }}
+                        >
+                          <IGRPIcon
+                            iconName={menu.icon || "Folder"}
+                            className="mr-2 size-4"
                           />
-                        </IGRPFormControlPrimitive>
-                        <IGRPFormMessagePrimitive />
-                      </IGRPFormItemPrimitive>
-                    )}
-                  /> */}
-                </div>
+                          {menu.name}
+                          <IGRPIcon
+                            iconName="Check"
+                            className={cn(
+                              "ml-auto opacity-0",
+                              menu.code === field.value &&
+                                "opacity-100"
+                            )}
+                          />
+                        </IGRPCommandItemPrimitive>
+                      ))}
+                    </IGRPCommandGroupPrimitive>
+                  </IGRPCommandListPrimitive>
+                </IGRPCommandPrimitive>
+              </IGRPPopoverContentPrimitive>
+            </IGRPPopoverPrimitive>
+            <IGRPFormMessagePrimitive />
+          </IGRPFormItemPrimitive>
+        )}
+      />
+    </fieldset>
+  )}
+</div>
+                
 
                 <IGRPDialogFooterPrimitive className="mt-4 gap-2">
                   {/* <div className="flex gap-2 justify-between"> */}
                   <div className="flex-1">
                     {!menu && step === "form" && (
-                    <IGRPButton
-                      type="button"
-                      variant="ghost"
-                      onClick={handleBack}
-                      disabled={isLoading}
-                      iconName="ChevronLeft"
-                      showIcon
-                    >
-                      Voltar
-                    </IGRPButton>
-                  )}
+                      <IGRPButton
+                        type="button"
+                        variant="ghost"
+                        onClick={handleBack}
+                        disabled={isLoading}
+                        iconName="ChevronLeft"
+                        showIcon
+                      >
+                        Voltar
+                      </IGRPButton>
+                    )}
                   </div>
                   <div className="flex gap-1.5">
                     <IGRPButton
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      form.reset();
-                      setStep("type");
-                      onOpenChange(false);
-                    }}
-                    iconName="X"
-                    showIcon
-                    disabled={isLoading}
-                  >
-                    Cancelar
-                  </IGRPButton>
-                  {openType !== "view" && (
-                    <IGRPButton
-                      iconName="Save"
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        form.reset();
+                        setStep("type");
+                        onOpenChange(false);
+                      }}
+                      iconName="X"
                       showIcon
-                      type="submit"
                       disabled={isLoading}
                     >
-                      {isLoading
-                        ? "Guardando..."
-                        : menu
-                        ? "Atualizar"
-                        : "Criar Menu"}
+                      Cancelar
                     </IGRPButton>
-                  )}
+                    {openType !== "view" && (
+                      <IGRPButton
+                        iconName="Save"
+                        showIcon
+                        type="submit"
+                        disabled={isLoading}
+                      >
+                        {isLoading
+                          ? "Guardando..."
+                          : menu
+                          ? "Atualizar"
+                          : "Criar Menu"}
+                      </IGRPButton>
+                    )}
                   </div>
                   {/* </div> */}
                 </IGRPDialogFooterPrimitive>

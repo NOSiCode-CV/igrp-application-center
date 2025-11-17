@@ -3,18 +3,11 @@
 import type { IGRPApplicationArgs } from "@igrp/framework-next-types";
 import {
   IGRPBadgePrimitive,
-  IGRPCardContentPrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardFooterPrimitive,
-  IGRPCardHeaderPrimitive,
-  IGRPCardPrimitive,
-  IGRPCardTitlePrimitive,
   IGRPIcon,
   IGRPDialogPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogHeaderPrimitive,
   IGRPDialogTitlePrimitive,
-  IGRPDialogTriggerPrimitive,
   IGRPButtonPrimitive,
   IGRPTooltipPrimitive,
   IGRPTooltipContentPrimitive,
@@ -22,6 +15,7 @@ import {
   IGRPTooltipTriggerPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
@@ -33,81 +27,85 @@ import { ApplicationForm } from "./app-form";
 export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
   const { name, code, status, description, slug, url } = app;
   const href = slug ? formatSlug(slug) : url;
+  const appImage = app.picture;
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <IGRPCardPrimitive className="@container/card overflow-hidden card-hover gap-3 py-4 justify-between">
-        <IGRPCardHeaderPrimitive className="px-4 pb-0">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start">
-              <div className="mr-2 rounded-md bg-primary/10 p-2">
-                <IGRPIcon iconName="AppWindow" className="text-primary" />
-              </div>
-              <div>
-                <IGRPCardTitlePrimitive className="text-base line-clamp-2">
-                  {name}
-                </IGRPCardTitlePrimitive>
-                <IGRPCardDescriptionPrimitive className="text-xs">
-                  {code}
-                </IGRPCardDescriptionPrimitive>
-              </div>
+      <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
+        
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="relative size-12 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+              {appImage ? (
+                <Image
+                  src={appImage}
+                  alt={name}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-base line-clamp-1">
+                {name}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{code}</p>
             </div>
           </div>
-        </IGRPCardHeaderPrimitive>
-        <IGRPCardContentPrimitive className="px-4">
-          <p className="text-sm text-muted-foreground line-clamp-2 h-10">
-            {description || "Sem descrição."}
-          </p>
-        </IGRPCardContentPrimitive>
-        <IGRPCardFooterPrimitive className="flex items-center justify-between px-4">
-          <div className="flex items-center">
-            <IGRPBadgePrimitive
-              className={cn(getStatusColor(status), "capitalize")}
-            >
-              {showStatus(status)}
-            </IGRPBadgePrimitive>
-          </div>
-          <div className="flex items-center gap-1">
-            <ButtonLinkTooltip
-              href={`${ROUTES.APPLICATIONS}/${code}`}
-              icon="Eye"
-              label="Ver"
-              size="icon"
-              variant="ghost"
-              btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-            />
+          
+          <IGRPBadgePrimitive
+            className={cn(getStatusColor(status), "shrink-0")}
+          >
+            {showStatus(status)}
+          </IGRPBadgePrimitive>
+        </div>
 
-            <IGRPTooltipProviderPrimitive>
-              <IGRPTooltipPrimitive>
-                <IGRPTooltipTriggerPrimitive asChild>
-                  <IGRPButtonPrimitive
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setOpen(true)}
-                    className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-                  >
-                    <IGRPIcon iconName="SquarePen" />
-                  </IGRPButtonPrimitive>
-                </IGRPTooltipTriggerPrimitive>
-                <IGRPTooltipContentPrimitive>Editar</IGRPTooltipContentPrimitive>
-              </IGRPTooltipPrimitive>
-            </IGRPTooltipProviderPrimitive>
+        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
+          {description || "Sem descrição."}
+        </p>
 
-            <ButtonLinkTooltip
-              href={href || ""}
-              icon="ExternalLink"
-              label="Abrir"
-              size="icon"
-              variant="ghost"
-              btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-            />
-          </div>
-        </IGRPCardFooterPrimitive>
-      </IGRPCardPrimitive>
+        <div className="flex items-center justify-end gap-1 pt-4 border-t">
+          <ButtonLinkTooltip
+            href={`${ROUTES.APPLICATIONS}/${code}`}
+            icon="Eye"
+            label="Ver"
+            size="icon"
+            variant="ghost"
+            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+          />
+
+          <IGRPTooltipProviderPrimitive>
+            <IGRPTooltipPrimitive>
+              <IGRPTooltipTriggerPrimitive asChild>
+                <IGRPButtonPrimitive
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => setOpen(true)}
+                  className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+                >
+                  <IGRPIcon iconName="SquarePen" />
+                </IGRPButtonPrimitive>
+              </IGRPTooltipTriggerPrimitive>
+              <IGRPTooltipContentPrimitive>Editar</IGRPTooltipContentPrimitive>
+            </IGRPTooltipPrimitive>
+          </IGRPTooltipProviderPrimitive>
+
+          <ButtonLinkTooltip
+            href={href || ""}
+            icon="ExternalLink"
+            label="Abrir"
+            size="icon"
+            variant="ghost"
+            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+          />
+        </div>
+      </div>
 
       <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh]">
+        <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh]">
           <IGRPDialogHeaderPrimitive>
             <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
           </IGRPDialogHeaderPrimitive>
