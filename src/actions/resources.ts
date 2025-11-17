@@ -5,6 +5,7 @@ import type {
   ResourceFilters,
 } from "@igrp/platform-access-management-client-ts";
 import { getClientAccess } from "./access-client";
+import { extractApiError } from "@/lib/utils";
 
 export async function getResources(
   filters?: ResourceFilters,
@@ -15,6 +16,6 @@ export async function getResources(
     return result.data as ResourceDTO[];
   } catch (error) {
     console.error("[resources] Não foi possível obter os dados:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }

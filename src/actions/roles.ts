@@ -8,6 +8,7 @@ import type {
 import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { getClientAccess } from "./access-client";
+import { extractApiError } from "@/lib/utils";
 
 export async function getRoles(params: RoleFilters) {
   // console.log({ RoleFilters: params });
@@ -22,7 +23,7 @@ export async function getRoles(params: RoleFilters) {
       "[roles] Não foi possível obter lista de dados dos perfís:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -34,7 +35,7 @@ export async function createRole(roleData: CreateRoleRequest) {
     return result.data as RoleArgs;
   } catch (error) {
     console.error("[create-roles] Não foi possível criar perfil:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -49,7 +50,7 @@ export async function updateRole(name: string, roleData: UpdateRoleRequest) {
       `[update-roles] Não foi possível atualizar perfil ${name}:`,
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -67,7 +68,7 @@ export async function deleteRole(code: string) {
       `[delete-role] Não foi possível eliminar perfil ${code}:`,
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -82,7 +83,7 @@ export async function getRoleByCode(name: string) {
       `[role-by-name] Não foi possível obter dado do perfil ${name}.:`,
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -105,7 +106,7 @@ export async function addPermissionsToRole(
       `[add-permissions-role] Não foi possível adicionar permissões a perfíl ${name}:`,
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -129,7 +130,7 @@ export async function removePermissionsFromRole(
       `[remove-permissions-role] Não foi possível remover permissões a perfíl ${name}:`,
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -144,6 +145,6 @@ export async function getPermissionsByRoleCode(name: string) {
       `[role-by-name] Não foi possível obter dados de permissões de perfil ${name}:`,
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }

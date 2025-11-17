@@ -14,6 +14,9 @@ import {
   IGRPUserAvatarImagePrimitive,
   IGRPUserAvatarFallbackPrimitive,
   useIGRPToast,
+  IGRPSeparatorPrimitive,
+  IGRPCardPrimitive,
+  IGRPCardContentPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useRef, useEffect } from "react";
 
@@ -62,111 +65,143 @@ export function ApplicationDetails({ code }: { code: string }) {
     );
   }
 
- const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append('file', file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-  try {
-    const result = await uploadPicture.mutateAsync({
-      file: formData,
-      options: {
-        folder: code,
-      },
-    });
+    try {
+      const result = await uploadPicture.mutateAsync({
+        file: formData,
+        options: {
+          folder: code,
+        },
+      });
 
-    setUploadedFilePath(result);
-    refetch();
-    igrpToast({
-      type: "success",
-      title: "Upload Sucesso",
-      description: `A imagem foi carregada com sucesso`,
-      duration: 4000,
-    });
-  } catch (err) {
-    igrpToast({
-      type: "error",
-      title: "Erro no upload.",
-      description: (err as Error).message,
-      duration: 4000,
-    });
-    console.error("Erro ao fazer upload:", err);
-  }
-};
+      setUploadedFilePath(result);
+      refetch();
+      igrpToast({
+        type: "success",
+        title: "Upload Sucesso",
+        description: `A imagem foi carregada com sucesso`,
+        duration: 4000,
+      });
+    } catch (err) {
+      igrpToast({
+        type: "error",
+        title: "Erro no upload.",
+        description: (err as Error).message,
+        duration: 4000,
+      });
+      console.error("Erro ao fazer upload:", err);
+    }
+  };
 
   const pictureUrl = previewUrl || app.picture || null;
 
   return (
-    <section>
-      <div className="flex items-start mt-4 justify-between mb-6">
-        <div className="flex items-start gap-4">
-          <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-            <IGRPUserAvatarPrimitive className="w-20! h-20! transition-all duration-300 group-hover:brightness-75">
-              {pictureUrl ? (
-                <IGRPUserAvatarImagePrimitive src={pictureUrl} alt={app.name} />
-              ) : (
-                <IGRPUserAvatarFallbackPrimitive className="text-2xl bg-primary/10">
-                  <IGRPIcon iconName="AppWindow" className="w-10 h-10 text-primary" />
-                </IGRPUserAvatarFallbackPrimitive>
-              )}
-            </IGRPUserAvatarPrimitive>
-
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <IGRPIcon
-                iconName={uploadPicture.isPending ? "LoaderCircle" : "Camera"}
-                className={cn(
-                  "w-6 h-6 text-white",
-                  uploadPicture.isPending && "animate-spin"
-                )}
-              />
-            </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              disabled={uploadPicture.isPending}
-            />
+    <section className="flex flex-col gap-6">
+      <IGRPCardPrimitive className="py-2 border-0 shadow-sm rounded-lg">
+        <IGRPCardContentPrimitive className="px-4 py-1">
+          <div className="flex items-center pb-2 justify-between">
+            <BackButton label="Voltar" href={ROUTES.USERS} />
+            <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
+              <IGRPDialogTriggerPrimitive asChild>
+                <IGRPButton
+                  showIcon
+                  variant="outline"
+                  iconName="Pencil"
+                  size="sm"
+                >
+                  Editar
+                </IGRPButton>
+              </IGRPDialogTriggerPrimitive>
+              <IGRPDialogContentPrimitive className="max-w-2xl">
+                <IGRPDialogHeaderPrimitive>
+                  <IGRPDialogTitlePrimitive>
+                    Editar Aplicação
+                  </IGRPDialogTitlePrimitive>
+                </IGRPDialogHeaderPrimitive>
+                <ApplicationForm
+                  application={app}
+                  onSuccess={() => setOpen(false)}
+                />
+              </IGRPDialogContentPrimitive>
+            </IGRPDialogPrimitive>
           </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <div
+                className="relative group cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <IGRPUserAvatarPrimitive className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
+                  {pictureUrl ? (
+                    <IGRPUserAvatarImagePrimitive
+                      src={pictureUrl}
+                      alt={app.name}
+                    />
+                  ) : (
+                    <IGRPUserAvatarFallbackPrimitive className="text-3xl bg-primary/10">
+                      <IGRPIcon
+                        iconName="AppWindow"
+                        className="w-12 h-12 text-primary"
+                      />
+                    </IGRPUserAvatarFallbackPrimitive>
+                  )}
+                </IGRPUserAvatarPrimitive>
 
-          <div>
-            <div className="flex items-center gap-3">
-              <BackButton href={ROUTES.APPLICATIONS} />
-              <h1 className="text-xl font-bold">{app.name}</h1>
-              <IGRPBadgePrimitive className={getStatusColor(app.status || "ACTIVE")}>
-                {app.status}
-              </IGRPBadgePrimitive>
+                <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
+                  <IGRPIcon
+                    iconName={
+                      uploadPicture.isPending ? "LoaderCircle" : "Camera"
+                    }
+                    className={cn(
+                      "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
+                      uploadPicture.isPending && "animate-spin"
+                    )}
+                  />
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  disabled={uploadPicture.isPending}
+                />
+              </div>
+
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1">
+                  <h1 className="text-2xl font-bold tracking-tight">
+                    {app.name}
+                  </h1>
+                  <IGRPBadgePrimitive
+                    className={getStatusColor(app.status || "ACTIVE")}
+                  >
+                    {app.status}
+                  </IGRPBadgePrimitive>
+                </div>
+
+                <div className="flex items-center mb-2">
+                  <span className="text-muted-foreground text-sm">
+                    #{app.code}
+                  </span>
+                  <CopyToClipboard value={app.code} />
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  {app.description || "Sem descrição."}
+                </p>
+              </div>
             </div>
-
-            <div className="flex items-center">
-              <span className="text-muted-foreground text-xs">#{app.code}</span>
-              <CopyToClipboard value={app.code} />
-            </div>
-
-            <p className="text-muted-foreground text-sm">
-              {app.description || "Sem descrição."}
-            </p>
           </div>
-        </div>
-
-        <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-          <IGRPDialogTriggerPrimitive asChild>
-            <IGRPButton showIcon variant="outline" iconName="Pencil">
-              Editar
-            </IGRPButton>
-          </IGRPDialogTriggerPrimitive>
-          <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh]">
-            <IGRPDialogHeaderPrimitive>
-              <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
-            </IGRPDialogHeaderPrimitive>
-            <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
-          </IGRPDialogContentPrimitive>
-        </IGRPDialogPrimitive>
-      </div>
+        </IGRPCardContentPrimitive>
+      </IGRPCardPrimitive>
 
       <MenuList app={app} />
     </section>

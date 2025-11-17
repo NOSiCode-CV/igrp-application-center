@@ -27,7 +27,7 @@ export function BackButton({ href, label, className }: BackButtonProps) {
 
   return (
     <IGRPButtonPrimitive
-      variant="outline"
+      variant="ghost"
       size="sm"
       className={cn("gap-1 px-2 h-8", className)}
       onClick={handleClick}

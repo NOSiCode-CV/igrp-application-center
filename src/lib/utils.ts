@@ -88,3 +88,45 @@ export function showStatus(status: string) {
         return "FileText";
     }
   };
+
+export function extractApiError(error: any): string {
+  if (error?.details) {
+    try {
+      const parsed = JSON.parse(error.details);
+      return parsed.details || parsed.title || getDefaultErrorMessage(error.status);
+    } catch {
+      return error.details;
+    }
+  }
+  
+  if (error?.status) {
+    return getDefaultErrorMessage(error.status);
+  }
+  
+  return error?.message || "Erro desconhecido";
+}
+
+function getDefaultErrorMessage(status?: number): string {
+  switch (status) {
+    case 400:
+      return "Requisição inválida";
+    case 401:
+      return "Não autorizado";
+    case 403:
+      return "Acesso negado";
+    case 404:
+      return "Recurso não encontrado";
+    case 409:
+      return "Conflito de dados";
+    case 422:
+      return "Dados inválidos";
+    case 500:
+      return "Erro interno do servidor";
+    case 502:
+      return "Servidor indisponível";
+    case 503:
+      return "Serviço temporariamente indisponível";
+    default:
+      return "Erro na operação";
+  }
+}

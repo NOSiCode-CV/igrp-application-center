@@ -9,6 +9,7 @@ import type {
 import type { DepartmentArgs } from "@/features/departments/dept-schemas";
 import { getClientAccess } from "./access-client";
 import { ApplicationArgs } from "@/features/applications/app-schemas";
+import { extractApiError } from "@/lib/utils";
 
 export async function getDepartments() {
   const client = await getClientAccess();
@@ -21,7 +22,7 @@ export async function getDepartments() {
       "[departments] Não foi possível obter lista de dados dos departamentos:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -38,7 +39,7 @@ export async function createDepartment(
       "[create-department] Não foi possível criar departamento:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -56,7 +57,7 @@ export async function updateDepartment(
       "[update-department] Não foi possível eliminar departamento:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -71,7 +72,7 @@ export async function deleteDepartment(code: string) {
       "[delete-department] Não foi possível eliminar departamento:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -86,7 +87,7 @@ export async function getDepartmentByCode(code: string) {
       "[department-by-code] Não foi possível obter lista de dados dos departamentos:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -100,7 +101,7 @@ export async function getAvailableApplications(code: string) {
       "[department-available-menus-for-roles] Não foi possível obter lista de apps dos departamentos para roles:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -120,7 +121,7 @@ export async function addApplicationsToDepartment(
       "[department-add-applications] Não foi possível adicionar apps ao departamento:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -140,7 +141,7 @@ export async function removeApplicationsFromDepartment(
       "[department-remove-applications] Não foi possível remover apps ao departamento:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -155,7 +156,7 @@ export async function getAvailableMenus(code: string) {
       "[department-available-menus] Não foi possível obter lista de menus dos departamentos:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -172,7 +173,7 @@ export async function addMenusToDepartment(code: string, menuCodes: string[]) {
       "[department-add-menus] Não foi possível adicionar menus ao departamento:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -192,6 +193,6 @@ export async function removeMenusFromDepartment(
       "[department-remove-menus] Não foi possível remover menus ao departamento:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }

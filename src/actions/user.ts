@@ -6,6 +6,7 @@ import type {
   UserFilters,
 } from "@igrp/platform-access-management-client-ts";
 import { getClientAccess } from "./access-client";
+import { extractApiError } from "@/lib/utils";
 
 export async function getUsers(params?: UserFilters, ids?: number[]) {
   const client = await getClientAccess();
@@ -15,7 +16,7 @@ export async function getUsers(params?: UserFilters, ids?: number[]) {
     return result.data;
   } catch (error) {
     console.error("[users] Erro ao carregar lista de utilizadores.:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 export async function getCurrentUser() {
@@ -29,7 +30,7 @@ export async function getCurrentUser() {
       "[user-current] Erro ao carregar os dados do utilizador atual.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 export async function inviteUser(user: CreateUserRequest) {
@@ -43,7 +44,7 @@ export async function inviteUser(user: CreateUserRequest) {
       "[user-invite] Erro ao enviar convite ao ultilizador(es).:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -53,12 +54,8 @@ export async function addRolesToUser(id: number, roleNames: string[]) {
   try {
     const result = await client.users.addRolesToUser(id, roleNames);
     return result.data;
-  } catch (error) {
-    console.error(
-      "[user-invite] Erro ao carregar adicionar perfis ao utilizador:",
-      error,
-    );
-    throw error;
+  } catch (error: any) {
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -73,7 +70,7 @@ export async function removeRolesFromUser(
     return result.data;
   } catch (error) {
     console.error("[user-invite] Erro ao remover perfis ao utilizador:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -85,7 +82,7 @@ export async function getUserRoles(id: number) {
     return result.data;
   } catch (error) {
     console.error("[user-role] Erro ao obter perfís de utilizador:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -97,6 +94,6 @@ export async function updateUser(id: number, user: UpdateUserRequest) {
     return result.data;
   } catch (error) {
     console.error("[user-update] Erro ao editar utilizardor:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }

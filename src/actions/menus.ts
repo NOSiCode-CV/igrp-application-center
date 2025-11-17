@@ -11,6 +11,7 @@ import {
   mapperMenuCRUD,
 } from "@/features/menus/menu-mapper";
 import { getClientAccess } from "./access-client";
+import { extractApiError } from "@/lib/utils";
 
 export async function getMenus(params?: MenuFilters) {
   const client = await getClientAccess();
@@ -24,7 +25,7 @@ export async function getMenus(params?: MenuFilters) {
       "[menus-get]: Erro ao carregar os menus da aplicação.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -37,7 +38,7 @@ export async function createMenu(menu: CreateMenuRequest) {
     return app;
   } catch (error) {
     console.error("menu-create] Não foi possível criar menu:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -50,7 +51,7 @@ export async function updateMenu(code: string, updated: UpdateMenuRequest) {
     return app;
   } catch (error) {
     console.error("[menu-update] Não foi possível atualizar menu:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -62,7 +63,7 @@ export async function deleteMenu(code: string) {
     return result;
   } catch (error) {
     console.error("[menu-update] Não foi possível eleiminar menu:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -82,7 +83,7 @@ export async function removeRolesFromMenu(
       "[menu-remove-roles] Não foi possível remover os papéis do menu:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -99,7 +100,7 @@ export async function addRolesToMenu(
       "[menu-assign-roles] Não foi possível atribuir os papéis ao menu:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -119,7 +120,7 @@ export async function addDepartamentsToMenu(
       "[menu-assign-departments] Não foi possível atribuir os departamentos ao menu:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -139,7 +140,7 @@ export async function removeDepartamentsFromMenu(
       "[menu-remove-departments] Não foi possível remover os departamentos do menu:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -157,6 +158,6 @@ export async function getMenusByDepartment(departmentCode: string) {
       "[menus-by-department] Erro ao carregar os menus da aplicação.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }

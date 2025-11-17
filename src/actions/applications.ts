@@ -8,6 +8,7 @@ import type {
 import { getClientAccess } from "./access-client";
 import { MenuArgs } from "@/features/menus/menu-schemas";
 import { IGRPApplicationArgs } from "@igrp/framework-next-types";
+import { extractApiError } from "@/lib/utils";
 
 export async function getApplications(
   filters?: ApplicationFilters,
@@ -19,7 +20,7 @@ export async function getApplications(
     return result.data as IGRPApplicationArgs[];
   } catch (error) {
     console.error("[apps] Não foi possível obter os dados:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -36,7 +37,7 @@ export async function getApplicationByCode(
       "[app-by-code] Não foi possível obter os dados da aplicação:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -48,7 +49,7 @@ export async function createApplication(application: CreateApplicationRequest) {
     return result.data as IGRPApplicationArgs;
   } catch (error) {
     console.error("[app-create] Não foi possível criar à aplicação:", error);
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -66,7 +67,7 @@ export async function updateApplication(
       "[app-update] Não foi possível atualizar à aplicação:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -81,7 +82,7 @@ export async function getAvailableMenus(appCode: string) {
       "[app-available-menus] Não foi possível obter os menus:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -101,7 +102,7 @@ export async function addDepartmentsToApplication(
       "[app-available-applications] Não foi possível adicionar departamentos:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -121,6 +122,6 @@ export async function removeDepartmentsFromApplication(
       "[app-available-applications] Não foi possível remover departamentos:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }

@@ -8,6 +8,7 @@ import type {
 import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { getClientAccess } from "./access-client";
+import { extractApiError } from "@/lib/utils";
 
 export async function getPermissions(params: PermissionFilters) {
   const client = await getClientAccess();
@@ -20,7 +21,7 @@ export async function getPermissions(params: PermissionFilters) {
       "[permissions]: Erro ao carregar lista de permissões.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -35,7 +36,7 @@ export async function createPermission(permission: CreatePermissionRequest) {
       "[create-permission]: Erro ao carregar criar permissão.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -53,7 +54,7 @@ export async function updatePermission(
       "[update-permission]: Erro ao carregar atualizar permissão.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -68,7 +69,7 @@ export async function deletePermission(name: string) {
       "[delete-permission]: Erro ao carregar eliminar permissão.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
 
@@ -83,6 +84,6 @@ export async function getRolesByPermissionName(name: string) {
       "[permission in roles]: Erro ao carregar lista de perfís.:",
       error,
     );
-    throw error;
+    throw new Error(extractApiError(error));
   }
 }
