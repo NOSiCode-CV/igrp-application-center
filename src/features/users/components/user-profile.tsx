@@ -149,6 +149,7 @@ export function UserProfile() {
         duration: 4000,
       });
     } catch (err) {
+      console.log("err - ", JSON.stringify(err));
       igrpToast({
         type: "error",
         title: "Erro ao atualizar assinatura",

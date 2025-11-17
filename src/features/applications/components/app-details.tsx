@@ -106,7 +106,7 @@ export function ApplicationDetails({ code }: { code: string }) {
       <IGRPCardPrimitive className="py-2 border-0 shadow-sm rounded-lg">
         <IGRPCardContentPrimitive className="px-4 py-1">
           <div className="flex items-center pb-2 justify-between">
-            <BackButton label="Voltar" href={ROUTES.USERS} />
+            <BackButton label="Voltar" href={ROUTES.APPLICATIONS} />
             <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
               <IGRPDialogTriggerPrimitive asChild>
                 <IGRPButton

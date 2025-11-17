@@ -10,6 +10,7 @@ import Image from "next/image";
 
 import { ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
+import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 
 export function ApplicationCardHOme({ app }: { app: IGRPApplicationArgs }) {
   const { name, status, description, code } = app;
@@ -53,14 +54,18 @@ export function ApplicationCardHOme({ app }: { app: IGRPApplicationArgs }) {
           {description || "Sem descrição disponível."}
         </p>
 
-        <div className="flex items-center justify-between pt-4 border-t">
-          <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
+        <div className="flex items-center justify-end pt-4 border-t">
+          {/* <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
             Ver detalhes
-          </span>
-          <IGRPIcon 
-            iconName="ArrowRight" 
-            className="size-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" 
-          />
+          </span> */}
+          <ButtonLinkTooltip
+                      href={href || ""}
+                      icon="ExternalLink"
+                      label="Acessar"
+                      size="icon"
+                      variant="ghost"
+                      btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+                    />
         </div>
       </div>
     </Link>

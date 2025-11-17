@@ -120,7 +120,7 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
   return (
     <IGRPFormPrimitive {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ScrollArea className="h-[calc(80vh-120px)] w-full pr-4">
+        <ScrollArea className="max-h-[calc(80vh-120px)] w-full pr-4">
           <div className="space-y-4">
             <IGRPFormFieldPrimitive
               control={form.control}

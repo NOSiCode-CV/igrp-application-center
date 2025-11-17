@@ -90,6 +90,7 @@ export function showStatus(status: string) {
   };
 
 export function extractApiError(error: any): string {
+  console.log("eoror - ", error)
   if (error?.details) {
     try {
       const parsed = JSON.parse(error.details);
