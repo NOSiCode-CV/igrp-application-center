@@ -13,8 +13,6 @@ export default function Home() {
           icon="AppWindow"
           variant="outline"
         />
-
-       
       </PageHeader>
 
       <ApplicationsListHome />

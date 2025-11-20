@@ -77,14 +77,14 @@ export function ApplicationList() {
           </IGRPDialogTriggerPrimitive>
           <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh]">
             <IGRPDialogHeaderPrimitive>
-              <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
+              <IGRPDialogTitlePrimitive>
+                Nova Aplicação
+              </IGRPDialogTitlePrimitive>
             </IGRPDialogHeaderPrimitive>
-            
-              <ApplicationForm onSuccess={() => setOpen(false)} />
-            
+
+            <ApplicationForm onSuccess={() => setOpen(false)} />
           </IGRPDialogContentPrimitive>
         </IGRPDialogPrimitive>
-
       </PageHeader>
 
       <div className="flex flex-col gap-6">
@@ -152,7 +152,8 @@ export function ApplicationList() {
 
         {filteredApps?.length === 0 && allApps && allApps.length > 0 ? (
           <div className="text-center py-6 text-muted-foreground">
-            Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou filtros.
+            Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou
+            filtros.
           </div>
         ) : allApps && allApps.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
@@ -164,11 +165,12 @@ export function ApplicationList() {
                 </IGRPButton>
               </IGRPDialogTriggerPrimitive>
               <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh]">
-
                 <IGRPDialogHeaderPrimitive>
-                  <IGRPDialogTitlePrimitive>Nova Aplicação</IGRPDialogTitlePrimitive>
+                  <IGRPDialogTitlePrimitive>
+                    Nova Aplicação
+                  </IGRPDialogTitlePrimitive>
                 </IGRPDialogHeaderPrimitive>
-                  <ApplicationForm onSuccess={() => setOpen(false)} />
+                <ApplicationForm onSuccess={() => setOpen(false)} />
               </IGRPDialogContentPrimitive>
             </IGRPDialogPrimitive>
           </div>

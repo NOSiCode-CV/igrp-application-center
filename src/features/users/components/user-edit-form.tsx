@@ -23,7 +23,7 @@ import { STATUS_OPTIONS } from "@/lib/constants";
 import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
 type UserEditFormProps = {
-  user: IGRPUserDTO
+  user: IGRPUserDTO;
   onSuccess: () => void;
 };
 
@@ -50,13 +50,13 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
   const onSubmit = async (data: FormData) => {
     try {
       await updateUser.mutateAsync({
-          id: user.id,
-          user: {
-              name: data.name,
-              username: user.username,
-              email: user.email,
-              status: data.status as any
-          } as any
+        id: user.id,
+        user: {
+          name: data.name,
+          username: user.username,
+          email: user.email,
+          status: data.status as any,
+        } as any,
       });
 
       igrpToast({
@@ -69,7 +69,8 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
       igrpToast({
         type: "error",
         title: "Erro ao atualizar perfil",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   };
@@ -91,36 +92,36 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
           )}
         />
 
-       <IGRPFormFieldPrimitive
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                    <IGRPSelectPrimitive
-                      onValueChange={field.onChange}
-                      value={field.value}
+        <IGRPFormFieldPrimitive
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <IGRPFormItemPrimitive>
+              <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+              <IGRPSelectPrimitive
+                onValueChange={field.onChange}
+                value={field.value}
+              >
+                <IGRPFormControlPrimitive>
+                  <IGRPSelectTriggerPrimitive className="w-full truncate">
+                    <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
+                  </IGRPSelectTriggerPrimitive>
+                </IGRPFormControlPrimitive>
+                <IGRPSelectContentPrimitive>
+                  {STATUS_OPTIONS.map((status) => (
+                    <IGRPSelectItemPrimitive
+                      key={status.value}
+                      value={status.value}
                     >
-                      <IGRPFormControlPrimitive>
-                        <IGRPSelectTriggerPrimitive className="w-full truncate">
-                          <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                        </IGRPSelectTriggerPrimitive>
-                      </IGRPFormControlPrimitive>
-                      <IGRPSelectContentPrimitive>
-                        {STATUS_OPTIONS.map((status) => (
-                          <IGRPSelectItemPrimitive
-                            key={status.value}
-                            value={status.value}
-                          >
-                            {status.label}
-                          </IGRPSelectItemPrimitive>
-                        ))}
-                      </IGRPSelectContentPrimitive>
-                    </IGRPSelectPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
-                )}
-              />
+                      {status.label}
+                    </IGRPSelectItemPrimitive>
+                  ))}
+                </IGRPSelectContentPrimitive>
+              </IGRPSelectPrimitive>
+              <IGRPFormMessagePrimitive />
+            </IGRPFormItemPrimitive>
+          )}
+        />
 
         <div className="flex justify-end gap-3">
           <IGRPButton
@@ -132,7 +133,12 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
           >
             Cancelar
           </IGRPButton>
-          <IGRPButton showIcon iconName="Save" type="submit" disabled={updateUser.isPending}>
+          <IGRPButton
+            showIcon
+            iconName="Save"
+            type="submit"
+            disabled={updateUser.isPending}
+          >
             {updateUser.isPending ? "Gravando..." : "Gravar"}
           </IGRPButton>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import type { IGRPApplicationArgs } from "@igrp/framework-next-types";
 import {
   IGRPBadgePrimitive,
   IGRPIcon,
@@ -23,8 +22,9 @@ import { formatSlug } from "@/features/applications/app-utils";
 import { ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
+import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
-export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
+export function ApplicationCard({ app }: { app: ApplicationDTO }) {
   const { name, code, status, description, slug, url } = app;
   const href = slug ? formatSlug(slug) : url;
   const appImage = app.picture;
@@ -33,7 +33,6 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
   return (
     <>
       <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
-        
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="relative size-12 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
@@ -45,17 +44,18 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
                   className="object-cover"
                 />
               ) : (
-                <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
+                <IGRPIcon
+                  iconName="AppWindow"
+                  className="size-6 text-primary"
+                />
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-base line-clamp-1">
-                {name}
-              </h3>
+              <h3 className="font-semibold text-base line-clamp-1">{name}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">{code}</p>
             </div>
           </div>
-          
+
           <IGRPBadgePrimitive
             className={cn(getStatusColor(status), "shrink-0")}
           >
@@ -107,7 +107,9 @@ export function ApplicationCard({ app }: { app: IGRPApplicationArgs }) {
       <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
         <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh]">
           <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive>Editar Aplicação</IGRPDialogTitlePrimitive>
+            <IGRPDialogTitlePrimitive>
+              Editar Aplicação
+            </IGRPDialogTitlePrimitive>
           </IGRPDialogHeaderPrimitive>
           <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
         </IGRPDialogContentPrimitive>

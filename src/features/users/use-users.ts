@@ -1,6 +1,7 @@
 import type {
   CreateUserRequest,
   IGRPUserDTO,
+  InviteUserDTO,
   RoleDTO,
   UpdateUserRequest,
   UserFilters,
@@ -14,6 +15,8 @@ import {
 import {
   addRolesToUser,
   getCurrentUser,
+  getCurrentUserApplications,
+  getCurrentUserDepartments,
   getUserRoles,
   getUsers,
   inviteUser,
@@ -21,10 +24,10 @@ import {
   updateUser,
 } from "@/actions/user";
 
-export const useUsers = (params?: UserFilters, ids?: number[]) => {
+export const useUsers = (params?: UserFilters) => {
   return useQuery<IGRPUserDTO[]>({
     queryKey: ["users"],
-    queryFn: () => getUsers(params, ids),
+    queryFn: () => getUsers(params),
   });
 };
 
@@ -39,8 +42,7 @@ export const useInviteUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ user }: { user: CreateUserRequest }) =>
-      inviteUser(user),
+    mutationFn: async ({ user }: { user: InviteUserDTO }) => inviteUser(user),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
@@ -54,11 +56,13 @@ export const useAddUserRole = () => {
   return useMutation({
     mutationFn: async ({
       id,
-      roleNames,
+      departmentCode,
+      roleCodes,
     }: {
       id: number;
-      roleNames: string[];
-    }) => addRolesToUser(id, roleNames),
+      departmentCode: string;
+      roleCodes: string[];
+    }) => addRolesToUser(id, departmentCode, roleCodes),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
@@ -72,13 +76,17 @@ export const useRemoveUserRole = () => {
   return useMutation({
     mutationFn: async ({
       id,
-      roleNames,
+      departmentCode,
+      roleCodes,
     }: {
       id: number;
-      roleNames: string[];
-    }) => removeRolesFromUser(id, roleNames),
+      departmentCode: string;
+      roleCodes: string[];
+    }) => removeRolesFromUser(id, departmentCode, roleCodes),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ queryKey: ["userRoles", variables.id] });
+      await queryClient.invalidateQueries({
+        queryKey: ["userRoles", variables.id],
+      });
       await queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
@@ -91,7 +99,6 @@ export const useUserRoles = (id: number) => {
     enabled: !!id,
   });
 };
-
 
 export const useUserRolesMulti = (id: number[]) => {
   return useQueries({
@@ -107,16 +114,27 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      user,
-    }: {
-      id: number;
-      user: UpdateUserRequest;
-    }) => updateUser(id, user),
+    mutationFn: async ({ id, user }: { id: number; user: IGRPUserDTO }) =>
+      updateUser(id, user),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["users"] });
-      await queryClient.refetchQueries({ queryKey: ["users"] });
+      await queryClient.refetchQueries({
+        queryKey: ["users"],
+        type: "active",
+      });
     },
+  });
+};
+
+export const useCurrentUserDepartments = () => {
+  return useQuery({
+    queryKey: ["current-user-departments"],
+    queryFn: async () => getCurrentUserDepartments(),
+  });
+};
+
+export const useCurrentUserApplications = () => {
+  return useQuery({
+    queryKey: ["current-user-applications"],
+    queryFn: async () => getCurrentUserApplications(),
   });
 };

@@ -12,11 +12,12 @@ export const departmentSchema = z
         "O código deve conter maiusculas, números e sublinhados",
       )
       .min(2, "Código é obrigatório (min 2 carateres)"),
-    name: z.string()
+    name: z
+      .string()
       .min(2, "Nome é obrigatório (min 2 carateres)")
       .regex(
         /^[a-zA-Z0-9\sÀ-ÿ()]+$/,
-        "O nome não pode conter caracteres especiais"
+        "O nome não pode conter caracteres especiais",
       ),
     description: z
       .string()

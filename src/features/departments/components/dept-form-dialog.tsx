@@ -31,17 +31,18 @@ import { useForm } from "react-hook-form";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusSchema } from "@/schemas/global";
 import {
-  type DepartmentArgs,
+  DepartmentArgs,
   departmentSchema,
   normalizeDeptartment,
 } from "../dept-schemas";
 import { useCreateDepartment, useUpdateDepartment } from "../use-departments";
+import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
 interface DepartmentCreateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  department: DepartmentArgs | null;
-  parentDeptId?: DepartmentArgs | null;
+  department: DepartmentDTO | null;
+  parentDeptId?: DepartmentDTO | null;
 }
 
 export function DepartmentFormDialog({
@@ -84,19 +85,19 @@ export function DepartmentFormDialog({
     } else {
       form.reset({
         ...defaultValues,
-        parentCode: parentDeptId?.code?? "",
+        parentCode: parentDeptId?.code ?? "",
       });
     }
   }, [open, department, parentDeptId, form]);
 
   const watchedName = form.watch("name");
 
-useEffect(() => {
-  if (!open) {
-    form.reset(defaultValues);
-    form.clearErrors();
-  }
-}, [open, form]);
+  useEffect(() => {
+    if (!open) {
+      form.reset(defaultValues);
+      form.clearErrors();
+    }
+  }, [open, form]);
 
   useEffect(() => {
     const codeDirty = !!form.formState.dirtyFields?.code;
@@ -167,16 +168,14 @@ useEffect(() => {
   const titleTxt = department
     ? "Editar Departamento"
     : isSubDepartment
-    ? "Criar Sub Departamento"
-    : "Criar Novo Departamento";
+      ? "Criar Sub Departamento"
+      : "Criar Novo Departamento";
 
   const descriptionTxt = department
     ? "Atualizar Departamento"
     : isSubDepartment
-    ? "Criar um novo sub departamento"
-    : "Criar um novo departamento";
-
-    console.log("parentDeptId - ", parentDeptId)
+      ? "Criar um novo sub departamento"
+      : "Criar um novo departamento";
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
@@ -280,7 +279,12 @@ useEffect(() => {
                     <IGRPFormControlPrimitive>
                       <IGRPInputPrimitive
                         {...field}
-                        value={parentDeptId?.name || parentDeptId?.description || parentDeptId?.code || ""}
+                        value={
+                          parentDeptId?.name ||
+                          parentDeptId?.description ||
+                          parentDeptId?.code ||
+                          ""
+                        }
                         disabled
                         placeholder="Departamento pai"
                         className="bg-muted border-primary/30"

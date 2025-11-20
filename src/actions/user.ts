@@ -1,24 +1,25 @@
 "use server";
 
 import type {
-  CreateUserRequest,
-  UpdateUserRequest,
+  IGRPUserDTO,
+  InviteUserDTO,
   UserFilters,
 } from "@igrp/platform-access-management-client-ts";
 import { getClientAccess } from "./access-client";
 import { extractApiError } from "@/lib/utils";
 
-export async function getUsers(params?: UserFilters, ids?: number[]) {
+export async function getUsers(params?: UserFilters) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.getUsers(params, ids);
+    const result = await client.users.getUsers(params);
     return result.data;
   } catch (error) {
     console.error("[users] Erro ao carregar lista de utilizadores.:", error);
     throw new Error(extractApiError(error));
   }
 }
+
 export async function getCurrentUser() {
   const client = await getClientAccess();
 
@@ -33,7 +34,8 @@ export async function getCurrentUser() {
     throw new Error(extractApiError(error));
   }
 }
-export async function inviteUser(user: CreateUserRequest) {
+
+export async function inviteUser(user: InviteUserDTO) {
   const client = await getClientAccess();
 
   try {
@@ -48,11 +50,19 @@ export async function inviteUser(user: CreateUserRequest) {
   }
 }
 
-export async function addRolesToUser(id: number, roleNames: string[]) {
+export async function addRolesToUser(
+  id: number,
+  departmentCode: string,
+  roleCodes: string[],
+) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.addRolesToUser(id, roleNames);
+    const result = await client.users.addRolesToUser(
+      id,
+      departmentCode,
+      roleCodes,
+    );
     return result.data;
   } catch (error: any) {
     throw new Error(extractApiError(error));
@@ -61,12 +71,17 @@ export async function addRolesToUser(id: number, roleNames: string[]) {
 
 export async function removeRolesFromUser(
   id: number,
-  roleNames: string[],
+  departmentCode: string,
+  roleCodes: string[],
 ) {
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.removeRolesFromUser(id, roleNames);
+    const result = await client.users.removeRolesFromUser(
+      id,
+      departmentCode,
+      roleCodes,
+    );
     return result.data;
   } catch (error) {
     console.error("[user-invite] Erro ao remover perfis ao utilizador:", error);
@@ -86,7 +101,7 @@ export async function getUserRoles(id: number) {
   }
 }
 
-export async function updateUser(id: number, user: UpdateUserRequest) {
+export async function updateUser(id: number, user: IGRPUserDTO) {
   const client = await getClientAccess();
 
   try {
@@ -94,6 +109,36 @@ export async function updateUser(id: number, user: UpdateUserRequest) {
     return result.data;
   } catch (error) {
     console.error("[user-update] Erro ao editar utilizardor:", error);
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function getCurrentUserDepartments() {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getCurrentUserDepartments();
+    return result.data;
+  } catch (error) {
+    console.error(
+      "[user-current] Erro ao carregar os dados do utilizador atual.:",
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function getCurrentUserApplications() {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getCurrentUserApplications();
+    return result.data;
+  } catch (error) {
+    console.error(
+      "[user-departments] Erro ao obter departamentos de utilizador:",
+      error,
+    );
     throw new Error(extractApiError(error));
   }
 }

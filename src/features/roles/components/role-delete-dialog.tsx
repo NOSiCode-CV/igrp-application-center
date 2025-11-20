@@ -1,5 +1,6 @@
 "use client";
 
+import { useDeleteRole } from "@/features/departments/use-departments";
 import {
   IGRPButton,
   IGRPButtonPrimitive,
@@ -15,15 +16,16 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { useDeleteRole } from "../use-roles";
 
 interface RoleDeleteDialogProps {
+  departmentCode: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   roleToDelete: string;
 }
 
 export function RoleDeleteDialog({
+  departmentCode,
   open,
   onOpenChange,
   roleToDelete,
@@ -37,7 +39,7 @@ export function RoleDeleteDialog({
 
   async function confirmDelete() {
     try {
-      await deleteRole(roleToDelete);
+      await deleteRole({ departmentCode, roleCode: roleToDelete });
       igrpToast({
         type: "success",
         title: "Role Eliminado",
@@ -123,8 +125,7 @@ export function RoleDeleteDialog({
           <IGRPButton
             variant="destructive"
             onClick={() => {
-              confirmDelete(),
-              setConfirmation("")
+              confirmDelete(), setConfirmation("");
             }}
             disabled={!isConfirmed || isPending}
             showIcon

@@ -1,6 +1,6 @@
 "use client";
 
-import type { IGRPApplicationArgs, IGRPMenuItemArgs } from "@igrp/framework-next-types";
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
   IGRPButtonPrimitive,
   IGRPCardDescriptionPrimitive,
@@ -26,26 +26,33 @@ import {
 import { useEffect, useState } from "react";
 import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
-import { useMenus, useUpdateMenu } from "@/features/menus/use-menus";
 import { statusSchema } from "@/schemas/global";
 import { MenuDeleteDialog } from "./menu-delete-dialog";
 import { MenuFormDialog } from "./menu-form-dialog";
 import { SortableMenuItem } from "./menu-sortable-item";
-import { MenuType, Status } from "@igrp/platform-access-management-client-ts";
+import {
+  ApplicationDTO,
+  MenuType,
+  Status,
+} from "@igrp/platform-access-management-client-ts";
+import {
+  useMenus,
+  useUpdateMenu,
+} from "@/features/applications/use-applications";
 
-export function MenuList({ app }: { app: IGRPApplicationArgs }) {
+export function MenuList({ app }: { app: ApplicationDTO }) {
   const { code } = app;
-  const {
-    data: appMenus,
-    isLoading,
-    error: errorGetMenus,
-  } = useMenus({ applicationCode: code });
+  const { data: appMenus, isLoading, error: errorGetMenus } = useMenus(code);
 
   const [menus, setMenus] = useState<IGRPMenuItemArgs[]>([]);
   const [openFormDialog, setOpenFormDialog] = useState(false);
-  const [openTypeFormDialog, setOpenTypeFormDialog] = useState<"edit" | "view" | undefined>();
+  const [openTypeFormDialog, setOpenTypeFormDialog] = useState<
+    "edit" | "view" | undefined
+  >();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState<IGRPMenuItemArgs | undefined>();
+  const [selectedMenu, setSelectedMenu] = useState<
+    IGRPMenuItemArgs | undefined
+  >();
   const [menuToDelete, setMenuToDelete] = useState<{
     code: string;
     name: string;
@@ -119,17 +126,16 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
       igrpToast({
         type: "warning",
         title: "Movimento não permitido",
-        description: "Só é possível reordenar menus no mesmo nível hierárquico.",
+        description:
+          "Só é possível reordenar menus no mesmo nível hierárquico.",
       });
       return;
     }
 
     const parentCode = activeParentCode;
-    const siblings = menus.filter(
-      (m) => (m.parentCode ?? null) === parentCode
-    );
+    const siblings = menus.filter((m) => (m.parentCode ?? null) === parentCode);
     const otherMenus = menus.filter(
-      (m) => (m.parentCode ?? null) !== parentCode
+      (m) => (m.parentCode ?? null) !== parentCode,
     );
 
     const oldIndex = siblings.findIndex((item) => item.code === active.id);
@@ -151,7 +157,8 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
       await Promise.all(
         updatedSiblings.map((menu, index) =>
           updateMenuMutation.mutateAsync({
-            code: menu.code,
+            appCode: app.code,
+            menuCode: menu.code,
             data: {
               name: menu.name,
               icon: menu.icon,
@@ -161,11 +168,11 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
               url: menu.url,
               pageSlug: menu.pageSlug,
               parentCode: menu.parentCode,
-              applicationCode: menu.applicationCode,
+              target: menu.target,
               position: index,
             },
-          })
-        )
+          }),
+        ),
       );
 
       igrpToast({
@@ -197,12 +204,12 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     setSelectedMenu({
       ...parentMenu,
       parentCode: parentMenu.code,
-      code: '',
-      name: '',
-      icon: '',
-      url: '',
-      pageSlug: '',
-      type: parentMenu.type === 'GROUP' ? 'FOLDER' : 'MENU_PAGE',
+      code: "",
+      name: "",
+      icon: "",
+      url: "",
+      pageSlug: "",
+      type: parentMenu.type === "GROUP" ? "FOLDER" : "MENU_PAGE",
     } as IGRPMenuItemArgs);
     setOpenFormDialog(true);
     setOpenTypeFormDialog(undefined);
@@ -224,11 +231,11 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
   const handleAddInternalPage = (parentMenu: IGRPMenuItemArgs) => {
     setSelectedMenu({
       parentCode: parentMenu.code,
-      code: '',
-      name: '',
-      icon: 'AppWindow',
-      type: 'MENU_PAGE',
-      status: 'ACTIVE',
+      code: "",
+      name: "",
+      icon: "AppWindow",
+      type: "MENU_PAGE",
+      status: "ACTIVE",
       applicationCode: app.code,
     } as IGRPMenuItemArgs);
     setOpenFormDialog(true);
@@ -238,11 +245,11 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
   const handleAddExternalPage = (parentMenu: IGRPMenuItemArgs) => {
     setSelectedMenu({
       parentCode: parentMenu.code,
-      code: '',
-      name: '',
-      icon: 'AppWindow',
-      type: 'EXTERNAL_PAGE',
-      status: 'ACTIVE',
+      code: "",
+      name: "",
+      icon: "AppWindow",
+      type: "EXTERNAL_PAGE",
+      status: "ACTIVE",
       applicationCode: app.code,
     } as IGRPMenuItemArgs);
     setOpenFormDialog(true);
@@ -253,9 +260,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
     <div className="pt-6">
       <div className="flex items-center justify-between">
         <div className="mb-3">
-          <IGRPCardTitlePrimitive>
-            Menus da Aplicação
-          </IGRPCardTitlePrimitive>
+          <IGRPCardTitlePrimitive>Menus da Aplicação</IGRPCardTitlePrimitive>
           <IGRPCardDescriptionPrimitive>
             Gerir e reorganizar os menus desta aplicação.
           </IGRPCardDescriptionPrimitive>
@@ -276,7 +281,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
         )}
       </div>
 
-      <div className=" border">
+      <div className=" border rounded-md">
         {menuEmpty ? (
           <div className="text-center py-12 px-4">
             <div className="flex justify-center mb-4">
@@ -344,6 +349,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
       </div>
 
       <MenuFormDialog
+        aplicationCode={app.code}
         open={openFormDialog}
         onOpenChange={(open) => {
           setOpenFormDialog(open);
@@ -362,6 +368,7 @@ export function MenuList({ app }: { app: IGRPApplicationArgs }) {
 
       {menuToDelete && (
         <MenuDeleteDialog
+          appCode={app.code}
           open={deleteDialogOpen}
           onOpenChange={setDeleteDialogOpen}
           menuToDelete={menuToDelete}

@@ -94,26 +94,17 @@ function IGRPDialogDelete({
             }}
             type="button"
           >
-            <IGRPIcon
-                  iconName="X"
-                  className=" size-4"
-                  strokeWidth={2}
-                />
+            <IGRPIcon iconName="X" className=" size-4" strokeWidth={2} />
             {labelBtnCancel}
           </IGRPButtonPrimitive>
           <IGRPButtonPrimitive
             variant="destructive"
             onClick={() => {
-              confirmDelete(),
-              setConfirmation("");
+              confirmDelete(), setConfirmation("");
             }}
             disabled={!isConfirmed || isDeleting}
           >
-            <IGRPIcon
-                  iconName="Trash"
-                  className="size-4"
-                  strokeWidth={2}
-                />
+            <IGRPIcon iconName="Trash" className="size-4" strokeWidth={2} />
             {isDeleting ? "Aguarde..." : labelBtnDelete}
           </IGRPButtonPrimitive>
         </IGRPDialogFooterPrimitive>

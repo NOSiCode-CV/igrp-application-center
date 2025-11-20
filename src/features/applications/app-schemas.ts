@@ -20,10 +20,13 @@ const BaseApp = z
         "Deve conter apenas maiúsculas, números e sublinhados",
       )
       .min(2, "Código deve ter no mínimo 2 caracteres"),
-    name: z.string().regex(
+    name: z
+      .string()
+      .regex(
         /^[a-zA-Z0-9\sÀ-ÿ()]+$/,
-        "O nome não pode conter caracteres especiais"
-      ).min(2, "Nome é obrigatório"),
+        "O nome não pode conter caracteres especiais",
+      )
+      .min(2, "Nome é obrigatório"),
     status: statusSchema,
     owner: z.string().optional(),
     description: z.string().optional(),
@@ -146,7 +149,7 @@ export function normalizeApplication(values: FormVals, isEdit: boolean) {
     description: values.description ?? null,
     owner: values.owner as string,
     picture: values.picture ?? null,
-    departments: []
+    departments: [],
   };
 
   if (values.type === appTypeCrud.enum.INTERNAL) {

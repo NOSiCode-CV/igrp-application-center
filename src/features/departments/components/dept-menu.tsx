@@ -1,17 +1,9 @@
 "use client";
 
-import { useApplications } from "@/features/applications/use-applications";
-import {
-  useAddRolesToMenu,
-  useDepartmentMenus,
-  useRemoveRolesFromMenu,
-} from "@/features/menus/use-menus";
-import { useRoles } from "@/features/roles/use-roles";
 import {
   cn,
   IGRPBadgePrimitive,
   IGRPButtonPrimitive,
-  IGRPCheckboxPrimitive,
   IGRPIcon,
   IGRPInputPrimitive,
   IGRPSelectPrimitive,
@@ -19,9 +11,7 @@ import {
   IGRPSelectValuePrimitive,
   IGRPSelectContentPrimitive,
   IGRPSelectItemPrimitive,
-  IGRPSkeletonPrimitive,
   IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
   IGRPTableHeaderPrimitive,
   IGRPTableHeadPrimitive,
   IGRPTablePrimitive,
@@ -38,6 +28,15 @@ import { ManageMenusModal } from "./Modal/manage-menus-modal";
 import { buildMenuTree } from "../dept-lib";
 import MenuTreeRow from "./menu-tree-row";
 import { AppCenterLoading } from "@/components/loading";
+import {
+  useDepartmentApplications,
+  useDepartmentMenus,
+  useRoles,
+} from "../use-departments";
+import {
+  useAddRolesToMenu,
+  useRemoveRolesFromMenu,
+} from "@/features/applications/use-applications";
 
 interface MenuPermissionsProps {
   departmentCode: string;
@@ -53,18 +52,18 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const [menuRoleAssignments, setMenuRoleAssignments] = useState<
     Map<string, Set<string>>
   >(new Map());
+
   const [showMenusModal, setShowMenusModal] = useState(false);
 
   const { data: menus, isLoading: loading } = useDepartmentMenus(
-    departmentCode || ""
+    selectedApp,
+    departmentCode || "",
   );
-
-  const { data: roles, isLoading: isLoadingRoles } = useRoles({
-    departmentCode: departmentCode || "",
-  });
-  const { data: assignedApps, isLoading: loadingApps } = useApplications({
-    departmentCode: departmentCode || "",
-  });
+  const { data: assignedApps, isLoading: loadingApps } =
+    useDepartmentApplications({ departmentCode: departmentCode || "" });
+  const { data: roles, isLoading: isLoadingRoles } = useRoles(
+    departmentCode || "",
+  );
 
   const addRolesMutation = useAddRolesToMenu();
   const removeRolesMutation = useRemoveRolesFromMenu();
@@ -73,7 +72,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   useEffect(() => {
     if (assignedApps && assignedApps.length > 0 && !selectedApp) {
       const sortedApps = [...assignedApps].sort((a, b) =>
-        a.name.localeCompare(b.name, "pt")
+        a.name.localeCompare(b.name, "pt"),
       );
       setSelectedApp(sortedApps[0].code);
     }
@@ -98,27 +97,31 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         const originalRoles = new Set(originalMenu?.roles || []);
 
         const rolesToAdd = Array.from(currentRoles).filter(
-          (role) => !originalRoles.has(role)
+          (role) => !originalRoles.has(role),
         );
         const rolesToRemove = Array.from(originalRoles).filter(
-          (role) => !currentRoles.has(role)
+          (role) => !currentRoles.has(role),
         );
 
         if (rolesToAdd.length > 0) {
           promises.push(
             addRolesMutation.mutateAsync({
+              appCode: selectedApp,
               menuCode,
-              roleCodes: rolesToAdd,
-            })
+              departmentCode,
+              roleNames: rolesToAdd,
+            }),
           );
         }
 
         if (rolesToRemove.length > 0) {
           promises.push(
             removeRolesMutation.mutateAsync({
+              appCode: selectedApp,
               menuCode,
-              roleCodes: rolesToRemove,
-            })
+              departmentCode,
+              roleNames: rolesToRemove,
+            }),
           );
         }
       }
@@ -167,7 +170,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const getColumnCheckState = (roleCode: string) => {
     const visibleMenuCodes = filteredMenus.map((m) => m.code);
     const menusWithRole = visibleMenuCodes.filter((code) =>
-      menuRoleAssignments.get(code)?.has(roleCode)
+      menuRoleAssignments.get(code)?.has(roleCode),
     );
 
     if (menusWithRole.length === 0) return false;
@@ -210,7 +213,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
       }
 
       return false;
-    }
+    },
   );
 
   const sortedApps = useMemo(() => {
@@ -290,7 +293,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         </div>
 
         {loading || isLoadingRoles ? (
-           <AppCenterLoading descrption="A carregar menus..." />
+          <AppCenterLoading descrption="A carregar menus..." />
         ) : menuTree.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon
@@ -329,7 +332,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   {sortedApps.find((app) => app.code === selectedApp)?.name ||
                     selectedApp}
                 </IGRPBadgePrimitive>
-                
               </div>
             )}
 
@@ -361,25 +363,24 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                       toggleAllMenusForRole(role.code)
                                     }
                                     className="group flex items-center gap-1 hover:bg-primary/10 px-2 py-1 rounded transition-colors"
-                                    
                                   >
                                     <IGRPIcon
                                       iconName={
                                         getColumnCheckState(role.code) === true
                                           ? "Check"
                                           : getColumnCheckState(role.code) ===
-                                            "indeterminate"
-                                          ? "Check"
-                                          : "Square"
+                                              "indeterminate"
+                                            ? "Check"
+                                            : "Square"
                                       }
                                       className={cn(
                                         "w-4 h-4 transition-colors",
                                         getColumnCheckState(role.code) === true
                                           ? "text-primary"
                                           : getColumnCheckState(role.code) ===
-                                            "indeterminate"
-                                          ? "text-primary/60"
-                                          : "text-muted-foreground group-hover:text-primary"
+                                              "indeterminate"
+                                            ? "text-primary/60"
+                                            : "text-muted-foreground group-hover:text-primary",
                                       )}
                                       strokeWidth={2}
                                     />
@@ -398,7 +399,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                             className="text-xs font-semibold truncate max-w-full px-1"
                             title={role.name}
                           >
-                            {role.name.split(".").pop() || role.name}
+                            {role?.name?.split(".").pop() ?? role?.name ?? ""}
                           </span>
                         </div>
                       </IGRPTableHeadPrimitive>
@@ -409,10 +410,13 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 <IGRPTableBodyPrimitive>
                   {menuTree.map((menu) => (
                     <MenuTreeRow
-                      setMenuRoleAssignments={setMenuRoleAssignments}  
-                      key={menu.code} 
+                      setMenuRoleAssignments={setMenuRoleAssignments}
+                      key={menu.code}
                       menu={menu}
-                      roles={roles}
+                      roles={roles?.map((role) => ({
+                        name: role.name ?? "",
+                        code: role.code,
+                      }))}
                       menuRoleAssignments={menuRoleAssignments}
                     />
                   ))}

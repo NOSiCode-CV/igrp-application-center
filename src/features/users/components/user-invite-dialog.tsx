@@ -30,13 +30,16 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type {
   CreateUserRequest,
+  InviteUserDTO,
   Status,
 } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useDepartments } from "@/features/departments/use-departments";
-import { useRoles } from "@/features/roles/use-roles";
+import {
+  useDepartments,
+  useRoles,
+} from "@/features/departments/use-departments";
 import { cn } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
 import { useAddUserRole, useInviteUser } from "../use-users";
@@ -49,7 +52,7 @@ interface UserInviteDialogProps {
 const formSchema = z.object({
   email: z.string().min(1, "Email obrigatório").email("Email inválido"),
   departmentCode: z.string().optional(),
-  roleNames: z.array(z.string()),
+  roleCodes: z.array(z.string()),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -71,7 +74,7 @@ export function UserInviteDialog({
     defaultValues: {
       email: "",
       departmentCode: undefined,
-      roleNames: [] as string[],
+      roleCodes: [] as string[],
     },
   });
 
@@ -80,12 +83,12 @@ export function UserInviteDialog({
       form.reset({
         email: "",
         departmentCode: undefined,
-        roleNames: [] as string[],
+        roleCodes: [] as string[],
       });
     }
   }, [open, form]);
 
-  const selectedDeptCode = form.watch("departmentCode");
+  const departmentCode = form.watch("departmentCode");
 
   const {
     data: depts,
@@ -96,7 +99,7 @@ export function UserInviteDialog({
     data: roles,
     isLoading: rolesLoading,
     error: rolesError,
-  } = useRoles({ departmentCode: selectedDeptCode });
+  } = useRoles(departmentCode || "");
 
   const isValid = form.formState.isValid;
   const isSubmitting = form.formState.isSubmitting;
@@ -106,22 +109,26 @@ export function UserInviteDialog({
 
   const parentSelected = useMemo(
     () => depts?.find((o) => o.code === parentValue) ?? null,
-    [parentValue, depts]
+    [parentValue, depts],
   );
 
   const onSubmit = async (values: FormSchema) => {
-    const { email, roleNames = [] } = values;
+    const { email, roleCodes = [] } = values;
 
-    const userPayload: CreateUserRequest = {
-      name: email.split("@")[0],
+    const userPayload: InviteUserDTO = {
       email: email.trim(),
-      status: statusSchema.enum.ACTIVE as Status,
+      departmentCode: departmentCode || "",
+      roles: roleCodes,
     };
 
     const promise = userInvite({ user: userPayload }).then(async (created) => {
       const finalId = (created as any)?.id;
-      if (finalId && roleNames.length > 0) {
-        await addUserRole({ id: finalId, roleNames });
+      if (finalId && roleCodes.length > 0) {
+        await addUserRole({
+          id: finalId,
+          departmentCode: departmentCode || "",
+          roleCodes,
+        });
       }
       return finalId;
     });
@@ -139,7 +146,7 @@ export function UserInviteDialog({
       form.reset({
         email: "",
         departmentCode: undefined,
-        roleNames: [] as string[],
+        roleCodes: [] as string[],
       });
       onOpenChange(false);
     } catch (error) {
@@ -222,12 +229,14 @@ export function UserInviteDialog({
                             disabled={isDeptDisabled}
                             className={cn(
                               "w-full justify-between",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
                             )}
                             aria-expanded={openDepts}
                           >
                             <span className="truncate">
-                              {parentSelected ? parentSelected.name : placeholder}
+                              {parentSelected
+                                ? parentSelected.name
+                                : placeholder}
                             </span>
                             <IGRPIcon
                               iconName={openDepts ? "ChevronUp" : "ChevronDown"}
@@ -255,7 +264,10 @@ export function UserInviteDialog({
                                 className="flex items-center gap-2"
                               >
                                 {!field.value ? (
-                                  <IGRPIcon iconName="Check" className="size-4" />
+                                  <IGRPIcon
+                                    iconName="Check"
+                                    className="size-4"
+                                  />
                                 ) : (
                                   <span className="w-4" />
                                 )}
@@ -269,7 +281,7 @@ export function UserInviteDialog({
                                     form.setValue("departmentCode", opt.code, {
                                       shouldValidate: true,
                                     });
-                                    form.setValue("roleNames", [] as string[], {
+                                    form.setValue("roleCodes", [] as string[], {
                                       shouldValidate: true,
                                     });
                                     setOpenDepts(false);
@@ -277,7 +289,10 @@ export function UserInviteDialog({
                                   className="flex items-center gap-2"
                                 >
                                   {field.value === opt.code ? (
-                                    <IGRPIcon iconName="Check" className="size-4" />
+                                    <IGRPIcon
+                                      iconName="Check"
+                                      className="size-4"
+                                    />
                                   ) : (
                                     <span className="w-4" />
                                   )}
@@ -299,23 +314,23 @@ export function UserInviteDialog({
 
               <IGRPFormFieldPrimitive
                 control={form.control}
-                name="roleNames"
+                name="roleCodes"
                 render={({ field }) => {
                   const isDisabled =
-                    !selectedDeptCode || (roles?.length ?? 0) === 0;
+                    !departmentCode || (roles?.length ?? 0) === 0;
                   const selectedCodes = new Set(field.value ?? []);
 
                   const toggle = (code: string) => {
                     const next = new Set(selectedCodes);
                     if (next.has(code)) next.delete(code);
                     else next.add(code);
-                    form.setValue("roleNames", Array.from(next), {
+                    form.setValue("roleCodes", Array.from(next), {
                       shouldValidate: true,
                       shouldDirty: true,
                     });
                   };
 
-                  const selectedRoleNames =
+                  const selectedroleCodes =
                     roles?.filter((role) => selectedCodes.has(role.code)) ?? [];
 
                   const label =
@@ -324,8 +339,8 @@ export function UserInviteDialog({
                         ? "Selecione um departamento"
                         : "Selecionar perfis"
                       : selectedCodes.size === 1
-                      ? selectedRoleNames[0]?.name ?? "1 perfil"
-                      : `${selectedCodes.size} perfis selecionados`;
+                        ? (selectedroleCodes[0]?.name ?? "1 perfil")
+                        : `${selectedCodes.size} perfis selecionados`;
 
                   return (
                     <IGRPFormItemPrimitive>
@@ -342,7 +357,8 @@ export function UserInviteDialog({
                               disabled={isDisabled}
                               className={cn(
                                 "w-full justify-between",
-                                selectedCodes.size === 0 && "text-muted-foreground"
+                                selectedCodes.size === 0 &&
+                                  "text-muted-foreground",
                               )}
                             >
                               <span className="truncate">{label}</span>
@@ -374,7 +390,7 @@ export function UserInviteDialog({
                                         iconName="Check"
                                         className={cn(
                                           "mr-2",
-                                          checked ? "opacity-100" : "opacity-0"
+                                          checked ? "opacity-100" : "opacity-0",
                                         )}
                                       />
                                       {role.name}
@@ -391,9 +407,9 @@ export function UserInviteDialog({
                         {rolesError ? rolesError.message : null}
                       </IGRPFormMessagePrimitive>
 
-                      {selectedRoleNames.length > 0 && (
+                      {selectedroleCodes.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
-                          {selectedRoleNames.map((role) => (
+                          {selectedroleCodes.map((role) => (
                             <span
                               key={role.code}
                               className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs"

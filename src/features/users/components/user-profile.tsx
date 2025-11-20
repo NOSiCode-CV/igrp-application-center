@@ -21,7 +21,7 @@ import {
 import { useState, useRef, useEffect } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import { useCurrentUser, useRemoveUserRole } from "@/features/users/use-users";
+import { useCurrentUser } from "@/features/users/use-users";
 import { ROUTES } from "@/lib/constants";
 import { getInitials } from "@/lib/utils";
 import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
@@ -29,21 +29,25 @@ import { BackButton } from "@/components/back-button";
 import { UserEditForm } from "./user-edit-form";
 import UserSignature from "./user-signature";
 import UserRoleList from "./user-role-list";
+import { useQueryClient } from "@tanstack/react-query";
+import UserApplications from "./user-applications";
+import DepartmentTreeItemSimple from "@/features/departments/components/dept-list-simple-tree";
+import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
 
 export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
 
   const { igrpToast } = useIGRPToast();
+  const queryClient = useQueryClient();
 
   const [open, setOpen] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
- 
 
   const uploadFile = useUploadPublicFiles();
   const [uploadedAvatarPath, setUploadedAvatarPath] = useState<string | null>(
-    null
+    null,
   );
- 
+
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   const { data: avatarUrl } = useFiles(uploadedAvatarPath || "");
@@ -54,8 +58,6 @@ export function UserProfile() {
       setUploadedAvatarPath(null);
     }
   }, [avatarUrl]);
-
- 
 
   if (isLoading) {
     return <AppCenterLoading descrption="Carregando utilizador..." />;
@@ -72,30 +74,13 @@ export function UserProfile() {
 
   if (userError) throw userError;
 
-  const handleName = (value: string) => {
-    const SENTINEL = "§§§";
-    return value
-      .replace(/iGRP/g, SENTINEL)
-      .replace(/[_\-.]+/g, " ")
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
-      .replace(/\s+/g, " ")
-      .trim()
-      .split(" ")
-      .map((w) => (w.includes(SENTINEL) ? "iGRP" : w.toLowerCase()))
-      .join(" ");
-  };
-
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
       const result = await uploadFile.mutateAsync({
-        file: formData,
+        file: file,
         options: {
           folder: `users/${user.id}/avatar`,
         },
@@ -124,12 +109,12 @@ export function UserProfile() {
     {
       label: "Departamentos",
       value: "departments",
-      content: <div></div>,
+      content: <DepartmentListSimple />,
     },
     {
       label: "Aplicações",
       value: "applications",
-      content: <div></div>,
+      content: <UserApplications />,
     },
     {
       label: "Roles",
@@ -140,7 +125,7 @@ export function UserProfile() {
       label: "Assinatura",
       value: "signature",
       content: <UserSignature refetch={refetch} user={user} />,
-    }
+    },
   ];
 
   return (
@@ -169,7 +154,15 @@ export function UserProfile() {
                       Editar Perfil
                     </IGRPDialogTitlePrimitive>
                   </IGRPDialogHeaderPrimitive>
-                  <UserEditForm user={user} onSuccess={() => setOpen(false)} />
+                  <UserEditForm
+                    user={user}
+                    onSuccess={async () => {
+                      await queryClient.invalidateQueries({
+                        queryKey: ["current-user"],
+                      });
+                      setOpen(false);
+                    }}
+                  />
                 </IGRPDialogContentPrimitive>
               </IGRPDialogPrimitive>
             </div>
@@ -193,7 +186,7 @@ export function UserProfile() {
                     iconName={uploadFile.isPending ? "LoaderCircle" : "Camera"}
                     className={cn(
                       "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      uploadFile.isPending && "animate-spin"
+                      uploadFile.isPending && "animate-spin",
                     )}
                   />
                 </div>
@@ -218,8 +211,6 @@ export function UserProfile() {
           </IGRPCardContentPrimitive>
         </IGRPCardPrimitive>
       </div>
-
-      
 
       <IGRPTabs
         defaultValue="roles"

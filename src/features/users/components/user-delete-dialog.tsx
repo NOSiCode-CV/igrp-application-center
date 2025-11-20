@@ -51,7 +51,7 @@ export function UserDeleteDialog({
     <IGRPDialogDelete
       open={open}
       onOpenChange={onOpenChange}
-      toDelete={{ name: userToDelete.username || '' }}
+      toDelete={{ name: userToDelete.username || "" }}
       confirmDelete={confirmDelete}
       label="Username"
       isDeleting={isDeleting}

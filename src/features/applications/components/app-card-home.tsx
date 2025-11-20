@@ -1,6 +1,5 @@
 "use client";
 
-import type { IGRPApplicationArgs } from "@igrp/framework-next-types";
 import {
   IGRPBadgePrimitive,
   IGRPIcon,
@@ -11,8 +10,9 @@ import Image from "next/image";
 import { ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
+import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
-export function ApplicationCardHOme({ app }: { app: IGRPApplicationArgs }) {
+export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
   const { name, status, description, code } = app;
   const href = `${ROUTES.APPLICATIONS}/${code}`;
   const appImage = app.picture;
@@ -20,7 +20,6 @@ export function ApplicationCardHOme({ app }: { app: IGRPApplicationArgs }) {
   return (
     <Link href={href} className="group block">
       <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
-        
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="relative size-12 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
@@ -32,7 +31,10 @@ export function ApplicationCardHOme({ app }: { app: IGRPApplicationArgs }) {
                   className="object-cover"
                 />
               ) : (
-                <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
+                <IGRPIcon
+                  iconName="AppWindow"
+                  className="size-6 text-primary"
+                />
               )}
             </div>
             <div className="min-w-0 flex-1">
@@ -42,7 +44,7 @@ export function ApplicationCardHOme({ app }: { app: IGRPApplicationArgs }) {
               <p className="text-xs text-muted-foreground mt-0.5">Aplicação</p>
             </div>
           </div>
-          
+
           <IGRPBadgePrimitive
             className={cn(getStatusColor(status), "shrink-0")}
           >
@@ -59,13 +61,13 @@ export function ApplicationCardHOme({ app }: { app: IGRPApplicationArgs }) {
             Ver detalhes
           </span> */}
           <ButtonLinkTooltip
-                      href={href || ""}
-                      icon="ExternalLink"
-                      label="Acessar"
-                      size="icon"
-                      variant="ghost"
-                      btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-                    />
+            href={href || ""}
+            icon="ExternalLink"
+            label="Acessar"
+            size="icon"
+            variant="ghost"
+            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+          />
         </div>
       </div>
     </Link>

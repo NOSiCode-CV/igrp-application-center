@@ -31,9 +31,9 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import {
   useAddMenusToDepartment,
   useDepartmentAvailableMenus,
+  useDepartmentMenus,
   useRemoveMenusFromDepartment,
 } from "../../use-departments";
-import { useDepartmentMenus } from "@/features/menus/use-menus";
 import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { buildMenuTree } from "../../dept-lib";
 import { getMenuIcon } from "@/lib/utils";
@@ -68,9 +68,10 @@ export function ManageMenusModal({
   } | null>(null);
 
   const { data: availableMenus, isLoading: loadingAvailable } =
-    useDepartmentAvailableMenus(departmentCode || "");
+    useDepartmentAvailableMenus(selectedApp, departmentCode || "");
   const { data: assignedMenus, isLoading: loadingAssigned } =
-    useDepartmentMenus(departmentCode || "");
+    useDepartmentMenus(selectedApp, departmentCode || "");
+
   const addMenusMutation = useAddMenusToDepartment();
   const removeMenusMutation = useRemoveMenusFromDepartment();
 
@@ -109,7 +110,7 @@ export function ManageMenusModal({
       (menu) => ({
         ...menu,
         isAssigned: assignedCodes.has(menu.code),
-      })
+      }),
     );
 
     return menusArray.sort((a, b) => a.name.localeCompare(b.name, "pt"));
@@ -118,7 +119,7 @@ export function ManageMenusModal({
   const appsFromMenus = useMemo(() => {
     if (allMenus.length === 0) return [];
     const uniqueAppCodes = new Set(
-      allMenus.map((menu) => menu.applicationCode)
+      allMenus.map((menu) => menu.applicationCode),
     );
     return Array.from(uniqueAppCodes)
       .map((appCode) => ({
@@ -143,7 +144,7 @@ export function ManageMenusModal({
   useEffect(() => {
     if (assignedApps && assignedApps.length > 0 && !selectedApp) {
       const sortedApps = [...assignedApps].sort((a, b) =>
-        a.name.localeCompare(b.name, "pt")
+        a.name.localeCompare(b.name, "pt"),
       );
       setSelectedApp(sortedApps[0].code);
     }
@@ -163,7 +164,7 @@ export function ManageMenusModal({
 
   const handleToggleMenu = async (
     menuCode: string,
-    currentlyAssigned: boolean
+    currentlyAssigned: boolean,
   ) => {
     if (currentlyAssigned) {
       const menu = allMenus.find((m) => m.code === menuCode);
@@ -177,7 +178,8 @@ export function ManageMenusModal({
     setProcessingMenu(menuCode);
     try {
       await addMenusMutation.mutateAsync({
-        code: departmentCode,
+        appCode: selectedApp,
+        departmentCode,
         menuCodes: [menuCode],
       });
 
@@ -204,7 +206,8 @@ export function ManageMenusModal({
     setProcessingMenu(menuToRemove.code);
     try {
       await removeMenusMutation.mutateAsync({
-        code: departmentCode,
+        appCode: selectedApp,
+        departmentCode,
         menuCodes: [menuToRemove.code],
       });
 
@@ -232,7 +235,7 @@ export function ManageMenusModal({
 
     if (selectedApp) {
       filtered = filtered.filter(
-        (menu) => menu.applicationCode === selectedApp
+        (menu) => menu.applicationCode === selectedApp,
       );
     }
 
@@ -242,7 +245,7 @@ export function ManageMenusModal({
         (menu) =>
           menu.name.toLowerCase().includes(term) ||
           menu.code.toLowerCase().includes(term) ||
-          menu.url?.toLowerCase().includes(term)
+          menu.url?.toLowerCase().includes(term),
       );
     }
 
@@ -272,7 +275,7 @@ export function ManageMenusModal({
             level > 0 && "ml-6",
             isAssigned
               ? "bg-primary/5 border-primary/20 hover:border-primary/40 hover:bg-primary/10"
-              : "bg-muted/30 border-muted hover:border-accent hover:bg-muted/50"
+              : "bg-muted/30 border-muted hover:border-accent hover:bg-muted/50",
           )}
         >
           <div className="flex items-center gap-3 p-3">
@@ -285,7 +288,7 @@ export function ManageMenusModal({
                   iconName="ChevronRight"
                   className={cn(
                     "w-4 h-4 transition-transform",
-                    isExpanded && "rotate-90"
+                    isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
                 />
@@ -297,7 +300,7 @@ export function ManageMenusModal({
                 "flex items-center justify-center w-10 h-10 rounded-lg shrink-0 transition-colors",
                 isAssigned
                   ? "bg-primary/10 text-primary"
-                  : "bg-muted text-muted-foreground"
+                  : "bg-muted text-muted-foreground",
               )}
             >
               <IGRPIcon
@@ -329,7 +332,7 @@ export function ManageMenusModal({
                 <span
                   className={cn(
                     "text-[10px] font-medium uppercase tracking-wider transition-colors",
-                    isAssigned ? "text-primary" : "text-muted-foreground"
+                    isAssigned ? "text-primary" : "text-muted-foreground",
                   )}
                 >
                   {isAssigned ? "Adicionado" : "Disponível"}
@@ -347,7 +350,7 @@ export function ManageMenusModal({
                 disabled={processingMenu !== null}
                 className={cn(
                   "data-[state=checked]:bg-green-200",
-                  processingMenu === menu.code && "opacity-50"
+                  processingMenu === menu.code && "opacity-50",
                 )}
               />
             </div>
@@ -383,8 +386,6 @@ export function ManageMenusModal({
     return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
   }, [assignedApps]);
 
-  console.log("sortedApps - ", sortedApps)
-
   return (
     <>
       <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
@@ -417,12 +418,17 @@ export function ManageMenusModal({
               <IGRPSelectPrimitive
                 value={selectedApp}
                 onValueChange={setSelectedApp}
-                disabled={loading}
+                disabled={loadingApps}
               >
                 <IGRPSelectTriggerPrimitive className="h-10">
                   <IGRPSelectValuePrimitive placeholder="Todas aplicações" />
                 </IGRPSelectTriggerPrimitive>
                 <IGRPSelectContentPrimitive>
+                  {loadingApps && (
+                    <IGRPSelectItemPrimitive value="loading">
+                      Carregando...
+                    </IGRPSelectItemPrimitive>
+                  )}
                   {sortedApps.map((app) => (
                     <IGRPSelectItemPrimitive key={app.code} value={app.code}>
                       <div className="flex items-center gap-2">

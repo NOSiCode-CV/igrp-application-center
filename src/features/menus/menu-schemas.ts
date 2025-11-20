@@ -1,9 +1,16 @@
-
-import type { MenuType, Status } from "@igrp/platform-access-management-client-ts";
+import type {
+  MenuType,
+  Status,
+} from "@igrp/platform-access-management-client-ts";
 import { z } from "zod";
 import { statusSchema } from "@/schemas/global";
 
-export const menuTypeSchema = z.enum(["GROUP", "FOLDER", "MENU_PAGE", "EXTERNAL_PAGE"]);
+export const menuTypeSchema = z.enum([
+  "GROUP",
+  "FOLDER",
+  "MENU_PAGE",
+  "EXTERNAL_PAGE",
+]);
 
 export const menuTargetSchema = z.enum(["_self", "_blank"]);
 
@@ -74,7 +81,7 @@ export const updateMenuSchema = menuSchema
   });
 
 export function normalizeMenu(values: CreateMenu | UpdateMenu) {
-  const cleanParent = values.parentCode 
+  const cleanParent = values.parentCode;
 
   const common = {
     code: values.code,

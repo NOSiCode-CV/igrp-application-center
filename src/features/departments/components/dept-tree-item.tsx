@@ -12,11 +12,11 @@ import {
   IGRPTooltipContentPrimitive,
   IGRPTooltipProviderPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
+import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
 import React from "react";
-import type { DepartmentArgs } from "../dept-schemas";
 
-type DepartmentWithChildren = DepartmentArgs & {
+type DepartmentWithChildren = DepartmentDTO & {
   children?: DepartmentWithChildren[];
 };
 
@@ -95,10 +95,7 @@ const DepartmentTreeItem = ({
           <div className="relative">
             <IGRPIcon
               iconName={isExpanded ? "FolderOpen" : "Folder"}
-              className={cn(
-                "w-4 h-4 shrink-0",
-                !isActive && "opacity-50"
-              )}
+              className={cn("w-4 h-4 shrink-0", !isActive && "opacity-50")}
               strokeWidth={2}
             />
             {!isActive && (

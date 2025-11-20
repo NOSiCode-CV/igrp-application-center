@@ -95,13 +95,13 @@ export function ManageAppsModal({
       (app) =>
         app.name.toLowerCase().includes(term) ||
         app.code.toLowerCase().includes(term) ||
-        app.description?.toLowerCase().includes(term)
+        app.description?.toLowerCase().includes(term),
     );
   }, [allApps, searchTerm]);
 
   const handleToggleApp = async (
     appCode: string,
-    currentlyAssigned: boolean
+    currentlyAssigned: boolean,
   ) => {
     if (currentlyAssigned) {
       const app = allApps.find((a) => a.code === appCode);
@@ -231,7 +231,7 @@ export function ManageAppsModal({
                       "group relative rounded-lg border",
                       app.isAssigned
                         ? "bg-primary/5 border-primary/20 hover:border-primary/40 hover:bg-primary/10"
-                        : "bg-muted/30 border-muted hover:border-accent hover:bg-muted/50"
+                        : "bg-muted/30 border-muted hover:border-accent hover:bg-muted/50",
                     )}
                   >
                     <div className="flex items-center gap-4 p-4">
@@ -240,7 +240,7 @@ export function ManageAppsModal({
                           "flex items-center justify-center w-12 h-12 rounded-lg shrink-0 transition-colors",
                           app.isAssigned
                             ? "bg-primary/10 text-primary"
-                            : "bg-muted text-muted-foreground"
+                            : "bg-muted text-muted-foreground",
                         )}
                       >
                         <IGRPIcon
@@ -276,7 +276,7 @@ export function ManageAppsModal({
                               "text-[10px] font-medium uppercase tracking-wider transition-colors",
                               app.isAssigned
                                 ? "text-primary"
-                                : "text-muted-foreground"
+                                : "text-muted-foreground",
                             )}
                           >
                             {app.isAssigned ? "Adicionado" : "Disponível"}
@@ -296,7 +296,7 @@ export function ManageAppsModal({
                           disabled={processingApp !== null}
                           className={cn(
                             "data-[state=checked]:bg-emerald-500",
-                            processingApp === app.code && "opacity-50"
+                            processingApp === app.code && "opacity-50",
                           )}
                         />
                       </div>

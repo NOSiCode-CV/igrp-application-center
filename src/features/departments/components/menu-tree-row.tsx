@@ -21,7 +21,7 @@ const MenuTreeRow = ({
   setMenuRoleAssignments: React.Dispatch<
     React.SetStateAction<Map<string, Set<string>>>
   >;
-  roles?: { name: string, code: string }[];
+  roles?: { name: string; code: string }[];
   menuRoleAssignments: Map<string, Set<string>>;
 }) => {
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
@@ -74,7 +74,7 @@ const MenuTreeRow = ({
                   iconName="ChevronRight"
                   className={cn(
                     "w-4 h-4 transition-transform",
-                    isExpanded && "rotate-90"
+                    isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
                 />
@@ -104,10 +104,12 @@ const MenuTreeRow = ({
             className="text-center border-l"
           >
             <div className="flex items-center justify-center">
-            <IGRPCheckboxPrimitive
-  checked={menuRoleAssignments.get(menu.code)?.has(role.code) ?? false}
-  onCheckedChange={() => toggleMenuRole(menu.code, role.code)}
-/>
+              <IGRPCheckboxPrimitive
+                checked={
+                  menuRoleAssignments.get(menu.code)?.has(role.code) ?? false
+                }
+                onCheckedChange={() => toggleMenuRole(menu.code, role.code)}
+              />
             </div>
           </IGRPTableCellPrimitive>
         ))}
@@ -116,9 +118,9 @@ const MenuTreeRow = ({
       {hasChildren &&
         isExpanded &&
         menu.children?.map((child) => (
-          <MenuTreeRow 
-            key={child.code} 
-            menu={child} 
+          <MenuTreeRow
+            key={child.code}
+            menu={child}
             level={level + 1}
             setMenuRoleAssignments={setMenuRoleAssignments}
             roles={roles}

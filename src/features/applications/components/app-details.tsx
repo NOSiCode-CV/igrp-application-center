@@ -69,12 +69,12 @@ export function ApplicationDetails({ code }: { code: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    // const formData = new FormData();
+    // formData.append("file", file);
 
     try {
       const result = await uploadPicture.mutateAsync({
-        file: formData,
+        file,
         options: {
           folder: code,
         },
@@ -160,7 +160,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                     }
                     className={cn(
                       "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      uploadPicture.isPending && "animate-spin"
+                      uploadPicture.isPending && "animate-spin",
                     )}
                   />
                 </div>

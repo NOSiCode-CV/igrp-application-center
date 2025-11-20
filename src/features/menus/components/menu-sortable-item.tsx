@@ -13,7 +13,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 interface SortableMenuItemProps {
   menu: IGRPMenuItemArgs;
@@ -26,8 +29,8 @@ interface SortableMenuItemProps {
   subMenus?: IGRPMenuItemArgs[];
   allMenus?: IGRPMenuItemArgs[];
   appCode?: string;
-  onAddInternalPage: any
-  onAddExternalPage: any
+  onAddInternalPage: any;
+  onAddExternalPage: any;
 }
 
 const MENU_TYPE_CONFIG = {
@@ -90,10 +93,10 @@ export function SortableMenuItem({
 
   const sortedSubMenus = subMenus
     ? [...subMenus].sort((a: any, b: any) => {
-      const aOrder = a.position ?? a.sortOrder ?? 0;
-      const bOrder = b.position ?? b.sortOrder ?? 0;
-      return aOrder - bOrder;
-    })
+        const aOrder = a.position ?? a.sortOrder ?? 0;
+        const bOrder = b.position ?? b.sortOrder ?? 0;
+        return aOrder - bOrder;
+      })
     : [];
 
   return (
@@ -102,9 +105,10 @@ export function SortableMenuItem({
         ref={setNodeRef}
         style={style}
         className={cn(
-          "group relative flex items-center justify-between border-b last:border-b-0 bg-background transition-all",
+          "group relative flex items-center justify-between bg-muted/50 transition-all",
           isDragging && "opacity-50 z-50",
-          isChild && "bg-muted/30",
+          menu.type === "FOLDER" && "bg-muted/30",
+          menu.type === "GROUP" && "bg-muted/10",
         )}
       >
         <div className="flex items-center gap-3 flex-1 py-3 pl-3">
@@ -150,7 +154,15 @@ export function SortableMenuItem({
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h4 className="text-sm font-medium truncate">{menu.name}</h4>
+              <h4
+                className={cn(
+                  "text-xs font-medium truncate",
+                  menu.type === "GROUP" && "text-base uppercase font-bold",
+                  menu.type === "FOLDER" && "text-sm font-semibold",
+                )}
+              >
+                {menu.name}
+              </h4>
               {menu.status === "INACTIVE" && (
                 <IGRPBadgePrimitive variant="secondary" className="text-xs">
                   Inativo
@@ -169,35 +181,56 @@ export function SortableMenuItem({
               <IGRPDropdownMenuTriggerPrimitive asChild>
                 <IGRPButtonPrimitive variant="ghost" className="h-8 w-8 p-0">
                   <span className="sr-only">Abrir menu</span>
-                  <IGRPIcon iconName="Ellipsis" strokeWidth={2} className="size-4" />
+                  <IGRPIcon
+                    iconName="Ellipsis"
+                    strokeWidth={2}
+                    className="size-4"
+                  />
                 </IGRPButtonPrimitive>
               </IGRPDropdownMenuTriggerPrimitive>
               <IGRPDropdownMenuContentPrimitive align="end">
                 <IGRPDropdownMenuItemPrimitive onClick={() => onView(menu)}>
-                  <IGRPIcon iconName="Eye" className="size-4 mr-2" strokeWidth={2} />
+                  <IGRPIcon
+                    iconName="Eye"
+                    className="size-4 mr-2"
+                    strokeWidth={2}
+                  />
                   Ver
                 </IGRPDropdownMenuItemPrimitive>
                 <IGRPDropdownMenuItemPrimitive onClick={() => onEdit(menu)}>
-                  <IGRPIcon iconName="Pencil" className="size-4 mr-2" strokeWidth={2} />
+                  <IGRPIcon
+                    iconName="Pencil"
+                    className="size-4 mr-2"
+                    strokeWidth={2}
+                  />
                   Editar
                 </IGRPDropdownMenuItemPrimitive>
 
-                {menu.type === 'GROUP' && (
-                  <IGRPDropdownMenuItemPrimitive onClick={() => onAddChild?.(menu)} >
+                {menu.type === "GROUP" && (
+                  <IGRPDropdownMenuItemPrimitive
+                    onClick={() => onAddChild?.(menu)}
+                  >
                     <IGRPIcon iconName="FolderPlus" className="size-4 mr-2" />
                     Adicionar Pasta
                   </IGRPDropdownMenuItemPrimitive>
                 )}
 
-                {menu.type === 'FOLDER' && (
+                {menu.type === "FOLDER" && (
                   <>
-                    <IGRPDropdownMenuItemPrimitive onClick={() => onAddInternalPage?.(menu)}>
+                    <IGRPDropdownMenuItemPrimitive
+                      onClick={() => onAddInternalPage?.(menu)}
+                    >
                       <IGRPIcon iconName="FileText" className="size-4 mr-2" />
                       Adicionar Página Interna
                     </IGRPDropdownMenuItemPrimitive>
 
-                    <IGRPDropdownMenuItemPrimitive onClick={() => onAddExternalPage?.(menu)}>
-                      <IGRPIcon iconName="ExternalLink" className="size-4 mr-2" />
+                    <IGRPDropdownMenuItemPrimitive
+                      onClick={() => onAddExternalPage?.(menu)}
+                    >
+                      <IGRPIcon
+                        iconName="ExternalLink"
+                        className="size-4 mr-2"
+                      />
                       Adicionar Página Externa
                     </IGRPDropdownMenuItemPrimitive>
                   </>
@@ -207,10 +240,13 @@ export function SortableMenuItem({
                   variant="destructive"
                   onClick={() => onDelete?.(menu.code, menu.name)}
                 >
-                  <IGRPIcon iconName="Trash" className="size-4 mr-2" strokeWidth={2} />
+                  <IGRPIcon
+                    iconName="Trash"
+                    className="size-4 mr-2"
+                    strokeWidth={2}
+                  />
                   Eliminar
                 </IGRPDropdownMenuItemPrimitive>
-
               </IGRPDropdownMenuContentPrimitive>
             </IGRPDropdownMenuPrimitive>
           </div>

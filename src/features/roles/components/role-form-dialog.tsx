@@ -35,7 +35,10 @@ import {
   type UpdateRoleArgs,
   updateRoleSchema,
 } from "../role-schemas";
-import { useCreateRole, useUpdateRole } from "../use-roles";
+import {
+  useCreateRole,
+  useUpdateRole,
+} from "@/features/departments/use-departments";
 
 interface RoleFormDialogProps {
   open: boolean;
@@ -105,7 +108,11 @@ export function RoleFormDialog({
 
         const payload = normalizeRole(parsed as RoleArgs);
 
-        await updateRole({ name: role.name, data: payload });
+        await updateRole({
+          departmentCode: role.departmentCode,
+          roleCode: role.code,
+          role: payload,
+        });
 
         igrpToast({
           type: "success",
@@ -114,7 +121,7 @@ export function RoleFormDialog({
         });
       } else {
         const payload = normalizeRole(values);
-        await createRole(payload);
+        await createRole({ departmentCode, role: payload });
 
         igrpToast({
           type: "success",
@@ -202,7 +209,7 @@ export function RoleFormDialog({
                       placeholder="CODIGO_ROLE"
                       required
                       pattern="^[A-Z0-9_]+$"
-                      disabled={isLoading}
+                      disabled={isLoading || isEdit}
                       className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                       {...field}
                     />
@@ -257,7 +264,7 @@ export function RoleFormDialog({
                 )}
               />
             )}
-            
+
             <IGRPFormFieldPrimitive
               control={form.control}
               name="status"

@@ -32,16 +32,20 @@ import { ButtonLink } from "@/components/button-link";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { getStatusColor, showStatus } from "@/lib/utils";
 import type { PermissionArgs } from "../permissions-schemas";
-import { usePermissionsbyName } from "../use-permission";
-import { PermissionDeleteDialog } from "./permisssion-delete-dialog";
-import { PermissionFormDialog } from "./permisssion-form-dialog";
-import { useResources } from "@/features/resources/use-resources";
+// import { PermissionDeleteDialog } from "./permisssion-delete-dialog";
+// import { PermissionFormDialog } from "./permisssion-form-dialog";
+import { ManageResourcesModal } from "./resource-manage-modal";
+import {
+  useDepartmentPermissions,
+  useDepartmentResources,
+} from "@/features/departments/use-departments";
 
 interface PermissionListProps {
   departmentCode: string;
 }
 
 export function PermissionList({ departmentCode }: PermissionListProps) {
+  const [openManageResources, setOpenManageResources] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [openFormDialog, setOpenFormDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -53,15 +57,12 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   );
 
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [resourceSelected, setResourceSelected] = useState<string>("");
-
-  const { data: resources, isLoading: resourcesLoading } = useResources();
 
   const {
     data: permissions,
     isLoading,
     error,
-  } = usePermissionsbyName({ resourceName: resourceSelected });
+  } = useDepartmentPermissions(departmentCode);
 
   if (error) {
     return (
@@ -88,7 +89,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
     setOpenDeleteDialog(true);
   };
 
-  const handleEdit = (permission: PermissionArgs) => {
+  const handleEdit = (permission: any) => {
     setSelectedPermission(permission);
     setOpenFormDialog(true);
   };
@@ -111,16 +112,21 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 Gerir e reorganizar os permissões.
               </div>
             </div>
-            {resourceSelected && !permissionEmpty && (
-              <div className="flex justify-end shrink-0">
-                <ButtonLink
+            <div className="flex justify-end shrink-0">
+              <ButtonLink
+                onClick={() => setOpenManageResources(true)}
+                icon="Shield"
+                href="#"
+                label="Gerenciar Recursos"
+                variant="outline"
+              />
+              {/* {!permissionEmpty && (<ButtonLink
                   onClick={handleNewpermssion}
                   icon="UserLock"
                   href="#"
                   label="Nova Permissão"
-                />
-              </div>
-            )}
+                /> )} */}
+            </div>
           </div>
         </div>
 
@@ -139,92 +145,59 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <IGRPSelectPrimitive
-              value={resourceSelected}
-              onValueChange={setResourceSelected}
-              disabled={resourcesLoading}
-            >
-              <IGRPSelectTriggerPrimitive className="w-[250px]">
-                <IGRPSelectValuePrimitive placeholder="Selecione um recurso" />
-              </IGRPSelectTriggerPrimitive>
-              <IGRPSelectContentPrimitive>
-                {resources?.map((resource) => (
-                  <IGRPSelectItemPrimitive
-                    key={resource.id}
-                    value={resource.name}
+            <>
+              <div className="flex flex-wrap gap-2 flex-shirnk-0">
+                <IGRPDropdownMenuPrimitive>
+                  <IGRPDropdownMenuTriggerPrimitive asChild>
+                    <IGRPButtonPrimitive variant="outline" className="gap-2">
+                      <IGRPIcon iconName="ListFilter" strokeWidth={2} />
+                      Estado{" "}
+                      {statusFilter.length > 0 && `(${statusFilter.length})`}
+                    </IGRPButtonPrimitive>
+                  </IGRPDropdownMenuTriggerPrimitive>
+                  <IGRPDropdownMenuContentPrimitive
+                    align="start"
+                    className="w-40"
                   >
-                    {resource.name}
-                  </IGRPSelectItemPrimitive>
-                ))}
-              </IGRPSelectContentPrimitive>
-            </IGRPSelectPrimitive>
-
-            {resourceSelected && (
-              <>
-                <div className="flex flex-wrap gap-2 flex-shirnk-0">
-                  <IGRPDropdownMenuPrimitive>
-                    <IGRPDropdownMenuTriggerPrimitive asChild>
-                      <IGRPButtonPrimitive variant="outline" className="gap-2">
-                        <IGRPIcon iconName="ListFilter" strokeWidth={2} />
-                        Estado{" "}
-                        {statusFilter.length > 0 && `(${statusFilter.length})`}
-                      </IGRPButtonPrimitive>
-                    </IGRPDropdownMenuTriggerPrimitive>
-                    <IGRPDropdownMenuContentPrimitive
-                      align="start"
-                      className="w-40"
-                    >
-                      <IGRPDropdownMenuSeparatorPrimitive />
-                      {STATUS_OPTIONS.map(({ value, label }) => (
-                        <IGRPDropdownMenuCheckboxItemPrimitive
-                          key={value}
-                          checked={statusFilter.includes(value)}
-                          onCheckedChange={(checked) => {
-                            setStatusFilter(
-                              checked
-                                ? [...statusFilter, value]
-                                : statusFilter.filter((s) => s !== value),
-                            );
-                          }}
+                    <IGRPDropdownMenuSeparatorPrimitive />
+                    {STATUS_OPTIONS.map(({ value, label }) => (
+                      <IGRPDropdownMenuCheckboxItemPrimitive
+                        key={value}
+                        checked={statusFilter.includes(value)}
+                        onCheckedChange={(checked) => {
+                          setStatusFilter(
+                            checked
+                              ? [...statusFilter, value]
+                              : statusFilter.filter((s) => s !== value),
+                          );
+                        }}
+                      >
+                        {label}
+                      </IGRPDropdownMenuCheckboxItemPrimitive>
+                    ))}
+                    {statusFilter.length > 0 && (
+                      <>
+                        <IGRPDropdownMenuSeparatorPrimitive />
+                        <IGRPDropdownMenuItemPrimitive
+                          onClick={() => setStatusFilter([])}
+                          className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
                         >
-                          {label}
-                        </IGRPDropdownMenuCheckboxItemPrimitive>
-                      ))}
-                      {statusFilter.length > 0 && (
-                        <>
-                          <IGRPDropdownMenuSeparatorPrimitive />
-                          <IGRPDropdownMenuItemPrimitive
-                            onClick={() => setStatusFilter([])}
-                            className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                          >
-                            <IGRPIcon
-                              iconName="X"
-                              className="mr-1"
-                              strokeWidth={2}
-                            />
-                            Limpar
-                          </IGRPDropdownMenuItemPrimitive>
-                        </>
-                      )}
-                    </IGRPDropdownMenuContentPrimitive>
-                  </IGRPDropdownMenuPrimitive>
-                </div>
-              </>
-            )}
+                          <IGRPIcon
+                            iconName="X"
+                            className="mr-1"
+                            strokeWidth={2}
+                          />
+                          Limpar
+                        </IGRPDropdownMenuItemPrimitive>
+                      </>
+                    )}
+                  </IGRPDropdownMenuContentPrimitive>
+                </IGRPDropdownMenuPrimitive>
+              </div>
+            </>
           </div>
 
-          {!resourceSelected ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <IGRPIcon
-                iconName="ListFilter"
-                className="size-12 mx-auto mb-4 opacity-50"
-              />
-              <p className="text-lg font-medium">Selecione um recurso</p>
-              <p className="text-sm">
-                Escolha um recurso para visualizar as permissões
-              </p>
-            </div>
-          ) : isLoading ? (
+          {isLoading ? (
             <div className="grid gap-4 animate-pulse">
               {Array.from({ length: 5 }).map((_, i) => (
                 <IGRPSkeletonPrimitive
@@ -239,13 +212,14 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
               {searchTerm ? (
                 "Tente ajustar a sua pesquisa."
               ) : (
-                <ButtonLink
-                  onClick={handleNewpermssion}
-                  icon="UserLock"
-                  href="#"
-                  label="Nova Permissão"
-                  variant="outline"
-                />
+                <> </>
+                // <ButtonLink
+                //   onClick={handleNewpermssion}
+                //   icon="UserLock"
+                //   href="#"
+                //   label="Nova Permissão"
+                //   variant="outline"
+                // />
               )}
             </div>
           ) : (
@@ -343,20 +317,26 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         </div>
       </div>
 
-      <PermissionFormDialog
+      {/* <PermissionFormDialog
         open={openFormDialog}
         onOpenChange={setOpenFormDialog}
         departmentCode={departmentCode}
         permission={selectedPermission}
-      />
-
+      /> */}
+      {/* 
       {permissionToDelete && (
         <PermissionDeleteDialog
           open={openDeleteDialog}
           onOpenChange={setOpenDeleteDialog}
           permissionToDelete={permissionToDelete}
         />
-      )}
+      )} */}
+
+      <ManageResourcesModal
+        departmentCode={departmentCode}
+        open={openManageResources}
+        onOpenChange={setOpenManageResources}
+      />
     </>
   );
 }

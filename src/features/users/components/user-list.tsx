@@ -43,7 +43,7 @@ export function UserList() {
 
   const { data: users, isLoading, error } = useUsers();
   const { data: currentUser } = useCurrentUser();
-  
+
   useEffect(() => {
     setData(users ?? []);
   }, [users]);
@@ -116,23 +116,21 @@ export function UserList() {
       <IGRPDropdownMenuPrimitive>
         {!isCurrentUser(email) && state === "ACTIVE" && (
           <>
-        <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
-          <IGRPIcon iconName="Ellipsis" />
-        </IGRPDropdownMenuTriggerPrimitive>
+            <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
+              <IGRPIcon iconName="Ellipsis" />
+            </IGRPDropdownMenuTriggerPrimitive>
 
-        <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
-          
-            <IGRPDropdownMenuItemPrimitive
-              className="text-destructive focus:text-destructive"
-              onSelect={() => handleDelete(row.original)}
-              variant="destructive"
-            >
-              <IGRPIcon iconName="CircleOff" />
-              Desativar
-            </IGRPDropdownMenuItemPrimitive>
-          
-        </IGRPDropdownMenuContentPrimitive>
-        </>
+            <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
+              <IGRPDropdownMenuItemPrimitive
+                className="text-destructive focus:text-destructive"
+                onSelect={() => handleDelete(row.original)}
+                variant="destructive"
+              >
+                <IGRPIcon iconName="CircleOff" />
+                Desativar
+              </IGRPDropdownMenuItemPrimitive>
+            </IGRPDropdownMenuContentPrimitive>
+          </>
         )}
       </IGRPDropdownMenuPrimitive>
     );

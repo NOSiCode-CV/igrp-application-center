@@ -19,7 +19,6 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
-import { IGRPApplicationArgs } from "@igrp/framework-next-types";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -29,20 +28,24 @@ import {
   appTypeCrud,
   normalizeApplication,
 } from "@/features/applications/app-schemas";
-import { 
-  useCreateApplication, 
-  useUpdateApplication 
+import {
+  useCreateApplication,
+  useUpdateApplication,
 } from "@/features/applications/use-applications";
 import { useUsers } from "@/features/users/use-users";
 import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
+import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 interface ApplicationFormProps {
-  application?: IGRPApplicationArgs;
+  application?: ApplicationDTO;
   onSuccess: () => void;
 }
 
-export function ApplicationForm({ application, onSuccess }: ApplicationFormProps) {
+export function ApplicationForm({
+  application,
+  onSuccess,
+}: ApplicationFormProps) {
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const { data: users } = useUsers();
@@ -112,7 +115,8 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
       igrpToast({
         type: "error",
         title: isEdit ? "Erro ao atualizar" : "Erro ao criar",
-        description: error instanceof Error ? error.message : "Erro desconhecido",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
       });
     }
   };
@@ -120,7 +124,7 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
   return (
     <IGRPFormPrimitive {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ScrollArea className="max-h-[calc(80vh-120px)] w-full pr-4">
+        <ScrollArea className="h-96 w-full">
           <div className="space-y-4">
             <IGRPFormFieldPrimitive
               control={form.control}
@@ -154,7 +158,9 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
                       disabled={isEdit}
                       onChange={(e) => {
                         if (!isEdit) {
-                          const v = e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "");
+                          const v = e.target.value
+                            .toUpperCase()
+                            .replace(/[^A-Z0-9_]/g, "");
                           field.onChange(v);
                         }
                       }}
@@ -171,7 +177,10 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
                   <IGRPFormLabelPrimitive>Proprietário</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive onValueChange={field.onChange} value={field.value}>
+                  <IGRPSelectPrimitive
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
                     <IGRPFormControlPrimitive className="w-full">
                       <IGRPSelectTriggerPrimitive>
                         <IGRPSelectValuePrimitive placeholder="Selecione" />
@@ -179,7 +188,10 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
                     </IGRPFormControlPrimitive>
                     <IGRPSelectContentPrimitive>
                       {users?.map((user) => (
-                        <IGRPSelectItemPrimitive key={user.name} value={user.name}>
+                        <IGRPSelectItemPrimitive
+                          key={user.name}
+                          value={user.name}
+                        >
                           {user.name}
                         </IGRPSelectItemPrimitive>
                       ))}
@@ -214,7 +226,10 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
                     </IGRPFormControlPrimitive>
                     <IGRPSelectContentPrimitive>
                       {APPLICATIONS_TYPES_FILTERED.map((opt) => (
-                        <IGRPSelectItemPrimitive key={opt.value} value={opt.value}>
+                        <IGRPSelectItemPrimitive
+                          key={opt.value}
+                          value={opt.value}
+                        >
                           {opt.label}
                         </IGRPSelectItemPrimitive>
                       ))}
@@ -233,7 +248,10 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
                   <IGRPFormItemPrimitive>
                     <IGRPFormLabelPrimitive>Slug</IGRPFormLabelPrimitive>
                     <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive {...field} value={field.value || ""} />
+                      <IGRPInputPrimitive
+                        {...field}
+                        value={field.value || ""}
+                      />
                     </IGRPFormControlPrimitive>
                     <IGRPFormMessagePrimitive />
                   </IGRPFormItemPrimitive>
@@ -249,7 +267,10 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
                   <IGRPFormItemPrimitive>
                     <IGRPFormLabelPrimitive>URL</IGRPFormLabelPrimitive>
                     <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive {...field} value={field.value || ""} />
+                      <IGRPInputPrimitive
+                        {...field}
+                        value={field.value || ""}
+                      />
                     </IGRPFormControlPrimitive>
                     <IGRPFormMessagePrimitive />
                   </IGRPFormItemPrimitive>
@@ -264,7 +285,11 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
                 <IGRPFormItemPrimitive>
                   <IGRPFormLabelPrimitive>Descrição</IGRPFormLabelPrimitive>
                   <IGRPFormControlPrimitive>
-                    <IGRPTextAreaPrimitive {...field} value={field.value || ""} rows={3} />
+                    <IGRPTextAreaPrimitive
+                      {...field}
+                      value={field.value || ""}
+                      rows={3}
+                    />
                   </IGRPFormControlPrimitive>
                   <IGRPFormMessagePrimitive />
                 </IGRPFormItemPrimitive>
@@ -277,7 +302,10 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
                   <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive onValueChange={field.onChange} value={field.value}>
+                  <IGRPSelectPrimitive
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
                     <IGRPFormControlPrimitive>
                       <IGRPSelectTriggerPrimitive className="w-full">
                         <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
@@ -285,7 +313,10 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
                     </IGRPFormControlPrimitive>
                     <IGRPSelectContentPrimitive>
                       {STATUS_OPTIONS.map((status) => (
-                        <IGRPSelectItemPrimitive key={status.value} value={status.value}>
+                        <IGRPSelectItemPrimitive
+                          key={status.value}
+                          value={status.value}
+                        >
                           {status.label}
                         </IGRPSelectItemPrimitive>
                       ))}
@@ -299,10 +330,21 @@ export function ApplicationForm({ application, onSuccess }: ApplicationFormProps
         </ScrollArea>
 
         <div className="flex justify-end gap-2 pt-4">
-          <IGRPButton type="button" showIcon iconName="X" variant="outline" onClick={onSuccess}>
+          <IGRPButton
+            type="button"
+            showIcon
+            iconName="X"
+            variant="outline"
+            onClick={onSuccess}
+          >
             Cancelar
           </IGRPButton>
-          <IGRPButton type="submit" showIcon iconName="Save" disabled={form.formState.isSubmitting}>
+          <IGRPButton
+            type="submit"
+            showIcon
+            iconName="Save"
+            disabled={form.formState.isSubmitting}
+          >
             {form.formState.isSubmitting ? "Guardando..." : "Guardar"}
           </IGRPButton>
         </div>

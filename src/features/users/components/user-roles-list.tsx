@@ -15,8 +15,16 @@ interface RolesListProps {
 export function UserRolesList({ id }: RolesListProps) {
   const { data, isLoading, isError } = useUserRoles(id);
 
-  if (isLoading) return <div className="p-6 text-center text-muted-foreground">Carregando...</div>;
-  if (isError) return <div className="p-6 text-center text-destructive">Erro ao carregar perfis</div>;
+  if (isLoading)
+    return (
+      <div className="p-6 text-center text-muted-foreground">Carregando...</div>
+    );
+  if (isError)
+    return (
+      <div className="p-6 text-center text-destructive">
+        Erro ao carregar perfis
+      </div>
+    );
 
   const roles = data ?? [];
 
@@ -26,7 +34,9 @@ export function UserRolesList({ id }: RolesListProps) {
         <IGRPIcon iconName="AlertCircle" className="h-5 w-5 shrink-0" />
         <div>
           <p className="text-sm font-medium">Sem perfis atribuídos</p>
-          <p className="text-xs">Este utilizador ainda não tem perfis atribuídos.</p>
+          <p className="text-xs">
+            Este utilizador ainda não tem perfis atribuídos.
+          </p>
         </div>
       </div>
     );

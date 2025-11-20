@@ -17,21 +17,23 @@ export async function getFileUrl(path: string) {
 }
 
 export async function uploadPublicFile(
-  formData: FormData,
-  options: UploadFileOptions
+  file: File | Blob,
+  options: UploadFileOptions,
 ) {
   const client = await getClientAccess();
   const headersList = await headers();
-  const contentType = headersList.get('content-type') ?? '';
-  
-  const file = formData.get('file') as File | Blob;
-  
+  const contentType = headersList.get("content-type") ?? "";
+
   if (!file) {
-    throw new Error('Nenhum arquivo encontrado');
+    throw new Error("Nenhum arquivo encontrado");
   }
-  
+
   try {
-    const result = await client.files.uploadPublicFile(file, options, contentType);
+    const result = await client.files.uploadPublicFile(
+      file,
+      options,
+      contentType,
+    );
     return result.data;
   } catch (error) {
     console.error(
@@ -41,7 +43,6 @@ export async function uploadPublicFile(
     throw error;
   }
 }
-
 
 export async function uploadPrivateFile(
   file: File | Blob,

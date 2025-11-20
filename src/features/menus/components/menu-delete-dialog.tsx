@@ -1,5 +1,6 @@
 "use client";
 
+import { useDeleteMenu } from "@/features/applications/use-applications";
 import {
   IGRPButton,
   IGRPButtonPrimitive,
@@ -15,15 +16,16 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { useDeleteMenu } from "../use-menus";
 
 interface MenuDeleteDialogProps {
+  appCode: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   menuToDelete: { code: string; name: string };
 }
 
 export function MenuDeleteDialog({
+  appCode,
   open,
   onOpenChange,
   menuToDelete,
@@ -37,7 +39,7 @@ export function MenuDeleteDialog({
 
   async function confirmDelete() {
     try {
-      await deleteMenuAsync(menuToDelete.code);
+      await deleteMenuAsync({ appCode: appCode, menuCode: menuToDelete.code });
 
       igrpToast({
         type: "success",

@@ -75,35 +75,43 @@ export function showStatus(status: string) {
   return STATUS_OPTIONS.find((s) => s.value === status)?.label;
 }
 
-
- export const getMenuIcon = (type: string) => {
-    switch (type) {
-      case "FOLDER":
-        return "Folder";
-      case "EXTERNAL_PAGE":
-        return "ExternalLink";
-      case "MENU_PAGE":
-        return "FileText";
-      default:
-        return "FileText";
-    }
-  };
+export const getMenuIcon = (type: string) => {
+  switch (type) {
+    case "FOLDER":
+      return "Folder";
+    case "EXTERNAL_PAGE":
+      return "ExternalLink";
+    case "MENU_PAGE":
+      return "FileText";
+    default:
+      return "FileText";
+  }
+};
 
 export function extractApiError(error: any): string {
-  console.log("eoror - ", error)
   if (error?.details) {
     try {
       const parsed = JSON.parse(error.details);
-      return parsed.details || parsed.title || getDefaultErrorMessage(error.status);
+
+      if (parsed.errors) {
+        const errorMessages = Object.values(parsed.errors).join(", ");
+        return errorMessages;
+      }
+
+      if (parsed.details) {
+        return parsed.details;
+      }
+
+      return parsed.title || getDefaultErrorMessage(error.status);
     } catch {
       return error.details;
     }
   }
-  
+
   if (error?.status) {
     return getDefaultErrorMessage(error.status);
   }
-  
+
   return error?.message || "Erro desconhecido";
 }
 

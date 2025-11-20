@@ -54,9 +54,10 @@ export function MenuTypeSelector({
           disabled={disabled}
           className={`
             text-left rounded-lg border-2 p-0 transition-all
-            ${value === type.value
-              ? "border-primary ring-2 ring-primary/20"
-              : "border-transparent hover:border-primary/50"
+            ${
+              value === type.value
+                ? "border-primary ring-2 ring-primary/20"
+                : "border-transparent hover:border-primary/50"
             }
             ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
           `}
