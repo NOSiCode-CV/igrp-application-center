@@ -22,12 +22,11 @@ import { formatSlug } from "@/features/applications/app-utils";
 import { ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
-import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { ApplicationDTO, ApplicationType } from "@igrp/platform-access-management-client-ts";
 
 export function ApplicationCard({ app }: { app: ApplicationDTO }) {
-  const { name, code, status, description, slug, url } = app;
+  const { name, code, status, description, slug, url, type } = app;
   const href = slug ? formatSlug(slug) : url;
-  const appImage = app.picture;
   const [open, setOpen] = useState(false);
 
   return (
@@ -81,7 +80,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
             btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
           />
 
-          <IGRPTooltipProviderPrimitive>
+          {type !== "SYSTEM" as ApplicationType && <IGRPTooltipProviderPrimitive>
             <IGRPTooltipPrimitive>
               <IGRPTooltipTriggerPrimitive asChild>
                 <IGRPButtonPrimitive
@@ -95,7 +94,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
               </IGRPTooltipTriggerPrimitive>
               <IGRPTooltipContentPrimitive>Editar</IGRPTooltipContentPrimitive>
             </IGRPTooltipPrimitive>
-          </IGRPTooltipProviderPrimitive>
+          </IGRPTooltipProviderPrimitive>}
 
           <ButtonLinkTooltip
             href={href || ""}

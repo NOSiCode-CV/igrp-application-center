@@ -12,6 +12,7 @@ import { UserRolesDialog } from "./user-role-dialog";
 import { AppCenterLoading } from "@/components/loading";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
+  console.log("user  - ", user)
   const { igrpToast } = useIGRPToast();
   const { data: userRoles, isLoading } = useUserRoles(user.id);
   const {

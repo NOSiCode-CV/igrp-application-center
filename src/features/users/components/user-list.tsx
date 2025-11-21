@@ -30,6 +30,7 @@ import { useCurrentUser, useUsers } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { cn, getInitials, getStatusColor, showStatus } from "@/lib/utils";
 import { UserDeleteDialog } from "./user-delete-dialog";
+import Link from "next/link";
 
 export function UserList() {
   const [data, setData] = useState<IGRPUserDTO[]>([]);
@@ -128,6 +129,15 @@ export function UserList() {
               >
                 <IGRPIcon iconName="CircleOff" />
                 Desativar
+              </IGRPDropdownMenuItemPrimitive>
+               <IGRPDropdownMenuItemPrimitive
+                className=""
+                variant="default"
+              >
+                <Link className="flex gap-2" href={`/users/${row.original.id}`}>
+                <IGRPIcon iconName="UserCog" />
+                Gerir
+                </Link>
               </IGRPDropdownMenuItemPrimitive>
             </IGRPDropdownMenuContentPrimitive>
           </>

@@ -142,3 +142,40 @@ export async function getCurrentUserApplications() {
     throw new Error(extractApiError(error));
   }
 }
+
+
+export async function getUserApplications(id: number) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getUserApplications(id);
+    return result.data;
+  } catch (error) {
+    console.error("[user-delete] Erro ao eliminar utilizador:", error);
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function getUserDepartments(id: number) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getUserDepartments(id);
+    return result.data;
+  } catch (error) {
+    console.error("[user-delete] Erro ao eliminar utilizador:", error);
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function getUser(id: number) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getUser(id);
+    return result.data;
+  } catch (error) {
+    console.error("[user-delete] Erro ao eliminar utilizador:", error);
+    throw new Error(extractApiError(error));
+  }
+}

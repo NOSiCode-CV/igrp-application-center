@@ -290,13 +290,13 @@ export function MenuFormDialog({
         form.setValue("target", undefined as any);
       }
 
-      if (type === menuTypeSchema.enum.MENU_PAGE) {
-        form.setValue("url", undefined as any);
-      }
+      // if (type === menuTypeSchema.enum.MENU_PAGE) {
+      //   form.setValue("url", undefined as any);
+      // }
 
-      if (type === menuTypeSchema.enum.EXTERNAL_PAGE) {
-        form.setValue("pageSlug", undefined as any);
-      }
+      // if (type === menuTypeSchema.enum.EXTERNAL_PAGE) {
+      //   form.setValue("pageSlug", undefined as any);
+      // }
     }
 
     setStep("form");
@@ -628,6 +628,7 @@ export function MenuFormDialog({
                                       {...field}
                                       value={field.value ?? ""}
                                       disabled={openType === "view"}
+                                      
                                     />
                                   </IGRPFormControlPrimitive>
                                   <IGRPFormMessagePrimitive />

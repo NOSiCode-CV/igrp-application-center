@@ -15,6 +15,9 @@ import {
   getCurrentUser,
   getCurrentUserApplications,
   getCurrentUserDepartments,
+  getUser,
+  getUserApplications,
+  getUserDepartments,
   getUserRoles,
   getUsers,
   inviteUser,
@@ -136,3 +139,27 @@ export const useCurrentUserApplications = () => {
     queryFn: async () => getCurrentUserApplications(),
   });
 };
+
+export function useUserApplications(userId: number) {
+  return useQuery({
+    queryKey: ['user-applications', userId],
+    queryFn: () => getUserApplications(userId),
+    enabled: !!userId,
+  });
+}
+
+export function useUserDepartments(userId: number) {
+  return useQuery({
+    queryKey: ['user-departments', userId],
+    queryFn: () => getUserDepartments(userId),
+    enabled: !!userId,
+  });
+}
+
+export function useUser(userId: number) {
+  return useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => getUser(userId),
+    enabled: !!userId,
+  });
+}
