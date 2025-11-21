@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  IGRPButtonPrimitive,
   IGRPIcon,
   IGRPUserAvatar,
   useIGRPToast,
@@ -13,7 +12,6 @@ import {
   IGRPButton,
   IGRPCardPrimitive,
   IGRPCardContentPrimitive,
-  IGRPSeparatorPrimitive,
   cn,
   IGRPTabItem,
   IGRPTabs,
@@ -21,7 +19,7 @@ import {
 import { useState, useRef, useEffect } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import { useCurrentUser } from "@/features/users/use-users";
+import { useCurrentUser, useUpdateUser } from "@/features/users/use-users";
 import { ROUTES } from "@/lib/constants";
 import { getInitials } from "@/lib/utils";
 import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
@@ -31,12 +29,11 @@ import UserSignature from "./user-signature";
 import UserRoleList from "./user-role-list";
 import { useQueryClient } from "@tanstack/react-query";
 import UserApplications from "./user-applications";
-import DepartmentTreeItemSimple from "@/features/departments/components/dept-list-simple-tree";
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
 
 export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
-
+  const { mutateAsync: updateUser } = useUpdateUser();
   const { igrpToast } = useIGRPToast();
   const queryClient = useQueryClient();
 
@@ -50,7 +47,9 @@ export function UserProfile() {
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-  const { data: avatarUrl } = useFiles(uploadedAvatarPath || "");
+  const { data: avatarUrl, isLoading: isLoadingFile } = useFiles(
+    user?.picture || uploadedAvatarPath || "",
+  );
 
   useEffect(() => {
     if (avatarUrl) {
@@ -87,6 +86,15 @@ export function UserProfile() {
       });
 
       setUploadedAvatarPath(result);
+
+      await updateUser({
+        id: user.id,
+        user: {
+          ...user,
+          picture: result,
+        },
+      });
+
       refetch();
       igrpToast({
         type: "success",
@@ -103,7 +111,7 @@ export function UserProfile() {
     }
   };
 
-  const currentAvatarUrl = avatarPreview || user.picture || null;
+  const currentAvatarUrl = avatarPreview || avatarUrl?.url || null;
 
   const tabs: IGRPTabItem[] = [
     {
@@ -176,17 +184,32 @@ export function UserProfile() {
                 <IGRPUserAvatar
                   alt={user.name}
                   image={currentAvatarUrl}
-                  fallbackContent={getInitials(user.name)}
+                  fallbackContent={
+                    isLoadingFile ? (
+                      <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
+                        <IGRPIcon
+                          iconName="LoaderCircle"
+                          className="w-8 h-8 text-muted-foreground animate-spin"
+                        />
+                      </div>
+                    ) : (
+                      getInitials(user.name)
+                    )
+                  }
                   className="relative size-28 bg-background border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105"
                   fallbackClass="text-3xl"
                 />
 
                 <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
                   <IGRPIcon
-                    iconName={uploadFile.isPending ? "LoaderCircle" : "Camera"}
+                    iconName={
+                      isLoadingFile || uploadFile.isPending
+                        ? "LoaderCircle"
+                        : "Camera"
+                    }
                     className={cn(
                       "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      uploadFile.isPending && "animate-spin",
+                      isLoadingFile || (uploadFile.isPending && "animate-spin"),
                     )}
                   />
                 </div>

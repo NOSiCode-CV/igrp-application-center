@@ -23,7 +23,10 @@ import { useState, useRef, useEffect } from "react";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import { useApplicationByCode } from "@/features/applications/use-applications";
+import {
+  useApplicationByCode,
+  useUpdateApplication,
+} from "@/features/applications/use-applications";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { getStatusColor } from "@/lib/utils";
 import { BackButton } from "@/components/back-button";
@@ -37,11 +40,15 @@ export function ApplicationDetails({ code }: { code: string }) {
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const { mutateAsync: updateApplication } = useUpdateApplication();
+
   const uploadPicture = useUploadPublicFiles();
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const { data: fileUrl } = useFiles(uploadedFilePath || "");
+  const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
+    app?.picture || uploadedFilePath || "",
+  );
 
   useEffect(() => {
     if (fileUrl) {
@@ -69,9 +76,6 @@ export function ApplicationDetails({ code }: { code: string }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // const formData = new FormData();
-    // formData.append("file", file);
-
     try {
       const result = await uploadPicture.mutateAsync({
         file,
@@ -81,6 +85,15 @@ export function ApplicationDetails({ code }: { code: string }) {
       });
 
       setUploadedFilePath(result);
+
+      await updateApplication({
+        code: app.code,
+        data: {
+          ...app,
+          picture: result,
+        },
+      });
+
       refetch();
       igrpToast({
         type: "success",
@@ -99,7 +112,7 @@ export function ApplicationDetails({ code }: { code: string }) {
     }
   };
 
-  const pictureUrl = previewUrl || app.picture || null;
+  const pictureUrl = previewUrl || fileUrl?.url || null;
 
   return (
     <section className="flex flex-col gap-6">
@@ -143,6 +156,13 @@ export function ApplicationDetails({ code }: { code: string }) {
                       src={pictureUrl}
                       alt={app.name}
                     />
+                  ) : isLoadingFile ? (
+                    <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
+                      <IGRPIcon
+                        iconName="LoaderCircle"
+                        className="w-8 h-8 text-muted-foreground animate-spin"
+                      />
+                    </div>
                   ) : (
                     <IGRPUserAvatarFallbackPrimitive className="text-3xl bg-primary/10">
                       <IGRPIcon
@@ -156,11 +176,14 @@ export function ApplicationDetails({ code }: { code: string }) {
                 <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
                   <IGRPIcon
                     iconName={
-                      uploadPicture.isPending ? "LoaderCircle" : "Camera"
+                      isLoadingFile || uploadPicture.isPending
+                        ? "LoaderCircle"
+                        : "Camera"
                     }
                     className={cn(
                       "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      uploadPicture.isPending && "animate-spin",
+                      isLoadingFile ||
+                        (uploadPicture.isPending && "animate-spin"),
                     )}
                   />
                 </div>

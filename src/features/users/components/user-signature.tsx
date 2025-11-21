@@ -8,6 +8,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import React, { useEffect, useRef, useState } from "react";
+import { useUpdateUser } from "../use-users";
 
 export default function UserSignature({
   user,
@@ -17,13 +18,16 @@ export default function UserSignature({
   refetch: any;
 }) {
   const { igrpToast } = useIGRPToast();
+  const { mutateAsync: updateUser } = useUpdateUser();
 
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
   const [uploadedSignaturePath, setUploadedSignaturePath] = useState<
     string | null
   >(null);
 
-  const { data: signatureUrl } = useFiles(uploadedSignaturePath || "");
+  const { data: signatureUrl, isLoading: isLoadingFile } = useFiles(
+    user?.signature || uploadedSignaturePath || "",
+  );
 
   const uploadFile = useUploadPublicFiles();
   const signatureInputRef = useRef<HTMLInputElement>(null);
@@ -34,9 +38,6 @@ export default function UserSignature({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // const formData = new FormData();
-    // formData.append("file", file);
-
     try {
       const result = await uploadFile.mutateAsync({
         file,
@@ -46,6 +47,14 @@ export default function UserSignature({
       });
 
       setUploadedSignaturePath(result);
+      await updateUser({
+        id: user.id,
+        user: {
+          ...user,
+          signature: result,
+        },
+      });
+
       refetch();
       igrpToast({
         type: "success",
@@ -69,7 +78,7 @@ export default function UserSignature({
     }
   }, [signatureUrl]);
 
-  const currentSignatureUrl = signaturePreview || user.signature || null;
+  const currentSignatureUrl = signaturePreview || signatureUrl?.url || null;
 
   return (
     <IGRPCardPrimitive>
@@ -107,11 +116,14 @@ export default function UserSignature({
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 rounded-full p-3 shadow-lg">
                     <IGRPIcon
                       iconName={
-                        uploadFile.isPending ? "LoaderCircle" : "Upload"
+                        isLoadingFile || uploadFile.isPending
+                          ? "LoaderCircle"
+                          : "Upload"
                       }
                       className={cn(
                         "w-5 h-5 text-primary",
-                        uploadFile.isPending && "animate-spin",
+                        isLoadingFile ||
+                          (uploadFile.isPending && "animate-spin"),
                       )}
                     />
                   </div>
