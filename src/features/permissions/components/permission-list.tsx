@@ -32,7 +32,9 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   const { igrpToast } = useIGRPToast();
   const [openManageResources, setOpenManageResources] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [processingPermission, setProcessingPermission] = useState<string | null>(null);
+  const [processingPermission, setProcessingPermission] = useState<
+    string | null
+  >(null);
 
   const { data: availablePermissions, isLoading: isLoadingAvailable } =
     useAvailablePermissions(departmentCode);
@@ -70,7 +72,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
     });
 
     return Array.from(permissionsMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name, "pt")
+      a.name.localeCompare(b.name, "pt"),
     );
   }, [availablePermissions, departmentPermissions]);
 
@@ -81,13 +83,13 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
     return allPermissions.filter(
       (perm) =>
         perm.name.toLowerCase().includes(term) ||
-        perm.description?.toLowerCase().includes(term)
+        perm.description?.toLowerCase().includes(term),
     );
   }, [allPermissions, searchTerm]);
 
   const handleTogglePermission = async (
     permissionName: string,
-    isEnabled: boolean
+    isEnabled: boolean,
   ) => {
     setProcessingPermission(permissionName);
     try {
@@ -177,8 +179,12 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 className="w-16 h-16 mb-4 opacity-30"
                 strokeWidth={1.5}
               />
-              <p className="text-lg font-medium mb-2">Nenhuma permissão disponível</p>
-              <p className="text-sm mb-4">Não existem permissões para este departamento.</p>
+              <p className="text-lg font-medium mb-2">
+                Nenhuma permissão disponível
+              </p>
+              <p className="text-sm mb-4">
+                Não existem permissões para este departamento.
+              </p>
             </div>
           ) : (
             <div className="w-full min-w-0">
@@ -223,11 +229,14 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                                 checked={permission.isAssigned}
                                 disabled={processingPermission !== null}
                                 onCheckedChange={(checked) =>
-                                  handleTogglePermission(permission.name, checked)
+                                  handleTogglePermission(
+                                    permission.name,
+                                    checked,
+                                  )
                                 }
                                 className={cn(
                                   "data-[state=checked]:bg-emerald-500",
-                                  isProcessing && "opacity-50"
+                                  isProcessing && "opacity-50",
                                 )}
                               />
                             </div>

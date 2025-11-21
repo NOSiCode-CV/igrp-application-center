@@ -46,12 +46,12 @@ import {
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import type { RoleArgs } from "@/features/roles/role-schemas";
-import { getStatusColor, showStatus } from "@/lib/utils";
 
 import {
   useAddPermissionsToRole,
-  useDepartmentResources,
-  usePermissionsByRoleByCode,
+  useAvailablePermissions,
+  useDepartmentPermissions,
+  usePermissionsByRole,
   useRemovePermissionsFromRole,
 } from "@/features/departments/use-departments";
 import { AppCenterLoading } from "@/components/loading";
@@ -107,19 +107,6 @@ const columns: ColumnDef<any>[] = [
     cell: ({ row }) => <div>{row.getValue("description") || "N/A"}</div>,
     enableSorting: false,
   },
-  {
-    header: "Estado",
-    accessorKey: "status",
-    cell: ({ row }) => (
-      <IGRPBadgePrimitive
-        className={cn(getStatusColor(row.getValue("status")), "capitalize")}
-      >
-        {showStatus(row.getValue("status"))}
-      </IGRPBadgePrimitive>
-    ),
-    size: 40,
-    enableSorting: false,
-  },
 ];
 
 const norm = (s: string) => s.trim().toLowerCase();
@@ -161,30 +148,45 @@ export function RoleDetails({
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
 
-  const [data, setData] = useState<any[]>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const {
-    data: permissions,
-    isLoading,
-    error,
-  } = useDepartmentResources(departmentCode);
+  const { data: availablePermissions, isLoading: isLoadingAvailable } =
+    useAvailablePermissions(departmentCode);
+
+  const { data: departmentPermissions, isLoading: isLoadingDepartment } =
+    useDepartmentPermissions(departmentCode);
 
   const {
     data: permissionByRole,
     isLoading: isLoadingPermissionsByRole,
     error: errorPermissionsByRole,
-  } = usePermissionsByRoleByCode(departmentCode, role.code);
+  } = usePermissionsByRole(departmentCode, role.code);
 
   const { mutateAsync: addPermissions, isPending: isAdding } =
     useAddPermissionsToRole();
   const { mutateAsync: removePermissions, isPending: isRemoving } =
     useRemovePermissionsFromRole();
+
+  const allPermissions = useMemo(() => {
+    const permissionsMap = new Map();
+
+    availablePermissions?.forEach((perm) => {
+      permissionsMap.set(perm.name, perm);
+    });
+
+    departmentPermissions?.forEach((perm) => {
+      permissionsMap.set(perm.name, perm);
+    });
+
+    return Array.from(permissionsMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name, "pt"),
+    );
+  }, [availablePermissions, departmentPermissions]);
 
   const getRowKey = (r: any) => String(r.id ?? r.name);
 
@@ -194,23 +196,18 @@ export function RoleDetails({
   }, [permissionByRole]);
 
   useEffect(() => {
-    setData(permissions ?? []);
-    setRowSelection({});
-  }, [permissions]);
-
-  useEffect(() => {
-    if (!data?.length) return;
+    if (!allPermissions?.length) return;
 
     const next: RowSelectionState = {};
-    for (const row of data) {
+    for (const row of allPermissions) {
       const key = getRowKey(row);
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [data, preselectedKeys]);
+  }, [allPermissions, preselectedKeys]);
 
   const table = useReactTable({
-    data,
+    data: allPermissions,
     columns,
     enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
@@ -238,14 +235,8 @@ export function RoleDetails({
 
   const hasChanges = toAdd.length > 0 || toRemove.length > 0;
 
-  if (error) {
-    return (
-      <div className="rounded-md border py-6">
-        <p className="text-center">Ocorreu um erro ao carregar permissões.</p>
-        <p className="text-center">{error.message}</p>
-      </div>
-    );
-  }
+  const isLoading =
+    isLoadingAvailable || isLoadingDepartment || isLoadingPermissionsByRole;
 
   async function onSubmit() {
     if (!hasChanges) {
@@ -297,7 +288,6 @@ export function RoleDetails({
       type: "error",
       title: "Perfil tem permissões associadas, mas não foram carregadas.",
     });
-    return <AppCenterLoading descrption="Carregando permissões..." />;
   }
 
   return (
@@ -355,7 +345,7 @@ export function RoleDetails({
                   {selectedRows.length} selecionado(s)
                 </IGRPBadgePrimitive>
               </div>
-              {isLoading || isLoadingPermissionsByRole ? (
+              {isLoading ? (
                 <AppCenterLoading descrption="Carregando permissões..." />
               ) : (
                 <>
@@ -540,9 +530,6 @@ export function RoleDetails({
                   disabled={selectedRows.length === 0}
                   onClick={() => setRowSelection({})}
                   size="sm"
-                  // className={
-                  //   selectedRows.length === 0 ? "hidden" : "inline-flex"
-                  // }
                   iconName="Trash"
                   showIcon
                 >

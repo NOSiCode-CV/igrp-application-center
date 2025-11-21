@@ -1,5 +1,7 @@
 import type {
+  ApplicationDTO,
   CreateRoleRequest,
+  DepartmentDTO,
   MenuEntryDTO,
   UpdateDepartmentRequest,
   UpdateRoleRequest,
@@ -18,6 +20,7 @@ import {
   getAvailableApplications,
   getAvailableMenus,
   getAvailablePermissions,
+  getAvailablePermissionsForRole,
   getAvailableResources,
   getDepartmentApplications,
   getDepartmentByCode,
@@ -25,20 +28,19 @@ import {
   getDepartmentPermissions,
   getDepartmentResources,
   getDepartments,
-  getPermissionsByRoleCode,
+  getPermissionsByRole,
   getRoles,
   removeApplicationsFromDepartment,
   removeMenusFromDepartment,
   removePermissionsFromDepartment,
+  removePermissionsFromRole,
   removeResourcesFromDepartment,
   updateDepartment,
   updateRole,
 } from "@/actions/departaments";
-import type { DepartmentArgs } from "./dept-schemas";
-import { ApplicationArgs } from "../applications/app-schemas";
 
 export const useDepartments = () => {
-  return useQuery<DepartmentArgs[]>({
+  return useQuery<DepartmentDTO[]>({
     queryKey: ["departments"],
     queryFn: () => getDepartments(),
   });
@@ -99,7 +101,7 @@ export const useDeleteDepartment = () => {
 };
 
 export const useDepartmentByCode = (code?: string) => {
-  return useQuery<DepartmentArgs>({
+  return useQuery<DepartmentDTO>({
     queryKey: ["department-by-code", code],
     queryFn: () => getDepartmentByCode(code || ""),
     enabled: !!code,
@@ -107,7 +109,7 @@ export const useDepartmentByCode = (code?: string) => {
 };
 
 export const useDepartmentAvailableApps = (departmentCode?: string) => {
-  return useQuery<ApplicationArgs[]>({
+  return useQuery<ApplicationDTO[]>({
     queryKey: ["department-available-menus-for-roles", departmentCode],
     queryFn: () => getAvailableApplications(departmentCode!),
     enabled: !!departmentCode,
@@ -117,7 +119,7 @@ export const useDepartmentAvailableApps = (departmentCode?: string) => {
 export const useDepartmentApplications = (params: {
   departmentCode: string;
 }) => {
-  return useQuery<ApplicationArgs[]>({
+  return useQuery<ApplicationDTO[]>({
     queryKey: ["applications", { departmentCode: params.departmentCode }],
     queryFn: () => getDepartmentApplications(params.departmentCode),
     enabled: !!params.departmentCode,
@@ -386,57 +388,6 @@ export const useDeleteRole = () => {
   });
 };
 
-export const useAddPermissionsToRole = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      departmentCode,
-      roleCode,
-      permissionCodes,
-    }: {
-      departmentCode: string;
-      roleCode: string;
-      permissionCodes: string[];
-    }) => addPermissionsToRole(departmentCode, roleCode, permissionCodes),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["roles"] });
-      await queryClient.refetchQueries({ queryKey: ["roles"] });
-    },
-  });
-};
-
-export const useRemovePermissionsFromRole = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      departmentCode,
-      roleCode,
-      permissionCodes,
-    }: {
-      departmentCode: string;
-      roleCode: string;
-      permissionCodes: string[];
-    }) => addPermissionsToRole(departmentCode, roleCode, permissionCodes),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["roles"] });
-      await queryClient.refetchQueries({ queryKey: ["roles"] });
-    },
-  });
-};
-
-export const usePermissionsByRoleByCode = (
-  departmentCode: string,
-  roleCode: string,
-) => {
-  return useQuery({
-    queryKey: ["roleByName", departmentCode, roleCode],
-    queryFn: () => getPermissionsByRoleCode(departmentCode, roleCode),
-    enabled: !!departmentCode && !!roleCode,
-  });
-};
-
 // RESOURCES
 export const useAddResourcesToDepartment = () => {
   const queryClient = useQueryClient();
@@ -449,20 +400,20 @@ export const useAddResourcesToDepartment = () => {
       resourceCodes: string[];
     }) => addResourcesToDepartment(departmentCode, resourceCodes),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ 
-        queryKey: ["departments"] 
+      await queryClient.invalidateQueries({
+        queryKey: ["departments"],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-resources", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["department-resources", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["available-resources", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["available-resources", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["department-permissions", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["available-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["available-permissions", variables.departmentCode],
       });
     },
   });
@@ -479,20 +430,20 @@ export const useRemoveResourcesFromDepartment = () => {
       resourceCodes: string[];
     }) => removeResourcesFromDepartment(departmentCode, resourceCodes),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ 
-        queryKey: ["departments"] 
+      await queryClient.invalidateQueries({
+        queryKey: ["departments"],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-resources", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["department-resources", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["available-resources", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["available-resources", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["department-permissions", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["available-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["available-permissions", variables.departmentCode],
       });
     },
   });
@@ -542,14 +493,14 @@ export const useAddPermissionsToDepartment = () => {
       permissionCodes: string[];
     }) => addPermissionsToDepartment(departmentCode, permissionCodes),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ 
-        queryKey: ["departments"] 
+      await queryClient.invalidateQueries({
+        queryKey: ["departments"],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["department-permissions", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["available-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["available-permissions", variables.departmentCode],
       });
     },
   });
@@ -566,15 +517,102 @@ export const useRemovePermissionsFromDepartment = () => {
       permissionCodes: string[];
     }) => removePermissionsFromDepartment(departmentCode, permissionCodes),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({ 
-        queryKey: ["departments"] 
+      await queryClient.invalidateQueries({
+        queryKey: ["departments"],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["department-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["department-permissions", variables.departmentCode],
       });
-      await queryClient.invalidateQueries({ 
-        queryKey: ["available-permissions", variables.departmentCode] 
+      await queryClient.invalidateQueries({
+        queryKey: ["available-permissions", variables.departmentCode],
       });
     },
+  });
+};
+
+// PERMISSIONS BY ROLE
+export const useAddPermissionsToRole = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      departmentCode,
+      roleCode,
+      permissionCodes,
+    }: {
+      departmentCode: string;
+      roleCode: string;
+      permissionCodes: string[];
+    }) => addPermissionsToRole(departmentCode, roleCode, permissionCodes),
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ["roles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["roleByName", variables.departmentCode, variables.roleCode],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [
+          "available-permissions-for-role",
+          variables.departmentCode,
+          variables.roleCode,
+        ],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["department-resources", variables.departmentCode],
+      });
+    },
+  });
+};
+
+export const useRemovePermissionsFromRole = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      departmentCode,
+      roleCode,
+      permissionCodes,
+    }: {
+      departmentCode: string;
+      roleCode: string;
+      permissionCodes: string[];
+    }) => removePermissionsFromRole(departmentCode, roleCode, permissionCodes),
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ["roles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["roleByName", variables.departmentCode, variables.roleCode],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [
+          "available-permissions-for-role",
+          variables.departmentCode,
+          variables.roleCode,
+        ],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["department-resources", variables.departmentCode],
+      });
+    },
+  });
+};
+
+export const usePermissionsByRole = (
+  departmentCode: string,
+  roleCode: string,
+) => {
+  return useQuery({
+    queryKey: ["roleByName", departmentCode, roleCode],
+    queryFn: () => getPermissionsByRole(departmentCode, roleCode),
+    enabled: !!departmentCode && !!roleCode,
+  });
+};
+
+export const useAvailablePermissionsForRole = (
+  departmentCode: string,
+  roleCode: string,
+) => {
+  return useQuery({
+    queryKey: ["available-permissions-for-role", departmentCode, roleCode],
+    queryFn: () => getAvailablePermissionsForRole(departmentCode, roleCode),
+    enabled: !!departmentCode && !!roleCode,
   });
 };

@@ -1,17 +1,17 @@
 "use server";
 
 import type {
+  ApplicationDTO,
   CreateDepartmentRequest,
   CreateRoleRequest,
+  DepartmentDTO,
   MenuEntryDTO,
   RoleDTO,
   UpdateDepartmentRequest,
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
 
-import type { DepartmentArgs } from "@/features/departments/dept-schemas";
 import { getClientAccess } from "./access-client";
-import { ApplicationArgs } from "@/features/applications/app-schemas";
 import { extractApiError } from "@/lib/utils";
 
 export async function getDepartments() {
@@ -19,7 +19,7 @@ export async function getDepartments() {
 
   try {
     const result = await client.departments.getDepartments();
-    return result.data as DepartmentArgs[];
+    return result.data as DepartmentDTO[];
   } catch (error) {
     console.error(
       "[departments] Não foi possível obter lista de dados dos departamentos:",
@@ -84,7 +84,7 @@ export async function getDepartmentByCode(code: string) {
 
   try {
     const result = await client.departments.getDepartmentByCode(code);
-    return result.data as DepartmentArgs;
+    return result.data as DepartmentDTO;
   } catch (error) {
     console.error(
       "[department-by-code] Não foi possível obter lista de dados dos departamentos:",
@@ -100,7 +100,7 @@ export async function getAvailableApplications(departmentCode: string) {
   try {
     const result =
       await client.departments.getAvailableApplications(departmentCode);
-    return result.data as ApplicationArgs[];
+    return result.data as ApplicationDTO[];
   } catch (error) {
     console.error(
       "[department-available-menus-for-roles] Não foi possível obter lista de apps dos departamentos para roles:",
@@ -115,7 +115,7 @@ export async function getDepartmentApplications(departmentCode: string) {
   try {
     const result =
       await client.departments.getDepartmentApplications(departmentCode);
-    return result.data as ApplicationArgs[];
+    return result.data as ApplicationDTO[];
   } catch (error) {
     console.error(
       "[department-applications] Não foi possível obter lista de apps dos departamentos:",
@@ -325,73 +325,6 @@ export async function deleteRole(departmentCode: string, roleCode: string) {
   }
 }
 
-export async function addPermissionsToRole(
-  departmentCode: string,
-  roleCode: string,
-  permissionCodes: string[],
-) {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.addPermissionsToRole(
-      departmentCode,
-      roleCode,
-      permissionCodes,
-    );
-    return result.data as RoleDTO;
-  } catch (error) {
-    console.error(
-      `[add-permissions-role] Não foi possível adicionar permissões a perfíl ${roleCode}:`,
-      error,
-    );
-    throw new Error(extractApiError(error));
-  }
-}
-
-export async function removePermissionsFromRole(
-  departmentCode: string,
-  roleCode: string,
-  permissionCodes: string[],
-) {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.removePermissionsFromRole(
-      departmentCode,
-      roleCode,
-      permissionCodes,
-    );
-    return result.data as RoleDTO;
-  } catch (error) {
-    console.error(
-      `[remove-permissions-role] Não foi possível remover permissões a perfíl ${roleCode}:`,
-      error,
-    );
-    throw new Error(extractApiError(error));
-  }
-}
-
-export async function getPermissionsByRoleCode(
-  departmentCode: string,
-  roleCode: string,
-) {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.getAvailablePermissionsForRole(
-      departmentCode,
-      roleCode,
-    );
-    return result.data;
-  } catch (error) {
-    console.error(
-      `[role-by-name] Não foi possível obter dados de permissões de perfil ${name}:`,
-      error,
-    );
-    throw new Error(extractApiError(error));
-  }
-}
-
 // RESOURCES
 export async function addResourcesToDepartment(
   departmentCode: string,
@@ -489,9 +422,7 @@ export async function getAvailablePermissions(departmentCode: string) {
 
   try {
     const result =
-      await client.departments.getAvailablePermissions(
-        departmentCode,
-      );
+      await client.departments.getAvailablePermissions(departmentCode);
     return result.data;
   } catch (error) {
     console.error(
@@ -538,6 +469,95 @@ export async function removePermissionsFromDepartment(
   } catch (error) {
     console.error(
       `[remove-department-permissions] Não foi possível remover permissões ao departamento ${departmentCode}:`,
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
+
+// PERMISSIONS BY ROLE
+export async function addPermissionsToRole(
+  departmentCode: string,
+  roleCode: string,
+  permissionCodes: string[],
+) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.departments.addPermissionsToRole(
+      departmentCode,
+      roleCode,
+      permissionCodes,
+    );
+    return result.data as RoleDTO;
+  } catch (error) {
+    console.error(
+      `[add-permissions-role] Não foi possível adicionar permissões a perfíl ${roleCode}:`,
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function removePermissionsFromRole(
+  departmentCode: string,
+  roleCode: string,
+  permissionCodes: string[],
+) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.departments.removePermissionsFromRole(
+      departmentCode,
+      roleCode,
+      permissionCodes,
+    );
+    return result.data as RoleDTO;
+  } catch (error) {
+    console.error(
+      `[remove-permissions-role] Não foi possível remover permissões a perfíl ${roleCode}:`,
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function getPermissionsByRole(
+  departmentCode: string,
+  roleCode: string,
+) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.departments.getPermissionsByRole(
+      departmentCode,
+      roleCode,
+    );
+    return result.data;
+  } catch (error) {
+    console.error(
+      `[permissions-by-role] Não foi possível obter dados de permissões de perfil ${roleCode}:`,
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function getAvailablePermissionsForRole(
+  departmentCode: string,
+  roleCode: string,
+) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.departments.getAvailablePermissionsForRole(
+      departmentCode,
+      roleCode,
+    );
+    return result.data;
+  } catch (error) {
+    console.error(
+      `[available-permissions-role] Não foi possível obter permissões disponíveis do perfil ${roleCode}:`,
       error,
     );
     throw new Error(extractApiError(error));
