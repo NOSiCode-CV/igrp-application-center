@@ -45,7 +45,6 @@ import {
 } from "@tanstack/react-table";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
-import { PermissionLoading } from "@/features/permissions/components/permission-loading";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { getStatusColor, showStatus } from "@/lib/utils";
 
@@ -55,6 +54,7 @@ import {
   usePermissionsByRoleByCode,
   useRemovePermissionsFromRole,
 } from "@/features/departments/use-departments";
+import { AppCenterLoading } from "@/components/loading";
 
 const multiColumnFilterFn: FilterFn<any> = (row, _columnId, filterValue) => {
   const term = String(filterValue ?? "")
@@ -297,7 +297,7 @@ export function RoleDetails({
       type: "error",
       title: "Perfil tem permissões associadas, mas não foram carregadas.",
     });
-    return <PermissionLoading />;
+    return <AppCenterLoading descrption="Carregando permissões..." />;
   }
 
   return (
@@ -356,7 +356,7 @@ export function RoleDetails({
                 </IGRPBadgePrimitive>
               </div>
               {isLoading || isLoadingPermissionsByRole ? (
-                <PermissionLoading />
+                <AppCenterLoading descrption="Carregando permissões..." />
               ) : (
                 <>
                   <div className="bg-background overflow-hidden rounded-md border">

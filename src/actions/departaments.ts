@@ -483,3 +483,63 @@ export async function getDepartmentPermissions(departmentCode: string) {
     throw new Error(extractApiError(error));
   }
 }
+
+export async function getAvailablePermissions(departmentCode: string) {
+  const client = await getClientAccess();
+
+  try {
+    const result =
+      await client.departments.getAvailablePermissions(
+        departmentCode,
+      );
+    return result.data;
+  } catch (error) {
+    console.error(
+      `[available-department-permissions] Não foi possível obter permissões disponíveis do departamento ${departmentCode}:`,
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function addPermissionsToDepartment(
+  departmentCode: string,
+  permissionCodes: string[],
+) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.departments.addPermissionsToDepartment(
+      departmentCode,
+      permissionCodes,
+    );
+    return result.data;
+  } catch (error) {
+    console.error(
+      `[add-department-permissions] Não foi possível adicionar permissões ao departamento ${departmentCode}:`,
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
+
+export async function removePermissionsFromDepartment(
+  departmentCode: string,
+  permissionCodes: string[],
+) {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.departments.removePermissionsFromDepartment(
+      departmentCode,
+      permissionCodes,
+    );
+    return result.data;
+  } catch (error) {
+    console.error(
+      `[remove-department-permissions] Não foi possível remover permissões ao departamento ${departmentCode}:`,
+      error,
+    );
+    throw new Error(extractApiError(error));
+  }
+}
