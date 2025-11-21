@@ -60,7 +60,7 @@ export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
           {description || "Sem descrição disponível."}
         </p>
 
-        <div className="flex items-center justify-end pt-3 border-t">
+        <div className="flex items-center justify-between pt-3 border-t">
           <span className="text-sm">
             Acessar
           </span>
