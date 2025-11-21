@@ -31,10 +31,11 @@ import { STATUS_OPTIONS } from "@/lib/constants";
 import { cn, getInitials, getStatusColor, showStatus } from "@/lib/utils";
 import { UserDeleteDialog } from "./user-delete-dialog";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function UserList() {
   const [data, setData] = useState<IGRPUserDTO[]>([]);
-
+const router = useRouter();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -133,6 +134,7 @@ export function UserList() {
                <IGRPDropdownMenuItemPrimitive
                 className=""
                 variant="default"
+                onClick={() => router.push(`/users/${row.original.id}`)}
               >
                 <Link className="flex gap-2" href={`/users/${row.original.id}`}>
                 <IGRPIcon iconName="UserCog" />

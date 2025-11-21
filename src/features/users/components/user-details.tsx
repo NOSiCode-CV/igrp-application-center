@@ -47,12 +47,12 @@ export function UserDetails({ id }: { id: string }) {
     {
       label: "Departamentos",
       value: "departments",
-      content: <DepartmentListSimple />,
+      content: <DepartmentListSimple user={user} />,
     },
     {
       label: "Aplicações",
       value: "applications",
-      content: <UserApplications />,
+      content: <UserApplications user={user} />,
     },
     {
       label: "Roles",

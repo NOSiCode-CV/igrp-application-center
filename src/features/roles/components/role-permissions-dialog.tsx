@@ -510,16 +510,7 @@ export function RoleDetails({
               )}
 
               <div className="flex justify-end gap-2">
-                <IGRPButton
-                  variant="outline"
-                  disabled={selectedRows.length === 0}
-                  onClick={() => setRowSelection({})}
-                  size="sm"
-                  iconName="Trash"
-                  showIcon
-                >
-                  Limpar seleção
-                </IGRPButton>
+              
                 <IGRPButton
                   variant="default"
                   onClick={onSubmit}

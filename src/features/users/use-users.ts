@@ -126,33 +126,37 @@ export const useUpdateUser = () => {
   });
 };
 
-export const useCurrentUserDepartments = () => {
+export const useCurrentUserDepartments = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["current-user-departments"],
     queryFn: async () => getCurrentUserDepartments(),
+    ...options,
   });
 };
 
-export const useCurrentUserApplications = () => {
+export const useCurrentUserApplications = ( options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["current-user-applications"],
     queryFn: async () => getCurrentUserApplications(),
+    ...options,
   });
 };
 
-export function useUserApplications(userId: number) {
+export function useUserApplications(userId: number, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['user-applications', userId],
     queryFn: () => getUserApplications(userId),
     enabled: !!userId,
+    ...options,
   });
 }
 
-export function useUserDepartments(userId: number) {
+export function useUserDepartments(userId: number, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['user-departments', userId],
     queryFn: () => getUserDepartments(userId),
     enabled: !!userId,
+    ...options,
   });
 }
 

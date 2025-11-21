@@ -8,15 +8,24 @@ import {
 import { useState } from "react";
 import DepartmentTreeItemSimple from "./dept-list-simple-tree";
 import { buildTree, filterTree } from "./dept-list-tree";
-import { useCurrentUserDepartments } from "@/features/users/use-users";
+import { useCurrentUserDepartments, useUserDepartments } from "@/features/users/use-users";
+import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { AppCenterLoading } from "@/components/loading";
 
-export function DepartmentListSimple() {
+export function DepartmentListSimple({ user }: { user: IGRPUserDTO }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
 
-  const { data: departments } = useCurrentUserDepartments();
+  const { data: currentUserDepts, isLoading: isLoadingMyDeps } = useCurrentUserDepartments({ enabled: !user });
+  const { data: userDepts, isLoading } = useUserDepartments(user?.id!, { enabled: !!user });
 
+   if (isLoadingMyDeps || isLoading) {
+      return <AppCenterLoading descrption="Carregando departamentos..." />;
+    }
+
+  const departments = user ? userDepts : currentUserDepts;
   const departmentTree = buildTree(departments as any);
+
   const filteredTree = filterTree(departmentTree, searchTerm);
 
   return (
