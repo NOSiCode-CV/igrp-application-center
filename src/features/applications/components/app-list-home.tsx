@@ -2,11 +2,11 @@
 
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import { useApplications } from "@/features/applications/use-applications";
 import { ApplicationCardHOme } from "./app-card-home";
+import { useCurrentUserApplications } from "@/features/users/use-users";
 
 export function ApplicationsListHome() {
-  const { data: applications, isLoading, error } = useApplications();
+  const { data: applications, isLoading, error } = useCurrentUserApplications();
 
   if (isLoading && !error)
     return <AppCenterLoading descrption="Carregando aplicações..." />;
