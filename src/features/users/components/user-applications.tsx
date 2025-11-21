@@ -1,9 +1,6 @@
 import { ApplicationCardHOme } from "@/features/applications/components/app-card-home";
 import React from "react";
-import {
-  useCurrentUserApplications,
-  useUserApplications,
-} from "../use-users";
+import { useCurrentUserApplications, useUserApplications } from "../use-users";
 import { AppCenterLoading } from "@/components/loading";
 import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
