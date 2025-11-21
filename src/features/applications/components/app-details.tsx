@@ -50,6 +50,8 @@ export function ApplicationDetails({ code }: { code: string }) {
     app?.picture || uploadedFilePath || "",
   );
 
+  console.log("fileUrl", fileUrl);
+
   useEffect(() => {
     if (fileUrl) {
       setPreviewUrl(fileUrl.url);
@@ -112,7 +114,9 @@ export function ApplicationDetails({ code }: { code: string }) {
     }
   };
 
-  const pictureUrl = previewUrl || fileUrl?.url || null;
+  const baseAppCode = process.env.IGRP_MINIO_ENDPOINT ?? "";
+  const pictureUrl =
+    previewUrl || (app?.picture ? `${baseAppCode}${app.picture}` : null);
 
   return (
     <section className="flex flex-col gap-6">

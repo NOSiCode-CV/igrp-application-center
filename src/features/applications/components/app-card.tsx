@@ -36,7 +36,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="relative size-12 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-              {appImage ? (
+              {/* {appImage ? (
                 <Image
                   src={appImage}
                   alt={name}
@@ -48,7 +48,11 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
                   iconName="AppWindow"
                   className="size-6 text-primary"
                 />
-              )}
+              )} */}
+               <IGRPIcon
+                  iconName="AppWindow"
+                  className="size-6 text-primary"
+                />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-base line-clamp-1">{name}</h3>
