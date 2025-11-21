@@ -56,14 +56,14 @@ export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
           </IGRPBadgePrimitive>
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4 min-h-[2.5rem]">
+        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
           {description || "Sem descrição disponível."}
         </p>
 
-        <div className="flex items-center justify-end pt-4 border-t">
-          {/* <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors">
-            Ver detalhes
-          </span> */}
+        <div className="flex items-center justify-end pt-3 border-t">
+          <span className="text-sm">
+            Acessar
+          </span>
           <ButtonLinkTooltip
             href={href || ""}
             icon="ExternalLink"

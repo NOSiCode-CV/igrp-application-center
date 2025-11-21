@@ -27,16 +27,10 @@ const MENU_TYPES = [
   },
   {
     value: menuTypeSchema.enum.MENU_PAGE,
-    label: "Página Interna",
+    label: "Página",
     icon: "FileText",
-    description: "Menu que abre uma página interna da aplicação",
-  },
-  {
-    value: menuTypeSchema.enum.EXTERNAL_PAGE,
-    label: "Página Externa",
-    icon: "ExternalLink",
-    description: "Menu que abre um link externo",
-  },
+    description: "Menu que abre uma página da aplicação",
+  }
 ] as const;
 
 export function MenuTypeSelector({

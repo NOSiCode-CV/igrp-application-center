@@ -221,10 +221,10 @@ export function SortableMenuItem({
                       onClick={() => onAddInternalPage?.(menu)}
                     >
                       <IGRPIcon iconName="FileText" className="size-4 mr-2" />
-                      Adicionar Página Interna
+                      Adicionar Página
                     </IGRPDropdownMenuItemPrimitive>
 
-                    <IGRPDropdownMenuItemPrimitive
+                    {/* <IGRPDropdownMenuItemPrimitive
                       onClick={() => onAddExternalPage?.(menu)}
                     >
                       <IGRPIcon
@@ -232,7 +232,7 @@ export function SortableMenuItem({
                         className="size-4 mr-2"
                       />
                       Adicionar Página Externa
-                    </IGRPDropdownMenuItemPrimitive>
+                    </IGRPDropdownMenuItemPrimitive> */}
                   </>
                 )}
                 <IGRPDropdownMenuSeparatorPrimitive />

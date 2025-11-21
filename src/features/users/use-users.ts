@@ -1,9 +1,7 @@
 import type {
-  CreateUserRequest,
   IGRPUserDTO,
   InviteUserDTO,
   RoleDTO,
-  UpdateUserRequest,
   UserFilters,
 } from "@igrp/platform-access-management-client-ts";
 import {

@@ -32,7 +32,6 @@ import {
   useCreateApplication,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
-import { useUsers } from "@/features/users/use-users";
 import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
 import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
@@ -48,7 +47,6 @@ export function ApplicationForm({
 }: ApplicationFormProps) {
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
-  const { data: users } = useUsers();
   const { mutateAsync: createApplication } = useCreateApplication();
   const { mutateAsync: updateApplication } = useUpdateApplication();
 
@@ -124,7 +122,7 @@ export function ApplicationForm({
   return (
     <IGRPFormPrimitive {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ScrollArea className="h-96 w-full">
+        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
           <div className="space-y-4">
             <IGRPFormFieldPrimitive
               control={form.control}
@@ -166,37 +164,6 @@ export function ApplicationForm({
                       }}
                     />
                   </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
-              )}
-            />
-
-            <IGRPFormFieldPrimitive
-              control={form.control}
-              name="owner"
-              render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Proprietário</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <IGRPFormControlPrimitive className="w-full">
-                      <IGRPSelectTriggerPrimitive>
-                        <IGRPSelectValuePrimitive placeholder="Selecione" />
-                      </IGRPSelectTriggerPrimitive>
-                    </IGRPFormControlPrimitive>
-                    <IGRPSelectContentPrimitive>
-                      {users?.map((user) => (
-                        <IGRPSelectItemPrimitive
-                          key={user.name}
-                          value={user.name}
-                        >
-                          {user.name}
-                        </IGRPSelectItemPrimitive>
-                      ))}
-                    </IGRPSelectContentPrimitive>
-                  </IGRPSelectPrimitive>
                   <IGRPFormMessagePrimitive />
                 </IGRPFormItemPrimitive>
               )}

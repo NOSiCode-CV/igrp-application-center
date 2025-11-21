@@ -606,7 +606,7 @@ export function MenuFormDialog({
                     </div>
                   </fieldset>
 
-                  {(isMenuPage || isExternalPage) && (
+                  {(isMenuPage ) && (
                     <fieldset className="border border-accent p-4 rounded-md">
                       <legend className="text-base font-semibold px-2">
                         Configurações de Página
@@ -635,7 +635,33 @@ export function MenuFormDialog({
                               )}
                             />
 
-                            <IGRPFormFieldPrimitive
+                            
+                          </>
+                        )}
+
+                        
+                          <IGRPFormFieldPrimitive
+                            control={form.control}
+                            name="url"
+                            render={({ field }) => (
+                              <IGRPFormItemPrimitive>
+                                <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                                  URL Externa
+                                </IGRPFormLabelPrimitive>
+                                <IGRPFormControlPrimitive>
+                                  <IGRPInputPrimitive
+                                    placeholder="https://example.com"
+                                    {...field}
+                                    value={field.value ?? ""}
+                                    disabled={openType === "view"}
+                                  />
+                                </IGRPFormControlPrimitive>
+                                <IGRPFormMessagePrimitive />
+                              </IGRPFormItemPrimitive>
+                            )}
+                          />
+
+                          <IGRPFormFieldPrimitive
                               control={form.control}
                               name="target"
                               render={({ field }) => (
@@ -671,31 +697,7 @@ export function MenuFormDialog({
                                 </IGRPFormItemPrimitive>
                               )}
                             />
-                          </>
-                        )}
-
-                        {isExternalPage && (
-                          <IGRPFormFieldPrimitive
-                            control={form.control}
-                            name="url"
-                            render={({ field }) => (
-                              <IGRPFormItemPrimitive>
-                                <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                                  URL Externa
-                                </IGRPFormLabelPrimitive>
-                                <IGRPFormControlPrimitive>
-                                  <IGRPInputPrimitive
-                                    placeholder="https://example.com"
-                                    {...field}
-                                    value={field.value ?? ""}
-                                    disabled={openType === "view"}
-                                  />
-                                </IGRPFormControlPrimitive>
-                                <IGRPFormMessagePrimitive />
-                              </IGRPFormItemPrimitive>
-                            )}
-                          />
-                        )}
+                        
                       </div>
                     </fieldset>
                   )}

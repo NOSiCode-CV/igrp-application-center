@@ -18,7 +18,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.2.2",
-    "@igrp/framework-next": "0.1.0-beta.59",
+    "@igrp/framework-next": "0.1.0-beta.61",
     "@igrp/framework-next-auth": "0.1.0-beta.58",
     "@igrp/framework-next-types": "0.1.0-beta.58",
     "@igrp/framework-next-ui": "0.1.0-beta.58",

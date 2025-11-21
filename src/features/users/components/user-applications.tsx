@@ -4,8 +4,7 @@ import { useCurrentUserApplications } from "../use-users";
 import { AppCenterLoading } from "@/components/loading";
 
 export default function UserApplications() {
-  const { data: myApps, isLoading: isLoadingMyApps } =
-    useCurrentUserApplications();
+  const { data: myApps, isLoading: isLoadingMyApps } = useCurrentUserApplications();
 
   if (isLoadingMyApps) {
     return <AppCenterLoading descrption="Carregando aplicações..." />;

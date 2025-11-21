@@ -115,8 +115,7 @@ export function ApplicationDetails({ code }: { code: string }) {
   };
 
   const baseAppCode = process.env.IGRP_MINIO_ENDPOINT ?? "";
-  const pictureUrl =
-    previewUrl || (app?.picture ? `${baseAppCode}${app.picture}` : null);
+  const pictureUrl = previewUrl || (app?.picture ? `${baseAppCode}${app.picture}` : null);
 
   return (
     <section className="flex flex-col gap-6">
@@ -141,6 +140,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                     Editar Aplicação
                   </IGRPDialogTitlePrimitive>
                 </IGRPDialogHeaderPrimitive>
+                
                 <ApplicationForm
                   application={app}
                   onSuccess={() => setOpen(false)}
