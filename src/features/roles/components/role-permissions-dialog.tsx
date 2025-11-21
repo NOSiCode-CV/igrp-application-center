@@ -49,7 +49,6 @@ import type { RoleArgs } from "@/features/roles/role-schemas";
 
 import {
   useAddPermissionsToRole,
-  useAvailablePermissions,
   useDepartmentPermissions,
   usePermissionsByRole,
   useRemovePermissionsFromRole,
@@ -155,9 +154,6 @@ export function RoleDetails({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const { data: availablePermissions, isLoading: isLoadingAvailable } =
-    useAvailablePermissions(departmentCode);
-
   const { data: departmentPermissions, isLoading: isLoadingDepartment } =
     useDepartmentPermissions(departmentCode);
 
@@ -173,20 +169,10 @@ export function RoleDetails({
     useRemovePermissionsFromRole();
 
   const allPermissions = useMemo(() => {
-    const permissionsMap = new Map();
-
-    availablePermissions?.forEach((perm) => {
-      permissionsMap.set(perm.name, perm);
-    });
-
-    departmentPermissions?.forEach((perm) => {
-      permissionsMap.set(perm.name, perm);
-    });
-
-    return Array.from(permissionsMap.values()).sort((a, b) =>
+    return (departmentPermissions ?? []).sort((a, b) =>
       a.name.localeCompare(b.name, "pt"),
     );
-  }, [availablePermissions, departmentPermissions]);
+  }, [departmentPermissions]);
 
   const getRowKey = (r: any) => String(r.id ?? r.name);
 
@@ -235,8 +221,7 @@ export function RoleDetails({
 
   const hasChanges = toAdd.length > 0 || toRemove.length > 0;
 
-  const isLoading =
-    isLoadingAvailable || isLoadingDepartment || isLoadingPermissionsByRole;
+  const isLoading = isLoadingDepartment || isLoadingPermissionsByRole;
 
   async function onSubmit() {
     if (!hasChanges) {

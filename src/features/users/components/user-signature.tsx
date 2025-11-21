@@ -81,18 +81,12 @@ export default function UserSignature({
   const currentSignatureUrl = signaturePreview || signatureUrl?.url || null;
 
   return (
-    <IGRPCardPrimitive>
-      <IGRPCardContentPrimitive className="p-6">
+    <IGRPCardPrimitive className="py-2">
+      <IGRPCardContentPrimitive className="p-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <IGRPIcon
-                    iconName="PenTool"
-                    className="w-4 h-4 text-primary"
-                  />
-                </div>
                 Assinatura Digital
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
