@@ -30,7 +30,7 @@ const MENU_TYPES = [
     label: "Página",
     icon: "FileText",
     description: "Menu que abre uma página da aplicação",
-  }
+  },
 ] as const;
 
 export function MenuTypeSelector({

@@ -510,7 +510,6 @@ export function RoleDetails({
               )}
 
               <div className="flex justify-end gap-2">
-              
                 <IGRPButton
                   variant="default"
                   onClick={onSubmit}

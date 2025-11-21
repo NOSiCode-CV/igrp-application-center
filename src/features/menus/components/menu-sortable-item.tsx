@@ -199,37 +199,42 @@ export function SortableMenuItem({
                   />
                   Ver
                 </IGRPDropdownMenuItemPrimitive>
-                 {String(app?.type) !== "SYSTEM" && (
-                   
-                 <>
-                <IGRPDropdownMenuItemPrimitive onClick={() => onEdit(menu)}>
-                  <IGRPIcon
-                    iconName="Pencil"
-                    className="size-4 mr-2"
-                    strokeWidth={2}
-                  />
-                  Editar
-                </IGRPDropdownMenuItemPrimitive>
-
-                {menu.type === "GROUP" && (
-                  <IGRPDropdownMenuItemPrimitive
-                    onClick={() => onAddChild?.(menu)}
-                  >
-                    <IGRPIcon iconName="FolderPlus" className="size-4 mr-2" />
-                    Adicionar Pasta
-                  </IGRPDropdownMenuItemPrimitive>
-                )}
-
-                {menu.type === "FOLDER" && (
+                {String(app?.type) !== "SYSTEM" && (
                   <>
-                    <IGRPDropdownMenuItemPrimitive
-                      onClick={() => onAddInternalPage?.(menu)}
-                    >
-                      <IGRPIcon iconName="FileText" className="size-4 mr-2" />
-                      Adicionar Página
+                    <IGRPDropdownMenuItemPrimitive onClick={() => onEdit(menu)}>
+                      <IGRPIcon
+                        iconName="Pencil"
+                        className="size-4 mr-2"
+                        strokeWidth={2}
+                      />
+                      Editar
                     </IGRPDropdownMenuItemPrimitive>
 
-                    {/* <IGRPDropdownMenuItemPrimitive
+                    {menu.type === "GROUP" && (
+                      <IGRPDropdownMenuItemPrimitive
+                        onClick={() => onAddChild?.(menu)}
+                      >
+                        <IGRPIcon
+                          iconName="FolderPlus"
+                          className="size-4 mr-2"
+                        />
+                        Adicionar Pasta
+                      </IGRPDropdownMenuItemPrimitive>
+                    )}
+
+                    {menu.type === "FOLDER" && (
+                      <>
+                        <IGRPDropdownMenuItemPrimitive
+                          onClick={() => onAddInternalPage?.(menu)}
+                        >
+                          <IGRPIcon
+                            iconName="FileText"
+                            className="size-4 mr-2"
+                          />
+                          Adicionar Página
+                        </IGRPDropdownMenuItemPrimitive>
+
+                        {/* <IGRPDropdownMenuItemPrimitive
                       onClick={() => onAddExternalPage?.(menu)}
                     >
                       <IGRPIcon
@@ -238,21 +243,21 @@ export function SortableMenuItem({
                       />
                       Adicionar Página Externa
                     </IGRPDropdownMenuItemPrimitive> */}
+                      </>
+                    )}
+                    <IGRPDropdownMenuSeparatorPrimitive />
+                    <IGRPDropdownMenuItemPrimitive
+                      variant="destructive"
+                      onClick={() => onDelete?.(menu.code, menu.name)}
+                    >
+                      <IGRPIcon
+                        iconName="Trash"
+                        className="size-4 mr-2"
+                        strokeWidth={2}
+                      />
+                      Eliminar
+                    </IGRPDropdownMenuItemPrimitive>
                   </>
-                )}
-                <IGRPDropdownMenuSeparatorPrimitive />
-                <IGRPDropdownMenuItemPrimitive
-                  variant="destructive"
-                  onClick={() => onDelete?.(menu.code, menu.name)}
-                >
-                  <IGRPIcon
-                    iconName="Trash"
-                    className="size-4 mr-2"
-                    strokeWidth={2}
-                  />
-                  Eliminar
-                </IGRPDropdownMenuItemPrimitive>
-                </>
                 )}
               </IGRPDropdownMenuContentPrimitive>
             </IGRPDropdownMenuPrimitive>

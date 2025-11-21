@@ -49,18 +49,17 @@ export const folderMenuSchema = menuSchema.extend({
   parentCode: parentSchema,
 });
 
-export const menuPageSchema = menuSchema.extend({
-  type: z.literal(menuTypeSchema.enum.MENU_PAGE),
-  pageSlug: z.string().optional(),
-  url: z.string().optional(),
-  parentCode: parentSchema,
-}).refine(
-  (data) => data.pageSlug || data.url,
-  {
+export const menuPageSchema = menuSchema
+  .extend({
+    type: z.literal(menuTypeSchema.enum.MENU_PAGE),
+    pageSlug: z.string().optional(),
+    url: z.string().optional(),
+    parentCode: parentSchema,
+  })
+  .refine((data) => data.pageSlug || data.url, {
     message: "Deve fornecer URL relativo ou URL externa",
     path: ["pageSlug"],
-  }
-);
+  });
 export const externalPageSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.EXTERNAL_PAGE),
   url: z.url("URL é obrigatório"),

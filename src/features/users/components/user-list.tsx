@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 
 export function UserList() {
   const [data, setData] = useState<IGRPUserDTO[]>([]);
-const router = useRouter();
+  const router = useRouter();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -131,14 +131,14 @@ const router = useRouter();
                 <IGRPIcon iconName="CircleOff" />
                 Desativar
               </IGRPDropdownMenuItemPrimitive>
-               <IGRPDropdownMenuItemPrimitive
+              <IGRPDropdownMenuItemPrimitive
                 className=""
                 variant="default"
                 onClick={() => router.push(`/users/${row.original.id}`)}
               >
                 <Link className="flex gap-2" href={`/users/${row.original.id}`}>
-                <IGRPIcon iconName="UserCog" />
-                Gerir
+                  <IGRPIcon iconName="UserCog" />
+                  Gerir
                 </Link>
               </IGRPDropdownMenuItemPrimitive>
             </IGRPDropdownMenuContentPrimitive>

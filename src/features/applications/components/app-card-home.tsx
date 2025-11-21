@@ -36,10 +36,7 @@ export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
                   className="size-6 text-primary"
                 />
               )} */}
-              <IGRPIcon
-                  iconName="AppWindow"
-                  className="size-6 text-primary"
-                />
+              <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-base line-clamp-1 group-hover:text-primary transition-colors">
@@ -61,9 +58,7 @@ export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
         </p>
 
         <div className="flex items-center justify-between pt-3 border-t">
-          <span className="text-sm">
-            Acessar
-          </span>
+          <span className="text-sm">Acessar</span>
           <ButtonLinkTooltip
             href={href || ""}
             icon="ExternalLink"
