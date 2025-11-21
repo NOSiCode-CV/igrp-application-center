@@ -1,23 +1,17 @@
 "use client";
 
 import {
-  cn,
-  IGRPBadge,
-  IGRPBreadcrumbItemPrimitive,
-  IGRPBreadcrumbListPrimitive,
-  IGRPBreadcrumbPrimitive,
-  IGRPBreadcrumbSeparatorPrimitive,
+  IGRPBadgePrimitive,
   IGRPButtonPrimitive,
   IGRPIcon,
   IGRPInputPrimitive,
   IGRPTabItem,
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
-import type { DepartmentArgs } from "../dept-schemas";
 import { useDepartments, useDepartmentByCode } from "../use-departments";
 import { DepartmentDeleteDialog } from "./dept-delete-dialog";
 import { DepartmentFormDialog } from "./dept-form-dialog";
@@ -26,11 +20,61 @@ import { PermissionList } from "@/features/permissions/components/permission-lis
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { RolesListTree } from "@/features/roles/components/role-tree-list";
 import { MenuPermissions } from "./dept-menu";
-import { useRoles } from "@/features/roles/use-roles";
 import { ManageAppsModal } from "./Modal/manage-apps-modal";
+import { getStatusColor } from "@/lib/utils";
+import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
-export type DepartmentWithChildren = DepartmentArgs & {
+export type DepartmentWithChildren = DepartmentDTO & {
   children?: DepartmentWithChildren[];
+};
+
+export const buildTree = (depts: DepartmentDTO[]): DepartmentWithChildren[] => {
+  const map = new Map<string, DepartmentWithChildren>();
+  const roots: DepartmentWithChildren[] = [];
+
+  depts?.forEach((dept) => {
+    map.set(dept.code, { ...dept, children: [] });
+  });
+
+  depts?.forEach((dept) => {
+    const node = map.get(dept.code)!;
+    if (dept.parentCode) {
+      const parent = map.get(dept.parentCode);
+      if (parent) {
+        parent.children!.push(node);
+      } else {
+        roots.push(node);
+      }
+    } else {
+      roots.push(node);
+    }
+  });
+
+  return roots;
+};
+
+export const filterTree = (
+  depts: DepartmentWithChildren[],
+  term: string,
+): DepartmentWithChildren[] => {
+  if (!term) return depts;
+
+  return depts
+    .map((dept) => {
+      const matchesCurrent =
+        dept.name.toLowerCase().includes(term.toLowerCase()) ||
+        dept.code.toLowerCase().includes(term.toLowerCase());
+
+      const filteredChildren = dept.children
+        ? filterTree(dept.children, term)
+        : [];
+
+      if (matchesCurrent || filteredChildren.length > 0) {
+        return { ...dept, children: filteredChildren };
+      }
+      return null;
+    })
+    .filter(Boolean) as DepartmentWithChildren[];
 };
 
 export function DepartmentListTree() {
@@ -38,8 +82,8 @@ export function DepartmentListTree() {
   const [openFormDialog, setOpenFormDialog] = useState(false);
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [currentDept, setCurrentDept] = useState<DepartmentArgs | null>(null);
-  const [parentDeptId, setParentDeptId] = useState<string | null>(null);
+  const [currentDept, setCurrentDept] = useState<DepartmentDTO | null>(null);
+  const [parentDeptId, setParentDeptId] = useState<DepartmentDTO | null>(null);
   const [deptToDelete, setDeptToDelete] = useState<{
     code: string;
     name: string;
@@ -51,31 +95,6 @@ export function DepartmentListTree() {
   const { data: departments, isLoading, error } = useDepartments();
   const { data: selectedDepartment, isLoading: isLoadSelectedDep } =
     useDepartmentByCode(selectedDeptCode || "");
-
-  const buildTree = (depts: DepartmentArgs[]): DepartmentWithChildren[] => {
-    const map = new Map<string, DepartmentWithChildren>();
-    const roots: DepartmentWithChildren[] = [];
-
-    depts.forEach((dept) => {
-      map.set(dept.code, { ...dept, children: [] });
-    });
-
-    depts.forEach((dept) => {
-      const node = map.get(dept.code)!;
-      if (dept.parent_code) {
-        const parent = map.get(dept.parent_code);
-        if (parent) {
-          parent.children!.push(node);
-        } else {
-          roots.push(node);
-        }
-      } else {
-        roots.push(node);
-      }
-    });
-
-    return roots;
-  };
 
   const handleOpenCreate = () => {
     setCurrentDept(null);
@@ -92,51 +111,30 @@ export function DepartmentListTree() {
     setOpenDeleteDialog(true);
   };
 
-  const handleEdit = (dept: DepartmentArgs) => {
+  const handleEdit = (dept: DepartmentDTO) => {
     setDeptToDelete(null);
     setParentDeptId(null);
     setCurrentDept(dept);
     setOpenFormDialog(true);
   };
 
-  const handleCreateSubDept = (parentCode: string) => {
+  const handleCreateSubDept = (parentCode: any) => {
     setDeptToDelete(null);
     setCurrentDept(null);
     setParentDeptId(parentCode);
     setOpenFormDialog(true);
   };
 
-  const filterTree = (
-    depts: DepartmentWithChildren[],
-    term: string,
-  ): DepartmentWithChildren[] => {
-    if (!term) return depts;
-
-    return depts
-      .map((dept) => {
-        const matchesCurrent =
-          dept.name.toLowerCase().includes(term.toLowerCase()) ||
-          dept.code.toLowerCase().includes(term.toLowerCase());
-
-        const filteredChildren = dept.children
-          ? filterTree(dept.children, term)
-          : [];
-
-        if (matchesCurrent || filteredChildren.length > 0) {
-          return { ...dept, children: filteredChildren };
-        }
-        return null;
-      })
-      .filter(Boolean) as DepartmentWithChildren[];
-  };
+  useEffect(() => {
+    departments && setSelectedDeptCode(departments[0]?.code);
+  }, [departments]);
 
   if (isLoading || !departments) {
     return <AppCenterLoading descrption="Carregando departamentos..." />;
   }
 
   if (error) throw error;
-
-  const departmentTree = buildTree(departments);
+  const departmentTree = buildTree(departments as any);
   const filteredTree = filterTree(departmentTree, searchTerm);
 
   const tabs: IGRPTabItem[] = [
@@ -158,11 +156,11 @@ export function DepartmentListTree() {
   ];
 
   return (
-    <div className="flex flex-col h-screen  overflow-hidden">
-      <div className="flex h-screen">
-        <div className="w-80 flex border-r pr-2 border-accent flex-col">
+    <div className="flex flex-col overflow-hidden">
+      <div className="flex h-">
+        <div className="w-80 flex pr-2 border-accent flex-col">
           <div className="flex flex-col min-w-0">
-            <h2 className="text-2xl font-bold tracking-tight truncate">
+            <h2 className="text-xl font-bold tracking-tight truncate">
               Gestão de Departamentos
             </h2>
 
@@ -217,67 +215,22 @@ export function DepartmentListTree() {
           {isLoadSelectedDep && (
             <AppCenterLoading descrption="Carregando departamentos..." />
           )}
-          {!isLoadSelectedDep && selectedDepartment ? (
+          {!isLoadSelectedDep && selectedDepartment && (
             <div className="container mx-auto px-6">
-              <IGRPBreadcrumbPrimitive>
-                <IGRPBreadcrumbListPrimitive>
-                  <IGRPBreadcrumbItemPrimitive className="text-xs">
-                    Departamentos
-                  </IGRPBreadcrumbItemPrimitive>
-                  {selectedDepartment?.parent_code && (
-                    <>
-                      <IGRPBreadcrumbSeparatorPrimitive />
-                      <IGRPBreadcrumbItemPrimitive className="text-xs">
-                        {selectedDepartment.parent_code}
-                      </IGRPBreadcrumbItemPrimitive>
-                    </>
-                  )}
-                  <IGRPBreadcrumbSeparatorPrimitive />
-                  <IGRPBreadcrumbItemPrimitive className="text-xs">
-                    {selectedDepartment.name}
-                  </IGRPBreadcrumbItemPrimitive>
-                </IGRPBreadcrumbListPrimitive>
-              </IGRPBreadcrumbPrimitive>
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <div className="flex items-center gap-3">
-                    <h1 className="text-2xl mt-2 font-bold">
+                    <h1 className="text-xl font-bold">
                       {selectedDepartment.name}
                     </h1>
 
-                    {IGRPBadge ? (
-                      <IGRPBadge
-                        variant="solid"
-                        color={
-                          selectedDepartment.status === "ACTIVE"
-                            ? "success"
-                            : "destructive"
-                        }
-                      >
-                        {selectedDepartment.status === "ACTIVE"
-                          ? "Ativo"
-                          : "Inativo"}
-                      </IGRPBadge>
-                    ) : (
-                      <span
-                        className={cn(
-                          "px-2.5 py-1 rounded-md text-xs font-medium",
-                          selectedDepartment.status === "ACTIVE"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700",
-                        )}
-                      >
-                        {selectedDepartment.status === "ACTIVE"
-                          ? "Ativo"
-                          : "Inativo"}
-                      </span>
-                    )}
-
-                    {!selectedDepartment?.parent_code && (
-                      <IGRPBadge variant="outline" color="primary">
-                        Departamento Pai
-                      </IGRPBadge>
-                    )}
+                    <IGRPBadgePrimitive
+                      className={getStatusColor(
+                        selectedDepartment.status || "ACTIVE",
+                      )}
+                    >
+                      {selectedDepartment.status}
+                    </IGRPBadgePrimitive>
                   </div>
                   <div className="flex items-center">
                     <span className="text-muted-foreground text-xs">
@@ -293,7 +246,7 @@ export function DepartmentListTree() {
 
                 <div className="flex flex-row justify-between gap-2">
                   <IGRPButtonPrimitive
-                    onClick={() => handleEdit(selectedDepartment)}
+                    onClick={() => handleEdit(selectedDepartment as any)}
                     variant="outline"
                     className="cursor-pointer"
                   >
@@ -325,24 +278,6 @@ export function DepartmentListTree() {
                 items={tabs}
                 className="min-w-0"
                 tabContentClassName="px-0"
-              />
-            </div>
-          ) : (
-            <div className="text-center py-6 text-muted-foreground">
-              <IGRPIcon
-                iconName="FolderTree"
-                className="w-16 h-16 mx-auto mb-4 opacity-50"
-              />
-              <div className="py-2">
-                Escolha um departamento na lista para ver os detalhes
-              </div>
-
-              <ButtonLink
-                onClick={handleOpenCreate}
-                icon="Plus"
-                href="#"
-                label="Novo Departamento"
-                variant="outline"
               />
             </div>
           )}

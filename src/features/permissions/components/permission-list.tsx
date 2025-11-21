@@ -2,103 +2,135 @@
 
 import {
   cn,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDropdownMenuCheckboxItemPrimitive,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuLabelPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuSeparatorPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
   IGRPIcon,
   IGRPInputPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPSkeletonPrimitive,
+  IGRPSwitchPrimitive,
   IGRPTableBodyPrimitive,
   IGRPTableCellPrimitive,
   IGRPTableHeaderPrimitive,
   IGRPTableHeadPrimitive,
   IGRPTablePrimitive,
   IGRPTableRowPrimitive,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
-
+import { useState, useMemo } from "react";
 import { ButtonLink } from "@/components/button-link";
-import { STATUS_OPTIONS } from "@/lib/constants";
-import { getStatusColor, showStatus } from "@/lib/utils";
-import type { PermissionArgs } from "../permissions-schemas";
-import { usePermissionsbyName } from "../use-permission";
-import { PermissionDeleteDialog } from "./permisssion-delete-dialog";
-import { PermissionFormDialog } from "./permisssion-form-dialog";
-import { useResources } from "@/features/resources/use-resources";
+import { ManageResourcesModal } from "./resource-manage-modal";
+import {
+  useAvailablePermissions,
+  useDepartmentPermissions,
+  useAddPermissionsToDepartment,
+  useRemovePermissionsFromDepartment,
+} from "@/features/departments/use-departments";
+import { AppCenterLoading } from "@/components/loading";
 
 interface PermissionListProps {
   departmentCode: string;
 }
 
 export function PermissionList({ departmentCode }: PermissionListProps) {
+  const { igrpToast } = useIGRPToast();
+  const [openManageResources, setOpenManageResources] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [openFormDialog, setOpenFormDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [selectedPermission, setSelectedPermission] = useState<
-    PermissionArgs | undefined
-  >(undefined);
-  const [permissionToDelete, setPermissionToDelete] = useState<string | null>(
-    null,
-  );
+  const [processingPermission, setProcessingPermission] = useState<
+    string | null
+  >(null);
 
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [resourceSelected, setResourceSelected] = useState<string>("");
+  const { data: availablePermissions, isLoading: isLoadingAvailable } =
+    useAvailablePermissions(departmentCode);
+  const { data: departmentPermissions, isLoading: isLoadingDepartment } =
+    useDepartmentPermissions(departmentCode);
 
-  const { data: resources, isLoading: resourcesLoading } = useResources();
+  const addPermissions = useAddPermissionsToDepartment();
+  const removePermissions = useRemovePermissionsFromDepartment();
 
-  const {
-    data: permissions,
-    isLoading,
-    error,
-  } = usePermissionsbyName({ resourceName: resourceSelected });
+  const isLoading = isLoadingAvailable || isLoadingDepartment;
 
-  if (error) {
-    return (
-      <div className="rounded-md border py-6">
-        <p className="text-center">Ocorreu um erro ao carregar permissões.</p>
-        <p className="text-center">{error.message}</p>
-      </div>
+  // Cria Set com nomes das permissões atribuídas
+  const assignedNames = useMemo(() => {
+    return new Set(departmentPermissions?.map((p) => p.name) || []);
+  }, [departmentPermissions]);
+
+  // Combina todas as permissões únicas
+  const allPermissions = useMemo(() => {
+    const permissionsMap = new Map();
+
+    // Adiciona permissões disponíveis
+    availablePermissions?.forEach((perm) => {
+      permissionsMap.set(perm.name, {
+        ...perm,
+        isAssigned: false,
+      });
+    });
+
+    // Adiciona/atualiza permissões do departamento
+    departmentPermissions?.forEach((perm) => {
+      permissionsMap.set(perm.name, {
+        ...perm,
+        isAssigned: true,
+      });
+    });
+
+    return Array.from(permissionsMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name, "pt"),
     );
+  }, [availablePermissions, departmentPermissions]);
+
+  const filteredPermissions = useMemo(() => {
+    if (!searchTerm) return allPermissions;
+
+    const term = searchTerm.toLowerCase();
+    return allPermissions.filter(
+      (perm) =>
+        perm.name.toLowerCase().includes(term) ||
+        perm.description?.toLowerCase().includes(term),
+    );
+  }, [allPermissions, searchTerm]);
+
+  const handleTogglePermission = async (
+    permissionName: string,
+    isEnabled: boolean,
+  ) => {
+    setProcessingPermission(permissionName);
+    try {
+      if (isEnabled) {
+        await addPermissions.mutateAsync({
+          departmentCode,
+          permissionCodes: [permissionName],
+        });
+        igrpToast({
+          type: "success",
+          title: "Permissão adicionada",
+          description: "A permissão foi adicionada com sucesso.",
+        });
+      } else {
+        await removePermissions.mutateAsync({
+          departmentCode,
+          permissionCodes: [permissionName],
+        });
+        igrpToast({
+          type: "success",
+          title: "Permissão removida",
+          description: "A permissão foi removida com sucesso.",
+        });
+      }
+    } catch (error) {
+      igrpToast({
+        type: "error",
+        title: "Erro",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    } finally {
+      setProcessingPermission(null);
+    }
+  };
+
+  if (isLoading) {
+    return <AppCenterLoading descrption="Carregando permissões..." />;
   }
 
-  const filteredPermissions = permissions?.filter((perm) => {
-    const matchesSearch =
-      perm.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      perm.description?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      statusFilter.length === 0 || statusFilter.includes(perm.status);
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const handleDelete = (name: string) => {
-    setPermissionToDelete(name);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleEdit = (permission: PermissionArgs) => {
-    setSelectedPermission(permission);
-    setOpenFormDialog(true);
-  };
-
-  const handleNewpermssion = () => {
-    setSelectedPermission(undefined);
-    setOpenFormDialog(true);
-  };
-
-  const permissionEmpty = permissions?.length === 0;
+  const permissionEmpty = allPermissions.length === 0;
 
   return (
     <>
@@ -108,19 +140,18 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
             <div className="min-w-0">
               <div className="leading-none font-semibold">Permissões</div>
               <div className="text-muted-foreground text-sm">
-                Gerir e reorganizar os permissões.
+                Gerir e reorganizar as permissões.
               </div>
             </div>
-            {resourceSelected && !permissionEmpty && (
-              <div className="flex justify-end shrink-0">
-                <ButtonLink
-                  onClick={handleNewpermssion}
-                  icon="UserLock"
-                  href="#"
-                  label="Nova Permissão"
-                />
-              </div>
-            )}
+            <div className="flex justify-end shrink-0">
+              <ButtonLink
+                onClick={() => setOpenManageResources(true)}
+                icon="Shield"
+                href="#"
+                label="Gerenciar Recursos"
+                variant="outline"
+              />
+            </div>
           </div>
         </div>
 
@@ -139,114 +170,21 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <IGRPSelectPrimitive
-              value={resourceSelected}
-              onValueChange={setResourceSelected}
-              disabled={resourcesLoading}
-            >
-              <IGRPSelectTriggerPrimitive className="w-[250px]">
-                <IGRPSelectValuePrimitive placeholder="Selecione um recurso" />
-              </IGRPSelectTriggerPrimitive>
-              <IGRPSelectContentPrimitive>
-                {resources?.map((resource) => (
-                  <IGRPSelectItemPrimitive
-                    key={resource.id}
-                    value={resource.name}
-                  >
-                    {resource.name}
-                  </IGRPSelectItemPrimitive>
-                ))}
-              </IGRPSelectContentPrimitive>
-            </IGRPSelectPrimitive>
-
-            {resourceSelected && (
-              <>
-                <div className="flex flex-wrap gap-2 flex-shirnk-0">
-                  <IGRPDropdownMenuPrimitive>
-                    <IGRPDropdownMenuTriggerPrimitive asChild>
-                      <IGRPButtonPrimitive variant="outline" className="gap-2">
-                        <IGRPIcon iconName="ListFilter" strokeWidth={2} />
-                        Estado{" "}
-                        {statusFilter.length > 0 && `(${statusFilter.length})`}
-                      </IGRPButtonPrimitive>
-                    </IGRPDropdownMenuTriggerPrimitive>
-                    <IGRPDropdownMenuContentPrimitive
-                      align="start"
-                      className="w-40"
-                    >
-                      <IGRPDropdownMenuSeparatorPrimitive />
-                      {STATUS_OPTIONS.map(({ value, label }) => (
-                        <IGRPDropdownMenuCheckboxItemPrimitive
-                          key={value}
-                          checked={statusFilter.includes(value)}
-                          onCheckedChange={(checked) => {
-                            setStatusFilter(
-                              checked
-                                ? [...statusFilter, value]
-                                : statusFilter.filter((s) => s !== value),
-                            );
-                          }}
-                        >
-                          {label}
-                        </IGRPDropdownMenuCheckboxItemPrimitive>
-                      ))}
-                      {statusFilter.length > 0 && (
-                        <>
-                          <IGRPDropdownMenuSeparatorPrimitive />
-                          <IGRPDropdownMenuItemPrimitive
-                            onClick={() => setStatusFilter([])}
-                            className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                          >
-                            <IGRPIcon
-                              iconName="X"
-                              className="mr-1"
-                              strokeWidth={2}
-                            />
-                            Limpar
-                          </IGRPDropdownMenuItemPrimitive>
-                        </>
-                      )}
-                    </IGRPDropdownMenuContentPrimitive>
-                  </IGRPDropdownMenuPrimitive>
-                </div>
-              </>
-            )}
           </div>
 
-          {!resourceSelected ? (
-            <div className="text-center py-12 text-muted-foreground">
+          {permissionEmpty ? (
+            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
               <IGRPIcon
-                iconName="ListFilter"
-                className="size-12 mx-auto mb-4 opacity-50"
+                iconName="ShieldOff"
+                className="w-16 h-16 mb-4 opacity-30"
+                strokeWidth={1.5}
               />
-              <p className="text-lg font-medium">Selecione um recurso</p>
-              <p className="text-sm">
-                Escolha um recurso para visualizar as permissões
+              <p className="text-lg font-medium mb-2">
+                Nenhuma permissão disponível
               </p>
-            </div>
-          ) : isLoading ? (
-            <div className="grid gap-4 animate-pulse">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <IGRPSkeletonPrimitive
-                  key={i}
-                  className="h-12 rounded-lg bg-muted"
-                />
-              ))}
-            </div>
-          ) : permissionEmpty ? (
-            <div className="text-center py-6 text-muted-foreground">
-              <div>Nenhuma permissão encontrada </div>
-              {searchTerm ? (
-                "Tente ajustar a sua pesquisa."
-              ) : (
-                <ButtonLink
-                  onClick={handleNewpermssion}
-                  icon="UserLock"
-                  href="#"
-                  label="Nova Permissão"
-                  variant="outline"
-                />
-              )}
+              <p className="text-sm mb-4">
+                Não existem permissões para este departamento.
+              </p>
             </div>
           ) : (
             <div className="w-full min-w-0">
@@ -260,81 +198,52 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                       <IGRPTableHeadPrimitive className="whitespace-nowrap">
                         Descrição
                       </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
-                        Estado
+                      <IGRPTableHeadPrimitive className="whitespace-nowrap text-right">
+                        Ativo
                       </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
-                        Nro. de Perfis
-                      </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="w-24" />
                     </IGRPTableRowPrimitive>
                   </IGRPTableHeaderPrimitive>
                   <IGRPTableBodyPrimitive>
-                    {filteredPermissions?.map((permssion) => (
-                      <IGRPTableRowPrimitive key={permssion.id}>
-                        <IGRPTableCellPrimitive className="font-medium whitespace-nowrap">
-                          {permssion.name}
-                        </IGRPTableCellPrimitive>
-                        <IGRPTableCellPrimitive className="whitespace-nowrap">
-                          {permssion.description || "N/A"}
-                        </IGRPTableCellPrimitive>
-                        <IGRPTableCellPrimitive className="whitespace-nowrap">
-                          <IGRPBadgePrimitive
-                            className={cn(
-                              getStatusColor(permssion.status),
-                              "capitalize",
-                            )}
-                          >
-                            {showStatus(permssion.status)}
-                          </IGRPBadgePrimitive>
-                        </IGRPTableCellPrimitive>
-                        <IGRPTableCellPrimitive className="whitespace-nowrap">
-                          {permssion.description || "N/A"}
-                        </IGRPTableCellPrimitive>
+                    {filteredPermissions.map((permission) => {
+                      const isProcessing =
+                        processingPermission === permission.name;
 
-                        <IGRPTableCellPrimitive>
-                          <IGRPDropdownMenuPrimitive>
-                            <IGRPDropdownMenuTriggerPrimitive asChild>
-                              <IGRPButtonPrimitive
-                                variant="ghost"
-                                className="size-8 p-0"
-                              >
-                                <span className="sr-only">Abrir Menu</span>
+                      return (
+                        <IGRPTableRowPrimitive key={permission.id}>
+                          <IGRPTableCellPrimitive className="font-medium whitespace-nowrap">
+                            {permission.name}
+                          </IGRPTableCellPrimitive>
+                          <IGRPTableCellPrimitive className="whitespace-nowrap">
+                            {permission.description || "N/A"}
+                          </IGRPTableCellPrimitive>
+                          <IGRPTableCellPrimitive className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {isProcessing && (
                                 <IGRPIcon
-                                  iconName="Ellipsis"
-                                  className="size-4"
+                                  iconName="LoaderCircle"
+                                  className="w-4 h-4 animate-spin text-muted-foreground"
+                                  strokeWidth={2}
                                 />
-                              </IGRPButtonPrimitive>
-                            </IGRPDropdownMenuTriggerPrimitive>
-                            <IGRPDropdownMenuContentPrimitive align="end">
-                              <IGRPDropdownMenuLabelPrimitive>
-                                Ações
-                              </IGRPDropdownMenuLabelPrimitive>
-                              <IGRPDropdownMenuItemPrimitive
-                                onSelect={() => handleEdit(permssion)}
-                              >
-                                <IGRPIcon
-                                  iconName="Pencil"
-                                  className="mr-1 size-4"
-                                />
-                                Editar
-                              </IGRPDropdownMenuItemPrimitive>
-                              <IGRPDropdownMenuSeparatorPrimitive />
-                              <IGRPDropdownMenuItemPrimitive
-                                onClick={() => handleDelete(permssion.name)}
-                                variant="destructive"
-                              >
-                                <IGRPIcon
-                                  iconName="Trash"
-                                  className="mr-1 size-4"
-                                />
-                                Eliminar
-                              </IGRPDropdownMenuItemPrimitive>
-                            </IGRPDropdownMenuContentPrimitive>
-                          </IGRPDropdownMenuPrimitive>
-                        </IGRPTableCellPrimitive>
-                      </IGRPTableRowPrimitive>
-                    ))}
+                              )}
+                              <IGRPSwitchPrimitive
+                                checked={permission.isAssigned}
+                                disabled={processingPermission !== null}
+                                onCheckedChange={(checked) =>
+                                  handleTogglePermission(
+                                    permission.name,
+                                    checked,
+                                  )
+                                }
+                                className={cn(
+                                  "data-[state=checked]:bg-emerald-500",
+                                  isProcessing && "opacity-50",
+                                )}
+                              />
+                            </div>
+                          </IGRPTableCellPrimitive>
+                        </IGRPTableRowPrimitive>
+                      );
+                    })}
                   </IGRPTableBodyPrimitive>
                 </IGRPTablePrimitive>
               </div>
@@ -343,20 +252,11 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         </div>
       </div>
 
-      <PermissionFormDialog
-        open={openFormDialog}
-        onOpenChange={setOpenFormDialog}
+      <ManageResourcesModal
         departmentCode={departmentCode}
-        permission={selectedPermission}
+        open={openManageResources}
+        onOpenChange={setOpenManageResources}
       />
-
-      {permissionToDelete && (
-        <PermissionDeleteDialog
-          open={openDeleteDialog}
-          onOpenChange={setOpenDeleteDialog}
-          permissionToDelete={permissionToDelete}
-        />
-      )}
     </>
   );
 }

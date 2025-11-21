@@ -16,6 +16,7 @@ interface IGRPDialogDeleteProps {
   onOpenChange: (open: boolean) => void;
   toDelete: { code?: string; name: string };
   confirmDelete(): Promise<void>;
+  isDeleting: boolean;
   description?: string;
   label?: string;
   labelBtnCancel?: string;
@@ -28,6 +29,7 @@ function IGRPDialogDelete({
   onOpenChange,
   toDelete,
   confirmDelete,
+  isDeleting,
   description,
   label = "Escreva",
   labelBtnCancel = "Cancelar",
@@ -92,14 +94,18 @@ function IGRPDialogDelete({
             }}
             type="button"
           >
+            <IGRPIcon iconName="X" className=" size-4" strokeWidth={2} />
             {labelBtnCancel}
           </IGRPButtonPrimitive>
           <IGRPButtonPrimitive
             variant="destructive"
-            onClick={confirmDelete}
-            disabled={!isConfirmed}
+            onClick={() => {
+              confirmDelete(), setConfirmation("");
+            }}
+            disabled={!isConfirmed || isDeleting}
           >
-            {labelBtnDelete}
+            <IGRPIcon iconName="Trash" className="size-4" strokeWidth={2} />
+            {isDeleting ? "Aguarde..." : labelBtnDelete}
           </IGRPButtonPrimitive>
         </IGRPDialogFooterPrimitive>
       </IGRPDialogContentPrimitive>

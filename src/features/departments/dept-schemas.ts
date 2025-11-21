@@ -11,11 +11,24 @@ export const departmentSchema = z
         /^[A-Z0-9_]+$/,
         "O código deve conter maiusculas, números e sublinhados",
       )
-      .min(3, "Código é obrigatório (min 3 carateres)"),
-    name: trimmed.min(3, "Nome é obrigatório (min 3 carateres)"),
-    description: z.string().min(5, "Descrição é obrigatória"),
+      .min(2, "Código é obrigatório (min 2 carateres)"),
+    name: z
+      .string()
+      .min(2, "Nome é obrigatório (min 2 carateres)")
+      .regex(
+        /^[a-zA-Z0-9\sÀ-ÿ()]+$/,
+        "O nome não pode conter caracteres especiais",
+      ),
+    description: z
+      .string()
+      // .regex(
+      //   /^[a-zA-Z0-9\sÀ-ÿ]+$/,
+      //   "A descrição não pode conter caracteres especiais"
+      // )
+      .optional()
+      .nullable(),
     status: statusSchema,
-    parent_code: trimmed.optional(),
+    parentCode: trimmed.optional(),
   })
   .strict();
 
@@ -46,6 +59,6 @@ export const normalizeDeptartment = (data: DepartmentArgs) => {
     name: data.name,
     description: data.description,
     status: data.status as DepartmentStatus,
-    parent_code: data.parent_code,
+    parentCode: data.parentCode,
   };
 };

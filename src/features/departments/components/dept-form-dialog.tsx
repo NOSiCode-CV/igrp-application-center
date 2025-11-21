@@ -26,23 +26,23 @@ import {
   IGRPTextAreaPrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusSchema } from "@/schemas/global";
-import { DEPT_OPTIONS } from "../dept-lib";
 import {
-  type DepartmentArgs,
+  DepartmentArgs,
   departmentSchema,
   normalizeDeptartment,
 } from "../dept-schemas";
 import { useCreateDepartment, useUpdateDepartment } from "../use-departments";
+import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
 interface DepartmentCreateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  department: DepartmentArgs | null;
-  parentDeptId?: string | null;
+  department: DepartmentDTO | null;
+  parentDeptId?: DepartmentDTO | null;
 }
 
 export function DepartmentFormDialog({
@@ -52,7 +52,7 @@ export function DepartmentFormDialog({
   parentDeptId,
 }: DepartmentCreateDialogProps) {
   const { igrpToast } = useIGRPToast();
-
+  const [shouldClose, setShouldClose] = useState(false);
   const { mutateAsync: createDepartment, isPending: isCreating } =
     useCreateDepartment();
   const { mutateAsync: updateDepartment, isPending: isUpdating } =
@@ -63,7 +63,7 @@ export function DepartmentFormDialog({
     code: "",
     description: "",
     status: statusSchema.enum.ACTIVE,
-    parent_code: "",
+    parentCode: "",
   };
 
   const form = useForm<DepartmentArgs>({
@@ -80,17 +80,24 @@ export function DepartmentFormDialog({
         code: department.code ?? "",
         description: department.description ?? "",
         status: department.status ?? statusSchema.enum.ACTIVE,
-        parent_code: department.parent_code ?? "",
+        parentCode: department.parentCode ?? "",
       });
     } else {
       form.reset({
         ...defaultValues,
-        parent_code: parentDeptId ?? "",
+        parentCode: parentDeptId?.code ?? "",
       });
     }
   }, [open, department, parentDeptId, form]);
 
   const watchedName = form.watch("name");
+
+  useEffect(() => {
+    if (!open) {
+      form.reset(defaultValues);
+      form.clearErrors();
+    }
+  }, [open, form]);
 
   useEffect(() => {
     const codeDirty = !!form.formState.dirtyFields?.code;
@@ -100,10 +107,15 @@ export function DepartmentFormDialog({
     if (!raw) return;
 
     if (!department) {
-      const code = `DEPT_${raw.replace(/\s+/g, "_").toUpperCase()}`.slice(
-        0,
-        30,
-      );
+      const ignoreWords = ["do", "da", "de", "dos", "das", "e", "o", "a"];
+      const words = raw.split(/\s+/);
+
+      const initials = words
+        .filter((word) => !ignoreWords.includes(word.toLowerCase()))
+        .map((word) => word.charAt(0).toUpperCase())
+        .join("");
+
+      const code = initials.slice(0, 30);
       form.setValue("code", code, { shouldValidate: true, shouldDirty: false });
     }
   }, [watchedName, form, department]);
@@ -123,15 +135,26 @@ export function DepartmentFormDialog({
       igrpToast({
         type: "success",
         title: "Departamento",
-        description: `O departamento foi ${department ? "atualizado" : "criado"} com sucesso.`,
+        description: `O departamento foi ${
+          department ? "atualizado" : "criado"
+        } com sucesso.`,
       });
 
-      form.reset();
-      onOpenChange(false);
+      if (shouldClose) {
+        onOpenChange(false);
+        form.reset();
+      } else {
+        form.reset({
+          ...defaultValues,
+          parentCode: parentDeptId?.code ?? "",
+        });
+      }
     } catch (error) {
       igrpToast({
         type: "error",
-        title: `Não foi possível ${department ? "atualizar" : "criar"} departamento.`,
+        title: `Não foi possível ${
+          department ? "atualizar" : "criar"
+        } departamento.`,
         description:
           error instanceof Error
             ? error.message
@@ -140,7 +163,7 @@ export function DepartmentFormDialog({
     }
   };
 
-  const isSubDepartment = Boolean(parentDeptId);
+  const isSubDepartment = Boolean(parentDeptId?.code);
 
   const titleTxt = department
     ? "Editar Departamento"
@@ -210,7 +233,7 @@ export function DepartmentFormDialog({
                       disabled={isLoading || !!department}
                       {...field}
                       onFocus={() => form.trigger("code")}
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                     />
                   </IGRPFormControlPrimitive>
                   <IGRPFormMessagePrimitive />
@@ -223,13 +246,12 @@ export function DepartmentFormDialog({
               name="description"
               render={({ field }) => (
                 <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                  <IGRPFormLabelPrimitive className="">
                     Descrição
                   </IGRPFormLabelPrimitive>
                   <IGRPFormControlPrimitive>
                     <IGRPTextAreaPrimitive
                       placeholder="Breve descrição do departamento"
-                      required
                       rows={2}
                       disabled={isLoading}
                       value={field.value ?? ""}
@@ -248,7 +270,7 @@ export function DepartmentFormDialog({
             {isSubDepartment && (
               <IGRPFormFieldPrimitive
                 control={form.control}
-                name="parent_code"
+                name="parentCode"
                 render={({ field }) => (
                   <IGRPFormItemPrimitive>
                     <IGRPFormLabelPrimitive>
@@ -257,6 +279,12 @@ export function DepartmentFormDialog({
                     <IGRPFormControlPrimitive>
                       <IGRPInputPrimitive
                         {...field}
+                        value={
+                          parentDeptId?.name ||
+                          parentDeptId?.description ||
+                          parentDeptId?.code ||
+                          ""
+                        }
                         disabled
                         placeholder="Departamento pai"
                         className="bg-muted border-primary/30"
@@ -301,7 +329,7 @@ export function DepartmentFormDialog({
               />
             )}
 
-            <IGRPDialogFooterPrimitive className="pt-6">
+            <IGRPDialogFooterPrimitive className="pt-6 flex justify-between">
               <IGRPButton
                 variant="outline"
                 onClick={() => {
@@ -312,18 +340,35 @@ export function DepartmentFormDialog({
                 disabled={isLoading}
                 showIcon
                 iconPlacement="start"
-                iconName="Undo2"
+                iconName="X"
               >
                 Cancelar
               </IGRPButton>
-              <IGRPButtonPrimitive
-                type="button"
-                disabled={isLoading}
-                onClick={form.handleSubmit(onSubmit)}
-              >
-                {isLoading ? "Guardando..." : "Guardar"}
-                <IGRPIcon iconName="Check" className="size-4" />
-              </IGRPButtonPrimitive>
+
+              <div className="flex gap-1">
+                {!department && (
+                  <IGRPButtonPrimitive
+                    type="submit"
+                    variant="outline"
+                    disabled={isLoading}
+                    onClick={() => setShouldClose(false)}
+                    className="flex items-center gap-1"
+                  >
+                    <IGRPIcon iconName="Save" className="size-4" />
+                    {isLoading ? "Guardando..." : "Guardar e Novo"}
+                  </IGRPButtonPrimitive>
+                )}
+
+                <IGRPButtonPrimitive
+                  type="submit"
+                  disabled={isLoading}
+                  onClick={() => setShouldClose(true)}
+                  className="flex items-center gap-1"
+                >
+                  <IGRPIcon iconName="Save" className="size-4" />
+                  {isLoading ? "Guardando..." : "Guardar"}
+                </IGRPButtonPrimitive>
+              </div>
             </IGRPDialogFooterPrimitive>
           </form>
         </IGRPFormPrimitive>

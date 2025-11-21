@@ -4,6 +4,7 @@ import {
   cn,
   IGRPBadge,
   IGRPBadgePrimitive,
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPCheckboxPrimitive,
   IGRPDialogContentPrimitive,
@@ -44,26 +45,17 @@ import {
 } from "@tanstack/react-table";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 
-import { PermissionLoading } from "@/features/permissions/components/permission-loading";
-import type { PermissionArgs } from "@/features/permissions/permissions-schemas";
-import {
-  usePermissions,
-  usePermissionsbyName,
-} from "@/features/permissions/use-permission";
 import type { RoleArgs } from "@/features/roles/role-schemas";
-import { getStatusColor, showStatus } from "@/lib/utils";
+
 import {
   useAddPermissionsToRole,
-  usePermissionsByRoleByCode,
+  useDepartmentPermissions,
+  usePermissionsByRole,
   useRemovePermissionsFromRole,
-} from "../use-roles";
-import { useResources } from "@/features/resources/use-resources";
+} from "@/features/departments/use-departments";
+import { AppCenterLoading } from "@/components/loading";
 
-const multiColumnFilterFn: FilterFn<PermissionArgs> = (
-  row,
-  _columnId,
-  filterValue,
-) => {
+const multiColumnFilterFn: FilterFn<any> = (row, _columnId, filterValue) => {
   const term = String(filterValue ?? "")
     .toLowerCase()
     .trim();
@@ -73,7 +65,7 @@ const multiColumnFilterFn: FilterFn<PermissionArgs> = (
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<PermissionArgs>[] = [
+const columns: ColumnDef<any>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -114,27 +106,11 @@ const columns: ColumnDef<PermissionArgs>[] = [
     cell: ({ row }) => <div>{row.getValue("description") || "N/A"}</div>,
     enableSorting: false,
   },
-  {
-    header: "Estado",
-    accessorKey: "status",
-    cell: ({ row }) => (
-      <IGRPBadgePrimitive
-        className={cn(getStatusColor(row.getValue("status")), "capitalize")}
-      >
-        {showStatus(row.getValue("status"))}
-      </IGRPBadgePrimitive>
-    ),
-    size: 40,
-    enableSorting: false,
-  },
 ];
 
 const norm = (s: string) => s.trim().toLowerCase();
 
-function diffPermissions(
-  selected: PermissionArgs[],
-  existing: PermissionArgs[],
-) {
+function diffPermissions(selected: any[], existing: any[]) {
   const selectedNorm = new Set(selected.map((p) => norm(p.name)));
   const existingNorm = new Set(existing.map((p) => norm(p.name)));
 
@@ -171,35 +147,34 @@ export function RoleDetails({
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
 
-  const [data, setData] = useState<PermissionArgs[]>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [resourceSelected, setResourceSelected] = useState<string>("");
 
-  const { data: resources, isLoading: resourcesLoading } = useResources();
-
-  const {
-    data: permissions,
-    isLoading,
-    error,
-  } = usePermissionsbyName({ resourceName: resourceSelected });
+  const { data: departmentPermissions, isLoading: isLoadingDepartment } =
+    useDepartmentPermissions(departmentCode);
 
   const {
     data: permissionByRole,
     isLoading: isLoadingPermissionsByRole,
     error: errorPermissionsByRole,
-  } = usePermissionsByRoleByCode(role.code);
+  } = usePermissionsByRole(departmentCode, role.code);
 
   const { mutateAsync: addPermissions, isPending: isAdding } =
     useAddPermissionsToRole();
   const { mutateAsync: removePermissions, isPending: isRemoving } =
     useRemovePermissionsFromRole();
 
-  const getRowKey = (r: PermissionArgs) => String(r.id ?? r.name);
+  const allPermissions = useMemo(() => {
+    return (departmentPermissions ?? []).sort((a, b) =>
+      a.name.localeCompare(b.name, "pt"),
+    );
+  }, [departmentPermissions]);
+
+  const getRowKey = (r: any) => String(r.id ?? r.name);
 
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(permissionByRole) ? permissionByRole : [];
@@ -207,23 +182,18 @@ export function RoleDetails({
   }, [permissionByRole]);
 
   useEffect(() => {
-    setData(permissions ?? []);
-    setRowSelection({});
-  }, [permissions]);
-
-  useEffect(() => {
-    if (!data?.length) return;
+    if (!allPermissions?.length) return;
 
     const next: RowSelectionState = {};
-    for (const row of data) {
+    for (const row of allPermissions) {
       const key = getRowKey(row);
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [data, preselectedKeys]);
+  }, [allPermissions, preselectedKeys]);
 
   const table = useReactTable({
-    data,
+    data: allPermissions,
     columns,
     enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
@@ -251,14 +221,7 @@ export function RoleDetails({
 
   const hasChanges = toAdd.length > 0 || toRemove.length > 0;
 
-  if (error) {
-    return (
-      <div className="rounded-md border py-6">
-        <p className="text-center">Ocorreu um erro ao carregar permissões.</p>
-        <p className="text-center">{error.message}</p>
-      </div>
-    );
-  }
+  const isLoading = isLoadingDepartment || isLoadingPermissionsByRole;
 
   async function onSubmit() {
     if (!hasChanges) {
@@ -273,12 +236,17 @@ export function RoleDetails({
     try {
       if (toAdd.length) {
         await addPermissions({
-          name: role.name,
-          permissionNames: toAdd as string[],
+          departmentCode,
+          roleCode: role.code,
+          permissionCodes: toAdd as string[],
         });
       }
       if (toRemove.length) {
-        await removePermissions({ name: role.name, permissionNames: toRemove });
+        await removePermissions({
+          departmentCode,
+          roleCode: role.code,
+          permissionCodes: toRemove,
+        });
       }
 
       igrpToast({
@@ -305,7 +273,6 @@ export function RoleDetails({
       type: "error",
       title: "Perfil tem permissões associadas, mas não foram carregadas.",
     });
-    return <PermissionLoading />;
   }
 
   return (
@@ -313,7 +280,7 @@ export function RoleDetails({
       <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
         <IGRPDialogHeaderPrimitive>
           <IGRPDialogTitlePrimitive className="text-base">
-            Adicionar ou Remover Permissões de{" "}
+            Adicionar ou Remover Permissões de perfil{" "}
             <IGRPBadge>{role.name}</IGRPBadge>
           </IGRPDialogTitlePrimitive>
         </IGRPDialogHeaderPrimitive>
@@ -321,25 +288,6 @@ export function RoleDetails({
         <div className="flex-1 min-w-0 overflow-x-hidden">
           <section className="space-y-10 max-w-full">
             <div className="flex flex-col gap-4">
-              <IGRPSelectPrimitive
-                value={resourceSelected}
-                onValueChange={setResourceSelected}
-                disabled={resourcesLoading}
-              >
-                <IGRPSelectTriggerPrimitive className="w-[250px]">
-                  <IGRPSelectValuePrimitive placeholder="Selecione um recurso" />
-                </IGRPSelectTriggerPrimitive>
-                <IGRPSelectContentPrimitive>
-                  {resources?.map((resource) => (
-                    <IGRPSelectItemPrimitive
-                      key={resource.id}
-                      value={resource.name}
-                    >
-                      {resource.name}
-                    </IGRPSelectItemPrimitive>
-                  ))}
-                </IGRPSelectContentPrimitive>
-              </IGRPSelectPrimitive>
               <div className="relative py-4">
                 <IGRPInputPrimitive
                   id={`${id}-input`}
@@ -360,7 +308,7 @@ export function RoleDetails({
                   aria-label="Filtar por nome"
                 />
                 <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-                  <IGRPIcon iconName="ListFilter" />
+                  <IGRPIcon iconName="Search" />
                 </div>
                 {Boolean(table.getColumn("name")?.getFilterValue()) && (
                   <button
@@ -381,43 +329,9 @@ export function RoleDetails({
                 <IGRPBadgePrimitive>
                   {selectedRows.length} selecionado(s)
                 </IGRPBadgePrimitive>
-
-                <div className="flex gap-2">
-                  <IGRPButtonPrimitive
-                    variant="default"
-                    onClick={onSubmit}
-                    disabled={!hasChanges || isAdding || isRemoving}
-                    size="sm"
-                  >
-                    Guardar
-                  </IGRPButtonPrimitive>
-
-                  <IGRPButtonPrimitive
-                    variant="outline"
-                    disabled={selectedRows.length === 0}
-                    onClick={() => setRowSelection({})}
-                    size="sm"
-                    className={
-                      selectedRows.length === 0 ? "hidden" : "inline-flex"
-                    }
-                  >
-                    Limpar seleção
-                  </IGRPButtonPrimitive>
-                </div>
               </div>
-              {!resourceSelected ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <IGRPIcon
-                    iconName="ListFilter"
-                    className="size-12 mx-auto mb-4 opacity-50"
-                  />
-                  <p className="text-lg font-medium">Selecione um recurso</p>
-                  <p className="text-sm">
-                    Escolha um recurso para visualizar as permissões
-                  </p>
-                </div>
-              ) : isLoading || isLoadingPermissionsByRole ? (
-                <PermissionLoading />
+              {isLoading ? (
+                <AppCenterLoading descrption="Carregando permissões..." />
               ) : (
                 <>
                   <div className="bg-background overflow-hidden rounded-md border">
@@ -594,6 +508,20 @@ export function RoleDetails({
                   </div>
                 </>
               )}
+
+              <div className="flex justify-end gap-2">
+              
+                <IGRPButton
+                  variant="default"
+                  onClick={onSubmit}
+                  disabled={!hasChanges || isAdding || isRemoving}
+                  size="sm"
+                  iconName="Save"
+                  showIcon
+                >
+                  Guardar
+                </IGRPButton>
+              </div>
             </div>
           </section>
         </div>

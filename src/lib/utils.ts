@@ -74,3 +74,68 @@ export function showStatus(status: string) {
   if (status == null || status === undefined) return null;
   return STATUS_OPTIONS.find((s) => s.value === status)?.label;
 }
+
+export const getMenuIcon = (type: string) => {
+  switch (type) {
+    case "FOLDER":
+      return "Folder";
+    case "EXTERNAL_PAGE":
+      return "ExternalLink";
+    case "MENU_PAGE":
+      return "FileText";
+    default:
+      return "FileText";
+  }
+};
+
+export function extractApiError(error: any): string {
+  if (error?.details) {
+    try {
+      const parsed = JSON.parse(error.details);
+
+      if (parsed.errors) {
+        const errorMessages = Object.values(parsed.errors).join(", ");
+        return errorMessages;
+      }
+
+      if (parsed.details) {
+        return parsed.details;
+      }
+
+      return parsed.title || getDefaultErrorMessage(error.status);
+    } catch {
+      return error.details;
+    }
+  }
+
+  if (error?.status) {
+    return getDefaultErrorMessage(error.status);
+  }
+
+  return error?.message || "Erro desconhecido";
+}
+
+function getDefaultErrorMessage(status?: number): string {
+  switch (status) {
+    case 400:
+      return "Requisição inválida";
+    case 401:
+      return "Não autorizado";
+    case 403:
+      return "Acesso negado";
+    case 404:
+      return "Recurso não encontrado";
+    case 409:
+      return "Conflito de dados";
+    case 422:
+      return "Dados inválidos";
+    case 500:
+      return "Erro interno do servidor";
+    case 502:
+      return "Servidor indisponível";
+    case 503:
+      return "Serviço temporariamente indisponível";
+    default:
+      return "Erro na operação";
+  }
+}

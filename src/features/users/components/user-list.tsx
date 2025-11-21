@@ -4,7 +4,6 @@ import {
   type ColumnDef,
   IGRPBadgePrimitive,
   IGRPDataTable,
-  IGRPDataTableCellExpander,
   type IGRPDataTableClientFilterListProps,
   IGRPDataTableFacetedFilterFn,
   IGRPDataTableFilterFaceted,
@@ -17,10 +16,6 @@ import {
   IGRPDropdownMenuSeparatorPrimitive,
   IGRPDropdownMenuTriggerPrimitive,
   IGRPIcon,
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipTriggerPrimitive,
   IGRPUserAvatar,
   type Row,
 } from "@igrp/igrp-framework-react-design-system";
@@ -28,24 +23,19 @@ import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useState } from "react";
 
 import { ButtonLink } from "@/components/button-link";
-import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";
 import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
-import {
-  useCurrentUser,
-  useUserRoles,
-  useUsers,
-} from "@/features/users/use-users";
-import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
+import { useCurrentUser, useUsers } from "@/features/users/use-users";
+import { STATUS_OPTIONS } from "@/lib/constants";
 import { cn, getInitials, getStatusColor, showStatus } from "@/lib/utils";
 import { UserDeleteDialog } from "./user-delete-dialog";
-import { UserRolesDialog } from "./user-role-dialog";
-import { UserRolesList } from "./user-roles-list";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function UserList() {
   const [data, setData] = useState<IGRPUserDTO[]>([]);
-
+const router = useRouter();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -53,26 +43,14 @@ export function UserList() {
     undefined,
   );
 
-  const [assignRolesFor, setAssignRolesFor] = useState<{
-    open: boolean;
-    username: string | null;
-    email: string | null;
-  }>(() => ({ open: false, username: null, email: null }));
-
   const { data: users, isLoading, error } = useUsers();
-  const { data: currentUser, isLoading: currentUserLoading } = useCurrentUser();
+  const { data: currentUser } = useCurrentUser();
 
   useEffect(() => {
     setData(users ?? []);
   }, [users]);
 
   const columns: ColumnDef<IGRPUserDTO>[] = [
-    {
-      id: "expander",
-      header: () => null,
-      cell: ({ row }) => <IGRPDataTableCellExpander row={row} field="name" />,
-      size: 50,
-    },
     {
       header: ({ column }) => (
         <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
@@ -95,42 +73,6 @@ export function UserList() {
               <span className="text-muted-foreground text-xs">{email}</span>
             </div>
           </div>
-        );
-      },
-    },
-    {
-      header: "Username",
-      accessorKey: "username",
-      cell: ({ row }) => {
-        const email = String(row.getValue("email"));
-        const username = String(row.getValue("username"));
-
-        return (
-          <>
-            {isCurrentUser(email) ? (
-              <div className="flex items-center gap-3">
-                <IGRPTooltipProviderPrimitive>
-                  <IGRPTooltipPrimitive>
-                    <IGRPTooltipTriggerPrimitive asChild>
-                      <ButtonLinkTooltip
-                        href={ROUTES.USER_PROFILE}
-                        className="underline underline-offset-2 hover:text-primary hover:no-underline"
-                        btnClassName="px-0 py-0 gap-1"
-                        label={username}
-                        icon="UserCheck"
-                        variant="link"
-                      />
-                    </IGRPTooltipTriggerPrimitive>
-                    <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
-                      Ver Perfil
-                    </IGRPTooltipContentPrimitive>
-                  </IGRPTooltipPrimitive>
-                </IGRPTooltipProviderPrimitive>
-              </div>
-            ) : (
-              username
-            )}
-          </>
         );
       },
     },
@@ -160,15 +102,6 @@ export function UserList() {
       size: 70,
     },
     {
-      id: "roles",
-      header: () => (
-        <IGRPDataTableHeaderDefault title="Perfís" className="text-center" />
-      ),
-      cell: ({ row }) => (
-        <RolesCountCell username={String(row.getValue("username"))} />
-      ),
-    },
-    {
       id: "actions",
       header: () => <span className="sr-only">Ações</span>,
       cell: ({ row }) => <RowActions row={row} />,
@@ -179,26 +112,17 @@ export function UserList() {
 
   function RowActions({ row }: { row: Row<IGRPUserDTO> }) {
     const email = String(row.getValue("email"));
-    const username = String(row.getValue("username"));
+    const state = String(row.getValue("status"));
 
     return (
       <IGRPDropdownMenuPrimitive>
-        <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
-          <IGRPIcon iconName="Ellipsis" />
-        </IGRPDropdownMenuTriggerPrimitive>
+        {!isCurrentUser(email) && state === "ACTIVE" && (
+          <>
+            <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
+              <IGRPIcon iconName="Ellipsis" />
+            </IGRPDropdownMenuTriggerPrimitive>
 
-        <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
-          <IGRPDropdownMenuItemPrimitive
-            onSelect={() => setAssignRolesFor({ open: true, username, email })}
-          >
-            <IGRPIcon iconName="ShieldUser" />
-            <span>Associar Perfís</span>
-          </IGRPDropdownMenuItemPrimitive>
-
-          {!isCurrentUser(email) && (
-            <>
-              <IGRPDropdownMenuSeparatorPrimitive />
-
+            <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
               <IGRPDropdownMenuItemPrimitive
                 className="text-destructive focus:text-destructive"
                 onSelect={() => handleDelete(row.original)}
@@ -207,36 +131,20 @@ export function UserList() {
                 <IGRPIcon iconName="CircleOff" />
                 Desativar
               </IGRPDropdownMenuItemPrimitive>
-            </>
-          )}
-        </IGRPDropdownMenuContentPrimitive>
+               <IGRPDropdownMenuItemPrimitive
+                className=""
+                variant="default"
+                onClick={() => router.push(`/users/${row.original.id}`)}
+              >
+                <Link className="flex gap-2" href={`/users/${row.original.id}`}>
+                <IGRPIcon iconName="UserCog" />
+                Gerir
+                </Link>
+              </IGRPDropdownMenuItemPrimitive>
+            </IGRPDropdownMenuContentPrimitive>
+          </>
+        )}
       </IGRPDropdownMenuPrimitive>
-    );
-  }
-
-  function RolesCountCell({ username }: { username: string }) {
-    const { data, isLoading, isError } = useUserRoles(username);
-
-    if (isLoading) return <div>…</div>;
-    if (isError) return <div>—</div>;
-
-    const roles = data ?? [];
-
-    if (roles.length === 0) {
-      return <div className="text-center">0</div>;
-    }
-
-    return (
-      <IGRPTooltipProviderPrimitive>
-        <IGRPTooltipPrimitive>
-          <IGRPTooltipTriggerPrimitive asChild>
-            <div className="text-center cursor-help">{roles.length} Perfís</div>
-          </IGRPTooltipTriggerPrimitive>
-          <IGRPTooltipContentPrimitive>
-            Expande o registo para mais informações
-          </IGRPTooltipContentPrimitive>
-        </IGRPTooltipPrimitive>
-      </IGRPTooltipProviderPrimitive>
     );
   }
 
@@ -296,26 +204,12 @@ export function UserList() {
         columns={columns}
         data={data}
         clientFilters={filters}
-        getRowCanExpand={(row) => Boolean(row.getValue("name"))}
-        renderSubComponent={(row) => (
-          <UserRolesList username={row.original.username} />
-        )}
       />
 
       {inviteDialogOpen && (
         <UserInviteDialog
           open={inviteDialogOpen}
           onOpenChange={setInviteDialogOpen}
-        />
-      )}
-
-      {assignRolesFor.open && (
-        <UserRolesDialog
-          open={assignRolesFor.open}
-          onOpenChange={(open) =>
-            setAssignRolesFor({ ...assignRolesFor, open })
-          }
-          username={assignRolesFor.username as string}
         />
       )}
 

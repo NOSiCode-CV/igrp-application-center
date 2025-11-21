@@ -1,12 +1,5 @@
 "use client";
 
-import { useApplications } from "@/features/applications/use-applications";
-import {
-  useAddRolesToMenu,
-  useDepartmentMenus,
-  useRemoveRolesFromMenu,
-} from "@/features/menus/use-menus";
-import { useRoles } from "@/features/roles/use-roles";
 import {
   cn,
   IGRPBadgePrimitive,
@@ -18,20 +11,32 @@ import {
   IGRPSelectValuePrimitive,
   IGRPSelectContentPrimitive,
   IGRPSelectItemPrimitive,
-  IGRPSkeletonPrimitive,
   IGRPTableBodyPrimitive,
   IGRPTableHeaderPrimitive,
   IGRPTableHeadPrimitive,
   IGRPTablePrimitive,
   IGRPTableRowPrimitive,
   useIGRPToast,
+  IGRPTooltipProviderPrimitive,
+  IGRPTooltipPrimitive,
+  IGRPTooltipTriggerPrimitive,
+  IGRPTooltipContentPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
-import { useState, useEffect } from "react";
-import { ManageAppsModal } from "./Modal/manage-apps-modal";
-import { MenuTreeRow } from "./dept-menu-tree";
-import { buildMenuTree } from "../dept-lib";
+import { useState, useEffect, useMemo } from "react";
 import { ManageMenusModal } from "./Modal/manage-menus-modal";
+import { buildMenuTree } from "../dept-lib";
+import MenuTreeRow from "./menu-tree-row";
+import { AppCenterLoading } from "@/components/loading";
+import {
+  useDepartmentApplications,
+  useDepartmentMenus,
+  useRoles,
+} from "../use-departments";
+import {
+  useAddRolesToMenu,
+  useRemoveRolesFromMenu,
+} from "@/features/applications/use-applications";
 
 interface MenuPermissionsProps {
   departmentCode: string;
@@ -47,23 +52,31 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const [menuRoleAssignments, setMenuRoleAssignments] = useState<
     Map<string, Set<string>>
   >(new Map());
-  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   const [showMenusModal, setShowMenusModal] = useState(false);
 
   const { data: menus, isLoading: loading } = useDepartmentMenus(
+    selectedApp,
     departmentCode || "",
   );
-  const { data: roles, isLoading: isLoadingRoles } = useRoles({
-    departmentCode: departmentCode || "",
-  });
-  const { data: assignedApps, isLoading: loadingApps } = useApplications({
-    departmentCode: departmentCode || "",
-  });
+  const { data: assignedApps, isLoading: loadingApps } =
+    useDepartmentApplications({ departmentCode: departmentCode || "" });
+  const { data: roles, isLoading: isLoadingRoles } = useRoles(
+    departmentCode || "",
+  );
 
   const addRolesMutation = useAddRolesToMenu();
   const removeRolesMutation = useRemoveRolesFromMenu();
   const saving = addRolesMutation.isPending || removeRolesMutation.isPending;
+
+  useEffect(() => {
+    if (assignedApps && assignedApps.length > 0 && !selectedApp) {
+      const sortedApps = [...assignedApps].sort((a, b) =>
+        a.name.localeCompare(b.name, "pt"),
+      );
+      setSelectedApp(sortedApps[0].code);
+    }
+  }, [assignedApps, selectedApp]);
 
   useEffect(() => {
     if (menus && menus.length > 0 && menuRoleAssignments.size === 0) {
@@ -73,7 +86,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
       });
       setMenuRoleAssignments(initialAssignments);
     }
-  }, [menus]);
+  }, [menus, menuRoleAssignments.size]);
 
   const handleSave = async () => {
     try {
@@ -93,8 +106,10 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         if (rolesToAdd.length > 0) {
           promises.push(
             addRolesMutation.mutateAsync({
+              appCode: selectedApp,
               menuCode,
-              roleCodes: rolesToAdd,
+              departmentCode,
+              roleNames: rolesToAdd,
             }),
           );
         }
@@ -102,8 +117,10 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         if (rolesToRemove.length > 0) {
           promises.push(
             removeRolesMutation.mutateAsync({
+              appCode: selectedApp,
               menuCode,
-              roleCodes: rolesToRemove,
+              departmentCode,
+              roleNames: rolesToRemove,
             }),
           );
         }
@@ -148,7 +165,41 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     );
   });
 
-  const menuTree = buildMenuTree(filteredMenus as any);
+  const menuTree = buildMenuTree(filteredMenus as MenuWithChildren[]);
+
+  const getColumnCheckState = (roleCode: string) => {
+    const visibleMenuCodes = filteredMenus.map((m) => m.code);
+    const menusWithRole = visibleMenuCodes.filter((code) =>
+      menuRoleAssignments.get(code)?.has(roleCode),
+    );
+
+    if (menusWithRole.length === 0) return false;
+    if (menusWithRole.length === visibleMenuCodes.length) return true;
+    return "indeterminate";
+  };
+
+  const toggleAllMenusForRole = (roleCode: string) => {
+    const visibleMenuCodes = filteredMenus.map((m) => m.code);
+    const currentState = getColumnCheckState(roleCode);
+
+    setMenuRoleAssignments((prev) => {
+      const newMap = new Map(prev);
+
+      visibleMenuCodes.forEach((menuCode) => {
+        const currentRoles = new Set(newMap.get(menuCode) || []);
+
+        if (currentState === true) {
+          currentRoles.delete(roleCode);
+        } else {
+          currentRoles.add(roleCode);
+        }
+
+        newMap.set(menuCode, currentRoles);
+      });
+
+      return newMap;
+    });
+  };
 
   const hasChanges = Array.from(menuRoleAssignments.entries()).some(
     ([menuCode, currentRoles]) => {
@@ -165,12 +216,17 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     },
   );
 
+  const sortedApps = useMemo(() => {
+    if (!assignedApps) return [];
+    return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
+  }, [assignedApps]);
+
   return (
     <>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="leading-none font-semibold mb-1"> Menus</div>
+            <div className="leading-none font-semibold mb-1">Menus</div>
             <div className="text-muted-foreground text-sm">
               Gerencie aplicações, menus e perfis do departamento.
             </div>
@@ -183,7 +239,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               className="gap-2"
             >
               <IGRPIcon iconName="Menu" className="w-4 h-4" strokeWidth={2} />
-              <span className="">Gerenciar Menus</span>
+              <span>Gerenciar Menus</span>
             </IGRPButtonPrimitive>
           </div>
         </div>
@@ -207,7 +263,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
             </div>
           )}
 
-          {assignedApps?.length !== 0 && (
+          {sortedApps.length !== 0 && (
             <div className="w-2/12">
               <IGRPSelectPrimitive
                 value={selectedApp}
@@ -218,7 +274,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   <IGRPSelectValuePrimitive placeholder="Todas as aplicações" />
                 </IGRPSelectTriggerPrimitive>
                 <IGRPSelectContentPrimitive>
-                  {assignedApps?.map((app) => (
+                  {sortedApps.map((app) => (
                     <IGRPSelectItemPrimitive key={app.code} value={app.code}>
                       <div className="flex items-center gap-2">
                         <IGRPIcon
@@ -237,11 +293,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         </div>
 
         {loading || isLoadingRoles ? (
-          <div className="space-y-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <IGRPSkeletonPrimitive key={i} className="h-14 rounded-lg" />
-            ))}
-          </div>
+          <AppCenterLoading descrption="A carregar menus..." />
         ) : menuTree.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon
@@ -276,14 +328,10 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     className="w-3 h-3"
                     strokeWidth={2}
                   />
-                  Filtrado por: {selectedApp}
+                  Filtrado por:{" "}
+                  {sortedApps.find((app) => app.code === selectedApp)?.name ||
+                    selectedApp}
                 </IGRPBadgePrimitive>
-                <button
-                  onClick={() => setSelectedApp("")}
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Limpar
-                </button>
               </div>
             )}
 
@@ -298,19 +346,60 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     {roles?.map((role) => (
                       <IGRPTableHeadPrimitive
                         key={role.name}
-                        className="text-center whitespace-nowrap w-36"
+                        className="text-center whitespace-nowrap w-36 border-l"
                       >
-                        <div className="flex flex-col items-center gap-1 py-1">
-                          <IGRPIcon
-                            iconName="ShieldCheck"
-                            className="w-4 h-4 text-primary"
-                            strokeWidth={2}
-                          />
+                        <div className="flex flex-col items-center gap-2 py-2">
+                          <div className="flex items-center gap-2">
+                            {/* <IGRPIcon
+                              iconName="ShieldCheck"
+                              className="w-4 h-4 text-primary"
+                              strokeWidth={2}
+                            /> */}
+                            <IGRPTooltipProviderPrimitive delayDuration={350}>
+                              <IGRPTooltipPrimitive>
+                                <IGRPTooltipTriggerPrimitive asChild>
+                                  <button
+                                    onClick={() =>
+                                      toggleAllMenusForRole(role.code)
+                                    }
+                                    className="group flex items-center gap-1 hover:bg-primary/10 px-2 py-1 rounded transition-colors"
+                                  >
+                                    <IGRPIcon
+                                      iconName={
+                                        getColumnCheckState(role.code) === true
+                                          ? "Check"
+                                          : getColumnCheckState(role.code) ===
+                                              "indeterminate"
+                                            ? "Check"
+                                            : "Square"
+                                      }
+                                      className={cn(
+                                        "w-4 h-4 transition-colors",
+                                        getColumnCheckState(role.code) === true
+                                          ? "text-primary"
+                                          : getColumnCheckState(role.code) ===
+                                              "indeterminate"
+                                            ? "text-primary/60"
+                                            : "text-muted-foreground group-hover:text-primary",
+                                      )}
+                                      strokeWidth={2}
+                                    />
+                                    <span className="sr-only">
+                                      Selecionar todos
+                                    </span>
+                                  </button>
+                                </IGRPTooltipTriggerPrimitive>
+                                <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
+                                  Marcar/desmarcar todos
+                                </IGRPTooltipContentPrimitive>
+                              </IGRPTooltipPrimitive>
+                            </IGRPTooltipProviderPrimitive>
+                          </div>
                           <span
                             className="text-xs font-semibold truncate max-w-full px-1"
                             title={role.name}
                           >
-                            {role.name.split(".").pop() || role.name}
+                            {role?.name?.split(".").pop() ?? role?.name ?? ""}
                           </span>
                         </div>
                       </IGRPTableHeadPrimitive>
@@ -321,13 +410,14 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 <IGRPTableBodyPrimitive>
                   {menuTree.map((menu) => (
                     <MenuTreeRow
+                      setMenuRoleAssignments={setMenuRoleAssignments}
                       key={menu.code}
                       menu={menu}
+                      roles={roles?.map((role) => ({
+                        name: role.name ?? "",
+                        code: role.code,
+                      }))}
                       menuRoleAssignments={menuRoleAssignments}
-                      setMenuRoleAssignments={setMenuRoleAssignments}
-                      roles={roles || []}
-                      expandedMenus={expandedMenus}
-                      setExpandedMenus={setExpandedMenus}
                     />
                   ))}
                 </IGRPTableBodyPrimitive>
@@ -341,7 +431,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               </div>
 
               <div className="flex gap-2">
-                <IGRPButtonPrimitive
+                {/* <IGRPButtonPrimitive
                   variant="outline"
                   onClick={() => {
                     if (menus) {
@@ -360,7 +450,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     strokeWidth={2}
                   />
                   Cancelar
-                </IGRPButtonPrimitive>
+                </IGRPButtonPrimitive> */}
 
                 <IGRPButtonPrimitive
                   onClick={handleSave}
@@ -370,20 +460,20 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   {saving ? (
                     <>
                       <IGRPIcon
-                        iconName="Loader"
+                        iconName="LoaderCircle"
                         className="w-4 h-4 animate-spin"
                         strokeWidth={2}
                       />
-                      Salvando...
+                      Guardando...
                     </>
                   ) : (
                     <>
                       <IGRPIcon
-                        iconName="Check"
+                        iconName="Save"
                         className="w-4 h-4"
                         strokeWidth={2}
                       />
-                      Salvar Permissões
+                      Guardar Permissões
                     </>
                   )}
                 </IGRPButtonPrimitive>

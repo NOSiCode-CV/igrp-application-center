@@ -1,6 +1,8 @@
 "use client";
 
+import { useDeleteMenu } from "@/features/applications/use-applications";
 import {
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogDescriptionPrimitive,
@@ -14,15 +16,16 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { useDeleteMenu } from "../use-menus";
 
 interface MenuDeleteDialogProps {
+  appCode: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   menuToDelete: { code: string; name: string };
 }
 
 export function MenuDeleteDialog({
+  appCode,
   open,
   onOpenChange,
   menuToDelete,
@@ -36,7 +39,7 @@ export function MenuDeleteDialog({
 
   async function confirmDelete() {
     try {
-      await deleteMenuAsync(menuToDelete.code);
+      await deleteMenuAsync({ appCode: appCode, menuCode: menuToDelete.code });
 
       igrpToast({
         type: "success",
@@ -104,23 +107,27 @@ export function MenuDeleteDialog({
           />
         </div>
         <IGRPDialogFooterPrimitive className="flex flex-col">
-          <IGRPButtonPrimitive
+          <IGRPButton
             variant="outline"
             onClick={() => {
               onOpenChange(false);
               setConfirmation("");
             }}
             type="button"
+            showIcon
+            iconName="X"
           >
             Cancelar
-          </IGRPButtonPrimitive>
-          <IGRPButtonPrimitive
+          </IGRPButton>
+          <IGRPButton
             variant="destructive"
             onClick={confirmDelete}
             disabled={!isConfirmed}
+            showIcon
+            iconName="Trash"
           >
             Eliminar
-          </IGRPButtonPrimitive>
+          </IGRPButton>
         </IGRPDialogFooterPrimitive>
       </IGRPDialogContentPrimitive>
     </IGRPDialogPrimitive>

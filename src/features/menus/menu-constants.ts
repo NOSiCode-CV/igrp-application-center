@@ -1,9 +1,10 @@
 import { menuTargetSchema, menuTypeSchema } from "./menu-schemas";
 
 export const menuTypeOptions = [
+  { value: "GROUP", label: "Grupo" },
+  { value: menuTypeSchema.enum.FOLDER, label: "Pasta" },
   { value: menuTypeSchema.enum.MENU_PAGE, label: "Página Interna" },
   { value: menuTypeSchema.enum.EXTERNAL_PAGE, label: "Página Externa" },
-  { value: menuTypeSchema.enum.FOLDER, label: "Grupo (Pasta)" },
 ] as const;
 
 export const menuTargetOptions = [

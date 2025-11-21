@@ -12,11 +12,11 @@ import {
   IGRPTooltipContentPrimitive,
   IGRPTooltipProviderPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
+import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
-import React, { useState } from "react";
-import type { DepartmentArgs } from "../dept-schemas";
+import React from "react";
 
-type DepartmentWithChildren = DepartmentArgs & {
+type DepartmentWithChildren = DepartmentDTO & {
   children?: DepartmentWithChildren[];
 };
 
@@ -36,7 +36,7 @@ const DepartmentTreeItem = ({
   setSelectedDeptCode: React.Dispatch<React.SetStateAction<string | null>>;
   selectedDeptCode: string | null;
   handleEdit: (dept: DepartmentWithChildren) => void;
-  handleCreateSubDept: (parentCode: string) => void;
+  handleCreateSubDept: (parentCode: any) => void;
   handleDelete: (code: string, name: string) => void;
   expandedDepts: Set<string>;
   setExpandedDepts: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -44,6 +44,8 @@ const DepartmentTreeItem = ({
   const hasChildren = dept.children && dept.children.length > 0;
   const isExpanded = expandedDepts.has(dept.code);
   const isSelected = selectedDeptCode === dept.code;
+
+  const isActive = dept.status === "ACTIVE";
 
   const toggleExpand = (code: string) => {
     const newExpanded = new Set(expandedDepts);
@@ -59,10 +61,12 @@ const DepartmentTreeItem = ({
     <div>
       <div
         className={cn(
-          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm border border-accent text-sm transition-all cursor-pointer",
+          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm text-sm transition-all cursor-pointer",
           isSelected
-            ? "bg-primary/10 text-primary font-medium"
-            : "text-foreground hover:bg-accent/50",
+            ? "bg-accent/50 text-primary font-medium"
+            : isActive
+              ? "border-accent text-foreground bg-accent/20"
+              : "border-accent text-foreground bg-accent/20",
         )}
         onClick={() => {
           if (hasChildren) toggleExpand(dept.code);
@@ -88,11 +92,16 @@ const DepartmentTreeItem = ({
           onClick={() => setSelectedDeptCode(dept.code)}
           className="flex items-center gap-2 flex-1 min-w-0"
         >
-          <IGRPIcon
-            iconName={isExpanded ? "FolderOpen" : "Folder"}
-            className="w-4 h-4 shrink-0"
-            strokeWidth={2}
-          />
+          <div className="relative">
+            <IGRPIcon
+              iconName={isExpanded ? "FolderOpen" : "Folder"}
+              className={cn("w-4 h-4 shrink-0", !isActive && "opacity-50")}
+              strokeWidth={2}
+            />
+            {!isActive && (
+              <div className="absolute -right-0.5 -bottom-0.5 w-2 h-2 rounded-full bg-red-500/50 border border-background" />
+            )}
+          </div>
           <span className="flex-1 text-left truncate font-medium">
             {dept.name}
           </span>
@@ -105,7 +114,7 @@ const DepartmentTreeItem = ({
                 <IGRPButtonPrimitive
                   variant="ghost"
                   className="h-6 w-6 p-0"
-                  onClick={() => handleCreateSubDept(dept.code)}
+                  onClick={() => handleCreateSubDept(dept)}
                 >
                   <span className="sr-only">Criar Sub-departamento</span>
                   <IGRPIcon
@@ -158,7 +167,7 @@ const DepartmentTreeItem = ({
               <IGRPDropdownMenuItemPrimitive
                 onSelect={(e) => {
                   e.stopPropagation();
-                  handleCreateSubDept(dept.code);
+                  handleCreateSubDept(dept);
                 }}
               >
                 <IGRPIcon

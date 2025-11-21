@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogFooterPrimitive,
@@ -34,7 +35,10 @@ import {
   type UpdateRoleArgs,
   updateRoleSchema,
 } from "../role-schemas";
-import { useCreateRole, useUpdateRole } from "../use-roles";
+import {
+  useCreateRole,
+  useUpdateRole,
+} from "@/features/departments/use-departments";
 
 interface RoleFormDialogProps {
   open: boolean;
@@ -51,13 +55,11 @@ export function RoleFormDialog({
   departmentCode,
   role,
   parentRoleName,
-  roles,
 }: RoleFormDialogProps) {
   const { mutateAsync: createRole, isPending: isCreating } = useCreateRole();
   const { mutateAsync: updateRole, isPending: isUpdating } = useUpdateRole();
 
   const { igrpToast } = useIGRPToast();
-
   const isEdit = !!role;
   const isSubRole = !!parentRoleName;
 
@@ -106,7 +108,11 @@ export function RoleFormDialog({
 
         const payload = normalizeRole(parsed as RoleArgs);
 
-        await updateRole({ name: role.name, data: payload });
+        await updateRole({
+          departmentCode: role.departmentCode,
+          roleCode: role.code,
+          role: payload,
+        });
 
         igrpToast({
           type: "success",
@@ -115,7 +121,7 @@ export function RoleFormDialog({
         });
       } else {
         const payload = normalizeRole(values);
-        await createRole(payload);
+        await createRole({ departmentCode, role: payload });
 
         igrpToast({
           type: "success",
@@ -203,7 +209,7 @@ export function RoleFormDialog({
                       placeholder="CODIGO_ROLE"
                       required
                       pattern="^[A-Z0-9_]+$"
-                      disabled={isLoading}
+                      disabled={isLoading || isEdit}
                       className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                       {...field}
                     />
@@ -259,51 +265,53 @@ export function RoleFormDialog({
               />
             )}
 
-            {role && (
-              <IGRPFormFieldPrimitive
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                    <IGRPSelectPrimitive
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <IGRPFormControlPrimitive>
-                        <IGRPSelectTriggerPrimitive className="w-full truncate">
-                          <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                        </IGRPSelectTriggerPrimitive>
-                      </IGRPFormControlPrimitive>
-                      <IGRPSelectContentPrimitive>
-                        {STATUS_OPTIONS.map((status) => (
-                          <IGRPSelectItemPrimitive
-                            key={status.value}
-                            value={status.value}
-                          >
-                            {status.label}
-                          </IGRPSelectItemPrimitive>
-                        ))}
-                      </IGRPSelectContentPrimitive>
-                    </IGRPSelectPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
-                )}
-              />
-            )}
+            <IGRPFormFieldPrimitive
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <IGRPFormItemPrimitive>
+                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
+                  <IGRPSelectPrimitive
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  >
+                    <IGRPFormControlPrimitive>
+                      <IGRPSelectTriggerPrimitive className="w-full truncate">
+                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
+                      </IGRPSelectTriggerPrimitive>
+                    </IGRPFormControlPrimitive>
+                    <IGRPSelectContentPrimitive>
+                      {STATUS_OPTIONS.map((status) => (
+                        <IGRPSelectItemPrimitive
+                          key={status.value}
+                          value={status.value}
+                        >
+                          {status.label}
+                        </IGRPSelectItemPrimitive>
+                      ))}
+                    </IGRPSelectContentPrimitive>
+                  </IGRPSelectPrimitive>
+                  <IGRPFormMessagePrimitive />
+                </IGRPFormItemPrimitive>
+              )}
+            />
 
             <IGRPDialogFooterPrimitive className="pt-4">
-              <IGRPButtonPrimitive
+              <IGRPButton
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                showIcon
+                iconPlacement="start"
+                iconName="X"
               >
                 Cancelar
-              </IGRPButtonPrimitive>
+              </IGRPButton>
               <IGRPButtonPrimitive
                 type="submit"
                 disabled={isCreating || isUpdating}
               >
+                <IGRPIcon iconName="Save" className="size-4" />
                 {isEdit
                   ? isUpdating
                     ? "Atualizando..."
