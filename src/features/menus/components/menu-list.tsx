@@ -43,7 +43,6 @@ import {
 export function MenuList({ app }: { app: ApplicationDTO }) {
   const { code } = app;
   const { data: appMenus, isLoading, error: errorGetMenus } = useMenus(code);
-
   const [menus, setMenus] = useState<IGRPMenuItemArgs[]>([]);
   const [openFormDialog, setOpenFormDialog] = useState(false);
   const [openTypeFormDialog, setOpenTypeFormDialog] = useState<
@@ -265,7 +264,7 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
             Gerir e reorganizar os menus desta aplicação.
           </IGRPCardDescriptionPrimitive>
         </div>
-        {!menuEmpty && (
+        {String(app?.type) !== "SYSTEM" && !menuEmpty && (
           <div className="mb-3 flex justify-end">
             <ButtonLink
               onClick={() => {
@@ -329,6 +328,7 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
 
                   return (
                     <SortableMenuItem
+                      app={app}
                       key={menu.code}
                       menu={menu}
                       onView={handleView}

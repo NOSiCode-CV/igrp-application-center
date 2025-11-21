@@ -14,7 +14,6 @@ import {
   IGRPUserAvatarImagePrimitive,
   IGRPUserAvatarFallbackPrimitive,
   useIGRPToast,
-  IGRPSeparatorPrimitive,
   IGRPCardPrimitive,
   IGRPCardContentPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
@@ -49,8 +48,6 @@ export function ApplicationDetails({ code }: { code: string }) {
   const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
     app?.picture || uploadedFilePath || "",
   );
-
-  console.log("fileUrl", fileUrl);
 
   useEffect(() => {
     if (fileUrl) {
@@ -123,7 +120,7 @@ export function ApplicationDetails({ code }: { code: string }) {
         <IGRPCardContentPrimitive className="px-4 py-1">
           <div className="flex items-center pb-2 justify-between">
             <BackButton label="Voltar" href={ROUTES.APPLICATIONS} />
-            <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
+            {String(app?.type) !== "SYSTEM" && <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
               <IGRPDialogTriggerPrimitive asChild>
                 <IGRPButton
                   showIcon
@@ -147,6 +144,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                 />
               </IGRPDialogContentPrimitive>
             </IGRPDialogPrimitive>
+            }
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">

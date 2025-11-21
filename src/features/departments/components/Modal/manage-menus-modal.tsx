@@ -446,7 +446,7 @@ export function ManageMenusModal({
             </div>
           </div>
 
-          <ScrollArea className="h-96 w-full ">
+          <ScrollArea className="h-[95vh] w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (

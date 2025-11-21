@@ -268,7 +268,6 @@ export function MenuFormDialog({
         .toUpperCase()
         .replace(/[^\w\s-]/g, "")
         .replace(/\s+/g, "_");
-      console.log("Código gerado:", code);
       form.setValue("code", code);
     }
   };

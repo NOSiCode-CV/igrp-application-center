@@ -31,6 +31,7 @@ interface SortableMenuItemProps {
   appCode?: string;
   onAddInternalPage: any;
   onAddExternalPage: any;
+  app: any;
 }
 
 const MENU_TYPE_CONFIG = {
@@ -53,6 +54,7 @@ const MENU_TYPE_CONFIG = {
 } as any;
 
 export function SortableMenuItem({
+  app,
   menu,
   onView,
   onEdit,
@@ -197,6 +199,9 @@ export function SortableMenuItem({
                   />
                   Ver
                 </IGRPDropdownMenuItemPrimitive>
+                 {String(app?.type) !== "SYSTEM" && (
+                   
+                 <>
                 <IGRPDropdownMenuItemPrimitive onClick={() => onEdit(menu)}>
                   <IGRPIcon
                     iconName="Pencil"
@@ -247,6 +252,8 @@ export function SortableMenuItem({
                   />
                   Eliminar
                 </IGRPDropdownMenuItemPrimitive>
+                </>
+                )}
               </IGRPDropdownMenuContentPrimitive>
             </IGRPDropdownMenuPrimitive>
           </div>
@@ -265,6 +272,7 @@ export function SortableMenuItem({
 
               return (
                 <SortableMenuItem
+                  app={app}
                   key={child.code}
                   menu={child}
                   onEdit={onEdit}

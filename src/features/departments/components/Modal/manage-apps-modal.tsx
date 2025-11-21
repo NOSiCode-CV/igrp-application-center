@@ -168,7 +168,7 @@ export function ManageAppsModal({
   return (
     <>
       <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl ! max-h-[85vh] overflow-hidden flex flex-col">
+        <IGRPDialogContentPrimitive className="sm:min-w-2xl ! max-h-[95vh] overflow-hidden flex flex-col">
           <IGRPDialogHeaderPrimitive>
             <IGRPDialogTitlePrimitive className="flex items-center gap-2">
               <IGRPIcon
@@ -199,7 +199,7 @@ export function ManageAppsModal({
             </div>
           </div>
 
-          <ScrollArea className="h-96 w-full ">
+          <ScrollArea className="flex-1 h-[95vh]  w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
