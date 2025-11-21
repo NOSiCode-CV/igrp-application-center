@@ -29,6 +29,8 @@ export const useUsers = (params?: UserFilters) => {
   return useQuery<IGRPUserDTO[]>({
     queryKey: ["users"],
     queryFn: () => getUsers(params),
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -36,6 +38,8 @@ export const useCurrentUser = () => {
   return useQuery<IGRPUserDTO>({
     queryKey: ["current-user"],
     queryFn: async () => getCurrentUser(),
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -48,6 +52,8 @@ export const useInviteUser = () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
     },
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -68,6 +74,8 @@ export const useAddUserRole = () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
     },
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -90,6 +98,8 @@ export const useRemoveUserRole = () => {
       });
       await queryClient.invalidateQueries({ queryKey: ["users"] });
     },
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -98,6 +108,8 @@ export const useUserRoles = (id: number) => {
     queryKey: ["userRoles", id],
     queryFn: () => getUserRoles(id),
     enabled: !!id,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -107,6 +119,8 @@ export const useUserRolesMulti = (id: number[]) => {
       queryKey: ["userRoles", u],
       queryFn: () => getUserRoles(u),
       enabled: !!u,
+      retry: false,
+      throwOnError: true,
     })),
   });
 };
@@ -123,6 +137,8 @@ export const useUpdateUser = () => {
         type: "active",
       });
     },
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -131,39 +147,55 @@ export const useCurrentUserDepartments = (options?: { enabled?: boolean }) => {
     queryKey: ["current-user-departments"],
     queryFn: async () => getCurrentUserDepartments(),
     ...options,
+    retry: false,
+    throwOnError: true,
   });
 };
 
-export const useCurrentUserApplications = ( options?: { enabled?: boolean }) => {
+export const useCurrentUserApplications = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["current-user-applications"],
     queryFn: async () => getCurrentUserApplications(),
     ...options,
+    retry: false,
+    throwOnError: true,
   });
 };
 
-export function useUserApplications(userId: number, options?: { enabled?: boolean }) {
+export function useUserApplications(
+  userId: number,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
-    queryKey: ['user-applications', userId],
+    queryKey: ["user-applications", userId],
     queryFn: () => getUserApplications(userId),
     enabled: !!userId,
     ...options,
+    retry: false,
+    throwOnError: true,
   });
 }
 
-export function useUserDepartments(userId: number, options?: { enabled?: boolean }) {
+export function useUserDepartments(
+  userId: number,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
-    queryKey: ['user-departments', userId],
+    queryKey: ["user-departments", userId],
     queryFn: () => getUserDepartments(userId),
     enabled: !!userId,
     ...options,
+    retry: false,
+    throwOnError: true,
   });
 }
 
 export function useUser(userId: number) {
   return useQuery({
-    queryKey: ['user', userId],
+    queryKey: ["user", userId],
     queryFn: () => getUser(userId),
     enabled: !!userId,
+    retry: false,
+    throwOnError: true,
   });
 }

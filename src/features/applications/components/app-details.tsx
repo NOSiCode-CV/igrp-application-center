@@ -112,7 +112,8 @@ export function ApplicationDetails({ code }: { code: string }) {
   };
 
   const baseAppCode = process.env.IGRP_MINIO_ENDPOINT ?? "";
-  const pictureUrl = previewUrl || (app?.picture ? `${baseAppCode}${app.picture}` : null);
+  const pictureUrl =
+    previewUrl || (app?.picture ? `${baseAppCode}${app.picture}` : null);
 
   return (
     <section className="flex flex-col gap-6">
@@ -120,31 +121,32 @@ export function ApplicationDetails({ code }: { code: string }) {
         <IGRPCardContentPrimitive className="px-4 py-1">
           <div className="flex items-center pb-2 justify-between">
             <BackButton label="Voltar" href={ROUTES.APPLICATIONS} />
-            {String(app?.type) !== "SYSTEM" && <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-              <IGRPDialogTriggerPrimitive asChild>
-                <IGRPButton
-                  showIcon
-                  variant="outline"
-                  iconName="Pencil"
-                  size="sm"
-                >
-                  Editar
-                </IGRPButton>
-              </IGRPDialogTriggerPrimitive>
-              <IGRPDialogContentPrimitive className="max-w-2xl">
-                <IGRPDialogHeaderPrimitive>
-                  <IGRPDialogTitlePrimitive>
-                    Editar Aplicação
-                  </IGRPDialogTitlePrimitive>
-                </IGRPDialogHeaderPrimitive>
-                
-                <ApplicationForm
-                  application={app}
-                  onSuccess={() => setOpen(false)}
-                />
-              </IGRPDialogContentPrimitive>
-            </IGRPDialogPrimitive>
-            }
+            {String(app?.type) !== "SYSTEM" && (
+              <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
+                <IGRPDialogTriggerPrimitive asChild>
+                  <IGRPButton
+                    showIcon
+                    variant="outline"
+                    iconName="Pencil"
+                    size="sm"
+                  >
+                    Editar
+                  </IGRPButton>
+                </IGRPDialogTriggerPrimitive>
+                <IGRPDialogContentPrimitive className="max-w-2xl">
+                  <IGRPDialogHeaderPrimitive>
+                    <IGRPDialogTitlePrimitive>
+                      Editar Aplicação
+                    </IGRPDialogTitlePrimitive>
+                  </IGRPDialogHeaderPrimitive>
+
+                  <ApplicationForm
+                    application={app}
+                    onSuccess={() => setOpen(false)}
+                  />
+                </IGRPDialogContentPrimitive>
+              </IGRPDialogPrimitive>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">

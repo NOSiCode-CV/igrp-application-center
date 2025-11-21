@@ -22,7 +22,10 @@ import { formatSlug } from "@/features/applications/app-utils";
 import { ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
-import { ApplicationDTO, ApplicationType } from "@igrp/platform-access-management-client-ts";
+import {
+  ApplicationDTO,
+  ApplicationType,
+} from "@igrp/platform-access-management-client-ts";
 
 export function ApplicationCard({ app }: { app: ApplicationDTO }) {
   const { name, code, status, description, slug, url, type } = app;
@@ -48,10 +51,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
                   className="size-6 text-primary"
                 />
               )} */}
-               <IGRPIcon
-                  iconName="AppWindow"
-                  className="size-6 text-primary"
-                />
+              <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-base line-clamp-1">{name}</h3>
@@ -80,21 +80,25 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
             btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
           />
 
-          {type !== "SYSTEM" as ApplicationType && <IGRPTooltipProviderPrimitive>
-            <IGRPTooltipPrimitive>
-              <IGRPTooltipTriggerPrimitive asChild>
-                <IGRPButtonPrimitive
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => setOpen(true)}
-                  className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-                >
-                  <IGRPIcon iconName="SquarePen" />
-                </IGRPButtonPrimitive>
-              </IGRPTooltipTriggerPrimitive>
-              <IGRPTooltipContentPrimitive>Editar</IGRPTooltipContentPrimitive>
-            </IGRPTooltipPrimitive>
-          </IGRPTooltipProviderPrimitive>}
+          {type !== ("SYSTEM" as ApplicationType) && (
+            <IGRPTooltipProviderPrimitive>
+              <IGRPTooltipPrimitive>
+                <IGRPTooltipTriggerPrimitive asChild>
+                  <IGRPButtonPrimitive
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setOpen(true)}
+                    className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+                  >
+                    <IGRPIcon iconName="SquarePen" />
+                  </IGRPButtonPrimitive>
+                </IGRPTooltipTriggerPrimitive>
+                <IGRPTooltipContentPrimitive>
+                  Editar
+                </IGRPTooltipContentPrimitive>
+              </IGRPTooltipPrimitive>
+            </IGRPTooltipProviderPrimitive>
+          )}
 
           <ButtonLinkTooltip
             href={href || ""}

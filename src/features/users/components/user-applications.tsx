@@ -1,12 +1,18 @@
 import { ApplicationCardHOme } from "@/features/applications/components/app-card-home";
 import React from "react";
-import { useCurrentUserApplications, useUserApplications, useUserDepartments } from "../use-users";
+import {
+  useCurrentUserApplications,
+  useUserApplications,
+} from "../use-users";
 import { AppCenterLoading } from "@/components/loading";
 import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
-export default function UserApplications({ user }: { user: IGRPUserDTO }) {
-  const { data: currentUserApps, isLoading: isLoadingMyApps } = useCurrentUserApplications({ enabled: !user });
-  const { data: userApps, isLoading } = useUserApplications(user?.id!, { enabled: !!user });
+export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
+  const { data: currentUserApps, isLoading: isLoadingMyApps } =
+    useCurrentUserApplications({ enabled: !user });
+  const { data: userApps, isLoading } = useUserApplications(user?.id!, {
+    enabled: !!user,
+  });
 
   const apps = user ? userApps : currentUserApps;
 

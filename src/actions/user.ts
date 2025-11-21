@@ -143,7 +143,6 @@ export async function getCurrentUserApplications() {
   }
 }
 
-
 export async function getUserApplications(id: number) {
   const client = await getClientAccess();
 

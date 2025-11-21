@@ -21,10 +21,17 @@ import UserApplications from "./user-applications";
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
 
 export function UserDetails({ id }: { id: string }) {
-  const { data: user, isLoading, error: userError, refetch } = useUser(Number(id));
+  const {
+    data: user,
+    isLoading,
+    error: userError,
+    refetch,
+  } = useUser(Number(id));
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: avatarUrl, isLoading: isLoadingFile } = useFiles(user?.picture || "");
+  const { data: avatarUrl, isLoading: isLoadingFile } = useFiles(
+    user?.picture || "",
+  );
 
   if (isLoading) {
     return <AppCenterLoading descrption="Carregando utilizador..." />;
@@ -73,7 +80,6 @@ export function UserDetails({ id }: { id: string }) {
 
         <IGRPCardPrimitive className="py-2 border-0 shadow-sm">
           <IGRPCardContentPrimitive className="px-4 py-1">
-            
             <div className="flex items-center gap-6">
               <div
                 className="relative group cursor-pointer"
@@ -102,11 +108,7 @@ export function UserDetails({ id }: { id: string }) {
 
                 <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
                   <IGRPIcon
-                    iconName={
-                      isLoadingFile 
-                        ? "LoaderCircle"
-                        : "Camera"
-                    }
+                    iconName={isLoadingFile ? "LoaderCircle" : "Camera"}
                     className={cn(
                       "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
                     )}

@@ -43,6 +43,8 @@ export const useDepartments = () => {
   return useQuery<DepartmentDTO[]>({
     queryKey: ["departments"],
     queryFn: () => getDepartments(),
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -105,6 +107,8 @@ export const useDepartmentByCode = (code?: string) => {
     queryKey: ["department-by-code", code],
     queryFn: () => getDepartmentByCode(code || ""),
     enabled: !!code,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -113,6 +117,8 @@ export const useDepartmentAvailableApps = (departmentCode?: string) => {
     queryKey: ["department-available-menus-for-roles", departmentCode],
     queryFn: () => getAvailableApplications(departmentCode!),
     enabled: !!departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -123,6 +129,8 @@ export const useDepartmentApplications = (params: {
     queryKey: ["applications", { departmentCode: params.departmentCode }],
     queryFn: () => getDepartmentApplications(params.departmentCode),
     enabled: !!params.departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -219,6 +227,8 @@ export const useDepartmentAvailableMenus = (
     queryKey: ["department-available-menus", appCode, departmentCode],
     queryFn: () => getAvailableMenus(appCode!, departmentCode!),
     enabled: !!appCode && !!departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -230,6 +240,8 @@ export const useDepartmentMenus = (
     queryKey: ["department-menus", appCode, departmentCode],
     queryFn: () => getDepartmentMenus(appCode!, departmentCode!),
     enabled: !!appCode && !!departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -454,6 +466,8 @@ export const useAvailableResources = (departmentCode?: string) => {
     queryKey: ["available-resources", departmentCode],
     queryFn: () => getAvailableResources(departmentCode!),
     enabled: !!departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -462,6 +476,8 @@ export const useDepartmentResources = (departmentCode?: string) => {
     queryKey: ["department-resources", departmentCode],
     queryFn: () => getDepartmentResources(departmentCode!),
     enabled: !!departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -471,6 +487,8 @@ export const useDepartmentPermissions = (departmentCode?: string) => {
     queryKey: ["department-permissions", departmentCode],
     queryFn: () => getDepartmentPermissions(departmentCode!),
     enabled: !!departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -479,6 +497,8 @@ export const useAvailablePermissions = (departmentCode?: string) => {
     queryKey: ["available-permissions", departmentCode],
     queryFn: () => getAvailablePermissions(departmentCode!),
     enabled: !!departmentCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -603,6 +623,8 @@ export const usePermissionsByRole = (
     queryKey: ["roleByName", departmentCode, roleCode],
     queryFn: () => getPermissionsByRole(departmentCode, roleCode),
     enabled: !!departmentCode && !!roleCode,
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -614,5 +636,7 @@ export const useAvailablePermissionsForRole = (
     queryKey: ["available-permissions-for-role", departmentCode, roleCode],
     queryFn: () => getAvailablePermissionsForRole(departmentCode, roleCode),
     enabled: !!departmentCode && !!roleCode,
+    retry: false,
+    throwOnError: true,
   });
 };

@@ -25,6 +25,8 @@ export const useApplications = (filters?: ApplicationFilters) => {
   return useQuery<ApplicationDTO[]>({
     queryKey: ["applications", filters],
     queryFn: () => getApplications(filters),
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -32,6 +34,8 @@ export const useApplicationByCode = (code: string) => {
   return useQuery<ApplicationDTO>({
     queryKey: ["applications", code],
     queryFn: () => getApplicationByCode(code),
+    retry: false,
+    throwOnError: true,
   });
 };
 
@@ -71,6 +75,8 @@ export const useMenus = (code?: string) => {
     queryKey: key,
     queryFn: () => getMenus(code!),
     enabled: !!code,
+    retry: false,
+    throwOnError: true,
   });
 };
 
