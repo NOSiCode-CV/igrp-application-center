@@ -34,8 +34,6 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
 
   const appImage = app.picture;
 
-  const minioUrl = config?.minioUrl
-
   return (
     <>
       <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
@@ -58,7 +56,6 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
                   className="size-6 text-primary"
                 />
               )}
-              <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-base line-clamp-1">{name}</h3>
