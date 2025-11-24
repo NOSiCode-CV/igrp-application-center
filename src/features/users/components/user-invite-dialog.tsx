@@ -137,7 +137,6 @@ export function UserInviteDialog({
       promise,
       loading: "A enviar convite...",
       success: "Convite enviado com sucesso!",
-      // error: (err) => `Falha ao convidar: ${String(err)}`,
       error: (err: any) => err.message || `Falha ao convidar: ${String(err)}`,
     });
 

@@ -53,7 +53,6 @@ export const useInviteUser = () => {
       await queryClient.refetchQueries({ queryKey: ["users"] });
     },
     retry: false,
-    throwOnError: true,
   });
 };
 
@@ -74,8 +73,7 @@ export const useAddUserRole = () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
     },
-    retry: false,
-    throwOnError: true,
+    retry: false
   });
 };
 
@@ -99,7 +97,6 @@ export const useRemoveUserRole = () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
     },
     retry: false,
-    throwOnError: true,
   });
 };
 
@@ -137,8 +134,7 @@ export const useUpdateUser = () => {
         type: "active",
       });
     },
-    retry: false,
-    throwOnError: true,
+    retry: false
   });
 };
 
