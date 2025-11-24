@@ -31,7 +31,7 @@ export function ApplicationsListHome() {
     .slice(0, 6);
 
   return (
-    <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
+    <div className="grid gap-4 grid-cols-3 md:grid-cols-5">
       {activeApps.map((app) => (
         <ApplicationCardHOme key={app.id} app={app} />
       ))}

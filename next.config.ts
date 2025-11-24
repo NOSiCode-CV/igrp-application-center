@@ -3,12 +3,9 @@ import type { ImageConfigComplete } from "next/dist/shared/lib/image-config";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-// Função para parsear domains de variável de ambiente
 const getRemotePatterns = () => {
   const patterns: ImageConfigComplete["remotePatterns"] = [];
 
-  // Adicionar domains extras via env (separados por vírgula)
-  // Ex: NEXT_PUBLIC_ALLOWED_DOMAINS=example.com,cdn.example.com
   const extraDomains =
     process.env.NEXT_PUBLIC_ALLOWED_DOMAINS?.split(",") || [];
 
@@ -29,8 +26,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   basePath: basePath,
   images: {
-    remotePatterns: getRemotePatterns(),
-  },
+  remotePatterns: getRemotePatterns(),},
 };
 
 export default nextConfig;
