@@ -58,8 +58,10 @@ export function UserList() {
       accessorKey: "name",
       cell: ({ row }) => {
         const email = String(row.getValue("email"));
-        const name = String(row.getValue("name"));
-
+        const nameValue = row.getValue("name");
+        const name = (nameValue && String(nameValue) !== "null") 
+          ? String(nameValue) 
+          : email;
         return (
           <div className="flex items-center gap-3">
             <IGRPUserAvatar

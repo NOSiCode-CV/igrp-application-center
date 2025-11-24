@@ -19,7 +19,7 @@ import { useState } from "react";
 
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { formatSlug } from "@/features/applications/app-utils";
-import { ROUTES } from "@/lib/constants";
+import { config, ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
 import {
@@ -32,25 +32,32 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
   const href = slug ? formatSlug(slug) : url;
   const [open, setOpen] = useState(false);
 
+  const appImage = app.picture;
+
+  const minioUrl = config?.minioUrl
+
   return (
     <>
       <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="relative size-12 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-              {/* {appImage ? (
+            <div className="relative size-12 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+              {appImage ? (
                 <Image
-                  src={appImage}
+                  src={config.minioUrl + appImage}
                   alt={name}
                   fill
                   className="object-cover"
+                  quality={100}
+                  sizes="56px"
+                  priority
                 />
               ) : (
                 <IGRPIcon
                   iconName="AppWindow"
                   className="size-6 text-primary"
                 />
-              )} */}
+              )}
               <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">

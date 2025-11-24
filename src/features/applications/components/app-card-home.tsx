@@ -7,66 +7,57 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 
-import { ROUTES } from "@/lib/constants";
+import { config, ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
-import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
-  const { name, status, description, code } = app;
+  const { name, status, code } = app;
   const href = `${ROUTES.APPLICATIONS}/${code}`;
   const appImage = app.picture;
 
+  const minioUrl = config?.minioUrl;
+
   return (
-    <Link href={href} className="group block">
-      <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="relative size-12 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-              {/* {appImage ? (
-                <Image
-                  src={appImage}
-                  alt={name}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <IGRPIcon
-                  iconName="AppWindow"
-                  className="size-6 text-primary"
-                />
-              )} */}
-              <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-base line-clamp-1 group-hover:text-primary transition-colors">
-                {name}
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Aplicação</p>
-            </div>
+    <Link href={href} className="group block h-full">
+      <div className="relative h-full overflow-hidden rounded-sm border-2 border-border/40 bg-card p-5 hover:shadow-sm">
+        <div className="flex items-center gap-4 mb-4">
+          <div className="relative size-14 rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50">
+            {appImage ? (
+              <Image
+                src={config.minioUrl + appImage}
+                alt={name}
+                fill
+                className="object-cover"
+                quality={100}
+                sizes="56px"
+                priority
+              />
+            ) : (
+              <IGRPIcon iconName="AppWindow" className="size-7 text-primary" />
+            )}
           </div>
 
-          <IGRPBadgePrimitive
-            className={cn(getStatusColor(status), "shrink-0")}
-          >
-            {showStatus(status)}
-          </IGRPBadgePrimitive>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors mb-1">
+              {name}
+            </h3>
+            <IGRPBadgePrimitive
+              className={cn(getStatusColor(status), "text-xs")}
+            >
+              {showStatus(status)}
+            </IGRPBadgePrimitive>
+          </div>
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
-          {description || "Sem descrição disponível."}
-        </p>
-
-        <div className="flex items-center justify-between pt-3 border-t">
-          <span className="text-sm">Acessar</span>
-          <ButtonLinkTooltip
-            href={href || ""}
-            icon="ExternalLink"
-            label="Acessar"
-            size="icon"
-            variant="ghost"
-            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-          />
+        <div className="flex items-center justify-end pt-4 border-t border-border/50">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-primary transition-colors">
+            <span className="font-medium">Acessar</span>
+            <IGRPIcon
+              iconName="ArrowRight"
+              className="size-4 group-hover:translate-x-1 transition-transform"
+            />
+          </div>
         </div>
       </div>
     </Link>
