@@ -152,7 +152,14 @@ export function ApplicationDetails({ code }: { code: string }) {
             <div className="flex items-center gap-6">
               <div
                 className="relative group cursor-pointer"
-                onClick={() => {{String(app?.type) !== "SYSTEM" ? fileInputRef.current?.click() : null}}}>
+                onClick={() => {
+                  {
+                    String(app?.type) !== "SYSTEM"
+                      ? fileInputRef.current?.click()
+                      : null;
+                  }
+                }}
+              >
                 <IGRPUserAvatarPrimitive className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
                   {pictureUrl ? (
                     <IGRPUserAvatarImagePrimitive

@@ -69,7 +69,7 @@ export function DepartmentFormDialog({
   const form = useForm<DepartmentArgs>({
     resolver: zodResolver(departmentSchema),
     defaultValues: defaultValues,
-    mode: "onChange"
+    mode: "onChange",
   });
 
   useEffect(() => {

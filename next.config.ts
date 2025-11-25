@@ -26,7 +26,8 @@ const nextConfig: NextConfig = {
   output: "standalone",
   basePath: basePath,
   images: {
-  remotePatterns: getRemotePatterns(),},
+    remotePatterns: getRemotePatterns(),
+  },
 };
 
 export default nextConfig;

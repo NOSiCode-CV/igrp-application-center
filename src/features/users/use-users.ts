@@ -73,7 +73,7 @@ export const useAddUserRole = () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
       await queryClient.refetchQueries({ queryKey: ["users"] });
     },
-    retry: false
+    retry: false,
   });
 };
 
@@ -134,7 +134,7 @@ export const useUpdateUser = () => {
         type: "active",
       });
     },
-    retry: false
+    retry: false,
   });
 };
 
