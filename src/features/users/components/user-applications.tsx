@@ -1,8 +1,8 @@
-import { ApplicationCardHOme } from "@/features/applications/components/app-card-home";
 import React from "react";
 import { useCurrentUserApplications, useUserApplications } from "../use-users";
 import { AppCenterLoading } from "@/components/loading";
 import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { ApplicationCard } from "@/features/applications/components/app-card";
 
 export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
   const { data: currentUserApps, isLoading: isLoadingMyApps } =
@@ -18,9 +18,9 @@ export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
   }
 
   return (
-    <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {apps?.map((app) => (
-        <ApplicationCardHOme key={app.id} app={app} />
+        <ApplicationCard key={app.id} app={app} />
       ))}
     </div>
   );

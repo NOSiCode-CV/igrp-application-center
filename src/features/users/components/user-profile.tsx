@@ -235,10 +235,11 @@ export function UserProfile() {
       </div>
 
       <IGRPTabs
-        defaultValue="roles"
+        defaultValue="departments"
         items={tabs}
         className="min-w-0"
         tabContentClassName="px-0"
+        orientation="horizontal"
       />
     </div>
   );
