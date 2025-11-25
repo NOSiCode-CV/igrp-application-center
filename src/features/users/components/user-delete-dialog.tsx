@@ -30,7 +30,10 @@ export function UserDeleteDialog({
       status: statusSchema.enum.INACTIVE as Status,
     };
     try {
-      await removeUser({ id, user: payload });
+      const result = await removeUser({ id, user: payload });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
       igrpToast({
         type: "success",
         title: "Utilizador Desativado",

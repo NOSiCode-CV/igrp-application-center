@@ -153,7 +153,7 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
     setMenus([...otherMenus, ...updatedSiblings]);
 
     try {
-      await Promise.all(
+      const results = await Promise.all(
         updatedSiblings.map((menu, index) =>
           updateMenuMutation.mutateAsync({
             appCode: app.code,
@@ -174,6 +174,11 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
         ),
       );
 
+      const failed = results.find((result) => !result.success);
+      if (failed) {
+        throw new Error(failed.error);
+      }
+
       igrpToast({
         type: "success",
         title: "Ordem atualizada",
@@ -185,7 +190,10 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
       igrpToast({
         type: "error",
         title: "Erro ao salvar",
-        description: "Não foi possível salvar a ordem dos menus.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Não foi possível salvar a ordem dos menus.",
       });
 
       if (appMenus) {

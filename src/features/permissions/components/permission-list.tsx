@@ -23,6 +23,7 @@ import {
   useRemovePermissionsFromDepartment,
 } from "@/features/departments/use-departments";
 import { AppCenterLoading } from "@/components/loading";
+import { PermissionArgs } from "../permissions-schemas";
 
 interface PermissionListProps {
   departmentCode: string;
@@ -46,25 +47,17 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
 
   const isLoading = isLoadingAvailable || isLoadingDepartment;
 
-  // Cria Set com nomes das permissões atribuídas
-  const assignedNames = useMemo(() => {
-    return new Set(departmentPermissions?.map((p) => p.name) || []);
-  }, [departmentPermissions]);
-
-  // Combina todas as permissões únicas
   const allPermissions = useMemo(() => {
     const permissionsMap = new Map();
 
-    // Adiciona permissões disponíveis
-    availablePermissions?.forEach((perm) => {
+    availablePermissions?.forEach((perm: PermissionArgs) => {
       permissionsMap.set(perm.name, {
         ...perm,
         isAssigned: false,
       });
     });
 
-    // Adiciona/atualiza permissões do departamento
-    departmentPermissions?.forEach((perm) => {
+    departmentPermissions?.forEach((perm: PermissionArgs) => {
       permissionsMap.set(perm.name, {
         ...perm,
         isAssigned: true,

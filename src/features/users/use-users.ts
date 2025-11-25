@@ -1,4 +1,6 @@
 import type {
+  ApplicationDTO,
+  DepartmentDTO,
   IGRPUserDTO,
   InviteUserDTO,
   RoleDTO,
@@ -26,20 +28,26 @@ import {
 } from "@/actions/user";
 
 export const useUsers = (params?: UserFilters) => {
-  return useQuery<IGRPUserDTO[]>({
+  return useQuery<IGRPUserDTO[], Error>({
     queryKey: ["users"],
-    queryFn: () => getUsers(params),
+    queryFn: async () => {
+      const result = await getUsers(params);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     retry: false,
-    throwOnError: true,
   });
 };
 
 export const useCurrentUser = () => {
-  return useQuery<IGRPUserDTO>({
+  return useQuery<IGRPUserDTO, Error>({
     queryKey: ["current-user"],
-    queryFn: async () => getCurrentUser(),
+    queryFn: async () => {
+      const result = await getCurrentUser();
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     retry: false,
-    throwOnError: true,
   });
 };
 
@@ -48,9 +56,11 @@ export const useInviteUser = () => {
 
   return useMutation({
     mutationFn: async ({ user }: { user: InviteUserDTO }) => inviteUser(user),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["users"] });
-      await queryClient.refetchQueries({ queryKey: ["users"] });
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({ queryKey: ["users"] });
+        await queryClient.refetchQueries({ queryKey: ["users"] });
+      }
     },
     retry: false,
   });
@@ -69,9 +79,11 @@ export const useAddUserRole = () => {
       departmentCode: string;
       roleCodes: string[];
     }) => addRolesToUser(id, departmentCode, roleCodes),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["users"] });
-      await queryClient.refetchQueries({ queryKey: ["users"] });
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({ queryKey: ["users"] });
+        await queryClient.refetchQueries({ queryKey: ["users"] });
+      }
     },
     retry: false,
   });
@@ -90,23 +102,28 @@ export const useRemoveUserRole = () => {
       departmentCode: string;
       roleCodes: string[];
     }) => removeRolesFromUser(id, departmentCode, roleCodes),
-    onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["userRoles", variables.id],
-      });
-      await queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSuccess: async (result, variables) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["userRoles", variables.id],
+        });
+        await queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
     },
     retry: false,
   });
 };
 
 export const useUserRoles = (id: number) => {
-  return useQuery<RoleDTO[]>({
+  return useQuery<RoleDTO[], Error>({
     queryKey: ["userRoles", id],
-    queryFn: () => getUserRoles(id),
+    queryFn: async () => {
+      const result = await getUserRoles(id);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     enabled: !!id,
     retry: false,
-    throwOnError: true,
   });
 };
 
@@ -114,10 +131,13 @@ export const useUserRolesMulti = (id: number[]) => {
   return useQueries({
     queries: id.map((u) => ({
       queryKey: ["userRoles", u],
-      queryFn: () => getUserRoles(u),
+      queryFn: async () => {
+        const result = await getUserRoles(u);
+        if (!result.success) throw new Error(result.error);
+        return result.data;
+      },
       enabled: !!u,
       retry: false,
-      throwOnError: true,
     })),
   });
 };
@@ -128,33 +148,41 @@ export const useUpdateUser = () => {
   return useMutation({
     mutationFn: async ({ id, user }: { id: number; user: IGRPUserDTO }) =>
       updateUser(id, user),
-    onSuccess: async () => {
-      await queryClient.refetchQueries({
-        queryKey: ["users"],
-        type: "active",
-      });
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.refetchQueries({
+          queryKey: ["users"],
+          type: "active",
+        });
+      }
     },
     retry: false,
   });
 };
 
 export const useCurrentUserDepartments = (options?: { enabled?: boolean }) => {
-  return useQuery({
+  return useQuery<DepartmentDTO[], Error>({
     queryKey: ["current-user-departments"],
-    queryFn: async () => getCurrentUserDepartments(),
+    queryFn: async () => {
+      const result = await getCurrentUserDepartments();
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     ...options,
     retry: false,
-    throwOnError: true,
   });
 };
 
 export const useCurrentUserApplications = (options?: { enabled?: boolean }) => {
-  return useQuery({
+  return useQuery<ApplicationDTO[], Error>({
     queryKey: ["current-user-applications"],
-    queryFn: async () => getCurrentUserApplications(),
+    queryFn: async () => {
+      const result = await getCurrentUserApplications();
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     ...options,
     retry: false,
-    throwOnError: true,
   });
 };
 
@@ -162,13 +190,16 @@ export function useUserApplications(
   userId: number,
   options?: { enabled?: boolean },
 ) {
-  return useQuery({
+  return useQuery<ApplicationDTO[], Error>({
     queryKey: ["user-applications", userId],
-    queryFn: () => getUserApplications(userId),
+    queryFn: async () => {
+      const result = await getUserApplications(userId);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     enabled: !!userId,
     ...options,
     retry: false,
-    throwOnError: true,
   });
 }
 
@@ -176,22 +207,28 @@ export function useUserDepartments(
   userId: number,
   options?: { enabled?: boolean },
 ) {
-  return useQuery({
+  return useQuery<DepartmentDTO[], Error>({
     queryKey: ["user-departments", userId],
-    queryFn: () => getUserDepartments(userId),
+    queryFn: async () => {
+      const result = await getUserDepartments(userId);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     enabled: !!userId,
     ...options,
     retry: false,
-    throwOnError: true,
   });
 }
 
 export function useUser(userId: number) {
-  return useQuery({
+  return useQuery<IGRPUserDTO, Error>({
     queryKey: ["user", userId],
-    queryFn: () => getUser(userId),
+    queryFn: async () => {
+      const result = await getUser(userId);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     enabled: !!userId,
     retry: false,
-    throwOnError: true,
   });
 }

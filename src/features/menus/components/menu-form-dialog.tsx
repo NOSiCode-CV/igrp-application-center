@@ -98,7 +98,7 @@ export function MenuFormDialog({
   const { igrpToast } = useIGRPToast();
 
   const { mutateAsync: createMenuAsync } = useCreateMenu();
-  const { mutate: updateMenu } = useUpdateMenu();
+  const { mutateAsync: updateMenu } = useUpdateMenu();
 
   const form = useForm<CreateMenu>({
     resolver: zodResolver(createMenuSchema),
@@ -212,11 +212,21 @@ export function MenuFormDialog({
     try {
       if (code) {
         const update = normalizeMenu(values as UpdateMenu);
-        updateMenu({ appCode: aplicationCode, menuCode: code, data: update });
+        const result = await updateMenu({
+          appCode: aplicationCode,
+          menuCode: code,
+          data: update,
+        });
+
+        if (!result.success) {
+          throw new Error(result.error);
+        }
 
         setMenus((prevMenus) =>
           prevMenus.map((m) =>
-            m.code === code ? ({ ...m, ...update } as IGRPMenuItemArgs) : m,
+            m.code === code
+              ? ({ ...m, ...result.data } as IGRPMenuItemArgs)
+              : m,
           ),
         );
 
@@ -227,11 +237,16 @@ export function MenuFormDialog({
         });
       } else {
         const create = normalizeMenu(values);
-        const newMenu = await createMenuAsync({
+        const result = await createMenuAsync({
           appCode: aplicationCode,
           menu: create as CreateMenuRequest,
         });
-        setMenus((prev) => [...prev, newMenu]);
+
+        if (!result.success) {
+          throw new Error(result.error);
+        }
+
+        setMenus((prev) => [...prev, result.data as IGRPMenuItemArgs]);
 
         igrpToast({
           type: "success",

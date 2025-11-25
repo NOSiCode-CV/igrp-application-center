@@ -112,6 +112,10 @@ export function extractApiError(error: any): string {
     return getDefaultErrorMessage(error.status);
   }
 
+  if (error?.message) {
+    return error.message;
+  }
+
   return error?.message || "Erro desconhecido";
 }
 

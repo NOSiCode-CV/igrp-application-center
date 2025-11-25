@@ -85,13 +85,17 @@ export function UserProfile() {
 
       setUploadedAvatarPath(result);
 
-      await updateUser({
+      const res = await updateUser({
         id: user.id,
         user: {
           ...user,
           picture: result,
         },
       });
+
+      if (!res.success) {
+        throw new Error(res.error);
+      }
 
       refetch();
       igrpToast({

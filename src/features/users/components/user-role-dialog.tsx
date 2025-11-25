@@ -306,10 +306,20 @@ export function UserRolesDialog({
 
     try {
       if (toAdd.length) {
-        await addUserRole({ id, departmentCode, roleCodes: toAdd });
+        const res = await addUserRole({ id, departmentCode, roleCodes: toAdd });
+        if (!res.success) {
+          throw new Error(res.error);
+        }
       }
       if (toRemove.length) {
-        await removeUserRole({ id, departmentCode, roleCodes: toRemove });
+        const res = await removeUserRole({
+          id,
+          departmentCode,
+          roleCodes: toRemove,
+        });
+        if (!res.success) {
+          throw new Error(res.error);
+        }
       }
 
       igrpToast({

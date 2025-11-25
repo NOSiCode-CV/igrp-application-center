@@ -39,7 +39,13 @@ export function RoleDeleteDialog({
 
   async function confirmDelete() {
     try {
-      await deleteRole({ departmentCode, roleCode: roleToDelete });
+      const result = await deleteRole({
+        departmentCode,
+        roleCode: roleToDelete,
+      });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
       igrpToast({
         type: "success",
         title: "Role Eliminado",

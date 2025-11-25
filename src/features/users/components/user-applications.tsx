@@ -1,7 +1,10 @@
 import React from "react";
 import { useCurrentUserApplications, useUserApplications } from "../use-users";
 import { AppCenterLoading } from "@/components/loading";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import {
+  ApplicationDTO,
+  IGRPUserDTO,
+} from "@igrp/platform-access-management-client-ts";
 import { ApplicationCard } from "@/features/applications/components/app-card";
 
 export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
@@ -19,7 +22,7 @@ export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {apps?.map((app) => (
+      {apps?.map((app: ApplicationDTO) => (
         <ApplicationCard key={app.id} app={app} />
       ))}
     </div>

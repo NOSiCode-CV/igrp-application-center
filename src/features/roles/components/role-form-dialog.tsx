@@ -108,11 +108,15 @@ export function RoleFormDialog({
 
         const payload = normalizeRole(parsed as RoleArgs);
 
-        await updateRole({
+        const result = await updateRole({
           departmentCode: role.departmentCode,
           roleCode: role.code,
           role: payload,
         });
+
+        if (!result.success) {
+          throw new Error(result.error);
+        }
 
         igrpToast({
           type: "success",
@@ -121,7 +125,11 @@ export function RoleFormDialog({
         });
       } else {
         const payload = normalizeRole(values);
-        await createRole({ departmentCode, role: payload });
+        const result = await createRole({ departmentCode, role: payload });
+
+        if (!result.success) {
+          throw new Error(result.error);
+        }
 
         igrpToast({
           type: "success",

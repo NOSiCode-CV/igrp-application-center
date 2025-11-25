@@ -28,11 +28,7 @@ import {
   IGRPPopoverTriggerPrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type {
-  CreateUserRequest,
-  InviteUserDTO,
-  Status,
-} from "@igrp/platform-access-management-client-ts";
+import type { InviteUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -41,7 +37,6 @@ import {
   useRoles,
 } from "@/features/departments/use-departments";
 import { cn } from "@/lib/utils";
-import { statusSchema } from "@/schemas/global";
 import { useAddUserRole, useInviteUser } from "../use-users";
 
 interface UserInviteDialogProps {
@@ -121,38 +116,46 @@ export function UserInviteDialog({
       roles: roleCodes,
     };
 
-    const promise = userInvite({ user: userPayload }).then(async (created) => {
-      const finalId = (created as any)?.id;
+    try {
+      const created = await userInvite({ user: userPayload });
+
+      if (!created.success) {
+        throw new Error(created.error);
+      }
+
+      const finalId = created.data?.id;
+
       if (finalId && roleCodes.length > 0) {
-        await addUserRole({
+        const roleResult = await addUserRole({
           id: finalId,
           departmentCode: departmentCode || "",
           roleCodes,
         });
+
+        if (!roleResult.success) {
+          throw new Error(roleResult.error);
+        }
       }
-      return finalId;
-    });
 
-    igrpToast({
-      promise,
-      loading: "A enviar convite...",
-      success: "Convite enviado com sucesso!",
-      error: (err: any) => err.message || `Falha ao convidar: ${String(err)}`,
-    });
+      igrpToast({
+        type: "success",
+        description: "Convite enviado com sucesso!",
+      });
 
-    try {
-      await promise;
       form.reset({
         email: "",
         departmentCode: undefined,
         roleCodes: [] as string[],
       });
       onOpenChange(false);
-    } catch (error) {
-      console.warn(error);
+    } catch (error: any) {
+      igrpToast({
+        type: "error",
+        title: "Falha ao convidar",
+        description: error.message || `Falha ao convidar: ${String(error)}`,
+      });
     }
   };
-
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
       <IGRPDialogContentPrimitive className="sm:max-w-2xl">

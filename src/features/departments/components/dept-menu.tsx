@@ -135,7 +135,12 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         return;
       }
 
-      await Promise.all(promises);
+      const results = await Promise.all(promises);
+
+      const failed = results.find((result) => !result.success);
+      if (failed) {
+        throw new Error(failed.error);
+      }
 
       igrpToast({
         type: "success",

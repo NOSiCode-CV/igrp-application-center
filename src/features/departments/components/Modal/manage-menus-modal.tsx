@@ -177,11 +177,15 @@ export function ManageMenusModal({
   const handleAddMenu = async (menuCode: string) => {
     setProcessingMenu(menuCode);
     try {
-      await addMenusMutation.mutateAsync({
+      const response = await addMenusMutation.mutateAsync({
         appCode: selectedApp,
         departmentCode,
         menuCodes: [menuCode],
       });
+
+      if (!response.success) {
+        throw new Error(response.error);
+      }
 
       igrpToast({
         type: "success",
@@ -205,11 +209,15 @@ export function ManageMenusModal({
 
     setProcessingMenu(menuToRemove.code);
     try {
-      await removeMenusMutation.mutateAsync({
+      const result = await removeMenusMutation.mutateAsync({
         appCode: selectedApp,
         departmentCode,
         menuCodes: [menuToRemove.code],
       });
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       igrpToast({
         type: "success",

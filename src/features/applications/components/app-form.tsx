@@ -85,10 +85,14 @@ export function ApplicationForm({
     try {
       if (isEdit) {
         const payload = normalizeApplication(values, true);
-        await updateApplication({
+        const created = await updateApplication({
           code: application.code,
           data: payload,
         });
+
+        if (!created.success) {
+          throw new Error(created.error);
+        }
 
         igrpToast({
           type: "success",

@@ -38,7 +38,7 @@ export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
 
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors mb-1">
-              {name} 
+              {name}
             </h3>
             <IGRPBadgePrimitive
               className={cn(getStatusColor(status), "text-xs")}

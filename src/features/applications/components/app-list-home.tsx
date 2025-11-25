@@ -4,6 +4,7 @@ import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import { ApplicationCardHOme } from "./app-card-home";
 import { useCurrentUserApplications } from "@/features/users/use-users";
+import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 export function ApplicationsListHome() {
   const { data: applications, isLoading, error } = useCurrentUserApplications();
@@ -30,12 +31,12 @@ export function ApplicationsListHome() {
     .slice(0, 6);
 
   return (
-   <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
-  {activeApps
-    .filter((app) => app.code !== "VAdy")
-    .map((app) => (
-      <ApplicationCardHOme key={app.id} app={app} />
-    ))}
-</div>
+    <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
+      {activeApps
+        .filter((app: ApplicationDTO) => app.code !== "VAdy")
+        .map((app: ApplicationDTO) => (
+          <ApplicationCardHOme key={app.id} app={app} />
+        ))}
+    </div>
   );
 }

@@ -22,20 +22,26 @@ import {
 import { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 
 export const useApplications = (filters?: ApplicationFilters) => {
-  return useQuery<ApplicationDTO[]>({
+  return useQuery<ApplicationDTO[], Error>({
     queryKey: ["applications", filters],
-    queryFn: () => getApplications(filters),
+    queryFn: async () => {
+      const result = await getApplications(filters);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     retry: false,
-    throwOnError: true,
   });
 };
 
 export const useApplicationByCode = (code: string) => {
-  return useQuery<ApplicationDTO>({
+  return useQuery<ApplicationDTO, Error>({
     queryKey: ["applications", code],
-    queryFn: () => getApplicationByCode(code),
+    queryFn: async () => {
+      const result = await getApplicationByCode(code);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     retry: false,
-    throwOnError: true,
   });
 };
 
@@ -44,8 +50,10 @@ export const useCreateApplication = () => {
 
   return useMutation({
     mutationFn: createApplication,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["applications"] });
+      }
     },
   });
 };
@@ -61,22 +69,25 @@ export const useUpdateApplication = () => {
       code: string;
       data: UpdateApplicationRequest;
     }) => updateApplication(code, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["applications"] });
+      }
     },
   });
 };
 
 // MENU
 export const useMenus = (code?: string) => {
-  const key = ["menus", code ?? null] as const;
-
-  return useQuery<IGRPMenuItemArgs[]>({
-    queryKey: key,
-    queryFn: () => getMenus(code!),
+  return useQuery<IGRPMenuItemArgs[], Error>({
+    queryKey: ["menus", code ?? null],
+    queryFn: async () => {
+      const result = await getMenus(code!);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     enabled: !!code,
     retry: false,
-    throwOnError: true,
   });
 };
 
@@ -91,17 +102,19 @@ export const useCreateMenu = () => {
       appCode: string;
       menu: CreateMenuRequest;
     }) => createMenu(appCode, menu),
-    onSuccess: (newMenu) => {
-      queryClient.invalidateQueries({ queryKey: ["menus"] });
-      if (newMenu.applicationCode) {
-        queryClient.invalidateQueries({
-          queryKey: ["menus", "application", newMenu.applicationCode],
-        });
-      }
-      if (newMenu.parentCode) {
-        queryClient.invalidateQueries({
-          queryKey: ["menus", "parent", newMenu.parentCode],
-        });
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["menus"] });
+        if (result.data.applicationCode) {
+          queryClient.invalidateQueries({
+            queryKey: ["menus", "application", result.data.applicationCode],
+          });
+        }
+        if (result.data.parentCode) {
+          queryClient.invalidateQueries({
+            queryKey: ["menus", "parent", result.data.parentCode],
+          });
+        }
       }
     },
   });
@@ -120,18 +133,20 @@ export const useUpdateMenu = () => {
       menuCode: string;
       data: UpdateMenuRequest;
     }) => updateMenu(appCode, menuCode, data),
-    onSuccess: (updatedMenu, { menuCode }) => {
-      queryClient.invalidateQueries({ queryKey: ["menus"] });
-      queryClient.invalidateQueries({ queryKey: ["menus", menuCode] });
-      if (updatedMenu.applicationCode) {
-        queryClient.invalidateQueries({
-          queryKey: ["menus", "application", updatedMenu.applicationCode],
-        });
-      }
-      if (updatedMenu.parentCode) {
-        queryClient.invalidateQueries({
-          queryKey: ["menus", "parent", updatedMenu.parentCode],
-        });
+    onSuccess: (result, { menuCode }) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["menus"] });
+        queryClient.invalidateQueries({ queryKey: ["menus", menuCode] });
+        if (result.data.applicationCode) {
+          queryClient.invalidateQueries({
+            queryKey: ["menus", "application", result.data.applicationCode],
+          });
+        }
+        if (result.data.parentCode) {
+          queryClient.invalidateQueries({
+            queryKey: ["menus", "parent", result.data.parentCode],
+          });
+        }
       }
     },
   });
@@ -148,11 +163,13 @@ export const useDeleteMenu = () => {
       appCode: string;
       menuCode: string;
     }) => deleteMenu(appCode, menuCode),
-    onSuccess: (_, deletedCode) => {
-      queryClient.invalidateQueries({ queryKey: ["menus"] });
-      queryClient.removeQueries({ queryKey: ["menus", deletedCode] });
-      queryClient.invalidateQueries({ queryKey: ["menus", "application"] });
-      queryClient.invalidateQueries({ queryKey: ["menus", "parent"] });
+    onSuccess: (result, { menuCode }) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["menus"] });
+        queryClient.removeQueries({ queryKey: ["menus", menuCode] });
+        queryClient.invalidateQueries({ queryKey: ["menus", "application"] });
+        queryClient.invalidateQueries({ queryKey: ["menus", "parent"] });
+      }
     },
   });
 };
