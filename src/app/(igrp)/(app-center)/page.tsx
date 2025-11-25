@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-10 animate-fade-in">
       <PageHeader
-        title="Bem vindo ao IGRP Application Center"
+        title="Bem vindo ao iGRP Application Center"
         description="Gerencie suas aplicações de forma fácil e eficiente."
         showActions
       />
