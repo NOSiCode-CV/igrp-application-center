@@ -52,7 +52,7 @@ export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
 
         <div className="flex items-center justify-end pt-4 border-t border-border/50">
           <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-primary transition-colors">
-            <span className="font-medium">Acessar</span>
+            <span className="font-medium">{code === "APP_IGRP_CENTER" ? "Acessar" : "Abrir" }</span>
             <IGRPIcon
               iconName="ArrowRight"
               className="size-4 group-hover:translate-x-1 transition-transform"
