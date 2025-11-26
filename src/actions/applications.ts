@@ -16,94 +16,103 @@ import {
   mapperMenuCRUD,
 } from "@/features/menus/menu-mapper";
 
+type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
 export async function getApplications(
   filters?: ApplicationFilters,
-): Promise<ApplicationDTO[]> {
+): Promise<ActionResult<ApplicationDTO[]>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.getApplications(filters);
-    return result.data as ApplicationDTO[];
+    return { success: true, data: result.data as ApplicationDTO[] };
   } catch (error) {
     console.error("[apps] Não foi possível obter os dados:", error);
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
 export async function getApplicationByCode(
   appCode: string,
-): Promise<ApplicationDTO> {
+): Promise<ActionResult<ApplicationDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.getApplications({ code: appCode });
-    return result.data[0] as ApplicationDTO;
+    return { success: true, data: result.data[0] as ApplicationDTO };
   } catch (error) {
     console.error(
       "[app-by-code] Não foi possível obter os dados da aplicação:",
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function createApplication(application: CreateApplicationRequest) {
+export async function createApplication(
+  application: CreateApplicationRequest,
+): Promise<ActionResult<ApplicationDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.createApplication(application);
-    return result.data as ApplicationDTO;
+    return { success: true, data: result.data as ApplicationDTO };
   } catch (error) {
     console.error("[app-create] Não foi possível criar à aplicação:", error);
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
 export async function updateApplication(
   code: string,
   updated: UpdateApplicationRequest,
-) {
+): Promise<ActionResult<ApplicationDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.updateApplication(code, updated);
-    return result.data as ApplicationDTO;
+    return { success: true, data: result.data as ApplicationDTO };
   } catch (error) {
     console.error(
       "[app-update] Não foi possível atualizar à aplicação:",
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
 // MENUS
-export async function getMenus(code: string) {
+export async function getMenus(code: string): Promise<ActionResult<any[]>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.getMenus(code);
     const menus = mapperListMenusCRUD(result);
-    return menus;
+    return { success: true, data: menus };
   } catch (error) {
     console.error(
-      "[menus-get]: Erro ao carregar os menus da aplicação BANANA.:",
+      "[menus-get]: Erro ao carregar os menus da aplicação:",
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function createMenu(appCode: string, menu: CreateMenuRequest) {
+export async function createMenu(
+  appCode: string,
+  menu: CreateMenuRequest,
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.createMenu(appCode, menu);
     const app = mapperMenuCRUD(result);
-    return app;
+    return { success: true, data: app };
   } catch (error) {
-    console.error("menu-create] Não foi possível criar menu:", error);
-    throw new Error(extractApiError(error));
+    console.error("[menu-create] Não foi possível criar menu:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
@@ -111,7 +120,7 @@ export async function updateMenu(
   appCode: string,
   menuCode: string,
   updated: UpdateMenuRequest,
-) {
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
@@ -121,22 +130,25 @@ export async function updateMenu(
       updated,
     );
     const app = mapperMenuCRUD(result);
-    return app;
+    return { success: true, data: app };
   } catch (error) {
     console.error("[menu-update] Não foi possível atualizar menu:", error);
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function deleteMenu(appCode: string, menuCode: string) {
+export async function deleteMenu(
+  appCode: string,
+  menuCode: string,
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.deleteMenu(appCode, menuCode);
-    return result;
+    return { success: true, data: result };
   } catch (error) {
-    console.error("[menu-update] Não foi possível eleiminar menu:", error);
-    throw new Error(extractApiError(error));
+    console.error("[menu-delete] Não foi possível eliminar menu:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
@@ -145,7 +157,7 @@ export async function removeRolesFromMenu(
   menuCode: string,
   departmentCode: string,
   roleNames: string[],
-): Promise<MenuEntryDTO> {
+): Promise<ActionResult<MenuEntryDTO>> {
   const client = await getClientAccess();
   try {
     const { data } = await client.applications.removeRolesFromMenu(
@@ -154,13 +166,13 @@ export async function removeRolesFromMenu(
       departmentCode,
       roleNames,
     );
-    return data;
+    return { success: true, data };
   } catch (error) {
     console.error(
       "[menu-remove-roles] Não foi possível remover os papéis do menu:",
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
@@ -169,7 +181,7 @@ export async function addRolesToMenu(
   menuCode: string,
   departmentCode: string,
   roleNames: string[],
-): Promise<MenuEntryDTO> {
+): Promise<ActionResult<MenuEntryDTO>> {
   const client = await getClientAccess();
   try {
     const { data } = await client.applications.addRolesToMenu(
@@ -178,12 +190,12 @@ export async function addRolesToMenu(
       departmentCode,
       roleNames,
     );
-    return data;
+    return { success: true, data };
   } catch (error) {
     console.error(
       "[menu-assign-roles] Não foi possível atribuir os papéis ao menu:",
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }

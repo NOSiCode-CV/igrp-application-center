@@ -1,6 +1,7 @@
 "use server";
 
 import type {
+  ApplicationDTO,
   IGRPUserDTO,
   InviteUserDTO,
   UserFilters,
@@ -8,45 +9,50 @@ import type {
 import { getClientAccess } from "./access-client";
 import { extractApiError } from "@/lib/utils";
 
-export async function getUsers(params?: UserFilters) {
+type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
+export async function getUsers(
+  params?: UserFilters,
+): Promise<ActionResult<IGRPUserDTO[]>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getUsers(params);
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("[users] Erro ao carregar lista de utilizadores.:", error);
-    throw new Error(extractApiError(error));
+    console.error("[users] Erro ao carregar lista de utilizadores:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<ActionResult<IGRPUserDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getCurrentUser();
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
     console.error(
-      "[user-current] Erro ao carregar os dados do utilizador atual.:",
+      "[user-current] Erro ao carregar os dados do utilizador atual:",
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function inviteUser(user: InviteUserDTO) {
+export async function inviteUser(
+  user: InviteUserDTO,
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.inviteUser(user);
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error(
-      "[user-invite] Erro ao enviar convite ao ultilizador(es).:",
-      error,
-    );
-    throw new Error(extractApiError(error));
+    console.error("[user-invite] Erro ao enviar convite ao utilizador:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
@@ -54,7 +60,7 @@ export async function addRolesToUser(
   id: number,
   departmentCode: string,
   roleCodes: string[],
-) {
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
@@ -63,9 +69,9 @@ export async function addRolesToUser(
       departmentCode,
       roleCodes,
     );
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error: any) {
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
@@ -73,7 +79,7 @@ export async function removeRolesFromUser(
   id: number,
   departmentCode: string,
   roleCodes: string[],
-) {
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
@@ -82,99 +88,100 @@ export async function removeRolesFromUser(
       departmentCode,
       roleCodes,
     );
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-invite] Erro ao remover perfis ao utilizador:", error);
-    throw new Error(extractApiError(error));
+    console.error("[user-remove-roles] Erro ao remover perfis:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getUserRoles(id: number) {
+export async function getUserRoles(id: number): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getUserRoles(id);
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-role] Erro ao obter perfís de utilizador:", error);
-    throw new Error(extractApiError(error));
+    console.error("[user-role] Erro ao obter perfis de utilizador:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function updateUser(id: number, user: IGRPUserDTO) {
+export async function updateUser(
+  id: number,
+  user: IGRPUserDTO,
+): Promise<ActionResult<IGRPUserDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.updateUser(id, user);
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-update] Erro ao editar utilizardor:", error);
-    throw new Error(extractApiError(error));
+    console.error("[user-update] Erro ao editar utilizador:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getCurrentUserDepartments() {
+export async function getCurrentUserDepartments(): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getCurrentUserDepartments();
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error(
-      "[user-current] Erro ao carregar os dados do utilizador atual.:",
-      error,
-    );
-    throw new Error(extractApiError(error));
+    console.error("[user-departments] Erro ao carregar departamentos:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getCurrentUserApplications() {
+export async function getCurrentUserApplications(): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getCurrentUserApplications();
-    return result.data;
+    return { success: true, data: result.data as ApplicationDTO[] };
   } catch (error) {
-    console.error(
-      "[user-departments] Erro ao obter departamentos de utilizador:",
-      error,
-    );
-    throw new Error(extractApiError(error));
+    console.error("[user-applications] Erro ao obter aplicações:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getUserApplications(id: number) {
+export async function getUserApplications(
+  id: number,
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getUserApplications(id);
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-delete] Erro ao eliminar utilizador:", error);
-    throw new Error(extractApiError(error));
+    console.error("[user-applications] Erro ao obter aplicações:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getUserDepartments(id: number) {
+export async function getUserDepartments(
+  id: number,
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getUserDepartments(id);
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-delete] Erro ao eliminar utilizador:", error);
-    throw new Error(extractApiError(error));
+    console.error("[user-departments] Erro ao obter departamentos:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getUser(id: number) {
+export async function getUser(id: number): Promise<ActionResult<IGRPUserDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getUser(id);
-    return result.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-delete] Erro ao eliminar utilizador:", error);
-    throw new Error(extractApiError(error));
+    console.error("[user-get] Erro ao obter utilizador:", error);
+    return { success: false, error: extractApiError(error) };
   }
 }

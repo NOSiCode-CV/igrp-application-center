@@ -32,6 +32,8 @@ import {
   IGRPPopoverContentPrimitive,
   IGRPPopoverPrimitive,
   IGRPPopoverTriggerPrimitive,
+  IGRPRadioGroupItemPrimitive,
+  IGRPRadioGroupPrimitive,
   IGRPScrollAreaPrimitive,
   IGRPSwitchPrimitive,
   useIGRPToast,
@@ -92,13 +94,13 @@ export function MenuFormDialog({
   const [query, setQuery] = useState("");
   const [step, setStep] = useState<"type" | "form">(menu ? "form" : "type");
   const [selectedType, setSelectedType] = useState<string>(
-    menu?.type ?? menuTypeSchema.enum.GROUP
+    menu?.type ?? menuTypeSchema.enum.GROUP,
   );
 
   const { igrpToast } = useIGRPToast();
 
   const { mutateAsync: createMenuAsync } = useCreateMenu();
-  const { mutate: updateMenu } = useUpdateMenu();
+  const { mutateAsync: updateMenu } = useUpdateMenu();
 
   const form = useForm<CreateMenu>({
     resolver: zodResolver(createMenuSchema),
@@ -192,7 +194,7 @@ export function MenuFormDialog({
     return items.filter(
       (o) =>
         String(o.value).toLowerCase().includes(q) ||
-        o.label.toLowerCase().includes(q)
+        o.label.toLowerCase().includes(q),
     );
   }, [query, items]);
 
@@ -212,12 +214,22 @@ export function MenuFormDialog({
     try {
       if (code) {
         const update = normalizeMenu(values as UpdateMenu);
-        updateMenu({ appCode: aplicationCode, menuCode: code, data: update });
+        const result = await updateMenu({
+          appCode: aplicationCode,
+          menuCode: code,
+          data: update,
+        });
+
+        if (!result.success) {
+          throw new Error(result.error);
+        }
 
         setMenus((prevMenus) =>
           prevMenus.map((m) =>
-            m.code === code ? ({ ...m, ...update } as IGRPMenuItemArgs) : m
-          )
+            m.code === code
+              ? ({ ...m, ...result.data } as IGRPMenuItemArgs)
+              : m,
+          ),
         );
 
         igrpToast({
@@ -227,11 +239,16 @@ export function MenuFormDialog({
         });
       } else {
         const create = normalizeMenu(values);
-        const newMenu = await createMenuAsync({
+        const result = await createMenuAsync({
           appCode: aplicationCode,
           menu: create as CreateMenuRequest,
         });
-        setMenus((prev) => [...prev, newMenu]);
+
+        if (!result.success) {
+          throw new Error(result.error);
+        }
+
+        setMenus((prev) => [...prev, result.data as IGRPMenuItemArgs]);
 
         igrpToast({
           type: "success",
@@ -257,7 +274,7 @@ export function MenuFormDialog({
 
   const currentIcon = useMemo(
     () => LUCIDE_ICON_OPTIONS.find((icon) => icon.value === selectedIcon),
-    [selectedIcon]
+    [selectedIcon],
   );
 
   const setDefaultFromName = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -315,12 +332,12 @@ export function MenuFormDialog({
     openType === "view"
       ? "Visualizar Menu"
       : openType === "edit"
-      ? "Editar Menu"
-      : menu?.parentCode
-      ? menu.type === "FOLDER"
-        ? "Adicionar Pasta"
-        : "Adicionar Menu"
-      : "Novo Menu";
+        ? "Editar Menu"
+        : menu?.parentCode
+          ? menu.type === "FOLDER"
+            ? "Adicionar Pasta"
+            : "Adicionar Menu"
+          : "Novo Menu";
 
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
@@ -333,8 +350,8 @@ export function MenuFormDialog({
                 ? "Visualizar informações do menu"
                 : "Atualizar os detalhes deste menu"
               : step === "type"
-              ? "Selecione o tipo de menu que deseja criar"
-              : "Preencha os detalhes do novo menu"}
+                ? "Selecione o tipo de menu que deseja criar"
+                : "Preencha os detalhes do novo menu"}
           </IGRPDialogDescriptionPrimitive>
         </IGRPDialogHeaderPrimitive>
 
@@ -365,7 +382,6 @@ export function MenuFormDialog({
                 className="flex flex-col gap-4 py-2"
               >
                 <div className="grid grid-cols-1 gap-4">
-                  {/* Fieldset: Informações Gerais */}
                   <fieldset className="border border-accent p-4 rounded-md">
                     <legend className="text-base font-semibold px-2">
                       Informações Gerais
@@ -485,7 +501,7 @@ export function MenuFormDialog({
                                               key={i}
                                               className="h-9 animate-pulse rounded-sm bg-foreground/5 mx-2 my-1"
                                             />
-                                          )
+                                          ),
                                         )}
                                       </IGRPCommandGroupPrimitive>
                                     </IGRPCommandListPrimitive>
@@ -528,17 +544,17 @@ export function MenuFormDialog({
                                                       value={`${iconData.value} ${iconData.label}`}
                                                       onSelect={() => {
                                                         field.onChange(
-                                                          iconData.value
+                                                          iconData.value,
                                                         );
                                                         setOpenIconPicker(
-                                                          false
+                                                          false,
                                                         );
                                                       }}
                                                       className="gap-3"
                                                     >
                                                       <IGRPIcon
                                                         iconName={String(
-                                                          iconData.value
+                                                          iconData.value,
                                                         )}
                                                       />
                                                       <span>
@@ -550,7 +566,7 @@ export function MenuFormDialog({
                                                           "ml-auto opacity-0",
                                                           iconData.value ===
                                                             field.value &&
-                                                            "opacity-100"
+                                                            "opacity-100",
                                                         )}
                                                       />
                                                     </IGRPCommandItemPrimitive>
@@ -592,7 +608,7 @@ export function MenuFormDialog({
                                   field.onChange(
                                     checked
                                       ? statusSchema.enum.ACTIVE
-                                      : statusSchema.enum.INACTIVE
+                                      : statusSchema.enum.INACTIVE,
                                   )
                                 }
                                 disabled={openType === "view"}
@@ -611,48 +627,55 @@ export function MenuFormDialog({
                         Configurações de Página
                       </legend>
                       <div className="flex flex-col gap-4">
-                        <div className="flex items-center justify-between p-3 border border-input rounded-md bg-background">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-sm font-medium">
+                            <IGRPFormFieldPrimitive
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                          <IGRPFormItemPrimitive>
+                            <IGRPFormLabelPrimitive>
                               Tipo de Página
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {form.watch("type") ===
-                              menuTypeSchema.enum.MENU_PAGE
-                                ? "Página Interna"
-                                : "Página Externa"}
-                            </span>
-                          </div>
-                          <IGRPSwitchPrimitive
-                            checked={
-                              form.watch("type") ===
-                              menuTypeSchema.enum.EXTERNAL_PAGE
-                            }
-                            onCheckedChange={(checked) => {
-                              const newType = checked
-                                ? menuTypeSchema.enum.EXTERNAL_PAGE
-                                : menuTypeSchema.enum.MENU_PAGE;
-
-                              form.setValue("type", newType);
-                              setSelectedType(newType);
-
-                              if (checked) {
-                                form.setValue("pageSlug", undefined as any);
-                                form.setValue(
-                                  "target",
-                                  menuTargetSchema.enum._blank
-                                );
-                              } else {
-                                form.setValue("url", undefined as any);
-                                form.setValue(
-                                  "target",
-                                  menuTargetSchema.enum._self
-                                );
-                              }
-                            }}
-                            disabled={openType === "view"}
-                          />
-                        </div>
+                            </IGRPFormLabelPrimitive>
+                            <IGRPFormControlPrimitive>
+                              <IGRPRadioGroupPrimitive
+                                value={field.value}
+                                onValueChange={(value) => {
+                                  field.onChange(value);
+                                  setSelectedType(value as any);
+                                  if (value === menuTypeSchema.enum.EXTERNAL_PAGE) {
+                                    form.setValue("pageSlug", undefined as any);
+                                    form.setValue("target", menuTargetSchema.enum._blank);
+                                  } else {
+                                    form.setValue("url", undefined as any);
+                                    form.setValue("target", menuTargetSchema.enum._self);
+                                  }
+                                }}
+                                disabled={openType === "view"}
+                                className="flex flex-row"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <IGRPRadioGroupItemPrimitive
+                                    value={menuTypeSchema.enum.MENU_PAGE}
+                                    id="internal"
+                                  />
+                                  <label htmlFor="internal" className="cursor-pointer">
+                                    Página Interna
+                                  </label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <IGRPRadioGroupItemPrimitive
+                                    value={menuTypeSchema.enum.EXTERNAL_PAGE}
+                                    id="external"
+                                  />
+                                  <label htmlFor="external" className="cursor-pointer">
+                                    Página Externa
+                                  </label>
+                                </div>
+                              </IGRPRadioGroupPrimitive>
+                            </IGRPFormControlPrimitive>
+                            <IGRPFormMessagePrimitive />
+                          </IGRPFormItemPrimitive>
+                        )}
+    />
 
                         {form.watch("type") ===
                           menuTypeSchema.enum.MENU_PAGE && (
@@ -727,7 +750,7 @@ export function MenuFormDialog({
                                       field.onChange(
                                         checked
                                           ? menuTargetSchema.enum._blank
-                                          : menuTargetSchema.enum._self
+                                          : menuTargetSchema.enum._self,
                                       )
                                     }
                                     disabled={openType === "view"}
@@ -770,7 +793,7 @@ export function MenuFormDialog({
                                   >
                                     {field.value
                                       ? parentOptions.find(
-                                          (m) => m.code === field.value
+                                          (m) => m.code === field.value,
                                         )?.name
                                       : `Selecionar ${
                                           menuType === "FOLDER"
@@ -805,7 +828,7 @@ export function MenuFormDialog({
                                           field.onChange("");
                                           form.setValue(
                                             "parentCode",
-                                            "" as any
+                                            "" as any,
                                           );
                                         }}
                                       >
@@ -814,7 +837,7 @@ export function MenuFormDialog({
                                           iconName="Check"
                                           className={cn(
                                             "ml-auto opacity-0",
-                                            !field.value && "opacity-100"
+                                            !field.value && "opacity-100",
                                           )}
                                         />
                                       </IGRPCommandItemPrimitive>
@@ -836,7 +859,7 @@ export function MenuFormDialog({
                                             className={cn(
                                               "ml-auto opacity-0",
                                               menu.code === field.value &&
-                                                "opacity-100"
+                                                "opacity-100",
                                             )}
                                           />
                                         </IGRPCommandItemPrimitive>
@@ -892,11 +915,7 @@ export function MenuFormDialog({
                         type="submit"
                         disabled={isLoading}
                       >
-                        {isLoading
-                          ? "Guardando..."
-                          : menu
-                          ? "Atualizar"
-                          : "Criar Menu"}
+                        {isLoading ? "Guardando..." : openType === "edit" ? "Atualizar" : "Criar Menu"}
                       </IGRPButton>
                     )}
                   </div>

@@ -89,8 +89,8 @@ export function DepartmentListTree() {
     name: string;
   } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-
   const [showAppsModal, setShowAppsModal] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const { data: departments, isLoading, error } = useDepartments();
   const { data: selectedDepartment, isLoading: isLoadSelectedDep } =
@@ -125,6 +125,11 @@ export function DepartmentListTree() {
     setOpenFormDialog(true);
   };
 
+  const handleSelectDept = (code: string) => {
+    setSelectedDeptCode(code);
+    setIsSidebarOpen(false);
+  };
+
   useEffect(() => {
     departments && setSelectedDeptCode(departments[0]?.code);
   }, [departments]);
@@ -157,8 +162,45 @@ export function DepartmentListTree() {
 
   return (
     <div className="flex flex-col overflow-hidden">
-      <div className="flex h-">
-        <div className="w-80 flex pr-2 border-accent flex-col">
+      <div className="block! lg:hidden! mb-4">
+        <IGRPButtonPrimitive
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          variant="outline"
+          className="w-full! cursor-pointer"
+        >
+          <IGRPIcon
+            iconName={isSidebarOpen ? "X" : "Menu"}
+            className="w-4 h-4"
+            strokeWidth={2}
+          />
+          {isSidebarOpen ? "Fechar" : "Departamentos"}
+        </IGRPButtonPrimitive>
+      </div>
+
+      <div className="flex h-full">
+        <div
+          className={`
+            ${isSidebarOpen ? "block!" : "hidden!"} lg:block!
+            fixed! lg:relative! inset-0! lg:inset-auto!
+            z-50! lg:z-auto!
+            w-full! lg:w-80!
+            bg-background!
+            overflow-y-auto!
+            flex pr-0! lg:pr-2! border-accent flex-col
+            p-4! lg:p-0!
+          `}
+        >
+          <div className="flex! lg:hidden! justify-end mb-2">
+            <IGRPButtonPrimitive
+              onClick={() => setIsSidebarOpen(false)}
+              variant="ghost"
+              size="sm"
+              className="cursor-pointer"
+            >
+              <IGRPIcon iconName="X" className="w-5 h-5" strokeWidth={2} />
+            </IGRPButtonPrimitive>
+          </div>
+
           <div className="flex flex-col min-w-0">
             <h2 className="text-xl font-bold tracking-tight truncate">
               Gestão de Departamentos
@@ -177,8 +219,6 @@ export function DepartmentListTree() {
           </div>
 
           <div className="mt-4">
-            <div className="flex items-center justify-between"></div>
-
             <div className="relative">
               <IGRPIcon
                 iconName="Search"
@@ -211,15 +251,24 @@ export function DepartmentListTree() {
           </div>
         </div>
 
+        {/* Overlay for mobile */}
+        {isSidebarOpen && (
+          <div
+            className="fixed! inset-0! bg-black/50! z-40! lg:hidden!"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Main content */}
         <div className="flex-1 overflow-y-auto">
           {isLoadSelectedDep && (
             <AppCenterLoading descrption="Carregando departamentos..." />
           )}
           {!isLoadSelectedDep && selectedDepartment && (
-            <div className="container mx-auto px-6">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <div className="flex items-center gap-3">
+            <div className="container mx-auto px-0 md:px-6!">
+              <div className="flex flex-col lg:flex-row! items-start justify-between mb-6 gap-4">
+                <div className="w-full! lg:w-auto!">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <h1 className="text-xl font-bold">
                       {selectedDepartment.name}
                     </h1>
@@ -244,11 +293,11 @@ export function DepartmentListTree() {
                   </p>
                 </div>
 
-                <div className="flex flex-row justify-between gap-2">
+                <div className="flex flex-col sm:flex-row! w-full! lg:w-auto! gap-2">
                   <IGRPButtonPrimitive
                     onClick={() => handleEdit(selectedDepartment as any)}
                     variant="outline"
-                    className="cursor-pointer"
+                    className="cursor-pointer w-full! sm:w-auto!"
                   >
                     <IGRPIcon
                       iconName="Pencil"
@@ -261,7 +310,7 @@ export function DepartmentListTree() {
                   <IGRPButtonPrimitive
                     variant="outline"
                     onClick={() => setShowAppsModal(true)}
-                    className="gap-2 cursor-pointer"
+                    className="gap-2 cursor-pointer w-full! sm:w-auto!"
                   >
                     <IGRPIcon
                       iconName="AppWindow"

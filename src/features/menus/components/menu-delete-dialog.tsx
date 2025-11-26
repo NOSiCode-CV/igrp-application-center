@@ -39,7 +39,14 @@ export function MenuDeleteDialog({
 
   async function confirmDelete() {
     try {
-      await deleteMenuAsync({ appCode: appCode, menuCode: menuToDelete.code });
+      const result = await deleteMenuAsync({
+        appCode: appCode,
+        menuCode: menuToDelete.code,
+      });
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       igrpToast({
         type: "success",

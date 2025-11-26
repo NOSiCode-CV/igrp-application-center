@@ -29,7 +29,14 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     if (!roleCodes) return;
 
     try {
-      await removeUserRole({ id: user.id, departmentCode, roleCodes });
+      const res = await removeUserRole({
+        id: user.id,
+        departmentCode,
+        roleCodes,
+      });
+      if (!res.success) {
+        throw new Error(res.error);
+      }
       igrpToast({
         type: "success",
         title: "Perfil removido com sucesso.",

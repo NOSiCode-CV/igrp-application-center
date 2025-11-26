@@ -77,11 +77,11 @@ export function ManageResourcesModal({
 
     const resourceMap = new Map<string, any & { isAssigned: boolean }>();
 
-    available.forEach((resource) => {
+    available.forEach((resource: any) => {
       resourceMap.set(resource.name, { ...resource, isAssigned: false });
     });
 
-    assigned.forEach((resource) => {
+    assigned.forEach((resource: any) => {
       resourceMap.set(resource.name, { ...resource, isAssigned: true });
     });
 

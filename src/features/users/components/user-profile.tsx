@@ -85,13 +85,17 @@ export function UserProfile() {
 
       setUploadedAvatarPath(result);
 
-      await updateUser({
+      const res = await updateUser({
         id: user.id,
         user: {
           ...user,
           picture: result,
         },
       });
+
+      if (!res.success) {
+        throw new Error(res.error);
+      }
 
       refetch();
       igrpToast({
@@ -235,10 +239,11 @@ export function UserProfile() {
       </div>
 
       <IGRPTabs
-        defaultValue="roles"
+        defaultValue="departments"
         items={tabs}
         className="min-w-0"
         tabContentClassName="px-0"
+        orientation="horizontal"
       />
     </div>
   );

@@ -13,10 +13,8 @@ import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
   const { name, status, code } = app;
-  const href = `${ROUTES.APPLICATIONS}/${code}`;
+  const href = app.slug ?? "#";
   const appImage = app.picture;
-
-  const minioUrl = config?.minioUrl;
 
   return (
     <Link href={href} className="group block h-full">
@@ -52,7 +50,9 @@ export function ApplicationCardHOme({ app }: { app: ApplicationDTO }) {
 
         <div className="flex items-center justify-end pt-4 border-t border-border/50">
           <div className="flex items-center gap-2 text-sm text-muted-foreground group-hover:text-primary transition-colors">
-            <span className="font-medium">Acessar</span>
+            <span className="font-medium">
+              {code === "APP_IGRP_CENTER" ? "Acessar" : "Abrir"}
+            </span>
             <IGRPIcon
               iconName="ArrowRight"
               className="size-4 group-hover:translate-x-1 transition-transform"

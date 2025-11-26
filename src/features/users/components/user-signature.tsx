@@ -47,13 +47,17 @@ export default function UserSignature({
       });
 
       setUploadedSignaturePath(result);
-      await updateUser({
+      const res = await updateUser({
         id: user.id,
         user: {
           ...user,
           signature: result,
         },
       });
+
+      if (!res.success) {
+        throw new Error(res.error);
+      }
 
       refetch();
       igrpToast({

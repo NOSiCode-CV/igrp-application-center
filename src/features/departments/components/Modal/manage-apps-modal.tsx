@@ -114,10 +114,12 @@ export function ManageAppsModal({
   const handleAddApp = async (appCode: string) => {
     setProcessingApp(appCode);
     try {
-      await addApplicationsMutation.mutateAsync({
+      const result = await addApplicationsMutation.mutateAsync({
         code: departmentCode,
         appCodes: [appCode],
       });
+
+      if (!result.success) throw new Error(result.error);
 
       igrpToast({
         type: "success",
@@ -141,10 +143,12 @@ export function ManageAppsModal({
 
     setProcessingApp(appToRemove.code);
     try {
-      await removeApplicationsMutation.mutateAsync({
+      const result = await removeApplicationsMutation.mutateAsync({
         code: departmentCode,
         appCodes: [appToRemove.code],
       });
+
+      if (!result.success) throw new Error(result.error);
 
       igrpToast({
         type: "success",

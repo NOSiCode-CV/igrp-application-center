@@ -169,7 +169,7 @@ export function RoleDetails({
     useRemovePermissionsFromRole();
 
   const allPermissions = useMemo(() => {
-    return (departmentPermissions ?? []).sort((a, b) =>
+    return (departmentPermissions ?? []).sort((a: any, b: any) =>
       a.name.localeCompare(b.name, "pt"),
     );
   }, [departmentPermissions]);
@@ -235,18 +235,26 @@ export function RoleDetails({
 
     try {
       if (toAdd.length) {
-        await addPermissions({
+        const res = await addPermissions({
           departmentCode,
           roleCode: role.code,
           permissionCodes: toAdd as string[],
         });
+
+        if (!res.success) {
+          throw new Error(res.error);
+        }
       }
       if (toRemove.length) {
-        await removePermissions({
+        const res = await removePermissions({
           departmentCode,
           roleCode: role.code,
           permissionCodes: toRemove,
         });
+
+        if (!res.success) {
+          throw new Error(res.error);
+        }
       }
 
       igrpToast({

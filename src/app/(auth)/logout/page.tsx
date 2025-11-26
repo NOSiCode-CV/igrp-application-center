@@ -19,7 +19,6 @@ export default function LogoutPage() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-accent">
       <div className="w-full max-w-md">
         <div className=" rounded-2xl shadow-2xl p-8 bg-card ">
-          
           <div className="flex justify-center mb-6">
             <div className="relative">
               <div className="w-20 h-20 rounded-full flex items-center justify-center animate-pulse">
@@ -58,7 +57,6 @@ export default function LogoutPage() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

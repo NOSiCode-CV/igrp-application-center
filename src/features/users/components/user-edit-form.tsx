@@ -49,7 +49,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await updateUser.mutateAsync({
+      const result = await updateUser.mutateAsync({
         id: user.id,
         user: {
           name: data.name,
@@ -58,6 +58,10 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
           status: data.status as any,
         } as any,
       });
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       igrpToast({
         type: "success",

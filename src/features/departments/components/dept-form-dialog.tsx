@@ -69,7 +69,7 @@ export function DepartmentFormDialog({
   const form = useForm<DepartmentArgs>({
     resolver: zodResolver(departmentSchema),
     defaultValues: defaultValues,
-    mode: "onChange"
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -128,9 +128,18 @@ export function DepartmentFormDialog({
 
     try {
       if (department) {
-        await updateDepartment({ code: department.code, data: payload });
+        const result = await updateDepartment({
+          code: department.code,
+          data: payload,
+        });
+        if (!result.success) {
+          throw new Error(result.error);
+        }
       } else {
-        await createDepartment(payload);
+        const result = await createDepartment(payload);
+        if (!result.success) {
+          throw new Error(result.error);
+        }
       }
 
       igrpToast({
