@@ -25,6 +25,14 @@ export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
       {apps?.map((app: ApplicationDTO) => (
         <ApplicationCard key={app.id} app={app} />
       ))}
+
+      {apps?.length === 0 && (
+        <div className="w-full">
+          <div className="text-primary">
+            <p className="text-sm">Nenhum aplicação atribuida</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

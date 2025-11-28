@@ -124,6 +124,7 @@ export function UserList() {
             </IGRPDropdownMenuTriggerPrimitive>
 
             <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
+              {state === "INACTIVE" && (
               <IGRPDropdownMenuItemPrimitive
                 className="text-destructive focus:text-destructive"
                 onSelect={() => handleDelete(row.original)}
@@ -132,6 +133,7 @@ export function UserList() {
                 <IGRPIcon iconName="CircleOff" />
                 Desativar
               </IGRPDropdownMenuItemPrimitive>
+            )}
               <IGRPDropdownMenuItemPrimitive
                 className=""
                 variant="default"

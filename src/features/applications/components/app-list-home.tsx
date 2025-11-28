@@ -5,7 +5,7 @@ import { AppCenterNotFound } from "@/components/not-found";
 import { ApplicationCardHOme } from "./app-card-home";
 import { useCurrentUserApplications } from "@/features/users/use-users";
 import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { IGRPBadgePrimitive } from "@igrp/igrp-framework-react-design-system";
+import { IGRPBadgePrimitive, IGRPInputText } from "@igrp/igrp-framework-react-design-system";
 
 export function ApplicationsListHome() {
   const { data: applications, isLoading, error } = useCurrentUserApplications();
@@ -40,19 +40,20 @@ export function ApplicationsListHome() {
         <IGRPBadgePrimitive variant="secondary" className="text-xs">
           {filteredApps.length}
         </IGRPBadgePrimitive>
+        
       </div>
+      <div className="mb-6">
+              <IGRPInputText
+                value={""}
+                //onChange={(e) => setTaskSearch(e.target.value)}
+                placeholder="Pesquisar aplicações..."
+                className="h-9 text-sm w-1/6"
+                iconName="Search"
+                showIcon
+              />
+            </div>
       <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
         {activeApps
-          .filter((app: ApplicationDTO) => app.code !== "VAdy")
-          .map((app: ApplicationDTO) => (
-            <ApplicationCardHOme key={app.id} app={app} />
-          ))}
-          {activeApps
-          .filter((app: ApplicationDTO) => app.code !== "VAdy")
-          .map((app: ApplicationDTO) => (
-            <ApplicationCardHOme key={app.id} app={app} />
-          ))}
-          {activeApps
           .filter((app: ApplicationDTO) => app.code !== "VAdy")
           .map((app: ApplicationDTO) => (
             <ApplicationCardHOme key={app.id} app={app} />
