@@ -117,7 +117,7 @@ export function UserList() {
 
     return (
       <IGRPDropdownMenuPrimitive>
-        {!isCurrentUser(email) && state === "ACTIVE" && (
+        
           <>
             <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
               <IGRPIcon iconName="Ellipsis" />
@@ -144,7 +144,7 @@ export function UserList() {
               </IGRPDropdownMenuItemPrimitive>
             </IGRPDropdownMenuContentPrimitive>
           </>
-        )}
+        
       </IGRPDropdownMenuPrimitive>
     );
   }

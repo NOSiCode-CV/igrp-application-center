@@ -10,7 +10,7 @@ export default async function HomeLayout({
   const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs, {
     showBreadcrumb: false,
     showSidebar: false,
-    showNotifications: false,
+    showNotifications: true,
     showSearch: false,
     showIGRPHeaderLogo: true,
     showIGRPHeaderTitle: true,

@@ -243,7 +243,7 @@ export default function HomeIGRP() {
   ];
 
   return (
-    <div className=" max-w-[1600px] mx-auto p-6">
+    <div className="mx-auto p-6">
       <div className="flex flex-col lg:flex-row! gap-8">
         <div className="flex-1 space-y-8">
           <ApplicationsListHome />

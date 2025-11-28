@@ -41,8 +41,18 @@ export function ApplicationsListHome() {
           {filteredApps.length}
         </IGRPBadgePrimitive>
       </div>
-      <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
         {activeApps
+          .filter((app: ApplicationDTO) => app.code !== "VAdy")
+          .map((app: ApplicationDTO) => (
+            <ApplicationCardHOme key={app.id} app={app} />
+          ))}
+          {activeApps
+          .filter((app: ApplicationDTO) => app.code !== "VAdy")
+          .map((app: ApplicationDTO) => (
+            <ApplicationCardHOme key={app.id} app={app} />
+          ))}
+          {activeApps
           .filter((app: ApplicationDTO) => app.code !== "VAdy")
           .map((app: ApplicationDTO) => (
             <ApplicationCardHOme key={app.id} app={app} />
