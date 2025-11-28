@@ -32,6 +32,7 @@ import { BackButton } from "@/components/back-button";
 import { ROUTES } from "@/lib/constants";
 import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
 import { ApplicationForm } from "./app-form";
+import Image from "next/image";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { igrpToast } = useIGRPToast();
@@ -162,9 +163,13 @@ export function ApplicationDetails({ code }: { code: string }) {
               >
                 <IGRPUserAvatarPrimitive className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
                   {pictureUrl ? (
-                    <IGRPUserAvatarImagePrimitive
+                    <Image
                       src={pictureUrl}
                       alt={app.name}
+                      fill
+                      sizes="106px"
+                      quality={100}
+                      className="object-contain"
                     />
                   ) : isLoadingFile ? (
                     <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">

@@ -5,6 +5,7 @@ import { AppCenterNotFound } from "@/components/not-found";
 import { ApplicationCardHOme } from "./app-card-home";
 import { useCurrentUserApplications } from "@/features/users/use-users";
 import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { IGRPBadgePrimitive } from "@igrp/igrp-framework-react-design-system";
 
 export function ApplicationsListHome() {
   const { data: applications, isLoading, error } = useCurrentUserApplications();
@@ -26,17 +27,27 @@ export function ApplicationsListHome() {
   }
 
   const filteredApps = applications;
-  const activeApps = filteredApps
-    .filter((app) => app.code !== "APP_IGRP_CENTER")
-    .slice(0, 6);
+  const activeApps = filteredApps.filter(
+    (app: ApplicationDTO) => app.status === "ACTIVE"
+  );
 
   return (
-    <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
-      {activeApps
-        .filter((app: ApplicationDTO) => app.code !== "VAdy")
-        .map((app: ApplicationDTO) => (
-          <ApplicationCardHOme key={app.id} app={app} />
-        ))}
-    </div>
+    <>
+      <div className="flex items-center gap-2 mb-4">
+        <h2 className="text-sm font-semibold text-foreground">
+          Todas as Aplicações
+        </h2>
+        <IGRPBadgePrimitive variant="secondary" className="text-xs">
+          {filteredApps.length}
+        </IGRPBadgePrimitive>
+      </div>
+      <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-3">
+        {activeApps
+          .filter((app: ApplicationDTO) => app.code !== "VAdy")
+          .map((app: ApplicationDTO) => (
+            <ApplicationCardHOme key={app.id} app={app} />
+          ))}
+      </div>
+    </>
   );
 }
