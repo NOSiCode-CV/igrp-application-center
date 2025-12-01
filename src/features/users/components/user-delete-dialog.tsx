@@ -37,7 +37,7 @@ export function UserDeleteDialog({
       igrpToast({
         type: "success",
         title: "Utilizador Desativado",
-        description: `Utilizador '${userToDelete.username}' foi desativado com sucesso.`,
+        description: `Utilizador '${userToDelete.name || userToDelete.email}' foi desativado com sucesso.`,
       });
 
       onOpenChange(false);
@@ -54,7 +54,7 @@ export function UserDeleteDialog({
     <IGRPDialogDelete
       open={open}
       onOpenChange={onOpenChange}
-      toDelete={{ name: userToDelete.username || "" }}
+      toDelete={{ name: userToDelete.name || userToDelete.email }}
       confirmDelete={confirmDelete}
       label="Username"
       isDeleting={isDeleting}

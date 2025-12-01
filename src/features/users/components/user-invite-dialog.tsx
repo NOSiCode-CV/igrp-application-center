@@ -61,7 +61,7 @@ export function UserInviteDialog({
   const { igrpToast } = useIGRPToast();
 
   const { mutateAsync: userInvite, isPending: isInviting } = useInviteUser();
-  const { mutateAsync: addUserRole } = useAddUserRole();
+  // const { mutateAsync: addUserRole } = useAddUserRole();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -123,19 +123,19 @@ export function UserInviteDialog({
         throw new Error(created.error);
       }
 
-      const finalId = created.data?.id;
+      // const finalId = created.data?.id;
 
-      if (finalId && roleCodes.length > 0) {
-        const roleResult = await addUserRole({
-          id: finalId,
-          departmentCode: departmentCode || "",
-          roleCodes,
-        });
+      // if (finalId && roleCodes.length > 0) {
+      //   const roleResult = await addUserRole({
+      //     id: finalId,
+      //     departmentCode: departmentCode || "",
+      //     roleCodes,
+      //   });
 
-        if (!roleResult.success) {
-          throw new Error(roleResult.error);
-        }
-      }
+      //   if (!roleResult.success) {
+      //     throw new Error(roleResult.error);
+      //   }
+      // }
 
       igrpToast({
         type: "success",

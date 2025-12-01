@@ -29,16 +29,19 @@ import {
 import { MenuList } from "@/features/menus/components/menu-list";
 import { getStatusColor } from "@/lib/utils";
 import { BackButton } from "@/components/back-button";
-import { ROUTES } from "@/lib/constants";
+import { config, ROUTES } from "@/lib/constants";
 import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
 import { ApplicationForm } from "./app-form";
 import Image from "next/image";
+import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { igrpToast } = useIGRPToast();
   const { data: app, isLoading, error, refetch } = useApplicationByCode(code);
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { mutate: registerAccess } = useRegisterCurrentUserApplicationAccess();
 
   const { mutateAsync: updateApplication } = useUpdateApplication();
 
@@ -49,6 +52,12 @@ export function ApplicationDetails({ code }: { code: string }) {
   const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
     app?.picture || uploadedFilePath || "",
   );
+
+  useEffect(() => {
+    if (code) {
+      registerAccess(code);
+    }
+  }, [code, registerAccess]);
 
   useEffect(() => {
     if (fileUrl) {
@@ -112,10 +121,6 @@ export function ApplicationDetails({ code }: { code: string }) {
     }
   };
 
-  const baseAppCode = process.env.IGRP_MINIO_ENDPOINT ?? "";
-  const pictureUrl =
-    previewUrl || (app?.picture ? `${baseAppCode}${app.picture}` : null);
-
   return (
     <section className="flex flex-col gap-6">
       <IGRPCardPrimitive className="py-2 border-0 shadow-sm rounded-lg">
@@ -162,9 +167,9 @@ export function ApplicationDetails({ code }: { code: string }) {
                 }}
               >
                 <IGRPUserAvatarPrimitive className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  {pictureUrl ? (
+                  {app?.picture ? (
                     <Image
-                      src={pictureUrl}
+                      src={config.minioUrl + app?.picture}
                       alt={app.name}
                       fill
                       sizes="106px"

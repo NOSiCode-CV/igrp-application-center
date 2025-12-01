@@ -241,7 +241,6 @@ export function UserProfile() {
         <IGRPCardPrimitive className="py-2 border-0 shadow-sm">
           <IGRPCardContentPrimitive className="px-4 py-1">
             <div className="flex items-center mb-2 justify-end gap-2">
-             
               <IGRPButton
                 showIcon
                 variant={isActive ? "destructive" : "default"}
@@ -308,7 +307,9 @@ export function UserProfile() {
                   <div className="flex items-center gap-2 mb-1">
                     <IGRPInputText
                       value={editedName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditedName(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEditedName(e.target.value)
+                      }
                       onKeyDown={(e: React.KeyboardEvent) => {
                         if (e.key === "Enter") handleSaveName();
                         if (e.key === "Escape") setIsEditingName(false);
@@ -377,8 +378,8 @@ export function UserProfile() {
             </IGRPAlertDialogTitlePrimitive>
             <IGRPAlertDialogDescriptionPrimitive>
               Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-              utilizador <strong className="text-foreground">{user.name}</strong>
-              ?
+              utilizador{" "}
+              <strong className="text-foreground">{user.name}</strong>?
             </IGRPAlertDialogDescriptionPrimitive>
           </IGRPAlertDialogHeaderPrimitive>
           <IGRPAlertDialogFooterPrimitive>

@@ -5,6 +5,7 @@ import {
   IGRPBadgePrimitive,
   IGRPCalendarSingle,
   IGRPCard,
+  IGRPIcon,
   IGRPInputText,
   IGRPSeparator,
   IGRPTabItem,
@@ -13,14 +14,12 @@ import {
 import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 import { useState } from "react";
 
-const initialTasks: any[] | (() => any[]) = [
-  
-];
+const initialTasks: any[] | (() => any[]) = [];
 
 export default function HomeIGRP() {
   const [tasks, setTasks] = useState(initialTasks);
   const [taskSearch, setTaskSearch] = useState("");
- const [date, setDate] = useState<Date | undefined>(new Date())
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
   const filteredTasks = tasks.filter((t) => {
     const matchesSearch =
@@ -48,11 +47,13 @@ export default function HomeIGRP() {
               />
             </div>
           </div>
-          {filteredTasks && filteredTasks.length > 0 && <div className="pb-2">
-            <span className="text-sm text-muted-foreground">
-              {filteredTasks.length} tarefas pendentes
-            </span>
-          </div> }
+          {filteredTasks && filteredTasks.length > 0 && (
+            <div className="pb-2">
+              <span className="text-sm text-muted-foreground">
+                {filteredTasks.length} tarefas pendentes
+              </span>
+            </div>
+          )}
           <ScrollArea className="h-[calc(90vh-300px)] -mr-4 pr-4">
             <div className="pb-4 space-y-2">
               {filteredTasks.map((task) => (
@@ -84,16 +85,16 @@ export default function HomeIGRP() {
                           task.priority === "high"
                             ? "destructive"
                             : task.priority === "medium"
-                            ? "default"
-                            : "secondary"
+                              ? "default"
+                              : "secondary"
                         }
                         className="text-[10px] px-1.5 py-0"
                       >
                         {task.priority === "high"
                           ? "Alta"
                           : task.priority === "medium"
-                          ? "Média"
-                          : "Baixa"}
+                            ? "Média"
+                            : "Baixa"}
                       </IGRPBadgePrimitive>
                     </div>
                   </div>
@@ -101,8 +102,13 @@ export default function HomeIGRP() {
               ))}
 
               {filteredTasks.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p className="text-sm">Nenhuma tarefa encontrada</p>
+                <div className="text-center justify-center py-8 text-muted-foreground">
+                  <IGRPIcon
+                    iconName="ClipboardCheck"
+                    size="xl"
+                    className="h-10 w-10 mx-auto"
+                  />
+                  <p className="text-sm pt-2">Nenhuma tarefa encontrada</p>
                 </div>
               )}
             </div>
@@ -114,18 +120,18 @@ export default function HomeIGRP() {
       label: "Agenda",
       value: "agenda",
       content: (
-      <>
-  <IGRPCalendarSingle
-    date={date}
-    onDateChange={setDate}
-    className="rounded-md border w-full"
-  />
-  {/* <IGRPSeparator className="my-4" /> */}
-  <div className="space-y-3">
-    {/* <h4 className="text-sm font-semibold">Próximos Compromissos</h4> */}
-    <ScrollArea className="h-[190px] -mr-4 pr-4">
-      <div className="space-y-2 pb-4">
-        {/* <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
+        <>
+          <IGRPCalendarSingle
+            date={date}
+            onDateChange={setDate}
+            className="rounded-md border w-full"
+          />
+          {/* <IGRPSeparator className="my-4" /> */}
+          <div className="space-y-3">
+            {/* <h4 className="text-sm font-semibold">Próximos Compromissos</h4> */}
+            <ScrollArea className="h-[190px] -mr-4 pr-4">
+              <div className="space-y-2 pb-4">
+                {/* <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
           <div className="h-2 w-2 rounded-full bg-blue-500" />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">
@@ -134,15 +140,19 @@ export default function HomeIGRP() {
             <p className="text-xs text-muted-foreground">Hoje, 10:00</p>
           </div>
         </div> */}
-         
+
                 <div className="text-center py-8 text-muted-foreground">
-                  <p className="text-sm">Nenhum compromisso agendado</p>
+                  <IGRPIcon
+                    iconName="CalendarX2"
+                    size="xl"
+                    className="h-10 w-10 mx-auto"
+                  />
+                  <p className="text-sm pt-2">Nenhum compromisso agendado</p>
                 </div>
-              
-      </div>
-    </ScrollArea>
-  </div>
-</>
+              </div>
+            </ScrollArea>
+          </div>
+        </>
       ),
     },
   ];

@@ -627,55 +627,73 @@ export function MenuFormDialog({
                         Configurações de Página
                       </legend>
                       <div className="flex flex-col gap-4">
-                            <IGRPFormFieldPrimitive
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <IGRPFormItemPrimitive>
-                            <IGRPFormLabelPrimitive>
-                              Tipo de Página
-                            </IGRPFormLabelPrimitive>
-                            <IGRPFormControlPrimitive>
-                              <IGRPRadioGroupPrimitive
-                                value={field.value}
-                                onValueChange={(value) => {
-                                  field.onChange(value);
-                                  setSelectedType(value as any);
-                                  if (value === menuTypeSchema.enum.EXTERNAL_PAGE) {
-                                    form.setValue("pageSlug", undefined as any);
-                                    form.setValue("target", menuTargetSchema.enum._blank);
-                                  } else {
-                                    form.setValue("url", undefined as any);
-                                    form.setValue("target", menuTargetSchema.enum._self);
-                                  }
-                                }}
-                                disabled={openType === "view"}
-                                className="flex flex-row"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <IGRPRadioGroupItemPrimitive
-                                    value={menuTypeSchema.enum.MENU_PAGE}
-                                    id="internal"
-                                  />
-                                  <label htmlFor="internal" className="cursor-pointer">
-                                    Página Interna
-                                  </label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <IGRPRadioGroupItemPrimitive
-                                    value={menuTypeSchema.enum.EXTERNAL_PAGE}
-                                    id="external"
-                                  />
-                                  <label htmlFor="external" className="cursor-pointer">
-                                    Página Externa
-                                  </label>
-                                </div>
-                              </IGRPRadioGroupPrimitive>
-                            </IGRPFormControlPrimitive>
-                            <IGRPFormMessagePrimitive />
-                          </IGRPFormItemPrimitive>
-                        )}
-    />
+                        <IGRPFormFieldPrimitive
+                          control={form.control}
+                          name="type"
+                          render={({ field }) => (
+                            <IGRPFormItemPrimitive>
+                              <IGRPFormLabelPrimitive>
+                                Tipo de Página
+                              </IGRPFormLabelPrimitive>
+                              <IGRPFormControlPrimitive>
+                                <IGRPRadioGroupPrimitive
+                                  value={field.value}
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+                                    setSelectedType(value as any);
+                                    if (
+                                      value ===
+                                      menuTypeSchema.enum.EXTERNAL_PAGE
+                                    ) {
+                                      form.setValue(
+                                        "pageSlug",
+                                        undefined as any,
+                                      );
+                                      form.setValue(
+                                        "target",
+                                        menuTargetSchema.enum._blank,
+                                      );
+                                    } else {
+                                      form.setValue("url", undefined as any);
+                                      form.setValue(
+                                        "target",
+                                        menuTargetSchema.enum._self,
+                                      );
+                                    }
+                                  }}
+                                  disabled={openType === "view"}
+                                  className="flex flex-row"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <IGRPRadioGroupItemPrimitive
+                                      value={menuTypeSchema.enum.MENU_PAGE}
+                                      id="internal"
+                                    />
+                                    <label
+                                      htmlFor="internal"
+                                      className="cursor-pointer"
+                                    >
+                                      Página Interna
+                                    </label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <IGRPRadioGroupItemPrimitive
+                                      value={menuTypeSchema.enum.EXTERNAL_PAGE}
+                                      id="external"
+                                    />
+                                    <label
+                                      htmlFor="external"
+                                      className="cursor-pointer"
+                                    >
+                                      Página Externa
+                                    </label>
+                                  </div>
+                                </IGRPRadioGroupPrimitive>
+                              </IGRPFormControlPrimitive>
+                              <IGRPFormMessagePrimitive />
+                            </IGRPFormItemPrimitive>
+                          )}
+                        />
 
                         {form.watch("type") ===
                           menuTypeSchema.enum.MENU_PAGE && (
@@ -915,7 +933,11 @@ export function MenuFormDialog({
                         type="submit"
                         disabled={isLoading}
                       >
-                        {isLoading ? "Guardando..." : openType === "edit" ? "Atualizar" : "Criar Menu"}
+                        {isLoading
+                          ? "Guardando..."
+                          : openType === "edit"
+                            ? "Atualizar"
+                            : "Criar Menu"}
                       </IGRPButton>
                     )}
                   </div>

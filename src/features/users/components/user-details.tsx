@@ -228,7 +228,9 @@ export function UserDetails({ id }: { id: string }) {
                   <div className="flex items-center gap-2 mb-1">
                     <IGRPInputText
                       value={editedName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditedName(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEditedName(e.target.value)
+                      }
                       onKeyDown={(e: React.KeyboardEvent) => {
                         if (e.key === "Enter") handleSaveName();
                         if (e.key === "Escape") setIsEditingName(false);
@@ -296,8 +298,8 @@ export function UserDetails({ id }: { id: string }) {
             </IGRPAlertDialogTitlePrimitive>
             <IGRPAlertDialogDescriptionPrimitive>
               Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-              utilizador <strong className="text-foreground">{user.name}</strong>
-              ?
+              utilizador{" "}
+              <strong className="text-foreground">{user.name}</strong>?
             </IGRPAlertDialogDescriptionPrimitive>
           </IGRPAlertDialogHeaderPrimitive>
           <IGRPAlertDialogFooterPrimitive>
@@ -316,12 +318,9 @@ export function UserDetails({ id }: { id: string }) {
               onClick={handleToggleStatus}
               disabled={isUpdatingStatus}
               className={cn(
-                isActive
-                  ? "bg-destructive hover:bg-destructive/90"
-                  : "",
+                isActive ? "bg-destructive hover:bg-destructive/90" : "",
                 "gap-2",
               )}
-              
             >
               {isUpdatingStatus ? (
                 <>

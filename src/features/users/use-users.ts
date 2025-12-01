@@ -5,6 +5,7 @@ import type {
   InviteUserDTO,
   RoleDTO,
   UserFilters,
+  UserInvitationResponseDTO,
 } from "@igrp/platform-access-management-client-ts";
 import {
   useMutation,
@@ -13,18 +14,28 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  addCurrentUserFavoriteApplication,
   addRolesToUser,
   getCurrentUser,
   getCurrentUserApplications,
   getCurrentUserDepartments,
+  getCurrentUserFavoriteApplications,
+  getCurrentUserRecentApplications,
   getUser,
   getUserApplications,
   getUserDepartments,
+  getUserInvitationByToken,
+  getUserInvitations,
   getUserRoles,
   getUsers,
   inviteUser,
+  registerCurrentUserApplicationAccess,
+  removeCurrentUserFavoriteApplication,
   removeRolesFromUser,
+  resendUserInvitation,
+  respondUserInvitation,
   updateUser,
+  updateUserStatus,
 } from "@/actions/user";
 
 export const useUsers = (params?: UserFilters) => {
@@ -229,6 +240,155 @@ export function useUser(userId: number) {
       return result.data;
     },
     enabled: !!userId,
+    retry: false,
+  });
+}
+
+export function useCurrentUserFavoriteApplications(applicationName?: string) {
+  return useQuery<ApplicationDTO[], Error>({
+    queryKey: ["favorite-applications", applicationName],
+    queryFn: async () => {
+      const result = await getCurrentUserFavoriteApplications(applicationName);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    throwOnError: true,
+    retry: false,
+  });
+}
+
+export function useAddCurrentUserFavoriteApplication() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (applicationCode: string) =>
+      addCurrentUserFavoriteApplication(applicationCode),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["favorite-applications"],
+        });
+      }
+    },
+    retry: false,
+  });
+}
+
+export function useRemoveCurrentUserFavoriteApplication() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (applicationCode: string) =>
+      removeCurrentUserFavoriteApplication(applicationCode),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["favorite-applications"],
+        });
+      }
+    },
+    retry: false,
+  });
+}
+
+export function useRegisterCurrentUserApplicationAccess() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (applicationCode: string) =>
+      registerCurrentUserApplicationAccess(applicationCode),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["recent-applications"],
+        });
+      }
+    },
+    retry: false,
+  });
+}
+
+export function useGetCurrentUserRecentApplications(applicationName?: string) {
+  return useQuery<ApplicationDTO[], Error>({
+    queryKey: ["recent-applications", applicationName],
+    queryFn: async () => {
+      const result = await getCurrentUserRecentApplications(applicationName);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    retry: false,
+  });
+}
+
+export function useGetUserInvitations(email?: string) {
+  return useQuery<any[], Error>({
+    queryKey: ["user-invitations", email],
+    queryFn: async () => {
+      const result = await getUserInvitations(email);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    retry: false,
+  });
+}
+
+export function useResendUserInvitation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => resendUserInvitation(id),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({ queryKey: ["user-invitations"] });
+      }
+    },
+    retry: false,
+  });
+}
+
+export function useRespondUserInvitation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      response,
+      token,
+    }: {
+      response: UserInvitationResponseDTO;
+      token: string;
+    }) => respondUserInvitation(response, token),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({ queryKey: ["user-invitations"] });
+      }
+    },
+    retry: false,
+  });
+}
+
+export function useUpdateUserStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, value }: { id: number; value: string }) =>
+      updateUserStatus(id, value),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({ queryKey: ["users"] });
+      }
+    },
+    retry: false,
+  });
+}
+
+export function useGetUserInvitationByToken(token: string) {
+  return useQuery<any, Error>({
+    queryKey: ["user-invitation-by-token"],
+    queryFn: async () => {
+      const result = await getUserInvitationByToken(token);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     retry: false,
   });
 }
