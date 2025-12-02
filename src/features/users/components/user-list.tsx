@@ -35,9 +35,10 @@ import {
   useGetUserInvitations,
   useResendUserInvitation,
   useUpdateUserStatus,
+  useCancelUserInvitation,
 } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
-import { cn, getInitials, getStatusColor, showStatus } from "@/lib/utils";
+import { cn, geInviteTitle, getInitials, getStatusColor, showStatus, statusInviteClass } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/components/confirmation-modal";
@@ -58,6 +59,8 @@ export function UserList() {
 
   const resendMutation = useResendUserInvitation();
   const updateStatusMutation = useUpdateUserStatus();
+
+  const cancelUserInvitationMutation = useCancelUserInvitation();
 
   const { data: users, isLoading, error } = useUsers();
   const { data: invites, isLoading: isLoadingInvites } =
@@ -161,6 +164,22 @@ export function UserList() {
         return (
           <div>
             {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
+          </div>
+        );
+      },
+    },
+    {
+      header: "Status",
+      accessorKey: "status",
+      cell: ({ row }) => {
+        const status = row.getValue("status");
+        return (
+          <div>
+            <IGRPBadgePrimitive
+              className={cn(statusInviteClass(status as string), "capitalize")}
+            >
+              {geInviteTitle(status as string)}
+            </IGRPBadgePrimitive>
           </div>
         );
       },
@@ -356,16 +375,26 @@ export function UserList() {
 
   const handleConfirmCancel = () => {
     if (userToCancel) {
-      // TODO: Implementar lógica de cancelamento
-      console.log("Cancelar convite:", userToCancel);
-      igrpToast({
-        type: "success",
-        title: "Convite cancelado",
-        description: "O convite foi cancelado com sucesso",
-        duration: 4000,
+      cancelUserInvitationMutation.mutate(userToCancel.id, {
+        onSuccess: () => {
+          igrpToast({
+            type: "success",
+            title: "Convite cancelado",
+            description: "O convite foi cancelado com sucesso",
+            duration: 4000,
+          });
+          setCancelDialogOpen(false);
+          setUserToCancel(null);
+        },
+        onError: () => {
+          igrpToast({
+            type: "error",
+            title: "Erro",
+            description: "Não foi possível cancelar o convite",
+            duration: 4000,
+          });
+        },
       });
-      setCancelDialogOpen(false);
-      setUserToCancel(null);
     }
   };
 
@@ -476,10 +505,10 @@ export function UserList() {
         }
         onConfirm={handleConfirmCancel}
         confirmText="Confirmar"
-        loadingText="Removendo..."
+        loadingText="Cancelando..."
         iconName="Trash"
         variant="destructive"
-        isLoading={false}
+        isLoading={cancelUserInvitationMutation.isPending}
       />
     </div>
   );

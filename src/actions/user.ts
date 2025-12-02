@@ -307,6 +307,18 @@ export async function respondUserInvitation(
   }
 }
 
+export async function cancelUserInvitation(id: number): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.cancelUserInvitation(id);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao cancelar convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
 export async function updateUserStatus(
   id: number,
   value: string,

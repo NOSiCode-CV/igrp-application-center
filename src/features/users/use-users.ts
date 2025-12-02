@@ -16,6 +16,7 @@ import {
 import {
   addCurrentUserFavoriteApplication,
   addRolesToUser,
+  cancelUserInvitation,
   getCurrentUser,
   getCurrentUserApplications,
   getCurrentUserDepartments,
@@ -366,6 +367,20 @@ export function useRespondUserInvitation() {
   });
 }
 
+export function useCancelUserInvitation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => cancelUserInvitation(id),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({ queryKey: ["user-invitations"] });
+      }
+    },
+    retry: false,
+  });
+}
+  
 export function useUpdateUserStatus() {
   const queryClient = useQueryClient();
 

@@ -25,6 +25,34 @@ export function statusClass(status: string): import("clsx").ClassValue {
   }
 }
 
+export function statusInviteClass(status: string): import("clsx").ClassValue {
+  if (!status) return "bg-gray-100 text-gray-800";
+
+  switch (status.trim()) {
+    case "PENDING":
+      return "bg-amber-100 text-amber-800";
+    case "ACCEPTED":
+      return "bg-emerald-100 text-emerald-800";
+    case "CANCELED":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+}
+
+export const geInviteTitle = (title: string) => {
+  switch (title) {
+    case "PENDING":
+      return "Pendente";
+    case "ACCEPTED":
+      return "Aceito";
+    case "CANCELED":
+      return "Cancelado";
+    default:
+      return "N/A";
+  }
+};
+
 export function getInitials(username: string) {
   const parts = username?.split(/[\s._-]+/).filter(Boolean);
   if (parts?.length === 0) return "";
