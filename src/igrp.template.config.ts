@@ -18,6 +18,9 @@ interface IGRPConfigOptions {
   showIGRPSidebarTrigger?: boolean;
   showIGRPHeaderLogo?: boolean;
   headerLogo?: string;
+  showSettings?: boolean;
+    settingsUrl?: string
+    settingsIcon?: string
 }
 
 export function createConfig(
@@ -52,7 +55,10 @@ export function createConfig(
         showIGRPHeaderTitle: options?.showIGRPHeaderTitle ?? false,
         showIGRPSidebarTrigger: options?.showIGRPSidebarTrigger ?? true,
         showIGRPHeaderLogo: options?.showIGRPHeaderLogo ?? false,
-        headerLogo: process.env.NEXT_IGRP_HEADER_LOGO || "/igrp-logo.svg",
+        headerLogo: "/igrp-logo.svg",
+        showSettings: options?.showSettings ?? false,
+        settingsUrl: options?.settingsUrl || "/settings",
+        settingsIcon: options?.settingsIcon || "Settings"
       }),
       getSidebarData: async () => ({
         menuItems: menu,

@@ -299,17 +299,20 @@ export function UserList() {
         </IGRPDropdownMenuTriggerPrimitive>
 
         <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
-          <IGRPDropdownMenuItemPrimitive onSelect={handleCopyUrl}>
+          {String(row.original.status) !== "CANCELED" && String(row.original.status) !== "REJECTED" && (
+            <IGRPDropdownMenuItemPrimitive onSelect={handleCopyUrl}>
             <IGRPIcon iconName="Copy" />
             Copiar URL
           </IGRPDropdownMenuItemPrimitive>
+          )}
 
           <IGRPDropdownMenuItemPrimitive onSelect={handleResend}>
             <IGRPIcon iconName="Mail" />
             Reenviar Convite
           </IGRPDropdownMenuItemPrimitive>
 
-          <IGRPDropdownMenuItemPrimitive
+          {String(row.original.status) !== "CANCELED" && String(row.original.status) !== "REJECTED" && (
+            <IGRPDropdownMenuItemPrimitive
             className="text-destructive focus:text-destructive"
             variant="destructive"
             onSelect={handleCancelClick}
@@ -317,6 +320,7 @@ export function UserList() {
             <IGRPIcon iconName="Trash2" />
             Cancelar Convite
           </IGRPDropdownMenuItemPrimitive>
+          )}
         </IGRPDropdownMenuContentPrimitive>
       </IGRPDropdownMenuPrimitive>
     );

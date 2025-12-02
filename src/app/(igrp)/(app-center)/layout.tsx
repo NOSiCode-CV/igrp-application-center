@@ -15,6 +15,9 @@ export default async function HomeLayout({
     showIGRPHeaderLogo: false,
     showIGRPHeaderTitle: false,
     showIGRPSidebarTrigger: true,
+    showSettings: true,
+    settingsUrl: "/settings",
+    settingsIcon: "Settings"
   });
 
   return <IGRPLayout config={config}>{children}</IGRPLayout>;

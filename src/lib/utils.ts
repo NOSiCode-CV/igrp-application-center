@@ -29,14 +29,12 @@ export function statusInviteClass(status: string): import("clsx").ClassValue {
   if (!status) return "bg-gray-100 text-gray-800";
 
   switch (status.trim()) {
-    case "PENDING":
-      return "bg-amber-100 text-amber-800";
-    case "ACCEPTED":
-      return "bg-emerald-100 text-emerald-800";
+    case "REJECTED":
+      return "bg-rose-100 text-rose-800";
     case "CANCELED":
       return "bg-red-100 text-red-800";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-amber-100 text-amber-800";
   }
 }
 
@@ -44,12 +42,10 @@ export const geInviteTitle = (title: string) => {
   switch (title) {
     case "PENDING":
       return "Pendente";
-    case "ACCEPTED":
-      return "Aceito";
     case "CANCELED":
       return "Cancelado";
     default:
-      return "N/A";
+      return "Rejeitado";
   }
 };
 

@@ -15,8 +15,9 @@ export default async function HomeLayout({
     showIGRPHeaderLogo: true,
     showIGRPHeaderTitle: true,
     showIGRPSidebarTrigger: false,
-    headerLogo:
-      "https://minio-demoigrp.nosi.cv/igrp/public/QQ/a467f627-5602-4ac2-4ac2-1fb6072c71c8/da380d9d-c137-431d-a191-67a11307425a_logo.webp",
+    showSettings: true,
+    settingsUrl: "/settings",
+    settingsIcon: "Settings"
   });
 
   return <IGRPLayout config={config}>{children}</IGRPLayout>;

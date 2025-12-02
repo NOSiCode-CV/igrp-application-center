@@ -15,8 +15,8 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { AppCenterLoading } from "@/components/loading";
-import { ROUTES } from "@/lib/constants";
 import {
+  useCurrentUser,
   useGetUserInvitationByToken,
   useRespondUserInvitation,
 } from "@/features/users/use-users";
@@ -29,17 +29,31 @@ export default function AcceptInvitePage() {
   const [isAccepting, setIsAccepting] = useState(false);
   const token = searchParams.get("token");
 
+  const { data: user, error: userError, isLoading: isLoadingUser } = useCurrentUser();
+
+  const [isValidating, setIsValidating] = useState(true);
+
   const {
     data: invitation,
-    isLoading,
+    isLoading: isLoadingInvitation,
     error,
   } = useGetUserInvitationByToken(token || "");
 
   useEffect(() => {
     if (!token) {
-      router.push(ROUTES.APPLICATIONS);
+      router.push("/");
     }
   }, [token, router]);
+
+   useEffect(() => {
+    if (!isLoadingUser && !isLoadingInvitation && user && invitation) {
+      if (user.email !== invitation.email) {
+        router.push(`/invite/invite-error?token=${token}`);
+      } else {
+        setIsValidating(false);
+      }
+    }
+  }, [user, invitation, token, router, isLoadingUser, isLoadingInvitation]);
 
   useEffect(() => {
     if (error) {
@@ -49,7 +63,7 @@ export default function AcceptInvitePage() {
         description: "O convite não foi encontrado ou expirou",
         duration: 4000,
       });
-      setTimeout(() => router.push(ROUTES.APPLICATIONS), 2000);
+      setTimeout(() => router.push("/"), 2000);
     }
   }, [error, router, igrpToast]);
 
@@ -74,7 +88,7 @@ export default function AcceptInvitePage() {
             description: "Você agora tem acesso à aplicação",
             duration: 4000,
           });
-          router.push(ROUTES.APPLICATIONS);
+          router.push("/");
         },
         onError: (error) => {
           igrpToast({
@@ -90,24 +104,47 @@ export default function AcceptInvitePage() {
   };
 
   const handleDecline = () => {
-    router.push(ROUTES.APPLICATIONS);
+    if (!token) return;
+
+    setIsAccepting(true);
+    respondMutation.mutate(
+      {
+        response: {
+          email: invitation.email,
+          accept: false,
+        },
+        token,
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (error) => {
+          igrpToast({
+            type: "error",
+            title: "Erro ao rejeitar convite",
+            description: (error as Error).message,
+            duration: 4000,
+          });
+          setIsAccepting(false);
+        },
+      },
+    );
   };
 
-  if (!token || isLoading) {
-    return <AppCenterLoading descrption="Carregando convite..." />;
+  if (!token || isLoadingInvitation || isLoadingUser || isValidating) {
+    return <AppCenterLoading descrption="Validando convite..." />;
   }
 
   if (error || !invitation) {
     return <AppCenterLoading descrption="Redirecionando..." />;
   }
 
-  const isExpired = new Date(invitation.expiry) < new Date();
-
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <IGRPCardPrimitive className="w-full max-w-md">
         <IGRPCardHeaderPrimitive className="text-center">
-          <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto w-12 h-12 bg-primary/10 bg- rounded-full flex items-center justify-center mb-4">
             <IGRPIcon iconName="Mail" className="w-6 h-6 text-primary" />
           </div>
           <IGRPCardTitlePrimitive>Aceitar convite</IGRPCardTitlePrimitive>
@@ -127,30 +164,6 @@ export default function AcceptInvitePage() {
               <span className="font-medium">{invitation.email}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-sm">
-              <IGRPIcon
-                iconName="Calendar"
-                className="w-4 h-4 text-muted-foreground"
-              />
-              <span className="text-muted-foreground">Data do convite:</span>
-              <span className="font-medium">
-                {new Date(invitation.invitationDate).toLocaleDateString()}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm">
-              <IGRPIcon
-                iconName="Clock"
-                className="w-4 h-4 text-muted-foreground"
-              />
-              <span className="text-muted-foreground">Expira em:</span>
-              <span
-                className={`font-medium ${isExpired ? "text-destructive" : ""}`}
-              >
-                {new Date(invitation.expiry).toLocaleDateString()}
-              </span>
-            </div>
-
             {invitation.roles && invitation.roles.length > 0 && (
               <div className="pt-2 border-t">
                 <div className="flex items-center gap-2 text-sm mb-2">
@@ -160,7 +173,7 @@ export default function AcceptInvitePage() {
                   />
                   <span className="text-muted-foreground">Perfis:</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-2">
                   {invitation.roles.map((role: any, index: number) => (
                     <IGRPBadgePrimitive key={index} variant="secondary">
                       {role.description || role.code}
@@ -171,21 +184,7 @@ export default function AcceptInvitePage() {
             )}
           </div>
 
-          {isExpired && (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex items-start gap-2">
-              <IGRPIcon
-                iconName="AlertTriangle"
-                className="w-4 h-4 text-destructive mt-0.5"
-              />
-              <div className="text-sm text-destructive">
-                <p className="font-medium">Convite expirado</p>
-                <p className="text-xs mt-1">
-                  Este convite não está mais válido. Entre em contato com o
-                  administrador.
-                </p>
-              </div>
-            </div>
-          )}
+           
         </IGRPCardContentPrimitive>
 
         <IGRPCardFooterPrimitive className="flex gap-3">
@@ -197,17 +196,17 @@ export default function AcceptInvitePage() {
             iconPlacement="start"
             disabled={isAccepting}
           >
-            Recusar
+            {isAccepting ? "Aguarde..." : "Rejeitar Convite"}
           </IGRPButton>
           <IGRPButton
             className="flex-1 bg-green-600 hover:bg-green-700 text-white hover:text-white"
             onClick={handleAccept}
-            disabled={isAccepting || isExpired}
+            disabled={isAccepting }
             showIcon
             iconName={isAccepting ? "LoaderCircle" : "Check"}
             iconPlacement="start"
           >
-            {isAccepting ? "Aceitando..." : "Aceitar Convite"}
+            {isAccepting ? "Aguarde..." : "Aceitar Convite"}
           </IGRPButton>
         </IGRPCardFooterPrimitive>
       </IGRPCardPrimitive>

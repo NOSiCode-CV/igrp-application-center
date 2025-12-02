@@ -43,7 +43,6 @@ export function UserProfile() {
   const { igrpToast } = useIGRPToast();
   const queryClient = useQueryClient();
 
-  const [open, setOpen] = useState(false);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
