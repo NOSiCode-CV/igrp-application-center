@@ -9,8 +9,23 @@ import { getMockMenus } from "@/temp/menus/use-mock-menus";
 import { getMockMenusFooter } from "@/temp/menus/use-mock-menus-footer";
 import { getMockUser } from "@/temp/users/use-mock-user";
 
+interface IGRPConfigOptions {
+  showSidebar?: boolean;
+  showBreadcrumb?: boolean;
+  showSearch?: boolean;
+  showNotifications?: boolean;
+  showIGRPHeaderTitle?: boolean;
+  showIGRPSidebarTrigger?: boolean;
+  showIGRPHeaderLogo?: boolean;
+  headerLogo?: string;
+  showSettings?: boolean;
+  settingsUrl?: string;
+  settingsIcon?: string;
+}
+
 export function createConfig(
   config: IGRPLayoutConfigArgs,
+  options?: IGRPConfigOptions,
 ): Promise<IGRPConfigArgs> {
   const user = getMockUser().mockUser;
   const menu = getMockMenus().mockMenus;
@@ -32,11 +47,18 @@ export function createConfig(
     layoutMockData: {
       getHeaderData: async () => ({
         user: user,
-        showBreadcrumb: true,
-        showSearch: true,
-        showNotifications: true,
+        showBreadcrumb: options?.showBreadcrumb ?? true,
+        showSearch: options?.showSearch ?? true,
+        showNotifications: options?.showNotifications ?? true,
         showUser: true,
         showThemeSwitcher: true,
+        showIGRPHeaderTitle: options?.showIGRPHeaderTitle ?? false,
+        showIGRPSidebarTrigger: options?.showIGRPSidebarTrigger ?? true,
+        showIGRPHeaderLogo: options?.showIGRPHeaderLogo ?? false,
+        headerLogo: "/igrp-logo.svg",
+        showSettings: options?.showSettings ?? false,
+        settingsUrl: options?.settingsUrl || "/settings",
+        settingsIcon: options?.settingsIcon || "Settings",
       }),
       getSidebarData: async () => ({
         menuItems: menu,
@@ -49,7 +71,7 @@ export function createConfig(
       }),
     },
     font: fontVariables,
-    showSidebar: true,
+    showSidebar: options?.showSidebar ?? true,
     showHeader: true,
 
     layout: {

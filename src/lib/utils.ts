@@ -25,11 +25,35 @@ export function statusClass(status: string): import("clsx").ClassValue {
   }
 }
 
+export function statusInviteClass(status: string): import("clsx").ClassValue {
+  if (!status) return "bg-gray-100 text-gray-800";
+
+  switch (status.trim()) {
+    case "REJECTED":
+      return "bg-rose-100 text-rose-800";
+    case "CANCELED":
+      return "bg-red-100 text-red-800";
+    default:
+      return "bg-amber-100 text-amber-800";
+  }
+}
+
+export const geInviteTitle = (title: string) => {
+  switch (title) {
+    case "PENDING":
+      return "Pendente";
+    case "CANCELED":
+      return "Cancelado";
+    default:
+      return "Rejeitado";
+  }
+};
+
 export function getInitials(username: string) {
-  const parts = username.split(/[\s._-]+/).filter(Boolean);
-  if (parts.length === 0) return "";
-  if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "";
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  const parts = username?.split(/[\s._-]+/).filter(Boolean);
+  if (parts?.length === 0) return "";
+  if (parts?.length === 1) return parts[0][0]?.toUpperCase() ?? "";
+  return (parts[0][0] + parts[parts?.length - 1][0]).toUpperCase();
 }
 
 export function formatIconString(input: string): string {

@@ -36,19 +36,29 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
 
   return (
     <div className="w-full ">
-      <div className="relative mb-4 max-w-md">
-        <IGRPIcon
-          iconName="Search"
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
-        />
-        <IGRPInputPrimitive
-          type="text"
-          placeholder="Pesquisar departamento..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full bg-background pl-8"
-        />
-      </div>
+      {filteredTree.length > 0 && (
+        <div className="relative mb-4 max-w-md">
+          <IGRPIcon
+            iconName="Search"
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
+          />
+          <IGRPInputPrimitive
+            type="text"
+            placeholder="Pesquisar departamento..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-background pl-8"
+          />
+        </div>
+      )}
+
+      {filteredTree.length === 0 && (
+        <div className="w-full">
+          <div className="text-primary">
+            <p className="text-sm">Nenhum departamento</p>
+          </div>
+        </div>
+      )}
 
       <div className="overflow-y-auto">
         {filteredTree.map((dept) => (

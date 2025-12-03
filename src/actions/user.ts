@@ -1,10 +1,12 @@
 "use server";
 
 import type {
+  ApiResponse,
   ApplicationDTO,
   IGRPUserDTO,
   InviteUserDTO,
   UserFilters,
+  UserInvitationResponseDTO,
 } from "@igrp/platform-access-management-client-ts";
 import { getClientAccess } from "./access-client";
 import { extractApiError } from "@/lib/utils";
@@ -182,6 +184,168 @@ export async function getUser(id: number): Promise<ActionResult<IGRPUserDTO>> {
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter utilizador:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function getCurrentUserFavoriteApplications(
+  applicationName?: string,
+): Promise<ActionResult<ApplicationDTO[]>> {
+  const client = await getClientAccess();
+
+  try {
+    const result =
+      await client.users.getCurrentUserFavoriteApplications(applicationName);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao obter favorites applications:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function addCurrentUserFavoriteApplication(
+  applicationCode: string,
+): Promise<ActionResult<ApplicationDTO>> {
+  const client = await getClientAccess();
+  try {
+    const result =
+      await client.users.addCurrentUserFavoriteApplication(applicationCode);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao adicionar favorite application:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function removeCurrentUserFavoriteApplication(
+  applicationCode: string,
+): Promise<ActionResult<ApplicationDTO>> {
+  const client = await getClientAccess();
+  try {
+    const result =
+      await client.users.removeCurrentUserFavoriteApplication(applicationCode);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao remover favorite application:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function getCurrentUserRecentApplications(
+  applicationName?: string,
+  max?: string,
+): Promise<ActionResult<ApplicationDTO[]>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getCurrentUserRecentApplications(
+      applicationName,
+      max,
+    );
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao obter recent applications:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function registerCurrentUserApplicationAccess(
+  applicationCode: string,
+): Promise<ActionResult<ApplicationDTO>> {
+  const client = await getClientAccess();
+
+  try {
+    const result =
+      await client.users.registerCurrentUserApplicationAccess(applicationCode);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao registo de acesso:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function getUserInvitations(
+  email?: string,
+): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getUserInvitations(email);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao obter convites:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function resendUserInvitation(
+  id: number,
+): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.resendUserInvitation(id);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao reenviar convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function respondUserInvitation(
+  response: UserInvitationResponseDTO,
+  token: string,
+): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.respondUserInvitation(response, token);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao responder convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function cancelUserInvitation(
+  id: number,
+): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.cancelUserInvitation(id);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao cancelar convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function updateUserStatus(
+  id: number,
+  value: string,
+): Promise<ActionResult<IGRPUserDTO>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.updateUserStatus(id, value);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao atualizar status:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function getUserInvitationByToken(
+  token: string,
+): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getUserInvitationByToken(token);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao obter dados convite:", error);
     return { success: false, error: extractApiError(error) };
   }
 }
