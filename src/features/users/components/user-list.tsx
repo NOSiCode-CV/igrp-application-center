@@ -231,9 +231,9 @@ export function UserList() {
 
           <IGRPDropdownMenuItemPrimitive
             variant="default"
-            onClick={() => router.push(`/users/${row.original.id}`)}
+            onClick={() => router.push(`/settings/users/${row.original.id}`)}
           >
-            <Link className="flex gap-2" href={`/users/${row.original.id}`}>
+            <Link className="flex gap-2" href={`/settings/users/${row.original.id}`}>
               <IGRPIcon iconName="UserCog" />
               Gerir
             </Link>

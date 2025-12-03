@@ -49,9 +49,9 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className=" mx-auto p-8 space-y-12">
+    <div className="mx-auto space-y-12">
       <section>
-        <h2 className="text-xl font-semibold mb-6">Configurações pessoais</h2>
+        <h2 className="text-xl font-semibold mb-6">Configurações Gerais</h2>
         <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
           {settingsConfig.personal.map((item) => (
             <button
@@ -68,7 +68,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="space-y-1 min-w-0">
                   <h3 className="font-medium text-primary">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-snug">
+                  <p className="text-xs text-muted-foreground leading-snug">
                     {item.description}
                   </p>
                 </div>

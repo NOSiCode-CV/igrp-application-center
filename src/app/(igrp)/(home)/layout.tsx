@@ -8,7 +8,7 @@ export default async function HomeLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const layoutConfig = await configLayout();
   const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs, {
-    showBreadcrumb: false,
+    showBreadcrumb: true,
     showSidebar: false,
     showNotifications: true,
     showSearch: false,
