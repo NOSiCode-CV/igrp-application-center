@@ -37,9 +37,8 @@ const settingsConfig = {
       icon: "Palette",
       href: "/settings/theme",
       status: "inativo",
-    }
+    },
   ],
-  
 };
 
 export default function SettingsPage() {
@@ -59,9 +58,12 @@ export default function SettingsPage() {
               key={item.id}
               onClick={() => handleNavigate(item.href)}
               disabled={item.status === "inativo"}
-              className={cn("text-left p-5 rounded-lg border-0 bg-accent/20 cursor-pointer hover:bg-accent/50 transition-colors", {
-                "opacity-50 cursor-not-allowed": item.status === "inativo",
-              })}
+              className={cn(
+                "text-left p-5 rounded-lg border-0 bg-accent/20 cursor-pointer hover:bg-accent/50 transition-colors",
+                {
+                  "opacity-50 cursor-not-allowed": item.status === "inativo",
+                },
+              )}
             >
               <div className="flex items-start gap-4">
                 <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
@@ -81,7 +83,6 @@ export default function SettingsPage() {
           ))}
         </div>
       </section>
-
     </div>
   );
 }

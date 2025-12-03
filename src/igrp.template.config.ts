@@ -19,8 +19,8 @@ interface IGRPConfigOptions {
   showIGRPHeaderLogo?: boolean;
   headerLogo?: string;
   showSettings?: boolean;
-    settingsUrl?: string
-    settingsIcon?: string
+  settingsUrl?: string;
+  settingsIcon?: string;
 }
 
 export function createConfig(
@@ -58,7 +58,7 @@ export function createConfig(
         headerLogo: "/igrp-logo.svg",
         showSettings: options?.showSettings ?? false,
         settingsUrl: options?.settingsUrl || "/settings",
-        settingsIcon: options?.settingsIcon || "Settings"
+        settingsIcon: options?.settingsIcon || "Settings",
       }),
       getSidebarData: async () => ({
         menuItems: menu,

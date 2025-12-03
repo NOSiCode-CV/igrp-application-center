@@ -38,7 +38,14 @@ import {
   useCancelUserInvitation,
 } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
-import { cn, geInviteTitle, getInitials, getStatusColor, showStatus, statusInviteClass } from "@/lib/utils";
+import {
+  cn,
+  geInviteTitle,
+  getInitials,
+  getStatusColor,
+  showStatus,
+  statusInviteClass,
+} from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/components/confirmation-modal";
@@ -233,7 +240,10 @@ export function UserList() {
             variant="default"
             onClick={() => router.push(`/settings/users/${row.original.id}`)}
           >
-            <Link className="flex gap-2" href={`/settings/users/${row.original.id}`}>
+            <Link
+              className="flex gap-2"
+              href={`/settings/users/${row.original.id}`}
+            >
               <IGRPIcon iconName="UserCog" />
               Gerir
             </Link>
@@ -299,28 +309,30 @@ export function UserList() {
         </IGRPDropdownMenuTriggerPrimitive>
 
         <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
-          {String(row.original.status) !== "CANCELED" && String(row.original.status) !== "REJECTED" && (
-            <IGRPDropdownMenuItemPrimitive onSelect={handleCopyUrl}>
-            <IGRPIcon iconName="Copy" />
-            Copiar URL
-          </IGRPDropdownMenuItemPrimitive>
-          )}
+          {String(row.original.status) !== "CANCELED" &&
+            String(row.original.status) !== "REJECTED" && (
+              <IGRPDropdownMenuItemPrimitive onSelect={handleCopyUrl}>
+                <IGRPIcon iconName="Copy" />
+                Copiar URL
+              </IGRPDropdownMenuItemPrimitive>
+            )}
 
           <IGRPDropdownMenuItemPrimitive onSelect={handleResend}>
             <IGRPIcon iconName="Mail" />
             Reenviar Convite
           </IGRPDropdownMenuItemPrimitive>
 
-          {String(row.original.status) !== "CANCELED" && String(row.original.status) !== "REJECTED" && (
-            <IGRPDropdownMenuItemPrimitive
-            className="text-destructive focus:text-destructive"
-            variant="destructive"
-            onSelect={handleCancelClick}
-          >
-            <IGRPIcon iconName="Trash2" />
-            Cancelar Convite
-          </IGRPDropdownMenuItemPrimitive>
-          )}
+          {String(row.original.status) !== "CANCELED" &&
+            String(row.original.status) !== "REJECTED" && (
+              <IGRPDropdownMenuItemPrimitive
+                className="text-destructive focus:text-destructive"
+                variant="destructive"
+                onSelect={handleCancelClick}
+              >
+                <IGRPIcon iconName="Trash2" />
+                Cancelar Convite
+              </IGRPDropdownMenuItemPrimitive>
+            )}
         </IGRPDropdownMenuContentPrimitive>
       </IGRPDropdownMenuPrimitive>
     );

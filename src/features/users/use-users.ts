@@ -380,7 +380,7 @@ export function useCancelUserInvitation() {
     retry: false,
   });
 }
-  
+
 export function useUpdateUserStatus() {
   const queryClient = useQueryClient();
 

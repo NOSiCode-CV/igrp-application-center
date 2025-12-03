@@ -307,7 +307,9 @@ export async function respondUserInvitation(
   }
 }
 
-export async function cancelUserInvitation(id: number): Promise<ActionResult<any>> {
+export async function cancelUserInvitation(
+  id: number,
+): Promise<ActionResult<any>> {
   const client = await getClientAccess();
 
   try {

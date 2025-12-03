@@ -18,7 +18,6 @@ export default function InviteErrorPage() {
   const router = useRouter();
   const token = searchParams.get("token");
 
-
   useEffect(() => {
     if (!token) {
       router.push("/");
@@ -30,7 +29,10 @@ export default function InviteErrorPage() {
       <IGRPCardPrimitive className="w-full max-w-md py-14">
         <IGRPCardHeaderPrimitive className="text-center">
           <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
-            <IGRPIcon iconName="AlertTriangle" className="w-6 h-6 text-destructive" />
+            <IGRPIcon
+              iconName="AlertTriangle"
+              className="w-6 h-6 text-destructive"
+            />
           </div>
           <IGRPCardTitlePrimitive className="text-destructive">
             Convite não corresponde
@@ -51,7 +53,6 @@ export default function InviteErrorPage() {
           >
             Voltar
           </IGRPButton>
-          
         </IGRPCardFooterPrimitive>
       </IGRPCardPrimitive>
     </div>

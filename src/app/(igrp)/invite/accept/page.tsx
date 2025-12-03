@@ -29,7 +29,11 @@ export default function AcceptInvitePage() {
   const [isAccepting, setIsAccepting] = useState(false);
   const token = searchParams.get("token");
 
-  const { data: user, error: userError, isLoading: isLoadingUser } = useCurrentUser();
+  const {
+    data: user,
+    error: userError,
+    isLoading: isLoadingUser,
+  } = useCurrentUser();
 
   const [isValidating, setIsValidating] = useState(true);
 
@@ -45,7 +49,7 @@ export default function AcceptInvitePage() {
     }
   }, [token, router]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!isLoadingUser && !isLoadingInvitation && user && invitation) {
       if (user.email !== invitation.email) {
         router.push(`/invite/invite-error?token=${token}`);
@@ -183,8 +187,6 @@ export default function AcceptInvitePage() {
               </div>
             )}
           </div>
-
-           
         </IGRPCardContentPrimitive>
 
         <IGRPCardFooterPrimitive className="flex gap-3">
@@ -201,7 +203,7 @@ export default function AcceptInvitePage() {
           <IGRPButton
             className="flex-1 bg-green-600 hover:bg-green-700 text-white hover:text-white"
             onClick={handleAccept}
-            disabled={isAccepting }
+            disabled={isAccepting}
             showIcon
             iconName={isAccepting ? "LoaderCircle" : "Check"}
             iconPlacement="start"
