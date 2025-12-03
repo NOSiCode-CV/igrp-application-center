@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 const settingsConfig = {
   personal: [
@@ -36,6 +36,7 @@ const settingsConfig = {
         "Aqui voce pode personalizar a sua interface, incluindo cores, fontes e imagens.",
       icon: "Palette",
       href: "/settings/theme",
+      status: "inativo",
     }
   ],
   
@@ -57,7 +58,10 @@ export default function SettingsPage() {
             <button
               key={item.id}
               onClick={() => handleNavigate(item.href)}
-              className="text-left p-5 rounded-lg border-0 bg-accent/20 cursor-pointer hover:bg-accent/50 transition-colors"
+              disabled={item.status === "inativo"}
+              className={cn("text-left p-5 rounded-lg border-0 bg-accent/20 cursor-pointer hover:bg-accent/50 transition-colors", {
+                "opacity-50 cursor-not-allowed": item.status === "inativo",
+              })}
             >
               <div className="flex items-start gap-4">
                 <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
