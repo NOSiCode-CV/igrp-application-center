@@ -21,6 +21,8 @@ stages:
   - deploy
 
 .build-template:
+  tags:
+    - nosi-runner
   only:
     - main
   before_script:
@@ -42,6 +44,8 @@ build-arm64:
    
 build-amd64:
   extends: .build-template
+  tags:
+    - nosi-runner
   stage: build
   script:
     - docker buildx create --use --name amd64builder
@@ -53,6 +57,8 @@ build-amd64:
 
 create-manifest:
   stage: manifest
+  tags:
+    - nosi-runner
   script:
     - docker login -u "$DOCKER_REGISTRY_USERNAME" -p "$DOCKER_REGISTRY_PASSWORD" "$DOCKER_REGISTRY"
     - docker manifest create "$IMAGE_NAME_FULL:$IMAGE_TAG" --amend "$IMAGE_NAME_FULL:amd64" --amend "$IMAGE_NAME_FULL:arm64"
