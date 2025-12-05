@@ -152,9 +152,9 @@ export default function AcceptInvitePage() {
             <IGRPIcon iconName="Mail" className="w-6 h-6 text-primary" />
           </div>
           <IGRPCardTitlePrimitive>Aceitar convite</IGRPCardTitlePrimitive>
-          <IGRPCardDescriptionPrimitive>
-            Você foi convidado para participar da aplicação
-          </IGRPCardDescriptionPrimitive>
+          {/* <IGRPCardDescriptionPrimitive>
+            Você foi convidado para 
+          </IGRPCardDescriptionPrimitive> */}
         </IGRPCardHeaderPrimitive>
 
         <IGRPCardContentPrimitive className="space-y-4">
@@ -167,6 +167,25 @@ export default function AcceptInvitePage() {
               <span className="text-muted-foreground">Email:</span>
               <span className="font-medium">{invitation.email}</span>
             </div>
+
+            {invitation.department && invitation.department.length > 0 && (
+              <div className="pt-2 border-t">
+                <div className="flex items-center gap-2 text-sm mb-2">
+                  <IGRPIcon
+                    iconName="Shield"
+                    className="w-4 h-4 text-muted-foreground"
+                  />
+                  <span className="text-muted-foreground">Departamento:</span>
+                </div>
+                <div className="flex gap-2">
+                  {invitation.department.map((role: any, index: number) => (
+                    <IGRPBadgePrimitive key={index} variant="secondary">
+                      {role.description || role.code}
+                    </IGRPBadgePrimitive>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {invitation.roles && invitation.roles.length > 0 && (
               <div className="pt-2 border-t">

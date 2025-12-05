@@ -42,6 +42,7 @@ export function ApplicationsListHome() {
 
   const activeApps = applications
     .filter((app: ApplicationDTO) => app.status === "ACTIVE")
+    .filter((app: ApplicationDTO) => app.code !== "APP_IGRP_CENTER")
     .filter((app: ApplicationDTO) =>
       search ? app.name?.toLowerCase().includes(search.toLowerCase()) : true,
     );
@@ -65,7 +66,7 @@ export function ApplicationsListHome() {
               {favoriteApps.length}
             </IGRPBadgePrimitive>
           </div>
-          <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
             {favoriteApps.map((app: ApplicationDTO) => (
               <ApplicationCardHome key={app.id} app={app} />
             ))}
@@ -82,7 +83,7 @@ export function ApplicationsListHome() {
               {recentApps.length}
             </IGRPBadgePrimitive>
           </div>
-          <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
             {recentApps.map((app: ApplicationDTO) => (
               <ApplicationCardHome key={app.id} app={app} />
             ))}
@@ -110,7 +111,7 @@ export function ApplicationsListHome() {
         />
       </div>
 
-      <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
         {activeApps.map((app: ApplicationDTO) => (
           <ApplicationCardHome key={app.id} app={app} />
         ))}

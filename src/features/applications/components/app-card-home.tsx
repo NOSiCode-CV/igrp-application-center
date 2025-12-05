@@ -14,7 +14,10 @@ import {
 
 export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   const { name, description, code, picture } = app;
-  const href = code === "APP_IGRP_CENTER" ? "/applications" : (app.url ?? "#");
+  const href =
+    code === "APP_IGRP_CENTER"
+      ? "/applications"
+      : (app.url ?? app?.slug ?? "#");
 
   const { data: favorites } = useCurrentUserFavoriteApplications();
   const addFavorite = useAddCurrentUserFavoriteApplication();
