@@ -82,7 +82,10 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     if (menus && menus.length > 0 && menuRoleAssignments.size === 0) {
       const initialAssignments = new Map<string, Set<string>>();
       menus.forEach((menu) => {
-        initialAssignments.set(menu.code, new Set(menu.roles || []));
+        initialAssignments.set(
+          menu.code,
+          new Set(menu.roles.map((r) => r.roleCode) || []),
+        );
       });
       setMenuRoleAssignments(initialAssignments);
     }
@@ -94,7 +97,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
       for (const [menuCode, currentRoles] of menuRoleAssignments.entries()) {
         const originalMenu = menus?.find((m) => m.code === menuCode);
-        const originalRoles = new Set(originalMenu?.roles || []);
+        const originalRoles = new Set(
+          originalMenu?.roles.map((r) => r.roleCode) || [],
+        );
 
         const rolesToAdd = Array.from(currentRoles).filter(
           (role) => !originalRoles.has(role),
@@ -209,7 +214,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const hasChanges = Array.from(menuRoleAssignments.entries()).some(
     ([menuCode, currentRoles]) => {
       const originalMenu = menus?.find((m) => m.code === menuCode);
-      const originalRoles = new Set(originalMenu?.roles || []);
+      const originalRoles = new Set(
+        originalMenu?.roles.map((r) => r.roleCode) || [],
+      );
 
       if (currentRoles.size !== originalRoles.size) return true;
 

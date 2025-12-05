@@ -120,7 +120,7 @@ export default function HomeIGRP() {
       label: "Agenda",
       value: "agenda",
       content: (
-        <>
+        <div className="flex flex-col justify-between">
           <IGRPCalendarSingle
             date={date}
             onDateChange={setDate}
@@ -152,7 +152,7 @@ export default function HomeIGRP() {
               </div>
             </ScrollArea>
           </div>
-        </>
+        </div>
       ),
     },
   ];
