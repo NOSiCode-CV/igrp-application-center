@@ -31,7 +31,7 @@ export default function HomeIGRP() {
 
   const tabs: IGRPTabItem[] = [
     {
-      label: "Tarrefas",
+      label: "Tarefas",
       value: "task",
       content: (
         <>
