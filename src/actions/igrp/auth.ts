@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth-options";
 
 export async function serverSession() {
-  const apiManagement = process.env.IGRP_APP_MANAGER_API || "";
+  const apiManagement = process.env.IGRP_ACCESS_MANAGEMENT_API || "";
 
   try {
     if (!process.env.NEXTAUTH_SECRET) {
