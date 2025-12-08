@@ -71,7 +71,7 @@ export function createConfig(
       }),
     },
     font: fontVariables,
-    showSidebar: true,
+    showSidebar: false,
     showHeader: true,
 
     layout: {
