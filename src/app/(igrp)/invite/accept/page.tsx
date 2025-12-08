@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
   IGRPCardPrimitive,
   IGRPCardHeaderPrimitive,
   IGRPCardTitlePrimitive,
-  IGRPCardDescriptionPrimitive,
   IGRPCardContentPrimitive,
   IGRPCardFooterPrimitive,
   IGRPButton,
@@ -16,7 +16,6 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { AppCenterLoading } from "@/components/loading";
 import {
-  useCurrentUser,
   useGetUserInvitationByToken,
   useRespondUserInvitation,
 } from "@/features/users/use-users";
@@ -24,16 +23,11 @@ import {
 export default function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { data: session } = useSession();
   const respondMutation = useRespondUserInvitation();
   const { igrpToast } = useIGRPToast();
   const [isAccepting, setIsAccepting] = useState(false);
   const token = searchParams.get("token");
-
-  const {
-    data: user,
-    error: userError,
-    isLoading: isLoadingUser,
-  } = useCurrentUser();
 
   const [isValidating, setIsValidating] = useState(true);
 
@@ -50,14 +44,14 @@ export default function AcceptInvitePage() {
   }, [token, router]);
 
   useEffect(() => {
-    if (!isLoadingUser && !isLoadingInvitation && user && invitation) {
-      if (user.email !== invitation.email) {
+    if (!isLoadingInvitation && session && invitation) {
+      const userEmail = session.user?.email;
+      
+      if (userEmail !== invitation.email) {
         router.push(`/invite/invite-error?token=${token}`);
-      } else {
-        setIsValidating(false);
       }
     }
-  }, [user, invitation, token, router, isLoadingUser, isLoadingInvitation]);
+  }, [session, invitation, token, router, isLoadingInvitation]);
 
   useEffect(() => {
     if (error) {
@@ -136,7 +130,7 @@ export default function AcceptInvitePage() {
     );
   };
 
-  if (!token || isLoadingInvitation || isLoadingUser || isValidating) {
+  if (!token || isLoadingInvitation || !invitation || isValidating) {
     return <AppCenterLoading descrption="Validando convite..." />;
   }
 
