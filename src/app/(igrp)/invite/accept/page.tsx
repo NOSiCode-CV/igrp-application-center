@@ -23,7 +23,7 @@ import {
 export default function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session }: any = useSession();
   const respondMutation = useRespondUserInvitation();
   const { igrpToast } = useIGRPToast();
   const [isAccepting, setIsAccepting] = useState(false);
@@ -45,7 +45,7 @@ export default function AcceptInvitePage() {
 
   useEffect(() => {
     if (!isLoadingInvitation && session && invitation) {
-      const userEmail = session.user?.email;
+      const userEmail = session?.email;
       
       if (userEmail !== invitation.email) {
         router.push(`/invite/invite-error?token=${token}`);
