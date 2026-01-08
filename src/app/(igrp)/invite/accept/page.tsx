@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
@@ -23,13 +23,14 @@ import {
 export default function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session }: any = useSession();
+  const { data: session, status: sessionStatus } = useSession({
+    required: false,
+  });
   const respondMutation = useRespondUserInvitation();
   const { igrpToast } = useIGRPToast();
   const [isAccepting, setIsAccepting] = useState(false);
+  const hasShownPage = useRef(false);
   const token = searchParams.get("token");
-
-  const [isValidating, setIsValidating] = useState(true);
 
   const {
     data: invitation,
@@ -44,14 +45,19 @@ export default function AcceptInvitePage() {
   }, [token, router]);
 
   useEffect(() => {
-    if (!isLoadingInvitation && session && invitation) {
-      const userEmail = session?.email;
-      
+    if (
+      sessionStatus === "authenticated" &&
+      !isLoadingInvitation &&
+      session &&
+      invitation &&
+      (session as any)?.email
+    ) {
+      const userEmail = (session as any).email;
       if (userEmail !== invitation.email) {
-        router.push(`/invite/invite-error?token=${token}`);
+        router.replace(`/invite/invite-error?token=${token}`);
       }
     }
-  }, [session, invitation, token, router, isLoadingInvitation]);
+  }, [session, sessionStatus, invitation, isLoadingInvitation, token, router]);
 
   useEffect(() => {
     if (error) {
@@ -130,12 +136,23 @@ export default function AcceptInvitePage() {
     );
   };
 
-  if (!token || isLoadingInvitation || !invitation || isValidating) {
-    return <AppCenterLoading descrption="Validando convite..." />;
+  const isReady = 
+    token &&
+    !error &&
+    !isLoadingInvitation &&
+    invitation &&
+    sessionStatus === "authenticated" &&
+    session &&
+    (session as any)?.email === invitation.email;
+
+  if (isReady) {
+    hasShownPage.current = true;
   }
 
-  if (error || !invitation) {
-    return <AppCenterLoading descrption="Redirecionando..." />;
+  if (hasShownPage.current && invitation && !error && sessionStatus !== "unauthenticated") {
+  } else if (!token || error || isLoadingInvitation || !invitation || 
+             (session && (session as any)?.email !== invitation?.email)) {
+    return <AppCenterLoading descrption="Validando convite..." />;
   }
 
   return (
