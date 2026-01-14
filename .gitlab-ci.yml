@@ -63,6 +63,8 @@ create-manifest:
   needs:
     - build-amd64
     - build-arm64
+  only:
+    - main
 
 deploy_dev:
   image: gcc:latest
