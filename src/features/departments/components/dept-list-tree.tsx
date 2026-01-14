@@ -134,7 +134,7 @@ export function DepartmentListTree() {
     departments && setSelectedDeptCode(departments[0]?.code);
   }, [departments]);
 
-  if (isLoading || !departments) {
+  if (isLoading || (!departments && !error)) {
     return <AppCenterLoading descrption="Carregando departamentos..." />;
   }
 
