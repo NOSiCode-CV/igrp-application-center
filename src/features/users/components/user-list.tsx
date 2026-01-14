@@ -355,7 +355,7 @@ export function UserList() {
     },
   ];
 
-  if (isLoading || !users) {
+  if (isLoading || (!users && !error)) {
     return <AppCenterLoading descrption="Carregando utilizadores..." />;
   }
 
