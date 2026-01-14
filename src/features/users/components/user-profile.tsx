@@ -4,11 +4,6 @@ import {
   IGRPIcon,
   IGRPUserAvatar,
   useIGRPToast,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogTriggerPrimitive,
   IGRPButton,
   IGRPCardPrimitive,
   IGRPCardContentPrimitive,
@@ -29,7 +24,6 @@ import { AppCenterNotFound } from "@/components/not-found";
 import { useCurrentUser, useUpdateUser } from "@/features/users/use-users";
 import { getInitials } from "@/lib/utils";
 import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
-import { UserEditForm } from "./user-edit-form";
 import UserSignature from "./user-signature";
 import UserRoleList from "./user-role-list";
 import { useQueryClient } from "@tanstack/react-query";
@@ -270,7 +264,7 @@ export function UserProfile() {
                         />
                       </div>
                     ) : (
-                      getInitials(user.name)
+                      getInitials(user?.name || user?.username || user?.email || "")
                     )
                   }
                   className="relative size-28 bg-background border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105"
@@ -334,7 +328,7 @@ export function UserProfile() {
                 ) : (
                   <div className="flex items-center gap-2 mb-1 group">
                     <h1 className="text-2xl font-bold tracking-tight">
-                      {user.name}
+                      {user.name || user.username || "N/A"}
                     </h1>
                     <IGRPButton
                       size="sm"

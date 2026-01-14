@@ -206,7 +206,7 @@ export function UserDetails({ id }: { id: string }) {
                         />
                       </div>
                     ) : (
-                      getInitials(user?.name || user?.email)
+                      getInitials(user?.name || user?.email || "")
                     )
                   }
                   className="relative size-28 bg-background border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105"
@@ -256,7 +256,7 @@ export function UserDetails({ id }: { id: string }) {
                 ) : (
                   <div className="flex items-center gap-2 mb-1 group">
                     <h1 className="text-2xl font-bold tracking-tight">
-                      {user.name}
+                      {user.name || "N/A"}
                     </h1>
                     <IGRPButton
                       size="sm"
