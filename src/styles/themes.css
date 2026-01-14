@@ -86,7 +86,7 @@ body {
   .rounded-md,
   .rounded-lg,
   .rounded-xl {
-    @apply rounded-none!;
+    @apply !rounded-none;
     border-radius: 0;
   }
 
@@ -95,11 +95,11 @@ body {
   .shadow-md,
   .shadow-lg,
   .shadow-xl {
-    @apply shadow-none!;
+    @apply !shadow-none;
   }
 
   [data-slot="toggle-group"],
   [data-slot="toggle-group-item"] {
-    @apply rounded-none! shadow-none!;
+    @apply !rounded-none !shadow-none;
   }
 }

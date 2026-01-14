@@ -11,9 +11,6 @@ variables:
   IMAGE_NAME: igrp-application-center
   IMAGE_NAME_FULL: "$DOCKER_REGISTRY/$DOCKER_PROJECT/$IMAGE_NAME"
   IMAGE_TAG: latest
-  # Default environment variables (can be overridden per environment)
-  NEXT_PUBLIC_BASE_PATH: ""
-  NEXT_PUBLIC_ALLOWED_DOMAINS: ""
   
 stages:
   - build
@@ -21,6 +18,8 @@ stages:
   - deploy
 
 .build-template:
+  tags:
+    - nosi-runner
   only:
     - main
   before_script:
@@ -33,7 +32,7 @@ build-arm64:
   script:
     - docker buildx create --use --name amd64builder
     - docker buildx inspect --bootstrap
-    - docker build --build-arg NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH --build-arg NEXT_PUBLIC_ALLOWED_DOMAINS=$NEXT_PUBLIC_ALLOWED_DOMAINS --platform linux/arm64 -t $IMAGE_NAME_FULL:arm64 --push --output=type=image,name="$IMAGE_NAME_FULL:arm64",push=true .
+    - docker build --build-arg SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE --platform linux/arm64 -t $IMAGE_NAME_FULL:arm64 --push --output=type=image,name="$IMAGE_NAME_FULL:arm64",push=true .
 
   tags:
     - arm64
@@ -42,17 +41,21 @@ build-arm64:
    
 build-amd64:
   extends: .build-template
+  tags:
+    - nosi-runner
   stage: build
   script:
     - docker buildx create --use --name amd64builder
     - docker buildx inspect --bootstrap
-    - docker build --build-arg NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH --build-arg NEXT_PUBLIC_ALLOWED_DOMAINS=$NEXT_PUBLIC_ALLOWED_DOMAINS --platform linux/amd64 -t $IMAGE_NAME_FULL:amd64 --push --output=type=image,name="$IMAGE_NAME_FULL:amd64",push=true .
+    - docker build --build-arg SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE --platform linux/amd64 -t $IMAGE_NAME_FULL:amd64 --push --output=type=image,name="$IMAGE_NAME_FULL:amd64",push=true .
   
   only:
     - main
 
 create-manifest:
   stage: manifest
+  tags:
+    - nosi-runner
   script:
     - docker login -u "$DOCKER_REGISTRY_USERNAME" -p "$DOCKER_REGISTRY_PASSWORD" "$DOCKER_REGISTRY"
     - docker manifest create "$IMAGE_NAME_FULL:$IMAGE_TAG" --amend "$IMAGE_NAME_FULL:amd64" --amend "$IMAGE_NAME_FULL:arm64"
@@ -60,8 +63,6 @@ create-manifest:
   needs:
     - build-amd64
     - build-arm64
-  only:
-    - main
 
 deploy_dev:
   image: gcc:latest

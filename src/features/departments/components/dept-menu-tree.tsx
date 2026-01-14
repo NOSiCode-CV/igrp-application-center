@@ -6,6 +6,7 @@ import {
   IGRPTableRowPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { MenuWithChildren } from "./dept-menu";
+import { getMenuIcon } from "@/lib/utils";
 
 export function MenuTreeRow({
   menu,
@@ -29,19 +30,6 @@ export function MenuTreeRow({
   const hasChildren = menu.children && menu.children.length > 0;
   const isExpanded = expandedMenus.has(menu.code);
   const assignedRoles = menuRoleAssignments.get(menu.code) || new Set<string>();
-
-  const getMenuIcon = (type: string) => {
-    switch (type) {
-      case "FOLDER":
-        return "Folder";
-      case "EXTERNAL_PAGE":
-        return "ExternalLink";
-      case "MENU_PAGE":
-        return "FileText";
-      default:
-        return "FileText";
-    }
-  };
 
   const toggleExpand = (menuCode: string) => {
     setExpandedMenus((prev) => {
@@ -79,7 +67,7 @@ export function MenuTreeRow({
             className="flex items-center gap-2"
             style={{ paddingLeft: `${level * 1.5}rem` }}
           >
-            {hasChildren ? (
+            {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
                 className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
@@ -93,8 +81,6 @@ export function MenuTreeRow({
                   strokeWidth={2}
                 />
               </button>
-            ) : (
-              <div className="w-5 shrink-0" />
             )}
 
             <IGRPIcon

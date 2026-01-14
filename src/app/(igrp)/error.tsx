@@ -2,7 +2,7 @@
 
 import { IGRPGlobalError } from "@igrp/framework-next-ui";
 
-export default function GloabalError({
+export default function GlobalError({
   error,
   reset,
 }: {

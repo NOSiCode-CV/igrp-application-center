@@ -25,11 +25,13 @@ import { useState } from "react";
 import { ButtonLink } from "@/components/button-link";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import type { RoleArgs } from "../role-schemas";
-import { useRoles } from "../use-roles";
 import { RoleDeleteDialog } from "./role-delete-dialog";
 import { RoleFormDialog } from "./role-form-dialog";
 import { RoleDetails } from "./role-permissions-dialog";
 import { RoleTreeRow } from "./role.tree-row";
+import { AppCenterLoading } from "@/components/loading";
+import { useRoles } from "@/features/departments/use-departments";
+import { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
 interface RolesListProps {
   departmentCode: string;
@@ -50,13 +52,13 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [expandedRoles, setExpandedRoles] = useState<Set<string>>(new Set());
 
-  const { data: roles, isLoading, error } = useRoles({ departmentCode });
+  const { data: roles, isLoading, error } = useRoles(departmentCode);
 
-  const buildRoleTree = (roles: RoleArgs[]): RoleWithChildren[] => {
+  const buildRoleTree = (roles: RoleDTO[]): RoleWithChildren[] => {
     const map = new Map<string, RoleWithChildren>();
     const roots: RoleWithChildren[] = [];
     roles.forEach((role) => {
-      map.set(role.code, { ...role, children: [] });
+      map.set(role.code, { ...role, name: role.name ?? "", children: [] });
     });
 
     roles.forEach((role) => {
@@ -131,9 +133,11 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
   }
 
   const filteredRoles = roles?.filter((role) => {
+    if (!role) return false;
+    const term = searchTerm.toLowerCase();
     const matchesSearch =
-      role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      !!role.name?.toLowerCase().includes(term) ||
+      !!role.description?.toLowerCase().includes(term);
 
     const matchesStatus =
       statusFilter.length === 0 || statusFilter.includes(role.status);
@@ -225,14 +229,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
         </div>
 
         {isLoading ? (
-          <div className="grid gap-4 animate-pulse">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <IGRPSkeletonPrimitive
-                key={i}
-                className="h-12 rounded-lg bg-muted"
-              />
-            ))}
-          </div>
+          <AppCenterLoading descrption="Carregando Roles..." />
         ) : roleEmpty ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon
@@ -250,7 +247,6 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                 icon="UserLock"
                 href="#"
                 label="Novo Perfil"
-                variant="outline"
               />
             )}
           </div>
@@ -309,6 +305,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
 
       {roleToDelete && (
         <RoleDeleteDialog
+          departmentCode={departmentCode}
           open={openDeleteDialog}
           onOpenChange={setOpenDeleteDialog}
           roleToDelete={roleToDelete}

@@ -2,7 +2,7 @@ import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 export function AppCenterLoading({ descrption }: { descrption: string }) {
   return (
-    <div className="w-full h-full flex items-center justify-center py-10">
+    <div className="w-full flex items-center justify-center py-10">
       <div className="text-center text-primary">
         <IGRPIcon
           iconName="LoaderCircle"

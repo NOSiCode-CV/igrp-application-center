@@ -20,7 +20,7 @@ export function formatSlug(slug: string): string {
   return `/apps/${slug}`;
 }
 
-export const APPLICATIONS_TYPES = ["EXTERNAL", "INTERNAL", "SYSTEM"] as const;
+export const APPLICATIONS_TYPES = ["EXTERNAL", "INTERNAL"] as const;
 
 export const APPLICATIONS_TYPES_EXCLUDE = ["EXTERNAL", "INTERNAL"] as const;
 

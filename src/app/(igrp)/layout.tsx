@@ -1,21 +1,14 @@
-import { IGRPLayout } from "@igrp/framework-next";
-import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
-import { createConfig } from "@igrp/template-config";
-
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-
 import { configLayout } from "@/actions/igrp/layout";
+import { QueryProvider } from "@/providers/query-provider";
 
 export default async function IGRPRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const layoutConfig = await configLayout();
-  const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs);
-
-  // TDOD: see to move this to the root-layout
-  const { layout, previewMode } = config;
-  const { session } = layout || {};
+  const { session } = layoutConfig || {};
+  const previewMode = process.env.IGRP_PREVIEW_MODE === "true";
 
   const headersList = await headers();
   const currentPath =
@@ -25,16 +18,13 @@ export default async function IGRPRootLayout({
     "";
 
   const baseUrl = process.env.NEXTAUTH_URL_INTERNAL || process.env.NEXTAUTH_URL;
-
   const urlLogin = "/login";
-
   const loginPath = new URL(urlLogin || "/", baseUrl).pathname;
-
   const isAlreadyOnLogin = currentPath.startsWith(loginPath);
 
-  if (!previewMode && session === null && urlLogin && !isAlreadyOnLogin) {
+  if (!previewMode && !session && urlLogin && !isAlreadyOnLogin) {
     redirect(urlLogin);
   }
 
-  return <IGRPLayout config={config}>{children}</IGRPLayout>;
+  return <QueryProvider>{children}</QueryProvider>;
 }

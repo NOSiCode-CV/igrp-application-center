@@ -21,20 +21,23 @@ export function UserDeleteDialog({
   userToDelete,
 }: UserDeleteDialogProps) {
   const { igrpToast } = useIGRPToast();
-  const { mutateAsync: removeUser } = useUpdateUser();
+  const { mutateAsync: removeUser, isPending: isDeleting } = useUpdateUser();
 
   async function confirmDelete() {
-    const username = userToDelete.username;
+    const id = userToDelete.id;
     const payload = {
       ...userToDelete,
       status: statusSchema.enum.INACTIVE as Status,
     };
     try {
-      await removeUser({ username, user: payload });
+      const result = await removeUser({ id, user: payload });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
       igrpToast({
         type: "success",
         title: "Utilizador Desativado",
-        description: `Utilizador '${userToDelete.username}' foi desativado com sucesso.`,
+        description: `Utilizador '${userToDelete.name || userToDelete.email}' foi desativado com sucesso.`,
       });
 
       onOpenChange(false);
@@ -51,9 +54,10 @@ export function UserDeleteDialog({
     <IGRPDialogDelete
       open={open}
       onOpenChange={onOpenChange}
-      toDelete={{ name: userToDelete.username }}
+      toDelete={{ name: userToDelete.name || userToDelete.email }}
       confirmDelete={confirmDelete}
       label="Username"
+      isDeleting={isDeleting}
       labelBtnDelete="Desativar"
     />
   );

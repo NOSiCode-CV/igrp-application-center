@@ -3,16 +3,23 @@ import type {
   Status,
 } from "@igrp/platform-access-management-client-ts";
 import { z } from "zod";
-import { nullIfEmpty } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
 
-export const menuTypeSchema = z.enum(["MENU_PAGE", "EXTERNAL_PAGE", "FOLDER"]);
+export const menuTypeSchema = z.enum([
+  "GROUP",
+  "FOLDER",
+  "MENU_PAGE",
+  "EXTERNAL_PAGE",
+]);
 
 export const menuTargetSchema = z.enum(["_self", "_blank"]);
 
+export const parentSchema = z.string().optional();
+export const applicationSchema = z.string();
+
 export const menuSchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(5, "Nome deve ter no mínimo 5 caracteres"),
+  name: z.string().min(1, "Nome deve ter no mínimo 1 caracteres"),
   code: z
     .string()
     .regex(/^[A-Z0-9_]+$/, "Permite letras maiúsculas, números e sublinhados."),
@@ -22,9 +29,9 @@ export const menuSchema = z.object({
   status: statusSchema,
   target: menuTargetSchema.optional(),
   url: z.string().optional().nullable(),
-  parentCode: z.string().optional(),
+  parentCode: parentSchema,
   pageSlug: z.string().optional().nullable(),
-  applicationCode: z.string(),
+  applicationCode: applicationSchema,
   createdBy: z.string().optional(),
   createdDate: z.string().optional(),
   lastModifiedBy: z.string().optional(),
@@ -32,21 +39,35 @@ export const menuSchema = z.object({
   permissions: z.array(z.string()).optional(),
 });
 
+export const groupMenuSchema = menuSchema.extend({
+  type: z.literal(menuTypeSchema.enum.GROUP),
+  parentCode: z.undefined(),
+});
+
 export const folderMenuSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.FOLDER),
+  parentCode: parentSchema,
 });
 
-export const menuPageSchema = menuSchema.extend({
-  type: z.literal(menuTypeSchema.enum.MENU_PAGE),
-  pageSlug: z.string().min(3, "Url relátivo é obrigatório"),
-});
-
+export const menuPageSchema = menuSchema
+  .extend({
+    type: z.literal(menuTypeSchema.enum.MENU_PAGE),
+    pageSlug: z.string().optional(),
+    url: z.string().optional(),
+    parentCode: parentSchema,
+  })
+  .refine((data) => data.pageSlug || data.url, {
+    message: "Deve fornecer URL relativo ou URL externa",
+    path: ["pageSlug"],
+  });
 export const externalPageSchema = menuSchema.extend({
   type: z.literal(menuTypeSchema.enum.EXTERNAL_PAGE),
-  url: z.string().url("URL é obrigatório"),
+  url: z.url("URL é obrigatório"),
+  parent: parentSchema,
 });
 
 export const createMenuSchema = z.discriminatedUnion("type", [
+  groupMenuSchema,
   folderMenuSchema,
   menuPageSchema,
   externalPageSchema,
@@ -65,6 +86,8 @@ export const updateMenuSchema = menuSchema
   });
 
 export function normalizeMenu(values: CreateMenu | UpdateMenu) {
+  const cleanParent = values.parentCode;
+
   const common = {
     code: values.code,
     name: values.name,
@@ -73,30 +96,44 @@ export function normalizeMenu(values: CreateMenu | UpdateMenu) {
     icon: values.icon || "",
     status: values.status as Status,
     applicationCode: values.applicationCode,
-    parentCode: nullIfEmpty(values.parentCode),
+    parentCode: values.parentCode,
     permissions: values.permissions ?? [],
   };
 
   if (values.type === menuTypeSchema.enum.MENU_PAGE) {
     return {
       ...common,
-      pageSlug: values.pageSlug?.trim() ? values.pageSlug : null,
-      url: values.pageSlug?.trim() ? values.pageSlug : null,
-      target: values.target,
+      parent: cleanParent,
+      pageSlug: values.pageSlug?.trim() || null,
+      url: values.url?.trim() || null,
+      target: values.target || menuTargetSchema.enum._self,
     };
   }
 
   if (values.type === menuTypeSchema.enum.EXTERNAL_PAGE) {
     return {
       ...common,
-      url: values.url?.trim() ? values.url : null,
-      pageSlug: nullIfEmpty(values.pageSlug),
+      parent: cleanParent,
+      url: values.url?.trim() || null,
+      pageSlug: null,
       target: menuTargetSchema.enum._blank,
     };
   }
 
+  if (values.type === menuTypeSchema.enum.FOLDER) {
+    return {
+      ...common,
+      parent: cleanParent,
+      url: null,
+      pageSlug: null,
+      target: undefined,
+    };
+  }
+
+  // GROUP
   return {
     ...common,
+    parent: undefined,
     url: null,
     pageSlug: null,
     target: undefined,
@@ -104,12 +141,15 @@ export function normalizeMenu(values: CreateMenu | UpdateMenu) {
 }
 
 export type MenuArgs = z.infer<typeof menuSchema>;
+export type GroupMenu = z.infer<typeof groupMenuSchema>;
 export type FolderMenu = z.infer<typeof folderMenuSchema>;
 export type MenuPage = z.infer<typeof menuPageSchema>;
 export type ExternalPage = z.infer<typeof externalPageSchema>;
 
 export type MenuTypeArgs = z.infer<typeof menuTypeSchema>;
 export type MenuTargetArgs = z.infer<typeof menuTargetSchema>;
+export type ParentArgs = z.infer<typeof parentSchema>;
+export type ApplicationArgs = z.infer<typeof applicationSchema>;
 
 export type CreateMenu = z.infer<typeof createMenuSchema>;
 export type UpdateMenu = z.infer<typeof updateMenuSchema>;

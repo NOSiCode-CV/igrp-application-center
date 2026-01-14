@@ -1,6 +1,8 @@
 "use client";
 
+import { useDeleteRole } from "@/features/departments/use-departments";
 import {
+  IGRPButton,
   IGRPButtonPrimitive,
   IGRPDialogContentPrimitive,
   IGRPDialogDescriptionPrimitive,
@@ -14,15 +16,16 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { useDeleteRole } from "../use-roles";
 
 interface RoleDeleteDialogProps {
+  departmentCode: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   roleToDelete: string;
 }
 
 export function RoleDeleteDialog({
+  departmentCode,
   open,
   onOpenChange,
   roleToDelete,
@@ -30,13 +33,19 @@ export function RoleDeleteDialog({
   const [confirmation, setConfirmation] = useState("");
   const { igrpToast } = useIGRPToast();
 
-  const { mutateAsync: deleteRole } = useDeleteRole();
+  const { mutateAsync: deleteRole, isPending } = useDeleteRole();
 
   const isConfirmed = confirmation === roleToDelete;
 
   async function confirmDelete() {
     try {
-      await deleteRole(roleToDelete);
+      const result = await deleteRole({
+        departmentCode,
+        roleCode: roleToDelete,
+      });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
       igrpToast({
         type: "success",
         title: "Role Eliminado",
@@ -107,23 +116,29 @@ export function RoleDeleteDialog({
           />
         </div>
         <IGRPDialogFooterPrimitive className="flex flex-col">
-          <IGRPButtonPrimitive
+          <IGRPButton
             variant="outline"
             onClick={() => {
               onOpenChange(false);
               setConfirmation("");
             }}
             type="button"
+            showIcon
+            iconName="X"
           >
             Cancelar
-          </IGRPButtonPrimitive>
-          <IGRPButtonPrimitive
+          </IGRPButton>
+          <IGRPButton
             variant="destructive"
-            onClick={confirmDelete}
-            disabled={!isConfirmed}
+            onClick={() => {
+              confirmDelete(), setConfirmation("");
+            }}
+            disabled={!isConfirmed || isPending}
+            showIcon
+            iconName="Trash"
           >
-            Eliminar
-          </IGRPButtonPrimitive>
+            {isPending ? "Aguarde..." : "Eliminar"}
+          </IGRPButton>
         </IGRPDialogFooterPrimitive>
       </IGRPDialogContentPrimitive>
     </IGRPDialogPrimitive>

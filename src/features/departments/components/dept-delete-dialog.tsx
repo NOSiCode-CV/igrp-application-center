@@ -16,17 +16,22 @@ export function DepartmentDeleteDialog({
   deptToDelete,
 }: DepartmentDeleteDialogProps) {
   const { igrpToast } = useIGRPToast();
-  const { mutateAsync: deleteDepartment } = useDeleteDepartment();
+  const { mutateAsync: deleteDepartment, isPending: isDeleting } =
+    useDeleteDepartment();
 
   async function confirmDelete() {
     try {
-      await deleteDepartment(deptToDelete.code);
+      const result = await deleteDepartment(deptToDelete.code);
       igrpToast({
         type: "success",
         title: "Departamento Eliminado",
         description: `Departamento '${deptToDelete.name}' foi eliminado com sucesso.`,
         duration: 4000,
       });
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       onOpenChange(false);
     } catch (error) {
@@ -45,6 +50,7 @@ export function DepartmentDeleteDialog({
       onOpenChange={onOpenChange}
       toDelete={deptToDelete}
       confirmDelete={confirmDelete}
+      isDeleting={isDeleting}
       label="Nome Departamento"
     />
   );
