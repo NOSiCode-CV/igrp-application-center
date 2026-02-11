@@ -234,20 +234,42 @@ export function DepartmentListTree() {
             </div>
           </div>
 
-          <div className="flex-1 mt-3 overflow-y-auto">
-            {filteredTree.map((dept) => (
-              <DepartmentTreeItem
-                expandedDepts={expandedDepts}
-                setExpandedDepts={setExpandedDepts}
-                setSelectedDeptCode={setSelectedDeptCode}
-                selectedDeptCode={selectedDeptCode}
-                handleEdit={handleEdit}
-                handleCreateSubDept={handleCreateSubDept}
-                handleDelete={handleDelete}
-                key={dept.code}
-                dept={dept}
-              />
-            ))}
+          <div className="flex-1 mt-3 overflow-y-auto min-h-[200px]">
+            {filteredTree.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 px-4 text-center border border-dashed rounded-lg bg-muted/30">
+                <div className="p-3 rounded-full bg-muted mb-4">
+                  <IGRPIcon
+                    iconName="Building2"
+                    className="size-8 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <h3 className="text-sm font-semibold mb-1">
+                  {searchTerm
+                    ? "Nenhum departamento encontrado"
+                    : "Nenhum departamento"}
+                </h3>
+                <p className="text-muted-foreground text-xs mb-4 max-w-[220px]">
+                  {searchTerm
+                    ? "Tente outro termo na pesquisa ou limpe o campo."
+                    : "Use o botão 'Novo Departamento' para criar o primeiro departamento para organizar perfis e permissões."}
+                </p>
+              </div>
+            ) : (
+              filteredTree.map((dept) => (
+                <DepartmentTreeItem
+                  expandedDepts={expandedDepts}
+                  setExpandedDepts={setExpandedDepts}
+                  setSelectedDeptCode={setSelectedDeptCode}
+                  selectedDeptCode={selectedDeptCode}
+                  handleEdit={handleEdit}
+                  handleCreateSubDept={handleCreateSubDept}
+                  handleDelete={handleDelete}
+                  key={dept.code}
+                  dept={dept}
+                />
+              ))
+            )}
           </div>
         </div>
 
@@ -264,6 +286,32 @@ export function DepartmentListTree() {
           {isLoadSelectedDep && (
             <AppCenterLoading descrption="Carregando departamentos..." />
           )}
+          {!isLoadSelectedDep &&
+            !selectedDepartment &&
+            departmentTree.length === 0 && (
+              <div className="flex flex-col items-center justify-center min-h-[320px] px-6 text-center">
+                <div className="p-4 rounded-full bg-muted/50 mb-5">
+                  <IGRPIcon
+                    iconName="Building2"
+                    className="size-12 text-muted-foreground"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <h2 className="text-lg font-semibold mb-2">
+                  Comece por um departamento
+                </h2>
+                <p className="text-muted-foreground text-sm max-w-sm mb-6">
+                  Os departamentos organizam perfis, permissões e menus. Crie o
+                  primeiro para configurar o sistema.
+                </p>
+                <ButtonLink
+                  onClick={handleOpenCreate}
+                  icon="Plus"
+                  href="#"
+                  label="Novo Departamento"
+                />
+              </div>
+            )}
           {!isLoadSelectedDep && selectedDepartment && (
             <div className="container mx-auto px-0 md:px-6!">
               <div className="flex flex-col lg:flex-row! items-start justify-between mb-6 gap-4">

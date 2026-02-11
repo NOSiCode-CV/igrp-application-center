@@ -264,7 +264,9 @@ export function UserProfile() {
                         />
                       </div>
                     ) : (
-                      getInitials(user?.name || user?.username || user?.email || "")
+                      getInitials(
+                        user?.name || user?.username || user?.email || "",
+                      )
                     )
                   }
                   className="relative size-28 bg-background border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105"

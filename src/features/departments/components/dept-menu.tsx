@@ -2,6 +2,12 @@
 
 import {
   cn,
+  IGRPAlertDialogContentPrimitive,
+  IGRPAlertDialogDescriptionPrimitive,
+  IGRPAlertDialogFooterPrimitive,
+  IGRPAlertDialogHeaderPrimitive,
+  IGRPAlertDialogPrimitive,
+  IGRPAlertDialogTitlePrimitive,
   IGRPBadgePrimitive,
   IGRPButtonPrimitive,
   IGRPIcon,
@@ -54,6 +60,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   >(new Map());
 
   const [showMenusModal, setShowMenusModal] = useState(false);
+  const [pendingAppSwitch, setPendingAppSwitch] = useState<string | null>(null);
 
   const { data: menus, isLoading: loading } = useDepartmentMenus(
     selectedApp,
@@ -91,7 +98,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     }
   }, [menus, menuRoleAssignments.size]);
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<boolean> => {
     try {
       const promises = [];
 
@@ -137,7 +144,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
           title: "Sem alterações",
           description: "Nenhuma mudança foi detectada.",
         });
-        return;
+        return true;
       }
 
       const results = await Promise.all(promises);
@@ -152,6 +159,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         title: "Permissões salvas",
         description: "Os perfis foram atribuídos aos menus com sucesso.",
       });
+      return true;
     } catch (error) {
       console.error("Erro:", error);
       igrpToast({
@@ -160,6 +168,33 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         description:
           error instanceof Error ? error.message : "Erro desconhecido",
       });
+      return false;
+    }
+  };
+
+  const handleAppChange = (newAppCode: string) => {
+    if (newAppCode === selectedApp) return;
+    if (hasChanges) {
+      setPendingAppSwitch(newAppCode);
+    } else {
+      setSelectedApp(newAppCode);
+    }
+  };
+
+  const handleDiscardAndSwitch = () => {
+    if (pendingAppSwitch != null) {
+      setMenuRoleAssignments(new Map());
+      setSelectedApp(pendingAppSwitch);
+      setPendingAppSwitch(null);
+    }
+  };
+
+  const handleSaveAndSwitch = async () => {
+    const toSwitch = pendingAppSwitch;
+    const ok = await handleSave();
+    if (ok && toSwitch != null) {
+      setSelectedApp(toSwitch);
+      setPendingAppSwitch(null);
     }
   };
 
@@ -279,7 +314,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
             <div className="w-2/12">
               <IGRPSelectPrimitive
                 value={selectedApp}
-                onValueChange={setSelectedApp}
+                onValueChange={handleAppChange}
                 disabled={loading || loadingApps}
               >
                 <IGRPSelectTriggerPrimitive className="w-full">
@@ -500,6 +535,80 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         open={showMenusModal}
         onOpenChange={setShowMenusModal}
       />
+
+      <IGRPAlertDialogPrimitive
+        open={pendingAppSwitch != null}
+        onOpenChange={(open) => !open && setPendingAppSwitch(null)}
+      >
+        <IGRPAlertDialogContentPrimitive>
+          <IGRPAlertDialogHeaderPrimitive>
+            <IGRPAlertDialogTitlePrimitive className="flex items-center gap-2">
+              <IGRPIcon
+                iconName="TriangleAlert"
+                className="w-5 h-5 text-amber-500"
+                strokeWidth={2}
+              />
+              Alterações por guardar
+            </IGRPAlertDialogTitlePrimitive>
+            <IGRPAlertDialogDescriptionPrimitive>
+              Tem alterações nas permissões dos menus que ainda não foram
+              guardadas. Guardar antes de mudar de aplicação ou descartar?
+            </IGRPAlertDialogDescriptionPrimitive>
+          </IGRPAlertDialogHeaderPrimitive>
+          <IGRPAlertDialogFooterPrimitive className="flex-col sm:justify-between sm:flex-row gap-2">
+            <div>
+              <IGRPButtonPrimitive
+                variant="outline"
+                onClick={() => setPendingAppSwitch(null)}
+                className="gap-2 w-full sm:w-auto"
+              >
+                <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
+                Cancelar
+              </IGRPButtonPrimitive>
+            </div>
+            <div className="flex gap-2">
+              <IGRPButtonPrimitive
+                variant="outline"
+                onClick={handleDiscardAndSwitch}
+                disabled={saving}
+                className="gap-2 sm:w-auto"
+              >
+                <IGRPIcon
+                  iconName="Trash2"
+                  className="w-4 h-4"
+                  strokeWidth={2}
+                />
+                Descartar e mudar
+              </IGRPButtonPrimitive>
+              <IGRPButtonPrimitive
+                onClick={handleSaveAndSwitch}
+                disabled={saving}
+                className="gap-2 sm:w-auto"
+              >
+                {saving ? (
+                  <>
+                    <IGRPIcon
+                      iconName="LoaderCircle"
+                      className="w-4 h-4 animate-spin"
+                      strokeWidth={2}
+                    />
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    <IGRPIcon
+                      iconName="Save"
+                      className="w-4 h-4"
+                      strokeWidth={2}
+                    />
+                    Guardar e mudar
+                  </>
+                )}
+              </IGRPButtonPrimitive>
+            </div>
+          </IGRPAlertDialogFooterPrimitive>
+        </IGRPAlertDialogContentPrimitive>
+      </IGRPAlertDialogPrimitive>
     </>
   );
 }
