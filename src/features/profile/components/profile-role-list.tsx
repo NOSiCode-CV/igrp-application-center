@@ -1,61 +1,56 @@
 "use client";
 import React, { useState } from "react";
-import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
 import {
   IGRPBadgePrimitive,
   IGRPButtonPrimitive,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { UserRolesDialog } from "./user-role-dialog";
 import { AppCenterLoading } from "@/components/loading";
+import {
+  useCurrentUserActiveRole,
+  useGetCurrentUserRoles,
+  useSetCurrentUserActiveRole,
+} from "@/features/users/use-users";
 
-export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
+export default function ProfileRoleList() {
   const { igrpToast } = useIGRPToast();
   const { data: userRoles, isLoading } = useGetCurrentUserRoles();
-  const {
-    mutateAsync: removeUserRole,
-    isPending,
-    variables,
-  } = useRemoveUserRole();
 
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const { data: activeRole } = useCurrentUserActiveRole();
+  const { mutateAsync: setActiveRole, isPending: isSettingActive } =
+    useSetCurrentUserActiveRole();
 
-  const handleRevokeRole = async (
-    departmentCode: string,
-    roleCodes: string[],
-  ) => {
-    if (!roleCodes) return;
-
+  const handleActivateRole = async (role: any) => {
+    const payload = {
+      roleCode: role.code,
+      departmentCode: role.departmentCode,
+    };
     try {
-      const res = await removeUserRole({
-        id: user.id,
-        departmentCode,
-        roleCodes,
-      });
+      const res = await setActiveRole(payload);
+
       if (!res.success) {
         throw new Error(res.error);
       }
+
       igrpToast({
         type: "success",
-        title: "Perfil removido com sucesso.",
+        title: "Perfil ativado com sucesso.",
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Não foi possivel remover o perfil.",
+        title: "Erro ao ativar perfil.",
         description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+          error instanceof Error ? error.message : "Erro desconhecido.",
       });
     }
   };
 
-  const isRemovingRole = (roleCode: string) => {
-    return isPending && variables?.roleCodes.includes(roleCode);
+  const isRoleActive = (roleCode?: string) => {
+    return activeRole?.roleCode === roleCode;
   };
+
   if (isLoading) {
     return <AppCenterLoading descrption="Carregando perfis..." />;
   }
@@ -66,14 +61,6 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Perfis Atribuídos</h2>
-            <IGRPButtonPrimitive
-              variant="outline"
-              size="sm"
-              onClick={() => setAssignDialogOpen(true)}
-            >
-              <IGRPIcon iconName="Plus" />
-              Adicionar
-            </IGRPButtonPrimitive>
           </div>
 
           <div className="space-y-3">
@@ -92,7 +79,17 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
 
                   <div className="flex-1 space-y-2">
                     <div>
-                      <p className="font-medium text-sm">{role.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-sm">{role.name}</p>
+                        {isRoleActive(role.code) && (
+                          <IGRPBadgePrimitive
+                            variant={"secondary"}
+                            className="bg-green-800 text-white text-xs"
+                          >
+                            Ativado
+                          </IGRPBadgePrimitive>
+                        )}
+                      </div>
                       {role.code && (
                         <p className="text-xs text-muted-foreground">
                           {role.code}
@@ -153,15 +150,13 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                 </div>
 
                 <IGRPButtonPrimitive
-                  variant="ghost"
+                  variant={isRoleActive(role.code) ? "secondary" : "ghost"}
                   size="sm"
-                  onClick={() =>
-                    handleRevokeRole(role.departmentCode, [role.code])
-                  }
-                  disabled={isRemovingRole(role.code || "")}
+                  onClick={() => handleActivateRole(role)}
+                  disabled={isRoleActive(role.code) || isSettingActive}
                   className="shrink-0 cursor-pointer"
                 >
-                  {isRemovingRole(role.code || "") ? "..." : "Revogar"}
+                  {isRoleActive(role.code) ? "Ativo" : "Ativar"}
                 </IGRPButtonPrimitive>
               </div>
             ))}
@@ -179,22 +174,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
               Este utilizador não tem perfis.
             </p>
           </div>
-          <IGRPButtonPrimitive
-            size="sm"
-            onClick={() => setAssignDialogOpen(true)}
-          >
-            <IGRPIcon iconName="Plus" />
-            Associar Perfis
-          </IGRPButtonPrimitive>
         </div>
-      )}
-
-      {assignDialogOpen && (
-        <UserRolesDialog
-          open={assignDialogOpen}
-          onOpenChange={setAssignDialogOpen}
-          id={user.id}
-        />
       )}
     </div>
   );
