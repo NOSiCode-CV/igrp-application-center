@@ -17,8 +17,8 @@ import {
   IGRPSelectValuePrimitive,
   IGRPTextAreaPrimitive,
   useIGRPToast,
+  IGRPScrollAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
-import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -126,7 +126,7 @@ export function ApplicationForm({
   return (
     <IGRPFormPrimitive {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
+        <IGRPScrollAreaPrimitive className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
           <div className="space-y-4">
             <IGRPFormFieldPrimitive
               control={form.control}
@@ -298,7 +298,7 @@ export function ApplicationForm({
               )}
             />
           </div>
-        </ScrollArea>
+        </IGRPScrollAreaPrimitive>
 
         <div className="flex justify-end gap-2 pt-4">
           <IGRPButton
