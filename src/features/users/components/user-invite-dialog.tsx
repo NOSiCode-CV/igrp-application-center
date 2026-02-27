@@ -189,6 +189,9 @@ export function UserInviteDialog({
                         placeholder="user@example.com"
                         {...field}
                         value={field.value ?? ""}
+                        onChange={(e) => {
+                          field.onChange(e.target.value.toLowerCase());
+                        }}
                       />
                     </IGRPFormControlPrimitive>
                     <IGRPFormMessagePrimitive />
