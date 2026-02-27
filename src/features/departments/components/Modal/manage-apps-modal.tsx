@@ -21,6 +21,7 @@ import {
   cn,
   useIGRPToast,
   IGRPButton,
+  IGRPScrollAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useMemo, useRef, useEffect } from "react";
 import {
@@ -29,7 +30,6 @@ import {
   useRemoveApplicationsFromDepartment,
 } from "../../use-departments";
 import { useApplications } from "@/features/applications/use-applications";
-import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 
 interface ManageAppsModalProps {
   departmentCode: string;
@@ -203,7 +203,7 @@ export function ManageAppsModal({
             </div>
           </div>
 
-          <ScrollArea className="flex-1 h-[95vh]  w-full ">
+          <IGRPScrollAreaPrimitive className="flex-1 h-[95vh]  w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -322,7 +322,7 @@ export function ManageAppsModal({
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </IGRPScrollAreaPrimitive>
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">

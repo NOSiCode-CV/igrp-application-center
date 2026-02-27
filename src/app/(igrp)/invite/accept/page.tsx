@@ -136,7 +136,7 @@ export default function AcceptInvitePage() {
     );
   };
 
-  const isReady = 
+  const isReady =
     token &&
     !error &&
     !isLoadingInvitation &&
@@ -149,9 +149,19 @@ export default function AcceptInvitePage() {
     hasShownPage.current = true;
   }
 
-  if (hasShownPage.current && invitation && !error && sessionStatus !== "unauthenticated") {
-  } else if (!token || error || isLoadingInvitation || !invitation || 
-             (session && (session as any)?.email !== invitation?.email)) {
+  if (
+    hasShownPage.current &&
+    invitation &&
+    !error &&
+    sessionStatus !== "unauthenticated"
+  ) {
+  } else if (
+    !token ||
+    error ||
+    isLoadingInvitation ||
+    !invitation ||
+    (session && (session as any)?.email !== invitation?.email)
+  ) {
     return <AppCenterLoading descrption="Validando convite..." />;
   }
 

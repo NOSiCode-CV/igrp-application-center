@@ -24,6 +24,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 
 import { ButtonLink } from "@/components/button-link";
@@ -53,6 +54,7 @@ import { ConfirmDialog } from "@/components/confirmation-modal";
 export function UserList() {
   const [data, setData] = useState<IGRPUserDTO[]>([]);
   const [pendingData, setPendingData] = useState<IGRPUserDTO[]>([]);
+  const [canceledData, setCanceledData] = useState<IGRPUserDTO[]>([]);
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
@@ -73,131 +75,120 @@ export function UserList() {
   const { data: invites, isLoading: isLoadingInvites } =
     useGetUserInvitations();
 
+  console.log("invites", users);
+
   useEffect(() => {
     setData(users ?? []);
   }, [users]);
 
   useEffect(() => {
-    setPendingData(invites ?? []);
+    setPendingData(
+      invites?.filter((invite) => invite.status === "PENDING") ?? [],
+    );
+    setCanceledData(
+      invites?.filter((invite) => invite.status === "CANCELED") ?? [],
+    );
   }, [invites]);
 
-  const activeColumns: ColumnDef<IGRPUserDTO>[] = [
-    {
-      header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
-      ),
-      accessorKey: "name",
-      cell: ({ row }) => {
-        const email = String(row.getValue("email"));
-        const nameValue = row.getValue("name");
-        const name =
-          nameValue && String(nameValue) !== "null" ? String(nameValue) : email;
-        return (
-          <div className="flex items-center gap-3">
-            <IGRPUserAvatar
-              alt={name}
-              fallbackContent={getInitials(name)}
-              className="size-10"
-              fallbackClass="text-base bg-primary text-primary-foreground"
-            />
-            <div>
-              <div className="text-sm leading-none">{name}</div>
-              <span className="text-muted-foreground text-xs">{email}</span>
-            </div>
-          </div>
-        );
-      },
-    },
-    {
-      header: "Email",
-      accessorKey: "email",
-      cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
-    },
-    {
-      header: () => (
-        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
-      ),
-      accessorKey: "status",
-      cell: ({ row }) => {
-        const status = String(row.getValue("status"));
-        return (
-          <div className="text-center">
-            <IGRPBadgePrimitive
-              className={cn(getStatusColor(status), "capitalize")}
-            >
-              {showStatus(status)}
-            </IGRPBadgePrimitive>
-          </div>
-        );
-      },
-      filterFn: IGRPDataTableFacetedFilterFn,
-      size: 70,
-    },
-    {
-      id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
-      cell: ({ row }) => <ActiveRowActions row={row} />,
-      size: 60,
-      enableHiding: false,
-    },
-  ];
+  const isInviteStatus = (s: string) =>
+    ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
 
-  const pendingColumns: ColumnDef<IGRPUserDTO>[] = [
-    {
-      header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Email" />
-      ),
-      accessorKey: "email",
-      cell: ({ row }) => {
-        const email = String(row.getValue("email"));
-        return (
-          <div className="flex items-center gap-3">
-            <IGRPUserAvatar
-              alt={email}
-              fallbackContent={getInitials(email)}
-              className="size-10"
-              fallbackClass="text-base bg-primary text-primary-foreground"
-            />
-            <div className="text-sm">{email}</div>
-          </div>
-        );
+  const getTableColumns = (
+    ActionsCell: (props: { row: Row<IGRPUserDTO> }) => ReactNode,
+    options?: { showInvitationDate?: boolean },
+  ): ColumnDef<IGRPUserDTO>[] => {
+    const showInvitationDate = options?.showInvitationDate !== false;
+    return [
+      {
+        header: ({ column }) => (
+          <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
+        ),
+        accessorKey: "name",
+        cell: ({ row }) => {
+          const email = String(row.getValue("email") ?? "");
+          const nameValue = row.getValue("name");
+          const name =
+            nameValue && String(nameValue) !== "null"
+              ? String(nameValue)
+              : email;
+          return (
+            <div className="flex items-center gap-3">
+              <IGRPUserAvatar
+                alt={name || email}
+                fallbackContent={getInitials(name || email)}
+                className="size-10"
+                fallbackClass="text-base bg-primary text-primary-foreground"
+              />
+              <div>
+                <div className="text-sm leading-none">{name || email}</div>
+                <span className="text-muted-foreground text-xs">{email}</span>
+              </div>
+            </div>
+          );
+        },
       },
-    },
-    {
-      header: "Data do Convite",
-      accessorKey: "invitationDate",
-      cell: ({ row }) => {
-        const date = row.getValue("invitationDate");
-        return (
-          <div>
-            {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-          </div>
-        );
+      {
+        header: ({ column }) => (
+          <IGRPDataTableHeaderSortToggle column={column} title="Email" />
+        ),
+        accessorKey: "email",
+        cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
       },
-    },
-    {
-      header: "Status",
-      accessorKey: "status",
-      cell: ({ row }) => {
-        const status = row.getValue("status");
-        return (
-          <div>
-            <IGRPBadgePrimitive
-              className={cn(statusInviteClass(status as string), "capitalize")}
-            >
-              {geInviteTitle(status as string)}
-            </IGRPBadgePrimitive>
-          </div>
-        );
+      ...(showInvitationDate
+        ? [
+            {
+              header: "Data do Convite",
+              accessorKey: "invitationDate",
+              cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
+                const date = row.getValue("invitationDate");
+                return (
+                  <div>
+                    {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
+                  </div>
+                );
+              },
+            } as ColumnDef<IGRPUserDTO>,
+          ]
+        : []),
+      {
+        header: () => (
+          <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
+        ),
+        accessorKey: "status",
+        cell: ({ row }) => {
+          const status = String(row.getValue("status") ?? "");
+          const isInvite = isInviteStatus(status);
+          return (
+            <div className="text-center">
+              <IGRPBadgePrimitive
+                className={cn(
+                  isInvite ? statusInviteClass(status) : getStatusColor(status),
+                  "capitalize",
+                )}
+              >
+                {isInvite ? geInviteTitle(status) : showStatus(status)}
+              </IGRPBadgePrimitive>
+            </div>
+          );
+        },
+        filterFn: IGRPDataTableFacetedFilterFn,
+        size: 70,
       },
-    },
-    {
-      id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
-      cell: ({ row }) => <PendingRowActions row={row} />,
-      size: 60,
-    },
-  ];
+      {
+        id: "actions",
+        header: () => <span className="sr-only">Ações</span>,
+        cell: ({ row }) => <ActionsCell row={row} />,
+        size: 60,
+        enableHiding: false,
+      },
+    ];
+  };
+
+  const activeColumns = getTableColumns(ActiveRowActions, {
+    showInvitationDate: false,
+  });
+  const pendingColumns = getTableColumns(PendingRowActions);
+  const canceledColumns = getTableColumns(PendingRowActions);
 
   function ActiveRowActions({ row }: { row: Row<IGRPUserDTO> }) {
     const state = String(row.getValue("status"));
@@ -341,11 +332,11 @@ export function UserList() {
   const activeFilters: IGRPDataTableClientFilterListProps<IGRPUserDTO>[] = [
     {
       columnId: "name",
-      component: (column) => <IGRPDataTableFilterInput column={column} />,
+      component: ({ column }) => <IGRPDataTableFilterInput column={column} />,
     },
     {
       columnId: "status",
-      component: (column) => (
+      component: ({ column }) => (
         <IGRPDataTableFilterFaceted
           column={column}
           options={STATUS_OPTIONS}
@@ -437,6 +428,9 @@ export function UserList() {
           <IGRPTabsTriggerPrimitive value="pending">
             Convites Pendentes ({pendingData.length})
           </IGRPTabsTriggerPrimitive>
+          <IGRPTabsTriggerPrimitive value="canceled">
+            Convites Cancelados ({canceledData.length})
+          </IGRPTabsTriggerPrimitive>
         </IGRPTabsListPrimitive>
 
         <IGRPTabsContentPrimitive value="active">
@@ -460,6 +454,22 @@ export function UserList() {
               tableClassName="table-fixed"
               columns={pendingColumns}
               data={pendingData}
+              clientFilters={activeFilters}
+            />
+          )}
+        </IGRPTabsContentPrimitive>
+
+        <IGRPTabsContentPrimitive value="canceled">
+          {isLoadingInvites ? (
+            <AppCenterLoading descrption="Carregando convites..." />
+          ) : (
+            <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
+              showFilter
+              showPagination
+              tableClassName="table-fixed"
+              columns={canceledColumns}
+              data={canceledData}
+              clientFilters={activeFilters}
             />
           )}
         </IGRPTabsContentPrimitive>

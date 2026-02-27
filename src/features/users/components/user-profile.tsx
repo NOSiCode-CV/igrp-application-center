@@ -30,6 +30,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import UserApplications from "./user-applications";
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
 import { Status } from "@igrp/platform-access-management-client-ts";
+import ProfileRoleList from "@/features/profile/components/profile-role-list";
 
 export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
@@ -217,7 +218,7 @@ export function UserProfile() {
     {
       label: "Roles",
       value: "roles",
-      content: <UserRoleList user={user} />,
+      content: <ProfileRoleList />,
     },
     {
       label: "Assinatura",
@@ -264,7 +265,9 @@ export function UserProfile() {
                         />
                       </div>
                     ) : (
-                      getInitials(user?.name || user?.username || user?.email || "")
+                      getInitials(
+                        user?.name || user?.username || user?.email || "",
+                      )
                     )
                   }
                   className="relative size-28 bg-background border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105"

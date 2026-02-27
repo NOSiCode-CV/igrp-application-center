@@ -19,13 +19,20 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
 
-  const { data: currentUserDepts, isLoading: isLoadingMyDeps, error: errorMyDeps } =
-    useCurrentUserDepartments({ enabled: !user });
-  const { data: userDepts, isLoading, error } = useUserDepartments(user?.id!, {
+  const {
+    data: currentUserDepts,
+    isLoading: isLoadingMyDeps,
+    error: errorMyDeps,
+  } = useCurrentUserDepartments({ enabled: !user });
+  const {
+    data: userDepts,
+    isLoading,
+    error,
+  } = useUserDepartments(user?.id!, {
     enabled: !!user,
   });
 
-  if (isLoadingMyDeps || isLoading  && !error && !errorMyDeps) {
+  if (isLoadingMyDeps || (isLoading && !error && !errorMyDeps)) {
     return <AppCenterLoading descrption="Carregando departamentos..." />;
   }
 

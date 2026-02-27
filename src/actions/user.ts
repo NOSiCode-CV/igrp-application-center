@@ -5,6 +5,7 @@ import type {
   ApplicationDTO,
   IGRPUserDTO,
   InviteUserDTO,
+  RoleDTO,
   UserFilters,
   UserInvitationResponseDTO,
 } from "@igrp/platform-access-management-client-ts";
@@ -93,6 +94,17 @@ export async function removeRolesFromUser(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-remove-roles] Erro ao remover perfis:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function getCurrentUserRoles(): Promise<ActionResult<RoleDTO[]>> {
+  const client = await getClientAccess();
+  try {
+    const result = await client.users.getCurrentUserRoles();
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao obter roles:", error);
     return { success: false, error: extractApiError(error) };
   }
 }
@@ -346,6 +358,32 @@ export async function getUserInvitationByToken(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter dados convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function getCurrentUserActiveRole(): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getCurrentUserActiveRole();
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao obter active role:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function setCurrentUserActiveRole(
+  role: any,
+): Promise<ActionResult<any>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.setCurrentUserActiveRole(role);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-get] Erro ao definir active role:", error);
     return { success: false, error: extractApiError(error) };
   }
 }

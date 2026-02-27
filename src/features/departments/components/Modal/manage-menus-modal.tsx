@@ -26,6 +26,7 @@ import {
   IGRPSwitchPrimitive,
   useIGRPToast,
   IGRPButton,
+  IGRPScrollAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useEffect, useMemo, useRef } from "react";
 import {
@@ -37,7 +38,6 @@ import {
 import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { buildMenuTree } from "../../dept-lib";
 import { getMenuIcon } from "@/lib/utils";
-import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 import { useApplications } from "@/features/applications/use-applications";
 
 interface ManageMenusModalProps {
@@ -454,7 +454,7 @@ export function ManageMenusModal({
             </div>
           </div>
 
-          <ScrollArea className="h-[95vh] w-full ">
+          <IGRPScrollAreaPrimitive className="h-[95vh] w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -482,7 +482,7 @@ export function ManageMenusModal({
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </IGRPScrollAreaPrimitive>
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">

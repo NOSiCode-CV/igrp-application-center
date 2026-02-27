@@ -18,10 +18,13 @@ import {
   addRolesToUser,
   cancelUserInvitation,
   getCurrentUser,
+  getCurrentUserActiveRole,
+  //getCurrentUserActiveRole,
   getCurrentUserApplications,
   getCurrentUserDepartments,
   getCurrentUserFavoriteApplications,
   getCurrentUserRecentApplications,
+  getCurrentUserRoles,
   getUser,
   getUserApplications,
   getUserDepartments,
@@ -35,6 +38,8 @@ import {
   removeRolesFromUser,
   resendUserInvitation,
   respondUserInvitation,
+  setCurrentUserActiveRole,
+  //setCurrentUserActiveRole,
   updateUser,
   updateUserStatus,
 } from "@/actions/user";
@@ -403,6 +408,51 @@ export function useGetUserInvitationByToken(token: string) {
       const result = await getUserInvitationByToken(token);
       if (!result.success) throw new Error(result.error);
       return result.data;
+    },
+    retry: false,
+  });
+}
+
+export function useGetCurrentUserRoles() {
+  return useQuery<any[], Error>({
+    queryKey: ["current-user-roles"],
+    queryFn: async () => {
+      const result = await getCurrentUserRoles();
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    retry: false,
+  });
+}
+
+export function useCurrentUserActiveRole(options?: { enabled?: boolean }) {
+  return useQuery<any, Error>({
+    queryKey: ["current-user-active-role"],
+    queryFn: async () => {
+      const result = await getCurrentUserActiveRole();
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    ...options,
+    retry: false,
+  });
+}
+
+export function useSetCurrentUserActiveRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (role: { roleCode: string; departmentCode: string }) =>
+      setCurrentUserActiveRole(role),
+    onSuccess: async (result) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["current-user-active-role"],
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ["current-user"],
+        });
+      }
     },
     retry: false,
   });

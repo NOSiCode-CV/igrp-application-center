@@ -21,10 +21,10 @@ import {
   IGRPSwitchPrimitive,
   useIGRPToast,
   IGRPButton,
+  IGRPScrollAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useEffect, useMemo } from "react";
 import { getStatusColor, showStatus } from "@/lib/utils";
-import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 import {
   useAddResourcesToDepartment,
   useAvailableResources,
@@ -303,7 +303,7 @@ export function ManageResourcesModal({
             </div>
           </div>
 
-          <ScrollArea className="h-[95vh] w-full">
+          <IGRPScrollAreaPrimitive className="h-[95vh] w-full">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -336,7 +336,7 @@ export function ManageResourcesModal({
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </IGRPScrollAreaPrimitive>
 
           <div className="flex justify-between items-center py-4">
             <div className="text-sm text-muted-foreground">
