@@ -1,17 +1,15 @@
 "use client";
 import { ApplicationsListHome } from "@/features/applications/components/app-list-home";
 import {
-  IGRPBadge,
   IGRPBadgePrimitive,
   IGRPCalendarSingle,
   IGRPCard,
   IGRPIcon,
   IGRPInputText,
-  IGRPSeparator,
   IGRPTabItem,
   IGRPTabs,
+  IGRPScrollAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
-import { ScrollArea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/scroll-area";
 import { useState } from "react";
 
 const initialTasks: any[] | (() => any[]) = [];
@@ -54,7 +52,7 @@ export default function HomeIGRP() {
               </span>
             </div>
           )}
-          <ScrollArea className="h-[calc(90vh-300px)] -mr-4 pr-4">
+          <IGRPScrollAreaPrimitive className="h-[calc(90vh-300px)] -mr-4 pr-4">
             <div className="pb-4 space-y-2">
               {filteredTasks.map((task) => (
                 <div
@@ -112,7 +110,7 @@ export default function HomeIGRP() {
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </IGRPScrollAreaPrimitive>
         </>
       ),
     },
@@ -129,7 +127,7 @@ export default function HomeIGRP() {
           {/* <IGRPSeparator className="my-4" /> */}
           <div className="space-y-3">
             {/* <h4 className="text-sm font-semibold">Próximos Compromissos</h4> */}
-            <ScrollArea className="h-[190px] -mr-4 pr-4">
+            <IGRPScrollAreaPrimitive className="h-[190px] -mr-4 pr-4">
               <div className="space-y-2 pb-4">
                 {/* <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
           <div className="h-2 w-2 rounded-full bg-blue-500" />
@@ -150,7 +148,7 @@ export default function HomeIGRP() {
                   <p className="text-sm pt-2">Nenhum compromisso agendado</p>
                 </div>
               </div>
-            </ScrollArea>
+            </IGRPScrollAreaPrimitive>
           </div>
         </div>
       ),

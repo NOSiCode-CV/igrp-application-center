@@ -332,11 +332,11 @@ export function UserList() {
   const activeFilters: IGRPDataTableClientFilterListProps<IGRPUserDTO>[] = [
     {
       columnId: "name",
-      component: (column) => <IGRPDataTableFilterInput column={column} />,
+      component: ({ column }) => <IGRPDataTableFilterInput column={column} />,
     },
     {
       columnId: "status",
-      component: (column) => (
+      component: ({ column }) => (
         <IGRPDataTableFilterFaceted
           column={column}
           options={STATUS_OPTIONS}
