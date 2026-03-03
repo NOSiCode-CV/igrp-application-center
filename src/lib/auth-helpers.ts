@@ -49,26 +49,47 @@ export async function refreshAccessToken(token: JWT): Promise<JWT> {
       },
     );
 
+    const bodyText = await refreshResponse.text();
+
     if (!refreshResponse.ok) {
-      const errorText = await refreshResponse.text();
       console.error(
         "[Auth] Failed to refresh token:",
         refreshResponse.status,
-        errorText,
+        bodyText,
       );
-      return { ...token, error: "RefreshAccessTokenError" };
+      throw new Error(bodyText || `Refresh failed: ${refreshResponse.status}`);
     }
 
-    const refreshed = await refreshResponse.json();
-
+    const refreshedTokens = JSON.parse(bodyText);
     return {
       ...token,
-      accessToken: refreshed.access_token,
-      expiresAt: Date.now() + (refreshed.expires_in || 3600) * 1000,
-      refreshToken: refreshed.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+      accessToken: refreshedTokens.access_token,
+      expiresAt: Date.now() + refreshedTokens.expires_in * 1000,
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
     };
   } catch (error) {
     console.error("[Auth] Error refreshing token:", error);
     return { ...token, error: "RefreshAccessTokenError" };
+  }
+}
+
+export async function signOut(token: JWT) {
+  if (token.refreshToken) {
+    try {
+      const url = `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/logout`;
+      await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          client_id: process.env.KEYCLOAK_CLIENT_ID!,
+          client_secret: process.env.KEYCLOAK_CLIENT_SECRET!,
+          refresh_token: token.refreshToken as string,
+        }),
+      });
+    } catch (error) {
+      console.error("Error revoking token", error);
+    }
   }
 }
