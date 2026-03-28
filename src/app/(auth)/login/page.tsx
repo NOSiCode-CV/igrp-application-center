@@ -1,3 +1,4 @@
+import { getAuthProviderIdFromEnv } from "@igrp/framework-next-auth";
 import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
 
 import { carouselItems, loginConfig } from "@/config/login";
@@ -13,6 +14,7 @@ export default async function AuthPage({
   searchParams: PageProps<"/login">["searchParams"];
 }) {
   const { callbackUrl } = await searchParams;
+  const providerId = getAuthProviderIdFromEnv(process.env);
 
   return (
     <section className="flex min-h-screen flex-col md:flex-row">
@@ -30,6 +32,7 @@ export default async function AuthPage({
         logo={logo}
         name={name}
         callbackUrl={callbackUrl as string}
+        providerId={providerId}
       />
     </section>
   );

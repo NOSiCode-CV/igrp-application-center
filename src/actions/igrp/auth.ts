@@ -1,7 +1,11 @@
 "use server";
 
 import { igrpSetAccessClientConfig } from "@igrp/framework-next";
-import { getServerSession, type Session } from "@igrp/framework-next-auth";
+import {
+  assertAuthProviderEnv,
+  getServerSession,
+  type Session,
+} from "@igrp/framework-next-auth";
 import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth-options";
@@ -19,18 +23,7 @@ export async function serverSession() {
       }
     }
 
-    if (
-      !process.env.KEYCLOAK_CLIENT_ID ||
-      !process.env.KEYCLOAK_CLIENT_SECRET ||
-      !process.env.KEYCLOAK_ISSUER
-    ) {
-      console.warn(
-        "Warning: One or more Keycloak environment variables are missing.",
-      );
-      throw new Error(
-        "One or more Keycloak environment variables are missing.",
-      );
-    }
+    assertAuthProviderEnv(process.env);
 
     const session = await getServerSession(authOptions);
 

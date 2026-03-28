@@ -1,5 +1,9 @@
 import type { NextApiRequest } from "next";
 import { cookies } from "next/headers";
+import {
+  refreshOidcAccessToken,
+  revokeOidcSession,
+} from "@igrp/framework-next-auth";
 import { getToken, type JWT } from "next-auth/jwt";
 
 export async function getAccessToken() {
@@ -24,49 +28,7 @@ export async function getAccessToken() {
  */
 export async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
-    const issuer = process.env.KEYCLOAK_ISSUER;
-    const clientId = process.env.KEYCLOAK_CLIENT_ID;
-    const clientSecret = process.env.KEYCLOAK_CLIENT_SECRET;
-
-    if (!issuer || !clientId || !clientSecret) {
-      console.error("[Auth] Missing Keycloak configuration for token refresh");
-      return { ...token, error: "RefreshAccessTokenError" };
-    }
-
-    const refreshResponse = await fetch(
-      `${issuer}/protocol/openid-connect/token`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          client_id: clientId,
-          client_secret: clientSecret,
-          grant_type: "refresh_token",
-          refresh_token: token.refreshToken || "",
-        }),
-      },
-    );
-
-    const bodyText = await refreshResponse.text();
-
-    if (!refreshResponse.ok) {
-      console.error(
-        "[Auth] Failed to refresh token:",
-        refreshResponse.status,
-        bodyText,
-      );
-      throw new Error(bodyText || `Refresh failed: ${refreshResponse.status}`);
-    }
-
-    const refreshedTokens = JSON.parse(bodyText);
-    return {
-      ...token,
-      accessToken: refreshedTokens.access_token,
-      expiresAt: Date.now() + refreshedTokens.expires_in * 1000,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
-    };
+    return await refreshOidcAccessToken(token, process.env);
   } catch (error) {
     console.error("[Auth] Error refreshing token:", error);
     return { ...token, error: "RefreshAccessTokenError" };
@@ -74,22 +36,9 @@ export async function refreshAccessToken(token: JWT): Promise<JWT> {
 }
 
 export async function signOut(token: JWT) {
-  if (token.refreshToken) {
-    try {
-      const url = `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/logout`;
-      await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          client_id: process.env.KEYCLOAK_CLIENT_ID!,
-          client_secret: process.env.KEYCLOAK_CLIENT_SECRET!,
-          refresh_token: token.refreshToken as string,
-        }),
-      });
-    } catch (error) {
-      console.error("Error revoking token", error);
-    }
+  try {
+    await revokeOidcSession(token, process.env);
+  } catch (error) {
+    console.error("Error revoking token", error);
   }
 }
