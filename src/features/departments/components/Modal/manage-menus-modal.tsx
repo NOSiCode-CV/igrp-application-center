@@ -1,32 +1,32 @@
 "use client";
 
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
   cn,
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSkeletonPrimitive,
-  IGRPSwitchPrimitive,
-  useIGRPToast,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   IGRPButton,
-  IGRPScrollAreaPrimitive,
+  IGRPIcon,
+  Input,
+  ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+  Switch,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useEffect, useMemo, useRef } from "react";
 import {
@@ -321,12 +321,12 @@ export function ManageMenusModal({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
                 <h4 className="font-semibold text-sm truncate">{menu.name}</h4>
-                <IGRPBadgePrimitive
+                <Badge
                   variant={isAssigned ? "default" : "secondary"}
                   className="text-[10px] px-1.5 py-0.5 shrink-0"
                 >
                   {menu.applicationCode}
-                </IGRPBadgePrimitive>
+                </Badge>
               </div>
               {menu.url && (
                 <p className="text-xs text-muted-foreground truncate">
@@ -352,7 +352,7 @@ export function ManageMenusModal({
                   </div>
                 )}
               </div>
-              <IGRPSwitchPrimitive
+              <Switch
                 checked={isAssigned}
                 onCheckedChange={() => handleToggleMenu(menu.code, isAssigned)}
                 disabled={processingMenu !== null}
@@ -396,17 +396,17 @@ export function ManageMenusModal({
 
   return (
     <>
-      <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl ! max-h-[85vh] overflow-hidden flex flex-col">
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive className="flex items-center gap-2">
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:min-w-2xl ! max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               <IGRPIcon iconName="Menu" className="w-5 h-5" strokeWidth={2} />
               Gerenciar Menus
-            </IGRPDialogTitlePrimitive>
-            <IGRPDialogDescriptionPrimitive>
+            </DialogTitle>
+            <DialogDescription>
               Adicione ou remova menus do departamento com um clique.
-            </IGRPDialogDescriptionPrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogDescription>
+          </DialogHeader>
 
           <div className="flex flex-col sm:flex-row gap-3 pb-4">
             <div className="flex-1 relative">
@@ -414,7 +414,7 @@ export function ManageMenusModal({
                 iconName="Search"
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
-              <IGRPInputPrimitive
+              <Input
                 type="search"
                 placeholder="Pesquisar por nome, código ou URL..."
                 className="pl-8"
@@ -423,22 +423,22 @@ export function ManageMenusModal({
               />
             </div>
             <div className="">
-              <IGRPSelectPrimitive
+              <Select
                 value={selectedApp}
                 onValueChange={setSelectedApp}
                 disabled={loadingApps}
               >
-                <IGRPSelectTriggerPrimitive className="h-10">
-                  <IGRPSelectValuePrimitive placeholder="Todas aplicações" />
-                </IGRPSelectTriggerPrimitive>
-                <IGRPSelectContentPrimitive>
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Todas aplicações" />
+                </SelectTrigger>
+                <SelectContent>
                   {loadingApps && (
-                    <IGRPSelectItemPrimitive value="loading">
+                    <SelectItem value="loading">
                       Carregando...
-                    </IGRPSelectItemPrimitive>
+                    </SelectItem>
                   )}
                   {sortedApps.map((app) => (
-                    <IGRPSelectItemPrimitive key={app.code} value={app.code}>
+                    <SelectItem key={app.code} value={app.code}>
                       <div className="flex items-center gap-2">
                         <IGRPIcon
                           iconName="AppWindow"
@@ -447,18 +447,18 @@ export function ManageMenusModal({
                         />
                         {app.name}
                       </div>
-                    </IGRPSelectItemPrimitive>
+                    </SelectItem>
                   ))}
-                </IGRPSelectContentPrimitive>
-              </IGRPSelectPrimitive>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <IGRPScrollAreaPrimitive className="h-[95vh] w-full ">
+          <ScrollArea className="h-[95vh] w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <IGRPSkeletonPrimitive key={i} className="h-20 rounded-lg" />
+                  <Skeleton key={i} className="h-20 rounded-lg" />
                 ))}
               </div>
             ) : menuTree.length === 0 ? (
@@ -482,7 +482,7 @@ export function ManageMenusModal({
                 ))}
               </div>
             )}
-          </IGRPScrollAreaPrimitive>
+          </ScrollArea>
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">
@@ -493,7 +493,7 @@ export function ManageMenusModal({
               menus adicionados
             </div>
 
-            <IGRPButtonPrimitive
+            <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={processingMenu !== null}
@@ -501,32 +501,32 @@ export function ManageMenusModal({
             >
               <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
               Fechar
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
-        </IGRPDialogContentPrimitive>
-      </IGRPDialogPrimitive>
+        </DialogContent>
+      </Dialog>
 
-      <IGRPAlertDialogPrimitive
+      <AlertDialog
         open={!!menuToRemove}
         onOpenChange={(open) => !open && setMenuToRemove(null)}
       >
-        <IGRPAlertDialogContentPrimitive>
-          <IGRPAlertDialogHeaderPrimitive>
-            <IGRPAlertDialogTitlePrimitive className="flex items-center gap-2">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
                 className="w-5 h-5 text-destructive"
                 strokeWidth={2}
               />
               Remover Menu
-            </IGRPAlertDialogTitlePrimitive>
-            <IGRPAlertDialogDescriptionPrimitive>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Tem certeza que deseja remover o menu{" "}
               <strong className="text-foreground">{menuToRemove?.name}</strong>{" "}
               deste departamento? Esta ação não pode ser desfeita.
-            </IGRPAlertDialogDescriptionPrimitive>
-          </IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogFooterPrimitive>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
             <IGRPButton
               disabled={processingMenu !== null}
               variant="outline"
@@ -565,9 +565,9 @@ export function ManageMenusModal({
                 </>
               )}
             </IGRPButton>
-          </IGRPAlertDialogFooterPrimitive>
-        </IGRPAlertDialogContentPrimitive>
-      </IGRPAlertDialogPrimitive>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

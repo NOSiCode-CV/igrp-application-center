@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
 import {
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
+  Badge,
+  Button,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -66,14 +66,14 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Perfis Atribuídos</h2>
-            <IGRPButtonPrimitive
+            <Button
               variant="outline"
               size="sm"
               onClick={() => setAssignDialogOpen(true)}
             >
               <IGRPIcon iconName="Plus" />
               Adicionar
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
 
           <div className="space-y-3">
@@ -131,28 +131,28 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                     {role.permissions.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {role.permissions.slice(0, 3).map((permission: any) => (
-                          <IGRPBadgePrimitive
+                          <Badge
                             key={permission}
                             variant="secondary"
                             className="text-xs font-mono"
                           >
                             {permission}
-                          </IGRPBadgePrimitive>
+                          </Badge>
                         ))}
                         {role.permissions.length > 3 && (
-                          <IGRPBadgePrimitive
+                          <Badge
                             variant="secondary"
                             className="text-xs"
                           >
                             +{role.permissions.length - 3} mais
-                          </IGRPBadgePrimitive>
+                          </Badge>
                         )}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <IGRPButtonPrimitive
+                <Button
                   variant="ghost"
                   size="sm"
                   onClick={() =>
@@ -162,7 +162,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                   className="shrink-0 cursor-pointer"
                 >
                   {isRemovingRole(role.code || "") ? "..." : "Revogar"}
-                </IGRPButtonPrimitive>
+                </Button>
               </div>
             ))}
           </div>
@@ -179,13 +179,13 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
               Este utilizador não tem perfis.
             </p>
           </div>
-          <IGRPButtonPrimitive
+          <Button
             size="sm"
             onClick={() => setAssignDialogOpen(true)}
           >
             <IGRPIcon iconName="Plus" />
             Associar Perfis
-          </IGRPButtonPrimitive>
+          </Button>
         </div>
       )}
 

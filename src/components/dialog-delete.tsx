@@ -1,13 +1,13 @@
 import {
-  IGRPButtonPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPDialogFooterPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPLabelPrimitive,
+  Input,
+  Label,
 } from "@igrp/igrp-framework-react-design-system";
 import { useId, useState } from "react";
 
@@ -50,8 +50,8 @@ function IGRPDialogDelete({
   );
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPDialogContentPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
         <div className="flex flex-col gap-4 bg-destructive/10 p-4 rounded-lg mt-3">
           <div className="flex items-center">
             <IGRPIcon
@@ -60,22 +60,22 @@ function IGRPDialogDelete({
             />
             <span>{textHeader}</span>
           </div>
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogDescriptionPrimitive className="text-foreground text-base">
+          <DialogHeader>
+            <DialogDescription className="text-foreground text-base">
               {description ? description : RenderDes}
-            </IGRPDialogDescriptionPrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogDescription>
+          </DialogHeader>
         </div>
 
         <div className="flex flex-col gap-2">
           <div className="*:not-first:mt-2">
-            <IGRPLabelPrimitive
+            <Label
               htmlFor={`confirmation-${id}`}
               className='after:content-["*"] after:text-destructive gap-0.5 mb-1'
             >
               {label}
-            </IGRPLabelPrimitive>
-            <IGRPInputPrimitive
+            </Label>
+            <Input
               id={`confirmation-${id}`}
               value={confirmation}
               onChange={(e) => setConfirmation(e.target.value)}
@@ -85,8 +85,8 @@ function IGRPDialogDelete({
             />
           </div>
         </div>
-        <IGRPDialogFooterPrimitive className="flex flex-col">
-          <IGRPButtonPrimitive
+        <DialogFooter className="flex flex-col">
+          <Button
             variant="outline"
             onClick={() => {
               onOpenChange(false);
@@ -96,8 +96,8 @@ function IGRPDialogDelete({
           >
             <IGRPIcon iconName="X" className=" size-4" strokeWidth={2} />
             {labelBtnCancel}
-          </IGRPButtonPrimitive>
-          <IGRPButtonPrimitive
+          </Button>
+          <Button
             variant="destructive"
             onClick={() => {
               confirmDelete(), setConfirmation("");
@@ -106,10 +106,10 @@ function IGRPDialogDelete({
           >
             <IGRPIcon iconName="Trash" className="size-4" strokeWidth={2} />
             {isDeleting ? "Aguarde..." : labelBtnDelete}
-          </IGRPButtonPrimitive>
-        </IGRPDialogFooterPrimitive>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

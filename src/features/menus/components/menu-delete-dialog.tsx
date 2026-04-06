@@ -2,17 +2,16 @@
 
 import { useDeleteMenu } from "@/features/applications/use-applications";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   IGRPButton,
-  IGRPButtonPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPDialogFooterPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPLabelPrimitive,
+  Input,
+  Label,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
@@ -68,10 +67,10 @@ export function MenuDeleteDialog({
   }
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPDialogContentPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
         <div>
-          <IGRPDialogHeaderPrimitive className="flex flex-col gap-4">
+          <DialogHeader className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
               <div
                 className="flex size-9 shrink-0 items-center justify-center"
@@ -82,9 +81,9 @@ export function MenuDeleteDialog({
                   className="opacity-80 size-4"
                 />
               </div>
-              <IGRPDialogTitlePrimitive>Confirmação</IGRPDialogTitlePrimitive>
+              <DialogTitle>Confirmação</DialogTitle>
             </div>
-            <IGRPDialogDescriptionPrimitive className="sm:text-center text-base text-balance ">
+            <DialogDescription className="sm:text-center text-base text-balance ">
               <span>
                 Esta ação é irreversível. O menu e todos os seus dados serão
                 eliminados permanentemente. Para confirmar, escreva
@@ -93,18 +92,18 @@ export function MenuDeleteDialog({
                 &nbsp;{menuToDelete.name}&nbsp;
               </span>{" "}
               abaixo:
-            </IGRPDialogDescriptionPrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogDescription>
+          </DialogHeader>
         </div>
 
         <div className="flex flex-col gap-2">
-          <IGRPLabelPrimitive
+          <Label
             htmlFor="confirmation"
             className='after:content-["*"] after:text-destructive gap-0.5 mb-1'
           >
             Nome do Menu
-          </IGRPLabelPrimitive>
-          <IGRPInputPrimitive
+          </Label>
+          <Input
             id="confirmation"
             value={confirmation}
             onChange={(e) => setConfirmation(e.target.value)}
@@ -113,7 +112,7 @@ export function MenuDeleteDialog({
             required
           />
         </div>
-        <IGRPDialogFooterPrimitive className="flex flex-col">
+        <DialogFooter className="flex flex-col">
           <IGRPButton
             variant="outline"
             onClick={() => {
@@ -135,8 +134,8 @@ export function MenuDeleteDialog({
           >
             Eliminar
           </IGRPButton>
-        </IGRPDialogFooterPrimitive>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

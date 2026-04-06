@@ -3,40 +3,40 @@
 import {
   cn,
   IGRPBadge,
-  IGRPBadgePrimitive,
+  Badge,
   IGRPButton,
-  IGRPButtonPrimitive,
-  IGRPCheckboxPrimitive,
-  IGRPCommandEmptyPrimitive,
-  IGRPCommandGroupPrimitive,
-  IGRPCommandInputPrimitive,
-  IGRPCommandItemPrimitive,
-  IGRPCommandListPrimitive,
-  IGRPCommandPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
+  Button,
+  Checkbox,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  Command,
+  DialogContent,
+  DialogHeader,
+  Dialog,
+  DialogTitle,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPLabelPrimitive,
-  IGRPPaginationContentPrimitive,
-  IGRPPaginationItemPrimitive,
-  IGRPPaginationPrimitive,
-  IGRPPopoverContentPrimitive,
-  IGRPPopoverPrimitive,
-  IGRPPopoverTriggerPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Label,
+  PaginationContent,
+  PaginationItem,
+  Pagination,
+  PopoverContent,
+  Popover,
+  PopoverTrigger,
+  SelectContent,
+  SelectItem,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHead,
+  Table,
+  TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import {
@@ -85,7 +85,7 @@ const columns: ColumnDef<RoleDTO>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <IGRPCheckboxPrimitive
+      <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -96,7 +96,7 @@ const columns: ColumnDef<RoleDTO>[] = [
       />
     ),
     cell: ({ row }) => (
-      <IGRPCheckboxPrimitive
+      <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -126,11 +126,11 @@ const columns: ColumnDef<RoleDTO>[] = [
     header: "Estado",
     accessorKey: "status",
     cell: ({ row }) => (
-      <IGRPBadgePrimitive
+      <Badge
         className={cn(getStatusColor(row.getValue("status")), "capitalize")}
       >
         {showStatus(row.getValue("status"))}
-      </IGRPBadgePrimitive>
+      </Badge>
     ),
     size: 40,
     enableSorting: false,
@@ -346,20 +346,20 @@ export function UserRolesDialog({
   const err = error || errorUserRoles;
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal={false}>
-      <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
-        <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive className="text-base">
+    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+      <DialogContent className="md:min-w-2xl max-h-[95vh]">
+        <DialogHeader>
+          <DialogTitle className="text-base">
             Adicionar ou Remover Perfis
-          </IGRPDialogTitlePrimitive>
-        </IGRPDialogHeaderPrimitive>
+          </DialogTitle>
+        </DialogHeader>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
           <section className="space-y-8 max-w-full">
             <div className="flex flex-col gap-4">
               <div className="flex gap-2 ">
                 <div className="relative flex-1">
-                  <IGRPInputPrimitive
+                  <Input
                     id={`${idValue}-input`}
                     ref={inputRef}
                     className={cn(
@@ -397,12 +397,12 @@ export function UserRolesDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <IGRPPopoverPrimitive
+                  <Popover
                     open={deptPopoverOpen}
                     onOpenChange={setDeptPopoverOpen}
                   >
-                    <IGRPPopoverTriggerPrimitive asChild>
-                      <IGRPButtonPrimitive
+                    <PopoverTrigger asChild>
+                      <Button
                         variant="outline"
                         role="combobox"
                         className={cn(
@@ -428,19 +428,19 @@ export function UserRolesDialog({
                           iconName="ChevronsUpDown"
                           className="ml-2 h-4 w-4 opacity-50"
                         />
-                      </IGRPButtonPrimitive>
-                    </IGRPPopoverTriggerPrimitive>
+                      </Button>
+                    </PopoverTrigger>
 
-                    <IGRPPopoverContentPrimitive className="w-[--radix-popover-trigger-width] p-0">
-                      <IGRPCommandPrimitive>
-                        <IGRPCommandInputPrimitive placeholder="Procurar departamento..." />
-                        <IGRPCommandListPrimitive>
-                          <IGRPCommandEmptyPrimitive>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                      <Command>
+                        <CommandInput placeholder="Procurar departamento..." />
+                        <CommandList>
+                          <CommandEmpty>
                             Nenhum departamento encontrado.
-                          </IGRPCommandEmptyPrimitive>
-                          <IGRPCommandGroupPrimitive>
+                          </CommandEmpty>
+                          <CommandGroup>
                             {depts?.map((dept) => (
-                              <IGRPCommandItemPrimitive
+                              <CommandItem
                                 key={dept.code}
                                 value={dept.code}
                                 onSelect={(v) => handleSelectDept(v)}
@@ -455,13 +455,13 @@ export function UserRolesDialog({
                                   )}
                                 />
                                 {dept.name}
-                              </IGRPCommandItemPrimitive>
+                              </CommandItem>
                             ))}
-                          </IGRPCommandGroupPrimitive>
-                        </IGRPCommandListPrimitive>
-                      </IGRPCommandPrimitive>
-                    </IGRPPopoverContentPrimitive>
-                  </IGRPPopoverPrimitive>
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
@@ -485,15 +485,15 @@ export function UserRolesDialog({
               ) : (
                 <>
                   <div className="bg-background overflow-hidden rounded-md border ">
-                    <IGRPTablePrimitive className="table-fixed">
-                      <IGRPTableHeaderPrimitive>
+                    <Table className="table-fixed">
+                      <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                          <IGRPTableRowPrimitive
+                          <TableRow
                             key={headerGroup.id}
                             className="hover:bg-transparent"
                           >
                             {headerGroup.headers.map((header) => (
-                              <IGRPTableHeadPrimitive
+                              <TableHead
                                 key={header.id}
                                 style={{ width: `${header.getSize()}px` }}
                                 className="h-12"
@@ -504,74 +504,74 @@ export function UserRolesDialog({
                                       header.column.columnDef.header,
                                       header.getContext(),
                                     )}
-                              </IGRPTableHeadPrimitive>
+                              </TableHead>
                             ))}
-                          </IGRPTableRowPrimitive>
+                          </TableRow>
                         ))}
-                      </IGRPTableHeaderPrimitive>
+                      </TableHeader>
 
-                      <IGRPTableBodyPrimitive>
+                      <TableBody>
                         {table.getRowModel().rows?.length ? (
                           table.getRowModel().rows.map((row) => (
-                            <IGRPTableRowPrimitive
+                            <TableRow
                               key={row.id}
                               data-state={row.getIsSelected() && "selected"}
                             >
                               {row.getVisibleCells().map((cell) => (
-                                <IGRPTableCellPrimitive key={cell.id}>
+                                <TableCell key={cell.id}>
                                   {flexRender(
                                     cell.column.columnDef.cell,
                                     cell.getContext(),
                                   )}
-                                </IGRPTableCellPrimitive>
+                                </TableCell>
                               ))}
-                            </IGRPTableRowPrimitive>
+                            </TableRow>
                           ))
                         ) : (
-                          <IGRPTableRowPrimitive>
-                            <IGRPTableCellPrimitive
+                          <TableRow>
+                            <TableCell
                               colSpan={columns.length}
                               className="h-24 text-center"
                             >
                               Sem resultados!
-                            </IGRPTableCellPrimitive>
-                          </IGRPTableRowPrimitive>
+                            </TableCell>
+                          </TableRow>
                         )}
-                      </IGRPTableBodyPrimitive>
-                    </IGRPTablePrimitive>
+                      </TableBody>
+                    </Table>
                   </div>
 
                   <div className="flex items-center justify-between gap-8">
                     <div className="flex items-center justify-end gap-3">
-                      <IGRPLabelPrimitive
+                      <Label
                         htmlFor={`${idValue}-per-page`}
                         className="max-sm:sr-only"
                       >
                         Rows per page
-                      </IGRPLabelPrimitive>
-                      <IGRPSelectPrimitive
+                      </Label>
+                      <Select
                         value={table.getState().pagination.pageSize.toString()}
                         onValueChange={(value) =>
                           table.setPageSize(Number(value))
                         }
                       >
-                        <IGRPSelectTriggerPrimitive
+                        <SelectTrigger
                           id={`${idValue}-per-page`}
                           className="w-fit whitespace-nowrap"
                         >
-                          <IGRPSelectValuePrimitive placeholder="Select number of results" />
-                        </IGRPSelectTriggerPrimitive>
-                        <IGRPSelectContentPrimitive className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
+                          <SelectValue placeholder="Select number of results" />
+                        </SelectTrigger>
+                        <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
                           {[5, 10].map((pageSize) => (
-                            <IGRPSelectItemPrimitive
+                            <SelectItem
                               key={pageSize}
                               value={pageSize.toString()}
                             >
                               {pageSize}
-                            </IGRPSelectItemPrimitive>
+                            </SelectItem>
                           ))}
-                        </IGRPSelectContentPrimitive>
-                      </IGRPSelectPrimitive>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
@@ -602,10 +602,10 @@ export function UserRolesDialog({
                     </div>
 
                     <div>
-                      <IGRPPaginationPrimitive>
-                        <IGRPPaginationContentPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -614,10 +614,10 @@ export function UserRolesDialog({
                               aria-label="Go to first page"
                             >
                               <IGRPIcon iconName="ChevronFirst" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                            </Button>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -626,10 +626,10 @@ export function UserRolesDialog({
                               aria-label="Go to previous page"
                             >
                               <IGRPIcon iconName="ChevronLeft" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                            </Button>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -638,10 +638,10 @@ export function UserRolesDialog({
                               aria-label="Go to next page"
                             >
                               <IGRPIcon iconName="ChevronRight" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                            </Button>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -650,19 +650,19 @@ export function UserRolesDialog({
                               aria-label="Go to last page"
                             >
                               <IGRPIcon iconName="ChevronLast" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                        </IGRPPaginationContentPrimitive>
-                      </IGRPPaginationPrimitive>
+                            </Button>
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
                     </div>
                   </div>
                 </>
               )}
 
               <div className="flex items-center justify-between gap-3">
-                <IGRPBadgePrimitive>
+                <Badge>
                   {table.getSelectedRowModel().rows.length} selecionado(s)
-                </IGRPBadgePrimitive>
+                </Badge>
 
                 <div className="flex gap-2">
                   <IGRPButton
@@ -703,7 +703,7 @@ export function UserRolesDialog({
             </div>
           </section>
         </div>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+      </DialogContent>
+    </Dialog>
   );
 }

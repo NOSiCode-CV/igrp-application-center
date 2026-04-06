@@ -2,7 +2,7 @@
 
 import {
   type ColumnDef,
-  IGRPBadgePrimitive,
+  Badge,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
   IGRPDataTableFacetedFilterFn,
@@ -10,17 +10,17 @@ import {
   IGRPDataTableFilterInput,
   IGRPDataTableHeaderDefault,
   IGRPDataTableHeaderSortToggle,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenu,
+  DropdownMenuTrigger,
   IGRPIcon,
   IGRPUserAvatar,
   type Row,
-  IGRPTabsPrimitive,
-  IGRPTabsListPrimitive,
-  IGRPTabsTriggerPrimitive,
-  IGRPTabsContentPrimitive,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
@@ -160,14 +160,14 @@ export function UserList() {
           const isInvite = isInviteStatus(status);
           return (
             <div className="text-center">
-              <IGRPBadgePrimitive
+              <Badge
                 className={cn(
                   isInvite ? statusInviteClass(status) : getStatusColor(status),
                   "capitalize",
                 )}
               >
                 {isInvite ? geInviteTitle(status) : showStatus(status)}
-              </IGRPBadgePrimitive>
+              </Badge>
             </div>
           );
         },
@@ -202,32 +202,32 @@ export function UserList() {
     };
 
     return (
-      <IGRPDropdownMenuPrimitive>
-        <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
+      <DropdownMenu>
+        <DropdownMenuTrigger className="p-1 rounded-sm">
           <IGRPIcon iconName="Ellipsis" />
-        </IGRPDropdownMenuTriggerPrimitive>
+        </DropdownMenuTrigger>
 
-        <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
+        <DropdownMenuContent align="end" className="min-w-44">
           {state === "ACTIVE" ? (
-            <IGRPDropdownMenuItemPrimitive
+            <DropdownMenuItem
               className="text-destructive focus:text-destructive"
               onSelect={() => handleStatusClick("INACTIVE")}
               variant="destructive"
             >
               <IGRPIcon iconName="CircleOff" />
               Desativar
-            </IGRPDropdownMenuItemPrimitive>
+            </DropdownMenuItem>
           ) : (
-            <IGRPDropdownMenuItemPrimitive
+            <DropdownMenuItem
               onSelect={() => handleStatusClick("ACTIVE")}
               variant="default"
             >
               <IGRPIcon iconName="CircleCheck" />
               Ativar
-            </IGRPDropdownMenuItemPrimitive>
+            </DropdownMenuItem>
           )}
 
-          <IGRPDropdownMenuItemPrimitive
+          <DropdownMenuItem
             variant="default"
             onClick={() => router.push(`/settings/users/${row.original.id}`)}
           >
@@ -238,9 +238,9 @@ export function UserList() {
               <IGRPIcon iconName="UserCog" />
               Gerir
             </Link>
-          </IGRPDropdownMenuItemPrimitive>
-        </IGRPDropdownMenuContentPrimitive>
-      </IGRPDropdownMenuPrimitive>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
@@ -294,38 +294,38 @@ export function UserList() {
     };
 
     return (
-      <IGRPDropdownMenuPrimitive>
-        <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
+      <DropdownMenu>
+        <DropdownMenuTrigger className="p-1 rounded-sm">
           <IGRPIcon iconName="Ellipsis" />
-        </IGRPDropdownMenuTriggerPrimitive>
+        </DropdownMenuTrigger>
 
-        <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
+        <DropdownMenuContent align="end" className="min-w-44">
           {String(row.original.status) !== "CANCELED" &&
             String(row.original.status) !== "REJECTED" && (
-              <IGRPDropdownMenuItemPrimitive onSelect={handleCopyUrl}>
+              <DropdownMenuItem onSelect={handleCopyUrl}>
                 <IGRPIcon iconName="Copy" />
                 Copiar URL
-              </IGRPDropdownMenuItemPrimitive>
+              </DropdownMenuItem>
             )}
 
-          <IGRPDropdownMenuItemPrimitive onSelect={handleResend}>
+          <DropdownMenuItem onSelect={handleResend}>
             <IGRPIcon iconName="Mail" />
             Reenviar Convite
-          </IGRPDropdownMenuItemPrimitive>
+          </DropdownMenuItem>
 
           {String(row.original.status) !== "CANCELED" &&
             String(row.original.status) !== "REJECTED" && (
-              <IGRPDropdownMenuItemPrimitive
+              <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 variant="destructive"
                 onSelect={handleCancelClick}
               >
                 <IGRPIcon iconName="Trash2" />
                 Cancelar Convite
-              </IGRPDropdownMenuItemPrimitive>
+              </DropdownMenuItem>
             )}
-        </IGRPDropdownMenuContentPrimitive>
-      </IGRPDropdownMenuPrimitive>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
@@ -420,20 +420,20 @@ export function UserList() {
         />
       </PageHeader>
 
-      <IGRPTabsPrimitive defaultValue="active">
-        <IGRPTabsListPrimitive>
-          <IGRPTabsTriggerPrimitive value="active">
+      <Tabs defaultValue="active">
+        <TabsList>
+          <TabsTrigger value="active">
             Utilizadores Ativos
-          </IGRPTabsTriggerPrimitive>
-          <IGRPTabsTriggerPrimitive value="pending">
+          </TabsTrigger>
+          <TabsTrigger value="pending">
             Convites Pendentes ({pendingData.length})
-          </IGRPTabsTriggerPrimitive>
-          <IGRPTabsTriggerPrimitive value="canceled">
+          </TabsTrigger>
+          <TabsTrigger value="canceled">
             Convites Cancelados ({canceledData.length})
-          </IGRPTabsTriggerPrimitive>
-        </IGRPTabsListPrimitive>
+          </TabsTrigger>
+        </TabsList>
 
-        <IGRPTabsContentPrimitive value="active">
+        <TabsContent value="active">
           <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
             showFilter
             showPagination
@@ -442,9 +442,9 @@ export function UserList() {
             data={data}
             clientFilters={activeFilters}
           />
-        </IGRPTabsContentPrimitive>
+        </TabsContent>
 
-        <IGRPTabsContentPrimitive value="pending">
+        <TabsContent value="pending">
           {isLoadingInvites ? (
             <AppCenterLoading descrption="Carregando convites..." />
           ) : (
@@ -457,9 +457,9 @@ export function UserList() {
               clientFilters={activeFilters}
             />
           )}
-        </IGRPTabsContentPrimitive>
+        </TabsContent>
 
-        <IGRPTabsContentPrimitive value="canceled">
+        <TabsContent value="canceled">
           {isLoadingInvites ? (
             <AppCenterLoading descrption="Carregando convites..." />
           ) : (
@@ -472,8 +472,8 @@ export function UserList() {
               clientFilters={activeFilters}
             />
           )}
-        </IGRPTabsContentPrimitive>
-      </IGRPTabsPrimitive>
+        </TabsContent>
+      </Tabs>
 
       {inviteDialogOpen && (
         <UserInviteDialog

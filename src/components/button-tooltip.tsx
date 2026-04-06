@@ -1,9 +1,9 @@
 import {
   IGRPButton,
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipTriggerPrimitive,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 
 type ButtonTooltipProps = React.ComponentProps<typeof IGRPButton> & {
@@ -17,15 +17,15 @@ export function ButtonTooltip({
   ...props
 }: ButtonTooltipProps) {
   return (
-    <IGRPTooltipProviderPrimitive>
-      <IGRPTooltipPrimitive>
-        <IGRPTooltipTriggerPrimitive asChild>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <IGRPButton {...props}>{children}</IGRPButton>
-        </IGRPTooltipTriggerPrimitive>
-        <IGRPTooltipContentPrimitive>
+        </TooltipTrigger>
+        <TooltipContent>
           <p>{label}</p>
-        </IGRPTooltipContentPrimitive>
-      </IGRPTooltipPrimitive>
-    </IGRPTooltipProviderPrimitive>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

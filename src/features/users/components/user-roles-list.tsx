@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  IGRPBadgePrimitive,
+  Badge,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
@@ -65,12 +65,12 @@ function UserRoleItem({ role }: UserRoleItemProps) {
       <div className="flex-1 min-w-0 space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
           <h4 className="font-semibold text-sm">{role.name}</h4>
-          <IGRPBadgePrimitive
+          <Badge
             variant="outline"
             className={cn("text-xs", getStatusColor(role.status))}
           >
             {showStatus(role.status)}
-          </IGRPBadgePrimitive>
+          </Badge>
         </div>
 
         {role.description && (

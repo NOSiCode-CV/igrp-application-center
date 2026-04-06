@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import {
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
+  Badge,
+  Button,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -82,12 +82,12 @@ export default function ProfileRoleList() {
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm">{role.name}</p>
                         {isRoleActive(role.code) && (
-                          <IGRPBadgePrimitive
+                          <Badge
                             variant={"secondary"}
                             className="bg-green-800 text-white text-xs"
                           >
                             Ativado
-                          </IGRPBadgePrimitive>
+                          </Badge>
                         )}
                       </div>
                       {role.code && (
@@ -128,28 +128,28 @@ export default function ProfileRoleList() {
                     {role.permissions.length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {role.permissions.slice(0, 3).map((permission: any) => (
-                          <IGRPBadgePrimitive
+                          <Badge
                             key={permission}
                             variant="secondary"
                             className="text-xs font-mono"
                           >
                             {permission}
-                          </IGRPBadgePrimitive>
+                          </Badge>
                         ))}
                         {role.permissions.length > 3 && (
-                          <IGRPBadgePrimitive
+                          <Badge
                             variant="secondary"
                             className="text-xs"
                           >
                             +{role.permissions.length - 3} mais
-                          </IGRPBadgePrimitive>
+                          </Badge>
                         )}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <IGRPButtonPrimitive
+                <Button
                   variant={isRoleActive(role.code) ? "secondary" : "ghost"}
                   size="sm"
                   onClick={() => handleActivateRole(role)}
@@ -157,7 +157,7 @@ export default function ProfileRoleList() {
                   className="shrink-0 cursor-pointer"
                 >
                   {isRoleActive(role.code) ? "Ativo" : "Ativar"}
-                </IGRPButtonPrimitive>
+                </Button>
               </div>
             ))}
           </div>

@@ -2,26 +2,26 @@
 
 import {
   cn,
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogDescriptionPrimitive,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  Badge,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSkeletonPrimitive,
-  IGRPSwitchPrimitive,
+  Input,
+  Skeleton,
+  Switch,
   useIGRPToast,
   IGRPButton,
-  IGRPScrollAreaPrimitive,
+  ScrollArea,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useEffect, useMemo } from "react";
 import { getStatusColor, showStatus } from "@/lib/utils";
@@ -204,21 +204,21 @@ export function ManageResourcesModal({
               <h4 className="font-semibold text-sm truncate">
                 {resource.name}
               </h4>
-              <IGRPBadgePrimitive
+              <Badge
                 variant="outline"
                 className="text-[10px] px-1.5 py-0.5 shrink-0"
               >
                 {resource.type}
-              </IGRPBadgePrimitive>
+              </Badge>
               {resource.status && (
-                <IGRPBadgePrimitive
+                <Badge
                   className={cn(
                     getStatusColor(resource.status),
                     "text-[10px] px-1.5 py-0.5 shrink-0",
                   )}
                 >
                   {showStatus(resource.status)}
-                </IGRPBadgePrimitive>
+                </Badge>
               )}
             </div>
             {resource.description && (
@@ -245,7 +245,7 @@ export function ManageResourcesModal({
                 </div>
               )}
             </div>
-            <IGRPSwitchPrimitive
+            <Switch
               checked={isAssigned}
               onCheckedChange={() => handleToggleResource(resource, isAssigned)}
               disabled={processingResource !== null}
@@ -275,17 +275,17 @@ export function ManageResourcesModal({
 
   return (
     <>
-      <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive className="flex items-center gap-2">
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               <IGRPIcon iconName="Shield" className="w-5 h-5" strokeWidth={2} />
               Gerenciar Recursos
-            </IGRPDialogTitlePrimitive>
-            <IGRPDialogDescriptionPrimitive>
+            </DialogTitle>
+            <DialogDescription>
               Adicione ou remova recursos do departamento com um clique.
-            </IGRPDialogDescriptionPrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogDescription>
+          </DialogHeader>
 
           <div className="pb-4">
             <div className="relative">
@@ -293,7 +293,7 @@ export function ManageResourcesModal({
                 iconName="Search"
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
-              <IGRPInputPrimitive
+              <Input
                 type="search"
                 placeholder="Pesquisar por nome, tipo ou descrição..."
                 className="pl-8"
@@ -303,11 +303,11 @@ export function ManageResourcesModal({
             </div>
           </div>
 
-          <IGRPScrollAreaPrimitive className="h-[95vh] w-full">
+          <ScrollArea className="h-[95vh] w-full">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <IGRPSkeletonPrimitive key={i} className="h-20 rounded-lg" />
+                  <Skeleton key={i} className="h-20 rounded-lg" />
                 ))}
               </div>
             ) : filteredResources.length === 0 ? (
@@ -336,7 +336,7 @@ export function ManageResourcesModal({
                 ))}
               </div>
             )}
-          </IGRPScrollAreaPrimitive>
+          </ScrollArea>
 
           <div className="flex justify-between items-center py-4">
             <div className="text-sm text-muted-foreground">
@@ -347,7 +347,7 @@ export function ManageResourcesModal({
               recursos adicionados
             </div>
 
-            <IGRPButtonPrimitive
+            <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={processingResource !== null}
@@ -355,34 +355,34 @@ export function ManageResourcesModal({
             >
               <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
               Fechar
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
-        </IGRPDialogContentPrimitive>
-      </IGRPDialogPrimitive>
+        </DialogContent>
+      </Dialog>
 
-      <IGRPAlertDialogPrimitive
+      <AlertDialog
         open={!!resourceToRemove}
         onOpenChange={(open) => !open && setResourceToRemove(null)}
       >
-        <IGRPAlertDialogContentPrimitive>
-          <IGRPAlertDialogHeaderPrimitive>
-            <IGRPAlertDialogTitlePrimitive className="flex items-center gap-2">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
                 className="w-5 h-5 text-destructive"
                 strokeWidth={2}
               />
               Remover Recurso
-            </IGRPAlertDialogTitlePrimitive>
-            <IGRPAlertDialogDescriptionPrimitive>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Tem certeza que deseja remover o recurso{" "}
               <strong className="text-foreground">
                 {resourceToRemove?.name}
               </strong>{" "}
               deste departamento? Esta ação não pode ser desfeita.
-            </IGRPAlertDialogDescriptionPrimitive>
-          </IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogFooterPrimitive>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
             <IGRPButton
               disabled={processingResource !== null}
               variant="outline"
@@ -419,9 +419,9 @@ export function ManageResourcesModal({
                 </>
               )}
             </IGRPButton>
-          </IGRPAlertDialogFooterPrimitive>
-        </IGRPAlertDialogContentPrimitive>
-      </IGRPAlertDialogPrimitive>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

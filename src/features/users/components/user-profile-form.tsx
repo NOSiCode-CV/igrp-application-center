@@ -7,20 +7,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import {
-  IGRPButtonPrimitive,
-  IGRPCardPrimitive,
-  IGRPCardContentPrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardHeaderPrimitive,
-  IGRPCardTitlePrimitive,
-  IGRPFormPrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormDescriptionPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPInputPrimitive,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -107,110 +107,111 @@ export function ProfileUserForm() {
         </div>
       </div>
 
-      <IGRPCardPrimitive>
-        <IGRPCardHeaderPrimitive className="mb-3">
-          <IGRPCardTitlePrimitive>
+      <Card>
+        <CardHeader className="mb-3">
+          <CardTitle>
             Detailed information about this user.
-          </IGRPCardTitlePrimitive>
-          <IGRPCardDescriptionPrimitive>
+          </CardTitle>
+          <CardDescription>
             Manage your personal information and account settings.
-          </IGRPCardDescriptionPrimitive>
-        </IGRPCardHeaderPrimitive>
-        <IGRPFormPrimitive {...form}>
+          </CardDescription>
+        </CardHeader>
+        <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <IGRPCardContentPrimitive className="flex flex-col gap-8">
+            <CardContent className="flex flex-col gap-8">
               <div className="grid sm:grid-cols-2 gap-6">
-                <IGRPFormFieldPrimitive
+                <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <IGRPFormItemPrimitive>
-                      <IGRPFormLabelPrimitive>Full Name</IGRPFormLabelPrimitive>
-                      <IGRPFormControlPrimitive>
-                        <IGRPInputPrimitive
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input
                           placeholder="johndoe"
                           {...field}
                           value={field.value ?? ""}
                         />
-                      </IGRPFormControlPrimitive>
-                      <IGRPFormDescriptionPrimitive>
+                      </FormControl>
+                      <FormDescription>
                         The user full name.
-                      </IGRPFormDescriptionPrimitive>
-                      <IGRPFormMessagePrimitive />
-                    </IGRPFormItemPrimitive>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <IGRPFormFieldPrimitive
+                <FormField
                   control={form.control}
                   name="picture"
                   render={({ field }) => (
-                    <IGRPFormItemPrimitive>
-                      <IGRPFormLabelPrimitive>
+                    <FormItem>
+                      <FormLabel>
                         Profile Image
-                      </IGRPFormLabelPrimitive>
-                      <IGRPFormControlPrimitive>
+                      </FormLabel>
+                      <FormControl>
                         <ProfileImageUpload
                           value={field.value}
                           onChange={field.onChange}
                         />
-                      </IGRPFormControlPrimitive>
-                      <IGRPFormDescriptionPrimitive>
+                      </FormControl>
+                      <FormDescription>
                         Upload a profile picture for this user.
-                      </IGRPFormDescriptionPrimitive>
-                      <IGRPFormMessagePrimitive />
-                    </IGRPFormItemPrimitive>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
 
-                <IGRPFormFieldPrimitive
+                <FormField
                   control={form.control}
                   name="signature"
                   render={({ field }) => (
-                    <IGRPFormItemPrimitive>
-                      <IGRPFormLabelPrimitive>Signature</IGRPFormLabelPrimitive>
-                      <IGRPFormControlPrimitive>
+                    <FormItem>
+                      <FormLabel>Signature</FormLabel>
+                      <FormControl>
                         <ProfileSignature
                           value={field.value}
                           onChange={field.onChange}
                         />
-                      </IGRPFormControlPrimitive>
-                      <IGRPFormDescriptionPrimitive>
+                      </FormControl>
+                      <FormDescription>
                         The user&apos;s digital signature.
-                      </IGRPFormDescriptionPrimitive>
-                      <IGRPFormMessagePrimitive />
-                    </IGRPFormItemPrimitive>
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
               </div>
-            </IGRPCardContentPrimitive>
-            <IGRPCardHeaderPrimitive className="flex justify-end gap-2 pt-6">
-              <IGRPButtonPrimitive
+            </CardContent>
+            <CardHeader className="flex justify-end gap-2 pt-6">
+              <Button
                 variant="outline"
                 onClick={() => router.back()}
                 disabled={isLoading}
                 type="button"
               >
                 Cancelar
-              </IGRPButtonPrimitive>
-              <IGRPButtonPrimitive type="submit" disabled={isLoading}>
+              </Button>
+              <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <span>
-                    <IGRPIcon iconName="Loader" className="mr-2 animate-spin" />
-                    Guardarndo...
+                    <IGRPIcon
+                      iconName="LoaderCircle"
+                      className="w-4 h-4 animate-spin mr-2"
+                    />
+                    A processar...
                   </span>
-                ) : user ? (
-                  "Atualizar Utilizador"
                 ) : (
-                  "Criar Utilizador"
+                  "Guardar Alterações"
                 )}
-              </IGRPButtonPrimitive>
-            </IGRPCardHeaderPrimitive>
+              </Button>
+            </CardHeader>
           </form>
-        </IGRPFormPrimitive>
-      </IGRPCardPrimitive>
+        </Form>
+      </Card>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import {
+  Checkbox,
   cn,
-  IGRPCheckboxPrimitive,
   IGRPIcon,
-  IGRPTableCellPrimitive,
-  IGRPTableRowPrimitive,
+  TableCell,
+  TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
 import { MenuWithChildren } from "./dept-menu";
@@ -59,8 +59,8 @@ const MenuTreeRow = ({
 
   return (
     <>
-      <IGRPTableRowPrimitive className={cn(level > 0 && "bg-muted/20")}>
-        <IGRPTableCellPrimitive>
+      <TableRow className={cn(level > 0 && "bg-muted/20")}>
+        <TableCell>
           <div
             className="flex items-center gap-2"
             style={{ paddingLeft: `${level * 1.5}rem` }}
@@ -96,24 +96,24 @@ const MenuTreeRow = ({
               )}
             </div>
           </div>
-        </IGRPTableCellPrimitive>
+        </TableCell>
 
         {roles?.map((role) => (
-          <IGRPTableCellPrimitive
+          <TableCell
             key={role.name}
             className="text-center border-l"
           >
             <div className="flex items-center justify-center">
-              <IGRPCheckboxPrimitive
+              <Checkbox
                 checked={
                   menuRoleAssignments.get(menu.code)?.has(role.code) ?? false
                 }
                 onCheckedChange={() => toggleMenuRole(menu.code, role.code)}
               />
             </div>
-          </IGRPTableCellPrimitive>
+          </TableCell>
         ))}
-      </IGRPTableRowPrimitive>
+      </TableRow>
 
       {hasChildren &&
         isExpanded &&

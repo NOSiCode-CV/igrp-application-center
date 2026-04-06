@@ -9,7 +9,7 @@ import {
 } from "@/features/users/use-users";
 import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import {
-  IGRPBadgePrimitive,
+  Badge,
   IGRPIcon,
   IGRPInputText,
 } from "@igrp/igrp-framework-react-design-system";
@@ -62,9 +62,9 @@ export function ApplicationsListHome() {
           <div className="flex items-center gap-2 mb-4">
             <IGRPIcon iconName="Star" className="size-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Favoritos</h2>
-            <IGRPBadgePrimitive variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs">
               {favoriteApps.length}
-            </IGRPBadgePrimitive>
+            </Badge>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
             {favoriteApps.map((app: ApplicationDTO) => (
@@ -79,9 +79,9 @@ export function ApplicationsListHome() {
           <div className="flex items-center gap-2 mb-4">
             <IGRPIcon iconName="Clock" className="size-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Recentes</h2>
-            <IGRPBadgePrimitive variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs">
               {recentApps.length}
-            </IGRPBadgePrimitive>
+            </Badge>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
             {recentApps.map((app: ApplicationDTO) => (
@@ -95,9 +95,9 @@ export function ApplicationsListHome() {
         <h2 className="text-sm font-semibold text-foreground">
           Todas as Aplicações
         </h2>
-        <IGRPBadgePrimitive variant="secondary" className="text-xs">
+        <Badge variant="secondary" className="text-xs">
           {activeApps.length}
-        </IGRPBadgePrimitive>
+        </Badge>
       </div>
 
       <div className="mb-6">

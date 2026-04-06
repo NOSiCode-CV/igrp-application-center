@@ -2,22 +2,22 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   IGRPButton,
-  IGRPFormControlPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPFormPrimitive,
-  IGRPInputPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPTextAreaPrimitive,
+  Input,
+  ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
   useIGRPToast,
-  IGRPScrollAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -124,36 +124,36 @@ export function ApplicationForm({
   };
 
   return (
-    <IGRPFormPrimitive {...form}>
+    <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <IGRPScrollAreaPrimitive className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
+        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
           <div className="space-y-4">
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                <FormItem>
+                  <FormLabel className='after:content-["*"] after:text-destructive'>
                     Nome
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive {...field} required />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} required />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="code"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                <FormItem>
+                  <FormLabel className='after:content-["*"] after:text-destructive'>
                     Código
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive
+                  </FormLabel>
+                  <FormControl>
+                    <Input
                       {...field}
                       className={isEdit ? "bg-muted uppercase" : "uppercase"}
                       required
@@ -167,19 +167,19 @@ export function ApplicationForm({
                         }
                       }}
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="type"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Tipo</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive
+                <FormItem>
+                  <FormLabel>Tipo</FormLabel>
+                  <Select
                     onValueChange={(value) => {
                       field.onChange(value);
                       if (value === "INTERNAL") {
@@ -190,117 +190,117 @@ export function ApplicationForm({
                     }}
                     value={field.value}
                   >
-                    <IGRPFormControlPrimitive className="w-full">
-                      <IGRPSelectTriggerPrimitive>
-                        <IGRPSelectValuePrimitive />
-                      </IGRPSelectTriggerPrimitive>
-                    </IGRPFormControlPrimitive>
-                    <IGRPSelectContentPrimitive>
+                    <FormControl className="w-full">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
                       {APPLICATIONS_TYPES_FILTERED.map((opt) => (
-                        <IGRPSelectItemPrimitive
+                        <SelectItem
                           key={opt.value}
                           value={opt.value}
                         >
                           {opt.label}
-                        </IGRPSelectItemPrimitive>
+                        </SelectItem>
                       ))}
-                    </IGRPSelectContentPrimitive>
-                  </IGRPSelectPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
             {type === "INTERNAL" && (
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="slug"
                 render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Slug</IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
+                  <FormItem>
+                    <FormLabel>Slug</FormLabel>
+                    <FormControl>
+                      <Input
                         {...field}
                         value={field.value || ""}
                       />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             )}
 
             {type === "EXTERNAL" && (
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="url"
                 render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>URL</IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
+                  <FormItem>
+                    <FormLabel>URL</FormLabel>
+                    <FormControl>
+                      <Input
                         {...field}
                         value={field.value || ""}
                       />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             )}
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Descrição</IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPTextAreaPrimitive
+                <FormItem>
+                  <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea
                       {...field}
                       value={field.value || ""}
                       rows={3}
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="status"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive
+                <FormItem>
+                  <FormLabel>Estado</FormLabel>
+                  <Select
                     onValueChange={field.onChange}
                     value={field.value}
                   >
-                    <IGRPFormControlPrimitive>
-                      <IGRPSelectTriggerPrimitive className="w-full">
-                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                      </IGRPSelectTriggerPrimitive>
-                    </IGRPFormControlPrimitive>
-                    <IGRPSelectContentPrimitive>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecionar estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
                       {STATUS_OPTIONS.map((status) => (
-                        <IGRPSelectItemPrimitive
+                        <SelectItem
                           key={status.value}
                           value={status.value}
                         >
                           {status.label}
-                        </IGRPSelectItemPrimitive>
+                        </SelectItem>
                       ))}
-                    </IGRPSelectContentPrimitive>
-                  </IGRPSelectPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )}
             />
           </div>
-        </IGRPScrollAreaPrimitive>
+        </ScrollArea>
 
-        <div className="flex justify-end gap-2 pt-4">
+        <div className="flex justify-end gap-2 pt-4 border-t">
           <IGRPButton
             type="button"
             showIcon
@@ -316,10 +316,14 @@ export function ApplicationForm({
             iconName="Save"
             disabled={form.formState.isSubmitting}
           >
-            {form.formState.isSubmitting ? "Guardando..." : "Guardar"}
+            {form.formState.isSubmitting
+              ? "Guardando..."
+              : isEdit
+                ? "Atualizar Aplicação"
+                : "Criar Aplicação"}
           </IGRPButton>
         </div>
       </form>
-    </IGRPFormPrimitive>
+    </Form>
   );
 }

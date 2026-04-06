@@ -2,9 +2,9 @@
 
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
-  IGRPButtonPrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardTitlePrimitive,
+  Button,
+  CardDescription,
+  CardTitle,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -267,10 +267,10 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
     <div className="pt-6">
       <div className="flex items-center justify-between">
         <div className="mb-3">
-          <IGRPCardTitlePrimitive>Menus da Aplicação</IGRPCardTitlePrimitive>
-          <IGRPCardDescriptionPrimitive>
+          <CardTitle>Menus da Aplicação</CardTitle>
+          <CardDescription>
             Gerir e reorganizar os menus desta aplicação.
-          </IGRPCardDescriptionPrimitive>
+          </CardDescription>
         </div>
         {String(app?.type) !== "SYSTEM" && !menuEmpty && (
           <div className="mb-3 flex justify-end">
@@ -306,7 +306,7 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
             <p className="text-muted-foreground mb-6">
               Comece criando o primeiro menu para esta aplicação.
             </p>
-            <IGRPButtonPrimitive
+            <Button
               onClick={() => {
                 setSelectedMenu(undefined);
                 setOpenFormDialog(true);
@@ -316,7 +316,7 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
             >
               <IGRPIcon iconName="Plus" className="mr-2 size-4" />
               Criar Primeiro Menu
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
         ) : (
           <DndContext

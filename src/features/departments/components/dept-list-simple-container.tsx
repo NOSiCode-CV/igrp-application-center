@@ -3,7 +3,7 @@
 import {
   cn,
   IGRPIcon,
-  IGRPInputPrimitive,
+  Input,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
 import DepartmentTreeItemSimple from "./dept-list-simple-tree";
@@ -49,7 +49,7 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
             iconName="Search"
             className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
           />
-          <IGRPInputPrimitive
+          <Input
             type="text"
             placeholder="Pesquisar departamento..."
             value={searchTerm}

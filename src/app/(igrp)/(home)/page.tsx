@@ -1,14 +1,14 @@
 "use client";
 import { ApplicationsListHome } from "@/features/applications/components/app-list-home";
 import {
-  IGRPBadgePrimitive,
-  IGRPCalendarSingle,
-  IGRPCard,
+  Badge,
+  Calendar,
+  Card,
   IGRPIcon,
   IGRPInputText,
   IGRPTabItem,
   IGRPTabs,
-  IGRPScrollAreaPrimitive,
+  ScrollArea,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
 
@@ -52,7 +52,7 @@ export default function HomeIGRP() {
               </span>
             </div>
           )}
-          <IGRPScrollAreaPrimitive className="h-[calc(90vh-300px)] -mr-4 pr-4">
+          <ScrollArea className="h-[calc(90vh-300px)] -mr-4 pr-4">
             <div className="pb-4 space-y-2">
               {filteredTasks.map((task) => (
                 <div
@@ -67,18 +67,18 @@ export default function HomeIGRP() {
                       <span className="text-xs text-muted-foreground">
                         {task.processName}
                       </span>
-                      <IGRPBadgePrimitive
+                      <Badge
                         variant="outline"
                         className="text-[10px] px-1.5 py-0 font-mono"
                       >
                         {task.processCode}
-                      </IGRPBadgePrimitive>
+                      </Badge>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">
                         {task.dueDate}
                       </span>
-                      <IGRPBadgePrimitive
+                      <Badge
                         variant={
                           task.priority === "high"
                             ? "destructive"
@@ -93,7 +93,7 @@ export default function HomeIGRP() {
                           : task.priority === "medium"
                             ? "Média"
                             : "Baixa"}
-                      </IGRPBadgePrimitive>
+                      </Badge>
                     </div>
                   </div>
                 </div>
@@ -110,7 +110,7 @@ export default function HomeIGRP() {
                 </div>
               )}
             </div>
-          </IGRPScrollAreaPrimitive>
+          </ScrollArea>
         </>
       ),
     },
@@ -119,7 +119,7 @@ export default function HomeIGRP() {
       value: "agenda",
       content: (
         <div className="flex flex-col justify-between">
-          <IGRPCalendarSingle
+          <Calendar
             date={date}
             onDateChange={setDate}
             className="rounded-md border w-full"
@@ -127,7 +127,7 @@ export default function HomeIGRP() {
           {/* <IGRPSeparator className="my-4" /> */}
           <div className="space-y-3">
             {/* <h4 className="text-sm font-semibold">Próximos Compromissos</h4> */}
-            <IGRPScrollAreaPrimitive className="h-[190px] -mr-4 pr-4">
+            <ScrollArea className="h-[190px] -mr-4 pr-4">
               <div className="space-y-2 pb-4">
                 {/* <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
           <div className="h-2 w-2 rounded-full bg-blue-500" />
@@ -148,7 +148,7 @@ export default function HomeIGRP() {
                   <p className="text-sm pt-2">Nenhum compromisso agendado</p>
                 </div>
               </div>
-            </IGRPScrollAreaPrimitive>
+            </ScrollArea>
           </div>
         </div>
       ),
@@ -163,7 +163,7 @@ export default function HomeIGRP() {
         </div>
 
         <aside className="w-full lg:w-80! xl:w-96! shrink-0 lg:sticky! lg:top-6 lg:self-start">
-          <IGRPCard className="px-4">
+          <Card className="px-4">
             <IGRPTabs
               defaultValue="task"
               items={tabs}
@@ -172,7 +172,7 @@ export default function HomeIGRP() {
               fullWidth
               orientation="horizontal"
             />
-          </IGRPCard>
+          </Card>
         </aside>
       </div>
     </div>

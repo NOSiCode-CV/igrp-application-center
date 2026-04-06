@@ -1,8 +1,8 @@
 import {
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipTriggerPrimitive,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 
 import { ButtonLink } from "./button-link";
@@ -17,9 +17,9 @@ export function ButtonLinkTooltip({
   ...props
 }: ButtonLinkTooltipProps) {
   return (
-    <IGRPTooltipProviderPrimitive>
-      <IGRPTooltipPrimitive>
-        <IGRPTooltipTriggerPrimitive asChild>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <ButtonLink
             href={href}
             label={
@@ -30,11 +30,11 @@ export function ButtonLinkTooltip({
             size={size}
             {...props}
           />
-        </IGRPTooltipTriggerPrimitive>
-        <IGRPTooltipContentPrimitive>
+        </TooltipTrigger>
+        <TooltipContent>
           <p>{label}</p>
-        </IGRPTooltipContentPrimitive>
-      </IGRPTooltipPrimitive>
-    </IGRPTooltipProviderPrimitive>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

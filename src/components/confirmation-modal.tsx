@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
@@ -40,15 +40,15 @@ export function ConfirmDialog({
   variant = "destructive",
 }: ConfirmDialogProps) {
   return (
-    <IGRPAlertDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPAlertDialogContentPrimitive>
-        <IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogTitlePrimitive>{title}</IGRPAlertDialogTitlePrimitive>
-          <IGRPAlertDialogDescriptionPrimitive>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>
             {description}
-          </IGRPAlertDialogDescriptionPrimitive>
-        </IGRPAlertDialogHeaderPrimitive>
-        <IGRPAlertDialogFooterPrimitive>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
           <IGRPButton
             type="button"
             variant="outline"
@@ -91,8 +91,8 @@ export function ConfirmDialog({
               </>
             )}
           </IGRPButton>
-        </IGRPAlertDialogFooterPrimitive>
-      </IGRPAlertDialogContentPrimitive>
-    </IGRPAlertDialogPrimitive>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  IGRPButtonPrimitive,
+  Button,
   IGRPIcon,
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipTriggerPrimitive,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
@@ -51,10 +51,10 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
   }
 
   return (
-    <IGRPTooltipProviderPrimitive delayDuration={350}>
-      <IGRPTooltipPrimitive>
-        <IGRPTooltipTriggerPrimitive asChild>
-          <IGRPButtonPrimitive
+    <TooltipProvider delayDuration={350}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
             variant="ghost"
             size="icon"
             className="disabled:opacity-100 size-7"
@@ -90,12 +90,12 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
                 className="size-3"
               />
             </div>
-          </IGRPButtonPrimitive>
-        </IGRPTooltipTriggerPrimitive>
-        <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent className="px-2 py-1 text-xs">
           Clique para copiar
-        </IGRPTooltipContentPrimitive>
-      </IGRPTooltipPrimitive>
-    </IGRPTooltipProviderPrimitive>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

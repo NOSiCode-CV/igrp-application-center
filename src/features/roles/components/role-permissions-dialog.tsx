@@ -3,31 +3,31 @@
 import {
   cn,
   IGRPBadge,
-  IGRPBadgePrimitive,
+  Badge,
   IGRPButton,
-  IGRPButtonPrimitive,
-  IGRPCheckboxPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
+  Button,
+  Checkbox,
+  DialogContent,
+  DialogHeader,
+  Dialog,
+  DialogTitle,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPLabelPrimitive,
-  IGRPPaginationContentPrimitive,
-  IGRPPaginationItemPrimitive,
-  IGRPPaginationPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Label,
+  PaginationContent,
+  PaginationItem,
+  Pagination,
+  SelectContent,
+  SelectItem,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHead,
+  Table,
+  TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import {
@@ -69,7 +69,7 @@ const columns: ColumnDef<any>[] = [
   {
     id: "select",
     header: ({ table }) => (
-      <IGRPCheckboxPrimitive
+      <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
@@ -80,7 +80,7 @@ const columns: ColumnDef<any>[] = [
       />
     ),
     cell: ({ row }) => (
-      <IGRPCheckboxPrimitive
+      <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
@@ -284,20 +284,20 @@ export function RoleDetails({
   }
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal>
-      <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
-        <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive className="text-base">
+    <Dialog open={open} onOpenChange={onOpenChange} modal>
+      <DialogContent className="md:min-w-2xl max-h-[95vh]">
+        <DialogHeader>
+          <DialogTitle className="text-base">
             Adicionar ou Remover Permissões de perfil{" "}
             <IGRPBadge>{role.name}</IGRPBadge>
-          </IGRPDialogTitlePrimitive>
-        </IGRPDialogHeaderPrimitive>
+          </DialogTitle>
+        </DialogHeader>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
           <section className="space-y-10 max-w-full">
             <div className="flex flex-col gap-4">
               <div className="relative py-4">
-                <IGRPInputPrimitive
+                <Input
                   id={`${id}-input`}
                   ref={inputRef}
                   className={cn(
@@ -334,24 +334,24 @@ export function RoleDetails({
               </div>
 
               <div className="flex items-center justify-between gap-3 px-3">
-                <IGRPBadgePrimitive>
+                <Badge>
                   {selectedRows.length} selecionado(s)
-                </IGRPBadgePrimitive>
+                </Badge>
               </div>
               {isLoading ? (
                 <AppCenterLoading descrption="Carregando permissões..." />
               ) : (
                 <>
                   <div className="bg-background overflow-hidden rounded-md border">
-                    <IGRPTablePrimitive className="table-fixed">
-                      <IGRPTableHeaderPrimitive>
+                    <Table className="table-fixed">
+                      <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                          <IGRPTableRowPrimitive
+                          <TableRow
                             key={headerGroup.id}
                             className="hover:bg-transparent"
                           >
                             {headerGroup.headers.map((header) => (
-                              <IGRPTableHeadPrimitive
+                              <TableHead
                                 key={header.id}
                                 style={{ width: `${header.getSize()}px` }}
                                 className="h-12"
@@ -362,74 +362,74 @@ export function RoleDetails({
                                       header.column.columnDef.header,
                                       header.getContext(),
                                     )}
-                              </IGRPTableHeadPrimitive>
+                              </TableHead>
                             ))}
-                          </IGRPTableRowPrimitive>
+                          </TableRow>
                         ))}
-                      </IGRPTableHeaderPrimitive>
+                      </TableHeader>
 
-                      <IGRPTableBodyPrimitive>
+                      <TableBody>
                         {table.getRowModel().rows?.length ? (
                           table.getRowModel().rows.map((row) => (
-                            <IGRPTableRowPrimitive
+                            <TableRow
                               key={row.id}
                               data-state={row.getIsSelected() && "selected"}
                             >
                               {row.getVisibleCells().map((cell) => (
-                                <IGRPTableCellPrimitive key={cell.id}>
+                                <TableCell key={cell.id}>
                                   {flexRender(
                                     cell.column.columnDef.cell,
                                     cell.getContext(),
                                   )}
-                                </IGRPTableCellPrimitive>
+                                </TableCell>
                               ))}
-                            </IGRPTableRowPrimitive>
+                            </TableRow>
                           ))
                         ) : (
-                          <IGRPTableRowPrimitive>
-                            <IGRPTableCellPrimitive
+                          <TableRow>
+                            <TableCell
                               colSpan={columns.length}
                               className="h-24 text-center"
                             >
                               Sem resultados!
-                            </IGRPTableCellPrimitive>
-                          </IGRPTableRowPrimitive>
+                            </TableCell>
+                          </TableRow>
                         )}
-                      </IGRPTableBodyPrimitive>
-                    </IGRPTablePrimitive>
+                      </TableBody>
+                    </Table>
                   </div>
 
                   <div className="flex items-center gap-4">
                     <div className="flex items-center grow justify-end gap-3">
-                      <IGRPLabelPrimitive
+                      <Label
                         htmlFor={`${id}-per-page`}
                         className="max-sm:sr-only"
                       >
                         Registos por página
-                      </IGRPLabelPrimitive>
-                      <IGRPSelectPrimitive
+                      </Label>
+                      <Select
                         value={table.getState().pagination.pageSize.toString()}
                         onValueChange={(value) =>
                           table.setPageSize(Number(value))
                         }
                       >
-                        <IGRPSelectTriggerPrimitive
+                        <SelectTrigger
                           id={`${id}-per-page`}
                           className="w-fit whitespace-nowrap"
                         >
-                          <IGRPSelectValuePrimitive placeholder="Select number of results" />
-                        </IGRPSelectTriggerPrimitive>
-                        <IGRPSelectContentPrimitive className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
+                          <SelectValue placeholder="Select number of results" />
+                        </SelectTrigger>
+                        <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
                           {[5, 10].map((pageSize) => (
-                            <IGRPSelectItemPrimitive
+                            <SelectItem
                               key={pageSize}
                               value={pageSize.toString()}
                             >
                               {pageSize}
-                            </IGRPSelectItemPrimitive>
+                            </SelectItem>
                           ))}
-                        </IGRPSelectContentPrimitive>
-                      </IGRPSelectPrimitive>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="text-muted-foreground flex text-sm whitespace-nowrap">
@@ -460,10 +460,10 @@ export function RoleDetails({
                     </div>
 
                     <div>
-                      <IGRPPaginationPrimitive>
-                        <IGRPPaginationContentPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -472,10 +472,10 @@ export function RoleDetails({
                               aria-label="Go to first page"
                             >
                               <IGRPIcon iconName="ChevronFirst" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                            </Button>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -484,10 +484,10 @@ export function RoleDetails({
                               aria-label="Go to previous page"
                             >
                               <IGRPIcon iconName="ChevronLeft" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                            </Button>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -496,10 +496,10 @@ export function RoleDetails({
                               aria-label="Go to next page"
                             >
                               <IGRPIcon iconName="ChevronRight" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
+                            </Button>
+                          </PaginationItem>
+                          <PaginationItem>
+                            <Button
                               size="icon"
                               variant="outline"
                               className="disabled:pointer-events-none disabled:opacity-50"
@@ -508,10 +508,10 @@ export function RoleDetails({
                               aria-label="Go to last page"
                             >
                               <IGRPIcon iconName="ChevronLast" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                        </IGRPPaginationContentPrimitive>
-                      </IGRPPaginationPrimitive>
+                            </Button>
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
                     </div>
                   </div>
                 </>
@@ -532,7 +532,7 @@ export function RoleDetails({
             </div>
           </section>
         </div>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,20 +1,20 @@
 "use client";
 
 import {
-  IGRPButtonPrimitive,
-  IGRPFormPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPInputPrimitive,
+  Button,
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Input,
   useIGRPToast,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
   IGRPButton,
 } from "@igrp/igrp-framework-react-design-system";
 import { useForm } from "react-hook-form";
@@ -80,50 +80,50 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
   };
 
   return (
-    <IGRPFormPrimitive {...form}>
+    <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <IGRPFormFieldPrimitive
+        <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <IGRPFormItemPrimitive>
-              <IGRPFormLabelPrimitive>Nome Completo</IGRPFormLabelPrimitive>
-              <IGRPFormControlPrimitive>
-                <IGRPInputPrimitive {...field} />
-              </IGRPFormControlPrimitive>
-              <IGRPFormMessagePrimitive />
-            </IGRPFormItemPrimitive>
+            <FormItem>
+              <FormLabel>Nome Completo</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
 
-        <IGRPFormFieldPrimitive
+        <FormField
           control={form.control}
           name="status"
           render={({ field }) => (
-            <IGRPFormItemPrimitive>
-              <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-              <IGRPSelectPrimitive
+            <FormItem>
+              <FormLabel>Estado</FormLabel>
+              <Select
                 onValueChange={field.onChange}
                 value={field.value}
               >
-                <IGRPFormControlPrimitive>
-                  <IGRPSelectTriggerPrimitive className="w-full truncate">
-                    <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                  </IGRPSelectTriggerPrimitive>
-                </IGRPFormControlPrimitive>
-                <IGRPSelectContentPrimitive>
+                <FormControl>
+                  <SelectTrigger className="w-full truncate">
+                    <SelectValue placeholder="Selecionar estado" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
                   {STATUS_OPTIONS.map((status) => (
-                    <IGRPSelectItemPrimitive
+                    <SelectItem
                       key={status.value}
                       value={status.value}
                     >
                       {status.label}
-                    </IGRPSelectItemPrimitive>
+                    </SelectItem>
                   ))}
-                </IGRPSelectContentPrimitive>
-              </IGRPSelectPrimitive>
-              <IGRPFormMessagePrimitive />
-            </IGRPFormItemPrimitive>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
           )}
         />
 
@@ -147,6 +147,6 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
           </IGRPButton>
         </div>
       </form>
-    </IGRPFormPrimitive>
+    </Form>
   );
 }

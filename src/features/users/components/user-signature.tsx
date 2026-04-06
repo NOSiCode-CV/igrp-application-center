@@ -1,8 +1,8 @@
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import {
   cn,
-  IGRPCardContentPrimitive,
-  IGRPCardPrimitive,
+  CardContent,
+  Card,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -85,8 +85,8 @@ export default function UserSignature({
   const currentSignatureUrl = signaturePreview || signatureUrl?.url || null;
 
   return (
-    <IGRPCardPrimitive className="py-2">
-      <IGRPCardContentPrimitive className="p-4">
+    <Card className="py-2">
+      <CardContent className="p-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
@@ -154,7 +154,7 @@ export default function UserSignature({
             />
           </div>
         </div>
-      </IGRPCardContentPrimitive>
-    </IGRPCardPrimitive>
+      </CardContent>
+    </Card>
   );
 }

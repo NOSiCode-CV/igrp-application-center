@@ -3,15 +3,15 @@
 import {
   IGRPIcon,
   IGRPUserAvatar,
-  IGRPCardPrimitive,
-  IGRPCardContentPrimitive,
+  Card,
+  CardContent,
   IGRPButton,
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
   useIGRPToast,
   cn,
   IGRPTabItem,
@@ -174,8 +174,8 @@ export function UserDetails({ id }: { id: string }) {
       <div className="relative">
         <div className="absolute inset-0 rounded-xl -z-10" />
 
-        <IGRPCardPrimitive className="py-2 border-0 shadow-sm">
-          <IGRPCardContentPrimitive className="px-4 py-1">
+        <Card className="py-2 border-0 shadow-sm">
+          <CardContent className="px-4 py-1">
             <div className="flex items-center mb-2 justify-end">
               <IGRPButton
                 showIcon
@@ -271,8 +271,8 @@ export function UserDetails({ id }: { id: string }) {
                 <p className="text-muted-foreground">{user.email}</p>
               </div>
             </div>
-          </IGRPCardContentPrimitive>
-        </IGRPCardPrimitive>
+          </CardContent>
+        </Card>
       </div>
 
       <IGRPTabs
@@ -282,27 +282,27 @@ export function UserDetails({ id }: { id: string }) {
         tabContentClassName="px-0"
       />
 
-      <IGRPAlertDialogPrimitive
+      <AlertDialog
         open={showStatusDialog}
         onOpenChange={setShowStatusDialog}
       >
-        <IGRPAlertDialogContentPrimitive>
-          <IGRPAlertDialogHeaderPrimitive>
-            <IGRPAlertDialogTitlePrimitive className="flex items-center gap-2">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
-                iconName="TriangleAlert"
+                iconName="AlertTriangle"
                 className="w-5 h-5 text-destructive"
                 strokeWidth={2}
               />
               {isActive ? "Desativar" : "Ativar"} Utilizador
-            </IGRPAlertDialogTitlePrimitive>
-            <IGRPAlertDialogDescriptionPrimitive>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
               utilizador{" "}
               <strong className="text-foreground">{user.name}</strong>?
-            </IGRPAlertDialogDescriptionPrimitive>
-          </IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogFooterPrimitive>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
             <IGRPButton
               disabled={isUpdatingStatus}
               variant="outline"
@@ -318,33 +318,23 @@ export function UserDetails({ id }: { id: string }) {
               onClick={handleToggleStatus}
               disabled={isUpdatingStatus}
               className={cn(
-                isActive ? "bg-destructive hover:bg-destructive/90" : "",
-                "gap-2",
+                isActive
+                  ? "bg-destructive hover:bg-destructive/90"
+                  : "bg-primary hover:bg-primary/90",
+                "gap-2 text-white",
               )}
             >
               {isUpdatingStatus ? (
-                <>
-                  <IGRPIcon
-                    iconName="LoaderCircle"
-                    className="w-4 h-4 animate-spin"
-                    strokeWidth={2}
-                  />
-                  Processando...
-                </>
+                <IGRPIcon iconName="LoaderCircle" className="animate-spin" />
               ) : (
-                <>
-                  <IGRPIcon
-                    iconName={isActive ? "Ban" : "Check"}
-                    className="w-4 h-4"
-                    strokeWidth={2}
-                  />
-                  {isActive ? "Desativar" : "Ativar"}
-                </>
+                <IGRPIcon iconName={isActive ? "Ban" : "Check"}
+                />
               )}
+              {isActive ? "Confirmar Desativar" : "Confirmar Ativar"}
             </IGRPButton>
-          </IGRPAlertDialogFooterPrimitive>
-        </IGRPAlertDialogContentPrimitive>
-      </IGRPAlertDialogPrimitive>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

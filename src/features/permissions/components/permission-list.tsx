@@ -3,14 +3,14 @@
 import {
   cn,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSwitchPrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Switch,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHead,
+  Table,
+  TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useMemo } from "react";
@@ -155,7 +155,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 iconName="Search"
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
-              <IGRPInputPrimitive
+              <Input
                 type="search"
                 placeholder="Pesquisar permissões..."
                 className="pl-8"
@@ -182,34 +182,34 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
           ) : (
             <div className="w-full min-w-0">
               <div className="rounded-md border overflow-x-auto">
-                <IGRPTablePrimitive className="min-w-full">
-                  <IGRPTableHeaderPrimitive>
-                    <IGRPTableRowPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                <Table className="min-w-full">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">
                         Permissão
-                      </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                      </TableHead>
+                      <TableHead className="whitespace-nowrap">
                         Descrição
-                      </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap text-right">
+                      </TableHead>
+                      <TableHead className="whitespace-nowrap text-right">
                         Ativo
-                      </IGRPTableHeadPrimitive>
-                    </IGRPTableRowPrimitive>
-                  </IGRPTableHeaderPrimitive>
-                  <IGRPTableBodyPrimitive>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {filteredPermissions.map((permission) => {
                       const isProcessing =
                         processingPermission === permission.name;
 
                       return (
-                        <IGRPTableRowPrimitive key={permission.id}>
-                          <IGRPTableCellPrimitive className="font-medium whitespace-nowrap">
+                        <TableRow key={permission.id}>
+                          <TableCell className="font-medium whitespace-nowrap">
                             {permission.name}
-                          </IGRPTableCellPrimitive>
-                          <IGRPTableCellPrimitive className="whitespace-nowrap">
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
                             {permission.description || "N/A"}
-                          </IGRPTableCellPrimitive>
-                          <IGRPTableCellPrimitive className="text-right">
+                          </TableCell>
+                          <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
                               {isProcessing && (
                                 <IGRPIcon
@@ -218,7 +218,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                                   strokeWidth={2}
                                 />
                               )}
-                              <IGRPSwitchPrimitive
+                              <Switch
                                 checked={permission.isAssigned}
                                 disabled={processingPermission !== null}
                                 onCheckedChange={(checked) =>
@@ -233,12 +233,12 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                                 )}
                               />
                             </div>
-                          </IGRPTableCellPrimitive>
-                        </IGRPTableRowPrimitive>
+                          </TableCell>
+                        </TableRow>
                       );
                     })}
-                  </IGRPTableBodyPrimitive>
-                </IGRPTablePrimitive>
+                  </TableBody>
+                </Table>
               </div>
             </div>
           )}

@@ -2,30 +2,30 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IGRPButtonPrimitive,
-  IGRPCommandEmptyPrimitive,
-  IGRPCommandGroupPrimitive,
-  IGRPCommandInputPrimitive,
-  IGRPCommandItemPrimitive,
-  IGRPCommandListPrimitive,
-  IGRPCommandPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPDialogFooterPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPFormPrimitive,
+  Button,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  Command,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  Dialog,
+  DialogTitle,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Form,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPPopoverContentPrimitive,
-  IGRPPopoverPrimitive,
-  IGRPPopoverTriggerPrimitive,
+  Input,
+  PopoverContent,
+  Popover,
+  PopoverTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { InviteUserDTO } from "@igrp/platform-access-management-client-ts";
@@ -157,45 +157,51 @@ export function UserInviteDialog({
     }
   };
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPDialogContentPrimitive className="sm:max-w-2xl">
-        <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive>
-            Convidar Utilizador
-          </IGRPDialogTitlePrimitive>
-          <IGRPDialogDescriptionPrimitive>
-            Envie um convite para um novo utilizador.
-          </IGRPDialogDescriptionPrimitive>
-        </IGRPDialogHeaderPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="md:min-w-2xl max-h-[95vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Convidar Utilizador</DialogTitle>
+          <DialogDescription>
+            Envie um convite por e-mail para um novo utilizador.
+          </DialogDescription>
+        </DialogHeader>
 
-        <IGRPFormPrimitive {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-6"
-          >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <fieldset className="border border-accent p-4 rounded-md space-y-4">
               <legend className="text-base font-semibold px-2 mb-1">
-                Informações Gerais
+                Informação do Utilizador
               </legend>
 
-              <IGRPFormFieldPrimitive
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome Completo</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: João Silva" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Email *</IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
-                        placeholder="user@example.com"
+                  <FormItem>
+                    <FormLabel>E-mail</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ex: joao@email.com"
+                        type="email"
                         {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => {
-                          field.onChange(e.target.value.toLowerCase());
-                        }}
                       />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             </fieldset>
@@ -209,7 +215,7 @@ export function UserInviteDialog({
                 Selecione departamento e perfis para o utilizador (opcional).
               </p>
 
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="departmentCode"
                 render={({ field }) => {
@@ -218,17 +224,17 @@ export function UserInviteDialog({
                     deptLoading || !!deptError || (depts?.length ?? 0) === 0;
 
                   return (
-                    <IGRPFormItemPrimitive>
-                      <IGRPFormLabelPrimitive>
+                    <FormItem>
+                      <FormLabel>
                         Departamento
-                      </IGRPFormLabelPrimitive>
+                      </FormLabel>
 
-                      <IGRPPopoverPrimitive
+                      <Popover
                         open={openDepts}
                         onOpenChange={setOpenDepts}
                       >
-                        <IGRPPopoverTriggerPrimitive asChild>
-                          <IGRPButtonPrimitive
+                        <PopoverTrigger asChild>
+                          <Button
                             type="button"
                             variant="outline"
                             disabled={isDeptDisabled}
@@ -246,21 +252,21 @@ export function UserInviteDialog({
                             <IGRPIcon
                               iconName={openDepts ? "ChevronUp" : "ChevronDown"}
                             />
-                          </IGRPButtonPrimitive>
-                        </IGRPPopoverTriggerPrimitive>
+                          </Button>
+                        </PopoverTrigger>
 
-                        <IGRPPopoverContentPrimitive
+                        <PopoverContent
                           className="p-0 w-[--radix-popover-trigger-width]"
                           align="start"
                         >
-                          <IGRPCommandPrimitive>
-                            <IGRPCommandInputPrimitive placeholder="Procurar..." />
-                            <IGRPCommandListPrimitive className="max-h-64">
-                              <IGRPCommandEmptyPrimitive>
+                          <Command>
+                            <CommandInput placeholder="Procurar..." />
+                            <CommandList className="max-h-64">
+                              <CommandEmpty>
                                 Departamento não encontrado.
-                              </IGRPCommandEmptyPrimitive>
+                              </CommandEmpty>
 
-                              <IGRPCommandItemPrimitive
+                              <CommandItem
                                 key="__none__"
                                 onSelect={() => {
                                   field.onChange("");
@@ -277,10 +283,10 @@ export function UserInviteDialog({
                                   <span className="w-4" />
                                 )}
                                 <span>Nenhum</span>
-                              </IGRPCommandItemPrimitive>
+                              </CommandItem>
 
                               {depts?.map((opt) => (
-                                <IGRPCommandItemPrimitive
+                                <CommandItem
                                   key={opt.code}
                                   onSelect={() => {
                                     form.setValue("departmentCode", opt.code, {
@@ -302,22 +308,22 @@ export function UserInviteDialog({
                                     <span className="w-4" />
                                   )}
                                   <span>{opt.name}</span>
-                                </IGRPCommandItemPrimitive>
+                                </CommandItem>
                               ))}
-                            </IGRPCommandListPrimitive>
-                          </IGRPCommandPrimitive>
-                        </IGRPPopoverContentPrimitive>
-                      </IGRPPopoverPrimitive>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
 
-                      <IGRPFormMessagePrimitive>
+                      <FormMessage>
                         {deptError ? deptError.message : null}
-                      </IGRPFormMessagePrimitive>
-                    </IGRPFormItemPrimitive>
+                      </FormMessage>
+                    </FormItem>
                   );
                 }}
               />
 
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="roleCodes"
                 render={({ field }) => {
@@ -348,15 +354,15 @@ export function UserInviteDialog({
                         : `${selectedCodes.size} perfis selecionados`;
 
                   return (
-                    <IGRPFormItemPrimitive>
-                      <IGRPFormLabelPrimitive>Perfis</IGRPFormLabelPrimitive>
-                      <IGRPPopoverPrimitive
+                    <FormItem>
+                      <FormLabel>Perfis</FormLabel>
+                      <Popover
                         open={openRoles}
                         onOpenChange={setOpenRoles}
                       >
-                        <IGRPPopoverTriggerPrimitive asChild>
-                          <IGRPFormControlPrimitive>
-                            <IGRPButtonPrimitive
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
                               type="button"
                               variant="outline"
                               disabled={isDisabled}
@@ -368,25 +374,25 @@ export function UserInviteDialog({
                             >
                               <span className="truncate">{label}</span>
                               <IGRPIcon iconName="ChevronsUpDown" />
-                            </IGRPButtonPrimitive>
-                          </IGRPFormControlPrimitive>
-                        </IGRPPopoverTriggerPrimitive>
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
 
-                        <IGRPPopoverContentPrimitive
+                        <PopoverContent
                           className="w-[--radix-popover-trigger-width] p-0"
                           align="start"
                         >
-                          <IGRPCommandPrimitive>
-                            <IGRPCommandInputPrimitive placeholder="Procurar..." />
-                            <IGRPCommandListPrimitive>
-                              <IGRPCommandEmptyPrimitive>
+                          <Command>
+                            <CommandInput placeholder="Procurar..." />
+                            <CommandList>
+                              <CommandEmpty>
                                 Nenhum perfil encontrado.
-                              </IGRPCommandEmptyPrimitive>
-                              <IGRPCommandGroupPrimitive>
+                              </CommandEmpty>
+                              <CommandGroup>
                                 {roles?.map((role) => {
                                   const checked = selectedCodes.has(role.code);
                                   return (
-                                    <IGRPCommandItemPrimitive
+                                    <CommandItem
                                       key={role.code}
                                       value={role.name}
                                       onSelect={() => toggle(role.code)}
@@ -399,18 +405,18 @@ export function UserInviteDialog({
                                         )}
                                       />
                                       {role.name}
-                                    </IGRPCommandItemPrimitive>
+                                    </CommandItem>
                                   );
                                 })}
-                              </IGRPCommandGroupPrimitive>
-                            </IGRPCommandListPrimitive>
-                          </IGRPCommandPrimitive>
-                        </IGRPPopoverContentPrimitive>
-                      </IGRPPopoverPrimitive>
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
 
-                      <IGRPFormMessagePrimitive>
+                      <FormMessage>
                         {rolesError ? rolesError.message : null}
-                      </IGRPFormMessagePrimitive>
+                      </FormMessage>
 
                       {selectedroleCodes.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
@@ -432,28 +438,28 @@ export function UserInviteDialog({
                           ))}
                         </div>
                       )}
-                    </IGRPFormItemPrimitive>
+                    </FormItem>
                   );
                 }}
               />
             </fieldset>
 
-            <IGRPDialogFooterPrimitive>
-              <IGRPButtonPrimitive
+            <DialogFooter>
+              <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isInviting}
                 type="button"
               >
                 Cancelar
-              </IGRPButtonPrimitive>
-              <IGRPButtonPrimitive type="submit" disabled={btnDisabled}>
+              </Button>
+              <Button type="submit" disabled={btnDisabled}>
                 {isInviting ? "A enviar..." : "Enviar Convite"}
-              </IGRPButtonPrimitive>
-            </IGRPDialogFooterPrimitive>
+              </Button>
+            </DialogFooter>
           </form>
-        </IGRPFormPrimitive>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  IGRPCardPrimitive,
+  Card,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import { menuTypeSchema } from "@/features/menus/menu-schemas";
@@ -56,7 +56,7 @@ export function MenuTypeSelector({
             ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
           `}
         >
-          <IGRPCardPrimitive className="py-2 border-0">
+          <Card className="py-2 border-0">
             <div className="p-3 flex flex-row items-center gap-3">
               <div className="p-3 rounded-full bg-primary/10">
                 <IGRPIcon
@@ -72,7 +72,7 @@ export function MenuTypeSelector({
                 </p>
               </div>
             </div>
-          </IGRPCardPrimitive>
+          </Card>
         </button>
       ))}
     </div>

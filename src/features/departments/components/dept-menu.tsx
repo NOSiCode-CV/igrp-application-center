@@ -1,32 +1,32 @@
 "use client";
 
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
   cn,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
   useIGRPToast,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipTriggerPrimitive,
-  IGRPTooltipContentPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { useState, useEffect, useMemo } from "react";
@@ -280,14 +280,14 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
           </div>
 
           <div className="flex gap-2">
-            <IGRPButtonPrimitive
+            <Button
               variant="outline"
               onClick={() => setShowMenusModal(true)}
               className="gap-2"
             >
               <IGRPIcon iconName="Menu" className="w-4 h-4" strokeWidth={2} />
               <span>Gerenciar Menus</span>
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
         </div>
 
@@ -299,7 +299,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   iconName="Search"
                   className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
                 />
-                <IGRPInputPrimitive
+                <Input
                   type="search"
                   placeholder="Pesquisar menu..."
                   className="pl-8"
@@ -312,17 +312,17 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
           {sortedApps.length !== 0 && (
             <div className="w-2/12">
-              <IGRPSelectPrimitive
+              <Select
                 value={selectedApp}
                 onValueChange={handleAppChange}
                 disabled={loading || loadingApps}
               >
-                <IGRPSelectTriggerPrimitive className="w-full">
-                  <IGRPSelectValuePrimitive placeholder="Todas as aplicações" />
-                </IGRPSelectTriggerPrimitive>
-                <IGRPSelectContentPrimitive>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Todas as aplicações" />
+                </SelectTrigger>
+                <SelectContent>
                   {sortedApps.map((app) => (
-                    <IGRPSelectItemPrimitive key={app.code} value={app.code}>
+                    <SelectItem key={app.code} value={app.code}>
                       <div className="flex items-center gap-2">
                         <IGRPIcon
                           iconName="AppWindow"
@@ -331,10 +331,10 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                         />
                         <span>{app.name}</span>
                       </div>
-                    </IGRPSelectItemPrimitive>
+                    </SelectItem>
                   ))}
-                </IGRPSelectContentPrimitive>
-              </IGRPSelectPrimitive>
+                </SelectContent>
+              </Select>
             </div>
           )}
         </div>
@@ -355,21 +355,21 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 : "Configure aplicações e menus primeiro"}
             </p>
             <div className="flex gap-2">
-              <IGRPButtonPrimitive
+              <Button
                 variant="outline"
                 onClick={() => setShowMenusModal(true)}
                 className="gap-2"
               >
                 <IGRPIcon iconName="Menu" className="w-4 h-4" strokeWidth={2} />
                 Gerenciar Menus
-              </IGRPButtonPrimitive>
+              </Button>
             </div>
           </div>
         ) : (
           <>
             {selectedApp && (
               <div className="flex items-center gap-2">
-                <IGRPBadgePrimitive variant="secondary" className="gap-1">
+                <Badge variant="secondary" className="gap-1">
                   <IGRPIcon
                     iconName="Filter"
                     className="w-3 h-3"
@@ -378,20 +378,20 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   Filtrado por:{" "}
                   {sortedApps.find((app) => app.code === selectedApp)?.name ||
                     selectedApp}
-                </IGRPBadgePrimitive>
+                </Badge>
               </div>
             )}
 
             <div className="rounded-md border overflow-x-auto">
-              <IGRPTablePrimitive>
-                <IGRPTableHeaderPrimitive>
-                  <IGRPTableRowPrimitive>
-                    <IGRPTableHeadPrimitive className="whitespace-nowrap min-w-[320px]">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="whitespace-nowrap min-w-[320px]">
                       Menu
-                    </IGRPTableHeadPrimitive>
+                    </TableHead>
 
                     {roles?.map((role) => (
-                      <IGRPTableHeadPrimitive
+                      <TableHead
                         key={role.name}
                         className="text-center whitespace-nowrap w-36 border-l"
                       >
@@ -402,9 +402,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                               className="w-4 h-4 text-primary"
                               strokeWidth={2}
                             /> */}
-                            <IGRPTooltipProviderPrimitive delayDuration={350}>
-                              <IGRPTooltipPrimitive>
-                                <IGRPTooltipTriggerPrimitive asChild>
+                            <TooltipProvider delayDuration={350}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
                                   <button
                                     onClick={() =>
                                       toggleAllMenusForRole(role.code)
@@ -435,12 +435,12 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                       Selecionar todos
                                     </span>
                                   </button>
-                                </IGRPTooltipTriggerPrimitive>
-                                <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
+                                </TooltipTrigger>
+                                <TooltipContent className="px-2 py-1 text-xs">
                                   Marcar/desmarcar todos
-                                </IGRPTooltipContentPrimitive>
-                              </IGRPTooltipPrimitive>
-                            </IGRPTooltipProviderPrimitive>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                           <span
                             className="text-xs font-semibold truncate max-w-full px-1"
@@ -449,12 +449,12 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                             {role?.name?.split(".").pop() ?? role?.name ?? ""}
                           </span>
                         </div>
-                      </IGRPTableHeadPrimitive>
+                      </TableHead>
                     ))}
-                  </IGRPTableRowPrimitive>
-                </IGRPTableHeaderPrimitive>
+                  </TableRow>
+                </TableHeader>
 
-                <IGRPTableBodyPrimitive>
+                <TableBody>
                   {menuTree.map((menu) => (
                     <MenuTreeRow
                       setMenuRoleAssignments={setMenuRoleAssignments}
@@ -467,8 +467,8 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                       menuRoleAssignments={menuRoleAssignments}
                     />
                   ))}
-                </IGRPTableBodyPrimitive>
-              </IGRPTablePrimitive>
+                </TableBody>
+              </Table>
             </div>
 
             <div className="flex justify-between items-center pt-2">
@@ -478,7 +478,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               </div>
 
               <div className="flex gap-2">
-                {/* <IGRPButtonPrimitive
+                {/* <Button
                   variant="outline"
                   onClick={() => {
                     if (menus) {
@@ -497,9 +497,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     strokeWidth={2}
                   />
                   Cancelar
-                </IGRPButtonPrimitive> */}
+                </Button> */}
 
-                <IGRPButtonPrimitive
+                <Button
                   onClick={handleSave}
                   disabled={saving || !hasChanges}
                   className="gap-2"
@@ -523,7 +523,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                       Guardar Permissões
                     </>
                   )}
-                </IGRPButtonPrimitive>
+                </Button>
               </div>
             </div>
           </>
@@ -536,38 +536,38 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         onOpenChange={setShowMenusModal}
       />
 
-      <IGRPAlertDialogPrimitive
+      <AlertDialog
         open={pendingAppSwitch != null}
         onOpenChange={(open) => !open && setPendingAppSwitch(null)}
       >
-        <IGRPAlertDialogContentPrimitive>
-          <IGRPAlertDialogHeaderPrimitive>
-            <IGRPAlertDialogTitlePrimitive className="flex items-center gap-2">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="TriangleAlert"
                 className="w-5 h-5 text-amber-500"
                 strokeWidth={2}
               />
               Alterações por guardar
-            </IGRPAlertDialogTitlePrimitive>
-            <IGRPAlertDialogDescriptionPrimitive>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Tem alterações nas permissões dos menus que ainda não foram
               guardadas. Guardar antes de mudar de aplicação ou descartar?
-            </IGRPAlertDialogDescriptionPrimitive>
-          </IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogFooterPrimitive className="flex-col sm:justify-between sm:flex-row gap-2">
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:justify-between sm:flex-row gap-2">
             <div>
-              <IGRPButtonPrimitive
+              <Button
                 variant="outline"
                 onClick={() => setPendingAppSwitch(null)}
                 className="gap-2 w-full sm:w-auto"
               >
                 <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
                 Cancelar
-              </IGRPButtonPrimitive>
+              </Button>
             </div>
             <div className="flex gap-2">
-              <IGRPButtonPrimitive
+              <Button
                 variant="outline"
                 onClick={handleDiscardAndSwitch}
                 disabled={saving}
@@ -579,8 +579,8 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   strokeWidth={2}
                 />
                 Descartar e mudar
-              </IGRPButtonPrimitive>
-              <IGRPButtonPrimitive
+              </Button>
+              <Button
                 onClick={handleSaveAndSwitch}
                 disabled={saving}
                 className="gap-2 sm:w-auto"
@@ -604,11 +604,11 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     Guardar e mudar
                   </>
                 )}
-              </IGRPButtonPrimitive>
+              </Button>
             </div>
-          </IGRPAlertDialogFooterPrimitive>
-        </IGRPAlertDialogContentPrimitive>
-      </IGRPAlertDialogPrimitive>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

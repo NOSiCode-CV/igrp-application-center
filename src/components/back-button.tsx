@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  IGRPButtonPrimitive,
+  Button,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ export function BackButton({ href, label, className }: BackButtonProps) {
   };
 
   return (
-    <IGRPButtonPrimitive
+    <Button
       variant="ghost"
       size="sm"
       className={cn("gap-1 px-2 h-8", className)}
@@ -35,6 +35,6 @@ export function BackButton({ href, label, className }: BackButtonProps) {
     >
       <IGRPIcon iconName="ArrowLeft" strokeWidth={2} />
       {label && <span>{label}</span>}
-    </IGRPButtonPrimitive>
+    </Button>
   );
 }

@@ -1,17 +1,17 @@
 "use client";
 
 import {
-  IGRPBadgePrimitive,
+  Badge,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   IGRPIcon,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPButtonPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipTriggerPrimitive,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import Link from "next/link";
 import Image from "next/image";
@@ -63,11 +63,9 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
             </div>
           </div>
 
-          <IGRPBadgePrimitive
-            className={cn(getStatusColor(status), "shrink-0")}
-          >
+          <Badge className={cn(getStatusColor(status), "shrink-0")}>
             {showStatus(status)}
-          </IGRPBadgePrimitive>
+          </Badge>
         </div>
 
         <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
@@ -85,23 +83,23 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
           />
 
           {type !== ("SYSTEM" as ApplicationType) && (
-            <IGRPTooltipProviderPrimitive>
-              <IGRPTooltipPrimitive>
-                <IGRPTooltipTriggerPrimitive asChild>
-                  <IGRPButtonPrimitive
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
                     size="icon"
                     variant="ghost"
                     onClick={() => setOpen(true)}
                     className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
                   >
                     <IGRPIcon iconName="SquarePen" />
-                  </IGRPButtonPrimitive>
-                </IGRPTooltipTriggerPrimitive>
-                <IGRPTooltipContentPrimitive>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
                   Editar
-                </IGRPTooltipContentPrimitive>
-              </IGRPTooltipPrimitive>
-            </IGRPTooltipProviderPrimitive>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
 
           <ButtonLinkTooltip
@@ -115,16 +113,16 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
         </div>
       </div>
 
-      <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh]">
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:min-w-2xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>
               Editar Aplicação
-            </IGRPDialogTitlePrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogTitle>
+          </DialogHeader>
           <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
-        </IGRPDialogContentPrimitive>
-      </IGRPDialogPrimitive>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

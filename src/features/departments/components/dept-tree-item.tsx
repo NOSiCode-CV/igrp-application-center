@@ -1,16 +1,16 @@
 import {
+  Button,
   cn,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   IGRPIcon,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuSeparatorPrimitive,
-  IGRPButtonPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipTriggerPrimitive,
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipProviderPrimitive,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
@@ -108,10 +108,10 @@ const DepartmentTreeItem = ({
         </button>
 
         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-          <IGRPTooltipProviderPrimitive delayDuration={350}>
-            <IGRPTooltipPrimitive>
-              <IGRPTooltipTriggerPrimitive asChild>
-                <IGRPButtonPrimitive
+          <TooltipProvider delayDuration={350}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
                   variant="ghost"
                   className="h-6 w-6 p-0"
                   onClick={() => handleCreateSubDept(dept)}
@@ -122,17 +122,17 @@ const DepartmentTreeItem = ({
                     className="w-4 h-4"
                     strokeWidth={2}
                   />
-                </IGRPButtonPrimitive>
-              </IGRPTooltipTriggerPrimitive>
-              <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent className="px-2 py-1 text-xs">
                 Criar Sub-departamento
-              </IGRPTooltipContentPrimitive>
-            </IGRPTooltipPrimitive>
-          </IGRPTooltipProviderPrimitive>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          <IGRPDropdownMenuPrimitive>
-            <IGRPDropdownMenuTriggerPrimitive asChild>
-              <IGRPButtonPrimitive
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
                 variant="ghost"
                 className="h-6 w-6 p-0"
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
@@ -143,14 +143,14 @@ const DepartmentTreeItem = ({
                   className="w-4 h-4"
                   strokeWidth={2}
                 />
-              </IGRPButtonPrimitive>
-            </IGRPDropdownMenuTriggerPrimitive>
+              </Button>
+            </DropdownMenuTrigger>
 
-            <IGRPDropdownMenuContentPrimitive
+            <DropdownMenuContent
               onCloseAutoFocus={(e) => e.preventDefault()}
               align="end"
             >
-              <IGRPDropdownMenuItemPrimitive
+              <DropdownMenuItem
                 onSelect={(e) => {
                   e.stopPropagation();
                   handleEdit(dept);
@@ -162,9 +162,9 @@ const DepartmentTreeItem = ({
                   strokeWidth={2}
                 />
                 Editar
-              </IGRPDropdownMenuItemPrimitive>
+              </DropdownMenuItem>
 
-              <IGRPDropdownMenuItemPrimitive
+              <DropdownMenuItem
                 onSelect={(e) => {
                   e.stopPropagation();
                   handleCreateSubDept(dept);
@@ -176,11 +176,11 @@ const DepartmentTreeItem = ({
                   strokeWidth={2}
                 />
                 Criar Sub-departamento
-              </IGRPDropdownMenuItemPrimitive>
+              </DropdownMenuItem>
 
-              <IGRPDropdownMenuSeparatorPrimitive />
+              <DropdownMenuSeparator />
 
-              <IGRPDropdownMenuItemPrimitive
+              <DropdownMenuItem
                 variant="destructive"
                 onClick={() => handleDelete(dept.code, dept.name)}
               >
@@ -190,9 +190,9 @@ const DepartmentTreeItem = ({
                   strokeWidth={2}
                 />
                 Eliminar
-              </IGRPDropdownMenuItemPrimitive>
-            </IGRPDropdownMenuContentPrimitive>
-          </IGRPDropdownMenuPrimitive>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

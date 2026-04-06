@@ -3,7 +3,6 @@
 import {
   cn,
   IGRPIcon,
-  IGRPInputPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import Link from "next/link";
 

@@ -2,24 +2,24 @@
 
 import {
   cn,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDropdownMenuCheckboxItemPrimitive,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuLabelPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuSeparatorPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
+  Badge,
+  Button,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenu,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSkeletonPrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Skeleton,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableHead,
+  Table,
+  TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
 import { ButtonLink } from "@/components/button-link";
@@ -178,7 +178,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
               iconName="Search"
               className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
             />
-            <IGRPInputPrimitive
+            <Input
               type="search"
               placeholder="Pesquisar perfil..."
               className="pl-8"
@@ -187,17 +187,17 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
             />
           </div>
           <div className="flex flex-wrap gap-2 flex-shirnk-0">
-            <IGRPDropdownMenuPrimitive>
-              <IGRPDropdownMenuTriggerPrimitive asChild>
-                <IGRPButtonPrimitive variant="outline" className="gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
                   <IGRPIcon iconName="ListFilter" strokeWidth={2} />
                   Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
-                </IGRPButtonPrimitive>
-              </IGRPDropdownMenuTriggerPrimitive>
-              <IGRPDropdownMenuContentPrimitive align="start" className="w-40">
-                <IGRPDropdownMenuSeparatorPrimitive />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-40">
+                <DropdownMenuSeparator />
                 {STATUS_OPTIONS.map(({ value, label }) => (
-                  <IGRPDropdownMenuCheckboxItemPrimitive
+                  <DropdownMenuCheckboxItem
                     key={value}
                     checked={statusFilter.includes(value)}
                     onCheckedChange={(checked) => {
@@ -209,22 +209,22 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                     }}
                   >
                     {label}
-                  </IGRPDropdownMenuCheckboxItemPrimitive>
+                  </DropdownMenuCheckboxItem>
                 ))}
                 {statusFilter.length > 0 && (
                   <>
-                    <IGRPDropdownMenuSeparatorPrimitive />
-                    <IGRPDropdownMenuItemPrimitive
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
                       onClick={() => setStatusFilter([])}
                       className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
                     >
                       <IGRPIcon iconName="X" className="mr-1" strokeWidth={2} />
                       Limpar
-                    </IGRPDropdownMenuItemPrimitive>
+                    </DropdownMenuItem>
                   </>
                 )}
-              </IGRPDropdownMenuContentPrimitive>
-            </IGRPDropdownMenuPrimitive>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -252,22 +252,22 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
           </div>
         ) : (
           <div className="rounded-md border">
-            <IGRPTablePrimitive>
-              <IGRPTableHeaderPrimitive>
-                <IGRPTableRowPrimitive>
-                  <IGRPTableHeadPrimitive className="whitespace-nowrap">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="whitespace-nowrap">
                     Perfil
-                  </IGRPTableHeadPrimitive>
-                  <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                  </TableHead>
+                  <TableHead className="whitespace-nowrap">
                     Descrição
-                  </IGRPTableHeadPrimitive>
-                  <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                  </TableHead>
+                  <TableHead className="whitespace-nowrap">
                     Estado
-                  </IGRPTableHeadPrimitive>
-                  <IGRPTableHeadPrimitive className="w-24" />
-                </IGRPTableRowPrimitive>
-              </IGRPTableHeaderPrimitive>
-              <IGRPTableBodyPrimitive>
+                  </TableHead>
+                  <TableHead className="w-24" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {roleTree.map((role) => (
                   <RoleTreeRow
                     key={role.id}
@@ -280,8 +280,8 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                     handleNewSubRole={handleNewSubRole}
                   />
                 ))}
-              </IGRPTableBodyPrimitive>
-            </IGRPTablePrimitive>
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>

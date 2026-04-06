@@ -1,21 +1,21 @@
 "use client";
 
 import {
-  IGRPBadgePrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogTriggerPrimitive,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Badge,
+  Card,
+  CardContent,
+  cn,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   IGRPButton,
   IGRPIcon,
-  cn,
-  IGRPUserAvatarPrimitive,
-  IGRPUserAvatarImagePrimitive,
-  IGRPUserAvatarFallbackPrimitive,
   useIGRPToast,
-  IGRPCardPrimitive,
-  IGRPCardContentPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useRef, useEffect } from "react";
 
@@ -123,13 +123,13 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   return (
     <section className="flex flex-col gap-6">
-      <IGRPCardPrimitive className="py-2 border-0 shadow-sm rounded-lg">
-        <IGRPCardContentPrimitive className="px-4 py-1">
+      <Card className="py-2 border-0 shadow-sm rounded-lg">
+        <CardContent className="px-4 py-1">
           <div className="flex items-center pb-2 justify-between">
             <BackButton label="Voltar" href={ROUTES.APPLICATIONS} />
             {String(app?.type) !== "SYSTEM" && (
-              <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-                <IGRPDialogTriggerPrimitive asChild>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
                   <IGRPButton
                     showIcon
                     variant="outline"
@@ -138,20 +138,20 @@ export function ApplicationDetails({ code }: { code: string }) {
                   >
                     Editar
                   </IGRPButton>
-                </IGRPDialogTriggerPrimitive>
-                <IGRPDialogContentPrimitive className="max-w-2xl">
-                  <IGRPDialogHeaderPrimitive>
-                    <IGRPDialogTitlePrimitive>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>
                       Editar Aplicação
-                    </IGRPDialogTitlePrimitive>
-                  </IGRPDialogHeaderPrimitive>
+                    </DialogTitle>
+                  </DialogHeader>
 
                   <ApplicationForm
                     application={app}
                     onSuccess={() => setOpen(false)}
                   />
-                </IGRPDialogContentPrimitive>
-              </IGRPDialogPrimitive>
+                </DialogContent>
+              </Dialog>
             )}
           </div>
           <div className="flex items-center justify-between">
@@ -166,7 +166,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                   }
                 }}
               >
-                <IGRPUserAvatarPrimitive className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
+                <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
                   {app?.picture ? (
                     <Image
                       src={config.minioUrl + app?.picture}
@@ -184,14 +184,14 @@ export function ApplicationDetails({ code }: { code: string }) {
                       />
                     </div>
                   ) : (
-                    <IGRPUserAvatarFallbackPrimitive className="text-3xl bg-primary/10">
+                    <AvatarFallback className="text-3xl bg-primary/10">
                       <IGRPIcon
                         iconName="AppWindow"
                         className="w-12 h-12 text-primary"
                       />
-                    </IGRPUserAvatarFallbackPrimitive>
+                    </AvatarFallback>
                   )}
-                </IGRPUserAvatarPrimitive>
+                </Avatar>
 
                 <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
                   <IGRPIcon
@@ -223,11 +223,11 @@ export function ApplicationDetails({ code }: { code: string }) {
                   <h1 className="text-2xl font-bold tracking-tight">
                     {app.name}
                   </h1>
-                  <IGRPBadgePrimitive
+                  <Badge
                     className={getStatusColor(app.status || "ACTIVE")}
                   >
                     {app.status}
-                  </IGRPBadgePrimitive>
+                  </Badge>
                 </div>
 
                 <div className="flex items-center mb-2">
@@ -243,8 +243,8 @@ export function ApplicationDetails({ code }: { code: string }) {
               </div>
             </div>
           </div>
-        </IGRPCardContentPrimitive>
-      </IGRPCardPrimitive>
+        </CardContent>
+      </Card>
 
       <MenuList app={app} />
     </section>

@@ -1,12 +1,12 @@
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuSeparatorPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
+  Badge,
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import { useSortable } from "@dnd-kit/sortable";
@@ -130,7 +130,7 @@ export function SortableMenuItem({
           {/* <div style={{ width: `${depth * 1.5}rem` }} className="shrink-0" /> */}
 
           {hasChildren ? (
-            <IGRPButtonPrimitive
+            <Button
               variant="ghost"
               size="icon"
               className="h-7 w-7 p-0 shrink-0"
@@ -141,7 +141,7 @@ export function SortableMenuItem({
                 strokeWidth={2}
                 className="size-4"
               />
-            </IGRPButtonPrimitive>
+            </Button>
           ) : (
             <div className="w-7 shrink-0" />
           )}
@@ -166,9 +166,9 @@ export function SortableMenuItem({
                 {menu.name}
               </h4>
               {menu.status === "INACTIVE" && (
-                <IGRPBadgePrimitive variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-xs">
                   Inativo
-                </IGRPBadgePrimitive>
+                </Badge>
               )}
             </div>
             {typeConfig?.label === "Página" && (
@@ -179,39 +179,39 @@ export function SortableMenuItem({
           </div>
 
           <div className="flex items-center gap-3 mr-3 shrink-0">
-            <IGRPDropdownMenuPrimitive>
-              <IGRPDropdownMenuTriggerPrimitive asChild>
-                <IGRPButtonPrimitive variant="ghost" className="h-8 w-8 p-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
                   <span className="sr-only">Abrir menu</span>
                   <IGRPIcon
                     iconName="Ellipsis"
                     strokeWidth={2}
                     className="size-4"
                   />
-                </IGRPButtonPrimitive>
-              </IGRPDropdownMenuTriggerPrimitive>
-              <IGRPDropdownMenuContentPrimitive align="end">
-                <IGRPDropdownMenuItemPrimitive onClick={() => onView(menu)}>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onView(menu)}>
                   <IGRPIcon
                     iconName="Eye"
                     className="size-4 mr-2"
                     strokeWidth={2}
                   />
                   Ver
-                </IGRPDropdownMenuItemPrimitive>
+                </DropdownMenuItem>
                 {String(app?.type) !== "SYSTEM" && (
                   <>
-                    <IGRPDropdownMenuItemPrimitive onClick={() => onEdit(menu)}>
+                    <DropdownMenuItem onClick={() => onEdit(menu)}>
                       <IGRPIcon
                         iconName="Pencil"
                         className="size-4 mr-2"
                         strokeWidth={2}
                       />
                       Editar
-                    </IGRPDropdownMenuItemPrimitive>
+                    </DropdownMenuItem>
 
                     {menu.type === "GROUP" && (
-                      <IGRPDropdownMenuItemPrimitive
+                      <DropdownMenuItem
                         onClick={() => onAddChild?.(menu)}
                       >
                         <IGRPIcon
@@ -219,12 +219,12 @@ export function SortableMenuItem({
                           className="size-4 mr-2"
                         />
                         Adicionar Pasta
-                      </IGRPDropdownMenuItemPrimitive>
+                      </DropdownMenuItem>
                     )}
 
                     {menu.type === "FOLDER" && (
                       <>
-                        <IGRPDropdownMenuItemPrimitive
+                        <DropdownMenuItem
                           onClick={() => onAddInternalPage?.(menu)}
                         >
                           <IGRPIcon
@@ -232,9 +232,9 @@ export function SortableMenuItem({
                             className="size-4 mr-2"
                           />
                           Adicionar Página
-                        </IGRPDropdownMenuItemPrimitive>
+                        </DropdownMenuItem>
 
-                        {/* <IGRPDropdownMenuItemPrimitive
+                        {/* <DropdownMenuItem
                       onClick={() => onAddExternalPage?.(menu)}
                     >
                       <IGRPIcon
@@ -242,11 +242,11 @@ export function SortableMenuItem({
                         className="size-4 mr-2"
                       />
                       Adicionar Página Externa
-                    </IGRPDropdownMenuItemPrimitive> */}
+                    </DropdownMenuItem> */}
                       </>
                     )}
-                    <IGRPDropdownMenuSeparatorPrimitive />
-                    <IGRPDropdownMenuItemPrimitive
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
                       variant="destructive"
                       onClick={() => onDelete?.(menu.code, menu.name)}
                     >
@@ -256,11 +256,11 @@ export function SortableMenuItem({
                         strokeWidth={2}
                       />
                       Eliminar
-                    </IGRPDropdownMenuItemPrimitive>
+                    </DropdownMenuItem>
                   </>
                 )}
-              </IGRPDropdownMenuContentPrimitive>
-            </IGRPDropdownMenuPrimitive>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

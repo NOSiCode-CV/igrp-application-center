@@ -4,14 +4,14 @@ import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
-  IGRPCardPrimitive,
-  IGRPCardHeaderPrimitive,
-  IGRPCardTitlePrimitive,
-  IGRPCardContentPrimitive,
-  IGRPCardFooterPrimitive,
+  Badge,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
   IGRPButton,
   IGRPIcon,
-  IGRPBadgePrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { AppCenterLoading } from "@/components/loading";
@@ -167,18 +167,18 @@ export default function AcceptInvitePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <IGRPCardPrimitive className="w-full max-w-md">
-        <IGRPCardHeaderPrimitive className="text-center">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-primary/10 bg- rounded-full flex items-center justify-center mb-4">
             <IGRPIcon iconName="Mail" className="w-6 h-6 text-primary" />
           </div>
-          <IGRPCardTitlePrimitive>Aceitar convite</IGRPCardTitlePrimitive>
-          {/* <IGRPCardDescriptionPrimitive>
+          <CardTitle>Aceitar convite</CardTitle>
+          {/* <CardDescription>
             Você foi convidado para 
-          </IGRPCardDescriptionPrimitive> */}
-        </IGRPCardHeaderPrimitive>
+          </CardDescription> */}
+        </CardHeader>
 
-        <IGRPCardContentPrimitive className="space-y-4">
+        <CardContent className="space-y-4">
           <div className="bg-muted/50 rounded-lg p-4 space-y-3">
             <div className="flex items-center gap-2 text-sm">
               <IGRPIcon
@@ -198,11 +198,11 @@ export default function AcceptInvitePage() {
                   />
                   <span className="text-muted-foreground">Departamento:</span>
                 </div>
-                <div className="flex gap-2">
-                  {invitation.department.map((role: any, index: number) => (
-                    <IGRPBadgePrimitive key={index} variant="secondary">
-                      {role.description || role.code}
-                    </IGRPBadgePrimitive>
+                <div className="flex flex-wrap gap-2">
+                  {invitation.department.map((dept: any, index: number) => (
+                    <Badge key={index} variant="outline">
+                      {dept.description || dept.code}
+                    </Badge>
                   ))}
                 </div>
               </div>
@@ -217,41 +217,36 @@ export default function AcceptInvitePage() {
                   />
                   <span className="text-muted-foreground">Perfis:</span>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {invitation.roles.map((role: any, index: number) => (
-                    <IGRPBadgePrimitive key={index} variant="secondary">
+                    <Badge key={index} variant="outline">
                       {role.description || role.code}
-                    </IGRPBadgePrimitive>
+                    </Badge>
                   ))}
                 </div>
               </div>
             )}
           </div>
-        </IGRPCardContentPrimitive>
+        </CardContent>
 
-        <IGRPCardFooterPrimitive className="flex gap-3">
+        <CardFooter className="flex justify-between gap-3 pt-6">
           <IGRPButton
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white hover:text-white"
+            variant="ghost"
+            className="flex-1"
             onClick={handleDecline}
-            showIcon
-            iconName="X"
-            iconPlacement="start"
             disabled={isAccepting}
           >
-            {isAccepting ? "Aguarde..." : "Rejeitar Convite"}
+            Recusar
           </IGRPButton>
           <IGRPButton
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white hover:text-white"
+            className="flex-1"
             onClick={handleAccept}
             disabled={isAccepting}
-            showIcon
-            iconName={isAccepting ? "LoaderCircle" : "Check"}
-            iconPlacement="start"
           >
-            {isAccepting ? "Aguarde..." : "Aceitar Convite"}
+            {isAccepting ? "Processando..." : "Aceitar Convite"}
           </IGRPButton>
-        </IGRPCardFooterPrimitive>
-      </IGRPCardPrimitive>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

@@ -3,16 +3,16 @@
 import { useDeleteRole } from "@/features/departments/use-departments";
 import {
   IGRPButton,
-  IGRPButtonPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPDialogFooterPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
+  Button,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  Dialog,
+  DialogTitle,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPLabelPrimitive,
+  Input,
+  Label,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
@@ -68,10 +68,10 @@ export function RoleDeleteDialog({
   }
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPDialogContentPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
         <div>
-          <IGRPDialogHeaderPrimitive className="flex flex-col gap-4">
+          <DialogHeader className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">
               <div
                 className="flex size-9 shrink-0 items-center justify-center"
@@ -82,9 +82,9 @@ export function RoleDeleteDialog({
                   className="opacity-80 size-4"
                 />
               </div>
-              <IGRPDialogTitlePrimitive>Confirmação</IGRPDialogTitlePrimitive>
+              <DialogTitle>Confirmação</DialogTitle>
             </div>
-            <IGRPDialogDescriptionPrimitive className="flex flex-col items-center text-base text-balance text-foreground mx-auto">
+            <DialogDescription className="flex flex-col items-center text-base text-balance text-foreground mx-auto">
               <div>
                 <span>
                   Esta ação é irreversível. O menu e todos os seus dados serão
@@ -95,18 +95,18 @@ export function RoleDeleteDialog({
                 </span>{" "}
                 abaixo:
               </div>
-            </IGRPDialogDescriptionPrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogDescription>
+          </DialogHeader>
         </div>
 
         <div className="flex flex-col gap-2">
-          <IGRPLabelPrimitive
+          <Label
             htmlFor="confirmation"
             className='after:content-["*"] after:text-destructive gap-0.5 mb-1'
           >
             Nome Perfil
-          </IGRPLabelPrimitive>
-          <IGRPInputPrimitive
+          </Label>
+          <Input
             id="confirmation"
             value={confirmation}
             onChange={(e) => setConfirmation(e.target.value)}
@@ -115,7 +115,7 @@ export function RoleDeleteDialog({
             required
           />
         </div>
-        <IGRPDialogFooterPrimitive className="flex flex-col">
+        <DialogFooter className="flex flex-col">
           <IGRPButton
             variant="outline"
             onClick={() => {
@@ -139,8 +139,8 @@ export function RoleDeleteDialog({
           >
             {isPending ? "Aguarde..." : "Eliminar"}
           </IGRPButton>
-        </IGRPDialogFooterPrimitive>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

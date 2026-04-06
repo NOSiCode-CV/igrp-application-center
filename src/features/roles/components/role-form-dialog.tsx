@@ -1,26 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   IGRPButton,
-  IGRPButtonPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogFooterPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPFormPrimitive,
+  Button,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  Dialog,
+  DialogTitle,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Form,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPTextAreaPrimitive,
+  Input,
+  SelectContent,
+  SelectItem,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useEffect, useMemo } from "react";
@@ -170,168 +170,134 @@ export function RoleFormDialog({
       : "Adicionar Perfil";
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal>
-      <IGRPDialogContentPrimitive>
-        <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive>{titleText}</IGRPDialogTitlePrimitive>
-        </IGRPDialogHeaderPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>
+            {isEdit ? "Editar Perfil" : "Criar Novo Perfil"}
+          </DialogTitle>
+        </DialogHeader>
 
-        <IGRPFormPrimitive {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4"
-          >
-            <IGRPFormFieldPrimitive
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {isSubRole && (
+              <div className="p-3 rounded-md bg-muted/50 border text-sm text-muted-foreground flex items-center gap-2">
+                <IGRPIcon iconName="Info" className="size-4" />
+                <span>
+                  Este será um sub-perfil de:{" "}
+                  <strong className="text-foreground">{parentRoleName}</strong>
+                </span>
+              </div>
+            )}
+
+            <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                    Nome
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive
-                      {...field}
-                      placeholder="Identificador único do perfil"
-                      required
-                      onChange={setDefaultFromName}
-                      disabled={isLoading}
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
-                    />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                <FormItem>
+                  <FormLabel>Nome</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nome do perfil" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="code"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                    Código
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive
-                      placeholder="CODIGO_ROLE"
-                      required
-                      pattern="^[A-Z0-9_]+$"
-                      disabled={isLoading || isEdit}
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                <FormItem>
+                  <FormLabel>Código</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ex: PERFIL_ADMIN"
+                      disabled={isEdit}
                       {...field}
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Descrição</IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPTextAreaPrimitive
-                      placeholder="Breve descrição do perfil"
-                      rows={2}
+                <FormItem>
+                  <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Breve descrição das responsabilidades deste perfil"
+                      className="resize-none"
+                      {...field}
                       value={field.value ?? ""}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                      ref={field.ref}
-                      disabled={isLoading}
-                      className="resize-none placeholder:truncate border-primary/30 focus-visible:ring-[2px] focus-visible:ring-primary/30 focus-visible:border-primary/30"
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            {isSubRole && (
-              <IGRPFormFieldPrimitive
-                control={form.control}
-                name="parentCode"
-                render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Perfil Pai</IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
-                        {...field}
-                        value={field.value ?? ""}
-                        disabled
-                        placeholder="Perfil pai"
-                        className="bg-muted border-primary/30"
-                      />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
-                )}
-              />
-            )}
-
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="status"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive
+                <FormItem>
+                  <FormLabel>Estado</FormLabel>
+                  <Select
                     onValueChange={field.onChange}
+                    defaultValue={field.value}
                     value={field.value}
                   >
-                    <IGRPFormControlPrimitive>
-                      <IGRPSelectTriggerPrimitive className="w-full truncate">
-                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                      </IGRPSelectTriggerPrimitive>
-                    </IGRPFormControlPrimitive>
-                    <IGRPSelectContentPrimitive>
-                      {STATUS_OPTIONS.map((status) => (
-                        <IGRPSelectItemPrimitive
-                          key={status.value}
-                          value={status.value}
-                        >
-                          {status.label}
-                        </IGRPSelectItemPrimitive>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {STATUS_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
                       ))}
-                    </IGRPSelectContentPrimitive>
-                  </IGRPSelectPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPDialogFooterPrimitive className="pt-4">
-              <IGRPButton
-                type="button"
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                showIcon
-                iconPlacement="start"
-                iconName="X"
+                type="button"
+                disabled={isLoading}
               >
                 Cancelar
-              </IGRPButton>
-              <IGRPButtonPrimitive
-                type="submit"
-                disabled={isCreating || isUpdating}
-              >
-                <IGRPIcon iconName="Save" className="size-4" />
-                {isEdit
-                  ? isUpdating
-                    ? "Atualizando..."
-                    : "Atualizar"
-                  : isCreating
-                    ? "Guardando..."
-                    : "Adicionar"}
-              </IGRPButtonPrimitive>
-            </IGRPDialogFooterPrimitive>
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <IGRPIcon
+                      iconName="LoaderCircle"
+                      className="mr-2 h-4 w-4 animate-spin"
+                    />
+                    {isEdit ? "A guardar..." : "A criar..."}
+                  </>
+                ) : isEdit ? (
+                  "Guardar Alterações"
+                ) : (
+                  "Criar Perfil"
+                )}
+              </Button>
+            </DialogFooter>
           </form>
-        </IGRPFormPrimitive>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }

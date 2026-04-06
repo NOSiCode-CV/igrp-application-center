@@ -1,13 +1,13 @@
 "use client";
 
 import {
+  Button,
   cn,
-  IGRPButtonPrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormDescriptionPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import Image from "next/image";
@@ -108,10 +108,10 @@ export function FileUploadField(props: FileUploadFieldProps) {
   };
 
   return (
-    <IGRPFormItemPrimitive>
-      {label && <IGRPFormLabelPrimitive>{label}</IGRPFormLabelPrimitive>}
+    <FormItem>
+      {label && <FormLabel>{label}</FormLabel>}
 
-      <IGRPFormControlPrimitive>
+      <FormControl>
         <div className="flex flex-col gap-2">
           <div className="relative">
             <div
@@ -161,7 +161,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
                       : "Selecionar imagem"}{" "}
                     (max. {maxSizeMB} MB)
                   </p>
-                  <IGRPButtonPrimitive
+                  <Button
                     type="button"
                     variant="outline"
                     className="mt-4 bg-transparent"
@@ -174,7 +174,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
                       aria-hidden="true"
                     />
                     {btnLabel}
-                  </IGRPButtonPrimitive>
+                  </Button>
                 </div>
               )}
             </div>
@@ -206,14 +206,14 @@ export function FileUploadField(props: FileUploadFieldProps) {
             </div>
           )}
         </div>
-      </IGRPFormControlPrimitive>
+      </FormControl>
 
       {description && (
-        <IGRPFormDescriptionPrimitive>
+        <FormDescription>
           {description}
-        </IGRPFormDescriptionPrimitive>
+        </FormDescription>
       )}
-      <IGRPFormMessagePrimitive />
-    </IGRPFormItemPrimitive>
+      <FormMessage />
+    </FormItem>
   );
 }

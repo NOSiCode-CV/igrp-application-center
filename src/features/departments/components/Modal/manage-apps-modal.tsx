@@ -1,27 +1,27 @@
 "use client";
 
 import {
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSkeletonPrimitive,
-  IGRPSwitchPrimitive,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
   cn,
-  useIGRPToast,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   IGRPButton,
-  IGRPScrollAreaPrimitive,
+  IGRPIcon,
+  Input,
+  ScrollArea,
+  Skeleton,
+  Switch,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState, useMemo, useRef, useEffect } from "react";
 import {
@@ -171,21 +171,21 @@ export function ManageAppsModal({
 
   return (
     <>
-      <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl ! max-h-[95vh] overflow-hidden flex flex-col">
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive className="flex items-center gap-2">
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:min-w-2xl ! max-h-[95vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AppWindow"
                 className="w-5 h-5"
                 strokeWidth={2}
               />
               Gerenciar Aplicações
-            </IGRPDialogTitlePrimitive>
-            <IGRPDialogDescriptionPrimitive>
+            </DialogTitle>
+            <DialogDescription>
               Adicione ou remova aplicações do departamento com um clique.
-            </IGRPDialogDescriptionPrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogDescription>
+          </DialogHeader>
 
           <div className="pb-4">
             <div className="relative">
@@ -193,7 +193,7 @@ export function ManageAppsModal({
                 iconName="Search"
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
-              <IGRPInputPrimitive
+              <Input
                 type="search"
                 placeholder="Pesquisar por nome, código ou descrição..."
                 className="pl-8"
@@ -203,11 +203,11 @@ export function ManageAppsModal({
             </div>
           </div>
 
-          <IGRPScrollAreaPrimitive className="flex-1 h-[95vh]  w-full ">
+          <ScrollArea className="flex-1 h-[95vh]  w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <IGRPSkeletonPrimitive key={i} className="h-20 rounded-lg" />
+                  <Skeleton key={i} className="h-20 rounded-lg" />
                 ))}
               </div>
             ) : filteredApps.length === 0 ? (
@@ -259,12 +259,12 @@ export function ManageAppsModal({
                           <h4 className="font-semibold text-sm truncate">
                             {app.name}
                           </h4>
-                          <IGRPBadgePrimitive
+                          <Badge
                             variant={app.isAssigned ? "default" : "secondary"}
                             className="text-[10px] px-1.5 py-0.5 shrink-0"
                           >
                             {app.type}
-                          </IGRPBadgePrimitive>
+                          </Badge>
                         </div>
                         {app.description && (
                           <p className="text-xs text-muted-foreground line-clamp-2">
@@ -292,7 +292,7 @@ export function ManageAppsModal({
                             </div>
                           )}
                         </div>
-                        <IGRPSwitchPrimitive
+                        <Switch
                           checked={app.isAssigned}
                           onCheckedChange={() =>
                             handleToggleApp(app.code, app.isAssigned)
@@ -322,7 +322,7 @@ export function ManageAppsModal({
                 ))}
               </div>
             )}
-          </IGRPScrollAreaPrimitive>
+          </ScrollArea>
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">
@@ -333,7 +333,7 @@ export function ManageAppsModal({
               aplicações adicionadas
             </div>
 
-            <IGRPButtonPrimitive
+            <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={processingApp !== null}
@@ -341,32 +341,32 @@ export function ManageAppsModal({
             >
               <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
               Fechar
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
-        </IGRPDialogContentPrimitive>
-      </IGRPDialogPrimitive>
+        </DialogContent>
+      </Dialog>
 
-      <IGRPAlertDialogPrimitive
+      <AlertDialog
         open={!!appToRemove}
         onOpenChange={(open) => !open && setAppToRemove(null)}
       >
-        <IGRPAlertDialogContentPrimitive>
-          <IGRPAlertDialogHeaderPrimitive>
-            <IGRPAlertDialogTitlePrimitive className="flex items-center gap-2">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
                 className="w-5 h-5 text-destructive"
                 strokeWidth={2}
               />
               Remover Aplicação
-            </IGRPAlertDialogTitlePrimitive>
-            <IGRPAlertDialogDescriptionPrimitive>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Tem certeza que deseja remover a aplicação{" "}
               <strong className="text-foreground">{appToRemove?.name}</strong>{" "}
               deste departamento? Esta ação não pode ser desfeita.
-            </IGRPAlertDialogDescriptionPrimitive>
-          </IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogFooterPrimitive>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
             <IGRPButton
               disabled={processingApp !== null}
               variant="outline"
@@ -405,9 +405,9 @@ export function ManageAppsModal({
                 </>
               )}
             </IGRPButton>
-          </IGRPAlertDialogFooterPrimitive>
-        </IGRPAlertDialogContentPrimitive>
-      </IGRPAlertDialogPrimitive>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
+  Badge,
+  Button,
   IGRPIcon,
-  IGRPInputPrimitive,
+  Input,
   IGRPTabItem,
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
@@ -163,7 +163,7 @@ export function DepartmentListTree() {
   return (
     <div className="flex flex-col overflow-hidden">
       <div className="block! lg:hidden! mb-4">
-        <IGRPButtonPrimitive
+        <Button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           variant="outline"
           className="w-full! cursor-pointer"
@@ -174,7 +174,7 @@ export function DepartmentListTree() {
             strokeWidth={2}
           />
           {isSidebarOpen ? "Fechar" : "Departamentos"}
-        </IGRPButtonPrimitive>
+        </Button>
       </div>
 
       <div className="flex h-full">
@@ -191,14 +191,14 @@ export function DepartmentListTree() {
           `}
         >
           <div className="flex! lg:hidden! justify-end mb-2">
-            <IGRPButtonPrimitive
+            <Button
               onClick={() => setIsSidebarOpen(false)}
               variant="ghost"
               size="sm"
               className="cursor-pointer"
             >
               <IGRPIcon iconName="X" className="w-5 h-5" strokeWidth={2} />
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
 
           <div className="flex flex-col min-w-0">
@@ -224,7 +224,7 @@ export function DepartmentListTree() {
                 iconName="Search"
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
               />
-              <IGRPInputPrimitive
+              <Input
                 type="text"
                 placeholder="Pesquisar departamento..."
                 value={searchTerm}
@@ -321,13 +321,13 @@ export function DepartmentListTree() {
                       {selectedDepartment.name}
                     </h1>
 
-                    <IGRPBadgePrimitive
+                    <Badge
                       className={getStatusColor(
                         selectedDepartment.status || "ACTIVE",
                       )}
                     >
                       {selectedDepartment.status}
-                    </IGRPBadgePrimitive>
+                    </Badge>
                   </div>
                   <div className="flex items-center">
                     <span className="text-muted-foreground text-xs">
@@ -342,7 +342,7 @@ export function DepartmentListTree() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row! w-full! lg:w-auto! gap-2">
-                  <IGRPButtonPrimitive
+                  <Button
                     onClick={() => handleEdit(selectedDepartment as any)}
                     variant="outline"
                     className="cursor-pointer w-full! sm:w-auto!"
@@ -353,9 +353,9 @@ export function DepartmentListTree() {
                       strokeWidth={2}
                     />
                     Editar
-                  </IGRPButtonPrimitive>
+                  </Button>
 
-                  <IGRPButtonPrimitive
+                  <Button
                     variant="outline"
                     onClick={() => setShowAppsModal(true)}
                     className="gap-2 cursor-pointer w-full! sm:w-auto!"
@@ -366,7 +366,7 @@ export function DepartmentListTree() {
                       strokeWidth={2}
                     />
                     Gerenciar Apps
-                  </IGRPButtonPrimitive>
+                  </Button>
                 </div>
               </div>
 

@@ -1,16 +1,16 @@
 import {
   cn,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuLabelPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuSeparatorPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
+  Badge,
+  Button,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenu,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   IGRPIcon,
-  IGRPTableCellPrimitive,
-  IGRPTableRowPrimitive,
+  TableCell,
+  TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import { RoleWithChildren } from "./role-tree-list";
 import { showStatus, statusClass } from "@/lib/utils";
@@ -39,8 +39,8 @@ export function RoleTreeRow({
 
   return (
     <>
-      <IGRPTableRowPrimitive className={cn(level > 0 && "bg-muted/30")}>
-        <IGRPTableCellPrimitive className="font-medium">
+      <TableRow className={cn(level > 0 && "bg-muted/30")}>
+        <TableCell className="font-medium">
           <div
             className="flex items-center gap-2"
             style={{ paddingLeft: `${level * 1.5}rem` }}
@@ -71,45 +71,45 @@ export function RoleTreeRow({
 
             <span>{role.name}</span>
           </div>
-        </IGRPTableCellPrimitive>
+        </TableCell>
 
-        <IGRPTableCellPrimitive>
+        <TableCell>
           {role.description || "N/A"}
-        </IGRPTableCellPrimitive>
+        </TableCell>
 
-        <IGRPTableCellPrimitive className="whitespace-nowrap">
-          <IGRPBadgePrimitive
+        <TableCell className="whitespace-nowrap">
+          <Badge
             className={cn(statusClass(role.status), "capitalize")}
           >
             {showStatus(role.status)}
-          </IGRPBadgePrimitive>
-        </IGRPTableCellPrimitive>
+          </Badge>
+        </TableCell>
 
-        <IGRPTableCellPrimitive>
-          <IGRPDropdownMenuPrimitive>
-            <IGRPDropdownMenuTriggerPrimitive asChild>
-              <IGRPButtonPrimitive variant="ghost" className="size-8 p-0">
+        <TableCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="size-8 p-0">
                 <span className="sr-only">Abrir Menu</span>
                 <IGRPIcon
                   iconName="Ellipsis"
                   className="size-4"
                   strokeWidth={2}
                 />
-              </IGRPButtonPrimitive>
-            </IGRPDropdownMenuTriggerPrimitive>
-            <IGRPDropdownMenuContentPrimitive align="end">
-              <IGRPDropdownMenuLabelPrimitive>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>
                 Ações
-              </IGRPDropdownMenuLabelPrimitive>
-              <IGRPDropdownMenuItemPrimitive onSelect={() => handleEdit(role)}>
+              </DropdownMenuLabel>
+              <DropdownMenuItem onSelect={() => handleEdit(role)}>
                 <IGRPIcon
                   iconName="Pencil"
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
                 Editar
-              </IGRPDropdownMenuItemPrimitive>
-              <IGRPDropdownMenuItemPrimitive
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onSelect={() => handleNewSubRole(role)}
               >
                 <IGRPIcon
@@ -118,8 +118,8 @@ export function RoleTreeRow({
                   strokeWidth={2}
                 />
                 Criar sub perfil
-              </IGRPDropdownMenuItemPrimitive>
-              <IGRPDropdownMenuItemPrimitive
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onSelect={() => handlePermissions(role)}
               >
                 <IGRPIcon
@@ -128,9 +128,9 @@ export function RoleTreeRow({
                   strokeWidth={2}
                 />
                 Permissões
-              </IGRPDropdownMenuItemPrimitive>
-              <IGRPDropdownMenuSeparatorPrimitive />
-              <IGRPDropdownMenuItemPrimitive
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
                 onClick={() => handleDelete(role.code)}
                 variant="destructive"
               >
@@ -140,11 +140,11 @@ export function RoleTreeRow({
                   strokeWidth={2}
                 />
                 Eliminar
-              </IGRPDropdownMenuItemPrimitive>
-            </IGRPDropdownMenuContentPrimitive>
-          </IGRPDropdownMenuPrimitive>
-        </IGRPTableCellPrimitive>
-      </IGRPTableRowPrimitive>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      </TableRow>
 
       {hasChildren &&
         isExpanded &&

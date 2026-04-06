@@ -3,12 +3,12 @@
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
-  IGRPCardPrimitive,
-  IGRPCardHeaderPrimitive,
-  IGRPCardTitlePrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardContentPrimitive,
-  IGRPCardFooterPrimitive,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
@@ -26,23 +26,23 @@ export default function InviteErrorPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <IGRPCardPrimitive className="w-full max-w-md py-14">
-        <IGRPCardHeaderPrimitive className="text-center">
+      <Card className="w-full max-w-md py-14">
+        <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
             <IGRPIcon
               iconName="AlertTriangle"
               className="w-6 h-6 text-destructive"
             />
           </div>
-          <IGRPCardTitlePrimitive className="text-destructive">
+          <CardTitle className="text-destructive">
             Convite não corresponde
-          </IGRPCardTitlePrimitive>
-          <IGRPCardDescriptionPrimitive>
+          </CardTitle>
+          <CardDescription>
             Este convite não foi enviado para sua conta.
-          </IGRPCardDescriptionPrimitive>
-        </IGRPCardHeaderPrimitive>
+          </CardDescription>
+        </CardHeader>
 
-        <IGRPCardFooterPrimitive className="flex justify-center mt-6 gap-3">
+        <CardFooter className="flex justify-center mt-6 gap-3">
           <IGRPButton
             variant="outline"
             className="flex"
@@ -53,8 +53,8 @@ export default function InviteErrorPage() {
           >
             Voltar
           </IGRPButton>
-        </IGRPCardFooterPrimitive>
-      </IGRPCardPrimitive>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
