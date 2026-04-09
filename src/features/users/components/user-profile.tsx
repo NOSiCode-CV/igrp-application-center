@@ -358,10 +358,7 @@ export function UserProfile() {
         orientation="horizontal"
       />
 
-      <AlertDialog
-        open={showStatusDialog}
-        onOpenChange={setShowStatusDialog}
-      >
+      <AlertDialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">

@@ -2,6 +2,8 @@ import type { AuthOptions } from "next-auth";
 import {
   createAuthProviderFromEnv,
   getAuthProviderIdFromEnv,
+  JWT,
+  Session,
 } from "@igrp/framework-next-auth";
 import { refreshAccessToken, signOut } from "./auth-helpers";
 
@@ -29,7 +31,7 @@ export const authOptions: AuthOptions = {
       // Access token has expired, try to update it
       return refreshAccessToken(token);
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
         session.accessToken = token.accessToken;
         session.idToken = token.idToken;

@@ -77,9 +77,7 @@ export function ApplicationList() {
           </DialogTrigger>
           <DialogContent className="sm:min-w-2xl max-h-[90vh]">
             <DialogHeader>
-              <DialogTitle>
-                Nova Aplicação
-              </DialogTitle>
+              <DialogTitle>Nova Aplicação</DialogTitle>
             </DialogHeader>
 
             <ApplicationForm onSuccess={() => setOpen(false)} />
@@ -107,11 +105,7 @@ export function ApplicationList() {
           <div className="flex flex-wrap gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  disabled={appEmpty}
-                >
+                <Button variant="outline" className="gap-2" disabled={appEmpty}>
                   <IGRPIcon iconName="ListFilter" strokeWidth={2} />
                   Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
                 </Button>
@@ -166,9 +160,7 @@ export function ApplicationList() {
               </DialogTrigger>
               <DialogContent className="sm:min-w-2xl  max-h-[90vh]">
                 <DialogHeader>
-                  <DialogTitle>
-                    Nova Aplicação
-                  </DialogTitle>
+                  <DialogTitle>Nova Aplicação</DialogTitle>
                 </DialogHeader>
                 <ApplicationForm onSuccess={() => setOpen(false)} />
               </DialogContent>

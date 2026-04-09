@@ -45,7 +45,7 @@ interface UserInviteDialogProps {
 }
 
 const formSchema = z.object({
-  email: z.string().min(1, "Email obrigatório").email("Email inválido"),
+  email: z.email().min(1, "Email obrigatório"),
   departmentCode: z.string().optional(),
   roleCodes: z.array(z.string()),
 });
@@ -173,7 +173,7 @@ export function UserInviteDialog({
                 Informação do Utilizador
               </legend>
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
@@ -185,7 +185,7 @@ export function UserInviteDialog({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <FormField
                 control={form.control}
@@ -225,14 +225,9 @@ export function UserInviteDialog({
 
                   return (
                     <FormItem>
-                      <FormLabel>
-                        Departamento
-                      </FormLabel>
+                      <FormLabel>Departamento</FormLabel>
 
-                      <Popover
-                        open={openDepts}
-                        onOpenChange={setOpenDepts}
-                      >
+                      <Popover open={openDepts} onOpenChange={setOpenDepts}>
                         <PopoverTrigger asChild>
                           <Button
                             type="button"
@@ -356,10 +351,7 @@ export function UserInviteDialog({
                   return (
                     <FormItem>
                       <FormLabel>Perfis</FormLabel>
-                      <Popover
-                        open={openRoles}
-                        onOpenChange={setOpenRoles}
-                      >
+                      <Popover open={openRoles} onOpenChange={setOpenRoles}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button

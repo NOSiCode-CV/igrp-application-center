@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  Button,
-  IGRPIcon,
-} from "@igrp/igrp-framework-react-design-system";
+import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";

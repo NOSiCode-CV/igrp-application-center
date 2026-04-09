@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  cn,
-  IGRPIcon,
-  Input,
-} from "@igrp/igrp-framework-react-design-system";
+import { cn, IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
 import DepartmentTreeItemSimple from "./dept-list-simple-tree";
 import { buildTree, filterTree } from "./dept-list-tree";

@@ -28,6 +28,15 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: getRemotePatterns(),
   },
+  experimental: {
+    typedEnv: true,
+    optimizePackageImports: [
+      "@igrp/igrp-framework-react-design-system",
+      "@igrp/framework-next-ui",
+      "@igrp/framework-next",
+      "@tanstack/react-query",
+    ],
+  },
 };
 
 export default nextConfig;

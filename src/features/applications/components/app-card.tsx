@@ -95,9 +95,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
                     <IGRPIcon iconName="SquarePen" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  Editar
-                </TooltipContent>
+                <TooltipContent>Editar</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
@@ -116,9 +114,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:min-w-2xl max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle>
-              Editar Aplicação
-            </DialogTitle>
+            <DialogTitle>Editar Aplicação</DialogTitle>
           </DialogHeader>
           <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
         </DialogContent>

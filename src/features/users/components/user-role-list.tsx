@@ -140,10 +140,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                           </Badge>
                         ))}
                         {role.permissions.length > 3 && (
-                          <Badge
-                            variant="secondary"
-                            className="text-xs"
-                          >
+                          <Badge variant="secondary" className="text-xs">
                             +{role.permissions.length - 3} mais
                           </Badge>
                         )}
@@ -179,10 +176,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
               Este utilizador não tem perfis.
             </p>
           </div>
-          <Button
-            size="sm"
-            onClick={() => setAssignDialogOpen(true)}
-          >
+          <Button size="sm" onClick={() => setAssignDialogOpen(true)}>
             <IGRPIcon iconName="Plus" />
             Associar Perfis
           </Button>

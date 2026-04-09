@@ -120,8 +120,8 @@ export default function HomeIGRP() {
       content: (
         <div className="flex flex-col justify-between">
           <Calendar
-            date={date}
-            onDateChange={setDate}
+            selected={date}
+            onSelect={setDate}
             className="rounded-md border w-full"
           />
           {/* <IGRPSeparator className="my-4" /> */}

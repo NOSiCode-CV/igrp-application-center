@@ -192,9 +192,7 @@ export function DepartmentFormDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{titleTxt}</DialogTitle>
-          <DialogDescription>
-            {descriptionTxt}
-          </DialogDescription>
+          <DialogDescription>{descriptionTxt}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -256,9 +254,7 @@ export function DepartmentFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="">
-                    Descrição
-                  </FormLabel>
+                  <FormLabel className="">Descrição</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Breve descrição do departamento"
@@ -283,9 +279,7 @@ export function DepartmentFormDialog({
                 name="parentCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      Departamento Pai
-                    </FormLabel>
+                    <FormLabel>Departamento Pai</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -313,10 +307,7 @@ export function DepartmentFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Estado</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full truncate">
                           <SelectValue placeholder="Selecionar estado" />
@@ -324,10 +315,7 @@ export function DepartmentFormDialog({
                       </FormControl>
                       <SelectContent>
                         {STATUS_OPTIONS.map((status) => (
-                          <SelectItem
-                            key={status.value}
-                            value={status.value}
-                          >
+                          <SelectItem key={status.value} value={status.value}>
                             {status.label}
                           </SelectItem>
                         ))}

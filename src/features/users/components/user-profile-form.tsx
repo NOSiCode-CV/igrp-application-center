@@ -109,9 +109,7 @@ export function ProfileUserForm() {
 
       <Card>
         <CardHeader className="mb-3">
-          <CardTitle>
-            Detailed information about this user.
-          </CardTitle>
+          <CardTitle>Detailed information about this user.</CardTitle>
           <CardDescription>
             Manage your personal information and account settings.
           </CardDescription>
@@ -133,9 +131,7 @@ export function ProfileUserForm() {
                           value={field.value ?? ""}
                         />
                       </FormControl>
-                      <FormDescription>
-                        The user full name.
-                      </FormDescription>
+                      <FormDescription>The user full name.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -148,9 +144,7 @@ export function ProfileUserForm() {
                   name="picture"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>
-                        Profile Image
-                      </FormLabel>
+                      <FormLabel>Profile Image</FormLabel>
                       <FormControl>
                         <ProfileImageUpload
                           value={field.value}

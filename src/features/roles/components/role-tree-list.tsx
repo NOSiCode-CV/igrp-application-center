@@ -255,15 +255,9 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap">
-                    Perfil
-                  </TableHead>
-                  <TableHead className="whitespace-nowrap">
-                    Descrição
-                  </TableHead>
-                  <TableHead className="whitespace-nowrap">
-                    Estado
-                  </TableHead>
+                  <TableHead className="whitespace-nowrap">Perfil</TableHead>
+                  <TableHead className="whitespace-nowrap">Descrição</TableHead>
+                  <TableHead className="whitespace-nowrap">Estado</TableHead>
                   <TableHead className="w-24" />
                 </TableRow>
               </TableHeader>

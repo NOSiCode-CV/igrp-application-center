@@ -208,11 +208,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
         </div>
       </FormControl>
 
-      {description && (
-        <FormDescription>
-          {description}
-        </FormDescription>
-      )}
+      {description && <FormDescription>{description}</FormDescription>}
       <FormMessage />
     </FormItem>
   );
