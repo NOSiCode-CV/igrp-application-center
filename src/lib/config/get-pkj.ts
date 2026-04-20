@@ -6,6 +6,7 @@ export function getPackageJson() {
     name: pkg.name,
     version: pkg.version,
     description: pkg.description,
+    displayName: pkg.displayName,
   };
   return appInfo;
 }

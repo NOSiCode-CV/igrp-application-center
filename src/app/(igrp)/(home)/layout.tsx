@@ -7,18 +7,7 @@ export default async function HomeLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const layoutConfig = await configLayout();
-  const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs, {
-    showBreadcrumb: true,
-    showSidebar: false,
-    showNotifications: true,
-    showSearch: false,
-    showIGRPHeaderLogo: true,
-    showIGRPHeaderTitle: true,
-    showIGRPSidebarTrigger: false,
-    showSettings: true,
-    settingsUrl: "/settings",
-    settingsIcon: "Settings",
-  });
+  const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs);
 
   return <IGRPLayout config={config}>{children}</IGRPLayout>;
 }

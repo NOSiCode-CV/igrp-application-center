@@ -1,4 +1,4 @@
-FROM node:24-alpine AS base
+FROM node:20-alpine AS base
 RUN apk add --no-cache libc6-compat && corepack enable
 WORKDIR /app
 
@@ -16,7 +16,12 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-COPY ./env/.env-build .env.production
+
+ARG NEXT_PUBLIC_BASE_PATH
+ARG NEXT_PUBLIC_ALLOWED_DOMAINS
+
+ENV NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
+ENV NEXT_PUBLIC_ALLOWED_DOMAINS=${NEXT_PUBLIC_ALLOWED_DOMAINS}
 
 RUN pnpm build
 

@@ -2,6 +2,7 @@
   "name": "@igrp/applications-center",
   "version": "0.1.0",
   "description": "IGRP Applications Center",
+  "displayName": "IGRP Applications Center",
   "private": true,
   "author": "IGRP Team | NOSi E.P.E - Núcleo Operacional Para a Sociedade de Informação",
   "license": "MIT",
