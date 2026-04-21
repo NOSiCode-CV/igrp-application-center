@@ -12,27 +12,11 @@ import { getPackageJson } from "./lib/config/get-pkj";
 import { getSessionArgs } from "./lib/config/get-session-args";
 import { getRoutes } from "./lib/config/get-routes";
 
-interface IGRPConfigOptions {
-  showSidebar?: boolean;
-  showBreadcrumb?: boolean;
-  showSearch?: boolean;
-  showNotifications?: boolean;
-  showIGRPHeaderTitle?: boolean;
-  showIGRPSidebarTrigger?: boolean;
-  showIGRPHeaderLogo?: boolean;
-  headerLogo?: string;
-  showSettings?: boolean;
-  settingsUrl?: string;
-  settingsIcon?: string;
-}
-
 export function createConfig(
-  config: IGRPLayoutConfigArgs,
-  options?: IGRPConfigOptions,
+  config: IGRPLayoutConfigArgs
 ): Promise<IGRPConfigArgs> {
   const user = getMockUser().mockUser;
   const menu = getMockMenus().mockMenus;
-  const footerMenu = getMockMenusFooter().mockMenusFooter;
   const apps = getMockApps().mockApps;
 
   const routes = getRoutes();
@@ -47,22 +31,20 @@ export function createConfig(
     layoutMockData: {
       getHeaderData: async () => ({
         user: user,
-        showBreadcrumb: options?.showBreadcrumb ?? true,
-        showSearch: options?.showSearch ?? true,
-        showNotifications: options?.showNotifications ?? true,
+        showBreadcrumb: true,
+        showSearch: true,
+        showNotifications: true,
         showUser: true,
         showThemeSwitcher: true,
-        showIGRPHeaderTitle: options?.showIGRPHeaderTitle ?? false,
-        showIGRPSidebarTrigger: options?.showIGRPSidebarTrigger ?? true,
-        showIGRPHeaderLogo: options?.showIGRPHeaderLogo ?? false,
-        headerLogo: "/igrp-logo.svg",
-        showSettings: options?.showSettings ?? false,
-        settingsUrl: options?.settingsUrl || "/settings",
-        settingsIcon: options?.settingsIcon || "Settings",
+        showIGRPHeaderTitle: true,
+        showIGRPSidebarTrigger: false,
+        showIGRPHeaderLogo: false,
+        showSettings: true,
+        settingsUrl: "/settings",
+        settingsIcon: "Settings",
       }),
       getSidebarData: async () => ({
         menuItems: menu,
-        footerItems: footerMenu,
         user: user,
         defaultOpen: true,
         showAppSwitcher: true,

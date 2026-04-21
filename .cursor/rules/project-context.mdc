@@ -1,0 +1,29 @@
+---
+description: Bootstrap — read AGENTS.md and matching ./skills/ SKILL.md before substantive work.
+alwaysApply: true
+---
+
+# Project context (read from disk)
+
+Cursor **does not** put full `AGENTS.md` or every `SKILL.md` into the model automatically. **You must read them** with file tools when this project is in scope.
+
+## Mandatory order (before code edits or non-trivial guidance)
+
+1. **Read `./AGENTS.md` in full** — single source of truth for stack order and `./skills/` map.
+2. If UI/components/layout: **read `./DESIGN_SYSTEM.md`**.
+3. **Read the SKILL.md(s)** for this task (see table)—then pull linked `rules/` or `components/` **only if** needed.
+
+If you have not read `./AGENTS.md` this session and the user’s request is substantive, **read it now** before answering or editing.
+
+## Which `./skills/**/SKILL.md` to open
+
+| Task | File |
+| ------ | ------ |
+| Next.js / React performance, fetching, bundles, re-renders | `./skills/react-best-practices/SKILL.md` |
+| UI / UX / a11y review | `./skills/web-design-guidelines/SKILL.md` |
+| Composition / component API refactors | `./skills/composition-patterns/SKILL.md` |
+| Product UI (Horizon / IGRP) | `./skills/igrp-design-system/SKILL.md` |
+
+## User-level IDE skills
+
+Short blurbs for global skills are **not** a substitute for the repo’s **`./skills/**/SKILL.md`** files above.

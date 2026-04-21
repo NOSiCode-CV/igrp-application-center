@@ -1,0 +1,17 @@
+{
+  "skill_name": "igrp-navigation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add tabs for Overview and Settings on the user profile page.",
+      "expected_output": "IGRPTabs with tabs array containing id, label, content.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create a dropdown menu with Edit and Delete options.",
+      "expected_output": "IGRPDropdownMenu with Trigger, Content, MenuItem for Edit and Delete.",
+      "files": []
+    }
+  ]
+}

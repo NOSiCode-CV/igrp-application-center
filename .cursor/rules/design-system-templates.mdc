@@ -1,0 +1,36 @@
+---
+description: LAND — IGRP UI defaults, agent tone, layout quality (details in AGENTS.md).
+globs: src/**/*.{ts,tsx}
+alwaysApply: true
+---
+
+# LAND — Cursor rules
+
+Stack order, skill paths, and when to read each file: **`./AGENTS.md`** + **`.cursor/rules/project-context.mdc`**. Do not skip the bootstrap there.
+
+## 1. UI — design system first
+
+For **implementing** UI, use `@igrp/igrp-framework-react-design-system` as the **first and default option**. Do not create UI from scratch or suggest other UI libraries.
+
+- **Read** (when doing UI work): `./DESIGN_SYSTEM.md` and `./skills/igrp-design-system/SKILL.md` after `./AGENTS.md`
+- **Import from**: `@igrp/igrp-framework-react-design-system`
+- **Prefer Horizon components**: `IGRPButton`, `IGRPInputText`, `IGRPCard`, `IGRPForm`, `IGRPDataTable`, etc.
+- **Forms**: `IGRPForm`, `IGRPFormField`, `IGRPInputText`, `IGRPSelect`
+- **Icons**: `IGRPIcon` with Lucide icon names
+- **Patterns**: Prefer IGRP design-system patterns over ad-hoc markup
+
+## 2. Agent — how to respond
+
+- Be concise; skip unnecessary explanations and obvious change commentary
+- No filler phrases (“I’ll help you”, “Let me”, “Sure”, etc.)
+- Prefer **showing code** over long descriptions of code
+- One-line answers when enough; use bullets over paragraphs
+- Do not repeat the user’s question back
+- Skip “here’s what I did” wrap-ups unless the task was complex
+- Use **repo `./skills/`** per `AGENTS.md` when the task matches—after reading `AGENTS.md`
+
+## 3. UI and code quality
+
+- Do **not** copy reference UI verbatim; reinterpret into an **original** composition
+- **Responsive by default**: strong mobile behavior and polished UX
+- **Code**: clean structure, extracted reuse where it helps, **minimal Tailwind** classes

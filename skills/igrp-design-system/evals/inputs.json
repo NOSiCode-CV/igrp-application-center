@@ -1,0 +1,365 @@
+{
+  "skill_name": "igrp-inputs",
+  "evals": [
+    {
+      "id": 1,
+      "skill_name": "igrp-input-text",
+      "prompt": "Add a form field for email with label and validation.",
+      "expected_output": "IGRPInputText with name='email', label='Email', type='email', required, inside IGRPForm with Zod schema.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputText with type='email'",
+        "Has a label prop set to 'Email'",
+        "Has required prop",
+        "Is inside IGRPForm with a Zod schema that validates email format",
+        "Uses formRef with useRef<IGRPFormHandle<typeof schema> | null>(null)",
+        "Does not use raw <input> or react-hook-form register() directly"
+      ]
+    },
+    {
+      "id": 2,
+      "skill_name": "igrp-select",
+      "prompt": "Create a select dropdown for status with Active and Inactive options.",
+      "expected_output": "IGRPSelect with options array [{ label, value }] for Active and Inactive, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPSelect component",
+        "Has an options prop with at least [{ label: 'Active', value: 'active' }, { label: 'Inactive', value: 'inactive' }]",
+        "Has a label prop",
+        "Has a name prop matching the Zod schema field",
+        "Is inside IGRPForm with formRef and onSubmit",
+        "Does not use a native <select> element"
+      ]
+    },
+    {
+      "id": 3,
+      "skill_name": "igrp-input-search",
+      "prompt": "Add a search input with a search icon on the left and a submit button.",
+      "expected_output": "IGRPInputSearch with showStartIcon=true, startIcon='Search', showSubmitButton=true, and an onSearch handler.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputSearch component",
+        "Has showStartIcon={true} and startIcon='Search'",
+        "Has showSubmitButton={true}",
+        "Has an onSearch callback prop",
+        "Does not use IGRPInputText with a manual icon wrapper",
+        "Handles Enter key press to trigger search"
+      ]
+    },
+    {
+      "id": 4,
+      "skill_name": "igrp-input-text",
+      "prompt": "Add a text input for full name with a user icon on the left side.",
+      "expected_output": "IGRPInputText with name, label, showIcon=true, iconName='User', iconPlacement='start'.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputText",
+        "Has showIcon={true}",
+        "Has iconName='User'",
+        "Has iconPlacement='start'",
+        "Has a label and name prop",
+        "Does not render IGRPIcon manually outside the input"
+      ]
+    },
+    {
+      "id": 5,
+      "skill_name": "igrp-input-password",
+      "prompt": "Create a password input field with label and required validation.",
+      "expected_output": "IGRPInputPassword with name, label, required, inside IGRPForm with Zod min length validation.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputPassword component",
+        "Has required prop",
+        "Has a label prop",
+        "Is inside IGRPForm with a Zod schema that uses z.string().min(8)",
+        "Does not use IGRPInputText with type='password'",
+        "Uses formRef with IGRPFormHandle"
+      ]
+    },
+    {
+      "id": 6,
+      "skill_name": "igrp-input-number",
+      "prompt": "Add a quantity input that only accepts numbers between 1 and 100.",
+      "expected_output": "IGRPInputNumber with name, label, min=1, max=100, step=1, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputNumber component",
+        "Has min={1} and max={100}",
+        "Has step={1}",
+        "Has a label and name prop",
+        "Is inside IGRPForm with Zod number validation",
+        "Does not use IGRPInputText with type='number'"
+      ]
+    },
+    {
+      "id": 7,
+      "skill_name": "igrp-textarea",
+      "prompt": "Add a textarea for user bio with a character limit hint.",
+      "expected_output": "IGRPTextarea with name, label, helperText showing the character limit, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPTextarea component",
+        "Has a label prop",
+        "Has a helperText prop with character limit information",
+        "Has a name prop matching the Zod schema field",
+        "Is inside IGRPForm with formRef and onSubmit",
+        "Does not use a raw <textarea> element"
+      ]
+    },
+    {
+      "id": 8,
+      "skill_name": "igrp-checkbox",
+      "prompt": "Add a checkbox for the user to agree to the terms and conditions.",
+      "expected_output": "IGRPCheckbox with name='agree', label='I agree to the terms and conditions', inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPCheckbox component",
+        "Has a label prop",
+        "Has a name prop",
+        "Is inside IGRPForm with Zod z.literal(true) or z.boolean() validation",
+        "Does not use a raw <input type='checkbox'>",
+        "Value stored in form state is boolean"
+      ]
+    },
+    {
+      "id": 9,
+      "skill_name": "igrp-combobox",
+      "prompt": "Create a multi-select combobox for selecting user roles from a predefined list.",
+      "expected_output": "IGRPCombobox with options array, multiple selection enabled, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPCombobox component",
+        "Has an options prop with role values and labels",
+        "Supports multiple selection",
+        "Has a label and name prop",
+        "Is inside IGRPForm with formRef and Zod array validation",
+        "Does not use IGRPSelect for multi-select"
+      ]
+    },
+    {
+      "id": 10,
+      "skill_name": "igrp-date-picker-single",
+      "prompt": "Add a single date picker for selecting a birth date, with dates after today disabled.",
+      "expected_output": "IGRPDatePickerSingle with name, label, disableAfter={new Date()}, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPDatePickerSingle component",
+        "Has disableAfter={new Date()} to block future dates",
+        "Has a label and name prop",
+        "In standalone mode uses date and onDateChange props — never value/onChange",
+        "Passes a real Date object — not a string",
+        "Is inside IGRPForm with formRef when in form context"
+      ]
+    },
+    {
+      "id": 11,
+      "skill_name": "igrp-date-picker-range",
+      "prompt": "Add a date range picker for selecting a booking period.",
+      "expected_output": "IGRPDatePickerRange with name, label, date as DateRange, onDateChange, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPDatePickerRange component",
+        "In standalone mode uses date and onDateChange — never value/onChange",
+        "The date prop is of type DateRange ({ from: Date, to?: Date })",
+        "Has a label and name prop",
+        "Popover closes automatically when both from and to are selected",
+        "Does not use two separate IGRPDatePickerSingle fields for range"
+      ]
+    },
+    {
+      "id": 12,
+      "skill_name": "igrp-date-picker-multiple",
+      "prompt": "Add a multiple date picker so the user can select several holiday dates.",
+      "expected_output": "IGRPDatePickerMultiple with name, label, date as Date[], onDateChange, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPDatePickerMultiple component",
+        "In standalone mode uses date (Date[]) and onDateChange — never value/onChange",
+        "Has a label and name prop",
+        "Is inside IGRPForm with formRef when in form context",
+        "Does not use IGRPDatePickerSingle in a loop",
+        "Passes real Date objects in the array — not strings"
+      ]
+    },
+    {
+      "id": 13,
+      "skill_name": "igrp-date-picker-input-single",
+      "prompt": "Add a date input where the user can type the date directly or pick from a calendar.",
+      "expected_output": "IGRPDatePickerInputSingle with name, label, dateFormat='dd/MM/yyyy', inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPDatePickerInputSingle component",
+        "Has a dateFormat prop (e.g. 'dd/MM/yyyy')",
+        "In standalone mode uses date and onDateChange — never value/onChange",
+        "Has a label and name prop",
+        "Is inside IGRPForm with formRef when in form context",
+        "Does not use IGRPDatePickerSingle when typing support is required"
+      ]
+    },
+    {
+      "id": 14,
+      "skill_name": "igrp-date-time-input",
+      "prompt": "Add a date and time input field for scheduling a meeting.",
+      "expected_output": "IGRPDateTimeInput with name, label, placeholder='DD/MM/YYYY, --:--', inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPDateTimeInput component",
+        "Has a label and name prop",
+        "Has a placeholder in DD/MM/YYYY, HH:MM format",
+        "Is inside IGRPForm with formRef when in form context",
+        "Does not combine separate date and time inputs manually",
+        "Auto-formats input as user types"
+      ]
+    },
+    {
+      "id": 15,
+      "skill_name": "igrp-input-time",
+      "prompt": "Add a time-only input for setting a meeting start time.",
+      "expected_output": "IGRPInputTime with name, label, defaultValue='09:00', inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputTime component",
+        "Has a label and name prop",
+        "Has defaultValue in HH:mm format",
+        "Is inside IGRPForm with formRef when in form context",
+        "Does not use IGRPInputText with type='time'",
+        "Value format is HH:mm (24-hour)"
+      ]
+    },
+    {
+      "id": 16,
+      "skill_name": "igrp-input-phone",
+      "prompt": "Add a phone number input with country selector defaulting to Portugal.",
+      "expected_output": "IGRPInputPhone with name, label, defaultCountry='PT', international=true, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputPhone component",
+        "Has defaultCountry='PT'",
+        "Has international={true}",
+        "Has a label and name prop",
+        "Is inside IGRPForm with formRef when in form context",
+        "Does not use IGRPInputText with type='tel'"
+      ]
+    },
+    {
+      "id": 17,
+      "skill_name": "igrp-input-url",
+      "prompt": "Add a URL input for a website field with protocol selector.",
+      "expected_output": "IGRPInputUrl with name, label, defaultProtocol='https://', inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputUrl component",
+        "Has defaultProtocol='https://'",
+        "Has a label and name prop",
+        "Is inside IGRPForm with formRef when in form context",
+        "onChange and form value contain the full URL including protocol",
+        "Does not use IGRPInputText with type='url'"
+      ]
+    },
+    {
+      "id": 18,
+      "skill_name": "igrp-input-file",
+      "prompt": "Add a file upload input that accepts only PDF files.",
+      "expected_output": "IGRPInputFile with name, label, accept='.pdf', helperText, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputFile component",
+        "Has accept='.pdf'",
+        "Has a label and name prop",
+        "Has a helperText explaining the accepted format",
+        "Is inside IGRPForm with formRef and Zod z.instanceof(File) validation",
+        "Does not use a raw <input type='file'>"
+      ]
+    },
+    {
+      "id": 19,
+      "skill_name": "igrp-input-color",
+      "prompt": "Add a color picker input for selecting a brand color, showing the hex value.",
+      "expected_output": "IGRPInputColor with name, label, defaultValue='#3b82f6', showHexValue=true, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputColor component",
+        "Has showHexValue={true}",
+        "Has a defaultValue in hex format (e.g. '#3b82f6')",
+        "Has a label and name prop",
+        "Is inside IGRPForm with formRef when in form context",
+        "Does not use a raw <input type='color'>"
+      ]
+    },
+    {
+      "id": 20,
+      "skill_name": "igrp-radio-group",
+      "prompt": "Add a radio group for selecting a subscription plan: Free, Pro, or Enterprise.",
+      "expected_output": "IGRPRadioGroup with name, label, options array with three plans, orientation='vertical', inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPRadioGroup component",
+        "Has an options prop with at least three entries (free, pro, enterprise)",
+        "Has orientation='vertical'",
+        "Has a label and name prop",
+        "Is inside IGRPForm with formRef and Zod z.enum() validation",
+        "Does not use native <input type='radio'>"
+      ]
+    },
+    {
+      "id": 21,
+      "skill_name": "igrp-switch",
+      "prompt": "Add a toggle switch to enable or disable email notifications.",
+      "expected_output": "IGRPSwitch with name='notifications', label='Enable email notifications', inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPSwitch component",
+        "Has a label prop",
+        "Has a name prop",
+        "Is inside IGRPForm with formRef and Zod z.boolean() validation",
+        "Value stored in form state is boolean",
+        "Does not use a native <input type='checkbox'> or manual toggle"
+      ]
+    },
+    {
+      "id": 22,
+      "skill_name": "igrp-input-search",
+      "prompt": "Add a search input with debounce that triggers a search callback 500ms after the user stops typing.",
+      "expected_output": "IGRPInputSearch with isDebounce=true, debounceMs=500, onSearch handler, showSubmitButton=false.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputSearch component",
+        "Has isDebounce={true}",
+        "Has debounceMs={500}",
+        "Has an onSearch callback",
+        "Has showSubmitButton={false} since search is triggered automatically",
+        "Does not implement a manual debounce with setTimeout outside the component"
+      ]
+    },
+    {
+      "id": 23,
+      "skill_name": "igrp-input-addon",
+      "prompt": "Add a currency input where the user selects EUR, USD, or GBP and enters an amount.",
+      "expected_output": "IGRPInputAddOn with options for EUR/USD/GBP, selectValue state, onSelectValueChange handler.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputAddOn component",
+        "Has an options prop with EUR, USD, GBP entries",
+        "Has selectValue controlled by useState",
+        "Has onSelectValueChange to update the selected currency",
+        "Has type='number' or appropriate placeholder for the amount",
+        "Does not use two separate inputs manually composed"
+      ]
+    },
+    {
+      "id": 24,
+      "skill_name": "igrp-input-hidden",
+      "prompt": "Add a hidden input to pass the current record ID through the form without showing it to the user.",
+      "expected_output": "IGRPInputHidden with name='recordId' and value set to the record id, inside IGRPForm.",
+      "files": [],
+      "expectations": [
+        "Uses IGRPInputHidden component",
+        "Has a name prop matching the Zod schema field",
+        "Has a value prop set to the record identifier",
+        "Is inside IGRPForm with other visible fields",
+        "Renders no visible UI — hidden by design",
+        "Does not use <input type='hidden'> directly"
+      ]
+    }
+  ]
+}
