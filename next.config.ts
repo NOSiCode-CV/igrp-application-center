@@ -4,7 +4,7 @@ import type { RemotePattern } from "next/dist/shared/lib/image-config";
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const getRemotePatterns = () => {
- const patterns: Array<{
+  const patterns: Array<{
     protocol: RemotePattern["protocol"];
     hostname: RemotePattern["hostname"];
   }> = [];
