@@ -197,10 +197,7 @@ export function ApplicationForm({
                     </FormControl>
                     <SelectContent>
                       {APPLICATIONS_TYPES_FILTERED.map((opt) => (
-                        <SelectItem
-                          key={opt.value}
-                          value={opt.value}
-                        >
+                        <SelectItem key={opt.value} value={opt.value}>
                           {opt.label}
                         </SelectItem>
                       ))}
@@ -219,10 +216,7 @@ export function ApplicationForm({
                   <FormItem>
                     <FormLabel>Slug</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value || ""}
-                      />
+                      <Input {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -238,10 +232,7 @@ export function ApplicationForm({
                   <FormItem>
                     <FormLabel>URL</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value || ""}
-                      />
+                      <Input {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -256,11 +247,7 @@ export function ApplicationForm({
                 <FormItem>
                   <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value || ""}
-                      rows={3}
-                    />
+                    <Textarea {...field} value={field.value || ""} rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -273,10 +260,7 @@ export function ApplicationForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Estado</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecionar estado" />
@@ -284,10 +268,7 @@ export function ApplicationForm({
                     </FormControl>
                     <SelectContent>
                       {STATUS_OPTIONS.map((status) => (
-                        <SelectItem
-                          key={status.value}
-                          value={status.value}
-                        >
+                        <SelectItem key={status.value} value={status.value}>
                           {status.label}
                         </SelectItem>
                       ))}

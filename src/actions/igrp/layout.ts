@@ -2,7 +2,8 @@
 
 import { cookies } from "next/headers";
 
-import { getAccessToken } from "@/lib/auth-helpers";
+import { auth } from "@/lib/auth";
+import { isPreviewMode } from "@/lib/utils";
 
 export async function getTheme() {
   const cookieStore = await cookies();
@@ -13,9 +14,7 @@ export async function getTheme() {
 }
 
 export async function configLayout() {
-  const session = await getAccessToken();
-
+  const session = await auth.getAccessToken();
   const { activeThemeValue, isScaled } = await getTheme();
-
   return { session, activeThemeValue, isScaled };
 }

@@ -139,7 +139,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
               {previewUrl ? (
                 <div className="absolute inset-0 flex items-center justify-center p-4">
                   <Image
-                    src={previewUrl || "/igrp/placeholder.svg"}
+                    src={previewUrl || "/placeholder.svg"}
                     alt={fileName || "Atualizar Imagem"}
                     className="mx-auto max-h-full rounded object-contain"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -208,11 +208,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
         </div>
       </FormControl>
 
-      {description && (
-        <FormDescription>
-          {description}
-        </FormDescription>
-      )}
+      {description && <FormDescription>{description}</FormDescription>}
       <FormMessage />
     </FormItem>
   );

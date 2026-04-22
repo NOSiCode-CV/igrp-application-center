@@ -422,9 +422,7 @@ export function UserList() {
 
       <Tabs defaultValue="active">
         <TabsList>
-          <TabsTrigger value="active">
-            Utilizadores Ativos
-          </TabsTrigger>
+          <TabsTrigger value="active">Utilizadores Ativos</TabsTrigger>
           <TabsTrigger value="pending">
             Convites Pendentes ({pendingData.length})
           </TabsTrigger>

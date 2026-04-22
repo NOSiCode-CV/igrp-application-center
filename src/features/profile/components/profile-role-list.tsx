@@ -137,10 +137,7 @@ export default function ProfileRoleList() {
                           </Badge>
                         ))}
                         {role.permissions.length > 3 && (
-                          <Badge
-                            variant="secondary"
-                            className="text-xs"
-                          >
+                          <Badge variant="secondary" className="text-xs">
                             +{role.permissions.length - 3} mais
                           </Badge>
                         )}

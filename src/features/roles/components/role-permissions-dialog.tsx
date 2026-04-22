@@ -334,9 +334,7 @@ export function RoleDetails({
               </div>
 
               <div className="flex items-center justify-between gap-3 px-3">
-                <Badge>
-                  {selectedRows.length} selecionado(s)
-                </Badge>
+                <Badge>{selectedRows.length} selecionado(s)</Badge>
               </div>
               {isLoading ? (
                 <AppCenterLoading descrption="Carregando permissões..." />

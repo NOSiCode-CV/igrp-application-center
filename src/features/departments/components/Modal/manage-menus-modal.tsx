@@ -433,9 +433,7 @@ export function ManageMenusModal({
                 </SelectTrigger>
                 <SelectContent>
                   {loadingApps && (
-                    <SelectItem value="loading">
-                      Carregando...
-                    </SelectItem>
+                    <SelectItem value="loading">Carregando...</SelectItem>
                   )}
                   {sortedApps.map((app) => (
                     <SelectItem key={app.code} value={app.code}>

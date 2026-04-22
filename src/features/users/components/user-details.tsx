@@ -282,10 +282,7 @@ export function UserDetails({ id }: { id: string }) {
         tabContentClassName="px-0"
       />
 
-      <AlertDialog
-        open={showStatusDialog}
-        onOpenChange={setShowStatusDialog}
-      >
+      <AlertDialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -327,8 +324,7 @@ export function UserDetails({ id }: { id: string }) {
               {isUpdatingStatus ? (
                 <IGRPIcon iconName="LoaderCircle" className="animate-spin" />
               ) : (
-                <IGRPIcon iconName={isActive ? "Ban" : "Check"}
-                />
+                <IGRPIcon iconName={isActive ? "Ban" : "Check"} />
               )}
               {isActive ? "Confirmar Desativar" : "Confirmar Ativar"}
             </IGRPButton>

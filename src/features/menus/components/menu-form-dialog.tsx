@@ -439,9 +439,7 @@ export function MenuFormDialog({
                         name="icon"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>
-                              Ícone
-                            </FormLabel>
+                            <FormLabel>Ícone</FormLabel>
                             <Popover
                               open={openIconPicker}
                               onOpenChange={setOpenIconPicker}
@@ -591,9 +589,7 @@ export function MenuFormDialog({
                         name="status"
                         render={({ field }) => (
                           <FormItem className="w-full">
-                            <FormLabel>
-                              Estado
-                            </FormLabel>
+                            <FormLabel>Estado</FormLabel>
                             <div className="flex items-center justify-between h-10 px-3 border border-input rounded-md bg-background">
                               <span className="text-sm">
                                 {field.value === statusSchema.enum.ACTIVE
@@ -632,9 +628,7 @@ export function MenuFormDialog({
                           name="type"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>
-                                Tipo de Página
-                              </FormLabel>
+                              <FormLabel>Tipo de Página</FormLabel>
                               <FormControl>
                                 <RadioGroup
                                   value={field.value}
@@ -749,9 +743,7 @@ export function MenuFormDialog({
                           render={({ field }) => (
                             <FormItem>
                               <div className="flex items-center justify-between">
-                                <FormLabel>
-                                  Abrir em nova aba
-                                </FormLabel>
+                                <FormLabel>Abrir em nova aba</FormLabel>
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm text-muted-foreground">
                                     {field.value ===

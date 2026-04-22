@@ -99,10 +99,7 @@ const MenuTreeRow = ({
         </TableCell>
 
         {roles?.map((role) => (
-          <TableCell
-            key={role.name}
-            className="text-center border-l"
-          >
+          <TableCell key={role.name} className="text-center border-l">
             <div className="flex items-center justify-center">
               <Checkbox
                 checked={

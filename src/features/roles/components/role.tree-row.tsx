@@ -73,14 +73,10 @@ export function RoleTreeRow({
           </div>
         </TableCell>
 
-        <TableCell>
-          {role.description || "N/A"}
-        </TableCell>
+        <TableCell>{role.description || "N/A"}</TableCell>
 
         <TableCell className="whitespace-nowrap">
-          <Badge
-            className={cn(statusClass(role.status), "capitalize")}
-          >
+          <Badge className={cn(statusClass(role.status), "capitalize")}>
             {showStatus(role.status)}
           </Badge>
         </TableCell>
@@ -98,9 +94,7 @@ export function RoleTreeRow({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>
-                Ações
-              </DropdownMenuLabel>
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuItem onSelect={() => handleEdit(role)}>
                 <IGRPIcon
                   iconName="Pencil"
@@ -109,9 +103,7 @@ export function RoleTreeRow({
                 />
                 Editar
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => handleNewSubRole(role)}
-              >
+              <DropdownMenuItem onSelect={() => handleNewSubRole(role)}>
                 <IGRPIcon
                   iconName="Plus"
                   className="mr-2 size-4"
@@ -119,9 +111,7 @@ export function RoleTreeRow({
                 />
                 Criar sub perfil
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => handlePermissions(role)}
-              >
+              <DropdownMenuItem onSelect={() => handlePermissions(role)}>
                 <IGRPIcon
                   iconName="ShieldCheck"
                   className="mr-2 size-4"

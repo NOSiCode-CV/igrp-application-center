@@ -102,10 +102,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Estado</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                value={field.value}
-              >
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-full truncate">
                     <SelectValue placeholder="Selecionar estado" />
@@ -113,10 +110,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
                 </FormControl>
                 <SelectContent>
                   {STATUS_OPTIONS.map((status) => (
-                    <SelectItem
-                      key={status.value}
-                      value={status.value}
-                    >
+                    <SelectItem key={status.value} value={status.value}>
                       {status.label}
                     </SelectItem>
                   ))}

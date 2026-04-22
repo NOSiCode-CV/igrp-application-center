@@ -9,8 +9,8 @@ export const siteConfig = {
     github: "https://github.com/NOSiCode-CV/IGRP-Framework",
   },
   logo: {
-    src: "/igrp/logo-no-text.png",
-    srcDark: "/igrp/logo-negative.png",
+    src: "/logo-no-text.png",
+    srcDark: "/logo-negative.png",
     width: 100,
     height: 60,
   },

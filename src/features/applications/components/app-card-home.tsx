@@ -11,6 +11,7 @@ import {
   useRemoveCurrentUserFavoriteApplication,
   useCurrentUserFavoriteApplications,
 } from "@/features/users/use-users";
+import { Route } from "next";
 
 export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   const { name, description, code, picture } = app;
@@ -37,7 +38,7 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   };
 
   return (
-    <Link href={href} className="group block h-full">
+    <Link href={href as Route} className="group block h-full">
       <div className="relative h-full overflow-hidden rounded-sm border-2 border-border/40 bg-card p-5 hover:shadow-sm">
         <div className="flex gap-4">
           <div className="relative size-14 rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50">

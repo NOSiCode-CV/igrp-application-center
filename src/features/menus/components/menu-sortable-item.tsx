@@ -211,9 +211,7 @@ export function SortableMenuItem({
                     </DropdownMenuItem>
 
                     {menu.type === "GROUP" && (
-                      <DropdownMenuItem
-                        onClick={() => onAddChild?.(menu)}
-                      >
+                      <DropdownMenuItem onClick={() => onAddChild?.(menu)}>
                         <IGRPIcon
                           iconName="FolderPlus"
                           className="size-4 mr-2"

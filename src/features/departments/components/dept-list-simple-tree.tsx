@@ -1,9 +1,7 @@
 "use client";
 
-import {
-  cn,
-  IGRPIcon,
-} from "@igrp/igrp-framework-react-design-system";
+import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { Route } from "next";
 import Link from "next/link";
 
 type Department = {
@@ -75,7 +73,7 @@ const DepartmentTreeItemSimple = ({
         </button>
 
         <Link
-          href="/departments"
+          href={"/departments" as Route}
           className="flex items-center gap-2 flex-1 min-w-0 hover:text-primary transition-colors"
         >
           <div className="relative">

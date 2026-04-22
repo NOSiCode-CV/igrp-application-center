@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { Route } from "next";
 
 const settingsConfig = {
   personal: [
@@ -45,7 +46,7 @@ export default function SettingsPage() {
   const router = useRouter();
 
   const handleNavigate = (href: string) => {
-    router.push(href);
+    router.push(href as Route);
   };
 
   return (

@@ -13,7 +13,7 @@ import { getSessionArgs } from "./lib/config/get-session-args";
 import { getRoutes } from "./lib/config/get-routes";
 
 export function createConfig(
-  config: IGRPLayoutConfigArgs
+  config: IGRPLayoutConfigArgs,
 ): Promise<IGRPConfigArgs> {
   const user = getMockUser().mockUser;
   const menu = getMockMenus().mockMenus;

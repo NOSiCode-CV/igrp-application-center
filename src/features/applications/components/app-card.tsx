@@ -26,6 +26,7 @@ import {
   ApplicationDTO,
   ApplicationType,
 } from "@igrp/platform-access-management-client-ts";
+import { Route } from "next";
 
 export function ApplicationCard({ app }: { app: ApplicationDTO }) {
   const { name, code, status, description, slug, url, type } = app;
@@ -68,13 +69,13 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
           </Badge>
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
+        <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
           {description || "Sem descrição."}
         </p>
 
         <div className="flex items-center justify-end gap-1 pt-4 border-t">
           <ButtonLinkTooltip
-            href={`${ROUTES.APPLICATIONS}/${code}`}
+            href={`${ROUTES.APPLICATIONS}/${code}` as Route}
             icon="Eye"
             label="Ver"
             size="icon"
@@ -95,15 +96,13 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
                     <IGRPIcon iconName="SquarePen" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
-                  Editar
-                </TooltipContent>
+                <TooltipContent>Editar</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
 
           <ButtonLinkTooltip
-            href={href || ""}
+            href={(href || "") as Route}
             icon="ExternalLink"
             label="Abrir"
             size="icon"
@@ -116,9 +115,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:min-w-2xl max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle>
-              Editar Aplicação
-            </DialogTitle>
+            <DialogTitle>Editar Aplicação</DialogTitle>
           </DialogHeader>
           <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
         </DialogContent>

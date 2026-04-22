@@ -2,7 +2,7 @@ import {
   igrpGetAccessClient,
   igrpResetAccessClientConfig,
 } from "@igrp/framework-next";
-import { serverSession } from "./igrp/auth";
+import { serverSession } from "@/lib/auth";
 
 export async function getClientAccess() {
   igrpResetAccessClientConfig();

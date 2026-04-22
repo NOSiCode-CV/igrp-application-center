@@ -141,9 +141,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
-                    <DialogTitle>
-                      Editar Aplicação
-                    </DialogTitle>
+                    <DialogTitle>Editar Aplicação</DialogTitle>
                   </DialogHeader>
 
                   <ApplicationForm
@@ -223,9 +221,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                   <h1 className="text-2xl font-bold tracking-tight">
                     {app.name}
                   </h1>
-                  <Badge
-                    className={getStatusColor(app.status || "ACTIVE")}
-                  >
+                  <Badge className={getStatusColor(app.status || "ACTIVE")}>
                     {app.status}
                   </Badge>
                 </div>
