@@ -6,6 +6,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
@@ -106,9 +107,12 @@ export default function UserSignature({
           >
             {currentSignatureUrl ? (
               <div className="relative p-6 min-h-[100px] flex items-center justify-center">
-                <img
+                <Image
                   src={currentSignatureUrl}
                   alt="Assinatura"
+                  width={160}
+                  height={80}
+                  unoptimized
                   className="max-h-20 max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">

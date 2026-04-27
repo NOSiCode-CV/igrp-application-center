@@ -130,7 +130,8 @@ export function RoleDeleteDialog({
           <IGRPButton
             variant="destructive"
             onClick={() => {
-              confirmDelete(), setConfirmation("");
+              confirmDelete();
+              setConfirmation("");
             }}
             disabled={!isConfirmed || isPending}
             showIcon

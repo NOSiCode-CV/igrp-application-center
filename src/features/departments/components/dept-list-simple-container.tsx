@@ -24,8 +24,8 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
     data: userDepts,
     isLoading,
     error,
-  } = useUserDepartments(user?.id!, {
-    enabled: !!user,
+  } = useUserDepartments(user?.id ?? 0, {
+    enabled: !!user?.id,
   });
 
   if (isLoadingMyDeps || (isLoading && !error && !errorMyDeps)) {

@@ -39,19 +39,6 @@ export function ProfileUserForm() {
 
   const { data: user, isLoading, error } = useCurrentUser();
 
-  if (!user) {
-    return (
-      <AppCenterNotFound
-        iconName="User"
-        title="Nenhum utilizador encontrada."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <AppCenterLoading descrption="Carregando profile..." />;
-  }
-
   const form = useForm<z.infer<typeof UpdateUserSchema>>({
     resolver: zodResolver(UpdateUserSchema),
   });
@@ -66,6 +53,19 @@ export function ProfileUserForm() {
       form.reset(defaultValues);
     }
   }, [user, form]);
+
+  if (isLoading) {
+    return <AppCenterLoading descrption="Carregando profile..." />;
+  }
+
+  if (!user) {
+    return (
+      <AppCenterNotFound
+        iconName="User"
+        title="Nenhum utilizador encontrada."
+      />
+    );
+  }
 
   async function onSubmit(values: z.infer<typeof UpdateUserSchema>) {
     const formData = new FormData();
