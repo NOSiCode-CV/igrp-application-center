@@ -6,16 +6,14 @@ import type {
   CreateRoleRequest,
   DepartmentDTO,
   MenuEntryDTO,
+  ResourceDTO,
   RoleDTO,
   UpdateDepartmentRequest,
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
 import { extractApiError } from "@/lib/utils";
 import { getClientAccess } from "./access-client";
-
-type ActionResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+import type { AccessClient, ActionResult, SdkData } from "./types";
 
 export async function getDepartments(): Promise<ActionResult<DepartmentDTO[]>> {
   const client = await getClientAccess();
@@ -31,7 +29,7 @@ export async function getDepartments(): Promise<ActionResult<DepartmentDTO[]>> {
 
 export async function createDepartment(
   departmentData: CreateDepartmentRequest,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<DepartmentDTO>> {
   const client = await getClientAccess();
 
   try {
@@ -46,7 +44,7 @@ export async function createDepartment(
 export async function updateDepartment(
   code: string,
   data: UpdateDepartmentRequest,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<DepartmentDTO>> {
   const client = await getClientAccess();
 
   try {
@@ -60,7 +58,7 @@ export async function updateDepartment(
 
 export async function deleteDepartment(
   code: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
 
   try {
@@ -118,7 +116,7 @@ export async function getDepartmentApplications(
 export async function addApplicationsToDepartment(
   code: string,
   appCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
   try {
     const result = await client.departments.addApplicationsToDepartment(
@@ -135,7 +133,7 @@ export async function addApplicationsToDepartment(
 export async function removeApplicationsFromDepartment(
   code: string,
   appCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
   try {
     const result = await client.departments.removeApplicationsFromDepartment(
@@ -189,7 +187,7 @@ export async function addMenusToDepartment(
   appCode: string,
   departmentCode: string,
   menuCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
   try {
     const result = await client.departments.addMenusToDepartment(
@@ -208,7 +206,7 @@ export async function removeMenusFromDepartment(
   appCode: string,
   departmentCode: string,
   menuCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
   try {
     const result = await client.departments.removeMenusFromDepartment(
@@ -280,7 +278,7 @@ export async function updateRole(
 export async function deleteRole(
   departmentCode: string,
   roleCode: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<{ code: string }>> {
   const client = await getClientAccess();
   try {
     const _result = await client.departments.deleteRole(
@@ -288,8 +286,9 @@ export async function deleteRole(
       roleCode,
     );
     return { success: true, data: { code: roleCode } };
-  } catch (error: any) {
-    if (error?.status === 204 || error?.status === 0) {
+  } catch (error: unknown) {
+    const status = (error as { status?: number } | null | undefined)?.status;
+    if (status === 204 || status === 0) {
       return { success: true, data: { code: roleCode } };
     }
     console.error(`[delete-role] Erro ao eliminar perfil ${roleCode}:`, error);
@@ -301,7 +300,7 @@ export async function deleteRole(
 export async function addResourcesToDepartment(
   departmentCode: string,
   resourceCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
 
   try {
@@ -319,7 +318,7 @@ export async function addResourcesToDepartment(
 export async function removeResourcesFromDepartment(
   departmentCode: string,
   resourceCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
 
   try {
@@ -336,7 +335,7 @@ export async function removeResourcesFromDepartment(
 
 export async function getAvailableResources(
   departmentCode: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<ResourceDTO[]>> {
   const client = await getClientAccess();
 
   try {
@@ -351,7 +350,7 @@ export async function getAvailableResources(
 
 export async function getDepartmentResources(
   departmentCode: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<ResourceDTO[]>> {
   const client = await getClientAccess();
 
   try {
@@ -367,7 +366,11 @@ export async function getDepartmentResources(
 // PERMISSIONS
 export async function getDepartmentPermissions(
   departmentCode: string,
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<
+    SdkData<AccessClient["departments"]["getDepartmentPermissions"]>
+  >
+> {
   const client = await getClientAccess();
 
   try {
@@ -382,7 +385,9 @@ export async function getDepartmentPermissions(
 
 export async function getAvailablePermissions(
   departmentCode: string,
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<SdkData<AccessClient["departments"]["getAvailablePermissions"]>>
+> {
   const client = await getClientAccess();
 
   try {
@@ -398,7 +403,7 @@ export async function getAvailablePermissions(
 export async function addPermissionsToDepartment(
   departmentCode: string,
   permissionCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
 
   try {
@@ -416,7 +421,7 @@ export async function addPermissionsToDepartment(
 export async function removePermissionsFromDepartment(
   departmentCode: string,
   permissionCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
 
   try {
@@ -472,10 +477,11 @@ export async function removePermissionsFromRole(
   }
 }
 
+// NOTE: SDK declares this as `ApiResponse<any>`; downstream consumers narrow.
 export async function getPermissionsByRole(
   departmentCode: string,
   roleCode: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<unknown>> {
   const client = await getClientAccess();
 
   try {
@@ -493,7 +499,11 @@ export async function getPermissionsByRole(
 export async function getAvailablePermissionsForRole(
   departmentCode: string,
   roleCode: string,
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<
+    SdkData<AccessClient["departments"]["getAvailablePermissionsForRole"]>
+  >
+> {
   const client = await getClientAccess();
 
   try {

@@ -1,6 +1,9 @@
 "use server";
 
-import type { IGRPMenuItemArgs } from "@igrp/framework-next-types/dist/types/access-management";
+import type {
+  IGRPMenuCRUDArgs,
+  IGRPMenuItemArgs,
+} from "@igrp/framework-next-types/dist/types/access-management";
 import type {
   ApplicationDTO,
   ApplicationFilters,
@@ -16,10 +19,7 @@ import {
 } from "@/features/menus/menu-mapper";
 import { extractApiError } from "@/lib/utils";
 import { getClientAccess } from "./access-client";
-
-type ActionResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+import type { ActionResult } from "./types";
 
 export async function getApplications(
   filters?: ApplicationFilters,
@@ -106,7 +106,7 @@ export async function getMenus(
 export async function createMenu(
   appCode: string,
   menu: CreateMenuRequest,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<IGRPMenuCRUDArgs>> {
   const client = await getClientAccess();
 
   try {
@@ -123,7 +123,7 @@ export async function updateMenu(
   appCode: string,
   menuCode: string,
   updated: UpdateMenuRequest,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<IGRPMenuCRUDArgs>> {
   const client = await getClientAccess();
 
   try {
@@ -148,7 +148,7 @@ export async function deleteMenu(
 
   try {
     const result = await client.applications.deleteMenu(appCode, menuCode);
-    return { success: true, data: result };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("[menu-delete] Não foi possível eliminar menu:", error);
     return { success: false, error: extractApiError(error) };
