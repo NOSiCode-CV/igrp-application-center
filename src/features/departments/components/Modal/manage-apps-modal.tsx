@@ -23,13 +23,13 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useApplications } from "@/features/applications/use-applications";
 import {
   useAddApplicationsToDepartment,
   useDepartmentAvailableApps,
   useRemoveApplicationsFromDepartment,
 } from "../../use-departments";
-import { useApplications } from "@/features/applications/use-applications";
 
 interface ManageAppsModalProps {
   departmentCode: string;
@@ -85,7 +85,7 @@ export function ManageAppsModal({
     }));
 
     return appsArray.sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [assignedCodes, availableApps, assignedApps]);
+  }, [assignedCodes]);
 
   const filteredApps = useMemo(() => {
     if (!searchTerm) return allApps;

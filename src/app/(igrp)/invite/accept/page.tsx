@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useSession } from "next-auth/react";
-import { useSearchParams, useRouter } from "next/navigation";
 import {
   Badge,
   Card,
@@ -14,6 +11,9 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import {
   useGetUserInvitationByToken,

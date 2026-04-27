@@ -1,26 +1,25 @@
 "use client";
 
 import {
-  Button,
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
+  IGRPButton,
   Input,
-  useIGRPToast,
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
-  IGRPButton,
+  SelectTrigger,
+  SelectValue,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
 type UserEditFormProps = {
   user: IGRPUserDTO;

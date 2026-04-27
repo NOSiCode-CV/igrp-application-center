@@ -1,8 +1,12 @@
 "use client";
 
 import {
-  type ColumnDef,
   Badge,
+  type ColumnDef,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
   IGRPDataTableFacetedFilterFn,
@@ -10,33 +14,31 @@ import {
   IGRPDataTableFilterInput,
   IGRPDataTableHeaderDefault,
   IGRPDataTableHeaderSortToggle,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenu,
-  DropdownMenuTrigger,
   IGRPIcon,
   IGRPUserAvatar,
   type Row,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
-  TabsContent,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
-
 import { ButtonLink } from "@/components/button-link";
+import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";
 import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
 import {
-  useUsers,
+  useCancelUserInvitation,
   useGetUserInvitations,
   useResendUserInvitation,
   useUpdateUserStatus,
-  useCancelUserInvitation,
+  useUsers,
 } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import {
@@ -47,9 +49,6 @@ import {
   showStatus,
   statusInviteClass,
 } from "@/lib/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ConfirmDialog } from "@/components/confirmation-modal";
 
 export function UserList() {
   const [data, setData] = useState<IGRPUserDTO[]>([]);
@@ -353,7 +352,7 @@ export function UserList() {
   if (error) throw error;
 
   const handleConfirmStatusChange = () => {
-    if (userToUpdate && userToUpdate.user.id) {
+    if (userToUpdate?.user.id) {
       updateStatusMutation.mutate(
         { id: userToUpdate.user.id, value: userToUpdate.newStatus },
         {

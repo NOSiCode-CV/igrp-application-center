@@ -1,19 +1,16 @@
 "use client";
 
 import { signOut } from "@igrp/framework-next-auth/client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LogoutPage() {
-  const router = useRouter();
-
   useEffect(() => {
     const performLogout = async () => {
       await signOut({ redirect: false });
     };
 
     performLogout();
-  }, [router]);
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-accent">
@@ -28,6 +25,7 @@ export default function LogoutPage() {
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
+                  <title>Logout</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

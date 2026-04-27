@@ -1,7 +1,6 @@
 "use server";
 
 import type {
-  ApiResponse,
   ApplicationDTO,
   IGRPUserDTO,
   InviteUserDTO,
@@ -9,8 +8,8 @@ import type {
   UserFilters,
   UserInvitationResponseDTO,
 } from "@igrp/platform-access-management-client-ts";
-import { getClientAccess } from "./access-client";
 import { extractApiError } from "@/lib/utils";
+import { getClientAccess } from "./access-client";
 
 type ActionResult<T> =
   | { success: true; data: T }

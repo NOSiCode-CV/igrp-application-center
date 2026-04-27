@@ -626,7 +626,7 @@ export const useAddPermissionsToRole = () => {
         await queryClient.invalidateQueries({ queryKey: ["roles"] });
         await queryClient.invalidateQueries({
           queryKey: [
-            "roleByName",
+            "permissionsByRole",
             variables.departmentCode,
             variables.roleCode,
           ],
@@ -664,7 +664,7 @@ export const useRemovePermissionsFromRole = () => {
         await queryClient.invalidateQueries({ queryKey: ["roles"] });
         await queryClient.invalidateQueries({
           queryKey: [
-            "roleByName",
+            "permissionsByRole",
             variables.departmentCode,
             variables.roleCode,
           ],
@@ -689,7 +689,7 @@ export const usePermissionsByRole = (
   roleCode: string,
 ) => {
   return useQuery({
-    queryKey: ["roleByName", departmentCode, roleCode],
+    queryKey: ["permissionsByRole", departmentCode, roleCode],
     queryFn: async () => {
       const result = await getPermissionsByRole(departmentCode, roleCode);
       if (!result.success) throw new Error(result.error);

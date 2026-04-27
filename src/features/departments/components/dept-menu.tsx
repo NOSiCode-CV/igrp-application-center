@@ -28,21 +28,21 @@ import {
   TooltipTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
-import { useState, useEffect, useMemo } from "react";
-import { ManageMenusModal } from "./Modal/manage-menus-modal";
-import { buildMenuTree } from "../dept-lib";
-import MenuTreeRow from "./menu-tree-row";
+import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+import { useEffect, useMemo, useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
+import {
+  useAddRolesToMenu,
+  useRemoveRolesFromMenu,
+} from "@/features/applications/use-applications";
+import { buildMenuTree } from "../dept-lib";
 import {
   useDepartmentApplications,
   useDepartmentMenus,
   useRoles,
 } from "../use-departments";
-import {
-  useAddRolesToMenu,
-  useRemoveRolesFromMenu,
-} from "@/features/applications/use-applications";
+import { ManageMenusModal } from "./Modal/manage-menus-modal";
+import MenuTreeRow from "./menu-tree-row";
 
 interface MenuPermissionsProps {
   departmentCode: string;

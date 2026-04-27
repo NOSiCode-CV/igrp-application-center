@@ -1,36 +1,35 @@
 "use client";
 
 import {
-  IGRPIcon,
-  IGRPUserAvatar,
-  useIGRPToast,
-  IGRPButton,
-  Card,
-  CardContent,
   AlertDialog,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Card,
+  CardContent,
   cn,
-  IGRPTabItem,
-  IGRPTabs,
+  IGRPButton,
+  IGRPIcon,
   IGRPInputText,
+  type IGRPTabItem,
+  IGRPTabs,
+  IGRPUserAvatar,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useRef, useEffect } from "react";
+import type { Status } from "@igrp/platform-access-management-client-ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
+import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
+import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
+import ProfileRoleList from "@/features/profile/components/profile-role-list";
 import { useCurrentUser, useUpdateUser } from "@/features/users/use-users";
 import { getInitials } from "@/lib/utils";
-import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
-import UserSignature from "./user-signature";
-import UserRoleList from "./user-role-list";
-import { useQueryClient } from "@tanstack/react-query";
 import UserApplications from "./user-applications";
-import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
-import { Status } from "@igrp/platform-access-management-client-ts";
-import ProfileRoleList from "@/features/profile/components/profile-role-list";
+import UserSignature from "./user-signature";
 
 export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();

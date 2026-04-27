@@ -10,9 +10,8 @@ import type {
   UpdateDepartmentRequest,
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
-
-import { getClientAccess } from "./access-client";
 import { extractApiError } from "@/lib/utils";
+import { getClientAccess } from "./access-client";
 
 type ActionResult<T> =
   | { success: true; data: T }
@@ -284,7 +283,7 @@ export async function deleteRole(
 ): Promise<ActionResult<any>> {
   const client = await getClientAccess();
   try {
-    const result = await client.departments.deleteRole(
+    const _result = await client.departments.deleteRole(
       departmentCode,
       roleCode,
     );

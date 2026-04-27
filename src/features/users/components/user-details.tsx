@@ -1,35 +1,35 @@
 "use client";
 
 import {
-  IGRPIcon,
-  IGRPUserAvatar,
-  Card,
-  CardContent,
-  IGRPButton,
   AlertDialog,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-  useIGRPToast,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Card,
+  CardContent,
   cn,
-  IGRPTabItem,
-  IGRPTabs,
+  IGRPButton,
+  IGRPIcon,
   IGRPInputText,
+  type IGRPTabItem,
+  IGRPTabs,
+  IGRPUserAvatar,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useRef } from "react";
+import type { Status } from "@igrp/platform-access-management-client-ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import { useUser, useUpdateUser } from "@/features/users/use-users";
-import { getInitials } from "@/lib/utils";
-import { useFiles } from "@/features/files/use-files";
-import UserSignature from "./user-signature";
-import UserRoleList from "./user-role-list";
-import UserApplications from "./user-applications";
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
-import { useQueryClient } from "@tanstack/react-query";
-import { Status } from "@igrp/platform-access-management-client-ts";
+import { useFiles } from "@/features/files/use-files";
+import { useUpdateUser, useUser } from "@/features/users/use-users";
+import { getInitials } from "@/lib/utils";
+import UserApplications from "./user-applications";
+import UserRoleList from "./user-role-list";
+import UserSignature from "./user-signature";
 
 export function UserDetails({ id }: { id: string }) {
   const {

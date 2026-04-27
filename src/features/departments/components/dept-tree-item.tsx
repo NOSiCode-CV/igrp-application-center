@@ -12,9 +12,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
-import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
+import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
-import React from "react";
+import type React from "react";
 
 type DepartmentWithChildren = DepartmentDTO & {
   children?: DepartmentWithChildren[];

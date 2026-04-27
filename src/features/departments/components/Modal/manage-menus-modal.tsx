@@ -28,17 +28,17 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useEffect, useMemo, useRef } from "react";
+import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useApplications } from "@/features/applications/use-applications";
+import { getMenuIcon } from "@/lib/utils";
+import { buildMenuTree } from "../../dept-lib";
 import {
   useAddMenusToDepartment,
   useDepartmentAvailableMenus,
   useDepartmentMenus,
   useRemoveMenusFromDepartment,
 } from "../../use-departments";
-import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
-import { buildMenuTree } from "../../dept-lib";
-import { getMenuIcon } from "@/lib/utils";
-import { useApplications } from "@/features/applications/use-applications";
 
 interface ManageMenusModalProps {
   departmentCode: string;
@@ -114,7 +114,7 @@ export function ManageMenusModal({
     );
 
     return menusArray.sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [assignedCodes, availableMenus, assignedMenus]);
+  }, [assignedCodes]);
 
   const appsFromMenus = useMemo(() => {
     if (allMenus.length === 0) return [];

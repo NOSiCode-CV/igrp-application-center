@@ -1,13 +1,14 @@
-import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import {
-  cn,
-  CardContent,
   Card,
+  CardContent,
+  cn,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import React, { useEffect, useRef, useState } from "react";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { useUpdateUser } from "../use-users";
 
 export default function UserSignature({

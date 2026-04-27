@@ -1,30 +1,33 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IGRPButton,
   Button,
+  Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  Dialog,
   DialogTitle,
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Form,
   IGRPIcon,
   Input,
+  Select,
   SelectContent,
   SelectItem,
-  Select,
   SelectTrigger,
   SelectValue,
   Textarea,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import {
+  useCreateRole,
+  useUpdateRole,
+} from "@/features/departments/use-departments";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusSchema } from "@/schemas/global";
 import {
@@ -35,10 +38,6 @@ import {
   type UpdateRoleArgs,
   updateRoleSchema,
 } from "../role-schemas";
-import {
-  useCreateRole,
-  useUpdateRole,
-} from "@/features/departments/use-departments";
 
 interface RoleFormDialogProps {
   open: boolean;
@@ -95,7 +94,7 @@ export function RoleFormDialog({
         parentCode: parentRoleName ?? "",
       } as CreateRoleArgs);
     }
-  }, [open, role, parentRoleName, departmentCode, form]);
+  }, [open, role, parentRoleName, departmentCode, form, defaultValues]);
 
   const isLoading = isCreating || isUpdating || form.formState.isSubmitting;
 
@@ -150,7 +149,7 @@ export function RoleFormDialog({
     }
   };
 
-  const setDefaultFromName = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const _setDefaultFromName = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     form.setValue("name", name);
 
@@ -163,7 +162,7 @@ export function RoleFormDialog({
     }
   };
 
-  const titleText = isEdit
+  const _titleText = isEdit
     ? "Editar Perfil"
     : isSubRole
       ? "Criar Sub Perfil"

@@ -1,6 +1,6 @@
+import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import { useQuery } from "@tanstack/react-query";
 import { getRoleByCode, getRoleById } from "@/actions/roles";
-import { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
 export const useRoleByCode = (name: string) => {
   return useQuery<RoleDTO>({
@@ -14,7 +14,7 @@ export const useRoleByCode = (name: string) => {
 
 export const useRoleById = (id: number) => {
   return useQuery<RoleDTO>({
-    queryKey: ["roleByCode", id] as const,
+    queryKey: ["roleById", id] as const,
     queryFn: () => getRoleById(id),
     enabled: !!id,
     retry: false,

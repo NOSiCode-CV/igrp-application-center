@@ -5,25 +5,25 @@ import {
   IGRPIcon,
   Input,
   Switch,
+  Table,
   TableBody,
   TableCell,
-  TableHeader,
   TableHead,
-  Table,
+  TableHeader,
   TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ButtonLink } from "@/components/button-link";
-import { ManageResourcesModal } from "./resource-manage-modal";
+import { AppCenterLoading } from "@/components/loading";
 import {
+  useAddPermissionsToDepartment,
   useAvailablePermissions,
   useDepartmentPermissions,
-  useAddPermissionsToDepartment,
   useRemovePermissionsFromDepartment,
 } from "@/features/departments/use-departments";
-import { AppCenterLoading } from "@/components/loading";
-import { PermissionArgs } from "../permissions-schemas";
+import type { PermissionArgs } from "../permissions-schemas";
+import { ManageResourcesModal } from "./resource-manage-modal";
 
 interface PermissionListProps {
   departmentCode: string;

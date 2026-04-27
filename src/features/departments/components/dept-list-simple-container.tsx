@@ -1,15 +1,15 @@
 "use client";
 
-import { cn, IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
+import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
-import DepartmentTreeItemSimple from "./dept-list-simple-tree";
-import { buildTree, filterTree } from "./dept-list-tree";
+import { AppCenterLoading } from "@/components/loading";
 import {
   useCurrentUserDepartments,
   useUserDepartments,
 } from "@/features/users/use-users";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { AppCenterLoading } from "@/components/loading";
+import DepartmentTreeItemSimple from "./dept-list-simple-tree";
+import { buildTree, filterTree } from "./dept-list-tree";
 
 export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   const [searchTerm, setSearchTerm] = useState("");

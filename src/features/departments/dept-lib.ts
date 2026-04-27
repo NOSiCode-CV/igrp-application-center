@@ -1,6 +1,6 @@
-import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+import type { MenuWithChildren } from "./components/dept-menu";
 import type { DepartmentArgs } from "./dept-schemas";
-import { MenuWithChildren } from "./components/dept-menu";
 
 export type DepartmentOption = { value: string; label: string };
 
@@ -25,7 +25,7 @@ export const buildMenuTree = (menus: MenuEntryDTO[]): MenuWithChildren[] => {
     if (menu.parentCode) {
       const parent = map.get(menu.parentCode);
       if (parent) {
-        parent.children!.push(node);
+        parent.children?.push(node);
       } else {
         roots.push(node);
       }

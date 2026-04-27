@@ -6,8 +6,8 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { MenuWithChildren } from "./dept-menu";
 import { getMenuIcon } from "@/lib/utils";
+import type { MenuWithChildren } from "./dept-menu";
 
 const MenuTreeRow = ({
   menu,

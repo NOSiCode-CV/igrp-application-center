@@ -1,19 +1,19 @@
 import {
-  cn,
   Badge,
   Button,
+  cn,
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenu,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   IGRPIcon,
   TableCell,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
-import { RoleWithChildren } from "./role-tree-list";
 import { showStatus, statusClass } from "@/lib/utils";
+import type { RoleWithChildren } from "./role-tree-list";
 
 export function RoleTreeRow({
   role,

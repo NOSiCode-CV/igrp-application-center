@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
-import { Route } from "next";
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
 
 const settingsConfig = {
   personal: [

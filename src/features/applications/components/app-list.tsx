@@ -19,7 +19,6 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
-import { AppCenterNotFound } from "@/components/not-found";
 import { PageHeader } from "@/components/page-header";
 import { ApplicationCard } from "@/features/applications/components/app-card";
 import { useApplications } from "@/features/applications/use-applications";

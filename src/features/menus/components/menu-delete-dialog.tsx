@@ -1,6 +1,5 @@
 "use client";
 
-import { useDeleteMenu } from "@/features/applications/use-applications";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +14,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
+import { useDeleteMenu } from "@/features/applications/use-applications";
 
 interface MenuDeleteDialogProps {
   appCode: string;

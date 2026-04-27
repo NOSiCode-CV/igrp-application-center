@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -12,6 +9,8 @@ import {
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function InviteErrorPage() {
   const searchParams = useSearchParams();

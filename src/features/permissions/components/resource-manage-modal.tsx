@@ -1,36 +1,36 @@
 "use client";
 
 import {
-  cn,
   AlertDialog,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Badge,
   Button,
+  cn,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
+  IGRPButton,
   IGRPIcon,
   Input,
+  ScrollArea,
   Skeleton,
   Switch,
   useIGRPToast,
-  IGRPButton,
-  ScrollArea,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useEffect, useMemo } from "react";
-import { getStatusColor, showStatus } from "@/lib/utils";
+import { useEffect, useMemo, useState } from "react";
 import {
   useAddResourcesToDepartment,
   useAvailableResources,
   useDepartmentResources,
   useRemoveResourcesFromDepartment,
 } from "@/features/departments/use-departments";
+import { getStatusColor, showStatus } from "@/lib/utils";
 
 interface ManageResourcesModalProps {
   departmentCode: string;

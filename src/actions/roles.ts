@@ -1,8 +1,8 @@
 "use server";
 
-import { getClientAccess } from "./access-client";
+import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import { extractApiError } from "@/lib/utils";
-import { RoleDTO } from "@igrp/platform-access-management-client-ts";
+import { getClientAccess } from "./access-client";
 
 export async function getRoleByCode(name: string) {
   const client = await getClientAccess();

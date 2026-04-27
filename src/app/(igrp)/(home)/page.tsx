@@ -1,21 +1,21 @@
 "use client";
-import { ApplicationsListHome } from "@/features/applications/components/app-list-home";
 import {
   Badge,
   Calendar,
   Card,
   IGRPIcon,
   IGRPInputText,
-  IGRPTabItem,
+  type IGRPTabItem,
   IGRPTabs,
   ScrollArea,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
+import { ApplicationsListHome } from "@/features/applications/components/app-list-home";
 
 const initialTasks: any[] | (() => any[]) = [];
 
 export default function HomeIGRP() {
-  const [tasks, setTasks] = useState(initialTasks);
+  const tasks = initialTasks;
   const [taskSearch, setTaskSearch] = useState("");
   const [date, setDate] = useState<Date | undefined>(new Date());
 

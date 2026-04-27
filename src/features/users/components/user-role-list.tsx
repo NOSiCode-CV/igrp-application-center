@@ -1,15 +1,15 @@
 "use client";
-import React, { useState } from "react";
-import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
 import {
   Badge,
   Button,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { UserRolesDialog } from "./user-role-dialog";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
+import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
+import { UserRolesDialog } from "./user-role-dialog";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();

@@ -1,32 +1,32 @@
 "use client";
 
 import {
-  cn,
-  IGRPBadge,
   Badge,
-  IGRPButton,
   Button,
   Checkbox,
+  cn,
+  Dialog,
   DialogContent,
   DialogHeader,
-  Dialog,
   DialogTitle,
+  IGRPBadge,
+  IGRPButton,
   IGRPIcon,
   Input,
   Label,
+  Pagination,
   PaginationContent,
   PaginationItem,
-  Pagination,
+  Select,
   SelectContent,
   SelectItem,
-  Select,
   SelectTrigger,
   SelectValue,
+  Table,
   TableBody,
   TableCell,
-  TableHeader,
   TableHead,
-  Table,
+  TableHeader,
   TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -44,8 +44,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-
-import type { RoleArgs } from "@/features/roles/role-schemas";
+import { AppCenterLoading } from "@/components/loading";
 
 import {
   useAddPermissionsToRole,
@@ -53,7 +52,7 @@ import {
   usePermissionsByRole,
   useRemovePermissionsFromRole,
 } from "@/features/departments/use-departments";
-import { AppCenterLoading } from "@/components/loading";
+import type { RoleArgs } from "@/features/roles/role-schemas";
 
 const multiColumnFilterFn: FilterFn<any> = (row, _columnId, filterValue) => {
   const term = String(filterValue ?? "")
@@ -179,7 +178,7 @@ export function RoleDetails({
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(permissionByRole) ? permissionByRole : [];
     return new Set<string>(list.map((p) => getRowKey(p)));
-  }, [permissionByRole]);
+  }, [permissionByRole, getRowKey]);
 
   useEffect(() => {
     if (!allPermissions?.length) return;
@@ -190,7 +189,7 @@ export function RoleDetails({
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [allPermissions, preselectedKeys]);
+  }, [allPermissions, preselectedKeys, getRowKey]);
 
   const table = useReactTable({
     data: allPermissions,

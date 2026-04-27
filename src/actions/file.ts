@@ -1,8 +1,8 @@
 "use server";
 
 import type { UploadFileOptions } from "@igrp/platform-access-management-client-ts";
-import { getClientAccess } from "./access-client";
 import { headers } from "next/headers";
+import { getClientAccess } from "./access-client";
 
 export async function getFileUrl(path: string) {
   const client = await getClientAccess();

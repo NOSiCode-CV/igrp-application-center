@@ -13,20 +13,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
-import Link from "next/link";
+import type {
+  ApplicationDTO,
+  ApplicationType,
+} from "@igrp/platform-access-management-client-ts";
+import type { Route } from "next";
 import Image from "next/image";
 import { useState } from "react";
-
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { formatSlug } from "@/features/applications/app-utils";
 import { config, ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
-import {
-  ApplicationDTO,
-  ApplicationType,
-} from "@igrp/platform-access-management-client-ts";
-import { Route } from "next";
 
 export function ApplicationCard({ app }: { app: ApplicationDTO }) {
   const { name, code, status, description, slug, url, type } = app;

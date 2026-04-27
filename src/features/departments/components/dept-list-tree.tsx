@@ -4,25 +4,24 @@ import {
   Badge,
   Button,
   IGRPIcon,
-  Input,
-  IGRPTabItem,
+  type IGRPTabItem,
   IGRPTabs,
+  Input,
 } from "@igrp/igrp-framework-react-design-system";
+import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useState } from "react";
-
 import { ButtonLink } from "@/components/button-link";
+import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { AppCenterLoading } from "@/components/loading";
-import { useDepartments, useDepartmentByCode } from "../use-departments";
+import { PermissionList } from "@/features/permissions/components/permission-list";
+import { RolesListTree } from "@/features/roles/components/role-tree-list";
+import { getStatusColor } from "@/lib/utils";
+import { useDepartmentByCode, useDepartments } from "../use-departments";
 import { DepartmentDeleteDialog } from "./dept-delete-dialog";
 import { DepartmentFormDialog } from "./dept-form-dialog";
-import DepartmentTreeItem from "./dept-tree-item";
-import { PermissionList } from "@/features/permissions/components/permission-list";
-import { CopyToClipboard } from "@/components/copy-to-clipboard";
-import { RolesListTree } from "@/features/roles/components/role-tree-list";
 import { MenuPermissions } from "./dept-menu";
+import DepartmentTreeItem from "./dept-tree-item";
 import { ManageAppsModal } from "./Modal/manage-apps-modal";
-import { getStatusColor } from "@/lib/utils";
-import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
 export type DepartmentWithChildren = DepartmentDTO & {
   children?: DepartmentWithChildren[];
@@ -41,7 +40,7 @@ export const buildTree = (depts: DepartmentDTO[]): DepartmentWithChildren[] => {
     if (dept.parentCode) {
       const parent = map.get(dept.parentCode);
       if (parent) {
-        parent.children!.push(node);
+        parent.children?.push(node);
       } else {
         roots.push(node);
       }
@@ -125,7 +124,7 @@ export function DepartmentListTree() {
     setOpenFormDialog(true);
   };
 
-  const handleSelectDept = (code: string) => {
+  const _handleSelectDept = (code: string) => {
     setSelectedDeptCode(code);
     setIsSidebarOpen(false);
   };

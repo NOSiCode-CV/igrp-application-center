@@ -1,3 +1,9 @@
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
   Badge,
@@ -9,14 +15,8 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 
 interface SortableMenuItemProps {
   menu: IGRPMenuItemArgs;

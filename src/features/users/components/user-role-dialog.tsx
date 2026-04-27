@@ -1,44 +1,44 @@
 "use client";
 
 import {
-  cn,
-  IGRPBadge,
   Badge,
-  IGRPButton,
   Button,
   Checkbox,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  Command,
+  cn,
+  Dialog,
   DialogContent,
   DialogHeader,
-  Dialog,
   DialogTitle,
+  IGRPButton,
   IGRPIcon,
   Input,
   Label,
+  Pagination,
   PaginationContent,
   PaginationItem,
-  Pagination,
-  PopoverContent,
   Popover,
+  PopoverContent,
   PopoverTrigger,
+  Select,
   SelectContent,
   SelectItem,
-  Select,
   SelectTrigger,
   SelectValue,
+  Table,
   TableBody,
   TableCell,
-  TableHeader,
   TableHead,
-  Table,
+  TableHeader,
   TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -63,7 +63,6 @@ import {
   useUserRoles,
 } from "@/features/users/use-users";
 import { getStatusColor, showStatus } from "@/lib/utils";
-import { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -227,7 +226,7 @@ export function UserRolesDialog({
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
     return new Set<string>(list.map((r) => getRowKey(r as any)));
-  }, [userRolesInDept]);
+  }, [userRolesInDept, getRowKey]);
 
   useEffect(() => {
     if (!open) {
@@ -243,7 +242,7 @@ export function UserRolesDialog({
     setData(roles ?? []);
     setRowSelection({});
     setPagination((p) => ({ ...p, pageIndex: 0 }));
-  }, [roles, departmentCode]);
+  }, [roles]);
 
   useEffect(() => {
     if (!data?.length) return;
@@ -253,7 +252,7 @@ export function UserRolesDialog({
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [data, preselectedKeys]);
+  }, [data, preselectedKeys, getRowKey]);
 
   const table = useReactTable({
     data,

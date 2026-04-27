@@ -1,5 +1,6 @@
 "use server";
 
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types/dist/types/access-management";
 import type {
   ApplicationDTO,
   ApplicationFilters,
@@ -9,12 +10,12 @@ import type {
   UpdateApplicationRequest,
   UpdateMenuRequest,
 } from "@igrp/platform-access-management-client-ts";
-import { getClientAccess } from "./access-client";
-import { extractApiError } from "@/lib/utils";
 import {
   mapperListMenusCRUD,
   mapperMenuCRUD,
 } from "@/features/menus/menu-mapper";
+import { extractApiError } from "@/lib/utils";
+import { getClientAccess } from "./access-client";
 
 type ActionResult<T> =
   | { success: true; data: T }
@@ -84,7 +85,9 @@ export async function updateApplication(
 }
 
 // MENUS
-export async function getMenus(code: string): Promise<ActionResult<any[]>> {
+export async function getMenus(
+  code: string,
+): Promise<ActionResult<IGRPMenuItemArgs[]>> {
   const client = await getClientAccess();
 
   try {
@@ -140,7 +143,7 @@ export async function updateMenu(
 export async function deleteMenu(
   appCode: string,
   menuCode: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
 
   try {

@@ -1,17 +1,16 @@
 "use client";
 
 import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
-import Link from "next/link";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import type { Route } from "next";
 import Image from "next/image";
-
-import { config } from "@/lib/constants";
-import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import Link from "next/link";
 import {
   useAddCurrentUserFavoriteApplication,
-  useRemoveCurrentUserFavoriteApplication,
   useCurrentUserFavoriteApplications,
+  useRemoveCurrentUserFavoriteApplication,
 } from "@/features/users/use-users";
-import { Route } from "next";
+import { config } from "@/lib/constants";
 
 export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   const { name, description, code, picture } = app;

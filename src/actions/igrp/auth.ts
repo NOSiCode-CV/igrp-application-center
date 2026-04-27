@@ -1,2 +1,2 @@
 "use server";
-export { serverSession, getSession } from "@/lib/auth";
+export { getSession, serverSession } from "@/lib/auth";

@@ -1,10 +1,9 @@
 "use client";
 
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
-
 import { cn } from "@/lib/utils";
-import { Route } from "next";
 
 interface BackButtonProps {
   href?: string;

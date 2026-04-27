@@ -1,11 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Button,
   Card,
@@ -20,21 +15,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   IGRPIcon,
+  Input,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-
-import { BackButton } from "@/components/back-button";
-
-import { ROUTES } from "@/lib/constants";
-import { useCurrentUser } from "../use-users";
-import { UpdateUserArgs, UpdateUserSchema } from "../user-schema";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import type * as z from "zod";
 import { updateUser } from "@/actions/user";
-import { ProfileImageUpload } from "./user-profile-image-upload";
-import { ProfileSignature } from "./user-profile-signature";
+import { BackButton } from "@/components/back-button";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
+import { ROUTES } from "@/lib/constants";
+import { useCurrentUser } from "../use-users";
+import { type UpdateUserArgs, UpdateUserSchema } from "../user-schema";
+import { ProfileImageUpload } from "./user-profile-image-upload";
+import { ProfileSignature } from "./user-profile-signature";
 
 export function ProfileUserForm() {
   const router = useRouter();

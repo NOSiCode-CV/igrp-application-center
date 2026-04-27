@@ -27,8 +27,8 @@ import {
   IGRPIcon,
   IGRPIconList,
   type IGRPIconName,
-  Input,
   type IGRPOptionsProps,
+  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -38,12 +38,14 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { CreateMenuRequest } from "@igrp/platform-access-management-client-ts";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-
-import { MenuTypeSelector } from "./menu-type-selector";
-import { menuTargetOptions } from "@/features/menus/menu-constants";
+import {
+  useCreateMenu,
+  useUpdateMenu,
+} from "@/features/applications/use-applications";
 import {
   type CreateMenu,
   createMenuSchema,
@@ -54,11 +56,7 @@ import {
 } from "@/features/menus/menu-schemas";
 import { cn, formatIconString } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
-import {
-  useCreateMenu,
-  useUpdateMenu,
-} from "@/features/applications/use-applications";
-import { CreateMenuRequest } from "@igrp/platform-access-management-client-ts";
+import { MenuTypeSelector } from "./menu-type-selector";
 
 export const LUCIDE_ICON_OPTIONS: IGRPOptionsProps[] = (
   Object.keys(IGRPIconList) as IGRPIconName[]
@@ -196,7 +194,7 @@ export function MenuFormDialog({
         String(o.value).toLowerCase().includes(q) ||
         o.label.toLowerCase().includes(q),
     );
-  }, [query, items]);
+  }, [query]);
 
   const parentRef = useRef<HTMLDivElement | null>(null);
   const rowVirtualizer = useVirtualizer({

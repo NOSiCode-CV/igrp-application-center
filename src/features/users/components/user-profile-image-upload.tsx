@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type React from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface ImageUploadProps {
   value?: File | string | null;
@@ -70,7 +70,7 @@ export function ProfileImageUpload({
     const file = event.target.files?.[0] || null;
 
     // Clean up previous preview URL
-    if (previewUrl && previewUrl.startsWith("blob:")) {
+    if (previewUrl?.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
 
@@ -93,7 +93,7 @@ export function ProfileImageUpload({
   // Clean up on unmount
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl.startsWith("blob:")) {
+      if (previewUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
@@ -136,7 +136,7 @@ export function ProfileImageUpload({
             <button
               type="button"
               onClick={() => {
-                if (previewUrl && previewUrl.startsWith("blob:")) {
+                if (previewUrl?.startsWith("blob:")) {
                   URL.revokeObjectURL(previewUrl);
                 }
                 setPreviewUrl(null);

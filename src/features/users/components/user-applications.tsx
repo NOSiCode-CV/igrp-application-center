@@ -1,11 +1,10 @@
-import React from "react";
-import { useCurrentUserApplications, useUserApplications } from "../use-users";
-import { AppCenterLoading } from "@/components/loading";
-import {
+import type {
   ApplicationDTO,
   IGRPUserDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { AppCenterLoading } from "@/components/loading";
 import { ApplicationCard } from "@/features/applications/components/app-card";
+import { useCurrentUserApplications, useUserApplications } from "../use-users";
 
 export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
   const { data: currentUserApps, isLoading: isLoadingMyApps } =

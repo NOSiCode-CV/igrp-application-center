@@ -3,7 +3,6 @@
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
   Badge,
   Card,
   CardContent,
@@ -17,8 +16,9 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useRef, useEffect } from "react";
-
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { BackButton } from "@/components/back-button";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
@@ -26,14 +26,12 @@ import {
   useApplicationByCode,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
+import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
-import { getStatusColor } from "@/lib/utils";
-import { BackButton } from "@/components/back-button";
-import { config, ROUTES } from "@/lib/constants";
-import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
-import { ApplicationForm } from "./app-form";
-import Image from "next/image";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
+import { config, ROUTES } from "@/lib/constants";
+import { getStatusColor } from "@/lib/utils";
+import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { igrpToast } = useIGRPToast();
@@ -47,7 +45,7 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   const uploadPicture = useUploadPublicFiles();
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [_previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
     app?.picture || uploadedFilePath || "",
@@ -157,11 +155,9 @@ export function ApplicationDetails({ code }: { code: string }) {
               <div
                 className="relative group cursor-pointer"
                 onClick={() => {
-                  {
-                    String(app?.type) !== "SYSTEM"
-                      ? fileInputRef.current?.click()
-                      : null;
-                  }
+                  String(app?.type) !== "SYSTEM"
+                    ? fileInputRef.current?.click()
+                    : null;
                 }}
               >
                 <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">

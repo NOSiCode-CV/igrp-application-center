@@ -1,3 +1,4 @@
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import type {
   ApplicationDTO,
   ApplicationFilters,
@@ -6,7 +7,6 @@ import type {
   UpdateMenuRequest,
 } from "@igrp/platform-access-management-client-ts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import {
   addRolesToMenu,
   createApplication,
@@ -19,7 +19,6 @@ import {
   updateApplication,
   updateMenu,
 } from "@/actions/applications";
-import { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 
 export const useApplications = (filters?: ApplicationFilters) => {
   return useQuery<ApplicationDTO[], Error>({
@@ -78,11 +77,12 @@ export const useUpdateApplication = () => {
 };
 
 // MENU
-export const useMenus = (code?: string) => {
+export const useMenus = (code: string) => {
   return useQuery<IGRPMenuItemArgs[], Error>({
     queryKey: ["menus", code ?? null],
     queryFn: async () => {
-      const result = await getMenus(code!);
+      // if (!code) throw new Error("Code is required for menus");
+      const result = await getMenus(code);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -211,7 +211,7 @@ export const useAddRolesToMenu = () => {
       return { previousRoles };
     },
 
-    onError: (err, variables, context) => {
+    onError: (_err, variables, context) => {
       if (context?.previousRoles) {
         queryClient.setQueryData(
           ["menu-roles", variables.appCode, variables.menuCode],
@@ -257,7 +257,7 @@ export const useRemoveRolesFromMenu = () => {
       return { previousRoles };
     },
 
-    onError: (err, variables, context) => {
+    onError: (_err, variables, context) => {
       if (context?.previousRoles) {
         queryClient.setQueryData(
           ["menu-roles", variables.appCode, variables.menuCode],

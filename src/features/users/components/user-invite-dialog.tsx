@@ -3,28 +3,28 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  Command,
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  Dialog,
   DialogTitle,
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Form,
   IGRPIcon,
   Input,
-  PopoverContent,
   Popover,
+  PopoverContent,
   PopoverTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -37,7 +37,7 @@ import {
   useRoles,
 } from "@/features/departments/use-departments";
 import { cn } from "@/lib/utils";
-import { useAddUserRole, useInviteUser } from "../use-users";
+import { useInviteUser } from "../use-users";
 
 interface UserInviteDialogProps {
   open: boolean;
