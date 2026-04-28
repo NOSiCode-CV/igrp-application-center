@@ -45,7 +45,7 @@ interface UserInviteDialogProps {
 }
 
 const formSchema = z.object({
-  email: z.string().min(1, "Email obrigatório").email("Email inválido"),
+  email: z.email("Email inválido").min(1, "Email obrigatório"),
   departmentCode: z.string().optional(),
   roleCodes: z.array(z.string()),
 });
@@ -92,7 +92,6 @@ export function UserInviteDialog({
   } = useDepartments();
   const {
     data: roles,
-    isLoading: rolesLoading,
     error: rolesError,
   } = useRoles(departmentCode || "");
 

@@ -94,7 +94,7 @@ export function RoleFormDialog({
         parentCode: parentRoleName ?? "",
       } as CreateRoleArgs);
     }
-  }, [open, role, parentRoleName, departmentCode, form, defaultValues]);
+  }, [open, role, parentRoleName, departmentCode, form]);
 
   const isLoading = isCreating || isUpdating || form.formState.isSubmitting;
 

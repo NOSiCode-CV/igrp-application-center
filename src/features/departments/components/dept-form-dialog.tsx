@@ -89,7 +89,7 @@ export function DepartmentFormDialog({
         parentCode: parentDeptId?.code ?? "",
       });
     }
-  }, [open, department, parentDeptId, form, defaultValues]);
+  }, [open, department, parentDeptId, form]);
 
   const watchedName = form.watch("name");
 
@@ -98,7 +98,7 @@ export function DepartmentFormDialog({
       form.reset(defaultValues);
       form.clearErrors();
     }
-  }, [open, form, defaultValues]);
+  }, [open, form]);
 
   useEffect(() => {
     const codeDirty = !!form.formState.dirtyFields?.code;

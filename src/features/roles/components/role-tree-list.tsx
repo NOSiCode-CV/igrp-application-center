@@ -57,7 +57,8 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     });
 
     roles.forEach((role) => {
-      const node = map.get(role.code)!;
+      const node = map.get(role.code);
+      if (!node) return;
       if (role.parentCode) {
         const parent = map.get(role.parentCode);
         if (parent) {

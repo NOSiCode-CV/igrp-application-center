@@ -69,7 +69,6 @@ export function SortableMenuItem({
   onDelete,
   onAddChild,
   depth = 0,
-  isChild = false,
   subMenus,
   allMenus,
   onAddInternalPage,

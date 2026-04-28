@@ -38,7 +38,7 @@ export function ProfileUserForm() {
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
 
-  const { data: user, isLoading, error } = useCurrentUser();
+  const { data: user, isLoading } = useCurrentUser();
 
   const form = useForm<z.infer<typeof UpdateUserSchema>>({
     resolver: zodResolver(UpdateUserSchema),

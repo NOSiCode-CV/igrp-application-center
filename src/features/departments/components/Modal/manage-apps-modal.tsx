@@ -203,7 +203,7 @@ export function ManageAppsModal({
             </div>
           </div>
 
-          <ScrollArea className="flex-1 h-[95vh]  w-full ">
+          <ScrollArea className="flex-1 h-[95vh] w-full ">
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (

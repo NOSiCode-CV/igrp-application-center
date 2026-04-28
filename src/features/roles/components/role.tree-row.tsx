@@ -49,6 +49,7 @@ export function RoleTreeRow({
               <button
                 onClick={() => toggleExpand(role.code)}
                 className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors"
+                type="button"
               >
                 <IGRPIcon
                   iconName="ChevronRight"

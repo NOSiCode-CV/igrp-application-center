@@ -86,8 +86,14 @@ export async function getDepartmentByCode(
 
 // APPLICATIONS
 export async function getAvailableApplications(
-  departmentCode: string,
+  departmentCode?: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
+  if (!departmentCode) {
+    return {
+      success: false,
+      error: extractApiError("Informação do departamento é obrigatório"),
+    };
+  }
   const client = await getClientAccess();
   try {
     const result =
@@ -149,9 +155,17 @@ export async function removeApplicationsFromDepartment(
 
 // MENU
 export async function getAvailableMenus(
-  appCode: string,
-  departmentCode: string,
+  appCode?: string,
+  departmentCode?: string,
 ): Promise<ActionResult<MenuEntryDTO[]>> {
+  if (!appCode || !departmentCode) {
+    return {
+      success: false,
+      error: extractApiError(
+        "Informação de aplicação e departamento são obrigatórios",
+      ),
+    };
+  }
   const client = await getClientAccess();
 
   try {
@@ -167,9 +181,17 @@ export async function getAvailableMenus(
 }
 
 export async function getDepartmentMenus(
-  appCode: string,
-  departmentCode: string,
+  appCode?: string,
+  departmentCode?: string,
 ): Promise<ActionResult<MenuEntryDTO[]>> {
+  if (!appCode || !departmentCode) {
+    return {
+      success: false,
+      error: extractApiError(
+        "Informação de aplicação e departamento são obrigatórios",
+      ),
+    };
+  }
   const client = await getClientAccess();
   try {
     const result = await client.departments.getDepartmentMenus(
@@ -334,8 +356,14 @@ export async function removeResourcesFromDepartment(
 }
 
 export async function getAvailableResources(
-  departmentCode: string,
+  departmentCode?: string,
 ): Promise<ActionResult<ResourceDTO[]>> {
+  if (!departmentCode) {
+    return {
+      success: false,
+      error: extractApiError("Informação do departamento é obrigatória"),
+    };
+  }
   const client = await getClientAccess();
 
   try {
@@ -349,8 +377,15 @@ export async function getAvailableResources(
 }
 
 export async function getDepartmentResources(
-  departmentCode: string,
+  departmentCode?: string,
 ): Promise<ActionResult<ResourceDTO[]>> {
+  if (!departmentCode) {
+    return {
+      success: false,
+      error: extractApiError("Informação do departamento é obrigatória"),
+    };
+  }
+
   const client = await getClientAccess();
 
   try {
@@ -365,10 +400,16 @@ export async function getDepartmentResources(
 
 // PERMISSIONS
 export async function getDepartmentPermissions(
-  departmentCode: string,
+  departmentCode?: string,
 ): Promise<
   ActionResult<SdkData<AccessClient["departments"]["getDepartmentPermissions"]>>
 > {
+  if (!departmentCode) {
+    return {
+      success: false,
+      error: extractApiError("Informação do departamento é obrigatória"),
+    };
+  }
   const client = await getClientAccess();
 
   try {
@@ -382,10 +423,17 @@ export async function getDepartmentPermissions(
 }
 
 export async function getAvailablePermissions(
-  departmentCode: string,
+  departmentCode?: string,
 ): Promise<
   ActionResult<SdkData<AccessClient["departments"]["getAvailablePermissions"]>>
 > {
+  if (!departmentCode) {
+    return {
+      success: false,
+      error: extractApiError("Informação do departamento é obrigatória"),
+    };
+  }
+
   const client = await getClientAccess();
 
   try {
