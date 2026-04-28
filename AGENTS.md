@@ -12,6 +12,7 @@ Package manager: **pnpm** (Node >= 20).
 - `pnpm lint` — `biome check --write` (lint + autofix + organize imports).
 - `pnpm format` — `biome format --write`.
 - `pnpm clean-all` — remove `node_modules` and `.next`.
+- `pnpm release` — `pnpm i && pnpm format && pnpm build && pnpm start --tag next`.
 
 There is no test runner configured in this project.
 
@@ -58,14 +59,17 @@ Server actions live in `src/actions/` (one file per resource, plus `src/actions/
 - Tokens come from `@igrp/igrp-framework-react-design-system/tokens` via `src/styles/globals.css`. Do not import prebuilt `*/styles.css` files.
 - Tailwind v4 via `@tailwindcss/postcss`.
 
-Before substantial UI work, consult the in-repo skills:
+Before substantial UI/auth work, consult the in-repo skills (under `.claude/skills/`):
 
-| Path | Use when |
+| Skill | Use when |
 | --- | --- |
-| `skills/igrp-design-system/SKILL.md` | Implementing product UI with IGRP/Horizon |
-| `skills/react-best-practices/SKILL.md` | RSC/client boundaries, data fetching, perf |
-| `skills/web-design-guidelines/SKILL.md` | UI/UX/a11y audits |
-| `skills/composition-patterns/SKILL.md` | Component-API / composition refactors |
+| `igrp-design-system` | Implementing product UI with IGRP/Horizon — the master skill for this codebase |
+| `multi-provider-nextauth` | Touching NextAuth, `withIGRPAuth`, the Keycloak/Autentika providers, or token refresh |
+| `frontend-design` | General frontend/UX design guidance |
+| `next-best-practices` | Next.js 15 / App Router patterns, RSC vs client boundaries, caching |
+| `vercel-react-best-practices` | React 19 / Next.js performance and rendering patterns |
+| `vercel-composition-patterns` | Component-API and composition refactors |
+| `shadcn` | Reference only — this project uses IGRP Horizon, not raw shadcn primitives |
 
 ### Data layer
 
