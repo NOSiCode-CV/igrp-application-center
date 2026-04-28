@@ -148,11 +148,15 @@ export function UserInviteDialog({
         roleCodes: [] as string[],
       });
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : `Falha ao convidar: ${String(error)}`;
       igrpToast({
         type: "error",
         title: "Falha ao convidar",
-        description: error.message || `Falha ao convidar: ${String(error)}`,
+        description: message,
       });
     }
   };

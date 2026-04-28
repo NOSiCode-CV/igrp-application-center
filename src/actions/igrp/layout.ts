@@ -11,9 +11,15 @@ export async function getTheme() {
   return { activeThemeValue, isScaled };
 }
 
+type AccessTokenSession = Awaited<ReturnType<typeof auth.getAccessToken>>;
+
 export async function configLayout() {
-  const session = isAuthBypass()
-    ? ({ user: { name: "Preview User", email: "preview@example.com" }, accessToken: "preview-token", expires: "9999-12-31T23:59:59.999Z" } as any)
+  const session: AccessTokenSession = isAuthBypass()
+    ? ({
+        user: { name: "Preview User", email: "preview@example.com" },
+        accessToken: "preview-token",
+        expires: "9999-12-31T23:59:59.999Z",
+      } as unknown as AccessTokenSession)
     : await auth.getAccessToken();
   const { activeThemeValue, isScaled } = await getTheme();
   return { session, activeThemeValue, isScaled };

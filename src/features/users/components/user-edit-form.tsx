@@ -16,7 +16,10 @@ import {
   SelectValue,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import type {
+  IGRPUserDTO,
+  Status,
+} from "@igrp/platform-access-management-client-ts";
 import { useForm } from "react-hook-form";
 import { useUpdateUser } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
@@ -51,11 +54,12 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
       const result = await updateUser.mutateAsync({
         id: user.id,
         user: {
+          ...user,
           name: data.name,
           username: user.username,
           email: user.email,
-          status: data.status as any,
-        } as any,
+          status: data.status as Status,
+        },
       });
 
       if (!result.success) {

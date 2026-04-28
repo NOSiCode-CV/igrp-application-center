@@ -17,7 +17,7 @@ export default function UserSignature({
   refetch,
 }: {
   user: IGRPUserDTO;
-  refetch: any;
+  refetch: () => Promise<unknown> | undefined;
 }) {
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: updateUser } = useUpdateUser();

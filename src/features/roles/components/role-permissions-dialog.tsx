@@ -54,7 +54,18 @@ import {
 } from "@/features/departments/use-departments";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 
-const multiColumnFilterFn: FilterFn<any> = (row, _columnId, filterValue) => {
+// Local mirror of the SDK's `PermissionDTO` (not re-exported by the package).
+interface PermissionLike {
+  id?: number;
+  name: string;
+  description?: string | null;
+}
+
+const multiColumnFilterFn: FilterFn<PermissionLike> = (
+  row,
+  _columnId,
+  filterValue,
+) => {
   const term = String(filterValue ?? "")
     .toLowerCase()
     .trim();
@@ -64,7 +75,7 @@ const multiColumnFilterFn: FilterFn<any> = (row, _columnId, filterValue) => {
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<any>[] = [
+const columns: ColumnDef<PermissionLike>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -109,7 +120,10 @@ const columns: ColumnDef<any>[] = [
 
 const norm = (s: string) => s.trim().toLowerCase();
 
-function diffPermissions(selected: any[], existing: any[]) {
+function diffPermissions(
+  selected: PermissionLike[],
+  existing: PermissionLike[],
+) {
   const selectedNorm = new Set(selected.map((p) => norm(p.name)));
   const existingNorm = new Set(existing.map((p) => norm(p.name)));
 
@@ -168,12 +182,12 @@ export function RoleDetails({
     useRemovePermissionsFromRole();
 
   const allPermissions = useMemo(() => {
-    return (departmentPermissions ?? []).sort((a: any, b: any) =>
+    return ((departmentPermissions ?? []) as PermissionLike[]).sort((a, b) =>
       a.name.localeCompare(b.name, "pt"),
     );
   }, [departmentPermissions]);
 
-  const getRowKey = (r: any) => String(r.id ?? r.name);
+  const getRowKey = (r: PermissionLike) => String(r.id ?? r.name);
 
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(permissionByRole) ? permissionByRole : [];
@@ -211,7 +225,10 @@ export function RoleDetails({
 
   const selectedRows = table.getSelectedRowModel().rows;
   const selectedData = selectedRows.map((r) => r.original);
-  const existing = permissionByRole ?? [];
+  // SDK declares `getPermissionsByRole` as `ApiResponse<any>`; cast at boundary.
+  const existing = (
+    Array.isArray(permissionByRole) ? permissionByRole : []
+  ) as PermissionLike[];
 
   const { toAdd, toRemove } = useMemo(
     () => diffPermissions(selectedData, existing),

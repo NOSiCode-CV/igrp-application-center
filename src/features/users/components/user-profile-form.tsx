@@ -19,6 +19,7 @@ import {
   Input,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -80,7 +81,11 @@ export function ProfileUserForm() {
       formData.append("signature", values.signature);
     }
 
-    user && (await updateUser(user.id, formData as any));
+    // updateUser action expects IGRPUserDTO but the runtime endpoint accepts
+    // FormData (multipart/form-data) for picture/signature uploads. The action
+    // signature is shared with the JSON code path; this double-cast documents
+    // that the type mismatch is intentional and runtime-safe.
+    user && (await updateUser(user.id, formData as unknown as IGRPUserDTO));
 
     igrpToast({
       type: "success",

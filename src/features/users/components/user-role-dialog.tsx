@@ -76,7 +76,7 @@ const multiColumnFilterFn: FilterFn<RoleDTO> = (
     .trim();
   if (!term) return true;
   const name = String(row.original?.name ?? "").toLowerCase();
-  const desc = String((row.original as any)?.description ?? "").toLowerCase();
+  const desc = String(row.original?.description ?? "").toLowerCase();
   return name.includes(term) || desc.includes(term);
 };
 
@@ -212,7 +212,7 @@ export function UserRolesDialog({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const getRowKey = (r: RoleDTO) => String((r as any).id ?? r.name);
+  const getRowKey = (r: RoleDTO) => String(r.id ?? r.name);
 
   const roleNameSet = useMemo(
     () => new Set((roles ?? []).map((r) => norm(r.name ?? ""))),
@@ -225,7 +225,7 @@ export function UserRolesDialog({
 
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
-    return new Set<string>(list.map((r) => getRowKey(r as any)));
+    return new Set<string>(list.map((r) => getRowKey(r as RoleDTO)));
   }, [userRolesInDept, getRowKey]);
 
   useEffect(() => {
@@ -478,7 +478,7 @@ export function UserRolesDialog({
                     Ocorreu um erro a carregar perfis do utilizador.
                   </p>
                   <p className="text-center">
-                    {(err as any)?.message ?? String(err)}
+                    {err instanceof Error ? err.message : String(err)}
                   </p>
                 </div>
               ) : (

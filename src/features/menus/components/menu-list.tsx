@@ -73,11 +73,16 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
 
   useEffect(() => {
     if (appMenus) {
-      const sorted = [...appMenus].sort((a: any, b: any) => {
-        const aOrder = a.position ?? a.sortOrder ?? 0;
-        const bOrder = b.position ?? b.sortOrder ?? 0;
-        return aOrder - bOrder;
-      });
+      const sorted = [...appMenus].sort(
+        (
+          a: IGRPMenuItemArgs & { sortOrder?: number },
+          b: IGRPMenuItemArgs & { sortOrder?: number },
+        ) => {
+          const aOrder = a.position ?? a.sortOrder ?? 0;
+          const bOrder = b.position ?? b.sortOrder ?? 0;
+          return aOrder - bOrder;
+        },
+      );
       setMenus(sorted);
     }
   }, [appMenus]);
@@ -197,11 +202,16 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
       });
 
       if (appMenus) {
-        const sorted = [...appMenus].sort((a: any, b: any) => {
-          const aOrder = a.position ?? a.sortOrder ?? 0;
-          const bOrder = b.position ?? b.sortOrder ?? 0;
-          return aOrder - bOrder;
-        });
+        const sorted = [...appMenus].sort(
+          (
+            a: IGRPMenuItemArgs & { sortOrder?: number },
+            b: IGRPMenuItemArgs & { sortOrder?: number },
+          ) => {
+            const aOrder = a.position ?? a.sortOrder ?? 0;
+            const bOrder = b.position ?? b.sortOrder ?? 0;
+            return aOrder - bOrder;
+          },
+        );
         setMenus(sorted);
       }
     }

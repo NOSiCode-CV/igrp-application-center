@@ -245,7 +245,8 @@ export function UserList() {
 
   function PendingRowActions({ row }: { row: Row<IGRPUserDTO> }) {
     const handleCopyUrl = () => {
-      const invitationUrl = (row.original as any).invitationUrl;
+      const invitationUrl = (row.original as { invitationUrl?: string })
+        .invitationUrl;
       if (invitationUrl) {
         navigator.clipboard.writeText(invitationUrl);
         igrpToast({

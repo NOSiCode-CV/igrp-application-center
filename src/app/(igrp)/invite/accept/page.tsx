@@ -11,6 +11,15 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+
+// Mirrors the SDK's `CodeDescriptionDTO`, which is not re-exported from
+// `@igrp/platform-access-management-client-ts`. Used as the shape for
+// invitation department/role entries.
+interface CodeDescriptionLike {
+  code?: string;
+  description?: string;
+}
+
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
@@ -50,10 +59,9 @@ export default function AcceptInvitePage() {
       !isLoadingInvitation &&
       session &&
       invitation &&
-      (session as any)?.email
+      session.user?.email
     ) {
-      const userEmail = (session as any).email;
-      if (userEmail !== invitation.email) {
+      if (session.user.email !== invitation.email) {
         router.replace(`/invite/invite-error?token=${token}`);
       }
     }
@@ -143,7 +151,7 @@ export default function AcceptInvitePage() {
     invitation &&
     sessionStatus === "authenticated" &&
     session &&
-    (session as any)?.email === invitation.email;
+    session.user?.email === invitation.email;
 
   if (isReady) {
     hasShownPage.current = true;
@@ -160,7 +168,7 @@ export default function AcceptInvitePage() {
     error ||
     isLoadingInvitation ||
     !invitation ||
-    (session && (session as any)?.email !== invitation?.email)
+    (session && session.user?.email !== invitation?.email)
   ) {
     return <AppCenterLoading descrption="Validando convite..." />;
   }
@@ -189,24 +197,34 @@ export default function AcceptInvitePage() {
               <span className="font-medium">{invitation.email}</span>
             </div>
 
-            {invitation.department && invitation.department.length > 0 && (
-              <div className="pt-2 border-t">
-                <div className="flex items-center gap-2 text-sm mb-2">
-                  <IGRPIcon
-                    iconName="Shield"
-                    className="w-4 h-4 text-muted-foreground"
-                  />
-                  <span className="text-muted-foreground">Departamento:</span>
+            {(() => {
+              // SDK declares `department` as a single CodeDescriptionDTO,
+              // but the runtime returns an array. Cast at the access boundary.
+              const departments = (invitation.department ??
+                []) as unknown as CodeDescriptionLike[];
+              if (departments.length === 0) return null;
+              return (
+                <div className="pt-2 border-t">
+                  <div className="flex items-center gap-2 text-sm mb-2">
+                    <IGRPIcon
+                      iconName="Shield"
+                      className="w-4 h-4 text-muted-foreground"
+                    />
+                    <span className="text-muted-foreground">Departamento:</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {departments.map((dept: CodeDescriptionLike) => (
+                      <Badge
+                        key={dept.code ?? dept.description}
+                        variant="outline"
+                      >
+                        {dept.description || dept.code}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {invitation.department.map((dept: any, index: number) => (
-                    <Badge key={index} variant="outline">
-                      {dept.description || dept.code}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
+              );
+            })()}
 
             {invitation.roles && invitation.roles.length > 0 && (
               <div className="pt-2 border-t">
@@ -218,8 +236,11 @@ export default function AcceptInvitePage() {
                   <span className="text-muted-foreground">Perfis:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {invitation.roles.map((role: any, index: number) => (
-                    <Badge key={index} variant="outline">
+                  {invitation.roles.map((role: CodeDescriptionLike) => (
+                    <Badge
+                      key={role.code ?? role.description}
+                      variant="outline"
+                    >
                       {role.description || role.code}
                     </Badge>
                   ))}

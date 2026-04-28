@@ -152,55 +152,58 @@ export function ApplicationDetails({ code }: { code: string }) {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div
-                className="relative group cursor-pointer"
-                onClick={() => {
-                  String(app?.type) !== "SYSTEM"
-                    ? fileInputRef.current?.click()
-                    : null;
-                }}
-              >
-                <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  {app?.picture ? (
-                    <Image
-                      src={config.minioUrl + app?.picture}
-                      alt={app.name}
-                      fill
-                      sizes="106px"
-                      quality={100}
-                      className="object-contain"
-                    />
-                  ) : isLoadingFile ? (
-                    <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
-                      <IGRPIcon
-                        iconName="LoaderCircle"
-                        className="w-8 h-8 text-muted-foreground animate-spin"
+              <div className="relative">
+                <button
+                  type="button"
+                  className="relative group cursor-pointer disabled:cursor-not-allowed rounded-full"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={
+                    String(app?.type) === "SYSTEM" || uploadPicture.isPending
+                  }
+                  aria-label="Alterar imagem da aplicação"
+                >
+                  <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
+                    {app?.picture ? (
+                      <Image
+                        src={config.minioUrl + app?.picture}
+                        alt={app.name}
+                        fill
+                        sizes="106px"
+                        quality={100}
+                        className="object-contain"
                       />
-                    </div>
-                  ) : (
-                    <AvatarFallback className="text-3xl bg-primary/10">
-                      <IGRPIcon
-                        iconName="AppWindow"
-                        className="w-12 h-12 text-primary"
-                      />
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-
-                <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
-                  <IGRPIcon
-                    iconName={
-                      isLoadingFile || uploadPicture.isPending
-                        ? "LoaderCircle"
-                        : "Camera"
-                    }
-                    className={cn(
-                      "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      isLoadingFile ||
-                        (uploadPicture.isPending && "animate-spin"),
+                    ) : isLoadingFile ? (
+                      <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
+                        <IGRPIcon
+                          iconName="LoaderCircle"
+                          className="w-8 h-8 text-muted-foreground animate-spin"
+                        />
+                      </div>
+                    ) : (
+                      <AvatarFallback className="text-3xl bg-primary/10">
+                        <IGRPIcon
+                          iconName="AppWindow"
+                          className="w-12 h-12 text-primary"
+                        />
+                      </AvatarFallback>
                     )}
-                  />
-                </div>
+                  </Avatar>
+
+                  <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
+                    <IGRPIcon
+                      iconName={
+                        isLoadingFile || uploadPicture.isPending
+                          ? "LoaderCircle"
+                          : "Camera"
+                      }
+                      className={cn(
+                        "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
+                        isLoadingFile ||
+                          (uploadPicture.isPending && "animate-spin"),
+                      )}
+                    />
+                  </div>
+                </button>
 
                 <input
                   ref={fileInputRef}

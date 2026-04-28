@@ -152,10 +152,21 @@ export const getMenuIcon = (type: string) => {
   }
 };
 
-export function extractApiError(error: any): string {
-  if (error?.details) {
+interface ApiErrorLike {
+  details?: string;
+  status?: number;
+  message?: string;
+}
+
+export function extractApiError(error: unknown): string {
+  const e = (error ?? {}) as ApiErrorLike;
+  if (e.details) {
     try {
-      const parsed = JSON.parse(error.details);
+      const parsed = JSON.parse(e.details) as {
+        errors?: Record<string, string>;
+        details?: string;
+        title?: string;
+      };
 
       if (parsed.errors) {
         const errorMessages = Object.values(parsed.errors).join(", ");
@@ -166,21 +177,21 @@ export function extractApiError(error: any): string {
         return parsed.details;
       }
 
-      return parsed.title || getDefaultErrorMessage(error.status);
+      return parsed.title || getDefaultErrorMessage(e.status);
     } catch {
-      return error.details;
+      return e.details;
     }
   }
 
-  if (error?.status) {
-    return getDefaultErrorMessage(error.status);
+  if (e.status) {
+    return getDefaultErrorMessage(e.status);
   }
 
-  if (error?.message) {
-    return error.message;
+  if (e.message) {
+    return e.message;
   }
 
-  return error?.message || "Erro desconhecido";
+  return e.message || "Erro desconhecido";
 }
 
 function getDefaultErrorMessage(status?: number): string {

@@ -23,7 +23,11 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { ResourceDTO } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useMemo, useState } from "react";
+
+type ResourceWithAssignment = ResourceDTO & { isAssigned: boolean };
+
 import {
   useAddResourcesToDepartment,
   useAvailableResources,
@@ -75,13 +79,13 @@ export function ManageResourcesModal({
     const available = availableResources || [];
     const assigned = assignedResources || [];
 
-    const resourceMap = new Map<string, any & { isAssigned: boolean }>();
+    const resourceMap = new Map<string, ResourceWithAssignment>();
 
-    available.forEach((resource: any) => {
+    available.forEach((resource: ResourceDTO) => {
       resourceMap.set(resource.name, { ...resource, isAssigned: false });
     });
 
-    assigned.forEach((resource: any) => {
+    assigned.forEach((resource: ResourceDTO) => {
       resourceMap.set(resource.name, { ...resource, isAssigned: true });
     });
 
@@ -91,7 +95,7 @@ export function ManageResourcesModal({
   }, [availableResources, assignedResources]);
 
   const handleToggleResource = async (
-    resource: any & { isAssigned: boolean },
+    resource: ResourceWithAssignment,
     currentlyAssigned: boolean,
   ) => {
     if (currentlyAssigned) {
@@ -171,11 +175,7 @@ export function ManageResourcesModal({
     );
   }, [allResources, searchTerm]);
 
-  const ResourceItem = ({
-    resource,
-  }: {
-    resource: any & { isAssigned: boolean };
-  }) => {
+  const ResourceItem = ({ resource }: { resource: ResourceWithAssignment }) => {
     const isAssigned = resource.isAssigned;
 
     return (

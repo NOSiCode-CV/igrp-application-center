@@ -49,6 +49,7 @@ import {
 import {
   type CreateMenu,
   createMenuSchema,
+  type MenuTypeArgs,
   menuTargetSchema,
   menuTypeSchema,
   normalizeMenu,
@@ -292,16 +293,16 @@ export function MenuFormDialog({
     const currentType = form.getValues("type");
 
     if (currentType !== type) {
-      form.setValue("type", type as any);
+      form.setValue("type", type as MenuTypeArgs);
       form.setValue("parentCode", undefined);
 
       if (
         type === menuTypeSchema.enum.GROUP ||
         type === menuTypeSchema.enum.FOLDER
       ) {
-        form.setValue("pageSlug", undefined as any);
-        form.setValue("url", undefined as any);
-        form.setValue("target", undefined as any);
+        form.setValue("pageSlug", undefined as never);
+        form.setValue("url", undefined as never);
+        form.setValue("target", undefined as never);
       }
 
       // if (type === menuTypeSchema.enum.MENU_PAGE) {
@@ -632,21 +633,21 @@ export function MenuFormDialog({
                                   value={field.value}
                                   onValueChange={(value) => {
                                     field.onChange(value);
-                                    setSelectedType(value as any);
+                                    setSelectedType(value);
                                     if (
                                       value ===
                                       menuTypeSchema.enum.EXTERNAL_PAGE
                                     ) {
                                       form.setValue(
                                         "pageSlug",
-                                        undefined as any,
+                                        undefined as never,
                                       );
                                       form.setValue(
                                         "target",
                                         menuTargetSchema.enum._blank,
                                       );
                                     } else {
-                                      form.setValue("url", undefined as any);
+                                      form.setValue("url", undefined as never);
                                       form.setValue(
                                         "target",
                                         menuTargetSchema.enum._self,
@@ -834,10 +835,7 @@ export function MenuFormDialog({
                                       <CommandItem
                                         onSelect={() => {
                                           field.onChange("");
-                                          form.setValue(
-                                            "parentCode",
-                                            "" as any,
-                                          );
+                                          form.setValue("parentCode", "");
                                         }}
                                       >
                                         Nenhum (Raiz)

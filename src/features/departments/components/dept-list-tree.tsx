@@ -36,7 +36,8 @@ export const buildTree = (depts: DepartmentDTO[]): DepartmentWithChildren[] => {
   });
 
   depts?.forEach((dept) => {
-    const node = map.get(dept.code)!;
+    const node = map.get(dept.code);
+    if (!node) return;
     if (dept.parentCode) {
       const parent = map.get(dept.parentCode);
       if (parent) {
@@ -117,10 +118,10 @@ export function DepartmentListTree() {
     setOpenFormDialog(true);
   };
 
-  const handleCreateSubDept = (parentCode: any) => {
+  const handleCreateSubDept = (parent: DepartmentWithChildren) => {
     setDeptToDelete(null);
     setCurrentDept(null);
-    setParentDeptId(parentCode);
+    setParentDeptId(parent);
     setOpenFormDialog(true);
   };
 
@@ -138,7 +139,7 @@ export function DepartmentListTree() {
   }
 
   if (error) throw error;
-  const departmentTree = buildTree(departments as any);
+  const departmentTree = buildTree(departments ?? []);
   const filteredTree = filterTree(departmentTree, searchTerm);
 
   const tabs: IGRPTabItem[] = [
@@ -274,7 +275,9 @@ export function DepartmentListTree() {
 
         {/* Overlay for mobile */}
         {isSidebarOpen && (
-          <div
+          <button
+            type="button"
+            aria-label="Fechar menu de departamentos"
             className="fixed! inset-0! bg-black/50! z-40! lg:hidden!"
             onClick={() => setIsSidebarOpen(false)}
           />
@@ -342,7 +345,9 @@ export function DepartmentListTree() {
 
                 <div className="flex flex-col sm:flex-row! w-full! lg:w-auto! gap-2">
                   <Button
-                    onClick={() => handleEdit(selectedDepartment as any)}
+                    onClick={() =>
+                      handleEdit(selectedDepartment as DepartmentWithChildren)
+                    }
                     variant="outline"
                     className="cursor-pointer w-full! sm:w-auto!"
                   >

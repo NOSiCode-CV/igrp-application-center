@@ -57,6 +57,7 @@ const DepartmentTreeItemSimple = ({
         <button
           onClick={toggleExpand}
           className="w-4 h-4 flex items-center justify-center shrink-0"
+          type="button"
         >
           {hasChildren ? (
             <IGRPIcon

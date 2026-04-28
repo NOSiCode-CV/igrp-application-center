@@ -33,7 +33,7 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   }
 
   const departments = user ? userDepts : currentUserDepts;
-  const departmentTree = buildTree(departments as any);
+  const departmentTree = buildTree(departments ?? []);
 
   const filteredTree = filterTree(departmentTree, searchTerm);
 
@@ -67,7 +67,13 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
         {filteredTree.map((dept) => (
           <DepartmentTreeItemSimple
             key={dept.code}
-            dept={dept as any}
+            // dept-list-simple-tree's local Department shape is structurally
+            // compatible but nominally distinct from DepartmentDTO.
+            dept={
+              dept as unknown as React.ComponentProps<
+                typeof DepartmentTreeItemSimple
+              >["dept"]
+            }
             expandedDepts={expandedDepts}
             setExpandedDepts={setExpandedDepts}
           />

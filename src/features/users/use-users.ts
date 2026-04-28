@@ -327,7 +327,7 @@ export function useGetCurrentUserRecentApplications(applicationName?: string) {
 }
 
 export function useGetUserInvitations(email?: string) {
-  return useQuery<any[], Error>({
+  return useQuery({
     queryKey: ["user-invitations", email],
     queryFn: async () => {
       const result = await getUserInvitations(email);
@@ -402,7 +402,7 @@ export function useUpdateUserStatus() {
 }
 
 export function useGetUserInvitationByToken(token: string) {
-  return useQuery<any, Error>({
+  return useQuery({
     queryKey: ["user-invitation-by-token"],
     queryFn: async () => {
       const result = await getUserInvitationByToken(token);
@@ -414,7 +414,7 @@ export function useGetUserInvitationByToken(token: string) {
 }
 
 export function useGetCurrentUserRoles() {
-  return useQuery<any[], Error>({
+  return useQuery({
     queryKey: ["current-user-roles"],
     queryFn: async () => {
       const result = await getCurrentUserRoles();
@@ -426,7 +426,7 @@ export function useGetCurrentUserRoles() {
 }
 
 export function useCurrentUserActiveRole(options?: { enabled?: boolean }) {
-  return useQuery<any, Error>({
+  return useQuery({
     queryKey: ["current-user-active-role"],
     queryFn: async () => {
       const result = await getCurrentUserActiveRole();

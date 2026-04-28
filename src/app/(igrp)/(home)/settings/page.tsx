@@ -1,10 +1,26 @@
 "use client";
 
-import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import {
+  cn,
+  IGRPIcon,
+  type IGRPIconName,
+} from "@igrp/igrp-framework-react-design-system";
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 
-const settingsConfig = {
+interface SettingsItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: IGRPIconName;
+  // Some settings entries (e.g. status="inativo") may not yet exist as
+  // typed routes; allow plain strings so the typed-routes gate stays
+  // permissive for placeholder destinations.
+  href: Route | string;
+  status?: "ativo" | "inativo";
+}
+
+const settingsConfig: { personal: SettingsItem[] } = {
   personal: [
     {
       id: "gestao-de-aplicacoes",
@@ -56,6 +72,7 @@ export default function SettingsPage() {
         <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
           {settingsConfig.personal.map((item) => (
             <button
+              type="button"
               key={item.id}
               onClick={() => handleNavigate(item.href)}
               disabled={item.status === "inativo"}
@@ -69,7 +86,7 @@ export default function SettingsPage() {
               <div className="flex items-start gap-4">
                 <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
                   <IGRPIcon
-                    iconName={item.icon as any}
+                    iconName={item.icon}
                     className="w-5 h-5 text-primary"
                   />
                 </div>

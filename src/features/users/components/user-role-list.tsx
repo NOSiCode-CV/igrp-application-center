@@ -130,15 +130,17 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
 
                     {role.permissions.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {role.permissions.slice(0, 3).map((permission: any) => (
-                          <Badge
-                            key={permission}
-                            variant="secondary"
-                            className="text-xs font-mono"
-                          >
-                            {permission}
-                          </Badge>
-                        ))}
+                        {role.permissions
+                          .slice(0, 3)
+                          .map((permission: string) => (
+                            <Badge
+                              key={permission}
+                              variant="secondary"
+                              className="text-xs font-mono"
+                            >
+                              {permission}
+                            </Badge>
+                          ))}
                         {role.permissions.length > 3 && (
                           <Badge variant="secondary" className="text-xs">
                             +{role.permissions.length - 3} mais

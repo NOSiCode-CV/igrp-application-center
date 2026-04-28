@@ -200,10 +200,10 @@ export const useAddRolesToMenu = () => {
         variables.menuCode,
       ]);
 
-      queryClient.setQueryData(
+      queryClient.setQueryData<{ code: string }[]>(
         ["menu-roles", variables.appCode, variables.menuCode],
-        (old: any) => [
-          ...(old || []),
+        (old) => [
+          ...(old ?? []),
           ...variables.roleNames.map((code) => ({ code })),
         ],
       );
@@ -248,10 +248,10 @@ export const useRemoveRolesFromMenu = () => {
         variables.menuCode,
       ]);
 
-      queryClient.setQueryData(
+      queryClient.setQueryData<{ code: string }[]>(
         ["menu-roles", variables.appCode, variables.menuCode],
-        (old: any) =>
-          old?.filter((role: any) => !variables.roleNames.includes(role.code)),
+        (old) =>
+          old?.filter((role) => !variables.roleNames.includes(role.code)),
       );
 
       return { previousRoles };

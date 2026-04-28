@@ -291,6 +291,7 @@ export function ManageMenusModal({
               <button
                 onClick={() => toggleExpand(menu.code)}
                 className="w-8 h-8 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                type="button"
               >
                 <IGRPIcon
                   iconName="ChevronRight"
@@ -455,8 +456,8 @@ export function ManageMenusModal({
           <ScrollArea className="h-[95vh] w-full ">
             {loading ? (
               <div className="space-y-2">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-20 rounded-lg" />
+                {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6"].map((key) => (
+                  <Skeleton key={key} className="h-20 rounded-lg" />
                 ))}
               </div>
             ) : menuTree.length === 0 ? (

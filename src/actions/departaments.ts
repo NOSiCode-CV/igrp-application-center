@@ -367,9 +367,7 @@ export async function getDepartmentResources(
 export async function getDepartmentPermissions(
   departmentCode: string,
 ): Promise<
-  ActionResult<
-    SdkData<AccessClient["departments"]["getDepartmentPermissions"]>
-  >
+  ActionResult<SdkData<AccessClient["departments"]["getDepartmentPermissions"]>>
 > {
   const client = await getClientAccess();
 

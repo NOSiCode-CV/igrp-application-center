@@ -410,6 +410,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                       toggleAllMenusForRole(role.code)
                                     }
                                     className="group flex items-center gap-1 hover:bg-primary/10 px-2 py-1 rounded transition-colors"
+                                    type="button"
                                   >
                                     <IGRPIcon
                                       iconName={

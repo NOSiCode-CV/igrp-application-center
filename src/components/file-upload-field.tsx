@@ -114,6 +114,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
       <FormControl>
         <div className="flex flex-col gap-2">
           <div className="relative">
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop has no keyboard equivalent; the inner Button and file input are the keyboard-accessible interactive elements */}
             <div
               onDragEnter={disabled ? undefined : handleDragEnter}
               onDragLeave={disabled ? undefined : handleDragLeave}
