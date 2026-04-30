@@ -42,6 +42,8 @@ import {
   //setCurrentUserActiveRole,
   updateUser,
   updateUserStatus,
+  validateInvitationEmail,
+  validateInvitationOtp,
 } from "@/actions/user";
 
 export const useUsers = (params?: UserFilters) => {
@@ -403,12 +405,13 @@ export function useUpdateUserStatus() {
 
 export function useGetUserInvitationByToken(token: string) {
   return useQuery({
-    queryKey: ["user-invitation-by-token"],
+    queryKey: ["user-invitation-by-token", token],
     queryFn: async () => {
       const result = await getUserInvitationByToken(token);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
+    enabled: !!token,
     retry: false,
   });
 }
@@ -454,6 +457,23 @@ export function useSetCurrentUserActiveRole() {
         });
       }
     },
+    retry: false,
+  });
+}
+
+export function useValidateInvitationEmail() {
+  return useMutation({
+    mutationFn: async (
+      request: Parameters<typeof validateInvitationEmail>[0],
+    ) => validateInvitationEmail(request),
+    retry: false,
+  });
+}
+
+export function useValidateInvitationOtp() {
+  return useMutation({
+    mutationFn: async (request: Parameters<typeof validateInvitationOtp>[0]) =>
+      validateInvitationOtp(request),
     retry: false,
   });
 }

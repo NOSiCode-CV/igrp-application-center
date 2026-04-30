@@ -402,3 +402,35 @@ export async function setCurrentUserActiveRole(
     return { success: false, error: extractApiError(error) };
   }
 }
+
+export async function validateInvitationEmail(
+  request: Parameters<AccessClient["users"]["validateInvitationEmail"]>[0],
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["validateInvitationEmail"]>>
+> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.validateInvitationEmail(request);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[invitation] Erro ao validar email de convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function validateInvitationOtp(
+  request: Parameters<AccessClient["users"]["validateInvitationOtp"]>[0],
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["validateInvitationOtp"]>>
+> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.validateInvitationOtp(request);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[invitation] Erro ao validar código OTP de convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
