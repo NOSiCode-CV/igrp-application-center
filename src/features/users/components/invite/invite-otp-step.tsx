@@ -95,6 +95,7 @@ export function InviteOtpStep({
                 <FormControl>
                   <InputOTP
                     maxLength={6}
+                    pattern="^\d+$"
                     inputMode="numeric"
                     autoComplete="one-time-code"
                     containerClassName="justify-center"
