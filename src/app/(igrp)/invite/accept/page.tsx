@@ -1,99 +1,182 @@
 "use client";
 
-import {
-  Badge,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  IGRPButton,
-  IGRPIcon,
-  useIGRPToast,
-} from "@igrp/igrp-framework-react-design-system";
-
-// Mirrors the SDK's `CodeDescriptionDTO`, which is not re-exported from
-// `@igrp/platform-access-management-client-ts`. Used as the shape for
-// invitation department/role entries.
-interface CodeDescriptionLike {
-  code?: string;
-  description?: string;
-}
-
+import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { AppCenterLoading } from "@/components/loading";
+import { InviteCardShell } from "@/features/users/components/invite/invite-card-shell";
+import { InviteEmailStep } from "@/features/users/components/invite/invite-email-step";
+import { InviteErrorState } from "@/features/users/components/invite/invite-error-state";
+import {
+  initialStep,
+  inviteFlowReducer,
+  RESEND_COOLDOWN_MS,
+} from "@/features/users/components/invite/invite-flow-state";
+import { InviteOtpStep } from "@/features/users/components/invite/invite-otp-step";
+import { InviteRejectedStep } from "@/features/users/components/invite/invite-rejected-step";
+import {
+  type InvitationLike,
+  InviteResponseStep,
+} from "@/features/users/components/invite/invite-response-step";
 import {
   useGetUserInvitationByToken,
   useRespondUserInvitation,
+  useValidateInvitationEmail,
+  useValidateInvitationOtp,
 } from "@/features/users/use-users";
 
 export default function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session, status: sessionStatus } = useSession({
-    required: false,
-  });
-  const respondMutation = useRespondUserInvitation();
   const { igrpToast } = useIGRPToast();
-  const [isAccepting, setIsAccepting] = useState(false);
-  const hasShownPage = useRef(false);
   const token = searchParams.get("token");
+
+  const { data: session, status: sessionStatus } = useSession({
+    required: true,
+  });
 
   const {
     data: invitation,
     isLoading: isLoadingInvitation,
-    error,
-  } = useGetUserInvitationByToken(token || "");
+    error: invitationError,
+  } = useGetUserInvitationByToken(token ?? "");
+
+  const [step, dispatch] = useReducer(inviteFlowReducer, initialStep);
+
+  const validateEmail = useValidateInvitationEmail();
+  const validateOtp = useValidateInvitationOtp();
+  const respond = useRespondUserInvitation();
 
   useEffect(() => {
+    if (step.kind !== "bootstrapping") return;
+
     if (!token) {
-      router.push("/");
+      dispatch({ type: "bootstrap-fail" });
+      return;
     }
-  }, [token, router]);
 
-  useEffect(() => {
-    if (
-      sessionStatus === "authenticated" &&
-      !isLoadingInvitation &&
-      session &&
-      invitation &&
-      session.user?.email
-    ) {
-      if (session.user.email !== invitation.email) {
-        router.replace(`/invite/invite-error?token=${token}`);
-      }
+    if (sessionStatus !== "authenticated") return;
+    if (isLoadingInvitation) return;
+
+    if (invitationError || !invitation) {
+      dispatch({ type: "bootstrap-fail" });
+      return;
     }
-  }, [session, sessionStatus, invitation, isLoadingInvitation, token, router]);
 
-  useEffect(() => {
-    if (error) {
-      igrpToast({
-        type: "error",
-        title: "Convite inválido",
-        description: "O convite não foi encontrado ou expirou",
-        duration: 4000,
-      });
-      setTimeout(() => router.push("/"), 2000);
+    const claimEmail = session?.user?.email;
+    if (!claimEmail) {
+      dispatch({ type: "bootstrap-ok-no-claim" });
+    } else if (claimEmail === invitation.email) {
+      dispatch({ type: "bootstrap-ok-matches" });
+    } else {
+      dispatch({ type: "bootstrap-ok-mismatch" });
     }
-  }, [error, router, igrpToast]);
+  }, [
+    step.kind,
+    token,
+    sessionStatus,
+    isLoadingInvitation,
+    invitationError,
+    invitation,
+    session?.user?.email,
+  ]);
 
-  const handleAccept = async () => {
+  const goHome = () => router.push("/");
+
+  const handleEmailSubmit = (email: string) => {
     if (!token) return;
-
-    setIsAccepting(true);
-
-    respondMutation.mutate(
+    validateEmail.mutate(
+      { token, email },
       {
-        response: {
-          email: invitation.email,
-          accept: true,
+        onSuccess: (result) => {
+          if (!result.success) {
+            dispatch({ type: "email-error", message: result.error });
+            return;
+          }
+          dispatch({ type: "email-validated", email });
         },
+        onError: (err) => {
+          dispatch({
+            type: "email-error",
+            message: (err as Error).message,
+          });
+        },
+      },
+    );
+  };
+
+  const handleOtpSubmit = (otpCode: string) => {
+    if (!token) return;
+    validateOtp.mutate(
+      { token, otpCode },
+      {
+        onSuccess: (result) => {
+          if (!result.success) {
+            dispatch({ type: "otp-error", message: result.error });
+            return;
+          }
+          dispatch({ type: "otp-validated" });
+        },
+        onError: (err) => {
+          dispatch({ type: "otp-error", message: (err as Error).message });
+        },
+      },
+    );
+  };
+
+  const handleResend = () => {
+    if (step.kind !== "otp-entry" || !token) return;
+    validateEmail.mutate(
+      { token, email: step.email },
+      {
+        onSuccess: (result) => {
+          if (!result.success) {
+            igrpToast({
+              type: "error",
+              title: "Não foi possível reenviar o código",
+              description: result.error,
+              duration: 4000,
+            });
+            return;
+          }
+          dispatch({ type: "resend-sent" });
+          igrpToast({
+            type: "success",
+            description: "Novo código enviado",
+            duration: 3000,
+          });
+        },
+        onError: (err) => {
+          igrpToast({
+            type: "error",
+            title: "Não foi possível reenviar o código",
+            description: (err as Error).message,
+            duration: 4000,
+          });
+        },
+      },
+    );
+  };
+
+  const handleAccept = () => {
+    if (!token || !invitation) return;
+    respond.mutate(
+      {
+        response: { email: invitation.email, accept: true },
         token,
       },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
+          if (!result.success) {
+            igrpToast({
+              type: "error",
+              title: "Erro ao aceitar convite",
+              description: result.error,
+              duration: 4000,
+            });
+            return;
+          }
           igrpToast({
             type: "success",
             title: "Convite aceito",
@@ -102,172 +185,97 @@ export default function AcceptInvitePage() {
           });
           router.push("/");
         },
-        onError: (error) => {
+        onError: (err) => {
           igrpToast({
             type: "error",
             title: "Erro ao aceitar convite",
-            description: (error as Error).message,
+            description: (err as Error).message,
             duration: 4000,
           });
-          setIsAccepting(false);
         },
       },
     );
   };
 
-  const handleDecline = () => {
-    if (!token) return;
-
-    setIsAccepting(true);
-    respondMutation.mutate(
+  const handleReject = () => {
+    if (!token || !invitation) return;
+    respond.mutate(
       {
-        response: {
-          email: invitation.email,
-          accept: false,
-        },
+        response: { email: invitation.email, accept: false },
         token,
       },
       {
-        onSuccess: () => {
-          router.push("/");
+        onSuccess: (result) => {
+          if (!result.success) {
+            igrpToast({
+              type: "error",
+              title: "Erro ao rejeitar convite",
+              description: result.error,
+              duration: 4000,
+            });
+            return;
+          }
+          dispatch({ type: "rejected" });
         },
-        onError: (error) => {
+        onError: (err) => {
           igrpToast({
             type: "error",
             title: "Erro ao rejeitar convite",
-            description: (error as Error).message,
+            description: (err as Error).message,
             duration: 4000,
           });
-          setIsAccepting(false);
         },
       },
     );
   };
 
-  const isReady =
-    token &&
-    !error &&
-    !isLoadingInvitation &&
-    invitation &&
-    sessionStatus === "authenticated" &&
-    session &&
-    session.user?.email === invitation.email;
-
-  if (isReady) {
-    hasShownPage.current = true;
-  }
-
-  if (
-    hasShownPage.current &&
-    invitation &&
-    !error &&
-    sessionStatus !== "unauthenticated"
-  ) {
-  } else if (
-    !token ||
-    error ||
-    isLoadingInvitation ||
-    !invitation ||
-    (session && session.user?.email !== invitation?.email)
-  ) {
+  if (step.kind === "bootstrapping") {
     return <AppCenterLoading descrption="Validando convite..." />;
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-primary/10 bg- rounded-full flex items-center justify-center mb-4">
-            <IGRPIcon iconName="Mail" className="w-6 h-6 text-primary" />
-          </div>
-          <CardTitle>Aceitar convite</CardTitle>
-          {/* <CardDescription>
-            Você foi convidado para 
-          </CardDescription> */}
-        </CardHeader>
+    <InviteCardShell>
+      {step.kind === "invalid-invitation" ? (
+        <InviteErrorState kind="invalid" onBackHome={goHome} />
+      ) : null}
 
-        <CardContent className="space-y-4">
-          <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-            <div className="flex items-center gap-2 text-sm">
-              <IGRPIcon
-                iconName="Mail"
-                className="w-4 h-4 text-muted-foreground"
-              />
-              <span className="text-muted-foreground">Email:</span>
-              <span className="font-medium">{invitation.email}</span>
-            </div>
+      {step.kind === "email-mismatch" ? (
+        <InviteErrorState kind="mismatch" onBackHome={goHome} />
+      ) : null}
 
-            {(() => {
-              // SDK declares `department` as a single CodeDescriptionDTO,
-              // but the runtime returns an array. Cast at the access boundary.
-              const departments = (invitation.department ??
-                []) as unknown as CodeDescriptionLike[];
-              if (departments.length === 0) return null;
-              return (
-                <div className="pt-2 border-t">
-                  <div className="flex items-center gap-2 text-sm mb-2">
-                    <IGRPIcon
-                      iconName="Shield"
-                      className="w-4 h-4 text-muted-foreground"
-                    />
-                    <span className="text-muted-foreground">Departamento:</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {departments.map((dept: CodeDescriptionLike) => (
-                      <Badge
-                        key={dept.code ?? dept.description}
-                        variant="outline"
-                      >
-                        {dept.description || dept.code}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
+      {step.kind === "email-entry" ? (
+        <InviteEmailStep
+          error={step.error}
+          isSubmitting={validateEmail.isPending}
+          onSubmit={handleEmailSubmit}
+        />
+      ) : null}
 
-            {invitation.roles && invitation.roles.length > 0 && (
-              <div className="pt-2 border-t">
-                <div className="flex items-center gap-2 text-sm mb-2">
-                  <IGRPIcon
-                    iconName="Shield"
-                    className="w-4 h-4 text-muted-foreground"
-                  />
-                  <span className="text-muted-foreground">Perfis:</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {invitation.roles.map((role: CodeDescriptionLike) => (
-                    <Badge
-                      key={role.code ?? role.description}
-                      variant="outline"
-                    >
-                      {role.description || role.code}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
+      {step.kind === "otp-entry" ? (
+        <InviteOtpStep
+          email={step.email}
+          otpError={step.otpError}
+          isSubmitting={validateOtp.isPending}
+          isResending={validateEmail.isPending}
+          cooldownUntil={step.lastSentAt + RESEND_COOLDOWN_MS}
+          onSubmit={handleOtpSubmit}
+          onResend={handleResend}
+          onChangeEmail={() => dispatch({ type: "change-email" })}
+        />
+      ) : null}
 
-        <CardFooter className="flex justify-between gap-3 pt-6">
-          <IGRPButton
-            variant="ghost"
-            className="flex-1"
-            onClick={handleDecline}
-            disabled={isAccepting}
-          >
-            Recusar
-          </IGRPButton>
-          <IGRPButton
-            className="flex-1"
-            onClick={handleAccept}
-            disabled={isAccepting}
-          >
-            {isAccepting ? "Processando..." : "Aceitar Convite"}
-          </IGRPButton>
-        </CardFooter>
-      </Card>
-    </div>
+      {step.kind === "response" && invitation ? (
+        <InviteResponseStep
+          invitation={invitation as unknown as InvitationLike}
+          isSubmitting={respond.isPending}
+          onAccept={handleAccept}
+          onReject={handleReject}
+        />
+      ) : null}
+
+      {step.kind === "rejected" ? (
+        <InviteRejectedStep onBackHome={goHome} />
+      ) : null}
+    </InviteCardShell>
   );
 }
