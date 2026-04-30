@@ -135,7 +135,7 @@ export function DepartmentListTree() {
   }, [departments]);
 
   if (isLoading || (!departments && !error)) {
-    return <AppCenterLoading descrption="Carregando departamentos..." />;
+    return <AppCenterLoading description="Carregando departamentos..." />;
   }
 
   if (error) throw error;
@@ -286,7 +286,7 @@ export function DepartmentListTree() {
         {/* Main content */}
         <div className="flex-1 overflow-y-auto">
           {isLoadSelectedDep && (
-            <AppCenterLoading descrption="Carregando departamentos..." />
+            <AppCenterLoading description="Carregando departamentos..." />
           )}
           {!isLoadSelectedDep &&
             !selectedDepartment &&

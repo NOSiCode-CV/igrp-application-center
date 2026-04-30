@@ -17,5 +17,5 @@ export default function InviteErrorPage() {
     }
   }, [token, router]);
 
-  return <AppCenterLoading descrption="A redireccionar..." />;
+  return <AppCenterLoading description="A redireccionar..." />;
 }

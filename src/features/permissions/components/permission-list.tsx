@@ -120,7 +120,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   };
 
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando permissões..." />;
+    return <AppCenterLoading description="Carregando permissões..." />;
   }
 
   const permissionEmpty = allPermissions.length === 0;

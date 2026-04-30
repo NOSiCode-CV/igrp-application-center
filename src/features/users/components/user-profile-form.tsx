@@ -56,7 +56,7 @@ export function ProfileUserForm() {
   }, [user, form]);
 
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando profile..." />;
+    return <AppCenterLoading description="Carregando profile..." />;
   }
 
   if (!user) {

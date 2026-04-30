@@ -353,7 +353,7 @@ export function RoleDetails({
                 <Badge>{selectedRows.length} selecionado(s)</Badge>
               </div>
               {isLoading ? (
-                <AppCenterLoading descrption="Carregando permissões..." />
+                <AppCenterLoading description="Carregando permissões..." />
               ) : (
                 <>
                   <div className="bg-background overflow-hidden rounded-md border">

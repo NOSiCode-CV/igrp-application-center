@@ -31,6 +31,13 @@ function toArray(
   return Array.isArray(value) ? value : [value];
 }
 
+// The SDK's `getUserInvitationByToken` returns `InvitationDTO`, but its runtime
+// shape (department-as-array, embedded roles) doesn't match the declared types.
+// Narrow at the boundary so callers don't need an `as unknown as` cast.
+export function toInvitationLike(dto: unknown): InvitationLike {
+  return dto as InvitationLike;
+}
+
 export function InviteResponseStep({
   invitation,
   isSubmitting,

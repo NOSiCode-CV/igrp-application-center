@@ -347,7 +347,7 @@ export function UserList() {
   ];
 
   if (isLoading || (!users && !error)) {
-    return <AppCenterLoading descrption="Carregando utilizadores..." />;
+    return <AppCenterLoading description="Carregando utilizadores..." />;
   }
 
   if (error) throw error;
@@ -444,7 +444,7 @@ export function UserList() {
 
         <TabsContent value="pending">
           {isLoadingInvites ? (
-            <AppCenterLoading descrption="Carregando convites..." />
+            <AppCenterLoading description="Carregando convites..." />
           ) : (
             <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
               showFilter
@@ -459,7 +459,7 @@ export function UserList() {
 
         <TabsContent value="canceled">
           {isLoadingInvites ? (
-            <AppCenterLoading descrption="Carregando convites..." />
+            <AppCenterLoading description="Carregando convites..." />
           ) : (
             <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
               showFilter

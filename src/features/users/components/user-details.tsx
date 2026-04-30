@@ -53,7 +53,7 @@ export function UserDetails({ id }: { id: string }) {
   );
 
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando utilizador..." />;
+    return <AppCenterLoading description="Carregando utilizador..." />;
   }
 
   if (!user) {

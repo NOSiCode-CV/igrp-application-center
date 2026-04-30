@@ -57,7 +57,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     return isPending && variables?.roleCodes.includes(roleCode);
   };
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando perfis..." />;
+    return <AppCenterLoading description="Carregando perfis..." />;
   }
 
   return (

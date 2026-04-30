@@ -87,7 +87,7 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
     }
   }, [appMenus]);
 
-  if (isLoading) return <AppCenterLoading descrption="A carregar menus..." />;
+  if (isLoading) return <AppCenterLoading description="A carregar menus..." />;
 
   if (errorGetMenus) {
     return (

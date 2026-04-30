@@ -29,7 +29,7 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   });
 
   if (isLoadingMyDeps || (isLoading && !error && !errorMyDeps)) {
-    return <AppCenterLoading descrption="Carregando departamentos..." />;
+    return <AppCenterLoading description="Carregando departamentos..." />;
   }
 
   const departments = user ? userDepts : currentUserDepts;

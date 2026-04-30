@@ -340,7 +340,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         </div>
 
         {loading || isLoadingRoles ? (
-          <AppCenterLoading descrption="A carregar menus..." />
+          <AppCenterLoading description="A carregar menus..." />
         ) : menuTree.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon

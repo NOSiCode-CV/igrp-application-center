@@ -33,7 +33,7 @@ export function ApplicationList() {
   const { data: applications, isLoading, error } = useApplications();
 
   if (isLoading && !error)
-    return <AppCenterLoading descrption="Carregando aplicações..." />;
+    return <AppCenterLoading description="Carregando aplicações..." />;
 
   if (error) throw error;
 

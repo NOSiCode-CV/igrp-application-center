@@ -16,8 +16,8 @@ import {
 import { InviteOtpStep } from "@/features/users/components/invite/invite-otp-step";
 import { InviteRejectedStep } from "@/features/users/components/invite/invite-rejected-step";
 import {
-  type InvitationLike,
   InviteResponseStep,
+  toInvitationLike,
 } from "@/features/users/components/invite/invite-response-step";
 import {
   useGetUserInvitationByToken,
@@ -230,7 +230,7 @@ export default function AcceptInvitePage() {
   };
 
   if (step.kind === "bootstrapping") {
-    return <AppCenterLoading descrption="Validando convite..." />;
+    return <AppCenterLoading description="Validando convite..." />;
   }
 
   return (
@@ -266,7 +266,7 @@ export default function AcceptInvitePage() {
 
       {step.kind === "response" && invitation ? (
         <InviteResponseStep
-          invitation={invitation as unknown as InvitationLike}
+          invitation={toInvitationLike(invitation)}
           isSubmitting={respond.isPending}
           onAccept={handleAccept}
           onReject={handleReject}

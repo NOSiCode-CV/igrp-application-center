@@ -65,7 +65,7 @@ export function ApplicationDetails({ code }: { code: string }) {
   }, [fileUrl]);
 
   if (isLoading) {
-    return <AppCenterLoading descrption="A carregar aplicação..." />;
+    return <AppCenterLoading description="A carregar aplicação..." />;
   }
 
   if (error) throw error;

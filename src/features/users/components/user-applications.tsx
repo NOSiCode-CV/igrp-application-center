@@ -16,7 +16,7 @@ export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
   const apps = user ? userApps : currentUserApps;
 
   if (isLoadingMyApps || isLoading) {
-    return <AppCenterLoading descrption="Carregando aplicações..." />;
+    return <AppCenterLoading description="Carregando aplicações..." />;
   }
 
   return (

@@ -25,7 +25,7 @@ export function ApplicationsListHome() {
     useGetCurrentUserRecentApplications();
 
   if (isLoading || favoritesLoading || recentLoading)
-    return <AppCenterLoading descrption="Carregando aplicações..." />;
+    return <AppCenterLoading description="Carregando aplicações..." />;
 
   if (error) throw error;
 

@@ -225,7 +225,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
         </div>
 
         {isLoading ? (
-          <AppCenterLoading descrption="Carregando Roles..." />
+          <AppCenterLoading description="Carregando Roles..." />
         ) : roleEmpty ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon
