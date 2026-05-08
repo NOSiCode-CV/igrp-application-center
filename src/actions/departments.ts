@@ -309,6 +309,7 @@ export async function deleteRole(
     );
     return { success: true, data: { code: roleCode } };
   } catch (error: unknown) {
+    // The SDK throws on 204 No Content instead of resolving — treat it as success.
     const status = (error as { status?: number } | null | undefined)?.status;
     if (status === 204 || status === 0) {
       return { success: true, data: { code: roleCode } };

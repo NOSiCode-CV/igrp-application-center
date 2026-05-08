@@ -38,7 +38,7 @@ import {
   removeResourcesFromDepartment,
   updateDepartment,
   updateRole,
-} from "@/actions/departaments";
+} from "@/actions/departments";
 
 export const useDepartments = () => {
   return useQuery<DepartmentDTO[], Error>({
