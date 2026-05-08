@@ -3,33 +3,38 @@
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import { extractApiError } from "@/lib/utils";
 import { getClientAccess } from "./access-client";
+import type { ActionResult } from "./types";
 
-export async function getRoleByCode(name: string) {
+export async function getRoleByCode(
+  name: string,
+): Promise<ActionResult<RoleDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.roles.getRoleByCode(name);
-    return result.data as RoleDTO;
+    return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error(
-      `[role-by-name] Não foi possível obter dado do perfil ${name}.:`,
+      `[role-by-code] Não foi possível obter dado do perfil ${name}:`,
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
 
-export async function getRoleById(id: number) {
+export async function getRoleById(
+  id: number,
+): Promise<ActionResult<RoleDTO>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.roles.getRoleById(id);
-    return result.data as RoleDTO;
+    return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error(
-      `[role-by-name] Não foi possível obter dado do perfil ${id}.:`,
+      `[role-by-id] Não foi possível obter dado do perfil ${id}:`,
       error,
     );
-    throw new Error(extractApiError(error));
+    return { success: false, error: extractApiError(error) };
   }
 }
