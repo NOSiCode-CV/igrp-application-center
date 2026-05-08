@@ -22,7 +22,7 @@ export default async function AuthPage({
     <section className="flex min-h-screen flex-col md:flex-row">
       <div
         className={cn(
-          "relative hidden w-full md:block md:w-1/2",
+          "relative hidden w-full md:block md:w-1/2 md:h-screen",
           "lg:order-first hidden lg:block",
           sliderPosition === "right" && "lg:order-last",
         )}

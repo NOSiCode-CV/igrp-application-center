@@ -15,10 +15,10 @@ const getRemotePatterns = () => {
   extraDomains.forEach((domain) => {
     const trimmedDomain = domain.trim();
     if (trimmedDomain) {
-      patterns.push({
-        protocol: "https" as const,
-        hostname: trimmedDomain,
-      });
+      patterns.push(
+        { protocol: "https" as const, hostname: trimmedDomain },
+        { protocol: "http" as const, hostname: trimmedDomain },
+      );
     }
   });
 

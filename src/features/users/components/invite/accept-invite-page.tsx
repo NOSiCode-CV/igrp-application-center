@@ -5,20 +5,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useReducer } from "react";
 import { AppCenterLoading } from "@/components/loading";
-import { InviteCardShell } from "@/features/users/components/invite/invite-card-shell";
-import { InviteEmailStep } from "@/features/users/components/invite/invite-email-step";
-import { InviteErrorState } from "@/features/users/components/invite/invite-error-state";
+import { InviteCardShell } from "./invite-card-shell";
+import { InviteEmailStep } from "./invite-email-step";
+import { InviteErrorState } from "./invite-error-state";
 import {
   initialStep,
   inviteFlowReducer,
   RESEND_COOLDOWN_MS,
-} from "@/features/users/components/invite/invite-flow-state";
-import { InviteOtpStep } from "@/features/users/components/invite/invite-otp-step";
-import { InviteRejectedStep } from "@/features/users/components/invite/invite-rejected-step";
-import {
-  InviteResponseStep,
-  toInvitationLike,
-} from "@/features/users/components/invite/invite-response-step";
+} from "./invite-flow-state";
+import { InviteOtpStep } from "./invite-otp-step";
+import { InviteRejectedStep } from "./invite-rejected-step";
+import { InviteResponseStep, toInvitationLike } from "./invite-response-step";
 import {
   useGetUserInvitationByToken,
   useRespondUserInvitation,
@@ -26,7 +23,7 @@ import {
   useValidateInvitationOtp,
 } from "@/features/users/use-users";
 
-export default function AcceptInvitePage() {
+export function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { igrpToast } = useIGRPToast();

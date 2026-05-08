@@ -29,7 +29,7 @@ import {
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
-import { config, ROUTES } from "@/lib/constants";
+import { ROUTES } from "@/lib/constants";
 import { getStatusColor } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
 
@@ -45,10 +45,9 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   const uploadPicture = useUploadPublicFiles();
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
-  const [_previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
-    app?.picture || uploadedFilePath || "",
+    uploadedFilePath || app?.picture || "",
   );
 
   useEffect(() => {
@@ -59,7 +58,6 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   useEffect(() => {
     if (fileUrl) {
-      setPreviewUrl(fileUrl.url);
       setUploadedFilePath(null);
     }
   }, [fileUrl]);
@@ -163,22 +161,22 @@ export function ApplicationDetails({ code }: { code: string }) {
                   aria-label="Alterar imagem da aplicação"
                 >
                   <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
-                    {app?.picture ? (
-                      <Image
-                        src={config.minioUrl + app?.picture}
-                        alt={app.name}
-                        fill
-                        sizes="106px"
-                        quality={100}
-                        className="object-contain"
-                      />
-                    ) : isLoadingFile ? (
+                    {isLoadingFile && (uploadedFilePath || app?.picture) ? (
                       <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
                         <IGRPIcon
                           iconName="LoaderCircle"
                           className="w-8 h-8 text-muted-foreground animate-spin"
                         />
                       </div>
+                    ) : fileUrl?.url ? (
+                      <Image
+                        src={fileUrl.url}
+                        alt={app.name}
+                        fill
+                        sizes="106px"
+                        quality={100}
+                        className="object-contain"
+                      />
                     ) : (
                       <AvatarFallback className="text-3xl bg-primary/10">
                         <IGRPIcon
