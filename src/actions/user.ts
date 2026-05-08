@@ -71,6 +71,7 @@ export async function addRolesToUser(
     );
     return { success: true, data: result.data };
   } catch (error: unknown) {
+    console.error("[user-add-roles] Erro ao adicionar perfis:", error);
     return { success: false, error: extractApiError(error) };
   }
 }
