@@ -35,7 +35,7 @@ yarn-error.log*
 !.env.example
 !.env.igrp.example
 !.env.production
-!env/.env-build
+!env/.env.development
 # vercel
 .vercel
 

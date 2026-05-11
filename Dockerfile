@@ -3,17 +3,11 @@ RUN apk add --no-cache libc6-compat && corepack enable
 WORKDIR /app
 
 FROM base AS deps
-COPY package.json .npmrc ./
-COPY pnpm-lock.yaml ./
+COPY package.json .npmrc pnpm-lock.yaml ./
 RUN node -v && pnpm -v
-RUN if [ -f pnpm-lock.yaml ]; then \
-    echo "Using frozen lockfile" && pnpm i --frozen-lockfile; \
-  else \
-    echo "No lockfile found, installing dependencies"; \
-  fi
+RUN pnpm i --frozen-lockfile
 
 FROM base AS builder
-WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 COPY ./env/.env.development .env.production
@@ -25,8 +19,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
