@@ -1,15 +1,15 @@
 "use client";
-import React, { useState } from "react";
-import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
 import {
   Badge,
   Button,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { UserRolesDialog } from "./user-role-dialog";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
+import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
+import { UserRolesDialog } from "./user-role-dialog";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();
@@ -57,7 +57,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     return isPending && variables?.roleCodes.includes(roleCode);
   };
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando perfis..." />;
+    return <AppCenterLoading description="Carregando perfis..." />;
   }
 
   return (
@@ -130,15 +130,17 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
 
                     {role.permissions.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {role.permissions.slice(0, 3).map((permission: any) => (
-                          <Badge
-                            key={permission}
-                            variant="secondary"
-                            className="text-xs font-mono"
-                          >
-                            {permission}
-                          </Badge>
-                        ))}
+                        {role.permissions
+                          .slice(0, 3)
+                          .map((permission: string) => (
+                            <Badge
+                              key={permission}
+                              variant="secondary"
+                              className="text-xs font-mono"
+                            >
+                              {permission}
+                            </Badge>
+                          ))}
                         {role.permissions.length > 3 && (
                           <Badge variant="secondary" className="text-xs">
                             +{role.permissions.length - 3} mais

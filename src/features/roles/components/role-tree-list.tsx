@@ -1,37 +1,32 @@
 "use client";
 
 import {
-  cn,
-  Badge,
   Button,
+  DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenu,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   IGRPIcon,
   Input,
-  Skeleton,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableHead,
   Table,
+  TableBody,
+  TableHead,
+  TableHeader,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
+import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
 import { ButtonLink } from "@/components/button-link";
+import { AppCenterLoading } from "@/components/loading";
+import { useRoles } from "@/features/departments/use-departments";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import type { RoleArgs } from "../role-schemas";
+import { RoleTreeRow } from "./role.tree-row";
 import { RoleDeleteDialog } from "./role-delete-dialog";
 import { RoleFormDialog } from "./role-form-dialog";
 import { RoleDetails } from "./role-permissions-dialog";
-import { RoleTreeRow } from "./role.tree-row";
-import { AppCenterLoading } from "@/components/loading";
-import { useRoles } from "@/features/departments/use-departments";
-import { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
 interface RolesListProps {
   departmentCode: string;
@@ -62,11 +57,12 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     });
 
     roles.forEach((role) => {
-      const node = map.get(role.code)!;
+      const node = map.get(role.code);
+      if (!node) return;
       if (role.parentCode) {
         const parent = map.get(role.parentCode);
         if (parent) {
-          parent.children!.push(node);
+          parent.children?.push(node);
         } else {
           roots.push(node);
         }
@@ -229,7 +225,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
         </div>
 
         {isLoading ? (
-          <AppCenterLoading descrption="Carregando Roles..." />
+          <AppCenterLoading description="Carregando Roles..." />
         ) : roleEmpty ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon

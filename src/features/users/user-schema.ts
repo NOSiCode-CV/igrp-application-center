@@ -13,7 +13,7 @@ const NameSchema = z
 //   .min(3, "Username deve ter mínimo 3 caracteres")
 //   .max(50);
 
-const EmailSchema = z.email({ message: "Email inválido" }).max(254);
+export const EmailSchema = z.email({ message: "Email inválido" }).max(254);
 
 export const UserSchema = z.object({
   id: z.number().int().positive().optional(),
@@ -52,3 +52,15 @@ export const formSchema = z.object({
 });
 
 export type FormSchema = z.infer<typeof formSchema>;
+
+export const InviteEmailFormSchema = z.object({
+  email: EmailSchema,
+});
+export type InviteEmailFormArgs = z.infer<typeof InviteEmailFormSchema>;
+
+export const InviteOtpFormSchema = z.object({
+  otpCode: z
+    .string()
+    .regex(/^\d{6}$/, { message: "Código deve ter 6 dígitos" }),
+});
+export type InviteOtpFormArgs = z.infer<typeof InviteOtpFormSchema>;

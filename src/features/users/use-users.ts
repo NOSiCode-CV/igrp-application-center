@@ -42,6 +42,8 @@ import {
   //setCurrentUserActiveRole,
   updateUser,
   updateUserStatus,
+  validateInvitationEmail,
+  validateInvitationOtp,
 } from "@/actions/user";
 
 export const useUsers = (params?: UserFilters) => {
@@ -327,7 +329,7 @@ export function useGetCurrentUserRecentApplications(applicationName?: string) {
 }
 
 export function useGetUserInvitations(email?: string) {
-  return useQuery<any[], Error>({
+  return useQuery({
     queryKey: ["user-invitations", email],
     queryFn: async () => {
       const result = await getUserInvitations(email);
@@ -402,19 +404,20 @@ export function useUpdateUserStatus() {
 }
 
 export function useGetUserInvitationByToken(token: string) {
-  return useQuery<any, Error>({
-    queryKey: ["user-invitation-by-token"],
+  return useQuery({
+    queryKey: ["user-invitation-by-token", token],
     queryFn: async () => {
       const result = await getUserInvitationByToken(token);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
+    enabled: !!token,
     retry: false,
   });
 }
 
 export function useGetCurrentUserRoles() {
-  return useQuery<any[], Error>({
+  return useQuery({
     queryKey: ["current-user-roles"],
     queryFn: async () => {
       const result = await getCurrentUserRoles();
@@ -426,7 +429,7 @@ export function useGetCurrentUserRoles() {
 }
 
 export function useCurrentUserActiveRole(options?: { enabled?: boolean }) {
-  return useQuery<any, Error>({
+  return useQuery({
     queryKey: ["current-user-active-role"],
     queryFn: async () => {
       const result = await getCurrentUserActiveRole();
@@ -454,6 +457,23 @@ export function useSetCurrentUserActiveRole() {
         });
       }
     },
+    retry: false,
+  });
+}
+
+export function useValidateInvitationEmail() {
+  return useMutation({
+    mutationFn: async (
+      request: Parameters<typeof validateInvitationEmail>[0],
+    ) => validateInvitationEmail(request),
+    retry: false,
+  });
+}
+
+export function useValidateInvitationOtp() {
+  return useMutation({
+    mutationFn: async (request: Parameters<typeof validateInvitationOtp>[0]) =>
+      validateInvitationOtp(request),
     retry: false,
   });
 }

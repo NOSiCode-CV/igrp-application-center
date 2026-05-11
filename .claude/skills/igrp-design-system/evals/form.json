@@ -1,0 +1,23 @@
+{
+  "skill_name": "igrp-form",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a user registration form with email, password, and confirm password fields. Use the IGRP design system. Validate that passwords match.",
+      "expected_output": "A complete form using IGRPForm, IGRPFormField, IGRPInputText, IGRPInputPassword, Zod schema with password confirmation validation, and IGRPButton for submit.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Add a form to edit a product with name, price, and description. The form should reset when the product id changes.",
+      "expected_output": "IGRPForm with resetKey={productId}, schema for name/price/description, IGRPFormField wrapping IGRPInputText and IGRPInputNumber/IGRPTextarea, formRef for programmatic control.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Create a form with a dynamic list of phone numbers. User can add and remove phone number inputs.",
+      "expected_output": "IGRPForm with IGRPFormList for field array, schema with z.array(z.object({ phone: z.string() })), renderItem rendering IGRPInputPhone or IGRPInputText for each item.",
+      "files": []
+    }
+  ]
+}

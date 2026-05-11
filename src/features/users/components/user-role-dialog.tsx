@@ -1,44 +1,44 @@
 "use client";
 
 import {
-  cn,
-  IGRPBadge,
   Badge,
-  IGRPButton,
   Button,
   Checkbox,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  Command,
+  cn,
+  Dialog,
   DialogContent,
   DialogHeader,
-  Dialog,
   DialogTitle,
+  IGRPButton,
   IGRPIcon,
   Input,
   Label,
+  Pagination,
   PaginationContent,
   PaginationItem,
-  Pagination,
-  PopoverContent,
   Popover,
+  PopoverContent,
   PopoverTrigger,
+  Select,
   SelectContent,
   SelectItem,
-  Select,
   SelectTrigger,
   SelectValue,
+  Table,
   TableBody,
   TableCell,
-  TableHeader,
   TableHead,
-  Table,
+  TableHeader,
   TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -63,7 +63,6 @@ import {
   useUserRoles,
 } from "@/features/users/use-users";
 import { getStatusColor, showStatus } from "@/lib/utils";
-import { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -77,7 +76,7 @@ const multiColumnFilterFn: FilterFn<RoleDTO> = (
     .trim();
   if (!term) return true;
   const name = String(row.original?.name ?? "").toLowerCase();
-  const desc = String((row.original as any)?.description ?? "").toLowerCase();
+  const desc = String(row.original?.description ?? "").toLowerCase();
   return name.includes(term) || desc.includes(term);
 };
 
@@ -213,7 +212,7 @@ export function UserRolesDialog({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const getRowKey = (r: RoleDTO) => String((r as any).id ?? r.name);
+  const getRowKey = (r: RoleDTO) => String(r.id ?? r.name);
 
   const roleNameSet = useMemo(
     () => new Set((roles ?? []).map((r) => norm(r.name ?? ""))),
@@ -226,8 +225,8 @@ export function UserRolesDialog({
 
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
-    return new Set<string>(list.map((r) => getRowKey(r as any)));
-  }, [userRolesInDept]);
+    return new Set<string>(list.map((r) => getRowKey(r as RoleDTO)));
+  }, [userRolesInDept, getRowKey]);
 
   useEffect(() => {
     if (!open) {
@@ -243,7 +242,7 @@ export function UserRolesDialog({
     setData(roles ?? []);
     setRowSelection({});
     setPagination((p) => ({ ...p, pageIndex: 0 }));
-  }, [roles, departmentCode]);
+  }, [roles]);
 
   useEffect(() => {
     if (!data?.length) return;
@@ -253,7 +252,7 @@ export function UserRolesDialog({
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [data, preselectedKeys]);
+  }, [data, preselectedKeys, getRowKey]);
 
   const table = useReactTable({
     data,
@@ -479,7 +478,7 @@ export function UserRolesDialog({
                     Ocorreu um erro a carregar perfis do utilizador.
                   </p>
                   <p className="text-center">
-                    {(err as any)?.message ?? String(err)}
+                    {err instanceof Error ? err.message : String(err)}
                   </p>
                 </div>
               ) : (

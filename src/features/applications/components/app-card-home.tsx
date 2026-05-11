@@ -1,16 +1,16 @@
 "use client";
 
 import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
-import Link from "next/link";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import type { Route } from "next";
 import Image from "next/image";
-
-import { config } from "@/lib/constants";
-import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import Link from "next/link";
 import {
   useAddCurrentUserFavoriteApplication,
-  useRemoveCurrentUserFavoriteApplication,
   useCurrentUserFavoriteApplications,
+  useRemoveCurrentUserFavoriteApplication,
 } from "@/features/users/use-users";
+import { config } from "@/lib/constants";
 
 export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   const { name, description, code, picture } = app;
@@ -37,7 +37,7 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   };
 
   return (
-    <Link href={href} className="group block h-full">
+    <Link href={href as Route} className="group block h-full">
       <div className="relative h-full overflow-hidden rounded-sm border-2 border-border/40 bg-card p-5 hover:shadow-sm">
         <div className="flex gap-4">
           <div className="relative size-14 rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50">
@@ -69,6 +69,7 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
             onClick={toggleFavorite}
             className="hover:scale-110 transition-transform cursor-pointer"
             disabled={addFavorite.isPending || removeFavorite.isPending}
+            type="button"
           >
             <IGRPIcon
               iconName="Star"

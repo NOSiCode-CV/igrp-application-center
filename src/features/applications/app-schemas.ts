@@ -140,7 +140,7 @@ export const FormSchema = z.union([
 export type FormVals = z.input<typeof FormSchema>;
 export type FormValsParsed = z.output<typeof FormSchema>;
 
-export function normalizeApplication(values: FormVals, isEdit: boolean) {
+export function normalizeApplication(values: FormVals, _isEdit: boolean) {
   const base = {
     code: values.code as string,
     name: values.name as string,

@@ -1,10 +1,13 @@
 import type { NextConfig } from "next";
-import type { ImageConfigComplete } from "next/dist/shared/lib/image-config";
+import type { RemotePattern } from "next/dist/shared/lib/image-config";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const getRemotePatterns = () => {
-  const patterns: ImageConfigComplete["remotePatterns"] = [];
+  const patterns: Array<{
+    protocol: RemotePattern["protocol"];
+    hostname: RemotePattern["hostname"];
+  }> = [];
 
   const extraDomains =
     process.env.NEXT_PUBLIC_ALLOWED_DOMAINS?.split(",") || [];
@@ -12,10 +15,10 @@ const getRemotePatterns = () => {
   extraDomains.forEach((domain) => {
     const trimmedDomain = domain.trim();
     if (trimmedDomain) {
-      patterns.push({
-        protocol: "https" as const,
-        hostname: trimmedDomain,
-      });
+      patterns.push(
+        { protocol: "https" as const, hostname: trimmedDomain },
+        { protocol: "http" as const, hostname: trimmedDomain },
+      );
     }
   });
 
@@ -28,6 +31,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: getRemotePatterns(),
   },
+  typedRoutes: true,
   experimental: {
     typedEnv: true,
     optimizePackageImports: [

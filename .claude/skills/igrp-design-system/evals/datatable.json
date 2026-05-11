@@ -1,0 +1,23 @@
+{
+  "skill_name": "igrp-datatable",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a table showing users with columns: name, email, status. Add pagination and make status sortable.",
+      "expected_output": "IGRPDataTable with columns using IGRPDataTableHeaderDefault for sortable status, IGRPDataTableCellBadge for status, showPagination.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Add a data table with expandable rows. Each row shows a summary; expanding shows a details section.",
+      "expected_output": "IGRPDataTable with getRowCanExpand, renderSubComponent, IGRPDataTableCellExpander in a column.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Create a products table with name (link to detail), price (formatted currency), and actions dropdown (Edit, Delete).",
+      "expected_output": "IGRPDataTable with IGRPDataTableCellLink, IGRPDataTableCellAmount, IGRPDataTableDropdownMenu with link and alert items.",
+      "files": []
+    }
+  ]
+}

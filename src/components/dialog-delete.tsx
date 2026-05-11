@@ -100,7 +100,8 @@ function IGRPDialogDelete({
           <Button
             variant="destructive"
             onClick={() => {
-              confirmDelete(), setConfirmation("");
+              confirmDelete();
+              setConfirmation("");
             }}
             disabled={!isConfirmed || isDeleting}
           >

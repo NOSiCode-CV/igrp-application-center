@@ -38,7 +38,7 @@ import {
   removeResourcesFromDepartment,
   updateDepartment,
   updateRole,
-} from "@/actions/departaments";
+} from "@/actions/departments";
 
 export const useDepartments = () => {
   return useQuery<DepartmentDTO[], Error>({
@@ -129,7 +129,7 @@ export const useDepartmentAvailableApps = (departmentCode?: string) => {
   return useQuery<ApplicationDTO[], Error>({
     queryKey: ["department-available-menus-for-roles", departmentCode],
     queryFn: async () => {
-      const result = await getAvailableApplications(departmentCode!);
+      const result = await getAvailableApplications(departmentCode);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -245,7 +245,7 @@ export const useDepartmentAvailableMenus = (
   return useQuery<MenuEntryDTO[], Error>({
     queryKey: ["department-available-menus", appCode, departmentCode],
     queryFn: async () => {
-      const result = await getAvailableMenus(appCode!, departmentCode!);
+      const result = await getAvailableMenus(appCode, departmentCode);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -261,7 +261,7 @@ export const useDepartmentMenus = (
   return useQuery<MenuEntryDTO[], Error>({
     queryKey: ["department-menus", appCode, departmentCode],
     queryFn: async () => {
-      const result = await getDepartmentMenus(appCode!, departmentCode!);
+      const result = await getDepartmentMenus(appCode, departmentCode);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -506,7 +506,7 @@ export const useAvailableResources = (departmentCode?: string) => {
   return useQuery({
     queryKey: ["available-resources", departmentCode],
     queryFn: async () => {
-      const result = await getAvailableResources(departmentCode!);
+      const result = await getAvailableResources(departmentCode);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -519,7 +519,7 @@ export const useDepartmentResources = (departmentCode?: string) => {
   return useQuery({
     queryKey: ["department-resources", departmentCode],
     queryFn: async () => {
-      const result = await getDepartmentResources(departmentCode!);
+      const result = await getDepartmentResources(departmentCode);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -533,7 +533,7 @@ export const useDepartmentPermissions = (departmentCode?: string) => {
   return useQuery({
     queryKey: ["department-permissions", departmentCode],
     queryFn: async () => {
-      const result = await getDepartmentPermissions(departmentCode!);
+      const result = await getDepartmentPermissions(departmentCode);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -546,7 +546,7 @@ export const useAvailablePermissions = (departmentCode?: string) => {
   return useQuery({
     queryKey: ["available-permissions", departmentCode],
     queryFn: async () => {
-      const result = await getAvailablePermissions(departmentCode!);
+      const result = await getAvailablePermissions(departmentCode);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -626,7 +626,7 @@ export const useAddPermissionsToRole = () => {
         await queryClient.invalidateQueries({ queryKey: ["roles"] });
         await queryClient.invalidateQueries({
           queryKey: [
-            "roleByName",
+            "permissionsByRole",
             variables.departmentCode,
             variables.roleCode,
           ],
@@ -664,7 +664,7 @@ export const useRemovePermissionsFromRole = () => {
         await queryClient.invalidateQueries({ queryKey: ["roles"] });
         await queryClient.invalidateQueries({
           queryKey: [
-            "roleByName",
+            "permissionsByRole",
             variables.departmentCode,
             variables.roleCode,
           ],
@@ -689,7 +689,7 @@ export const usePermissionsByRole = (
   roleCode: string,
 ) => {
   return useQuery({
-    queryKey: ["roleByName", departmentCode, roleCode],
+    queryKey: ["permissionsByRole", departmentCode, roleCode],
     queryFn: async () => {
       const result = await getPermissionsByRole(departmentCode, roleCode);
       if (!result.success) throw new Error(result.error);

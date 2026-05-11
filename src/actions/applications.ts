@@ -1,6 +1,10 @@
 "use server";
 
 import type {
+  IGRPMenuCRUDArgs,
+  IGRPMenuItemArgs,
+} from "@igrp/framework-next-types/dist/types/access-management";
+import type {
   ApplicationDTO,
   ApplicationFilters,
   CreateApplicationRequest,
@@ -9,16 +13,13 @@ import type {
   UpdateApplicationRequest,
   UpdateMenuRequest,
 } from "@igrp/platform-access-management-client-ts";
-import { getClientAccess } from "./access-client";
-import { extractApiError } from "@/lib/utils";
 import {
   mapperListMenusCRUD,
   mapperMenuCRUD,
 } from "@/features/menus/menu-mapper";
-
-type ActionResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+import { extractApiError } from "@/lib/utils";
+import { getClientAccess } from "./access-client";
+import type { ActionResult } from "./types";
 
 export async function getApplications(
   filters?: ApplicationFilters,
@@ -84,7 +85,9 @@ export async function updateApplication(
 }
 
 // MENUS
-export async function getMenus(code: string): Promise<ActionResult<any[]>> {
+export async function getMenus(
+  code: string,
+): Promise<ActionResult<IGRPMenuItemArgs[]>> {
   const client = await getClientAccess();
 
   try {
@@ -103,7 +106,7 @@ export async function getMenus(code: string): Promise<ActionResult<any[]>> {
 export async function createMenu(
   appCode: string,
   menu: CreateMenuRequest,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<IGRPMenuCRUDArgs>> {
   const client = await getClientAccess();
 
   try {
@@ -120,7 +123,7 @@ export async function updateMenu(
   appCode: string,
   menuCode: string,
   updated: UpdateMenuRequest,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<IGRPMenuCRUDArgs>> {
   const client = await getClientAccess();
 
   try {
@@ -140,12 +143,12 @@ export async function updateMenu(
 export async function deleteMenu(
   appCode: string,
   menuCode: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<string>> {
   const client = await getClientAccess();
 
   try {
     const result = await client.applications.deleteMenu(appCode, menuCode);
-    return { success: true, data: result };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("[menu-delete] Não foi possível eliminar menu:", error);
     return { success: false, error: extractApiError(error) };

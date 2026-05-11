@@ -1,11 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Button,
   Card,
@@ -20,40 +15,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Input,
   IGRPIcon,
+  Input,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-
-import { BackButton } from "@/components/back-button";
-
-import { ROUTES } from "@/lib/constants";
-import { useCurrentUser } from "../use-users";
-import { UpdateUserArgs, UpdateUserSchema } from "../user-schema";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import type * as z from "zod";
 import { updateUser } from "@/actions/user";
-import { ProfileImageUpload } from "./user-profile-image-upload";
-import { ProfileSignature } from "./user-profile-signature";
+import { BackButton } from "@/components/back-button";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
+import { ROUTES } from "@/lib/constants";
+import { useCurrentUser } from "../use-users";
+import { type UpdateUserArgs, UpdateUserSchema } from "../user-schema";
+import { ProfileImageUpload } from "./user-profile-image-upload";
+import { ProfileSignature } from "./user-profile-signature";
 
 export function ProfileUserForm() {
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
 
-  const { data: user, isLoading, error } = useCurrentUser();
-
-  if (!user) {
-    return (
-      <AppCenterNotFound
-        iconName="User"
-        title="Nenhum utilizador encontrada."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <AppCenterLoading descrption="Carregando profile..." />;
-  }
+  const { data: user, isLoading } = useCurrentUser();
 
   const form = useForm<z.infer<typeof UpdateUserSchema>>({
     resolver: zodResolver(UpdateUserSchema),
@@ -70,6 +55,19 @@ export function ProfileUserForm() {
     }
   }, [user, form]);
 
+  if (isLoading) {
+    return <AppCenterLoading description="Carregando profile..." />;
+  }
+
+  if (!user) {
+    return (
+      <AppCenterNotFound
+        iconName="User"
+        title="Nenhum utilizador encontrada."
+      />
+    );
+  }
+
   async function onSubmit(values: z.infer<typeof UpdateUserSchema>) {
     const formData = new FormData();
     formData.append("fullname", values.name || "");
@@ -83,7 +81,11 @@ export function ProfileUserForm() {
       formData.append("signature", values.signature);
     }
 
-    user && (await updateUser(user.id, formData as any));
+    // updateUser action expects IGRPUserDTO but the runtime endpoint accepts
+    // FormData (multipart/form-data) for picture/signature uploads. The action
+    // signature is shared with the JSON code path; this double-cast documents
+    // that the type mismatch is intentional and runtime-safe.
+    user && (await updateUser(user.id, formData as unknown as IGRPUserDTO));
 
     igrpToast({
       type: "success",

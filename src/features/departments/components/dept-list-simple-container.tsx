@@ -1,15 +1,15 @@
 "use client";
 
-import { cn, IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
+import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
-import DepartmentTreeItemSimple from "./dept-list-simple-tree";
-import { buildTree, filterTree } from "./dept-list-tree";
+import { AppCenterLoading } from "@/components/loading";
 import {
   useCurrentUserDepartments,
   useUserDepartments,
 } from "@/features/users/use-users";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { AppCenterLoading } from "@/components/loading";
+import DepartmentTreeItemSimple from "./dept-list-simple-tree";
+import { buildTree, filterTree } from "./dept-list-tree";
 
 export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,16 +24,16 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
     data: userDepts,
     isLoading,
     error,
-  } = useUserDepartments(user?.id!, {
-    enabled: !!user,
+  } = useUserDepartments(user?.id ?? 0, {
+    enabled: !!user?.id,
   });
 
   if (isLoadingMyDeps || (isLoading && !error && !errorMyDeps)) {
-    return <AppCenterLoading descrption="Carregando departamentos..." />;
+    return <AppCenterLoading description="Carregando departamentos..." />;
   }
 
   const departments = user ? userDepts : currentUserDepts;
-  const departmentTree = buildTree(departments as any);
+  const departmentTree = buildTree(departments ?? []);
 
   const filteredTree = filterTree(departmentTree, searchTerm);
 
@@ -67,7 +67,13 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
         {filteredTree.map((dept) => (
           <DepartmentTreeItemSimple
             key={dept.code}
-            dept={dept as any}
+            // dept-list-simple-tree's local Department shape is structurally
+            // compatible but nominally distinct from DepartmentDTO.
+            dept={
+              dept as unknown as React.ComponentProps<
+                typeof DepartmentTreeItemSimple
+              >["dept"]
+            }
             expandedDepts={expandedDepts}
             setExpandedDepts={setExpandedDepts}
           />

@@ -19,7 +19,6 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
-import { AppCenterNotFound } from "@/components/not-found";
 import { PageHeader } from "@/components/page-header";
 import { ApplicationCard } from "@/features/applications/components/app-card";
 import { useApplications } from "@/features/applications/use-applications";
@@ -34,7 +33,7 @@ export function ApplicationList() {
   const { data: applications, isLoading, error } = useApplications();
 
   if (isLoading && !error)
-    return <AppCenterLoading descrption="Carregando aplicações..." />;
+    return <AppCenterLoading description="Carregando aplicações..." />;
 
   if (error) throw error;
 

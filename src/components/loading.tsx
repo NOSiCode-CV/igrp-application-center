@@ -1,6 +1,6 @@
 import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
-export function AppCenterLoading({ descrption }: { descrption: string }) {
+export function AppCenterLoading({ description }: { description: string }) {
   return (
     <div className="w-full flex items-center justify-center py-10">
       <div className="text-center text-primary">
@@ -9,7 +9,7 @@ export function AppCenterLoading({ descrption }: { descrption: string }) {
           strokeWidth={1}
           className="size-16 animate-spin mx-auto mb-4"
         />
-        <p className="text-primary">{descrption}</p>
+        <p className="text-primary">{description}</p>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import {
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface ConfirmDialogProps {
   open: boolean;

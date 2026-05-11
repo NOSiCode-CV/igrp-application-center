@@ -1,20 +1,17 @@
 "use server";
 
 import type {
-  ApiResponse,
   ApplicationDTO,
+  DepartmentDTO,
   IGRPUserDTO,
   InviteUserDTO,
   RoleDTO,
   UserFilters,
   UserInvitationResponseDTO,
 } from "@igrp/platform-access-management-client-ts";
-import { getClientAccess } from "./access-client";
 import { extractApiError } from "@/lib/utils";
-
-type ActionResult<T> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+import { getClientAccess } from "./access-client";
+import type { AccessClient, ActionResult, SdkData } from "./types";
 
 export async function getUsers(
   params?: UserFilters,
@@ -47,7 +44,7 @@ export async function getCurrentUser(): Promise<ActionResult<IGRPUserDTO>> {
 
 export async function inviteUser(
   user: InviteUserDTO,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<SdkData<AccessClient["users"]["inviteUser"]>>> {
   const client = await getClientAccess();
 
   try {
@@ -63,7 +60,7 @@ export async function addRolesToUser(
   id: number,
   departmentCode: string,
   roleCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<RoleDTO>> {
   const client = await getClientAccess();
 
   try {
@@ -73,7 +70,8 @@ export async function addRolesToUser(
       roleCodes,
     );
     return { success: true, data: result.data };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    console.error("[user-add-roles] Erro ao adicionar perfis:", error);
     return { success: false, error: extractApiError(error) };
   }
 }
@@ -82,7 +80,7 @@ export async function removeRolesFromUser(
   id: number,
   departmentCode: string,
   roleCodes: string[],
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<RoleDTO>> {
   const client = await getClientAccess();
 
   try {
@@ -109,7 +107,9 @@ export async function getCurrentUserRoles(): Promise<ActionResult<RoleDTO[]>> {
   }
 }
 
-export async function getUserRoles(id: number): Promise<ActionResult<any>> {
+export async function getUserRoles(
+  id: number,
+): Promise<ActionResult<RoleDTO[]>> {
   const client = await getClientAccess();
 
   try {
@@ -136,7 +136,9 @@ export async function updateUser(
   }
 }
 
-export async function getCurrentUserDepartments(): Promise<ActionResult<any>> {
+export async function getCurrentUserDepartments(): Promise<
+  ActionResult<DepartmentDTO[]>
+> {
   const client = await getClientAccess();
 
   try {
@@ -148,12 +150,14 @@ export async function getCurrentUserDepartments(): Promise<ActionResult<any>> {
   }
 }
 
-export async function getCurrentUserApplications(): Promise<ActionResult<any>> {
+export async function getCurrentUserApplications(): Promise<
+  ActionResult<ApplicationDTO[]>
+> {
   const client = await getClientAccess();
 
   try {
     const result = await client.users.getCurrentUserApplications();
-    return { success: true, data: result.data as ApplicationDTO[] };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-applications] Erro ao obter aplicações:", error);
     return { success: false, error: extractApiError(error) };
@@ -162,7 +166,7 @@ export async function getCurrentUserApplications(): Promise<ActionResult<any>> {
 
 export async function getUserApplications(
   id: number,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<ApplicationDTO[]>> {
   const client = await getClientAccess();
 
   try {
@@ -176,7 +180,7 @@ export async function getUserApplications(
 
 export async function getUserDepartments(
   id: number,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<DepartmentDTO[]>> {
   const client = await getClientAccess();
 
   try {
@@ -278,7 +282,7 @@ export async function registerCurrentUserApplicationAccess(
 
 export async function getUserInvitations(
   email?: string,
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<SdkData<AccessClient["users"]["getUserInvitations"]>>> {
   const client = await getClientAccess();
 
   try {
@@ -292,7 +296,9 @@ export async function getUserInvitations(
 
 export async function resendUserInvitation(
   id: number,
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["resendUserInvitation"]>>
+> {
   const client = await getClientAccess();
 
   try {
@@ -307,7 +313,9 @@ export async function resendUserInvitation(
 export async function respondUserInvitation(
   response: UserInvitationResponseDTO,
   token: string,
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["respondUserInvitation"]>>
+> {
   const client = await getClientAccess();
 
   try {
@@ -321,7 +329,9 @@ export async function respondUserInvitation(
 
 export async function cancelUserInvitation(
   id: number,
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["cancelUserInvitation"]>>
+> {
   const client = await getClientAccess();
 
   try {
@@ -350,7 +360,9 @@ export async function updateUserStatus(
 
 export async function getUserInvitationByToken(
   token: string,
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["getUserInvitationByToken"]>>
+> {
   const client = await getClientAccess();
 
   try {
@@ -362,7 +374,9 @@ export async function getUserInvitationByToken(
   }
 }
 
-export async function getCurrentUserActiveRole(): Promise<ActionResult<any>> {
+export async function getCurrentUserActiveRole(): Promise<
+  ActionResult<SdkData<AccessClient["users"]["getCurrentUserActiveRole"]>>
+> {
   const client = await getClientAccess();
 
   try {
@@ -375,8 +389,10 @@ export async function getCurrentUserActiveRole(): Promise<ActionResult<any>> {
 }
 
 export async function setCurrentUserActiveRole(
-  role: any,
-): Promise<ActionResult<any>> {
+  role: Parameters<AccessClient["users"]["setCurrentUserActiveRole"]>[0],
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["setCurrentUserActiveRole"]>>
+> {
   const client = await getClientAccess();
 
   try {
@@ -384,6 +400,38 @@ export async function setCurrentUserActiveRole(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao definir active role:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function validateInvitationEmail(
+  request: Parameters<AccessClient["users"]["validateInvitationEmail"]>[0],
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["validateInvitationEmail"]>>
+> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.validateInvitationEmail(request);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[invitation] Erro ao validar email de convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function validateInvitationOtp(
+  request: Parameters<AccessClient["users"]["validateInvitationOtp"]>[0],
+): Promise<
+  ActionResult<SdkData<AccessClient["users"]["validateInvitationOtp"]>>
+> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.validateInvitationOtp(request);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[invitation] Erro ao validar código OTP de convite:", error);
     return { success: false, error: extractApiError(error) };
   }
 }

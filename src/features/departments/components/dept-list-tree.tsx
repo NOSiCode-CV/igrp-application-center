@@ -4,25 +4,24 @@ import {
   Badge,
   Button,
   IGRPIcon,
-  Input,
-  IGRPTabItem,
+  type IGRPTabItem,
   IGRPTabs,
+  Input,
 } from "@igrp/igrp-framework-react-design-system";
+import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useState } from "react";
-
 import { ButtonLink } from "@/components/button-link";
+import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { AppCenterLoading } from "@/components/loading";
-import { useDepartments, useDepartmentByCode } from "../use-departments";
+import { PermissionList } from "@/features/permissions/components/permission-list";
+import { RolesListTree } from "@/features/roles/components/role-tree-list";
+import { getStatusColor } from "@/lib/utils";
+import { useDepartmentByCode, useDepartments } from "../use-departments";
 import { DepartmentDeleteDialog } from "./dept-delete-dialog";
 import { DepartmentFormDialog } from "./dept-form-dialog";
-import DepartmentTreeItem from "./dept-tree-item";
-import { PermissionList } from "@/features/permissions/components/permission-list";
-import { CopyToClipboard } from "@/components/copy-to-clipboard";
-import { RolesListTree } from "@/features/roles/components/role-tree-list";
 import { MenuPermissions } from "./dept-menu";
+import DepartmentTreeItem from "./dept-tree-item";
 import { ManageAppsModal } from "./Modal/manage-apps-modal";
-import { getStatusColor } from "@/lib/utils";
-import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
 export type DepartmentWithChildren = DepartmentDTO & {
   children?: DepartmentWithChildren[];
@@ -37,11 +36,12 @@ export const buildTree = (depts: DepartmentDTO[]): DepartmentWithChildren[] => {
   });
 
   depts?.forEach((dept) => {
-    const node = map.get(dept.code)!;
+    const node = map.get(dept.code);
+    if (!node) return;
     if (dept.parentCode) {
       const parent = map.get(dept.parentCode);
       if (parent) {
-        parent.children!.push(node);
+        parent.children?.push(node);
       } else {
         roots.push(node);
       }
@@ -118,14 +118,14 @@ export function DepartmentListTree() {
     setOpenFormDialog(true);
   };
 
-  const handleCreateSubDept = (parentCode: any) => {
+  const handleCreateSubDept = (parent: DepartmentWithChildren) => {
     setDeptToDelete(null);
     setCurrentDept(null);
-    setParentDeptId(parentCode);
+    setParentDeptId(parent);
     setOpenFormDialog(true);
   };
 
-  const handleSelectDept = (code: string) => {
+  const _handleSelectDept = (code: string) => {
     setSelectedDeptCode(code);
     setIsSidebarOpen(false);
   };
@@ -135,11 +135,11 @@ export function DepartmentListTree() {
   }, [departments]);
 
   if (isLoading || (!departments && !error)) {
-    return <AppCenterLoading descrption="Carregando departamentos..." />;
+    return <AppCenterLoading description="Carregando departamentos..." />;
   }
 
   if (error) throw error;
-  const departmentTree = buildTree(departments as any);
+  const departmentTree = buildTree(departments ?? []);
   const filteredTree = filterTree(departmentTree, searchTerm);
 
   const tabs: IGRPTabItem[] = [
@@ -275,7 +275,9 @@ export function DepartmentListTree() {
 
         {/* Overlay for mobile */}
         {isSidebarOpen && (
-          <div
+          <button
+            type="button"
+            aria-label="Fechar menu de departamentos"
             className="fixed! inset-0! bg-black/50! z-40! lg:hidden!"
             onClick={() => setIsSidebarOpen(false)}
           />
@@ -284,7 +286,7 @@ export function DepartmentListTree() {
         {/* Main content */}
         <div className="flex-1 overflow-y-auto">
           {isLoadSelectedDep && (
-            <AppCenterLoading descrption="Carregando departamentos..." />
+            <AppCenterLoading description="Carregando departamentos..." />
           )}
           {!isLoadSelectedDep &&
             !selectedDepartment &&
@@ -343,7 +345,9 @@ export function DepartmentListTree() {
 
                 <div className="flex flex-col sm:flex-row! w-full! lg:w-auto! gap-2">
                   <Button
-                    onClick={() => handleEdit(selectedDepartment as any)}
+                    onClick={() =>
+                      handleEdit(selectedDepartment as DepartmentWithChildren)
+                    }
                     variant="outline"
                     className="cursor-pointer w-full! sm:w-auto!"
                   >

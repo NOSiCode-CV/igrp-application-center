@@ -118,7 +118,7 @@ export const useFileUpload = (
 
       return null;
     },
-    [accept, maxSize],
+    [maxSize],
   );
 
   const createPreview = useCallback(

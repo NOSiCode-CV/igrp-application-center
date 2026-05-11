@@ -20,6 +20,32 @@ export function isPreviewMode(): boolean {
   return previewModeValue === "true";
 }
 
+/**
+ * Checks if authentication is disabled at the provider level (AUTH_PROVIDER=none).
+ * Handles whitespace, case sensitivity, and quotes.
+ */
+export function isAuthDisabled(): boolean {
+  const rawValue = process.env.AUTH_PROVIDER;
+  const providerValue = rawValue
+    ?.trim()
+    ?.replace(/^["']|["']$/g, "")
+    ?.toLowerCase();
+  return providerValue === "none";
+}
+
+/**
+ * Returns true when the UI should bypass the auth flow entirely — either
+ * because preview mode is on, or because AUTH_PROVIDER=none.
+ *
+ * Call sites use this single predicate wherever they previously checked
+ * `isPreviewMode()` alone, so `AUTH_PROVIDER=none` gets the same UX path as
+ * preview mode: no redirect to /login, /login itself routes back to /,
+ * mock session in the layout, /api/auth/* blocked at the middleware.
+ */
+export function isAuthBypass(): boolean {
+  return isPreviewMode() || isAuthDisabled();
+}
+
 export function getStatusColor(status: string) {
   return status === "ACTIVE" ? "status-active" : "status-inactive";
 }
@@ -126,10 +152,21 @@ export const getMenuIcon = (type: string) => {
   }
 };
 
-export function extractApiError(error: any): string {
-  if (error?.details) {
+interface ApiErrorLike {
+  details?: string;
+  status?: number;
+  message?: string;
+}
+
+export function extractApiError(error: unknown): string {
+  const e = (error ?? {}) as ApiErrorLike;
+  if (e.details) {
     try {
-      const parsed = JSON.parse(error.details);
+      const parsed = JSON.parse(e.details) as {
+        errors?: Record<string, string>;
+        details?: string;
+        title?: string;
+      };
 
       if (parsed.errors) {
         const errorMessages = Object.values(parsed.errors).join(", ");
@@ -140,21 +177,21 @@ export function extractApiError(error: any): string {
         return parsed.details;
       }
 
-      return parsed.title || getDefaultErrorMessage(error.status);
+      return parsed.title || getDefaultErrorMessage(e.status);
     } catch {
-      return error.details;
+      return e.details;
     }
   }
 
-  if (error?.status) {
-    return getDefaultErrorMessage(error.status);
+  if (e.status) {
+    return getDefaultErrorMessage(e.status);
   }
 
-  if (error?.message) {
-    return error.message;
+  if (e.message) {
+    return e.message;
   }
 
-  return error?.message || "Erro desconhecido";
+  return e.message || "Erro desconhecido";
 }
 
 function getDefaultErrorMessage(status?: number): string {

@@ -1,5 +1,4 @@
 "use client";
-import React, { useState } from "react";
 import {
   Badge,
   Button,
@@ -21,7 +20,10 @@ export default function ProfileRoleList() {
   const { mutateAsync: setActiveRole, isPending: isSettingActive } =
     useSetCurrentUserActiveRole();
 
-  const handleActivateRole = async (role: any) => {
+  const handleActivateRole = async (role: {
+    code: string;
+    departmentCode: string;
+  }) => {
     const payload = {
       roleCode: role.code,
       departmentCode: role.departmentCode,
@@ -52,7 +54,7 @@ export default function ProfileRoleList() {
   };
 
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando perfis..." />;
+    return <AppCenterLoading description="Carregando perfis..." />;
   }
 
   return (
@@ -127,15 +129,17 @@ export default function ProfileRoleList() {
 
                     {role.permissions.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {role.permissions.slice(0, 3).map((permission: any) => (
-                          <Badge
-                            key={permission}
-                            variant="secondary"
-                            className="text-xs font-mono"
-                          >
-                            {permission}
-                          </Badge>
-                        ))}
+                        {role.permissions
+                          .slice(0, 3)
+                          .map((permission: string) => (
+                            <Badge
+                              key={permission}
+                              variant="secondary"
+                              className="text-xs font-mono"
+                            >
+                              {permission}
+                            </Badge>
+                          ))}
                         {role.permissions.length > 3 && (
                           <Badge variant="secondary" className="text-xs">
                             +{role.permissions.length - 3} mais

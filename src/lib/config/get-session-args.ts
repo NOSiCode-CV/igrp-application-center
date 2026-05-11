@@ -9,7 +9,6 @@ export function getSessionArgs() {
       basePath: getBasePath(process.env.NEXT_PUBLIC_BASE_PATH || ""),
     };
   }
-
   return {
     refetchInterval: 5 * 60,
     refetchOnWindowFocus: true,

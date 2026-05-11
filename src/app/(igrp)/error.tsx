@@ -1,13 +1,24 @@
 "use client";
+import { IGRPSegmentError } from "@igrp/framework-next-ui";
+import { useEffect } from "react";
+import { resolveErrorCopy } from "@/config/error-messages";
+import { reportError } from "@/lib/report-error";
 
-import { IGRPGlobalError } from "@igrp/framework-next-ui";
-
-export default function GlobalError({
+export default function IgrpSegmentError({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  return <IGRPGlobalError error={error} reset={reset} />;
+  useEffect(() => {
+    reportError(error, { segment: "(igrp)" });
+  }, [error]);
+  return (
+    <IGRPSegmentError
+      error={error}
+      reset={reset}
+      resolveCopy={resolveErrorCopy}
+    />
+  );
 }

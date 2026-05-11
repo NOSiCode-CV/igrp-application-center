@@ -3,7 +3,6 @@
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
   Badge,
   Card,
   CardContent,
@@ -17,8 +16,9 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useRef, useEffect } from "react";
-
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import { BackButton } from "@/components/back-button";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
@@ -26,14 +26,12 @@ import {
   useApplicationByCode,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
+import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
-import { getStatusColor } from "@/lib/utils";
-import { BackButton } from "@/components/back-button";
-import { config, ROUTES } from "@/lib/constants";
-import { useUploadPublicFiles, useFiles } from "@/features/files/use-files";
-import { ApplicationForm } from "./app-form";
-import Image from "next/image";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
+import { ROUTES } from "@/lib/constants";
+import { getStatusColor } from "@/lib/utils";
+import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { igrpToast } = useIGRPToast();
@@ -47,10 +45,9 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   const uploadPicture = useUploadPublicFiles();
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
-    app?.picture || uploadedFilePath || "",
+    uploadedFilePath || app?.picture || "",
   );
 
   useEffect(() => {
@@ -61,13 +58,12 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   useEffect(() => {
     if (fileUrl) {
-      setPreviewUrl(fileUrl.url);
       setUploadedFilePath(null);
     }
   }, [fileUrl]);
 
   if (isLoading) {
-    return <AppCenterLoading descrption="A carregar aplicação..." />;
+    return <AppCenterLoading description="A carregar aplicação..." />;
   }
 
   if (error) throw error;
@@ -154,57 +150,58 @@ export function ApplicationDetails({ code }: { code: string }) {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div
-                className="relative group cursor-pointer"
-                onClick={() => {
-                  {
-                    String(app?.type) !== "SYSTEM"
-                      ? fileInputRef.current?.click()
-                      : null;
+              <div className="relative">
+                <button
+                  type="button"
+                  className="relative group cursor-pointer disabled:cursor-not-allowed rounded-full"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={
+                    String(app?.type) === "SYSTEM" || uploadPicture.isPending
                   }
-                }}
-              >
-                <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
-                  {app?.picture ? (
-                    <Image
-                      src={config.minioUrl + app?.picture}
-                      alt={app.name}
-                      fill
-                      sizes="106px"
-                      quality={100}
-                      className="object-contain"
-                    />
-                  ) : isLoadingFile ? (
-                    <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
-                      <IGRPIcon
-                        iconName="LoaderCircle"
-                        className="w-8 h-8 text-muted-foreground animate-spin"
+                  aria-label="Alterar imagem da aplicação"
+                >
+                  <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
+                    {isLoadingFile && (uploadedFilePath || app?.picture) ? (
+                      <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
+                        <IGRPIcon
+                          iconName="LoaderCircle"
+                          className="w-8 h-8 text-muted-foreground animate-spin"
+                        />
+                      </div>
+                    ) : fileUrl?.url ? (
+                      <Image
+                        src={fileUrl.url}
+                        alt={app.name}
+                        fill
+                        sizes="106px"
+                        quality={100}
+                        className="object-contain"
                       />
-                    </div>
-                  ) : (
-                    <AvatarFallback className="text-3xl bg-primary/10">
-                      <IGRPIcon
-                        iconName="AppWindow"
-                        className="w-12 h-12 text-primary"
-                      />
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-
-                <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
-                  <IGRPIcon
-                    iconName={
-                      isLoadingFile || uploadPicture.isPending
-                        ? "LoaderCircle"
-                        : "Camera"
-                    }
-                    className={cn(
-                      "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      isLoadingFile ||
-                        (uploadPicture.isPending && "animate-spin"),
+                    ) : (
+                      <AvatarFallback className="text-3xl bg-primary/10">
+                        <IGRPIcon
+                          iconName="AppWindow"
+                          className="w-12 h-12 text-primary"
+                        />
+                      </AvatarFallback>
                     )}
-                  />
-                </div>
+                  </Avatar>
+
+                  <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
+                    <IGRPIcon
+                      iconName={
+                        isLoadingFile || uploadPicture.isPending
+                          ? "LoaderCircle"
+                          : "Camera"
+                      }
+                      className={cn(
+                        "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
+                        isLoadingFile ||
+                          (uploadPicture.isPending && "animate-spin"),
+                      )}
+                    />
+                  </div>
+                </button>
 
                 <input
                   ref={fileInputRef}

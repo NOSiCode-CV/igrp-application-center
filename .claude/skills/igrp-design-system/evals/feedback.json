@@ -1,0 +1,17 @@
+{
+  "skill_name": "igrp-feedback",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Show an error alert when form submission fails.",
+      "expected_output": "IGRPAlert variant destructive with title/description, conditionally rendered.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Add status badges (Active/Inactive) to the table.",
+      "expected_output": "IGRPBadge with variant success/destructive or similar based on status.",
+      "files": []
+    }
+  ]
+}

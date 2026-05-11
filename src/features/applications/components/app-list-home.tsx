@@ -1,20 +1,20 @@
 "use client";
 
-import { AppCenterLoading } from "@/components/loading";
-import { AppCenterNotFound } from "@/components/not-found";
-import {
-  useCurrentUserFavoriteApplications,
-  useCurrentUserApplications,
-  useGetCurrentUserRecentApplications,
-} from "@/features/users/use-users";
-import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import {
   Badge,
   IGRPIcon,
   IGRPInputText,
 } from "@igrp/igrp-framework-react-design-system";
-import { ApplicationCardHome } from "./app-card-home";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
+import { AppCenterLoading } from "@/components/loading";
+import { AppCenterNotFound } from "@/components/not-found";
+import {
+  useCurrentUserApplications,
+  useCurrentUserFavoriteApplications,
+  useGetCurrentUserRecentApplications,
+} from "@/features/users/use-users";
+import { ApplicationCardHome } from "./app-card-home";
 
 export function ApplicationsListHome() {
   const [search, setSearch] = useState("");
@@ -25,7 +25,7 @@ export function ApplicationsListHome() {
     useGetCurrentUserRecentApplications();
 
   if (isLoading || favoritesLoading || recentLoading)
-    return <AppCenterLoading descrption="Carregando aplicações..." />;
+    return <AppCenterLoading description="Carregando aplicações..." />;
 
   if (error) throw error;
 

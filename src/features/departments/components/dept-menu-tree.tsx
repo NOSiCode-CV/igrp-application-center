@@ -5,8 +5,8 @@ import {
   TableCell,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
-import { MenuWithChildren } from "./dept-menu";
 import { getMenuIcon } from "@/lib/utils";
+import type { MenuWithChildren } from "./dept-menu";
 
 export function MenuTreeRow({
   menu,
@@ -71,6 +71,7 @@ export function MenuTreeRow({
               <button
                 onClick={() => toggleExpand(menu.code)}
                 className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                type="button"
               >
                 <IGRPIcon
                   iconName="ChevronRight"

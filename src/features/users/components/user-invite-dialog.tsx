@@ -3,28 +3,28 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  Command,
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  Dialog,
   DialogTitle,
+  Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-  Form,
   IGRPIcon,
   Input,
-  PopoverContent,
   Popover,
+  PopoverContent,
   PopoverTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -37,7 +37,7 @@ import {
   useRoles,
 } from "@/features/departments/use-departments";
 import { cn } from "@/lib/utils";
-import { useAddUserRole, useInviteUser } from "../use-users";
+import { useInviteUser } from "../use-users";
 
 interface UserInviteDialogProps {
   open: boolean;
@@ -45,7 +45,7 @@ interface UserInviteDialogProps {
 }
 
 const formSchema = z.object({
-  email: z.email().min(1, "Email obrigatório"),
+  email: z.email("Email inválido").min(1, "Email obrigatório"),
   departmentCode: z.string().optional(),
   roleCodes: z.array(z.string()),
 });
@@ -92,7 +92,6 @@ export function UserInviteDialog({
   } = useDepartments();
   const {
     data: roles,
-    isLoading: rolesLoading,
     error: rolesError,
   } = useRoles(departmentCode || "");
 
@@ -148,11 +147,15 @@ export function UserInviteDialog({
         roleCodes: [] as string[],
       });
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : `Falha ao convidar: ${String(error)}`;
       igrpToast({
         type: "error",
         title: "Falha ao convidar",
-        description: error.message || `Falha ao convidar: ${String(error)}`,
+        description: message,
       });
     }
   };

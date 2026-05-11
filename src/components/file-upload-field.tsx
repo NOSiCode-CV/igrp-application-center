@@ -114,6 +114,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
       <FormControl>
         <div className="flex flex-col gap-2">
           <div className="relative">
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop has no keyboard equivalent; the inner Button and file input are the keyboard-accessible interactive elements */}
             <div
               onDragEnter={disabled ? undefined : handleDragEnter}
               onDragLeave={disabled ? undefined : handleDragLeave}
@@ -139,7 +140,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
               {previewUrl ? (
                 <div className="absolute inset-0 flex items-center justify-center p-4">
                   <Image
-                    src={previewUrl || "/igrp/placeholder.svg"}
+                    src={previewUrl || "/placeholder.svg"}
                     alt={fileName || "Atualizar Imagem"}
                     className="mx-auto max-h-full rounded object-contain"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

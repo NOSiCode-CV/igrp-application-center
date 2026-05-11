@@ -1,21 +1,30 @@
 "use client";
-import { ApplicationsListHome } from "@/features/applications/components/app-list-home";
 import {
   Badge,
   Calendar,
   Card,
   IGRPIcon,
   IGRPInputText,
-  IGRPTabItem,
+  type IGRPTabItem,
   IGRPTabs,
   ScrollArea,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
+import { ApplicationsListHome } from "@/features/applications/components/app-list-home";
 
-const initialTasks: any[] | (() => any[]) = [];
+interface DashboardTask {
+  id: string;
+  title: string;
+  processName: string;
+  processCode: string;
+  dueDate: string;
+  priority: "high" | "medium" | "low";
+}
+
+const initialTasks: DashboardTask[] = [];
 
 export default function HomeIGRP() {
-  const [tasks, setTasks] = useState(initialTasks);
+  const tasks = initialTasks;
   const [taskSearch, setTaskSearch] = useState("");
   const [date, setDate] = useState<Date | undefined>(new Date());
 
@@ -120,6 +129,7 @@ export default function HomeIGRP() {
       content: (
         <div className="flex flex-col justify-between">
           <Calendar
+            mode="single"
             selected={date}
             onSelect={setDate}
             className="rounded-md border w-full"
@@ -127,7 +137,7 @@ export default function HomeIGRP() {
           {/* <IGRPSeparator className="my-4" /> */}
           <div className="space-y-3">
             {/* <h4 className="text-sm font-semibold">Próximos Compromissos</h4> */}
-            <ScrollArea className="h-[190px] -mr-4 pr-4">
+            <ScrollArea className="h-48 -mr-4 pr-4">
               <div className="space-y-2 pb-4">
                 {/* <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
           <div className="h-2 w-2 rounded-full bg-blue-500" />

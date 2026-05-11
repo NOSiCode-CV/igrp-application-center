@@ -12,9 +12,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
-import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
+import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
-import React from "react";
+import type React from "react";
 
 type DepartmentWithChildren = DepartmentDTO & {
   children?: DepartmentWithChildren[];
@@ -36,7 +36,7 @@ const DepartmentTreeItem = ({
   setSelectedDeptCode: React.Dispatch<React.SetStateAction<string | null>>;
   selectedDeptCode: string | null;
   handleEdit: (dept: DepartmentWithChildren) => void;
-  handleCreateSubDept: (parentCode: any) => void;
+  handleCreateSubDept: (parent: DepartmentWithChildren) => void;
   handleDelete: (code: string, name: string) => void;
   expandedDepts: Set<string>;
   setExpandedDepts: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -61,19 +61,31 @@ const DepartmentTreeItem = ({
     <div>
       <div
         className={cn(
-          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm text-sm transition-all cursor-pointer",
+          "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm text-sm transition-all",
           isSelected
             ? "bg-accent/50 text-primary font-medium"
             : isActive
               ? "border-accent text-foreground bg-accent/20"
               : "border-accent text-foreground bg-accent/20",
         )}
-        onClick={() => {
-          if (hasChildren) toggleExpand(dept.code);
-        }}
         style={{ paddingLeft: `${level * 1.5 + 0.75}rem` }}
       >
-        <button className="w-4 h-4 flex items-center justify-center shrink-0">
+        <button
+          type="button"
+          className="w-4 h-4 flex items-center justify-center shrink-0 disabled:cursor-default"
+          onClick={() => {
+            if (hasChildren) toggleExpand(dept.code);
+          }}
+          disabled={!hasChildren}
+          aria-expanded={hasChildren ? isExpanded : undefined}
+          aria-label={
+            hasChildren
+              ? isExpanded
+                ? "Recolher departamento"
+                : "Expandir departamento"
+              : undefined
+          }
+        >
           {hasChildren ? (
             <IGRPIcon
               iconName="ChevronRight"
@@ -89,8 +101,9 @@ const DepartmentTreeItem = ({
         </button>
 
         <button
+          type="button"
           onClick={() => setSelectedDeptCode(dept.code)}
-          className="flex items-center gap-2 flex-1 min-w-0"
+          className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
         >
           <div className="relative">
             <IGRPIcon

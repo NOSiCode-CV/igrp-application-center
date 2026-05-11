@@ -1,32 +1,32 @@
 "use client";
 
 import {
-  cn,
-  IGRPBadge,
   Badge,
-  IGRPButton,
   Button,
   Checkbox,
+  cn,
+  Dialog,
   DialogContent,
   DialogHeader,
-  Dialog,
   DialogTitle,
+  IGRPBadge,
+  IGRPButton,
   IGRPIcon,
   Input,
   Label,
+  Pagination,
   PaginationContent,
   PaginationItem,
-  Pagination,
+  Select,
   SelectContent,
   SelectItem,
-  Select,
   SelectTrigger,
   SelectValue,
+  Table,
   TableBody,
   TableCell,
-  TableHeader,
   TableHead,
-  Table,
+  TableHeader,
   TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -44,8 +44,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-
-import type { RoleArgs } from "@/features/roles/role-schemas";
+import { AppCenterLoading } from "@/components/loading";
 
 import {
   useAddPermissionsToRole,
@@ -53,9 +52,20 @@ import {
   usePermissionsByRole,
   useRemovePermissionsFromRole,
 } from "@/features/departments/use-departments";
-import { AppCenterLoading } from "@/components/loading";
+import type { RoleArgs } from "@/features/roles/role-schemas";
 
-const multiColumnFilterFn: FilterFn<any> = (row, _columnId, filterValue) => {
+// Local mirror of the SDK's `PermissionDTO` (not re-exported by the package).
+interface PermissionLike {
+  id?: number;
+  name: string;
+  description?: string | null;
+}
+
+const multiColumnFilterFn: FilterFn<PermissionLike> = (
+  row,
+  _columnId,
+  filterValue,
+) => {
   const term = String(filterValue ?? "")
     .toLowerCase()
     .trim();
@@ -65,7 +75,7 @@ const multiColumnFilterFn: FilterFn<any> = (row, _columnId, filterValue) => {
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<any>[] = [
+const columns: ColumnDef<PermissionLike>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -110,7 +120,10 @@ const columns: ColumnDef<any>[] = [
 
 const norm = (s: string) => s.trim().toLowerCase();
 
-function diffPermissions(selected: any[], existing: any[]) {
+function diffPermissions(
+  selected: PermissionLike[],
+  existing: PermissionLike[],
+) {
   const selectedNorm = new Set(selected.map((p) => norm(p.name)));
   const existingNorm = new Set(existing.map((p) => norm(p.name)));
 
@@ -169,17 +182,17 @@ export function RoleDetails({
     useRemovePermissionsFromRole();
 
   const allPermissions = useMemo(() => {
-    return (departmentPermissions ?? []).sort((a: any, b: any) =>
+    return ((departmentPermissions ?? []) as PermissionLike[]).sort((a, b) =>
       a.name.localeCompare(b.name, "pt"),
     );
   }, [departmentPermissions]);
 
-  const getRowKey = (r: any) => String(r.id ?? r.name);
+  const getRowKey = (r: PermissionLike) => String(r.id ?? r.name);
 
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(permissionByRole) ? permissionByRole : [];
     return new Set<string>(list.map((p) => getRowKey(p)));
-  }, [permissionByRole]);
+  }, [permissionByRole, getRowKey]);
 
   useEffect(() => {
     if (!allPermissions?.length) return;
@@ -190,7 +203,7 @@ export function RoleDetails({
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [allPermissions, preselectedKeys]);
+  }, [allPermissions, preselectedKeys, getRowKey]);
 
   const table = useReactTable({
     data: allPermissions,
@@ -212,7 +225,10 @@ export function RoleDetails({
 
   const selectedRows = table.getSelectedRowModel().rows;
   const selectedData = selectedRows.map((r) => r.original);
-  const existing = permissionByRole ?? [];
+  // SDK declares `getPermissionsByRole` as `ApiResponse<any>`; cast at boundary.
+  const existing = (
+    Array.isArray(permissionByRole) ? permissionByRole : []
+  ) as PermissionLike[];
 
   const { toAdd, toRemove } = useMemo(
     () => diffPermissions(selectedData, existing),
@@ -337,7 +353,7 @@ export function RoleDetails({
                 <Badge>{selectedRows.length} selecionado(s)</Badge>
               </div>
               {isLoading ? (
-                <AppCenterLoading descrption="Carregando permissões..." />
+                <AppCenterLoading description="Carregando permissões..." />
               ) : (
                 <>
                   <div className="bg-background overflow-hidden rounded-md border">

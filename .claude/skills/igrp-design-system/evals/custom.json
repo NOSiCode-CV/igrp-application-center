@@ -1,0 +1,17 @@
+{
+  "skill_name": "igrp-custom",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a dashboard with 3 KPI cards: Total Users, Revenue, Active Sessions.",
+      "expected_output": "IGRPStatsCardMini or IGRPStatsCard for each KPI with title, value, iconName.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Add a user avatar in the header showing the logged-in user.",
+      "expected_output": "IGRPUserAvatar with image and fallbackContent (initials).",
+      "files": []
+    }
+  ]
+}

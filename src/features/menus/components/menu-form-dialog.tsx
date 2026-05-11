@@ -27,8 +27,8 @@ import {
   IGRPIcon,
   IGRPIconList,
   type IGRPIconName,
-  Input,
   type IGRPOptionsProps,
+  Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -38,15 +38,18 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { CreateMenuRequest } from "@igrp/platform-access-management-client-ts";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-
-import { MenuTypeSelector } from "./menu-type-selector";
-import { menuTargetOptions } from "@/features/menus/menu-constants";
+import {
+  useCreateMenu,
+  useUpdateMenu,
+} from "@/features/applications/use-applications";
 import {
   type CreateMenu,
   createMenuSchema,
+  type MenuTypeArgs,
   menuTargetSchema,
   menuTypeSchema,
   normalizeMenu,
@@ -54,11 +57,7 @@ import {
 } from "@/features/menus/menu-schemas";
 import { cn, formatIconString } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
-import {
-  useCreateMenu,
-  useUpdateMenu,
-} from "@/features/applications/use-applications";
-import { CreateMenuRequest } from "@igrp/platform-access-management-client-ts";
+import { MenuTypeSelector } from "./menu-type-selector";
 
 export const LUCIDE_ICON_OPTIONS: IGRPOptionsProps[] = (
   Object.keys(IGRPIconList) as IGRPIconName[]
@@ -196,7 +195,7 @@ export function MenuFormDialog({
         String(o.value).toLowerCase().includes(q) ||
         o.label.toLowerCase().includes(q),
     );
-  }, [query, items]);
+  }, [query]);
 
   const parentRef = useRef<HTMLDivElement | null>(null);
   const rowVirtualizer = useVirtualizer({
@@ -294,16 +293,16 @@ export function MenuFormDialog({
     const currentType = form.getValues("type");
 
     if (currentType !== type) {
-      form.setValue("type", type as any);
+      form.setValue("type", type as MenuTypeArgs);
       form.setValue("parentCode", undefined);
 
       if (
         type === menuTypeSchema.enum.GROUP ||
         type === menuTypeSchema.enum.FOLDER
       ) {
-        form.setValue("pageSlug", undefined as any);
-        form.setValue("url", undefined as any);
-        form.setValue("target", undefined as any);
+        form.setValue("pageSlug", undefined as never);
+        form.setValue("url", undefined as never);
+        form.setValue("target", undefined as never);
       }
 
       // if (type === menuTypeSchema.enum.MENU_PAGE) {
@@ -634,21 +633,21 @@ export function MenuFormDialog({
                                   value={field.value}
                                   onValueChange={(value) => {
                                     field.onChange(value);
-                                    setSelectedType(value as any);
+                                    setSelectedType(value);
                                     if (
                                       value ===
                                       menuTypeSchema.enum.EXTERNAL_PAGE
                                     ) {
                                       form.setValue(
                                         "pageSlug",
-                                        undefined as any,
+                                        undefined as never,
                                       );
                                       form.setValue(
                                         "target",
                                         menuTargetSchema.enum._blank,
                                       );
                                     } else {
-                                      form.setValue("url", undefined as any);
+                                      form.setValue("url", undefined as never);
                                       form.setValue(
                                         "target",
                                         menuTargetSchema.enum._self,
@@ -836,10 +835,7 @@ export function MenuFormDialog({
                                       <CommandItem
                                         onSelect={() => {
                                           field.onChange("");
-                                          form.setValue(
-                                            "parentCode",
-                                            "" as any,
-                                          );
+                                          form.setValue("parentCode", "");
                                         }}
                                       >
                                         Nenhum (Raiz)

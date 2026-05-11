@@ -1,8 +1,8 @@
 "use client";
 
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
-
 import { cn } from "@/lib/utils";
 
 interface BackButtonProps {
@@ -16,7 +16,7 @@ export function BackButton({ href, label, className }: BackButtonProps) {
 
   const handleClick = () => {
     if (href) {
-      router.push(href);
+      router.push(href as Route);
     } else {
       router.back();
     }

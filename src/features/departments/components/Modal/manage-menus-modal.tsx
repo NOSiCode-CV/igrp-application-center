@@ -28,17 +28,17 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useEffect, useMemo, useRef } from "react";
+import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useApplications } from "@/features/applications/use-applications";
+import { getMenuIcon } from "@/lib/utils";
+import { buildMenuTree } from "../../dept-lib";
 import {
   useAddMenusToDepartment,
   useDepartmentAvailableMenus,
   useDepartmentMenus,
   useRemoveMenusFromDepartment,
 } from "../../use-departments";
-import { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
-import { buildMenuTree } from "../../dept-lib";
-import { getMenuIcon } from "@/lib/utils";
-import { useApplications } from "@/features/applications/use-applications";
 
 interface ManageMenusModalProps {
   departmentCode: string;
@@ -114,7 +114,7 @@ export function ManageMenusModal({
     );
 
     return menusArray.sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [assignedCodes, availableMenus, assignedMenus]);
+  }, [assignedCodes]);
 
   const appsFromMenus = useMemo(() => {
     if (allMenus.length === 0) return [];
@@ -291,6 +291,7 @@ export function ManageMenusModal({
               <button
                 onClick={() => toggleExpand(menu.code)}
                 className="w-8 h-8 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                type="button"
               >
                 <IGRPIcon
                   iconName="ChevronRight"
@@ -455,8 +456,8 @@ export function ManageMenusModal({
           <ScrollArea className="h-[95vh] w-full ">
             {loading ? (
               <div className="space-y-2">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-20 rounded-lg" />
+                {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6"].map((key) => (
+                  <Skeleton key={key} className="h-20 rounded-lg" />
                 ))}
               </div>
             ) : menuTree.length === 0 ? (

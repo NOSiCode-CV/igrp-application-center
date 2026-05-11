@@ -13,19 +13,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
-import Link from "next/link";
+import type {
+  ApplicationDTO,
+  ApplicationType,
+} from "@igrp/platform-access-management-client-ts";
+import type { Route } from "next";
 import Image from "next/image";
 import { useState } from "react";
-
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { formatSlug } from "@/features/applications/app-utils";
 import { config, ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
-import {
-  ApplicationDTO,
-  ApplicationType,
-} from "@igrp/platform-access-management-client-ts";
 
 export function ApplicationCard({ app }: { app: ApplicationDTO }) {
   const { name, code, status, description, slug, url, type } = app;
@@ -68,13 +67,13 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
           </Badge>
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
+        <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
           {description || "Sem descrição."}
         </p>
 
         <div className="flex items-center justify-end gap-1 pt-4 border-t">
           <ButtonLinkTooltip
-            href={`${ROUTES.APPLICATIONS}/${code}`}
+            href={`${ROUTES.APPLICATIONS}/${code}` as Route}
             icon="Eye"
             label="Ver"
             size="icon"
@@ -101,7 +100,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
           )}
 
           <ButtonLinkTooltip
-            href={href || ""}
+            href={(href || "") as Route}
             icon="ExternalLink"
             label="Abrir"
             size="icon"

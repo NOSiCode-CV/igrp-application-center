@@ -10,7 +10,11 @@ import {
 export const useFiles = (path: string) => {
   return useQuery({
     queryKey: ["files", path ?? ""],
-    queryFn: ({ queryKey: [, p] }) => getFileUrl(p),
+    queryFn: async ({ queryKey: [, p] }) => {
+      const result = await getFileUrl(p);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     enabled: !!path,
   });
 };
@@ -25,7 +29,11 @@ export const useUploadPublicFiles = () => {
     }: {
       file: File | Blob;
       options: UploadFileOptions;
-    }) => uploadPublicFile(file, options),
+    }) => {
+      const result = await uploadPublicFile(file, options);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["public-files-public"],
@@ -45,7 +53,11 @@ export const useUploadPrivateFiles = () => {
     }: {
       file: File | Blob;
       options: UploadFileOptions;
-    }) => uploadPrivateFile(file, options),
+    }) => {
+      const result = await uploadPrivateFile(file, options);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["public-files-private"],

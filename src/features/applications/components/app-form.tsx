@@ -19,22 +19,21 @@ import {
   Textarea,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-
 import {
-  CreateApplicationSchema,
-  type CreateApplicationArgs,
   appTypeCrud,
+  type CreateApplicationArgs,
+  CreateApplicationSchema,
   normalizeApplication,
 } from "@/features/applications/app-schemas";
+import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
 import {
   useCreateApplication,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
 import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
-import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
-import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 interface ApplicationFormProps {
   application?: ApplicationDTO;

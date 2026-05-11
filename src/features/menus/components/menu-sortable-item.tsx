@@ -1,4 +1,13 @@
-import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import type {
+  IGRPMenuItemArgs,
+  IGRPMenuType,
+} from "@igrp/framework-next-types";
 import {
   Badge,
   Button,
@@ -9,14 +18,9 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 
 interface SortableMenuItemProps {
   menu: IGRPMenuItemArgs;
@@ -29,29 +33,33 @@ interface SortableMenuItemProps {
   subMenus?: IGRPMenuItemArgs[];
   allMenus?: IGRPMenuItemArgs[];
   appCode?: string;
-  onAddInternalPage: any;
-  onAddExternalPage: any;
-  app: any;
+  onAddInternalPage: (menu: IGRPMenuItemArgs) => void;
+  onAddExternalPage: (menu: IGRPMenuItemArgs) => void;
+  app: ApplicationDTO;
 }
 
-const MENU_TYPE_CONFIG = {
+const MENU_TYPE_FALLBACK = { icon: "FileText", label: "Página" } as const;
+
+const MENU_TYPE_CONFIG: Partial<
+  Record<IGRPMenuType, { icon: string; label: string }>
+> = {
   GROUP: {
-    icon: "FolderTree" as const,
+    icon: "FolderTree",
     label: "Grupo",
   },
   FOLDER: {
-    icon: "Folder" as const,
+    icon: "Folder",
     label: "Pasta",
   },
   MENU_PAGE: {
-    icon: "FileText" as const,
+    icon: "FileText",
     label: "Página",
   },
   EXTERNAL_PAGE: {
-    icon: "ExternalLink" as const,
+    icon: "ExternalLink",
     label: "Externo",
   },
-} as any;
+};
 
 export function SortableMenuItem({
   app,
@@ -61,7 +69,6 @@ export function SortableMenuItem({
   onDelete,
   onAddChild,
   depth = 0,
-  isChild = false,
   subMenus,
   allMenus,
   onAddInternalPage,
@@ -90,15 +97,20 @@ export function SortableMenuItem({
     transition,
   };
 
-  const typeConfig = MENU_TYPE_CONFIG[menu.type] || MENU_TYPE_CONFIG.MENU_PAGE;
+  const typeConfig = MENU_TYPE_CONFIG[menu.type] ?? MENU_TYPE_FALLBACK;
   const hasChildren = subMenus && subMenus.length > 0;
 
   const sortedSubMenus = subMenus
-    ? [...subMenus].sort((a: any, b: any) => {
-        const aOrder = a.position ?? a.sortOrder ?? 0;
-        const bOrder = b.position ?? b.sortOrder ?? 0;
-        return aOrder - bOrder;
-      })
+    ? [...subMenus].sort(
+        (
+          a: IGRPMenuItemArgs & { sortOrder?: number },
+          b: IGRPMenuItemArgs & { sortOrder?: number },
+        ) => {
+          const aOrder = a.position ?? a.sortOrder ?? 0;
+          const bOrder = b.position ?? b.sortOrder ?? 0;
+          return aOrder - bOrder;
+        },
+      )
     : [];
 
   return (
