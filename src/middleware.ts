@@ -25,6 +25,7 @@ const PUBLIC_PREFIXES = ["/login/", "/logout/", "/api/auth/"];
 const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 
 function isPublicPath(pathname: string): boolean {
+  if (/\.[^/]+$/.test(pathname)) return true;
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;

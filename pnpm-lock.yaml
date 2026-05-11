@@ -62,9 +62,6 @@ importers:
       next-auth:
         specifier: 4.24.14
         version: 4.24.14(next@15.5.18(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      next-themes:
-        specifier: ^0.4.6
-        version: 0.4.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -81,7 +78,7 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       zod:
-        specifier: ^4.1.12
+        specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
       '@biomejs/biome':
