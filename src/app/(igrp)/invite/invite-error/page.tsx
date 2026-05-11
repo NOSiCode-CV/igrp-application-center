@@ -11,9 +11,9 @@ export default function InviteErrorPage() {
 
   useEffect(() => {
     if (token) {
-      router.replace(`/invite?token=${encodeURIComponent(token)}`);
+      router.replace(`/invite/accept?token=${encodeURIComponent(token)}`);
     } else {
-      router.replace("/");
+      router.replace("/invite/accept");
     }
   }, [token, router]);
 
