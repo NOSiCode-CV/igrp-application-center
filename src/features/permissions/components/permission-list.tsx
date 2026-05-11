@@ -22,7 +22,6 @@ import {
   useDepartmentPermissions,
   useRemovePermissionsFromDepartment,
 } from "@/features/departments/use-departments";
-import type { PermissionArgs } from "../permissions-schemas";
 import { ManageResourcesModal } from "./resource-manage-modal";
 
 interface PermissionListProps {
@@ -50,14 +49,14 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   const allPermissions = useMemo(() => {
     const permissionsMap = new Map();
 
-    availablePermissions?.forEach((perm: PermissionArgs) => {
+    availablePermissions?.forEach((perm) => {
       permissionsMap.set(perm.name, {
         ...perm,
         isAssigned: false,
       });
     });
 
-    departmentPermissions?.forEach((perm: PermissionArgs) => {
+    departmentPermissions?.forEach((perm) => {
       permissionsMap.set(perm.name, {
         ...perm,
         isAssigned: true,

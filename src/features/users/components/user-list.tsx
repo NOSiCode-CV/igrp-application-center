@@ -23,7 +23,10 @@ import {
   TabsTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import type {
+  IGRPUserDTO,
+  InvitationDTO,
+} from "@igrp/platform-access-management-client-ts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -52,8 +55,8 @@ import {
 
 export function UserList() {
   const [data, setData] = useState<IGRPUserDTO[]>([]);
-  const [pendingData, setPendingData] = useState<IGRPUserDTO[]>([]);
-  const [canceledData, setCanceledData] = useState<IGRPUserDTO[]>([]);
+  const [pendingData, setPendingData] = useState<InvitationDTO[]>([]);
+  const [canceledData, setCanceledData] = useState<InvitationDTO[]>([]);
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
@@ -63,7 +66,7 @@ export function UserList() {
     user: IGRPUserDTO;
     newStatus: "ACTIVE" | "INACTIVE";
   } | null>(null);
-  const [userToCancel, setUserToCancel] = useState<IGRPUserDTO | null>(null);
+  const [userToCancel, setUserToCancel] = useState<InvitationDTO | null>(null);
 
   const resendMutation = useResendUserInvitation();
   const updateStatusMutation = useUpdateUserStatus();
@@ -183,11 +186,75 @@ export function UserList() {
     ];
   };
 
+  const getInvitationColumns = (
+    ActionsCell: (props: { row: Row<InvitationDTO> }) => ReactNode,
+  ): ColumnDef<InvitationDTO>[] => [
+    {
+      header: ({ column }) => (
+        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
+      ),
+      accessorKey: "email",
+      cell: ({ row }) => {
+        const email = String(row.getValue("email") ?? "");
+        return (
+          <div className="flex items-center gap-3">
+            <IGRPUserAvatar
+              alt={email}
+              fallbackContent={getInitials(email)}
+              className="size-10"
+              fallbackClass="text-base bg-primary text-primary-foreground"
+            />
+            <div>
+              <div className="text-sm leading-none">{email}</div>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      header: "Data do Convite",
+      accessorKey: "invitationDate",
+      cell: ({ row }) => {
+        const date = row.getValue("invitationDate");
+        return (
+          <div>
+            {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
+          </div>
+        );
+      },
+    },
+    {
+      header: () => (
+        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
+      ),
+      accessorKey: "status",
+      cell: ({ row }) => {
+        const status = String(row.getValue("status") ?? "");
+        return (
+          <div className="text-center">
+            <Badge className={cn(statusInviteClass(status), "capitalize")}>
+              {geInviteTitle(status)}
+            </Badge>
+          </div>
+        );
+      },
+      filterFn: IGRPDataTableFacetedFilterFn,
+      size: 70,
+    },
+    {
+      id: "actions",
+      header: () => <span className="sr-only">Ações</span>,
+      cell: ({ row }) => <ActionsCell row={row} />,
+      size: 60,
+      enableHiding: false,
+    },
+  ];
+
   const activeColumns = getTableColumns(ActiveRowActions, {
     showInvitationDate: false,
   });
-  const pendingColumns = getTableColumns(PendingRowActions);
-  const canceledColumns = getTableColumns(PendingRowActions);
+  const pendingColumns = getInvitationColumns(PendingRowActions);
+  const canceledColumns = getInvitationColumns(PendingRowActions);
 
   function ActiveRowActions({ row }: { row: Row<IGRPUserDTO> }) {
     const state = String(row.getValue("status"));
@@ -243,10 +310,9 @@ export function UserList() {
     );
   }
 
-  function PendingRowActions({ row }: { row: Row<IGRPUserDTO> }) {
+  function PendingRowActions({ row }: { row: Row<InvitationDTO> }) {
     const handleCopyUrl = () => {
-      const invitationUrl = (row.original as { invitationUrl?: string })
-        .invitationUrl;
+      const invitationUrl = row.original.invitationUrl;
       if (invitationUrl) {
         navigator.clipboard.writeText(invitationUrl);
         igrpToast({
@@ -343,6 +409,13 @@ export function UserList() {
           placeholder="Estado"
         />
       ),
+    },
+  ];
+
+  const inviteFilters: IGRPDataTableClientFilterListProps<InvitationDTO>[] = [
+    {
+      columnId: "email",
+      component: ({ column }) => <IGRPDataTableFilterInput column={column} />,
     },
   ];
 
@@ -446,13 +519,13 @@ export function UserList() {
           {isLoadingInvites ? (
             <AppCenterLoading description="Carregando convites..." />
           ) : (
-            <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
+            <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
               tableClassName="table-fixed"
               columns={pendingColumns}
               data={pendingData}
-              clientFilters={activeFilters}
+              clientFilters={inviteFilters}
             />
           )}
         </TabsContent>
@@ -461,13 +534,13 @@ export function UserList() {
           {isLoadingInvites ? (
             <AppCenterLoading description="Carregando convites..." />
           ) : (
-            <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
+            <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
               tableClassName="table-fixed"
               columns={canceledColumns}
               data={canceledData}
-              clientFilters={activeFilters}
+              clientFilters={inviteFilters}
             />
           )}
         </TabsContent>

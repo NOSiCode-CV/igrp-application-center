@@ -36,8 +36,8 @@ importers:
         specifier: 0.1.0-beta.127
         version: 0.1.0-beta.127(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(next@15.5.18(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@igrp/platform-access-management-client-ts':
-        specifier: 0.2.0-beta.5
-        version: 0.2.0-beta.5
+        specifier: 0.2.0-beta.6
+        version: 0.2.0-beta.6
       '@tanstack/react-query':
         specifier: ^5.100.10
         version: 5.100.10(react@19.2.6)
@@ -264,6 +264,9 @@ packages:
 
   '@igrp/platform-access-management-client-ts@0.2.0-beta.5':
     resolution: {integrity: sha512-5tNMx2zJJ8HsJw5ki+50Ot2rTNc13rvo+NfbsQWDbPNHIr6fhN7ZnHE/Q2VyC434UFO9YjnMosJ9inKFTy+tfA==}
+
+  '@igrp/platform-access-management-client-ts@0.2.0-beta.6':
+    resolution: {integrity: sha512-p0GvqFOyG3mGKTq/qzqJmvo04xpL5/1BwmhmLDYReB1yjddIAkatsihQdDxuIm7y1kY8Y2koP22F9u1B8nk+fg==}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2069,6 +2072,8 @@ snapshots:
       - '@types/react-dom'
 
   '@igrp/platform-access-management-client-ts@0.2.0-beta.5': {}
+
+  '@igrp/platform-access-management-client-ts@0.2.0-beta.6': {}
 
   '@img/colour@1.1.0':
     optional: true
