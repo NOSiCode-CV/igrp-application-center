@@ -90,10 +90,7 @@ export function UserInviteDialog({
     isLoading: deptLoading,
     error: deptError,
   } = useDepartments();
-  const {
-    data: roles,
-    error: rolesError,
-  } = useRoles(departmentCode || "");
+  const { data: roles, error: rolesError } = useRoles(departmentCode || "");
 
   const isValid = form.formState.isValid;
   const isSubmitting = form.formState.isSubmitting;

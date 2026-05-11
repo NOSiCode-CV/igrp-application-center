@@ -22,9 +22,7 @@ export async function getRoleByCode(
   }
 }
 
-export async function getRoleById(
-  id: number,
-): Promise<ActionResult<RoleDTO>> {
+export async function getRoleById(id: number): Promise<ActionResult<RoleDTO>> {
   const client = await getClientAccess();
 
   try {
