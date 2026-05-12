@@ -45,6 +45,14 @@ interface DepartmentCreateDialogProps {
   parentDeptId?: DepartmentDTO | null;
 }
 
+const defaultValues = {
+  name: "",
+  code: "",
+  description: "",
+  status: statusSchema.enum.ACTIVE,
+  parentCode: "",
+};
+
 export function DepartmentFormDialog({
   open,
   onOpenChange,
@@ -57,14 +65,6 @@ export function DepartmentFormDialog({
     useCreateDepartment();
   const { mutateAsync: updateDepartment, isPending: isUpdating } =
     useUpdateDepartment();
-
-  const defaultValues = {
-    name: "",
-    code: "",
-    description: "",
-    status: statusSchema.enum.ACTIVE,
-    parentCode: "",
-  };
 
   const form = useForm<DepartmentArgs>({
     resolver: zodResolver(departmentSchema),
