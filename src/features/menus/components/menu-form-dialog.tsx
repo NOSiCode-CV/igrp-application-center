@@ -495,6 +495,7 @@ export function MenuFormDialog({
                                         {Array.from({ length: 10 }).map(
                                           (_, i) => (
                                             <div
+                                              // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
                                               key={i}
                                               className="h-9 animate-pulse rounded-sm bg-foreground/5 mx-2 my-1"
                                             />

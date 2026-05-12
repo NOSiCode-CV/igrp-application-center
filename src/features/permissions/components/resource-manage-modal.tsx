@@ -307,6 +307,7 @@ export function ManageResourcesModal({
             {loading ? (
               <div className="space-y-2">
                 {Array.from({ length: 6 }).map((_, i) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
                   <Skeleton key={i} className="h-20 rounded-lg" />
                 ))}
               </div>
