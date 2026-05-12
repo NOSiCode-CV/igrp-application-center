@@ -39,6 +39,14 @@ import {
   updateRoleSchema,
 } from "../role-schemas";
 
+const emptyRoleValues = {
+  name: "",
+  description: null,
+  parentCode: "",
+  code: "",
+  status: statusSchema.enum.ACTIVE,
+} satisfies Omit<CreateRoleArgs, "departmentCode">;
+
 interface RoleFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -65,12 +73,8 @@ export function RoleFormDialog({
   const form = useForm<CreateRoleArgs>({
     resolver: zodResolver(createRoleSchema),
     defaultValues: {
-      name: "",
-      description: null,
+      ...emptyRoleValues,
       departmentCode: departmentCode ?? "",
-      parentCode: "",
-      code: "",
-      status: statusSchema.enum.ACTIVE,
     },
   });
 
@@ -140,12 +144,8 @@ export function RoleFormDialog({
       }
 
       form.reset({
-        name: "",
-        description: null,
+        ...emptyRoleValues,
         departmentCode: departmentCode ?? "",
-        parentCode: "",
-        code: "",
-        status: statusSchema.enum.ACTIVE,
       });
       onOpenChange(false);
     } catch (error) {
