@@ -43,7 +43,14 @@ import {
   type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AppCenterLoading } from "@/components/loading";
 
 import {
@@ -139,7 +146,9 @@ function diffPermissions(
 
   return {
     toAdd: toAddNorm.map((n) => selectedByNorm.get(n)).filter(Boolean),
-    toRemove: toRemoveNorm.map((n) => existingByNorm.get(n)!).filter(Boolean),
+    toRemove: toRemoveNorm
+      .map((n) => existingByNorm.get(n) ?? "")
+      .filter(Boolean),
   };
 }
 
@@ -187,7 +196,10 @@ export function RoleDetails({
     );
   }, [departmentPermissions]);
 
-  const getRowKey = (r: PermissionLike) => String(r.id ?? r.name);
+  const getRowKey = useCallback(
+    (r: PermissionLike) => String(r.id ?? r.name),
+    [],
+  );
 
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(permissionByRole) ? permissionByRole : [];
