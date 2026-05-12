@@ -52,7 +52,14 @@ import {
   type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   useDepartments,
   useRoles,
@@ -151,8 +158,10 @@ function diffRoles(selected: RoleDTO[], existing: RoleDTO[]) {
   const existingByNorm = new Map(existing.map((r) => [norm(r.code), r.code]));
 
   return {
-    toAdd: toAddNorm.map((n) => selectedByNorm.get(n)!).filter(Boolean),
-    toRemove: toRemoveNorm.map((n) => existingByNorm.get(n)!).filter(Boolean),
+    toAdd: toAddNorm.map((n) => selectedByNorm.get(n) ?? "").filter(Boolean),
+    toRemove: toRemoveNorm
+      .map((n) => existingByNorm.get(n) ?? "")
+      .filter(Boolean),
   };
 }
 
@@ -212,7 +221,7 @@ export function UserRolesDialog({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-  const getRowKey = (r: RoleDTO) => String(r.id ?? r.name);
+  const getRowKey = useCallback((r: RoleDTO) => String(r.id ?? r.name), []);
 
   const roleNameSet = useMemo(
     () => new Set((roles ?? []).map((r) => norm(r.name ?? ""))),
@@ -383,6 +392,7 @@ export function UserRolesDialog({
                   </div>
                   {Boolean(table.getColumn("name")?.getFilterValue()) && (
                     <button
+                      type="button"
                       className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px]"
                       aria-label="Clear filter"
                       onClick={() => {
