@@ -143,7 +143,7 @@ email-auto-submit
 ### Component changes (`accept-invite-page.tsx`)
 
 1. **Bootstrap `useEffect`:** when `claimEmail` is present (regardless of match) → `dispatch({ type: "bootstrap-ok-has-email", email: claimEmail })`
-2. **Auto-submit `useEffect`:** fires when `step.kind === "email-auto-submit"` → calls `validateEmail.mutate({ token, email: step.email }, callbacks)`; the callback maps API errors to specific dispatch actions (`email-mismatch`, `invalid-invitation`, or `email-error`)
+2. **Auto-submit `useEffect`:** fires when `step.kind === "email-auto-submit"` → calls `validateEmail.mutate({ token, email: step.email }, callbacks)`; the callback maps API errors to specific dispatch actions (`email-mismatch`, `invalid-invitation`, or `email-error`). **Implementation note:** the exact error strings/codes from `validateInvitationEmail` must be verified against the real API before writing this mapping — use `email-entry` with error message as the safe fallback if no structured error code is available
 3. **Render:** `email-auto-submit` → `<AppCenterLoading description="A validar email..." />`
 
 ---

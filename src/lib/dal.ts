@@ -1,6 +1,6 @@
-import { cache } from "react";
 import { redirect } from "next/navigation";
 import type { Session } from "next-auth";
+import { cache } from "react";
 
 import { getSession } from "@/lib/auth";
 import { isAuthBypass } from "@/lib/utils";

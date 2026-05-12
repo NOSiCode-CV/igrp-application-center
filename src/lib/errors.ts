@@ -1,13 +1,12 @@
-export {
-  PUBLIC_ERROR_DELIMITER,
-  parsePublicDigest,
-  getDisplayableErrorMessage,
-  AppError,
-} from "@igrp/framework-next/app-error";
-
 export type {
   PublicErrorId,
   PublicErrorMessage,
+} from "@igrp/framework-next/app-error";
+export {
+  AppError,
+  getDisplayableErrorMessage,
+  PUBLIC_ERROR_DELIMITER,
+  parsePublicDigest,
 } from "@igrp/framework-next/app-error";
 
 export { logger } from "@igrp/framework-next/logger";

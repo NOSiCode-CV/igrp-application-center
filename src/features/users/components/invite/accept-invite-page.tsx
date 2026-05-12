@@ -5,6 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useReducer } from "react";
 import { AppCenterLoading } from "@/components/loading";
+import {
+  useGetUserInvitationByToken,
+  useRespondUserInvitation,
+  useValidateInvitationEmail,
+  useValidateInvitationOtp,
+} from "@/features/users/use-users";
 import { InviteCardShell } from "./invite-card-shell";
 import { InviteEmailStep } from "./invite-email-step";
 import { InviteErrorState } from "./invite-error-state";
@@ -16,12 +22,6 @@ import {
 import { InviteOtpStep } from "./invite-otp-step";
 import { InviteRejectedStep } from "./invite-rejected-step";
 import { InviteResponseStep, toInvitationLike } from "./invite-response-step";
-import {
-  useGetUserInvitationByToken,
-  useRespondUserInvitation,
-  useValidateInvitationEmail,
-  useValidateInvitationOtp,
-} from "@/features/users/use-users";
 
 export function AcceptInvitePage() {
   const searchParams = useSearchParams();
@@ -170,7 +170,7 @@ export function AcceptInvitePage() {
               type: "error",
               title: "Erro ao aceitar convite",
               description: result.error,
-              duration: 4000,
+              duration: 6000,
             });
             return;
           }
@@ -178,7 +178,7 @@ export function AcceptInvitePage() {
             type: "success",
             title: "Convite aceito",
             description: "Você agora tem acesso à aplicação",
-            duration: 4000,
+            duration: 6000,
           });
           router.push("/");
         },
@@ -187,7 +187,7 @@ export function AcceptInvitePage() {
             type: "error",
             title: "Erro ao aceitar convite",
             description: (err as Error).message,
-            duration: 4000,
+            duration: 6000,
           });
         },
       },

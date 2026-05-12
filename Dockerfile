@@ -16,8 +16,8 @@ COPY . .
 
 COPY ./env/.env.development .env.production
 
-RUN pnpm build
 
+RUN pnpm build
 FROM base AS runner
 WORKDIR /app
 
