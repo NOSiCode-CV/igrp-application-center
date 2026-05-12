@@ -51,7 +51,7 @@ Server actions live in `src/actions/` (one file per resource, plus `src/actions/
 
 ### UI — use the IGRP design system
 
-**This is load-bearing.** See [AGENTS.md](AGENTS.md) and [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) for the full rule. Summary:
+**This is load-bearing.** See [AGENTS.md](AGENTS.md) and [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) for the full rule. Summary:
 
 - All UI imports from `@igrp/igrp-framework-react-design-system` (published package — there is no local design-system folder).
 - Prefer **Horizon** components (`IGRPButton`, `IGRPInputText`, `IGRPForm`, `IGRPFormField`, `IGRPDataTable`, `IGRPCard`, `IGRPModalDialog`, etc.) before primitives.

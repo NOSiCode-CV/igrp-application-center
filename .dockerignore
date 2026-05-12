@@ -2,5 +2,5 @@ node_modules
 .next
 build
 *.log
-.env*
-!env/.env-build
+.env/*
+!env/.env.development

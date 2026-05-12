@@ -1,15 +1,19 @@
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat && corepack enable
+FROM node:22-alpine AS base
+
+RUN apk add --no-cache libc6-compat
+RUN npm install -g pnpm@11.1.1
 WORKDIR /app
 
 FROM base AS deps
-COPY package.json .npmrc pnpm-lock.yaml ./
-RUN node -v && pnpm -v
-RUN pnpm i --frozen-lockfile
+
+COPY package.json pnpm-lock.yaml .npmrc ./
+RUN pnpm i --frozen-lockfile --ignore-scripts
 
 FROM base AS builder
+WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
 COPY ./env/.env.development .env.production
 
 RUN pnpm build
@@ -18,6 +22,8 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
