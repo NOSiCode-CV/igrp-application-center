@@ -189,8 +189,14 @@ export function UserDetails({ id }: { id: string }) {
             </div>
             <div className="flex items-center gap-6">
               <div
+                role="button"
+                tabIndex={0}
                 className="relative group cursor-pointer"
                 onClick={() => avatarInputRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ")
+                    avatarInputRef.current?.click();
+                }}
               >
                 <div className="absolute -inset-1 rounded-full blur opacity-75 group-hover:opacity-100 transition" />
 
