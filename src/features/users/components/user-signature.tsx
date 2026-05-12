@@ -101,15 +101,10 @@ export default function UserSignature({
             </div>
           </div>
 
-          <div
-            role="button"
-            tabIndex={0}
-            className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-all bg-muted/20 hover:bg-muted/30"
+          <button
+            type="button"
+            className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-all bg-muted/20 hover:bg-muted/30 w-full p-0 text-left"
             onClick={() => signatureInputRef.current?.click()}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ")
-                signatureInputRef.current?.click();
-            }}
           >
             {currentSignatureUrl ? (
               <div className="relative p-6 min-h-[100px] flex items-center justify-center">
@@ -163,7 +158,7 @@ export default function UserSignature({
               className="hidden"
               disabled={uploadFile.isPending}
             />
-          </div>
+          </button>
         </div>
       </CardContent>
     </Card>
