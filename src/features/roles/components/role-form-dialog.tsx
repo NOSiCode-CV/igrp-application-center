@@ -62,18 +62,16 @@ export function RoleFormDialog({
   const isEdit = !!role;
   const isSubRole = !!parentRoleName;
 
-  const defaultValues = {
-    name: "",
-    description: null,
-    departmentCode: departmentCode,
-    parentCode: "",
-    code: "",
-    status: statusSchema.enum.ACTIVE,
-  };
-
   const form = useForm<CreateRoleArgs>({
     resolver: zodResolver(createRoleSchema),
-    defaultValues: defaultValues,
+    defaultValues: {
+      name: "",
+      description: null,
+      departmentCode: departmentCode ?? "",
+      parentCode: "",
+      code: "",
+      status: statusSchema.enum.ACTIVE,
+    },
   });
 
   useEffect(() => {
@@ -90,8 +88,12 @@ export function RoleFormDialog({
       } as CreateRoleArgs);
     } else {
       form.reset({
-        ...defaultValues,
+        name: "",
+        description: null,
+        departmentCode: departmentCode ?? "",
         parentCode: parentRoleName ?? "",
+        code: "",
+        status: statusSchema.enum.ACTIVE,
       } as CreateRoleArgs);
     }
   }, [open, role, parentRoleName, departmentCode, form]);
@@ -137,7 +139,14 @@ export function RoleFormDialog({
         });
       }
 
-      form.reset(defaultValues);
+      form.reset({
+        name: "",
+        description: null,
+        departmentCode: departmentCode ?? "",
+        parentCode: "",
+        code: "",
+        status: statusSchema.enum.ACTIVE,
+      });
       onOpenChange(false);
     } catch (error) {
       console.error("Falha ao adicionar perfil:", error);
