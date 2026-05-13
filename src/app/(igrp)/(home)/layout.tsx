@@ -5,13 +5,16 @@ import { redirect } from "next/navigation";
 import { configLayout } from "@/actions/igrp/layout";
 import { getCurrentUser } from "@/actions/user";
 
+/** SDK Status enum does not yet model TEMPORARY — cast until it does */
+const TEMPORARY_STATUS = "TEMPORARY";
+
 export default async function HomeLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const user = await getCurrentUser();
   if (
     user.success &&
-    (user.data?.status as string | undefined) === "TEMPORARY"
+    (user.data?.status as string | undefined) === TEMPORARY_STATUS
   ) {
     redirect("/invite/pending");
   }
