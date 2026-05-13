@@ -41,6 +41,8 @@ export function AcceptInvitePage() {
 
   const [step, dispatch] = useReducer(inviteFlowReducer, initialStep);
 
+  const stepEmail = step.kind === "email-auto-submit" ? step.email : null;
+
   const validateEmail = useValidateInvitationEmail();
   const validateOtp = useValidateInvitationOtp();
   const respond = useRespondUserInvitation();
@@ -64,10 +66,8 @@ export function AcceptInvitePage() {
     const claimEmail = session?.user?.email;
     if (!claimEmail) {
       dispatch({ type: "bootstrap-ok-no-claim" });
-    } else if (claimEmail === invitation.email) {
-      dispatch({ type: "bootstrap-ok-matches" });
     } else {
-      dispatch({ type: "bootstrap-ok-mismatch" });
+      dispatch({ type: "bootstrap-ok-has-email", email: claimEmail });
     }
   }, [
     step.kind,
@@ -226,8 +226,38 @@ export function AcceptInvitePage() {
     );
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
+  useEffect(() => {
+    if (!stepEmail || !token) return;
+    validateEmail.mutate(
+      { token, email: stepEmail },
+      {
+        onSuccess: (result) => {
+          if (!result.success) {
+            dispatch({
+              type: "email-error",
+              message: result.error ?? "Erro ao validar email",
+            });
+            return;
+          }
+          dispatch({ type: "email-validated", email: stepEmail });
+        },
+        onError: (err) => {
+          dispatch({
+            type: "email-error",
+            message: (err as Error).message,
+          });
+        },
+      },
+    );
+  }, [stepEmail, token]);
+
   if (step.kind === "bootstrapping") {
     return <AppCenterLoading description="Validando convite..." />;
+  }
+
+  if (step.kind === "email-auto-submit") {
+    return <AppCenterLoading description="A validar email..." />;
   }
 
   return (

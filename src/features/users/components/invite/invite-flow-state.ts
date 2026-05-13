@@ -2,6 +2,7 @@ export type Step =
   | { kind: "bootstrapping" }
   | { kind: "invalid-invitation" }
   | { kind: "email-mismatch" }
+  | { kind: "email-auto-submit"; email: string }
   | { kind: "email-entry"; error?: string }
   | {
       kind: "otp-entry";
@@ -13,9 +14,8 @@ export type Step =
   | { kind: "rejected" };
 
 export type Action =
+  | { type: "bootstrap-ok-has-email"; email: string }
   | { type: "bootstrap-ok-no-claim" }
-  | { type: "bootstrap-ok-matches" }
-  | { type: "bootstrap-ok-mismatch" }
   | { type: "bootstrap-fail" }
   | { type: "email-validated"; email: string }
   | { type: "email-error"; message: string }
@@ -35,20 +35,17 @@ export function inviteFlowReducer(state: Step, action: Action): Step {
       if (state.kind !== "bootstrapping") return state;
       return { kind: "email-entry" };
 
-    case "bootstrap-ok-matches":
+    case "bootstrap-ok-has-email":
       if (state.kind !== "bootstrapping") return state;
-      return { kind: "response" };
-
-    case "bootstrap-ok-mismatch":
-      if (state.kind !== "bootstrapping") return state;
-      return { kind: "email-mismatch" };
+      return { kind: "email-auto-submit", email: action.email };
 
     case "bootstrap-fail":
       if (state.kind !== "bootstrapping") return state;
       return { kind: "invalid-invitation" };
 
     case "email-validated":
-      if (state.kind !== "email-entry") return state;
+      if (state.kind !== "email-entry" && state.kind !== "email-auto-submit")
+        return state;
       return {
         kind: "otp-entry",
         email: action.email,
@@ -56,7 +53,8 @@ export function inviteFlowReducer(state: Step, action: Action): Step {
       };
 
     case "email-error":
-      if (state.kind !== "email-entry") return state;
+      if (state.kind !== "email-entry" && state.kind !== "email-auto-submit")
+        return state;
       return { kind: "email-entry", error: action.message };
 
     case "otp-validated":
