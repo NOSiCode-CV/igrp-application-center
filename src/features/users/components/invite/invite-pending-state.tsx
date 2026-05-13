@@ -1,6 +1,7 @@
 "use client";
 
-import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { signOut } from "next-auth/react";
 
 export function InvitePendingState() {
   return (
@@ -15,6 +16,15 @@ export function InvitePendingState() {
           link de convite e continuar.
         </p>
       </div>
+      <IGRPButton
+        variant="outline"
+        onClick={() => signOut({ callbackUrl: "/" })}
+        showIcon
+        iconName="LogOut"
+        iconPlacement="start"
+      >
+        Terminar sessão
+      </IGRPButton>
     </div>
   );
 }
