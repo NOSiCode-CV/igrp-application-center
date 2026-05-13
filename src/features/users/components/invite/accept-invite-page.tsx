@@ -88,7 +88,10 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            dispatch({ type: "email-error", message: result.error });
+            dispatch({
+              type: "email-error",
+              message: result.error ?? "Erro ao validar email",
+            });
             return;
           }
           dispatch({ type: "email-validated", email });
@@ -266,6 +269,7 @@ export function AcceptInvitePage() {
         <InviteErrorState kind="invalid" onBackHome={goHome} />
       ) : null}
 
+      {/* Reserved: email-mismatch becomes reachable once auto-submit maps structured API errors */}
       {step.kind === "email-mismatch" ? (
         <InviteErrorState kind="mismatch" onBackHome={goHome} />
       ) : null}

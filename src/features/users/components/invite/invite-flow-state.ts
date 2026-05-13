@@ -1,6 +1,8 @@
 export type Step =
   | { kind: "bootstrapping" }
   | { kind: "invalid-invitation" }
+  // Reserved: reachable in a future pass when validateInvitationEmail returns a structured
+  // error code indicating the session email does not match the invited address.
   | { kind: "email-mismatch" }
   | { kind: "email-auto-submit"; email: string }
   | { kind: "email-entry"; error?: string }
