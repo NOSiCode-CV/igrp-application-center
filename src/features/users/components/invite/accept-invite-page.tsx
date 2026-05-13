@@ -231,7 +231,13 @@ export function AcceptInvitePage() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
   useEffect(() => {
-    if (!stepEmail || !token) return;
+    if (
+      !stepEmail ||
+      !token ||
+      validateEmail.isPending ||
+      validateEmail.isSuccess
+    )
+      return;
     validateEmail.mutate(
       { token, email: stepEmail },
       {
