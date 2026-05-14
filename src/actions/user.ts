@@ -9,6 +9,7 @@ import type {
   RoleDTO,
   UserFilters,
   UserInvitationResponseDTO,
+  UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
 import { extractApiError } from "@/lib/utils";
 import { getClientAccess } from "./access-client";
@@ -433,6 +434,35 @@ export async function validateInvitationOtp(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[invitation] Erro ao validar código OTP de convite:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function getUserMetadata(
+  id: number,
+): Promise<ActionResult<UserMetadataDTO>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.getUserMetadata(id);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-metadata] Erro ao carregar metadados:", error);
+    return { success: false, error: extractApiError(error) };
+  }
+}
+
+export async function updateUserMetadata(
+  id: number,
+  metadata: Record<string, unknown>,
+): Promise<ActionResult<UserMetadataDTO>> {
+  const client = await getClientAccess();
+
+  try {
+    const result = await client.users.updateUserMetadata(id, { metadata });
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error("[user-metadata] Erro ao atualizar metadados:", error);
     return { success: false, error: extractApiError(error) };
   }
 }
