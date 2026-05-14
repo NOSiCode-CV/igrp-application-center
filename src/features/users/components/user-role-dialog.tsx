@@ -314,7 +314,7 @@ export function UserRolesDialog({
 
     try {
       if (toAdd.length) {
-        const res = await addUserRole({ id, departmentCode, roleCodes: toAdd });
+        const res = await addUserRole({ id, departmentCode, request: { roles: toAdd } });
         if (!res.success) {
           throw new Error(res.error);
         }

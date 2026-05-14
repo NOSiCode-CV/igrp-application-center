@@ -1,4 +1,5 @@
 import type {
+  AddRolesToUserRequestDTO,
   ApplicationDTO,
   DepartmentDTO,
   IGRPUserDTO,
@@ -92,12 +93,12 @@ export const useAddUserRole = () => {
     mutationFn: async ({
       id,
       departmentCode,
-      roleCodes,
+      request,
     }: {
       id: number;
       departmentCode: string;
-      roleCodes: string[];
-    }) => addRolesToUser(id, departmentCode, roleCodes),
+      request: AddRolesToUserRequestDTO;
+    }) => addRolesToUser(id, departmentCode, request),
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["users"] });

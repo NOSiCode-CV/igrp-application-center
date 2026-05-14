@@ -1,6 +1,7 @@
 "use server";
 
 import type {
+  AddRolesToUserRequestDTO,
   ApplicationDTO,
   DepartmentDTO,
   IGRPUserDTO,
@@ -59,7 +60,7 @@ export async function inviteUser(
 export async function addRolesToUser(
   id: number,
   departmentCode: string,
-  roleCodes: string[],
+  request: AddRolesToUserRequestDTO,
 ): Promise<ActionResult<RoleDTO>> {
   const client = await getClientAccess();
 
@@ -67,7 +68,7 @@ export async function addRolesToUser(
     const result = await client.users.addRolesToUser(
       id,
       departmentCode,
-      roleCodes,
+      request,
     );
     return { success: true, data: result.data };
   } catch (error: unknown) {
