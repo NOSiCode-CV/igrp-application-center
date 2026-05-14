@@ -10,6 +10,7 @@ import type {
   SecurityAuditLogDTO,
   SessionResponseDTO,
   UserFilters,
+  InvitationDTO,
   UserInvitationResponseDTO,
   UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
@@ -342,7 +343,10 @@ export function useGetCurrentUserRecentApplications(applicationName?: string) {
   });
 }
 
-export function useGetUserInvitations(email?: string) {
+export function useGetUserInvitations(
+  email?: string,
+  options?: { initialData?: InvitationDTO[] },
+) {
   return useQuery({
     queryKey: ["user-invitations", email],
     queryFn: async () => {
@@ -350,6 +354,7 @@ export function useGetUserInvitations(email?: string) {
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
+    initialData: options?.initialData,
     retry: false,
   });
 }
