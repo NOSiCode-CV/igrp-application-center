@@ -69,6 +69,7 @@ import {
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
+import { computeRoleDiff } from "@/features/users/lib/role-diff";
 import { getStatusColor, showStatus } from "@/lib/utils";
 
 const norm = (s: string) => s.trim().toLowerCase();
@@ -143,27 +144,6 @@ const columns: ColumnDef<RoleDTO>[] = [
   },
 ];
 
-function diffRoles(selected: RoleDTO[], existing: RoleDTO[]) {
-  const selectedNorm = new Set(selected.map((r) => norm(r.code)));
-  const existingNorm = new Set(existing.map((r) => norm(r.code)));
-
-  const toAddNorm = Array.from(selectedNorm).filter(
-    (n) => !existingNorm.has(n),
-  );
-  const toRemoveNorm = Array.from(existingNorm).filter(
-    (n) => !selectedNorm.has(n),
-  );
-
-  const selectedByNorm = new Map(selected.map((r) => [norm(r.code), r.code]));
-  const existingByNorm = new Map(existing.map((r) => [norm(r.code), r.code]));
-
-  return {
-    toAdd: toAddNorm.map((n) => selectedByNorm.get(n) ?? "").filter(Boolean),
-    toRemove: toRemoveNorm
-      .map((n) => existingByNorm.get(n) ?? "")
-      .filter(Boolean),
-  };
-}
 
 type UserRolesDialogProps = {
   open: boolean;
@@ -220,6 +200,7 @@ export function UserRolesDialog({
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [expiresAt, setExpiresAt] = useState<string>("");
 
   const getRowKey = useCallback((r: RoleDTO) => String(r.id ?? r.name), []);
 
@@ -244,6 +225,7 @@ export function UserRolesDialog({
       setData([]);
       setColumnFilters([]);
       setPagination({ pageIndex: 0, pageSize: 5 });
+      setExpiresAt("");
     }
   }, [open]);
 
@@ -284,12 +266,17 @@ export function UserRolesDialog({
 
   const existing = userRolesInDept ?? [];
 
-  const { toAdd, toRemove } = useMemo(
-    () => diffRoles(selectedData, existing as RoleDTO[]),
-    [selectedData, existing],
+  const diff = useMemo(
+    () =>
+      computeRoleDiff(
+        (existing as RoleDTO[]).map((r) => r.code ?? "").filter(Boolean),
+        selectedData.map((r) => r.code ?? "").filter(Boolean),
+        expiresAt || undefined,
+      ),
+    [selectedData, existing, expiresAt],
   );
 
-  const hasChanges = toAdd.length > 0 || toRemove.length > 0;
+  const hasChanges = diff.toAdd.roles.length > 0 || diff.toRemove.length > 0;
 
   const { mutateAsync: addUserRole, isPending: isAdding } = useAddUserRole();
   const { mutateAsync: removeUserRole, isPending: isRemoving } =
@@ -313,17 +300,17 @@ export function UserRolesDialog({
     }
 
     try {
-      if (toAdd.length) {
-        const res = await addUserRole({ id, departmentCode, request: { roles: toAdd } });
+      if (diff.toAdd.roles.length) {
+        const res = await addUserRole({ id, departmentCode, request: diff.toAdd });
         if (!res.success) {
           throw new Error(res.error);
         }
       }
-      if (toRemove.length) {
+      if (diff.toRemove.length) {
         const res = await removeUserRole({
           id,
           departmentCode,
-          roleCodes: toRemove,
+          roleCodes: diff.toRemove,
         });
         if (!res.success) {
           throw new Error(res.error);
@@ -333,7 +320,7 @@ export function UserRolesDialog({
       igrpToast({
         type: "success",
         title: "Perfis atualizados",
-        description: `+${toAdd.length} adicionada(s), -${toRemove.length} removida(s).`,
+        description: `+${diff.toAdd.roles.length} adicionada(s), -${diff.toRemove.length} removida(s).`,
       });
 
       await refetchUserRoles();
@@ -472,6 +459,20 @@ export function UserRolesDialog({
                     </PopoverContent>
                   </Popover>
                 </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Label htmlFor="expires-at" className="text-sm whitespace-nowrap">
+                  Expiração (opcional)
+                </Label>
+                <Input
+                  id="expires-at"
+                  type="date"
+                  value={expiresAt}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  className="w-44"
+                />
               </div>
 
               {!departmentCode ? (
@@ -694,7 +695,7 @@ export function UserRolesDialog({
                     onClick={onSubmit}
                     disabled={
                       !departmentCode ||
-                      !(toAdd.length || toRemove.length) ||
+                      !(diff.toAdd.roles.length || diff.toRemove.length) ||
                       loading ||
                       isAdding ||
                       isRemoving
