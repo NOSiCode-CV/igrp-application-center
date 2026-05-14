@@ -1,5 +1,10 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
+
+/** Absolute app root so Turbopack does not pick a parent `pnpm-lock.yaml` (e.g. on `D:\`). */
+const turbopackRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -9,6 +14,8 @@ const getRemotePatterns = () => {
     hostname: RemotePattern["hostname"];
   }> = [];
 
+  // Add extra domains via env (comma-separated)
+  // Ex: NEXT_PUBLIC_ALLOWED_DOMAINS=example.com,cdn.example.com
   const extraDomains =
     process.env.NEXT_PUBLIC_ALLOWED_DOMAINS?.split(",") || [];
 
@@ -32,6 +39,9 @@ const nextConfig: NextConfig = {
     remotePatterns: getRemotePatterns(),
   },
   typedRoutes: true,
+  turbopack: {
+    root: turbopackRoot,
+  },
   experimental: {
     typedEnv: true,
     optimizePackageImports: [

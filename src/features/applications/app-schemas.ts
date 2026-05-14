@@ -22,11 +22,12 @@ const BaseApp = z
       .min(2, "Código deve ter no mínimo 2 caracteres"),
     name: z
       .string()
-      .regex(
-        /^[a-zA-Z0-9\sÀ-ÿ()]+$/,
-        "O nome não pode conter caracteres especiais",
-      )
-      .min(2, "Nome é obrigatório"),
+      // .regex(
+      //   /^[a-zA-Z0-9\sÀ-ÿ()]+$/,
+      //   "O nome não pode conter caracteres especiais",
+      // )
+      .min(2, "Nome é obrigatório")
+      .max(255, "Nome deve ter no máximo 255 caracteres"),
     status: statusSchema,
     owner: z.string().optional(),
     description: z.string().optional(),
