@@ -1,0 +1,113 @@
+"use client";
+
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { Suspense } from "react";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
+import {
+  IGRPButton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@igrp/igrp-framework-react-design-system";
+import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
+import UserApplications from "./user-applications";
+import UserRoleList from "./user-role-list";
+import UserSignature from "./user-signature";
+import { UserAuditLogTab } from "./user-audit-tab";
+import { UserMetadataPanel } from "./user-metadata-panel";
+import { UserSessionsTab } from "./user-sessions-tab";
+
+function TabSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 p-4 animate-pulse">
+      <div className="h-4 w-3/4 rounded bg-muted" />
+      <div className="h-4 w-1/2 rounded bg-muted" />
+      <div className="h-4 w-2/3 rounded bg-muted" />
+    </div>
+  );
+}
+
+function TabError({ error, resetErrorBoundary }: FallbackProps) {
+  const message =
+    error instanceof Error ? error.message : "Erro ao carregar dados";
+  return (
+    <div className="flex flex-col items-center gap-3 p-6 text-sm text-destructive">
+      <p>{message}</p>
+      <IGRPButton size="sm" onClick={resetErrorBoundary}>
+        Tentar novamente
+      </IGRPButton>
+    </div>
+  );
+}
+
+function TabPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundary FallbackComponent={TabError}>
+      <Suspense fallback={<TabSkeleton />}>{children}</Suspense>
+    </ErrorBoundary>
+  );
+}
+
+interface UserDetailsTabsProps {
+  user: IGRPUserDTO;
+}
+
+export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
+  return (
+    <Tabs defaultValue="roles">
+      <TabsList>
+        <TabsTrigger value="roles">Perfis</TabsTrigger>
+        <TabsTrigger value="departments">Departamentos</TabsTrigger>
+        <TabsTrigger value="applications">Aplicações</TabsTrigger>
+        <TabsTrigger value="signature">Assinatura</TabsTrigger>
+        <TabsTrigger value="sessions">Sessões</TabsTrigger>
+        <TabsTrigger value="audit">Auditoria</TabsTrigger>
+        <TabsTrigger value="metadata">Metadados</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="roles">
+        <TabPanel>
+          <UserRoleList user={user} />
+        </TabPanel>
+      </TabsContent>
+
+      <TabsContent value="departments">
+        <TabPanel>
+          <DepartmentListSimple user={user} />
+        </TabPanel>
+      </TabsContent>
+
+      <TabsContent value="applications">
+        <TabPanel>
+          <UserApplications user={user} />
+        </TabPanel>
+      </TabsContent>
+
+      <TabsContent value="signature">
+        <TabPanel>
+          {/* refetch is a no-op here; user data is fetched server-side */}
+          <UserSignature user={user} refetch={() => undefined} />
+        </TabPanel>
+      </TabsContent>
+
+      <TabsContent value="sessions">
+        <TabPanel>
+          <UserSessionsTab username={user.username} />
+        </TabPanel>
+      </TabsContent>
+
+      <TabsContent value="audit">
+        <TabPanel>
+          <UserAuditLogTab userId={String(user.id)} />
+        </TabPanel>
+      </TabsContent>
+
+      <TabsContent value="metadata">
+        <TabPanel>
+          <UserMetadataPanel userId={user.id} />
+        </TabPanel>
+      </TabsContent>
+    </Tabs>
+  );
+}
