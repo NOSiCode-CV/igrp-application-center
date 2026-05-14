@@ -1,12 +1,17 @@
 import type {
   AddRolesToUserRequestDTO,
   ApplicationDTO,
+  AuditLogFilters,
   DepartmentDTO,
   IGRPUserDTO,
   InviteUserDTO,
+  PageResponse,
   RoleDTO,
+  SecurityAuditLogDTO,
+  SessionResponseDTO,
   UserFilters,
   UserInvitationResponseDTO,
+  UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
 import {
   useMutation,
@@ -31,6 +36,7 @@ import {
   getUserDepartments,
   getUserInvitationByToken,
   getUserInvitations,
+  getUserMetadata,
   getUserRoles,
   getUsers,
   inviteUser,
@@ -42,12 +48,18 @@ import {
   setCurrentUserActiveRole,
   //setCurrentUserActiveRole,
   updateUser,
+  updateUserMetadata,
   updateUserStatus,
   validateInvitationEmail,
   validateInvitationOtp,
 } from "@/actions/user";
+import { getUserAuditLogs } from "@/actions/user-audit";
+import { getUserSession, killUserSession } from "@/actions/user-sessions";
 
-export const useUsers = (params?: UserFilters) => {
+export const useUsers = (
+  params?: UserFilters,
+  options?: { initialData?: IGRPUserDTO[] },
+) => {
   return useQuery<IGRPUserDTO[], Error>({
     queryKey: ["users"],
     queryFn: async () => {
@@ -55,6 +67,7 @@ export const useUsers = (params?: UserFilters) => {
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
+    initialData: options?.initialData,
     retry: false,
   });
 };
@@ -478,3 +491,91 @@ export function useValidateInvitationOtp() {
     retry: false,
   });
 }
+
+export const useUserMetadata = (id: number) => {
+  return useQuery<UserMetadataDTO, Error>({
+    queryKey: ["userMetadata", id],
+    queryFn: async () => {
+      const result = await getUserMetadata(id);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    enabled: !!id,
+    retry: false,
+  });
+};
+
+export const useUpdateUserMetadata = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      metadata,
+    }: {
+      id: number;
+      metadata: Record<string, unknown>;
+    }) => updateUserMetadata(id, metadata),
+    onSuccess: async (result, variables) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["userMetadata", variables.id],
+        });
+      }
+    },
+    retry: false,
+  });
+};
+
+export const useUserSession = (userExternalId: string | undefined) => {
+  return useQuery<SessionResponseDTO, Error>({
+    queryKey: ["userSession", userExternalId],
+    queryFn: async () => {
+      const result = await getUserSession(userExternalId!);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    enabled: !!userExternalId,
+    retry: false,
+  });
+};
+
+export const useKillUserSession = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      sessionId,
+      reason,
+      userExternalId,
+    }: {
+      sessionId: string;
+      reason: string;
+      userExternalId: string;
+    }) => killUserSession(sessionId, reason),
+    onSuccess: async (result, variables) => {
+      if (result.success) {
+        await queryClient.invalidateQueries({
+          queryKey: ["userSession", variables.userExternalId],
+        });
+      }
+    },
+    retry: false,
+  });
+};
+
+export const useUserAuditLogs = (
+  userId: string | undefined,
+  filters?: AuditLogFilters,
+) => {
+  return useQuery<PageResponse<SecurityAuditLogDTO>, Error>({
+    queryKey: ["userAuditLogs", userId, filters],
+    queryFn: async () => {
+      const result = await getUserAuditLogs(userId!, filters);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    enabled: !!userId,
+    retry: false,
+  });
+};
