@@ -73,6 +73,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 | `vercel-react-best-practices` | React 19 / Next.js performance and rendering patterns |
 | `vercel-composition-patterns` | Component-API and composition refactors |
 | `shadcn` | Reference only — this project uses IGRP Horizon, not raw shadcn primitives |
+| `web-design-guidelines` | General web design guidelines and principles |
 
 ### Data layer
 
@@ -98,6 +99,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 
 ## Conventions
 
-- Formatter/linter: Biome 2.4.12 (2-space indent). `pnpm lint` is the gate.
+- Formatter/linter: Biome 2.4.15 (2-space indent). `pnpm lint` is the gate.
+- Test runner: Vitest ^4.1.6 with `@testing-library/react`. Run with `pnpm test`. Tests live alongside features.
 - `optimizePackageImports` is set for the IGRP framework packages and React Query — keep imports tree-shakable (named imports, no deep default imports into those packages).
 - `output: "standalone"` — Dockerfile builds rely on this; don't change without updating the Dockerfile.
