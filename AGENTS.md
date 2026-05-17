@@ -32,7 +32,12 @@ All auth flows through `@igrp/framework-next-auth`, wrapping NextAuth v4.
 ### Route groups
 
 - `src/app/(auth)` — `/login`, `/logout`. Public.
-- `src/app/(igrp)` — authenticated app shell (layout, error, not-found, loading). Contains `(home)` (dashboard, `/profile`, `/settings`), `(app-center)`, `(generated)`, and `/invite`.
+- `src/app/(igrp)` — authenticated app shell (layout, error, not-found, loading). Contains:
+  - `(home)` — dashboard, `/profile`, `/settings` (applications, departments, users, users/[id])
+  - `(app-center)` — application center features
+  - `(generated)` — reserved, empty (`.gitkeep`)
+  - `/invite` — invite pending and invite-error pages (authenticated)
+- `src/app/(invite)` — `/invite/accept` — public invite acceptance flow (outside the authenticated shell).
 - `src/app/(my-app)` — reserved for per-app subroutes (see the matcher's `apps` exclusion — subdomain-style apps are mounted outside the middleware-protected tree).
 - `src/app/api/{auth,health}`.
 
