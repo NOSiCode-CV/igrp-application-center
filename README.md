@@ -42,6 +42,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | `pnpm lint` | Lint and autofix (Biome) |
 | `pnpm format` | Format code (Biome) |
 | `pnpm clean-all` | Remove `node_modules` and `.next` |
+| `pnpm test` | Run tests (Vitest) |
+| `pnpm test:watch` | Run tests in watch mode |
 
 ---
 
