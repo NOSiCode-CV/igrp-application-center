@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Package manager: **pnpm** (Node >= 20).
+Package manager: **pnpm** (Node >= 22).
 
 - `pnpm dev` — Next.js dev server with Turbopack.
 - `pnpm build` — runs `pnpm format` then `next build --turbopack`.
@@ -12,9 +12,9 @@ Package manager: **pnpm** (Node >= 20).
 - `pnpm lint` — `biome check --write` (lint + autofix + organize imports).
 - `pnpm format` — `biome format --write`.
 - `pnpm clean-all` — remove `node_modules` and `.next`.
-- `pnpm release` — `pnpm i && pnpm format && pnpm build && pnpm start --tag next`.
-
-There is no test runner configured in this project.
+- `pnpm release` — `pnpm i && pnpm build && pnpm start`.
+- `pnpm test` — run tests with Vitest (single run).
+- `pnpm test:watch` — run tests in watch mode.
 
 ## Architecture
 
