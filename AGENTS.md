@@ -32,7 +32,7 @@ All auth flows through `@igrp/framework-next-auth`, wrapping NextAuth v4.
 ### Route groups
 
 - `src/app/(auth)` — `/login`, `/logout`. Public.
-- `src/app/(igrp)` — authenticated app shell (layout, error, not-found, loading). Contains:
+- `src/app/(igrp)` — authenticated app shell (layout, error, loading). Contains:
   - `(home)` — dashboard, `/profile`, `/settings` (applications, departments, users, users/[id])
   - `(app-center)` — application center features
   - `(generated)` — reserved, empty (`.gitkeep`)
