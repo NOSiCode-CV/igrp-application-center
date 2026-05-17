@@ -103,3 +103,31 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 - Test runner: Vitest ^4.1.6 with `@testing-library/react`. Run with `pnpm test`. Tests live alongside features.
 - `optimizePackageImports` is set for the IGRP framework packages and React Query — keep imports tree-shakable (named imports, no deep default imports into those packages).
 - `output: "standalone"` — Dockerfile builds rely on this; don't change without updating the Dockerfile.
+
+## Maintenance
+
+These rules define when each documentation file must be updated. They exist here so both humans and AI have a single place to check.
+
+**Update `README.md` when:**
+- Adding or removing environment variables
+- Changing `pnpm` scripts
+- Adding new top-level directories under `src/`
+
+**Update `AGENTS.md` when:**
+- Auth flow changes (providers, middleware logic, session helpers)
+- New feature modules added under `src/features/`
+- New route groups added under `src/app/`
+- SDK or data-fetching patterns change
+- New skills added to `.claude/skills/`
+- Biome, Vitest, or other tooling versions change
+
+**Update `docs/DESIGN_SYSTEM.md` when:**
+- New Horizon components are available or usage patterns change
+
+**Update `docs/TOKENS.md` when:**
+- Token definitions or theme override patterns change
+
+**Update `docs/DOCKER-RUN.md` when:**
+- Docker build or run instructions change
+
+**Content boundary rule:** README describes *what exists* (shallow). AGENTS.md describes *how it works* (deep). When adding an env var: README gets a table row (name + one-line description); AGENTS.md gets the behavioral explanation.
