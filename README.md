@@ -93,20 +93,11 @@ Copy `.env.example` to `.env` and fill in the required variables:
 ## Docker
 
 ```bash
-# Build
 docker build -t igrp-application-center .
-
-# Run
 docker run --rm -it -p 3000:3000 --env-file .env igrp-application-center
 ```
 
-Or with Docker Compose (runs on port 3001):
-
-```bash
-docker-compose up -d
-```
-
-See [DOCKER-RUN.md](docs/DOCKER-RUN.md) for detailed Docker instructions.
+See [docs/DOCKER-RUN.md](docs/DOCKER-RUN.md) for full instructions.
 
 ---
 
@@ -148,6 +139,16 @@ src/
 | Data | TanStack Query v5 + server actions |
 | Tables | TanStack Table v8 |
 | Linting | Biome |
+
+---
+
+## Documentation
+
+| File | Contents |
+|---|---|
+| [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Horizon component patterns, imports, and usage examples |
+| [docs/TOKENS.md](docs/TOKENS.md) | CSS design tokens, dark mode, Tailwind aliases |
+| [docs/DOCKER-RUN.md](docs/DOCKER-RUN.md) | Full Docker build and run instructions |
 
 ---
 
