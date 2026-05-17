@@ -90,7 +90,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 
 (See `.env.igrp.example`.)
 
-- `AUTH_PROVIDER` — `keycloak` | `autentika` | `none` (chooses NextAuth provider in `withIGRPAuth`).
+- `AUTH_PROVIDER` — `igrp-auth` | `keycloak` | `autentika` | `none` (chooses NextAuth provider in `withIGRPAuth`).
 - `NEXTAUTH_SECRET` — required in production; `serverSession()` warns in dev and throws in prod if missing.
 - `NEXTAUTH_URL_INTERNAL` — internal URL used for redirects (middleware refresh-error redirect).
 - `IGRP_ACCESS_MANAGEMENT_API` — base URL for the platform access-management API.
