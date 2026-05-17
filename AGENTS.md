@@ -72,6 +72,8 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 | `next-best-practices` | Next.js 15 / App Router patterns, RSC vs client boundaries, caching |
 | `vercel-react-best-practices` | React 19 / Next.js performance and rendering patterns |
 | `vercel-composition-patterns` | Component-API and composition refactors |
+| `tanstack-query` | TanStack Query patterns — use when writing `use-<domain>.ts` hooks or server-state data fetching |
+| `tanstack-table` | TanStack Table patterns — use when building `IGRPDataTable` columns or custom table logic |
 | `shadcn` | Reference only — this project uses IGRP Horizon, not raw shadcn primitives |
 | `web-design-guidelines` | General web design guidelines and principles |
 
