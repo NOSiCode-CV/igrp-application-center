@@ -411,7 +411,7 @@ export function useUpdateUserStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, value }: { id: number; value: string }) =>
+    mutationFn: async ({ id, value }: { id: string; value: string }) =>
       updateUserStatus(id, value),
     onSuccess: async (result) => {
       if (result.success) {

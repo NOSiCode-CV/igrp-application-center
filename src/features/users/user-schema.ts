@@ -23,6 +23,7 @@ export const UserSchema = z.object({
   status: statusSchema,
   picture: z.string().optional(),
   signature: z.string().optional(),
+  username: z.string().optional(),
 });
 
 export const CreateUserSchema = UserSchema.omit({ id: true });

@@ -29,8 +29,7 @@ import type {
 } from "@igrp/platform-access-management-client-ts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ButtonLink } from "@/components/button-link";
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
@@ -58,147 +57,259 @@ interface UserListTableProps {
   initialInvitations: InvitationDTO[];
 }
 
-export function UserListTable({
-  initialUsers,
-  initialInvitations,
-}: UserListTableProps) {
-  const [data, setData] = useState<IGRPUserDTO[]>([]);
-  const [pendingData, setPendingData] = useState<InvitationDTO[]>([]);
-  const [canceledData, setCanceledData] = useState<InvitationDTO[]>([]);
+// ─── Module-level helpers (stable references across renders) ────────────────
+
+const isInviteStatus = (s: string) =>
+  ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
+
+function ActiveRowActionsCell({
+  row,
+  onStatusClick,
+}: {
+  row: Row<IGRPUserDTO>;
+  onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void;
+}) {
+  const state = String(row.getValue("status"));
   const router = useRouter();
-  const { igrpToast } = useIGRPToast();
-  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [userToUpdate, setUserToUpdate] = useState<{
-    user: IGRPUserDTO;
-    newStatus: "ACTIVE" | "INACTIVE";
-  } | null>(null);
-  const [userToCancel, setUserToCancel] = useState<InvitationDTO | null>(null);
 
-  const resendMutation = useResendUserInvitation();
-  const updateStatusMutation = useUpdateUserStatus();
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="p-1 rounded-sm">
+        <IGRPIcon iconName="Ellipsis" />
+      </DropdownMenuTrigger>
 
-  const cancelUserInvitationMutation = useCancelUserInvitation();
+      <DropdownMenuContent align="end" className="min-w-44">
+        {state === "ACTIVE" ? (
+          <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
+            onSelect={() => onStatusClick(row.original, "INACTIVE")}
+            variant="destructive"
+          >
+            <IGRPIcon iconName="CircleOff" />
+            Desativar
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem
+            onSelect={() => onStatusClick(row.original, "ACTIVE")}
+            variant="default"
+          >
+            <IGRPIcon iconName="CircleCheck" />
+            Ativar
+          </DropdownMenuItem>
+        )}
 
-  const { data: users = initialUsers, isLoading, error } = useUsers(undefined, {
-    initialData: initialUsers,
-  });
-  const { data: invites, isLoading: isLoadingInvites } = useGetUserInvitations(
-    undefined,
-    { initialData: initialInvitations },
+        <DropdownMenuItem
+          variant="default"
+          onClick={() => router.push(`/settings/users/${row.original.id}`)}
+        >
+          <Link
+            className="flex gap-2"
+            href={`/settings/users/${row.original.id}`}
+          >
+            <IGRPIcon iconName="UserCog" />
+            Gerir
+          </Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
+}
 
-  useEffect(() => {
-    setData(users ?? []);
-  }, [users]);
+function PendingRowActionsCell({
+  row,
+  onCancelClick,
+}: {
+  row: Row<InvitationDTO>;
+  onCancelClick: (invitation: InvitationDTO) => void;
+}) {
+  const { igrpToast } = useIGRPToast();
+  const resendMutation = useResendUserInvitation();
 
-  useEffect(() => {
-    setPendingData(
-      invites?.filter((invite) => invite.status === "PENDING") ?? [],
-    );
-    setCanceledData(
-      invites?.filter((invite) => invite.status === "CANCELED") ?? [],
-    );
-  }, [invites]);
-
-  const isInviteStatus = (s: string) =>
-    ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
-
-  const getTableColumns = (
-    ActionsCell: (props: { row: Row<IGRPUserDTO> }) => ReactNode,
-    options?: { showInvitationDate?: boolean },
-  ): ColumnDef<IGRPUserDTO>[] => {
-    const showInvitationDate = options?.showInvitationDate !== false;
-    return [
-      {
-        header: ({ column }) => (
-          <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
-        ),
-        accessorKey: "name",
-        cell: ({ row }) => {
-          const email = String(row.getValue("email") ?? "");
-          const nameValue = row.getValue("name");
-          const name =
-            nameValue && String(nameValue) !== "null"
-              ? String(nameValue)
-              : email;
-          return (
-            <div className="flex items-center gap-3">
-              <IGRPUserAvatar
-                alt={name || email}
-                fallbackContent={getInitials(name || email)}
-                className="size-10"
-                fallbackClass="text-base bg-primary text-primary-foreground"
-              />
-              <div>
-                <div className="text-sm leading-none">{name || email}</div>
-                <span className="text-muted-foreground text-xs">{email}</span>
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        header: ({ column }) => (
-          <IGRPDataTableHeaderSortToggle column={column} title="Email" />
-        ),
-        accessorKey: "email",
-        cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
-      },
-      ...(showInvitationDate
-        ? [
-            {
-              header: "Data do Convite",
-              accessorKey: "invitationDate",
-              cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
-                const date = row.getValue("invitationDate");
-                return (
-                  <div>
-                    {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-                  </div>
-                );
-              },
-            } as ColumnDef<IGRPUserDTO>,
-          ]
-        : []),
-      {
-        header: () => (
-          <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
-        ),
-        accessorKey: "status",
-        cell: ({ row }) => {
-          const status = String(row.getValue("status") ?? "");
-          const isInvite = isInviteStatus(status);
-          return (
-            <div className="text-center">
-              <Badge
-                className={cn(
-                  isInvite ? statusInviteClass(status) : getStatusColor(status),
-                  "capitalize",
-                )}
-              >
-                {isInvite ? geInviteTitle(status) : showStatus(status)}
-              </Badge>
-            </div>
-          );
-        },
-        filterFn: IGRPDataTableFacetedFilterFn,
-        size: 70,
-      },
-      {
-        id: "actions",
-        header: () => <span className="sr-only">Ações</span>,
-        cell: ({ row }) => <ActionsCell row={row} />,
-        size: 60,
-        enableHiding: false,
-      },
-    ];
+  const handleCopyUrl = () => {
+    const invitationUrl = row.original.invitationUrl;
+    if (invitationUrl) {
+      navigator.clipboard.writeText(invitationUrl);
+      igrpToast({
+        type: "success",
+        title: "URL copiado",
+        description: "URL do convite copiado para a área de transferência",
+        duration: 4000,
+      });
+    } else {
+      igrpToast({
+        type: "error",
+        title: "Erro",
+        description: "URL do convite não disponível",
+        duration: 4000,
+      });
+    }
   };
 
-  const getInvitationColumns = (
-    ActionsCell: (props: { row: Row<InvitationDTO> }) => ReactNode,
-  ): ColumnDef<InvitationDTO>[] => [
+  const handleResend = () => {
+    if (row.original.id) {
+      resendMutation.mutate(row.original.id, {
+        onSuccess: () => {
+          igrpToast({
+            type: "success",
+            title: "Convite reenviado",
+            description: "O convite foi reenviado com sucesso",
+            duration: 4000,
+          });
+        },
+        onError: () => {
+          igrpToast({
+            type: "error",
+            title: "Erro",
+            description: "Não foi possível reenviar o convite",
+            duration: 4000,
+          });
+        },
+      });
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="p-1 rounded-sm">
+        <IGRPIcon iconName="Ellipsis" />
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="min-w-44">
+        {String(row.original.status) !== "CANCELED" &&
+          String(row.original.status) !== "REJECTED" && (
+            <DropdownMenuItem onSelect={handleCopyUrl}>
+              <IGRPIcon iconName="Copy" />
+              Copiar URL
+            </DropdownMenuItem>
+          )}
+
+        <DropdownMenuItem onSelect={handleResend}>
+          <IGRPIcon iconName="Mail" />
+          Reenviar Convite
+        </DropdownMenuItem>
+
+        {String(row.original.status) !== "CANCELED" &&
+          String(row.original.status) !== "REJECTED" && (
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              variant="destructive"
+              onSelect={() => onCancelClick(row.original)}
+            >
+              <IGRPIcon iconName="Trash2" />
+              Cancelar Convite
+            </DropdownMenuItem>
+          )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function getTableColumns(
+  onStatusClick: (
+    user: IGRPUserDTO,
+    newStatus: "ACTIVE" | "INACTIVE",
+  ) => void,
+  options?: { showInvitationDate?: boolean },
+): ColumnDef<IGRPUserDTO>[] {
+  const showInvitationDate = options?.showInvitationDate !== false;
+  return [
+    {
+      header: ({ column }) => (
+        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
+      ),
+      accessorKey: "name",
+      filterFn: (row, _columnId, value: string) => {
+        const search = value.toLowerCase();
+        const name = String(row.getValue("name") ?? "").toLowerCase();
+        const email = String(row.getValue("email") ?? "").toLowerCase();
+        return name.includes(search) || email.includes(search);
+      },
+      cell: ({ row }) => {
+        const email = String(row.getValue("email") ?? "");
+        const nameValue = row.getValue("name");
+        const name =
+          nameValue && String(nameValue) !== "null"
+            ? String(nameValue)
+            : email;
+        return (
+          <div className="flex items-center gap-3">
+            <IGRPUserAvatar
+              alt={name || email}
+              fallbackContent={getInitials(name || email)}
+              className="size-10"
+              fallbackClass="text-base bg-primary text-primary-foreground"
+            />
+            <div>
+              <div className="text-sm leading-none">{name || email}</div>
+              <span className="text-muted-foreground text-xs">{email}</span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      header: ({ column }) => (
+        <IGRPDataTableHeaderSortToggle column={column} title="Email" />
+      ),
+      accessorKey: "email",
+      cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
+    },
+    ...(showInvitationDate
+      ? [
+          {
+            header: "Data do Convite",
+            accessorKey: "invitationDate",
+            cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
+              const date = row.getValue("invitationDate");
+              return (
+                <div>
+                  {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
+                </div>
+              );
+            },
+          } as ColumnDef<IGRPUserDTO>,
+        ]
+      : []),
+    {
+      header: () => (
+        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
+      ),
+      accessorKey: "status",
+      cell: ({ row }) => {
+        const status = String(row.getValue("status") ?? "");
+        const isInvite = isInviteStatus(status);
+        return (
+          <div className="text-center">
+            <Badge
+              className={cn(
+                isInvite ? statusInviteClass(status) : getStatusColor(status),
+                "capitalize",
+              )}
+            >
+              {isInvite ? geInviteTitle(status) : showStatus(status)}
+            </Badge>
+          </div>
+        );
+      },
+      filterFn: IGRPDataTableFacetedFilterFn,
+      size: 70,
+    },
+    {
+      id: "actions",
+      header: () => <span className="sr-only">Ações</span>,
+      cell: ({ row }) => (
+        <ActiveRowActionsCell row={row} onStatusClick={onStatusClick} />
+      ),
+      size: 60,
+      enableHiding: false,
+    },
+  ];
+}
+
+function getInvitationColumns(
+  onCancelClick: (invitation: InvitationDTO) => void,
+): ColumnDef<InvitationDTO>[] {
+  return [
     {
       header: ({ column }) => (
         <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
@@ -254,180 +365,122 @@ export function UserListTable({
     {
       id: "actions",
       header: () => <span className="sr-only">Ações</span>,
-      cell: ({ row }) => <ActionsCell row={row} />,
+      cell: ({ row }) => (
+        <PendingRowActionsCell row={row} onCancelClick={onCancelClick} />
+      ),
       size: 60,
       enableHiding: false,
     },
   ];
+}
 
-  const activeColumns = getTableColumns(ActiveRowActions, {
-    showInvitationDate: false,
+// ─── Main component ──────────────────────────────────────────────────────────
+
+export function UserListTable({
+  initialUsers,
+  initialInvitations,
+}: UserListTableProps) {
+  const [data, setData] = useState<IGRPUserDTO[]>([]);
+  const [pendingData, setPendingData] = useState<InvitationDTO[]>([]);
+  const [canceledData, setCanceledData] = useState<InvitationDTO[]>([]);
+  const { igrpToast } = useIGRPToast();
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [userToUpdate, setUserToUpdate] = useState<{
+    user: IGRPUserDTO;
+    newStatus: "ACTIVE" | "INACTIVE";
+  } | null>(null);
+  const [userToCancel, setUserToCancel] = useState<InvitationDTO | null>(null);
+
+  const updateStatusMutation = useUpdateUserStatus();
+  const cancelUserInvitationMutation = useCancelUserInvitation();
+
+  const { data: users = initialUsers, error } = useUsers(undefined, {
+    initialData: initialUsers,
   });
-  const pendingColumns = getInvitationColumns(PendingRowActions);
-  const canceledColumns = getInvitationColumns(PendingRowActions);
+  const { data: invites, isLoading: isLoadingInvites } = useGetUserInvitations(
+    undefined,
+    { initialData: initialInvitations },
+  );
 
-  function ActiveRowActions({ row }: { row: Row<IGRPUserDTO> }) {
-    const state = String(row.getValue("status"));
+  useEffect(() => {
+    setData(users ?? []);
+  }, [users]);
 
-    const handleStatusClick = (newStatus: "ACTIVE" | "INACTIVE") => {
-      setUserToUpdate({
-        user: row.original,
-        newStatus,
-      });
+  useEffect(() => {
+    setPendingData(
+      invites?.filter((invite) => invite.status === "PENDING") ?? [],
+    );
+    setCanceledData(
+      invites?.filter((invite) => invite.status === "CANCELED") ?? [],
+    );
+  }, [invites]);
+
+  const handleStatusClick = useCallback(
+    (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => {
+      setUserToUpdate({ user, newStatus });
       setStatusDialogOpen(true);
-    };
+    },
+    [],
+  );
 
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="p-1 rounded-sm">
-          <IGRPIcon iconName="Ellipsis" />
-        </DropdownMenuTrigger>
+  const handleCancelClick = useCallback((invitation: InvitationDTO) => {
+    setUserToCancel(invitation);
+    setCancelDialogOpen(true);
+  }, []);
 
-        <DropdownMenuContent align="end" className="min-w-44">
-          {state === "ACTIVE" ? (
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              onSelect={() => handleStatusClick("INACTIVE")}
-              variant="destructive"
-            >
-              <IGRPIcon iconName="CircleOff" />
-              Desativar
-            </DropdownMenuItem>
-          ) : (
-            <DropdownMenuItem
-              onSelect={() => handleStatusClick("ACTIVE")}
-              variant="default"
-            >
-              <IGRPIcon iconName="CircleCheck" />
-              Ativar
-            </DropdownMenuItem>
-          )}
+  const activeColumns = useMemo(
+    () => getTableColumns(handleStatusClick, { showInvitationDate: false }),
+    [handleStatusClick],
+  );
+  const pendingColumns = useMemo(
+    () => getInvitationColumns(handleCancelClick),
+    [handleCancelClick],
+  );
+  const canceledColumns = useMemo(
+    () => getInvitationColumns(handleCancelClick),
+    [handleCancelClick],
+  );
 
-          <DropdownMenuItem
-            variant="default"
-            onClick={() => router.push(`/settings/users/${row.original.id}`)}
-          >
-            <Link
-              className="flex gap-2"
-              href={`/settings/users/${row.original.id}`}
-            >
-              <IGRPIcon iconName="UserCog" />
-              Gerir
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+  const activeFilters: IGRPDataTableClientFilterListProps<IGRPUserDTO>[] =
+    useMemo(
+      () => [
+        {
+          columnId: "name",
+          component: ({ column }) => (
+            <IGRPDataTableFilterInput
+              column={column}
+              placeholder="Pesquisar por nome ou email..."
+            />
+          ),
+        },
+        {
+          columnId: "status",
+          component: ({ column }) => (
+            <IGRPDataTableFilterFaceted
+              column={column}
+              options={STATUS_OPTIONS}
+              placeholder="Estado"
+            />
+          ),
+        },
+      ],
+      [],
     );
-  }
 
-  function PendingRowActions({ row }: { row: Row<InvitationDTO> }) {
-    const handleCopyUrl = () => {
-      const invitationUrl = row.original.invitationUrl;
-      if (invitationUrl) {
-        navigator.clipboard.writeText(invitationUrl);
-        igrpToast({
-          type: "success",
-          title: "URL copiado",
-          description: "URL do convite copiado para a área de transferência",
-          duration: 4000,
-        });
-      } else {
-        igrpToast({
-          type: "error",
-          title: "Erro",
-          description: "URL do convite não disponível",
-          duration: 4000,
-        });
-      }
-    };
-
-    const handleResend = () => {
-      if (row.original.id) {
-        resendMutation.mutate(row.original.id, {
-          onSuccess: () => {
-            igrpToast({
-              type: "success",
-              title: "Convite reenviado",
-              description: "O convite foi reenviado com sucesso",
-              duration: 4000,
-            });
-          },
-          onError: () => {
-            igrpToast({
-              type: "error",
-              title: "Erro",
-              description: "Não foi possível reenviar o convite",
-              duration: 4000,
-            });
-          },
-        });
-      }
-    };
-
-    const handleCancelClick = () => {
-      setUserToCancel(row.original);
-      setCancelDialogOpen(true);
-    };
-
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="p-1 rounded-sm">
-          <IGRPIcon iconName="Ellipsis" />
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="end" className="min-w-44">
-          {String(row.original.status) !== "CANCELED" &&
-            String(row.original.status) !== "REJECTED" && (
-              <DropdownMenuItem onSelect={handleCopyUrl}>
-                <IGRPIcon iconName="Copy" />
-                Copiar URL
-              </DropdownMenuItem>
-            )}
-
-          <DropdownMenuItem onSelect={handleResend}>
-            <IGRPIcon iconName="Mail" />
-            Reenviar Convite
-          </DropdownMenuItem>
-
-          {String(row.original.status) !== "CANCELED" &&
-            String(row.original.status) !== "REJECTED" && (
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                variant="destructive"
-                onSelect={handleCancelClick}
-              >
-                <IGRPIcon iconName="Trash2" />
-                Cancelar Convite
-              </DropdownMenuItem>
-            )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+  const inviteFilters: IGRPDataTableClientFilterListProps<InvitationDTO>[] =
+    useMemo(
+      () => [
+        {
+          columnId: "email",
+          component: ({ column }) => (
+            <IGRPDataTableFilterInput column={column} />
+          ),
+        },
+      ],
+      [],
     );
-  }
-
-  const activeFilters: IGRPDataTableClientFilterListProps<IGRPUserDTO>[] = [
-    {
-      columnId: "name",
-      component: ({ column }) => <IGRPDataTableFilterInput column={column} />,
-    },
-    {
-      columnId: "status",
-      component: ({ column }) => (
-        <IGRPDataTableFilterFaceted
-          column={column}
-          options={STATUS_OPTIONS}
-          placeholder="Estado"
-        />
-      ),
-    },
-  ];
-
-  const inviteFilters: IGRPDataTableClientFilterListProps<InvitationDTO>[] = [
-    {
-      columnId: "email",
-      component: ({ column }) => <IGRPDataTableFilterInput column={column} />,
-    },
-  ];
 
   if (error) throw error;
 

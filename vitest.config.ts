@@ -1,5 +1,5 @@
-import path from "path";
 import react from "@vitejs/plugin-react";
+import path from "path";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
@@ -8,6 +8,11 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test-setup.ts"],
+    pool: "threads",
+    threads: {
+      singleThread: true,
+      maxMemoryLimit: "4096MB",
+    },
   },
   resolve: {
     alias: {

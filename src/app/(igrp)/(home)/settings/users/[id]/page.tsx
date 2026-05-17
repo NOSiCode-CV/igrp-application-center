@@ -11,7 +11,7 @@ export default async function UserPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const result = await getUser(Number(id));
+  const result = await getUser(id);
 
   if (!result.success) notFound();
 

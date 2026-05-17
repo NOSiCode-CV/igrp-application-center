@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AI Reference
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -63,8 +63,6 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 
 | Skill | Use when |
 | --- | --- |
-| `igrp-design-system` | Implementing product UI with IGRP/Horizon — the master skill for this codebase |
-| `multi-provider-nextauth` | Touching NextAuth, `withIGRPAuth`, the Keycloak/Autentika providers, or token refresh |
 | `frontend-design` | General frontend/UX design guidance |
 | `next-best-practices` | Next.js 15 / App Router patterns, RSC vs client boundaries, caching |
 | `vercel-react-best-practices` | React 19 / Next.js performance and rendering patterns |

@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "template": "demo-legacy",
+  "applied": [
+    {
+      "id": "01-preview-mode-not-found",
+      "appliedAt": "2025-11-10T00:00:00.000Z",
+      "cliVersion": "0.1.1-beta.115",
+      "manifestHash": "299eb00d42c2cb9d",
+      "undo": [],
+      "fileHashes": {}
+    },
+    {
+      "id": "02-access-sync-config-refactor",
+      "appliedAt": "2025-12-05T00:00:00.000Z",
+      "cliVersion": "0.1.1-beta.115",
+      "manifestHash": "a147f1ef0124d7f2",
+      "undo": [],
+      "fileHashes": {}
+    },
+    {
+      "id": "03-tailwind-v4-tokens",
+      "appliedAt": "2026-02-04T00:00:00.000Z",
+      "cliVersion": "0.1.1-beta.115",
+      "manifestHash": "115de6d98aae9182",
+      "undo": [],
+      "fileHashes": {}
+    },
+    {
+      "id": "04-multi-auth-provider",
+      "appliedAt": "2026-04-20T00:00:00.000Z",
+      "cliVersion": "0.1.1-beta.115",
+      "manifestHash": "d506198404a1a56e",
+      "undo": [],
+      "fileHashes": {}
+    },
+    {
+      "id": "05-edge-safe-auth-bypass",
+      "appliedAt": "2026-04-23T00:00:00.000Z",
+      "cliVersion": "0.1.1-beta.115",
+      "manifestHash": "5465b3ba2384f17e",
+      "undo": [],
+      "fileHashes": {}
+    },
+    {
+      "id": "06-error-handling-overhaul",
+      "appliedAt": "2026-04-23T00:00:00.000Z",
+      "cliVersion": "0.1.1-beta.115",
+      "manifestHash": "1b251a4000bd7131",
+      "undo": [],
+      "fileHashes": {}
+    }
+  ]
+}

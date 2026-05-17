@@ -47,3 +47,6 @@ next-env.d.ts
 # docker
 # docker-compose.yml
 .claude/settings.local.json
+
+# Brainstorming session artefacts
+.superpowers/

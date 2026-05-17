@@ -194,7 +194,7 @@ export async function getUserDepartments(
   }
 }
 
-export async function getUser(id: number): Promise<ActionResult<IGRPUserDTO>> {
+export async function getUser(id: string): Promise<ActionResult<IGRPUserDTO>> {
   const client = await getClientAccess();
 
   try {
@@ -346,7 +346,7 @@ export async function cancelUserInvitation(
 }
 
 export async function updateUserStatus(
-  id: number,
+  id: string,
   value: string,
 ): Promise<ActionResult<IGRPUserDTO>> {
   const client = await getClientAccess();
