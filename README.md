@@ -116,18 +116,22 @@ See [DOCKER-RUN.md](docs/DOCKER-RUN.md) for detailed Docker instructions.
 src/
 ├── app/                  # Next.js App Router
 │   ├── (auth)/           # Public routes: /login, /logout
+│   ├── (invite)/         # Public invite acceptance: /invite/accept
 │   ├── (igrp)/           # Protected app shell
-│   │   ├── (home)/       # Dashboard, /profile, /settings
-│   │   └── (app-center)/ # Application center features
+│   │   ├── (home)/       # Dashboard, /profile, /settings, /settings/users
+│   │   ├── (app-center)/ # Application center features
+│   │   └── invite/       # Invite pending + invite-error pages
 │   └── api/
 │       ├── auth/         # NextAuth route handler
 │       └── health/       # Health check endpoint
-├── features/             # Feature modules (applications, users, roles, …)
+├── features/             # Feature modules (applications, departments, files, menus, permissions, profile, roles, users)
 ├── actions/              # Next.js server actions
 ├── lib/                  # Auth config, utilities, data access layer
 ├── components/           # Shared UI components
 ├── providers/            # React context providers
-└── schemas/              # Zod validation schemas
+├── schemas/              # Zod validation schemas
+├── config/               # Site config, error messages, login config
+└── temp/                 # Mock data (development only)
 ```
 
 ---
