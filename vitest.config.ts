@@ -9,10 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test-setup.ts"],
     pool: "threads",
-    threads: {
-      singleThread: true,
-      maxMemoryLimit: "4096MB",
-    },
+    maxWorkers: 1,
+    vmMemoryLimit: "4096MB",
   },
   resolve: {
     alias: {

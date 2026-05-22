@@ -1,6 +1,6 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import type { Session } from "next-auth";
-import { cache } from "react";
 
 import { getSession } from "@/lib/auth";
 import { isAuthBypass } from "@/lib/utils";
@@ -14,8 +14,8 @@ import { isAuthBypass } from "@/lib/utils";
  * - If no session exists: redirects to /login.
  */
 export const verifySession = cache(async (): Promise<Session> => {
-  // getSession() returns null in bypass mode, so check here before hitting the redirect below.
   if (isAuthBypass()) {
+    // Stub covers the minimal fields the layout needs; cast is safe in dev/preview only.
     return {
       user: { name: "Preview User", email: "preview@example.com" },
       accessToken: "preview-token",

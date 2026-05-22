@@ -1,8 +1,6 @@
 "use server";
 
-import type {
-  SessionResponseDTO,
-} from "@igrp/platform-access-management-client-ts";
+import type { SessionResponseDTO } from "@igrp/platform-access-management-client-ts";
 import { extractApiError } from "@/lib/utils";
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
@@ -16,7 +14,10 @@ export async function getUserSession(
     const result = await client.adminSessions.getUserSession(userExternalId);
     return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-session] Erro ao carregar sessão do utilizador:", error);
+    console.error(
+      "[user-session] Erro ao carregar sessão do utilizador:",
+      error,
+    );
     return { success: false, error: extractApiError(error) };
   }
 }

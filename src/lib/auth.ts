@@ -1,11 +1,11 @@
-import { igrpSetAccessClientConfig } from "@igrp/framework-next";
-import { isIgrpError } from "@igrp/framework-next/errors";
-import { assertAuthProviderEnv } from "@igrp/framework-next-auth";
 import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { redirect } from "next/navigation";
 
-import { reportError } from "@/lib/report-error";
+import { igrpSetAccessClientConfig } from "@igrp/framework-next";
+import { isIgrpError } from "@igrp/framework-next/errors";
+import { assertAuthProviderEnv } from "@igrp/framework-next-auth";
 import { isAuthBypass } from "@/lib/utils";
+import { reportError } from "@/lib/report-error";
 
 /**
  * Central IGRP auth instance.
@@ -75,7 +75,7 @@ export async function serverSession() {
 /**
  * Gets the current session for layout use.
  * Redirects to /logout when token expired or refresh failed.
- * Returns null in preview mode.
+ * Returns null in bypass mode (IGRP_PREVIEW_MODE or AUTH_PROVIDER=none).
  */
 export async function getSession() {
   if (isAuthBypass()) return null;

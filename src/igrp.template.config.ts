@@ -3,63 +3,73 @@ import type {
   IGRPConfigArgs,
   IGRPLayoutConfigArgs,
 } from "@igrp/framework-next-types";
-import { getPackageJson } from "@/lib/config/get-pkj";
-import { getRoutes } from "@/lib/config/get-routes";
-import { getSessionArgs } from "@/lib/config/get-session-args";
 import { fontVariables } from "@/lib/fonts";
 import { isPreviewMode } from "@/lib/utils";
 import { getMockApps } from "@/temp/applications/use-mock-apps";
 import { getMockMenus } from "@/temp/menus/use-mock-menus";
 import { getMockUser } from "@/temp/users/use-mock-user";
+import { getPackageJson } from "./lib/config/get-pkj";
+import { getRoutes } from "./lib/config/get-routes";
+import { getSessionArgs } from "./lib/config/get-session-args";
 
 export function createConfig(
   config: IGRPLayoutConfigArgs,
 ): Promise<IGRPConfigArgs> {
-  const user = getMockUser().mockUser;
-  const menu = getMockMenus().mockMenus;
-  const apps = getMockApps().mockApps;
+  const preview = isPreviewMode();
+
   const routes = getRoutes();
   const appRoutes = routes?.appRoutes ?? [];
   const paramMapBody = routes?.paramMapBody ?? "";
 
   return igrpBuildConfig({
     appCode: process.env.IGRP_APP_CODE || "",
-    previewMode: isPreviewMode(),
+    previewMode: preview,
     syncAccess: process.env.IGRP_SYNC_ACCESS === "true",
     appInformation: getPackageJson(),
     layoutMockData: {
-      getHeaderData: async () => ({
-        user,
-        userProfileUrl: process.env.NEXT_PUBLIC_IGRP_PROFILE_URL || "",
-        notificationsUrl: process.env.NEXT_PUBLIC_IGRP_NOTIFICATION_URL || "",
-        showBreadcrumb: true,
-        showSearch: false,
-        showNotifications: false,
-        showUser: true,
-        showThemeSwitcher: true,
-        showIGRPSidebarTrigger: false,
-        showIGRPHeaderTitle: false,
-        showIGRPHeaderLogo: true,
-        showSettings: true,
-      }),
-      getSidebarData: async () => ({
-        menuItems: menu,
-        user,
-        defaultOpen: true,
-        showAppSwitcher: false,
-        apps,
-        appCenterUrl: process.env.NEXT_IGRP_APP_CENTER_URL || "",
-      }),
+      getHeaderData: async () => {
+        const user = preview ? getMockUser().mockUser : undefined;
+        return {
+          user: user,
+          userProfileUrl: process.env.NEXT_PUBLIC_IGRP_PROFILE_URL || "",
+          notificationsUrl: process.env.NEXT_PUBLIC_IGRP_NOTIFICATION_URL || "",
+          showBreadcrumb: true,
+          showSearch: true,
+          showNotifications: true,
+          showUser: true,
+          showThemeSwitcher: true,
+          showIGRPSidebarTrigger: false,
+          showIGRPHeaderTitle: false,
+          showIGRPHeaderLogo: true,
+          showSettings: true,
+          settingsUrl: process.env.NEXT_PUBLIC_IGRP_SETTINGS_URL || "",
+        };
+      },
+      getSidebarData: async () => {
+        const user = preview ? getMockUser().mockUser : undefined;
+        const menu = preview ? getMockMenus().mockMenus : undefined;
+        const apps = preview ? getMockApps().mockApps : undefined;
+        return {
+          menuItems: menu ?? [],
+          user: user,
+          defaultOpen: true,
+          showAppSwitcher: true,
+          apps: apps ?? [],
+          appCenterUrl: process.env.NEXT_IGRP_APP_CENTER_URL || "",
+        };
+      },
     },
     font: fontVariables,
-    showSidebar: false,
-    showHeader: true,
-    layout: { ...config },
+
+    layout: {
+      ...config,
+    },
     apiManagementConfig: {
       baseUrl: process.env.IGRP_ACCESS_MANAGEMENT_API || "",
-      m2mServiceId: process.env.IGRP_M2M_SERVICE_ID || "",
-      m2mToken: process.env.IGRP_M2M_TOKEN || "",
-      syncOnCodeMenus: process.env.IGRP_SYNC_ON_CODE_MENUS === "true",
+      serviceId: process.env.IGRP_SERVICE_ID || "",
+      m2mClientId: process.env.IGRP_M2M_CLIENT_ID || "",
+      m2mClientSecret: process.env.IGRP_M2M_CLIENT_SECRET || "",
+      m2mScope: process.env.IGRP_M2M_SCOPE || undefined,
       appRoutes,
       paramMapBody,
     },
@@ -69,7 +79,6 @@ export function createConfig(
       richColors: true,
       closeButton: true,
     },
-    showSettings: true,
     sessionArgs: getSessionArgs(),
   });
 }

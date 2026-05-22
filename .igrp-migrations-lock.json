@@ -49,6 +49,75 @@
       "manifestHash": "1b251a4000bd7131",
       "undo": [],
       "fileHashes": {}
+    },
+    {
+      "id": "07-data-access-layer",
+      "appliedAt": "2026-05-22T10:55:34.520Z",
+      "cliVersion": "0.1.0-beta.117",
+      "manifestHash": "3ab5da4bc16d576f",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/dal.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.137",
+            "@igrp/framework-next-auth": "0.1.0-beta.131",
+            "@igrp/framework-next-types": "0.1.0-beta.133",
+            "@igrp/framework-next-ui": "0.1.0-beta.137",
+            "@igrp/igrp-framework-react-design-system": "0.1.0-beta.129"
+          }
+        }
+      ],
+      "fileHashes": {
+        "src/lib/dal.ts": "78fc1137ba9be575",
+        "src/lib/auth.ts": "e669337020f4e5cf",
+        "package.json": "f03616899f16b378"
+      }
+    },
+    {
+      "id": "08-m2m-oauth2-client-credentials",
+      "appliedAt": "2026-05-22T10:56:12.997Z",
+      "cliVersion": "0.1.0-beta.118",
+      "manifestHash": "effa2a13dc7437d9",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/igrp.template.config.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": ".env.example",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.120",
+            "@igrp/framework-next-types": "0.1.0-beta.119"
+          }
+        }
+      ],
+      "fileHashes": {
+        "src/igrp.template.config.ts": "a64b9f934e8b7055",
+        ".env.example": "ad43477152a6e6d1",
+        "package.json": "6c200414da4c929a"
+      }
     }
   ]
 }

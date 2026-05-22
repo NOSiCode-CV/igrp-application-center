@@ -59,7 +59,7 @@ export async function inviteUser(
 }
 
 export async function addRolesToUser(
-  id: number,
+  id: string,
   departmentCode: string,
   request: AddRolesToUserRequestDTO,
 ): Promise<ActionResult<RoleDTO>> {
@@ -79,7 +79,7 @@ export async function addRolesToUser(
 }
 
 export async function removeRolesFromUser(
-  id: number,
+  id: string,
   departmentCode: string,
   roleCodes: string[],
 ): Promise<ActionResult<RoleDTO>> {
@@ -110,7 +110,7 @@ export async function getCurrentUserRoles(): Promise<ActionResult<RoleDTO[]>> {
 }
 
 export async function getUserRoles(
-  id: number,
+  id: string,
 ): Promise<ActionResult<RoleDTO[]>> {
   const client = await getClientAccess();
 
@@ -124,7 +124,7 @@ export async function getUserRoles(
 }
 
 export async function updateUser(
-  id: number,
+  id: string,
   user: IGRPUserDTO,
 ): Promise<ActionResult<IGRPUserDTO>> {
   const client = await getClientAccess();
@@ -167,7 +167,7 @@ export async function getCurrentUserApplications(): Promise<
 }
 
 export async function getUserApplications(
-  id: number,
+  id: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
   const client = await getClientAccess();
 
@@ -181,7 +181,7 @@ export async function getUserApplications(
 }
 
 export async function getUserDepartments(
-  id: number,
+  id: string,
 ): Promise<ActionResult<DepartmentDTO[]>> {
   const client = await getClientAccess();
 
@@ -439,7 +439,7 @@ export async function validateInvitationOtp(
 }
 
 export async function getUserMetadata(
-  id: number,
+  id: string,
 ): Promise<ActionResult<UserMetadataDTO>> {
   const client = await getClientAccess();
 
@@ -453,7 +453,7 @@ export async function getUserMetadata(
 }
 
 export async function updateUserMetadata(
-  id: number,
+  id: string,
   metadata: Record<string, unknown>,
 ): Promise<ActionResult<UserMetadataDTO>> {
   const client = await getClientAccess();

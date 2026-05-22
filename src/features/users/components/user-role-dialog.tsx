@@ -144,11 +144,10 @@ const columns: ColumnDef<RoleDTO>[] = [
   },
 ];
 
-
 type UserRolesDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  id: number;
+  id: string;
 };
 
 export function UserRolesDialog({
@@ -301,7 +300,11 @@ export function UserRolesDialog({
 
     try {
       if (diff.toAdd.roles.length) {
-        const res = await addUserRole({ id, departmentCode, request: diff.toAdd });
+        const res = await addUserRole({
+          id,
+          departmentCode,
+          request: diff.toAdd,
+        });
         if (!res.success) {
           throw new Error(res.error);
         }
@@ -462,7 +465,10 @@ export function UserRolesDialog({
               </div>
 
               <div className="flex items-center gap-2">
-                <Label htmlFor="expires-at" className="text-sm whitespace-nowrap">
+                <Label
+                  htmlFor="expires-at"
+                  className="text-sm whitespace-nowrap"
+                >
                   Expiração (opcional)
                 </Label>
                 <Input

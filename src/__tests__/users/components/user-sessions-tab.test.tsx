@@ -3,10 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserSessionsTab } from "@/features/users/components/user-sessions-tab";
-import {
-  useUserSession,
-  useKillUserSession,
-} from "@/features/users/use-users";
+import { useUserSession, useKillUserSession } from "@/features/users/use-users";
 
 const mockSession = {
   sessionId: "abc123def456",
@@ -38,9 +35,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     placeholder?: string;
     value?: string;
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  }) => (
-    <input placeholder={placeholder} value={value} onChange={onChange} />
-  ),
+  }) => <input placeholder={placeholder} value={value} onChange={onChange} />,
   Label: ({ children }: { children?: React.ReactNode }) => (
     <label>{children}</label>
   ),

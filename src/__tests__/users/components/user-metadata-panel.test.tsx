@@ -28,12 +28,14 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     placeholder?: string;
     value?: string;
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  }) => (
-    <input placeholder={placeholder} value={value} onChange={onChange} />
-  ),
-  Label: ({ children, className }: { children?: React.ReactNode; className?: string }) => (
-    <label className={className}>{children}</label>
-  ),
+  }) => <input placeholder={placeholder} value={value} onChange={onChange} />,
+  Label: ({
+    children,
+    className,
+  }: {
+    children?: React.ReactNode;
+    className?: string;
+  }) => <label className={className}>{children}</label>,
   useIGRPToast: () => ({ igrpToast: vi.fn() }),
 }));
 
@@ -79,7 +81,9 @@ describe("UserMetadataPanel", () => {
 
   it("calls updateUserMetadata with current rows on save", async () => {
     const mutateAsync = vi.fn().mockResolvedValue({ success: true });
-    const { useUpdateUserMetadata } = await import("@/features/users/use-users");
+    const { useUpdateUserMetadata } = await import(
+      "@/features/users/use-users"
+    );
     vi.mocked(useUpdateUserMetadata).mockReturnValue({
       mutateAsync,
       isPending: false,

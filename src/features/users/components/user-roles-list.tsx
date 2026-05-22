@@ -6,7 +6,7 @@ import { cn, getStatusColor, showStatus } from "@/lib/utils";
 import { useUserRoles } from "../use-users";
 
 interface RolesListProps {
-  id: number;
+  id: string;
 }
 
 export function UserRolesList({ id }: RolesListProps) {

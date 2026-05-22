@@ -29,7 +29,7 @@ import type {
 } from "@igrp/platform-access-management-client-ts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ButtonLink } from "@/components/button-link";
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
@@ -205,10 +205,7 @@ function PendingRowActionsCell({
 }
 
 function getTableColumns(
-  onStatusClick: (
-    user: IGRPUserDTO,
-    newStatus: "ACTIVE" | "INACTIVE",
-  ) => void,
+  onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void,
   options?: { showInvitationDate?: boolean },
 ): ColumnDef<IGRPUserDTO>[] {
   const showInvitationDate = options?.showInvitationDate !== false;
@@ -228,9 +225,7 @@ function getTableColumns(
         const email = String(row.getValue("email") ?? "");
         const nameValue = row.getValue("name");
         const name =
-          nameValue && String(nameValue) !== "null"
-            ? String(nameValue)
-            : email;
+          nameValue && String(nameValue) !== "null" ? String(nameValue) : email;
         return (
           <div className="flex items-center gap-3">
             <IGRPUserAvatar
@@ -380,9 +375,6 @@ export function UserListTable({
   initialUsers,
   initialInvitations,
 }: UserListTableProps) {
-  const [data, setData] = useState<IGRPUserDTO[]>([]);
-  const [pendingData, setPendingData] = useState<InvitationDTO[]>([]);
-  const [canceledData, setCanceledData] = useState<InvitationDTO[]>([]);
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
@@ -404,18 +396,15 @@ export function UserListTable({
     { initialData: initialInvitations },
   );
 
-  useEffect(() => {
-    setData(users ?? []);
-  }, [users]);
-
-  useEffect(() => {
-    setPendingData(
-      invites?.filter((invite) => invite.status === "PENDING") ?? [],
-    );
-    setCanceledData(
-      invites?.filter((invite) => invite.status === "CANCELED") ?? [],
-    );
-  }, [invites]);
+  const data = useMemo(() => users ?? [], [users]);
+  const pendingData = useMemo(
+    () => invites?.filter((invite) => invite.status === "PENDING") ?? [],
+    [invites],
+  );
+  const canceledData = useMemo(
+    () => invites?.filter((invite) => invite.status === "CANCELED") ?? [],
+    [invites],
+  );
 
   const handleStatusClick = useCallback(
     (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => {

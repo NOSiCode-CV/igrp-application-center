@@ -7,7 +7,7 @@ import { IGRP_META_THEME_COLORS } from "@igrp/igrp-framework-react-design-system
 import type { Metadata, Viewport } from "next";
 
 import { configLayout } from "@/actions/igrp/layout";
-import { createConfig } from "@/igrp.template.config";
+import { createConfig } from "@igrp/template-config";
 
 export const metadata: Metadata = {
   title: "IGRP | Centro de Aplicações",

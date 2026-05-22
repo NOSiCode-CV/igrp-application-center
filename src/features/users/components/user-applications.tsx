@@ -9,7 +9,7 @@ import { useCurrentUserApplications, useUserApplications } from "../use-users";
 export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
   const { data: currentUserApps, isLoading: isLoadingMyApps } =
     useCurrentUserApplications({ enabled: !user });
-  const { data: userApps, isLoading } = useUserApplications(user?.id ?? 0, {
+  const { data: userApps, isLoading } = useUserApplications(user?.id ?? "", {
     enabled: !!user?.id,
   });
 

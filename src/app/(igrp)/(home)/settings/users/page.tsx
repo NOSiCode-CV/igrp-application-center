@@ -15,11 +15,9 @@ export default async function UserPage() {
     : [];
 
   return (
-    <div className="flex flex-col gap-4 p-6">
-      <UserListTable
-        initialUsers={initialUsers}
-        initialInvitations={initialInvitations}
-      />
-    </div>
+    <UserListTable
+      initialUsers={initialUsers}
+      initialInvitations={initialInvitations}
+    />
   );
 }

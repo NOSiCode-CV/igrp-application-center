@@ -1,9 +1,6 @@
 import "server-only";
 
-import {
-  igrpGetAccessClient,
-  igrpSetAccessClientConfig,
-} from "@igrp/framework-next";
+import { AccessManagementClient } from "@igrp/platform-access-management-client-ts";
 import { redirect } from "next/navigation";
 import { serverSession } from "@/lib/auth";
 
@@ -12,11 +9,12 @@ export async function getClientAccess() {
   if (!session) {
     redirect("/login");
   }
-  // React.cache does not share state across Server Action invocations, so
-  // the side-effect from serverSession() cannot be relied upon here.
-  igrpSetAccessClientConfig({
-    token: session.accessToken as string,
+
+  return AccessManagementClient.create({
     baseUrl: process.env.IGRP_ACCESS_MANAGEMENT_API ?? "",
+    timeout: 10_000,
+    headers: {
+      Authorization: `Bearer ${session.accessToken as string}`,
+    },
   });
-  return await igrpGetAccessClient();
 }

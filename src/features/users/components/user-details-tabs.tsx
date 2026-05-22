@@ -92,9 +92,11 @@ export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
       </TabsContent>
 
       <TabsContent value="sessions">
-        <TabPanel>
-          <UserSessionsTab username={user.username} />
-        </TabPanel>
+        {user.username && (
+          <TabPanel>
+            <UserSessionsTab username={user.username} />
+          </TabPanel>
+        )}
       </TabsContent>
 
       <TabsContent value="audit">

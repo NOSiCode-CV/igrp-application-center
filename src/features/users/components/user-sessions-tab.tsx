@@ -16,7 +16,7 @@ import { useState } from "react";
 import { useKillUserSession, useUserSession } from "../use-users";
 
 interface UserSessionsTabProps {
-  username: string | undefined;
+  username: string;
 }
 
 export function UserSessionsTab({ username }: UserSessionsTabProps) {

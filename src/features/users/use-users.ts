@@ -109,7 +109,7 @@ export const useAddUserRole = () => {
       departmentCode,
       request,
     }: {
-      id: number;
+      id: string;
       departmentCode: string;
       request: AddRolesToUserRequestDTO;
     }) => addRolesToUser(id, departmentCode, request),
@@ -132,7 +132,7 @@ export const useRemoveUserRole = () => {
       departmentCode,
       roleCodes,
     }: {
-      id: number;
+      id: string;
       departmentCode: string;
       roleCodes: string[];
     }) => removeRolesFromUser(id, departmentCode, roleCodes),
@@ -148,7 +148,7 @@ export const useRemoveUserRole = () => {
   });
 };
 
-export const useUserRoles = (id: number) => {
+export const useUserRoles = (id: string) => {
   return useQuery<RoleDTO[], Error>({
     queryKey: ["userRoles", id],
     queryFn: async () => {
@@ -161,7 +161,7 @@ export const useUserRoles = (id: number) => {
   });
 };
 
-export const useUserRolesMulti = (id: number[]) => {
+export const useUserRolesMulti = (id: string[]) => {
   return useQueries({
     queries: id.map((u) => ({
       queryKey: ["userRoles", u],
@@ -180,7 +180,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, user }: { id: number; user: IGRPUserDTO }) =>
+    mutationFn: async ({ id, user }: { id: string; user: IGRPUserDTO }) =>
       updateUser(id, user),
     onSuccess: async (result) => {
       if (result.success) {
@@ -221,7 +221,7 @@ export const useCurrentUserApplications = (options?: { enabled?: boolean }) => {
 };
 
 export function useUserApplications(
-  userId: number,
+  userId: string,
   options?: { enabled?: boolean },
 ) {
   return useQuery<ApplicationDTO[], Error>({
@@ -238,7 +238,7 @@ export function useUserApplications(
 }
 
 export function useUserDepartments(
-  userId: number,
+  userId: string,
   options?: { enabled?: boolean },
 ) {
   return useQuery<DepartmentDTO[], Error>({
@@ -254,7 +254,7 @@ export function useUserDepartments(
   });
 }
 
-export function useUser(userId: number) {
+export function useUser(userId: string) {
   return useQuery<IGRPUserDTO, Error>({
     queryKey: ["user", userId],
     queryFn: async () => {
@@ -497,7 +497,7 @@ export function useValidateInvitationOtp() {
   });
 }
 
-export const useUserMetadata = (id: number) => {
+export const useUserMetadata = (id: string) => {
   return useQuery<UserMetadataDTO, Error>({
     queryKey: ["userMetadata", id],
     queryFn: async () => {
@@ -518,7 +518,7 @@ export const useUpdateUserMetadata = () => {
       id,
       metadata,
     }: {
-      id: number;
+      id: string;
       metadata: Record<string, unknown>;
     }) => updateUserMetadata(id, metadata),
     onSuccess: async (result, variables) => {
@@ -532,11 +532,11 @@ export const useUpdateUserMetadata = () => {
   });
 };
 
-export const useUserSession = (userExternalId: string | undefined) => {
+export const useUserSession = (userExternalId: string) => {
   return useQuery<SessionResponseDTO, Error>({
     queryKey: ["userSession", userExternalId],
     queryFn: async () => {
-      const result = await getUserSession(userExternalId!);
+      const result = await getUserSession(userExternalId);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
@@ -569,14 +569,11 @@ export const useKillUserSession = () => {
   });
 };
 
-export const useUserAuditLogs = (
-  userId: string | undefined,
-  filters?: AuditLogFilters,
-) => {
+export const useUserAuditLogs = (userId: string, filters?: AuditLogFilters) => {
   return useQuery<PageResponse<SecurityAuditLogDTO>, Error>({
     queryKey: ["userAuditLogs", userId, filters],
     queryFn: async () => {
-      const result = await getUserAuditLogs(userId!, filters);
+      const result = await getUserAuditLogs(userId, filters);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
