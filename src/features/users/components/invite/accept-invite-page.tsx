@@ -15,6 +15,7 @@ import { InviteCardShell } from "./invite-card-shell";
 import { InviteEmailStep } from "./invite-email-step";
 import { InviteErrorState } from "./invite-error-state";
 import {
+  classifyInviteError,
   initialStep,
   inviteFlowReducer,
   RESEND_COOLDOWN_MS,
@@ -59,7 +60,13 @@ export function AcceptInvitePage() {
     if (isLoadingInvitation) return;
 
     if (invitationError || !invitation) {
-      dispatch({ type: "bootstrap-fail" });
+      const message = (invitationError as Error | null)?.message;
+      const cls = classifyInviteError(message);
+      if (cls === "expired") {
+        dispatch({ type: "bootstrap-expired", message });
+      } else {
+        dispatch({ type: "bootstrap-fail", message });
+      }
       return;
     }
 
@@ -81,6 +88,20 @@ export function AcceptInvitePage() {
 
   const goHome = () => router.push("/");
 
+  const dispatchEmailFailure = (message: string | undefined) => {
+    const cls = classifyInviteError(message);
+    if (cls === "expired") {
+      dispatch({ type: "token-expired", message });
+    } else if (cls === "mismatch") {
+      dispatch({ type: "email-mismatch", message });
+    } else {
+      dispatch({
+        type: "email-error",
+        message: message ?? "Erro ao validar email",
+      });
+    }
+  };
+
   const handleEmailSubmit = (email: string) => {
     if (!token) return;
     validateEmail.mutate(
@@ -88,22 +109,30 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            dispatch({
-              type: "email-error",
-              message: result.error ?? "Erro ao validar email",
-            });
+            dispatchEmailFailure(result.error);
             return;
           }
           dispatch({ type: "email-validated", email });
         },
         onError: (err) => {
-          dispatch({
-            type: "email-error",
-            message: (err as Error).message,
-          });
+          dispatchEmailFailure((err as Error).message);
         },
       },
     );
+  };
+
+  const dispatchOtpFailure = (message: string | undefined) => {
+    const cls = classifyInviteError(message);
+    if (cls === "expired") {
+      dispatch({ type: "token-expired", message });
+    } else if (cls === "mismatch") {
+      dispatch({ type: "email-mismatch", message });
+    } else {
+      dispatch({
+        type: "otp-error",
+        message: message ?? "Código inválido",
+      });
+    }
   };
 
   const handleOtpSubmit = (otpCode: string) => {
@@ -113,13 +142,13 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            dispatch({ type: "otp-error", message: result.error });
+            dispatchOtpFailure(result.error);
             return;
           }
           dispatch({ type: "otp-validated" });
         },
         onError: (err) => {
-          dispatch({ type: "otp-error", message: (err as Error).message });
+          dispatchOtpFailure((err as Error).message);
         },
       },
     );
@@ -243,19 +272,13 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            dispatch({
-              type: "email-error",
-              message: result.error ?? "Erro ao validar email",
-            });
+            dispatchEmailFailure(result.error);
             return;
           }
           dispatch({ type: "email-validated", email: stepEmail });
         },
         onError: (err) => {
-          dispatch({
-            type: "email-error",
-            message: (err as Error).message,
-          });
+          dispatchEmailFailure((err as Error).message);
         },
       },
     );
@@ -272,12 +295,27 @@ export function AcceptInvitePage() {
   return (
     <InviteCardShell>
       {step.kind === "invalid-invitation" ? (
-        <InviteErrorState kind="invalid" onBackHome={goHome} />
+        <InviteErrorState
+          kind="invalid"
+          description={step.message}
+          onBackHome={goHome}
+        />
       ) : null}
 
-      {/* Reserved: email-mismatch becomes reachable once auto-submit maps structured API errors */}
       {step.kind === "email-mismatch" ? (
-        <InviteErrorState kind="mismatch" onBackHome={goHome} />
+        <InviteErrorState
+          kind="mismatch"
+          description={step.message}
+          onBackHome={goHome}
+        />
+      ) : null}
+
+      {step.kind === "token-expired" ? (
+        <InviteErrorState
+          kind="expired"
+          description={step.message}
+          onBackHome={goHome}
+        />
       ) : null}
 
       {step.kind === "email-entry" ? (
