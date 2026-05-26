@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { applicationsKeys, menusKeys } from "@/features/applications/query-keys";
+import {
+  applicationsKeys,
+  menusKeys,
+} from "@/features/applications/query-keys";
 
 describe("applicationsKeys", () => {
   it("returns a stable list key", () => {
@@ -7,10 +10,10 @@ describe("applicationsKeys", () => {
   });
 
   it("returns a list key scoped by filters", () => {
-    expect(applicationsKeys.list({ status: "ACTIVE" })).toEqual([
+    expect(applicationsKeys.list({ type: "WEB" })).toEqual([
       "applications",
       "list",
-      { status: "ACTIVE" },
+      { type: "WEB" },
     ]);
   });
 
