@@ -2,7 +2,13 @@
 
 import {
   Button,
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
   IGRPIcon,
+  Sheet,
+  SheetContent,
+  SheetTitle,
 } from "@igrp/igrp-framework-react-design-system";
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { DepartmentSidebarContent } from "./dept-sidebar-content";
@@ -36,51 +42,43 @@ export function DepartmentSidebar({
 
   return (
     <>
+      {/* Hamburger trigger — visible only below lg */}
       <div className="block lg:hidden mb-4">
         <Button
-          onClick={() => onOpenChange(!isOpen)}
+          onClick={() => onOpenChange(true)}
           variant="outline"
           className="w-full"
+          aria-label="Abrir lista de departamentos"
         >
-          <IGRPIcon
-            iconName={isOpen ? "X" : "Menu"}
-            className="w-4 h-4"
-            strokeWidth={2}
-          />
-          {isOpen ? "Fechar" : "Departamentos"}
+          <IGRPIcon iconName="Menu" className="w-4 h-4" strokeWidth={2} />
+          Departamentos
         </Button>
       </div>
 
-      <aside
-        className={`${isOpen ? "block" : "hidden"} lg:block
-          fixed lg:relative inset-0 lg:inset-auto
-          z-50 lg:z-auto
-          w-full lg:w-80
-          bg-background
-          overflow-y-auto
-          border-accent
-          p-4 lg:p-0 lg:pr-2`}
-      >
-        <div className="flex lg:hidden justify-end mb-2">
-          <Button
-            onClick={() => onOpenChange(false)}
-            variant="ghost"
-            size="sm"
-          >
-            <IGRPIcon iconName="X" className="w-5 h-5" strokeWidth={2} />
-          </Button>
-        </div>
+      {/* < sm: Drawer (bottom sheet) */}
+      <div className="sm:hidden">
+        <Drawer open={isOpen} onOpenChange={onOpenChange}>
+          <DrawerContent className="max-h-[90vh] p-4">
+            <DrawerTitle className="sr-only">Departamentos</DrawerTitle>
+            <DepartmentSidebarContent {...contentProps} />
+          </DrawerContent>
+        </Drawer>
+      </div>
+
+      {/* sm – lg: Sheet (left side) */}
+      <div className="hidden sm:block lg:hidden">
+        <Sheet open={isOpen} onOpenChange={onOpenChange}>
+          <SheetContent side="left" className="w-80 p-4">
+            <SheetTitle className="sr-only">Departamentos</SheetTitle>
+            <DepartmentSidebarContent {...contentProps} />
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* lg+: static aside */}
+      <aside className="hidden lg:flex lg:flex-col w-80 pr-2 border-accent overflow-y-auto">
         <DepartmentSidebarContent {...contentProps} />
       </aside>
-
-      {isOpen && (
-        <button
-          type="button"
-          aria-label="Fechar menu de departamentos"
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => onOpenChange(false)}
-        />
-      )}
     </>
   );
 }
