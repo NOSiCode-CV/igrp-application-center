@@ -1,65 +1,56 @@
 "use client";
 
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  IGRPButton,
-  IGRPIcon,
-  Input,
-} from "@igrp/igrp-framework-react-design-system";
+import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
 import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";
-import { ApplicationCard } from "@/features/applications/components/app-card";
 import { useApplications } from "@/features/applications/use-applications";
-import { STATUS_OPTIONS } from "@/lib/constants";
-import { ApplicationForm } from "./app-form";
+import { ApplicationFormDialog } from "./application-form-dialog";
+import { ApplicationsGrid } from "./applications-grid";
+import { ApplicationsToolbar } from "./applications-toolbar";
 
 export function ApplicationList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [open, setOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<ApplicationDTO | undefined>();
 
   const { data: applications, isLoading, error, refetch } = useApplications();
 
-  if (isLoading) return <AppCenterLoading description="Carregando aplicações..." />;
+  const openCreate = () => {
+    setEditing(undefined);
+    setDialogOpen(true);
+  };
 
-  if (error) return <InlineError message={error.message} onRetry={() => refetch()} />;
+  const openEdit = (app: ApplicationDTO) => {
+    setEditing(app);
+    setDialogOpen(true);
+  };
 
-  // if (!applications || applications.length === 0) {
-  //   return (
-  //     <AppCenterNotFound
-  //       iconName="AppWindow"
-  //       title="Nenhuma aplicação encontrada."
-  //     />
-  //   );
-  // }
+  if (isLoading)
+    return <AppCenterLoading description="Carregando aplicações..." />;
 
-  const allApps = applications;
-  const filteredApps = allApps?.filter((app) => {
-    const matchesSearch =
-      app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.code?.toLowerCase().includes(searchTerm.toLowerCase());
+  if (error)
+    return <InlineError message={error.message} onRetry={() => refetch()} />;
 
-    const matchesStatus =
-      statusFilter.length === 0 || statusFilter.includes(app.status);
+  const allApps = applications ?? [];
+  const appEmpty = allApps.length === 0;
 
-    return matchesSearch && matchesStatus;
-  });
-
-  const appEmpty = allApps?.length === 0;
+  const emptyState = (
+    <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
+      <p className="mb-4">Nenhuma aplicação encontrada.</p>
+      <IGRPButton
+        variant="outline"
+        showIcon
+        iconName="Grid2x2Plus"
+        onClick={openCreate}
+      >
+        Criar Nova Aplicação
+      </IGRPButton>
+    </div>
+  );
 
   return (
     <div className="flex flex-col gap-10 animate-fade-in">
@@ -68,111 +59,37 @@ export function ApplicationList() {
         description="Gerir Menus de Aplicações."
         showActions
       >
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <IGRPButton showIcon iconName="Grid2x2Plus">
-              Nova Aplicação
-            </IGRPButton>
-          </DialogTrigger>
-          <DialogContent className="sm:min-w-2xl max-h-[90vh]">
-            <DialogHeader>
-              <DialogTitle>Nova Aplicação</DialogTitle>
-            </DialogHeader>
-
-            <ApplicationForm onSuccess={() => setOpen(false)} />
-          </DialogContent>
-        </Dialog>
+        <IGRPButton showIcon iconName="Grid2x2Plus" onClick={openCreate}>
+          Nova Aplicação
+        </IGRPButton>
       </PageHeader>
 
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-          <div className="relative w-full max-w-sm">
-            <IGRPIcon
-              iconName="Search"
-              className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-              strokeWidth={2}
-            />
-            <Input
-              type="search"
-              placeholder="Pesquisar aplicações..."
-              className="w-full bg-background pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              disabled={appEmpty}
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2" disabled={appEmpty}>
-                  <IGRPIcon iconName="ListFilter" strokeWidth={2} />
-                  Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-40">
-                <DropdownMenuSeparator />
-                {STATUS_OPTIONS.map(({ value, label }) => (
-                  <DropdownMenuCheckboxItem
-                    key={value}
-                    checked={statusFilter.includes(value)}
-                    onCheckedChange={(checked) => {
-                      setStatusFilter(
-                        checked
-                          ? [...statusFilter, value]
-                          : statusFilter.filter((s) => s !== value),
-                      );
-                    }}
-                  >
-                    {label}
-                  </DropdownMenuCheckboxItem>
-                ))}
-                {statusFilter.length > 0 && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => setStatusFilter([])}
-                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <IGRPIcon iconName="X" className="mr-1" strokeWidth={2} />
-                      Limpar
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+        <ApplicationsToolbar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          disabled={appEmpty}
+        />
 
-        {filteredApps?.length === 0 && allApps && allApps.length > 0 ? (
-          <div className="text-center py-6 text-muted-foreground">
-            Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou
-            filtros.
-          </div>
-        ) : allApps && allApps.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
-            <p className="mb-4">Nenhuma aplicação encontrada.</p>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <IGRPButton variant="outline" showIcon iconName="Grid2x2Plus">
-                  Criar Nova Aplicação
-                </IGRPButton>
-              </DialogTrigger>
-              <DialogContent className="sm:min-w-2xl  max-h-[90vh]">
-                <DialogHeader>
-                  <DialogTitle>Nova Aplicação</DialogTitle>
-                </DialogHeader>
-                <ApplicationForm onSuccess={() => setOpen(false)} />
-              </DialogContent>
-            </Dialog>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredApps?.map((app) => (
-              <ApplicationCard key={app.id} app={app} />
-            ))}
-          </div>
-        )}
+        <ApplicationsGrid
+          applications={allApps}
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          onEdit={openEdit}
+          emptyState={emptyState}
+        />
       </div>
+
+      <ApplicationFormDialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) setEditing(undefined);
+        }}
+        application={editing}
+      />
     </div>
   );
 }
