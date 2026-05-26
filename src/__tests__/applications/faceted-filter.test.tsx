@@ -2,40 +2,48 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+type MockProps = {
+  children?: React.ReactNode;
+  disabled?: boolean;
+  checked?: boolean;
+  onClick?: () => void;
+  onCheckedChange?: (next: boolean) => void;
+};
+
 vi.mock("@igrp/igrp-framework-react-design-system", () => {
+  // biome-ignore lint/correctness/noNodejsModules: vitest mock factory runs in a Node context.
   const React = require("react");
   return {
-    Button: ({ children, disabled, ...rest }: any) =>
+    Button: ({ children, disabled, ...rest }: MockProps) =>
       React.createElement(
         "button",
         { type: "button", disabled, ...rest },
         children,
       ),
     IGRPIcon: () => null,
-    DropdownMenu: ({ children }: any) =>
+    DropdownMenu: ({ children }: MockProps) =>
       React.createElement(React.Fragment, null, children),
-    DropdownMenuTrigger: ({ children }: any) =>
+    DropdownMenuTrigger: ({ children }: MockProps) =>
       React.createElement(React.Fragment, null, children),
-    DropdownMenuContent: ({ children }: any) =>
+    DropdownMenuContent: ({ children }: MockProps) =>
       React.createElement("div", { role: "menu" }, children),
-    DropdownMenuCheckboxItem: ({ children, checked, onCheckedChange }: any) =>
+    DropdownMenuCheckboxItem: ({
+      children,
+      checked,
+      onCheckedChange,
+    }: MockProps) =>
       React.createElement(
         "div",
         {
           role: "menuitemcheckbox",
           "aria-checked": checked ? "true" : "false",
-          "aria-label":
-            typeof children === "string" ? children : undefined,
+          "aria-label": typeof children === "string" ? children : undefined,
           onClick: () => onCheckedChange?.(!checked),
         },
         children,
       ),
-    DropdownMenuItem: ({ children, onClick }: any) =>
-      React.createElement(
-        "div",
-        { role: "menuitem", onClick },
-        children,
-      ),
+    DropdownMenuItem: ({ children, onClick }: MockProps) =>
+      React.createElement("div", { role: "menuitem", onClick }, children),
     DropdownMenuSeparator: () => null,
   };
 });

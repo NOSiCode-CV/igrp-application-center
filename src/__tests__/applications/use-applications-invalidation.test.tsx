@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
+import { addRolesToMenu, removeRolesFromMenu } from "@/actions/applications";
 import {
   applicationsKeys,
   menusKeys,
@@ -12,10 +13,6 @@ import {
   useRemoveRolesFromMenu,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
-import {
-  addRolesToMenu,
-  removeRolesFromMenu,
-} from "@/actions/applications";
 
 vi.mock("@/actions/applications", () => ({
   updateApplication: vi.fn(async () => ({
