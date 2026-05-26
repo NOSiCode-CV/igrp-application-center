@@ -194,8 +194,8 @@ export function ApplicationDetails({ code }: { code: string }) {
                       }
                       className={cn(
                         "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                        isLoadingFile ||
-                          (uploadPicture.isPending && "animate-spin"),
+                        (isLoadingFile || uploadPicture.isPending) &&
+                          "animate-spin",
                       )}
                     />
                   </div>
