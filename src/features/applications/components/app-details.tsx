@@ -48,9 +48,10 @@ export function ApplicationDetails({ code }: { code: string }) {
   const uploadPicture = useUploadPublicFiles();
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
 
-  const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
-    uploadedFilePath || app?.picture || "",
-  );
+  const filePath = uploadedFilePath ?? app?.picture;
+  const { data: fileUrl, isLoading: isLoadingFile } = useFiles(filePath ?? "", {
+    enabled: Boolean(filePath),
+  });
 
   useEffect(() => {
     if (code && registeredFor.current !== code) {
@@ -58,12 +59,6 @@ export function ApplicationDetails({ code }: { code: string }) {
       registerAccess(code);
     }
   }, [code, registerAccess]);
-
-  useEffect(() => {
-    if (fileUrl) {
-      setUploadedFilePath(null);
-    }
-  }, [fileUrl]);
 
   if (isLoading) {
     return <AppCenterLoading description="A carregar aplicação..." />;
