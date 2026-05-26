@@ -29,7 +29,6 @@ export const useApplications = (filters?: ApplicationFilters) => {
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
-    retry: false,
   });
 };
 
@@ -42,7 +41,6 @@ export const useApplicationByCode = (code: string) => {
       return result.data;
     },
     enabled: !!code,
-    retry: false,
   });
 };
 
@@ -88,7 +86,6 @@ export const useMenus = (code: string) => {
       return result.data;
     },
     enabled: !!code,
-    retry: false,
   });
 };
 

@@ -1,20 +1,12 @@
-import { QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import {
   getApplicationByCode,
   getApplications,
 } from "@/actions/applications";
+import { makeQueryClient } from "@/providers/query-provider";
 import { applicationsKeys } from "./query-keys";
 
-export function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 30_000,
-        retry: false,
-      },
-    },
-  });
-}
+export { makeQueryClient };
 
 export async function prefetchApplicationsList(client: QueryClient) {
   await client.prefetchQuery({
