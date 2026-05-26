@@ -3,7 +3,6 @@
 import {
   IGRPIcon,
   Input,
-  TooltipProvider,
 } from "@igrp/igrp-framework-react-design-system";
 import { ButtonLink } from "@/components/button-link";
 import type { DepartmentWithChildren } from "../dept-tree-utils";
@@ -74,17 +73,15 @@ export function DepartmentSidebarContent({
           isFiltering ? "opacity-70" : "opacity-100"
         }`}
       >
-        <TooltipProvider delayDuration={350}>
-          {filtered.length === 0 ? (
-            <DepartmentEmptyState
-              variant={searchTerm ? "sidebar-no-results" : "sidebar-empty"}
-            />
-          ) : (
-            filtered.map((dept) => (
-              <DepartmentTreeItem key={dept.code} dept={dept} />
-            ))
-          )}
-        </TooltipProvider>
+        {filtered.length === 0 ? (
+          <DepartmentEmptyState
+            variant={searchTerm ? "sidebar-no-results" : "sidebar-empty"}
+          />
+        ) : (
+          filtered.map((dept) => (
+            <DepartmentTreeItem key={dept.code} dept={dept} />
+          ))
+        )}
       </div>
     </div>
   );
