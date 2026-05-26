@@ -1,7 +1,7 @@
 "use client";
 
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import {
   IGRPButton,
@@ -49,13 +49,24 @@ function TabPanel({ children }: { children: React.ReactNode }) {
   );
 }
 
+type TabValue =
+  | "roles"
+  | "departments"
+  | "applications"
+  | "signature"
+  | "sessions"
+  | "audit"
+  | "metadata";
+
 interface UserDetailsTabsProps {
   user: IGRPUserDTO;
 }
 
 export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
+  const [active, setActive] = useState<TabValue>("roles");
+
   return (
-    <Tabs defaultValue="roles">
+    <Tabs value={active} onValueChange={(v) => setActive(v as TabValue)}>
       <TabsList>
         <TabsTrigger value="roles">Perfis</TabsTrigger>
         <TabsTrigger value="departments">Departamentos</TabsTrigger>
@@ -67,32 +78,39 @@ export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
       </TabsList>
 
       <TabsContent value="roles">
-        <TabPanel>
-          <UserRoleList user={user} />
-        </TabPanel>
+        {active === "roles" && (
+          <TabPanel>
+            <UserRoleList user={user} />
+          </TabPanel>
+        )}
       </TabsContent>
 
       <TabsContent value="departments">
-        <TabPanel>
-          <DepartmentListSimple user={user} />
-        </TabPanel>
+        {active === "departments" && (
+          <TabPanel>
+            <DepartmentListSimple user={user} />
+          </TabPanel>
+        )}
       </TabsContent>
 
       <TabsContent value="applications">
-        <TabPanel>
-          <UserApplications user={user} />
-        </TabPanel>
+        {active === "applications" && (
+          <TabPanel>
+            <UserApplications user={user} />
+          </TabPanel>
+        )}
       </TabsContent>
 
       <TabsContent value="signature">
-        <TabPanel>
-          {/* refetch is a no-op here; user data is fetched server-side */}
-          <UserSignature user={user} refetch={() => undefined} />
-        </TabPanel>
+        {active === "signature" && (
+          <TabPanel>
+            <UserSignature user={user} />
+          </TabPanel>
+        )}
       </TabsContent>
 
       <TabsContent value="sessions">
-        {user.username && (
+        {active === "sessions" && user.username && (
           <TabPanel>
             <UserSessionsTab username={user.username} />
           </TabPanel>
@@ -100,15 +118,19 @@ export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
       </TabsContent>
 
       <TabsContent value="audit">
-        <TabPanel>
-          <UserAuditLogTab userId={String(user.id)} />
-        </TabPanel>
+        {active === "audit" && (
+          <TabPanel>
+            <UserAuditLogTab userId={String(user.id)} />
+          </TabPanel>
+        )}
       </TabsContent>
 
       <TabsContent value="metadata">
-        <TabPanel>
-          <UserMetadataPanel userId={user.id} />
-        </TabPanel>
+        {active === "metadata" && (
+          <TabPanel>
+            <UserMetadataPanel userId={user.id} />
+          </TabPanel>
+        )}
       </TabsContent>
     </Tabs>
   );

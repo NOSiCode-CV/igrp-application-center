@@ -1,7 +1,7 @@
 import { getUsers, getUserInvitations } from "@/actions/user";
 import { UserListTable } from "@/features/users/components/user-list-table";
 
-// export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic";
 
 export default async function UserPage() {
   const [usersResult, invitationsResult] = await Promise.all([

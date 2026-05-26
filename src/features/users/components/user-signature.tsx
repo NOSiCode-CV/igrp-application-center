@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -6,6 +8,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
@@ -14,13 +17,12 @@ import { useUpdateUser } from "../use-users";
 
 export default function UserSignature({
   user,
-  refetch,
 }: {
   user: IGRPUserDTO;
-  refetch: () => Promise<unknown> | undefined;
 }) {
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: updateUser } = useUpdateUser();
+  const queryClient = useQueryClient();
 
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
   const [uploadedSignaturePath, setUploadedSignaturePath] = useState<
@@ -61,7 +63,8 @@ export default function UserSignature({
         throw new Error(res.error);
       }
 
-      refetch();
+      await queryClient.invalidateQueries({ queryKey: ["user", user.id] });
+      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
       igrpToast({
         type: "success",
         title: "Assinatura atualizada com sucesso",

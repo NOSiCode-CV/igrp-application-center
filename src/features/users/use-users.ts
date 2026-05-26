@@ -62,7 +62,7 @@ export const useUsers = (
   options?: { initialData?: IGRPUserDTO[] },
 ) => {
   return useQuery<IGRPUserDTO[], Error>({
-    queryKey: ["users"],
+    queryKey: ["users", params ?? null],
     queryFn: async () => {
       const result = await getUsers(params);
       if (!result.success) throw new Error(result.error);
@@ -413,9 +413,10 @@ export function useUpdateUserStatus() {
   return useMutation({
     mutationFn: async ({ id, value }: { id: string; value: string }) =>
       updateUserStatus(id, value),
-    onSuccess: async (result) => {
+    onSuccess: async (result, variables) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["users"] });
+        await queryClient.invalidateQueries({ queryKey: ["user", variables.id] });
       }
     },
     retry: false,
