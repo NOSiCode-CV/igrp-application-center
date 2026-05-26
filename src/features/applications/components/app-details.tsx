@@ -144,7 +144,10 @@ export function ApplicationDetails({ code }: { code: string }) {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div className="relative">
+              <div
+                className="relative"
+                aria-busy={uploadPicture.isPending || isLoadingFile}
+              >
                 <button
                   type="button"
                   className="relative group cursor-pointer disabled:cursor-not-allowed rounded-full"
@@ -203,8 +206,14 @@ export function ApplicationDetails({ code }: { code: string }) {
                   accept="image/*"
                   onChange={handleFileChange}
                   className="hidden"
-                  disabled={uploadPicture.isPending}
                 />
+                <span className="sr-only" aria-live="polite">
+                  {uploadPicture.isPending
+                    ? "A carregar imagem..."
+                    : isLoadingFile
+                      ? "A obter imagem..."
+                      : ""}
+                </span>
               </div>
 
               <div className="flex-1">
