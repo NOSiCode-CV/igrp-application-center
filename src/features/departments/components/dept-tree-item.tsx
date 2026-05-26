@@ -9,53 +9,25 @@ import {
   IGRPIcon,
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
-import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
-
 import type React from "react";
+import type { DepartmentWithChildren } from "../dept-tree-utils";
+import { useDeptTree } from "./dept-tree-context";
 
-type DepartmentWithChildren = DepartmentDTO & {
-  children?: DepartmentWithChildren[];
-};
-
-const DepartmentTreeItem = ({
-  dept,
-  level = 0,
-  setSelectedDeptCode,
-  selectedDeptCode,
-  handleEdit,
-  handleCreateSubDept,
-  handleDelete,
-  expandedDepts,
-  setExpandedDepts,
-}: {
+interface Props {
   dept: DepartmentWithChildren;
   level?: number;
-  setSelectedDeptCode: React.Dispatch<React.SetStateAction<string | null>>;
-  selectedDeptCode: string | null;
-  handleEdit: (dept: DepartmentWithChildren) => void;
-  handleCreateSubDept: (parent: DepartmentWithChildren) => void;
-  handleDelete: (code: string, name: string) => void;
-  expandedDepts: Set<string>;
-  setExpandedDepts: React.Dispatch<React.SetStateAction<Set<string>>>;
-}) => {
-  const hasChildren = dept.children && dept.children.length > 0;
-  const isExpanded = expandedDepts.has(dept.code);
-  const isSelected = selectedDeptCode === dept.code;
+}
 
+const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
+  const { selectedCode, expanded, select, toggle, onEdit, onCreateSub, onDelete } =
+    useDeptTree();
+
+  const hasChildren = !!dept.children?.length;
+  const isExpanded = expanded.has(dept.code);
+  const isSelected = selectedCode === dept.code;
   const isActive = dept.status === "ACTIVE";
-
-  const toggleExpand = (code: string) => {
-    const newExpanded = new Set(expandedDepts);
-    if (newExpanded.has(code)) {
-      newExpanded.delete(code);
-    } else {
-      newExpanded.add(code);
-    }
-    setExpandedDepts(newExpanded);
-  };
 
   return (
     <div>
@@ -64,18 +36,14 @@ const DepartmentTreeItem = ({
           "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm text-sm transition-all",
           isSelected
             ? "bg-accent/50 text-primary font-medium"
-            : isActive
-              ? "border-accent text-foreground bg-accent/20"
-              : "border-accent text-foreground bg-accent/20",
+            : "border-accent text-foreground bg-accent/20",
         )}
         style={{ paddingLeft: `${level * 1.5 + 0.75}rem` }}
       >
         <button
           type="button"
           className="w-4 h-4 flex items-center justify-center shrink-0 disabled:cursor-default"
-          onClick={() => {
-            if (hasChildren) toggleExpand(dept.code);
-          }}
+          onClick={() => hasChildren && toggle(dept.code)}
           disabled={!hasChildren}
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-label={
@@ -102,7 +70,7 @@ const DepartmentTreeItem = ({
 
         <button
           type="button"
-          onClick={() => setSelectedDeptCode(dept.code)}
+          onClick={() => select(dept.code)}
           className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
         >
           <div className="relative">
@@ -121,27 +89,21 @@ const DepartmentTreeItem = ({
         </button>
 
         <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-          <TooltipProvider delayDuration={350}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="h-6 w-6 p-0"
-                  onClick={() => handleCreateSubDept(dept)}
-                >
-                  <span className="sr-only">Criar Sub-departamento</span>
-                  <IGRPIcon
-                    iconName="Plus"
-                    className="w-4 h-4"
-                    strokeWidth={2}
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="px-2 py-1 text-xs">
-                Criar Sub-departamento
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-6 w-6 p-0"
+                onClick={() => onCreateSub(dept)}
+              >
+                <span className="sr-only">Criar Sub-departamento</span>
+                <IGRPIcon iconName="Plus" className="w-4 h-4" strokeWidth={2} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent className="px-2 py-1 text-xs">
+              Criar Sub-departamento
+            </TooltipContent>
+          </Tooltip>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -163,45 +125,20 @@ const DepartmentTreeItem = ({
               onCloseAutoFocus={(e) => e.preventDefault()}
               align="end"
             >
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  e.stopPropagation();
-                  handleEdit(dept);
-                }}
-              >
-                <IGRPIcon
-                  iconName="Pencil"
-                  className="w-4 h-4 mr-2"
-                  strokeWidth={2}
-                />
+              <DropdownMenuItem onSelect={() => onEdit(dept)}>
+                <IGRPIcon iconName="Pencil" className="w-4 h-4 mr-2" strokeWidth={2} />
                 Editar
               </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  e.stopPropagation();
-                  handleCreateSubDept(dept);
-                }}
-              >
-                <IGRPIcon
-                  iconName="FolderPlus"
-                  className="w-4 h-4 mr-2"
-                  strokeWidth={2}
-                />
+              <DropdownMenuItem onSelect={() => onCreateSub(dept)}>
+                <IGRPIcon iconName="FolderPlus" className="w-4 h-4 mr-2" strokeWidth={2} />
                 Criar Sub-departamento
               </DropdownMenuItem>
-
               <DropdownMenuSeparator />
-
               <DropdownMenuItem
                 variant="destructive"
-                onClick={() => handleDelete(dept.code, dept.name)}
+                onSelect={() => onDelete(dept.code, dept.name)}
               >
-                <IGRPIcon
-                  iconName="Trash"
-                  className="w-4 h-4 mr-2"
-                  strokeWidth={2}
-                />
+                <IGRPIcon iconName="Trash" className="w-4 h-4 mr-2" strokeWidth={2} />
                 Eliminar
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -212,18 +149,7 @@ const DepartmentTreeItem = ({
       {hasChildren &&
         isExpanded &&
         dept.children?.map((child) => (
-          <DepartmentTreeItem
-            key={child.code}
-            dept={child}
-            level={level + 1}
-            setSelectedDeptCode={setSelectedDeptCode}
-            selectedDeptCode={selectedDeptCode}
-            handleEdit={handleEdit}
-            handleCreateSubDept={handleCreateSubDept}
-            handleDelete={handleDelete}
-            expandedDepts={expandedDepts}
-            setExpandedDepts={setExpandedDepts}
-          />
+          <DepartmentTreeItem key={child.code} dept={child} level={level + 1} />
         ))}
     </div>
   );
