@@ -98,6 +98,7 @@ export function DepartmentListTree() {
             onCreate={() => dispatch({ type: "openCreate" })}
             isOpen={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
+            isFiltering={false}
           />
 
           <div className="flex-1 overflow-y-auto">
