@@ -144,10 +144,13 @@ export const useDeleteMenu = () => {
       appCode: string;
       menuCode: string;
     }) => deleteMenu(appCode, menuCode),
-    onSuccess: (result, { appCode }) => {
+    onSuccess: (result, { appCode, menuCode }) => {
       if (result.success) {
         queryClient.invalidateQueries({
           queryKey: menusKeys.byApplication(appCode),
+        });
+        queryClient.removeQueries({
+          queryKey: menusKeys.roles(appCode, menuCode),
         });
       }
     },
@@ -186,6 +189,11 @@ export const useAddRolesToMenu = () => {
         );
       }
     },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: menusKeys.roles(variables.appCode, variables.menuCode),
+      });
+    },
   });
 };
 
@@ -219,6 +227,11 @@ export const useRemoveRolesFromMenu = () => {
           context.previousRoles,
         );
       }
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: menusKeys.roles(variables.appCode, variables.menuCode),
+      });
     },
   });
 };
