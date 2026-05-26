@@ -70,6 +70,10 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
             className="hover:scale-110 transition-transform cursor-pointer"
             disabled={addFavorite.isPending || removeFavorite.isPending}
             type="button"
+            aria-pressed={isFavorite}
+            aria-label={
+              isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
+            }
           >
             <IGRPIcon
               iconName="Star"
