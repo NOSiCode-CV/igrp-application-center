@@ -25,6 +25,14 @@ import {
 export function DepartmentListTree() {
   const { data: departments, isLoading, error } = useDepartments();
 
+  const counts = useMemo(
+    () => ({
+      active: departments?.filter((d) => d.status === "ACTIVE").length ?? 0,
+      inactive: departments?.filter((d) => d.status !== "ACTIVE").length ?? 0,
+    }),
+    [departments],
+  );
+
   const [searchTerm, setSearchTerm] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [explicitSelected, setExplicitSelected] = useState<string | null>(null);
@@ -108,6 +116,7 @@ export function DepartmentListTree() {
             isOpen={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
             isFiltering={isFiltering}
+            counts={counts}
           />
 
           <div className="flex-1 overflow-y-auto">

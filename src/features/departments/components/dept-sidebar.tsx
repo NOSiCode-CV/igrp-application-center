@@ -21,6 +21,7 @@ interface Props {
   isOpen: boolean;
   onOpenChange(open: boolean): void;
   isFiltering: boolean;
+  counts: { active: number; inactive: number };
 }
 
 export function DepartmentSidebar({
@@ -31,6 +32,7 @@ export function DepartmentSidebar({
   isOpen,
   onOpenChange,
   isFiltering,
+  counts,
 }: Props) {
   const contentProps = {
     filtered,
@@ -38,6 +40,7 @@ export function DepartmentSidebar({
     onSearchChange,
     onCreate,
     isFiltering,
+    counts,
   };
 
   return (

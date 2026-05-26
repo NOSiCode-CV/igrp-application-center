@@ -16,6 +16,7 @@ interface Props {
   onSearchChange(value: string): void;
   onCreate(): void;
   isFiltering: boolean;
+  counts: { active: number; inactive: number };
 }
 
 export function DepartmentSidebarContent({
@@ -24,6 +25,7 @@ export function DepartmentSidebarContent({
   onSearchChange,
   onCreate,
   isFiltering,
+  counts,
 }: Props) {
   return (
     <div className="flex flex-col h-full min-w-0">
@@ -32,7 +34,9 @@ export function DepartmentSidebarContent({
           Gestão de Departamentos
         </h2>
         <p className="text-muted-foreground text-sm mb-4">
-          Ver e gerir todos os departamentos do sistema.
+          {counts.inactive > 0
+            ? `${counts.active} ativos · ${counts.inactive} inativos`
+            : `${counts.active} departamento${counts.active === 1 ? "" : "s"}`}
         </p>
         <ButtonLink
           onClick={onCreate}
