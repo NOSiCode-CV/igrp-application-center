@@ -21,6 +21,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import {
   appTypeCrud,
@@ -51,31 +52,37 @@ export function ApplicationForm({
 
   const isEdit = !!application;
 
+  const defaultValues = useMemo<CreateApplicationArgs>(
+    () =>
+      application
+        ? {
+            name: application.name,
+            code: application.code,
+            owner: application.owner,
+            type: application.type as "INTERNAL" | "EXTERNAL",
+            slug: application.slug || "",
+            url: application.url || "",
+            description: application.description || "",
+            status: application.status,
+            picture: application.picture || "",
+          }
+        : {
+            name: "",
+            code: "",
+            owner: "",
+            type: appTypeCrud.enum.INTERNAL,
+            slug: "",
+            url: "",
+            description: "",
+            status: "ACTIVE",
+            picture: "",
+          },
+    [application],
+  );
+
   const form = useForm<CreateApplicationArgs>({
     resolver: zodResolver(CreateApplicationSchema),
-    defaultValues: isEdit
-      ? {
-          name: application.name,
-          code: application.code,
-          owner: application.owner,
-          type: application.type as "INTERNAL" | "EXTERNAL",
-          slug: application.slug || "",
-          url: application.url || "",
-          description: application.description || "",
-          status: application.status,
-          picture: application.picture || "",
-        }
-      : {
-          name: "",
-          code: "",
-          owner: "",
-          type: appTypeCrud.enum.INTERNAL,
-          slug: "",
-          url: "",
-          description: "",
-          status: "ACTIVE",
-          picture: "",
-        },
+    defaultValues,
   });
 
   const type = form.watch("type");
