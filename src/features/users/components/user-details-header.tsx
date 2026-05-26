@@ -4,18 +4,14 @@ import {
   Card,
   CardContent,
   cn,
-  IGRPButton,
   IGRPIcon,
-  IGRPInputText,
   IGRPUserAvatar,
-  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useFiles } from "@/features/files/use-files";
-import { useUpdateUser } from "@/features/users/use-users";
 import { getInitials } from "@/lib/utils";
+import { UserNameEditor } from "./user-name-editor";
 import { UserStatusToggle } from "./user-status-toggle";
 
 interface UserDetailsHeaderProps {
@@ -23,57 +19,13 @@ interface UserDetailsHeaderProps {
 }
 
 export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
-  const { mutateAsync: updateUser } = useUpdateUser();
-  const { igrpToast } = useIGRPToast();
-  const queryClient = useQueryClient();
   const avatarInputRef = useRef<HTMLInputElement>(null);
-
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [editedName, setEditedName] = useState("");
 
   const { data: avatarUrl, isLoading: isLoadingFile } = useFiles(
     user?.picture || "",
   );
 
   const currentAvatarUrl = avatarUrl?.url || null;
-
-  const handleSaveName = async () => {
-    if (!editedName.trim() || editedName === user.name) {
-      setIsEditingName(false);
-      return;
-    }
-
-    try {
-      const res = await updateUser({
-        id: user.id,
-        user: {
-          ...user,
-          name: editedName.trim(),
-        },
-      });
-
-      if (!res.success) {
-        throw new Error(res.error);
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: ["user"],
-      });
-      setIsEditingName(false);
-      igrpToast({
-        type: "success",
-        title: "Nome atualizado com sucesso",
-        duration: 4000,
-      });
-    } catch (err) {
-      igrpToast({
-        type: "error",
-        title: "Erro ao atualizar nome",
-        description: (err as Error).message,
-        duration: 4000,
-      });
-    }
-  };
 
   return (
     <div className="relative">
@@ -122,53 +74,7 @@ export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
             </button>
 
             <div className="flex-1">
-              {isEditingName ? (
-                <div className="flex items-center gap-2 mb-1">
-                  <IGRPInputText
-                    value={editedName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setEditedName(e.target.value)
-                    }
-                    onKeyDown={(e: React.KeyboardEvent) => {
-                      if (e.key === "Enter") handleSaveName();
-                      if (e.key === "Escape") setIsEditingName(false);
-                    }}
-                    className="text-2xl font-bold tracking-tight h-10"
-                    autoFocus
-                  />
-                  <IGRPButton
-                    size="sm"
-                    variant="ghost"
-                    onClick={handleSaveName}
-                  >
-                    <IGRPIcon iconName="Check" className="w-4 h-4" />
-                  </IGRPButton>
-                  <IGRPButton
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setIsEditingName(false)}
-                  >
-                    <IGRPIcon iconName="X" className="w-4 h-4" />
-                  </IGRPButton>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 mb-1 group">
-                  <h1 className="text-2xl font-bold tracking-tight">
-                    {user.name || "N/A"}
-                  </h1>
-                  <IGRPButton
-                    size="sm"
-                    variant="ghost"
-                    className="opacity-100 transition-opacity"
-                    onClick={() => {
-                      setEditedName(user.name || "");
-                      setIsEditingName(true);
-                    }}
-                  >
-                    <IGRPIcon iconName="Pencil" className="w-4 h-4" />
-                  </IGRPButton>
-                </div>
-              )}
+              <UserNameEditor user={user} />
               <p className="text-muted-foreground">{user.email}</p>
             </div>
           </div>
