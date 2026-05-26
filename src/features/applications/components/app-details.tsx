@@ -6,7 +6,6 @@ import {
   Badge,
   Card,
   CardContent,
-  cn,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -23,7 +22,10 @@ import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import { isSystemApp } from "@/features/applications/app-utils";
+import {
+  APP_DESCRIPTION_FALLBACK,
+  isSystemApp,
+} from "@/features/applications/app-utils";
 import {
   useApplicationByCode,
   useUpdateApplication,
@@ -32,7 +34,7 @@ import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
 import { ROUTES } from "@/lib/constants";
-import { getStatusColor } from "@/lib/utils";
+import { cn, getStatusColor } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
@@ -234,7 +236,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  {app.description || "Sem descrição."}
+                  {app.description || APP_DESCRIPTION_FALLBACK}
                 </p>
               </div>
             </div>

@@ -2,7 +2,7 @@
 
 import {
   Badge,
-  Button,
+  IGRPButton,
   IGRPIcon,
   Tooltip,
   TooltipContent,
@@ -12,7 +12,11 @@ import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts"
 import type { Route } from "next";
 import Image from "next/image";
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
-import { formatSlug, isSystemApp } from "@/features/applications/app-utils";
+import {
+  APP_DESCRIPTION_FALLBACK,
+  formatSlug,
+  isSystemApp,
+} from "@/features/applications/app-utils";
 import { config, ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 
@@ -56,7 +60,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
       </div>
 
       <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
-        {description || "Sem descrição."}
+        {description || APP_DESCRIPTION_FALLBACK}
       </p>
 
       <div className="flex items-center justify-end gap-1 pt-4 border-t">
@@ -72,15 +76,15 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
         {!isSystem && onEdit && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button
+              <IGRPButton
                 size="icon"
                 variant="ghost"
+                showIcon
+                iconName="SquarePen"
                 onClick={() => onEdit(app)}
                 className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
                 aria-label={`Editar ${name}`}
-              >
-                <IGRPIcon iconName="SquarePen" />
-              </Button>
+              />
             </TooltipTrigger>
             <TooltipContent>Editar</TooltipContent>
           </Tooltip>
