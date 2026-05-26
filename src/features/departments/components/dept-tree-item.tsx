@@ -30,7 +30,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
   const isActive = dept.status === "ACTIVE";
 
   return (
-    <div>
+    <div style={{ contentVisibility: "auto", containIntrinsicSize: "40px" }}>
       <div
         className={cn(
           "group flex items-center gap-2 px-3 py-2.5 my-1.5 rounded-sm text-sm transition-all",
