@@ -132,7 +132,7 @@ export function ApplicationForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
+        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem)] w-full scroll-auto">
           <div className="space-y-4">
             <FormField
               control={form.control}
