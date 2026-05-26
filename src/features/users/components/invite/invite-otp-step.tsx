@@ -2,21 +2,20 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  IGRPButton,
-  IGRPIcon,
+  Button,
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect, useState } from "react";
+import { Loader2, ShieldCheck } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { type InviteOtpFormArgs, InviteOtpFormSchema } from "../../user-schema";
+import { InviteStepHeader } from "./invite-step-header";
 
 interface InviteOtpStepProps {
   email: string;
@@ -29,13 +28,21 @@ interface InviteOtpStepProps {
   onChangeEmail: () => void;
 }
 
-function useNow(intervalMs: number): number {
-  const [now, setNow] = useState(() => Date.now());
+function useCountdown(until: number): number {
+  const [remaining, setRemaining] = useState(() =>
+    Math.max(0, Math.ceil((until - Date.now()) / 1000)),
+  );
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), intervalMs);
-    return () => clearInterval(id);
-  }, [intervalMs]);
-  return now;
+    setRemaining(Math.max(0, Math.ceil((until - Date.now()) / 1000)));
+    if (until <= Date.now()) return;
+    const id = window.setInterval(() => {
+      const next = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+      setRemaining(next);
+      if (next === 0) window.clearInterval(id);
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [until]);
+  return remaining;
 }
 
 export function InviteOtpStep({
@@ -54,104 +61,111 @@ export function InviteOtpStep({
     defaultValues: { otpCode: "" },
   });
 
+  const { setValue } = form;
   useEffect(() => {
-    if (otpError) {
-      form.setValue("otpCode", "", { shouldValidate: false });
-    }
-  }, [otpError, form]);
+    if (otpError) setValue("otpCode", "", { shouldValidate: false });
+  }, [otpError, setValue]);
 
-  const now = useNow(1000);
-  const remainingSeconds = Math.max(0, Math.ceil((cooldownUntil - now) / 1000));
+  const remainingSeconds = useCountdown(cooldownUntil);
   const inCooldown = remainingSeconds > 0;
-  const resendLabel = inCooldown
-    ? `Reenviar em ${remainingSeconds}s`
-    : "Reenviar código";
 
   const handleSubmit = form.handleSubmit((values) => {
     onSubmit(values.otpCode);
   });
 
+  const handleOtpChange = useCallback(
+    (value: string) => {
+      form.setValue("otpCode", value, { shouldValidate: true });
+    },
+    [form],
+  );
+
+  const fieldInvalid =
+    Boolean(otpError) || Boolean(form.formState.errors.otpCode);
+
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="space-y-2 text-center">
-        <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-amber-600">
-          <IGRPIcon iconName="Shield" className="h-8 w-8" aria-hidden="true" />
-        </div>
-        <h2 className="text-2xl font-bold">Verificação OTP</h2>
-        <p className="text-sm text-muted-foreground">
-          Enviamos um código de 6 dígitos para{" "}
-          <span className="font-medium text-primary">{email}</span>
-        </p>
-      </div>
+    <div className="flex flex-col gap-8">
+      <InviteStepHeader
+        icon={ShieldCheck}
+        eyebrow="Verificação"
+        title="Código de acesso"
+        description={
+          <>
+            Enviámos um código de 6 dígitos para{" "}
+            <span className="font-medium text-foreground">{email}</span>.
+          </>
+        }
+      />
 
-      <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <FormField
-            control={form.control}
-            name="otpCode"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="sr-only">Código OTP</FormLabel>
-                <FormControl>
-                  <InputOTP
-                    maxLength={6}
-                    pattern="^\d+$"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    containerClassName="justify-center"
-                    disabled={isSubmitting}
-                    value={field.value}
-                    onChange={field.onChange}
-                  >
-                    <InputOTPGroup>
-                      {[0, 1, 2, 3, 4, 5].map((i) => (
-                        <InputOTPSlot key={i} index={i} />
-                      ))}
-                    </InputOTPGroup>
-                  </InputOTP>
-                </FormControl>
-                <FormMessage className="text-center" />
-                {otpError && !form.formState.errors.otpCode ? (
-                  <p
-                    role="alert"
-                    className="text-center text-sm font-medium text-destructive"
-                  >
-                    {otpError}
-                  </p>
-                ) : null}
-              </FormItem>
-            )}
-          />
-
-          <IGRPButton
-            type="submit"
-            className="h-12 w-full rounded-xl"
-            disabled={isSubmitting || !form.formState.isValid}
-          >
-            {isSubmitting ? "A verificar..." : "Verificar Código"}
-          </IGRPButton>
-
-          <div className="flex flex-col items-center gap-1">
-            <button
-              type="button"
-              onClick={onResend}
-              disabled={inCooldown || isResending}
-              aria-label={resendLabel}
-              className="text-sm font-medium text-primary transition-colors hover:text-primary/80 disabled:cursor-not-allowed disabled:text-muted-foreground"
-            >
-              {isResending ? "A reenviar..." : resendLabel}
-            </button>
-            <button
-              type="button"
-              onClick={onChangeEmail}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
+        <FieldGroup>
+          <Field data-invalid={fieldInvalid || undefined}>
+            <FieldLabel htmlFor="otp-code" className="sr-only">
+              Código OTP
+            </FieldLabel>
+            <InputOTP
+              id="otp-code"
+              maxLength={6}
+              pattern="^\d+$"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              containerClassName="justify-center"
               disabled={isSubmitting}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed"
+              value={form.watch("otpCode")}
+              onChange={handleOtpChange}
             >
-              Alterar email
-            </button>
-          </div>
-        </form>
-      </Form>
+              <InputOTPGroup>
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <InputOTPSlot key={i} index={i} />
+                ))}
+              </InputOTPGroup>
+            </InputOTP>
+            {otpError || form.formState.errors.otpCode ? (
+              <FieldDescription
+                role="alert"
+                className="text-center text-destructive"
+              >
+                {form.formState.errors.otpCode?.message ?? otpError}
+              </FieldDescription>
+            ) : null}
+          </Field>
+        </FieldGroup>
+
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={isSubmitting || !form.formState.isValid}
+        >
+          {isSubmitting ? (
+            <Loader2 data-icon="inline-start" className="animate-spin" />
+          ) : null}
+          {isSubmitting ? "A verificar..." : "Verificar código"}
+        </Button>
+
+        <div className="flex flex-col items-center gap-1.5 text-sm">
+          <button
+            type="button"
+            onClick={onResend}
+            disabled={inCooldown || isResending}
+            className="font-medium text-primary transition-colors hover:text-primary/80 disabled:cursor-not-allowed disabled:text-muted-foreground"
+          >
+            {isResending
+              ? "A reenviar..."
+              : inCooldown
+                ? `Reenviar em ${remainingSeconds}s`
+                : "Reenviar código"}
+          </button>
+          <button
+            type="button"
+            onClick={onChangeEmail}
+            disabled={isSubmitting}
+            className="text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed"
+          >
+            Alterar email
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

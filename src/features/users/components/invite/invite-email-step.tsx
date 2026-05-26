@@ -2,21 +2,22 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  IGRPButton,
-  IGRPIcon,
-  Input,
+  Button,
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
 } from "@igrp/igrp-framework-react-design-system";
+import { ArrowRight, Loader2, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
   type InviteEmailFormArgs,
   InviteEmailFormSchema,
 } from "../../user-schema";
+import { InviteStepHeader } from "./invite-step-header";
 
 interface InviteEmailStepProps {
   defaultEmail?: string;
@@ -41,67 +42,62 @@ export function InviteEmailStep({
     onSubmit(values.email.trim());
   });
 
+  const fieldInvalid = Boolean(error) || Boolean(form.formState.errors.email);
+
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="space-y-2 text-center">
-        <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <IGRPIcon iconName="Mail" className="h-8 w-8" />
-        </div>
-        <h2 className="text-2xl font-bold">Bem-vindo</h2>
-        <p className="text-sm text-muted-foreground">
-          Introduza o seu email para aceder ao convite
-        </p>
-      </div>
+    <div className="flex flex-col gap-8">
+      <InviteStepHeader
+        icon={Mail}
+        eyebrow="Identificação"
+        title="Bem-vindo"
+        description="Introduza o seu email para aceder ao convite."
+      />
 
-      <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="sr-only">Email</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <IGRPIcon
-                      iconName="Mail"
-                      className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <Input
-                      type="email"
-                      autoComplete="email"
-                      placeholder="exemplo@email.com"
-                      className="h-12 rounded-xl pl-12"
-                      disabled={isSubmitting}
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-                {error && !form.formState.errors.email ? (
-                  <p
-                    role="alert"
-                    className="text-sm font-medium text-destructive"
-                  >
-                    {error}
-                  </p>
-                ) : null}
-              </FormItem>
-            )}
-          />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
+        <FieldGroup>
+          <Field data-invalid={fieldInvalid || undefined}>
+            <FieldLabel htmlFor="email" className="sr-only">
+              Email
+            </FieldLabel>
+            <InputGroup>
+              <InputGroupAddon>
+                <Mail aria-hidden="true" />
+              </InputGroupAddon>
+              <InputGroupInput
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="exemplo@email.cv"
+                disabled={isSubmitting}
+                aria-invalid={fieldInvalid}
+                {...form.register("email")}
+              />
+            </InputGroup>
+            {form.formState.errors.email ? (
+              <FieldDescription className="text-destructive">
+                {form.formState.errors.email.message}
+              </FieldDescription>
+            ) : error ? (
+              <FieldDescription role="alert" className="text-destructive">
+                {error}
+              </FieldDescription>
+            ) : null}
+          </Field>
+        </FieldGroup>
 
-          <IGRPButton
-            type="submit"
-            className="h-12 w-full rounded-xl"
-            disabled={isSubmitting || !form.formState.isValid}
-            showIcon
-            iconName="ArrowRight"
-            iconPlacement="end"
-          >
-            {isSubmitting ? "A enviar..." : "Enviar Código"}
-          </IGRPButton>
-        </form>
-      </Form>
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={isSubmitting || !form.formState.isValid}
+        >
+          {isSubmitting ? (
+            <Loader2 data-icon="inline-start" className="animate-spin" />
+          ) : null}
+          {isSubmitting ? "A enviar..." : "Enviar código"}
+          {!isSubmitting ? <ArrowRight data-icon="inline-end" /> : null}
+        </Button>
+      </form>
     </div>
   );
 }

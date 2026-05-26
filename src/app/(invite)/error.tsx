@@ -10,7 +10,10 @@ import {
 } from "@/features/users/components/invite/invite-flow-state";
 import { reportError } from "@/lib/report-error";
 
-const KIND_BY_CLASS: Record<InviteErrorClass, "expired" | "mismatch" | "invalid"> = {
+const KIND_BY_CLASS: Record<
+  InviteErrorClass,
+  "expired" | "mismatch" | "invalid"
+> = {
   expired: "expired",
   mismatch: "mismatch",
   other: "invalid",

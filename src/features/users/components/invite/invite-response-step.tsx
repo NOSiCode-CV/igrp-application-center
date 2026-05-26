@@ -2,9 +2,11 @@
 
 import {
   Badge,
-  IGRPButton,
-  IGRPIcon,
+  Button,
+  Separator,
 } from "@igrp/igrp-framework-react-design-system";
+import { Building2, Check, Loader2, Mail, Shield, X } from "lucide-react";
+import { InviteStepHeader } from "./invite-step-header";
 
 interface CodeDescriptionLike {
   code?: string;
@@ -33,7 +35,6 @@ function toArray(
 
 // The SDK's `getUserInvitationByToken` returns `InvitationDTO`, but its runtime
 // shape (department-as-array, embedded roles) doesn't match the declared types.
-// Narrow at the boundary so callers don't need an `as unknown as` cast.
 export function toInvitationLike(dto: unknown): InvitationLike {
   return dto as InvitationLike;
 }
@@ -48,108 +49,102 @@ export function InviteResponseStep({
   const roles = invitation.roles ?? [];
 
   return (
-    <div className="space-y-8 animate-in fade-in zoom-in duration-500">
-      <div className="space-y-4 text-center">
-        <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-xl">
-          <IGRPIcon iconName="Mail" className="h-8 w-8" aria-hidden="true" />
-        </div>
-        <h2 className="text-2xl font-bold">Aceitar convite</h2>
-      </div>
+    <div className="flex flex-col gap-8">
+      <InviteStepHeader
+        icon={Mail}
+        eyebrow="Convite"
+        title="Aceitar acesso"
+        description="Revise os detalhes antes de confirmar."
+      />
 
-      <div className="space-y-6 rounded-2xl border bg-muted/40 p-6">
-        <div className="flex items-start gap-4">
-          <IGRPIcon
-            iconName="Mail"
-            className="mt-0.5 h-5 w-5 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <div className="space-y-1">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Email
-            </p>
-            <p className="font-medium">{invitation.email}</p>
-          </div>
-        </div>
+      <dl className="flex flex-col gap-5 rounded-2xl border border-border/60 bg-muted/30 p-5">
+        <InvitationRow icon={Mail} label="Email">
+          <span className="font-medium text-foreground">
+            {invitation.email}
+          </span>
+        </InvitationRow>
 
         {departments.length > 0 ? (
           <>
-            <div className="h-px w-full bg-border" />
-            <div className="flex items-start gap-4">
-              <IGRPIcon
-                iconName="Building"
-                className="mt-0.5 h-5 w-5 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Departamento
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {departments.map((dept) => (
-                    <Badge
-                      key={dept.code ?? dept.description}
-                      variant="outline"
-                    >
-                      {dept.description || dept.code}
-                    </Badge>
-                  ))}
-                </div>
+            <Separator />
+            <InvitationRow icon={Building2} label="Departamento">
+              <div className="flex flex-wrap gap-1.5">
+                {departments.map((dept) => (
+                  <Badge
+                    key={dept.code ?? dept.description}
+                    variant="secondary"
+                  >
+                    {dept.description || dept.code}
+                  </Badge>
+                ))}
               </div>
-            </div>
+            </InvitationRow>
           </>
         ) : null}
 
         {roles.length > 0 ? (
           <>
-            <div className="h-px w-full bg-border" />
-            <div className="flex items-start gap-4">
-              <IGRPIcon
-                iconName="Shield"
-                className="mt-0.5 h-5 w-5 text-muted-foreground"
-                aria-hidden="true"
-              />
-              <div className="space-y-3">
-                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Perfis
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {roles.map((role) => (
-                    <Badge
-                      key={role.code ?? role.description}
-                      variant="outline"
-                    >
-                      {role.description || role.code}
-                    </Badge>
-                  ))}
-                </div>
+            <Separator />
+            <InvitationRow icon={Shield} label="Perfis">
+              <div className="flex flex-wrap gap-1.5">
+                {roles.map((role) => (
+                  <Badge
+                    key={role.code ?? role.description}
+                    variant="secondary"
+                  >
+                    {role.description || role.code}
+                  </Badge>
+                ))}
               </div>
-            </div>
+            </InvitationRow>
           </>
         ) : null}
-      </div>
+      </dl>
 
-      <div className="grid grid-cols-2 gap-4">
-        <IGRPButton
-          variant="destructive"
+      <div className="grid grid-cols-2 gap-3">
+        <Button
+          variant="outline"
+          size="lg"
           onClick={onReject}
           disabled={isSubmitting}
-          showIcon
-          iconName="X"
-          iconPlacement="start"
-          className="h-14 rounded-xl"
         >
+          <X data-icon="inline-start" />
           Rejeitar
-        </IGRPButton>
-        <IGRPButton
-          onClick={onAccept}
-          disabled={isSubmitting}
-          showIcon
-          iconName="Check"
-          iconPlacement="start"
-          className="h-14 rounded-xl"
-        >
+        </Button>
+        <Button size="lg" onClick={onAccept} disabled={isSubmitting}>
+          {isSubmitting ? (
+            <Loader2 data-icon="inline-start" className="animate-spin" />
+          ) : (
+            <Check data-icon="inline-start" />
+          )}
           {isSubmitting ? "A processar..." : "Aceitar"}
-        </IGRPButton>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function InvitationRow({
+  icon: Icon,
+  label,
+  children,
+}: {
+  icon: typeof Mail;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <Icon
+        aria-hidden="true"
+        className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+        strokeWidth={1.75}
+      />
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <dt className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          {label}
+        </dt>
+        <dd className="text-sm">{children}</dd>
       </div>
     </div>
   );
