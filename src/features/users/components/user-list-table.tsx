@@ -426,11 +426,7 @@ export function UserListTable({
     () => getTableColumns(handleStatusClick, { showInvitationDate: false }),
     [handleStatusClick],
   );
-  const pendingColumns = useMemo(
-    () => getInvitationColumns(handleCancelClick),
-    [handleCancelClick],
-  );
-  const canceledColumns = useMemo(
+  const inviteColumns = useMemo(
     () => getInvitationColumns(handleCancelClick),
     [handleCancelClick],
   );
@@ -574,7 +570,7 @@ export function UserListTable({
               showFilter
               showPagination
               tableClassName="table-fixed"
-              columns={pendingColumns}
+              columns={inviteColumns}
               data={pendingData}
               clientFilters={inviteFilters}
             />
@@ -589,7 +585,7 @@ export function UserListTable({
               showFilter
               showPagination
               tableClassName="table-fixed"
-              columns={canceledColumns}
+              columns={inviteColumns}
               data={canceledData}
               clientFilters={inviteFilters}
             />
