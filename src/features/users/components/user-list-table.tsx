@@ -369,19 +369,19 @@ function getInvitationColumns(
 
 // ─── Main component ──────────────────────────────────────────────────────────
 
+type DialogState =
+  | { kind: "none" }
+  | { kind: "status"; user: IGRPUserDTO; newStatus: "ACTIVE" | "INACTIVE" }
+  | { kind: "cancel"; invitation: InvitationDTO };
+
 export function UserListTable({
   initialUsers,
   initialInvitations,
 }: UserListTableProps) {
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [userToUpdate, setUserToUpdate] = useState<{
-    user: IGRPUserDTO;
-    newStatus: "ACTIVE" | "INACTIVE";
-  } | null>(null);
-  const [userToCancel, setUserToCancel] = useState<InvitationDTO | null>(null);
+  const [dialog, setDialog] = useState<DialogState>({ kind: "none" });
+  const closeDialog = useCallback(() => setDialog({ kind: "none" }), []);
 
   const updateStatusMutation = useUpdateUserStatus();
   const cancelUserInvitationMutation = useCancelUserInvitation();
@@ -406,15 +406,13 @@ export function UserListTable({
 
   const handleStatusClick = useCallback(
     (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => {
-      setUserToUpdate({ user, newStatus });
-      setStatusDialogOpen(true);
+      setDialog({ kind: "status", user, newStatus });
     },
     [],
   );
 
   const handleCancelClick = useCallback((invitation: InvitationDTO) => {
-    setUserToCancel(invitation);
-    setCancelDialogOpen(true);
+    setDialog({ kind: "cancel", invitation });
   }, []);
 
   const activeColumns = useMemo(
@@ -468,56 +466,52 @@ export function UserListTable({
   if (error) throw error;
 
   const handleConfirmStatusChange = () => {
-    if (userToUpdate?.user.id) {
-      updateStatusMutation.mutate(
-        { id: userToUpdate.user.id, value: userToUpdate.newStatus },
-        {
-          onSuccess: () => {
-            igrpToast({
-              type: "success",
-              title: "Estado alterado",
-              description: "O estado do utilizador foi alterado com sucesso",
-              duration: 4000,
-            });
-            setStatusDialogOpen(false);
-            setUserToUpdate(null);
-          },
-          onError: () => {
-            igrpToast({
-              type: "error",
-              title: "Erro",
-              description: "Não foi possível alterar o estado do utilizador",
-              duration: 4000,
-            });
-          },
-        },
-      );
-    }
-  };
-
-  const handleConfirmCancel = () => {
-    if (userToCancel) {
-      cancelUserInvitationMutation.mutate(userToCancel.id, {
+    if (dialog.kind !== "status") return;
+    updateStatusMutation.mutate(
+      { id: dialog.user.id, value: dialog.newStatus },
+      {
         onSuccess: () => {
           igrpToast({
             type: "success",
-            title: "Convite cancelado",
-            description: "O convite foi cancelado com sucesso",
+            title: "Estado alterado",
+            description: "O estado do utilizador foi alterado com sucesso",
             duration: 4000,
           });
-          setCancelDialogOpen(false);
-          setUserToCancel(null);
+          closeDialog();
         },
         onError: () => {
           igrpToast({
             type: "error",
             title: "Erro",
-            description: "Não foi possível cancelar o convite",
+            description: "Não foi possível alterar o estado do utilizador",
             duration: 4000,
           });
         },
-      });
-    }
+      },
+    );
+  };
+
+  const handleConfirmCancel = () => {
+    if (dialog.kind !== "cancel") return;
+    cancelUserInvitationMutation.mutate(dialog.invitation.id, {
+      onSuccess: () => {
+        igrpToast({
+          type: "success",
+          title: "Convite cancelado",
+          description: "O convite foi cancelado com sucesso",
+          duration: 4000,
+        });
+        closeDialog();
+      },
+      onError: () => {
+        igrpToast({
+          type: "error",
+          title: "Erro",
+          description: "Não foi possível cancelar o convite",
+          duration: 4000,
+        });
+      },
+    });
   };
 
   return (
@@ -596,51 +590,58 @@ export function UserListTable({
       )}
 
       <ConfirmDialog
-        open={statusDialogOpen}
-        onOpenChange={setStatusDialogOpen}
+        open={dialog.kind === "status"}
+        onOpenChange={(open) => !open && closeDialog()}
         title={
-          userToUpdate?.newStatus === "INACTIVE"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "Desativar Utilizador"
             : "Ativar Utilizador"
         }
         description={
-          <>
-            Tem certeza que deseja{" "}
-            {userToUpdate?.newStatus === "INACTIVE" ? "desativar" : "ativar"}
-            <strong>
-              {userToUpdate?.user.name || userToUpdate?.user.email}
-            </strong>
-            ?
-          </>
+          dialog.kind === "status" ? (
+            <>
+              Tem certeza que deseja{" "}
+              {dialog.newStatus === "INACTIVE" ? "desativar" : "ativar"}{" "}
+              <strong>{dialog.user.name || dialog.user.email}</strong>?
+            </>
+          ) : null
         }
         onConfirm={handleConfirmStatusChange}
         confirmText={
-          userToUpdate?.newStatus === "INACTIVE" ? "Desativar" : "Ativar"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? "Desativar"
+            : "Ativar"
         }
         loadingText={
-          userToUpdate?.newStatus === "INACTIVE"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "Desativando..."
             : "Ativando..."
         }
         iconName={
-          userToUpdate?.newStatus === "INACTIVE" ? "CircleOff" : "CircleCheck"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? "CircleOff"
+            : "CircleCheck"
         }
         variant={
-          userToUpdate?.newStatus === "INACTIVE" ? "destructive" : "default"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? "destructive"
+            : "default"
         }
         isLoading={updateStatusMutation.isPending}
       />
 
       <ConfirmDialog
-        open={cancelDialogOpen}
-        onOpenChange={setCancelDialogOpen}
+        open={dialog.kind === "cancel"}
+        onOpenChange={(open) => !open && closeDialog()}
         title="Cancelar Convite"
         description={
-          <>
-            Tem certeza que deseja cancelar o convite para{" "}
-            <strong>{userToCancel?.email}</strong>? Esta ação não pode ser
-            desfeita.
-          </>
+          dialog.kind === "cancel" ? (
+            <>
+              Tem certeza que deseja cancelar o convite para{" "}
+              <strong>{dialog.invitation.email}</strong>? Esta ação não pode ser
+              desfeita.
+            </>
+          ) : null
         }
         onConfirm={handleConfirmCancel}
         confirmText="Confirmar"
