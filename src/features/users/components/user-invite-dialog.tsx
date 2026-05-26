@@ -61,7 +61,6 @@ export function UserInviteDialog({
   const { igrpToast } = useIGRPToast();
 
   const { mutateAsync: userInvite, isPending: isInviting } = useInviteUser();
-  // const { mutateAsync: addUserRole } = useAddUserRole();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -96,11 +95,9 @@ export function UserInviteDialog({
   const isSubmitting = form.formState.isSubmitting;
   const btnDisabled = !isValid || isSubmitting || isInviting;
 
-  const parentValue = form.watch("departmentCode");
-
   const parentSelected = useMemo(
-    () => depts?.find((o) => o.code === parentValue) ?? null,
-    [parentValue, depts],
+    () => depts?.find((o) => o.code === departmentCode) ?? null,
+    [departmentCode, depts],
   );
 
   const onSubmit = async (values: FormSchema) => {
@@ -118,20 +115,6 @@ export function UserInviteDialog({
       if (!created.success) {
         throw new Error(created.error);
       }
-
-      // const finalId = created.data?.id;
-
-      // if (finalId && roleCodes.length > 0) {
-      //   const roleResult = await addUserRole({
-      //     id: finalId,
-      //     departmentCode: departmentCode || "",
-      //     roleCodes,
-      //   });
-
-      //   if (!roleResult.success) {
-      //     throw new Error(roleResult.error);
-      //   }
-      // }
 
       igrpToast({
         type: "success",
@@ -172,20 +155,6 @@ export function UserInviteDialog({
               <legend className="text-base font-semibold px-2 mb-1">
                 Informação do Utilizador
               </legend>
-
-              {/* <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome Completo</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: João Silva" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
 
               <FormField
                 control={form.control}
