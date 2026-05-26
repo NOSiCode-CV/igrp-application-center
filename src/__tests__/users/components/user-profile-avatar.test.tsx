@@ -74,3 +74,40 @@ it("clears object URL when upload errors", async () => {
 
   await waitFor(() => expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeUrl));
 });
+
+it("exposes aria-label and disables trigger while resolving URL", () => {
+  render(
+    <UserProfileAvatar
+      user={baseUser}
+      resolvedUrl={null}
+      isResolvingUrl={true}
+      isUploading={false}
+      onUpload={vi.fn()}
+    />,
+  );
+
+  const trigger = screen.getByRole("button", { name: /alterar avatar/i });
+  expect(trigger).toBeDisabled();
+});
+
+it("falls back to username then email for alt text when name is empty", () => {
+  const userNoName = { ...baseUser, name: "", username: "ana_u" } as never;
+  render(
+    <UserProfileAvatar
+      user={userNoName}
+      resolvedUrl="https://example.com/a.png"
+      isResolvingUrl={false}
+      isUploading={false}
+      onUpload={vi.fn()}
+    />,
+  );
+
+  // IGRPUserAvatar may render the alt on different elements depending on
+  // whether the image loaded. Query the document for any element with the
+  // expected alt text.
+  const altMatcher = (content: string) => content === "ana_u";
+  expect(
+    document.querySelector('[alt="ana_u"]') ||
+      screen.queryByAltText(altMatcher),
+  ).toBeTruthy();
+});

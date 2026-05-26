@@ -52,16 +52,19 @@ export function UserProfileAvatar({
 
   const currentUrl = localPreview ?? resolvedUrl;
   const spinning = isResolvingUrl || isUploading;
+  const disabled = isUploading || isResolvingUrl;
+  const altText = user.name || user.username || user.email || "Utilizador";
 
   return (
     <button
       type="button"
       aria-label="Alterar avatar"
-      className="relative group cursor-pointer p-0 border-0 bg-transparent"
+      disabled={disabled}
+      className="relative group cursor-pointer p-0 border-0 bg-transparent disabled:opacity-60 disabled:cursor-not-allowed"
       onClick={() => inputRef.current?.click()}
     >
       <IGRPUserAvatar
-        alt={user.name}
+        alt={altText}
         image={currentUrl}
         fallbackContent={
           isResolvingUrl ? (
@@ -96,7 +99,7 @@ export function UserProfileAvatar({
         aria-label="Alterar avatar"
         onChange={handleChange}
         className="hidden"
-        disabled={isUploading}
+        disabled={disabled}
       />
     </button>
   );
