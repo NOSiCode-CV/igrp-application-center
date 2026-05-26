@@ -10,7 +10,7 @@ import {
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import type { Status } from "@igrp/platform-access-management-client-ts";
+import { Status } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
 
 export interface UserProfileStatusDialogProps {
@@ -29,7 +29,7 @@ export function UserProfileStatusDialog({
   onConfirm,
 }: UserProfileStatusDialogProps) {
   const [pending, setPending] = useState(false);
-  const next: Status = isActive ? "INACTIVE" : "ACTIVE";
+  const next: Status = isActive ? Status.INACTIVE : Status.ACTIVE;
 
   const handleConfirm = async () => {
     setPending(true);
