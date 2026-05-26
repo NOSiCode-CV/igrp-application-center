@@ -35,7 +35,7 @@ import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { igrpToast } = useIGRPToast();
-  const { data: app, isLoading, error, refetch } = useApplicationByCode(code);
+  const { data: app, isLoading, error } = useApplicationByCode(code);
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -84,26 +84,20 @@ export function ApplicationDetails({ code }: { code: string }) {
     try {
       const result = await uploadPicture.mutateAsync({
         file,
-        options: {
-          folder: code,
-        },
+        options: { folder: code },
       });
 
       setUploadedFilePath(result);
 
       await updateApplication({
         code: app.code,
-        data: {
-          ...app,
-          picture: result,
-        },
+        data: { picture: result },
       });
 
-      refetch();
       igrpToast({
         type: "success",
         title: "Upload Sucesso",
-        description: `A imagem foi carregada com sucesso`,
+        description: "A imagem foi carregada com sucesso",
         duration: 4000,
       });
     } catch (err) {
