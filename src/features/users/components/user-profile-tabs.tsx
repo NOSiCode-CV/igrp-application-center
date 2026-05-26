@@ -5,11 +5,32 @@ import {
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
-import ProfileRoleList from "@/features/profile/components/profile-role-list";
-import UserApplications from "./user-applications";
-import UserSignature from "./user-signature";
+import { TabLoading } from "./tab-loading";
+
+const DepartmentListSimple = dynamic(
+  () =>
+    import("@/features/departments/components/dept-list-simple-container").then(
+      (m) => m.DepartmentListSimple,
+    ),
+  { ssr: false, loading: () => <TabLoading /> },
+);
+
+const UserApplications = dynamic(() => import("./user-applications"), {
+  ssr: false,
+  loading: () => <TabLoading />,
+});
+
+const ProfileRoleList = dynamic(
+  () => import("@/features/profile/components/profile-role-list"),
+  { ssr: false, loading: () => <TabLoading /> },
+);
+
+const UserSignature = dynamic(() => import("./user-signature"), {
+  ssr: false,
+  loading: () => <TabLoading />,
+});
 
 export interface UserProfileTabsProps {
   user: IGRPUserDTO;
