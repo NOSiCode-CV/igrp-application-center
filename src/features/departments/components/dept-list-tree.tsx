@@ -1,7 +1,13 @@
 "use client";
 
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
-import { useCallback, useMemo, useReducer, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { closedDialog, dialogReducer } from "../dept-dialog-state";
 import type { DepartmentWithChildren } from "../dept-tree-utils";
@@ -25,7 +31,10 @@ export function DepartmentListTree() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [dialog, dispatch] = useReducer(dialogReducer, closedDialog);
 
-  const { filtered } = useDepartmentTree(departments, searchTerm);
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+  const isFiltering = searchTerm !== deferredSearchTerm;
+
+  const { filtered } = useDepartmentTree(departments, deferredSearchTerm);
 
   // Derived: explicit user pick wins (if still present), otherwise default to first dept.
   const selectedCode =
@@ -98,7 +107,7 @@ export function DepartmentListTree() {
             onCreate={() => dispatch({ type: "openCreate" })}
             isOpen={isSidebarOpen}
             onOpenChange={setIsSidebarOpen}
-            isFiltering={false}
+            isFiltering={isFiltering}
           />
 
           <div className="flex-1 overflow-y-auto">
