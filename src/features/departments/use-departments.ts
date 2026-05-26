@@ -63,10 +63,6 @@ export const useCreateDepartment = () => {
           queryKey: ["departments"],
           exact: true,
         });
-        await queryClient.refetchQueries({
-          queryKey: ["departments"],
-          exact: true,
-        });
       }
     },
   });
@@ -86,10 +82,6 @@ export const useUpdateDepartment = () => {
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["departments"] });
-        await queryClient.refetchQueries({
-          queryKey: ["departments"],
-          exact: true,
-        });
       }
     },
   });
@@ -103,10 +95,6 @@ export const useDeleteDepartment = () => {
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["departments"] });
-        await queryClient.refetchQueries({
-          queryKey: ["departments"],
-          exact: true,
-        });
       }
     },
   });
@@ -182,11 +170,6 @@ export const useAddApplicationsToDepartment = () => {
         await queryClient.invalidateQueries({
           queryKey: ["department-menus", variables.code],
         });
-
-        await queryClient.refetchQueries({
-          queryKey: ["departments"],
-          exact: true,
-        });
       }
     },
   });
@@ -219,17 +202,6 @@ export const useRemoveApplicationsFromDepartment = () => {
           }),
           queryClient.invalidateQueries({
             queryKey: ["department-menus", variables.code],
-          }),
-        ]);
-
-        await Promise.all([
-          queryClient.refetchQueries({
-            queryKey: ["applications", { departmentCode: variables.code }],
-            type: "active",
-          }),
-          queryClient.refetchQueries({
-            queryKey: ["department-available-apps", variables.code],
-            type: "active",
           }),
         ]);
       }
@@ -301,11 +273,6 @@ export const useAddMenusToDepartment = () => {
             variables.departmentCode,
           ],
         });
-
-        await queryClient.refetchQueries({
-          queryKey: ["departments"],
-          exact: true,
-        });
       }
     },
   });
@@ -341,11 +308,6 @@ export const useRemoveMenusFromDepartment = () => {
             variables.appCode,
             variables.departmentCode,
           ],
-        });
-
-        await queryClient.refetchQueries({
-          queryKey: ["departments"],
-          exact: true,
         });
       }
     },
@@ -386,7 +348,6 @@ export const useCreateRole = () => {
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["roles"] });
-        await queryClient.refetchQueries({ queryKey: ["roles"] });
       }
     },
   });
@@ -408,7 +369,6 @@ export const useUpdateRole = () => {
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["roles"] });
-        await queryClient.refetchQueries({ queryKey: ["roles"] });
       }
     },
   });
@@ -428,10 +388,6 @@ export const useDeleteRole = () => {
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["roles"] });
-        await queryClient.refetchQueries({
-          queryKey: ["roles"],
-          exact: true,
-        });
       }
     },
   });
