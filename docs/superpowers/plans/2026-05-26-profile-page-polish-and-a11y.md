@@ -15,9 +15,12 @@
 - `src/features/users/components/user-profile-tabs.tsx`
 - `src/features/users/components/user-profile-editable-name.tsx`
 - `src/features/users/components/user-profile-status-dialog.tsx`
-- `src/features/users/components/user-profile.tsx` (slimmed orchestrator)
+- `src/features/users/components/user-profile.tsx` (slimmed orchestrator: contains `UserProfile` for gating + `UserProfileView` for the authenticated render path)
+- `src/features/users/hooks/use-user-profile-actions.ts` (extracts `saveName`, `uploadAvatar`, `setStatus` mutation handlers)
 
 If any of those are missing, STOP and finish the predecessor plan first.
+
+**Note on Task 8 deviation:** The predecessor plan's Task 8 was executed with a deviation — mutation handlers were extracted into a hook (`useUserProfileActions`) rather than living inline in the container. This plan accommodates that: Task 3 below extends the hook to expose `isUpdating` and reads it from `UserProfileView` instead of destructuring `useUpdateUser()` directly.
 
 ---
 
@@ -27,7 +30,8 @@ If any of those are missing, STOP and finish the predecessor plan first.
 
 - `src/app/(igrp)/(home)/profile/page.tsx` — add `metadata`, drop `force-dynamic`.
 - `src/features/users/components/user-profile-header.tsx` — accept `actions` prop; render actions slot in name row; delete dead `<div className="relative">` + `<div className="absolute inset-0 …" />` wrappers; drop inline status button.
-- `src/features/users/components/user-profile.tsx` — compose `<UserProfileActionsMenu />` into `<UserProfileHeader actions={…} />`; pass `updateUser.isPending` down.
+- `src/features/users/components/user-profile.tsx` — compose `<UserProfileActionsMenu />` into `<UserProfileHeader actions={…} />` inside `UserProfileView`; read `isUpdating` from `useUserProfileActions`.
+- `src/features/users/hooks/use-user-profile-actions.ts` — additionally return `isUpdating` (mapped from `useUpdateUser().isPending`).
 - `src/features/users/components/user-profile-avatar.tsx` — `aria-label="Alterar avatar"`, `alt` fallback chain, `disabled={isUploading || isResolvingUrl}` on trigger + file input.
 - `src/features/users/components/user-profile-editable-name.tsx` — `maxLength` prop, internal `saving` and `error` state, inline `aria-live` error, re-throw to parent.
 - `src/features/users/components/user-profile-tabs.tsx` — each tab content wrapped in `next/dynamic({ ssr: false, loading: TabLoading })`.
@@ -294,53 +298,56 @@ Note what changed:
 - The inline `<div className="flex items-center mb-2 justify-end gap-2">` block holding the destructive status button is GONE.
 - The name row is now a flex container; `actions` renders right-aligned via `ml-auto`.
 
-- [ ] **Step 3: Update the container to pass actions**
+- [ ] **Step 3: Extend `useUserProfileActions` to expose `isUpdating`**
 
-Open `src/features/users/components/user-profile.tsx`. Import the new menu:
+Open `src/features/users/hooks/use-user-profile-actions.ts`. Change the `useUpdateUser()` destructure and the return object so `isPending` from the update mutation is exposed:
+
+```ts
+const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
+// …existing handlers unchanged…
+return {
+  saveName,
+  uploadAvatar,
+  setStatus,
+  isUploadingAvatar: uploadFile.isPending,
+  isUpdating,
+};
+```
+
+- [ ] **Step 4: Update `UserProfileView` to pass actions**
+
+Open `src/features/users/components/user-profile.tsx`. Inside `UserProfileView` (the component that renders when `user` is non-null), import the new menu and read `isUpdating` from the hook:
 
 ```tsx
 import { UserProfileActionsMenu } from "./user-profile-actions-menu";
 ```
 
-Read what `useUpdateUser` returns and confirm it exposes `isPending`. If it does not (the predecessor plan keeps the surface tight), destructure it:
-
 ```tsx
-const { mutateAsync: updateUser, isPending: isUpdatingUser } = useUpdateUser();
+const { saveName, uploadAvatar, setStatus, isUploadingAvatar, isUpdating } =
+  useUserProfileActions(user);
 ```
 
-In the JSX, replace:
-
-```tsx
-<UserProfileHeader
-  user={user}
-  isActive={isActive}
-  …
-  onToggleStatus={() => setShowStatusDialog(true)}
-  …
-/>
-```
-
-with:
+In the JSX, replace the current `<UserProfileHeader … onToggleStatus={…}>` call with the new shape (no `isActive`/`onToggleStatus` props on the header; the menu carries them):
 
 ```tsx
 <UserProfileHeader
   user={user}
   avatarUrl={avatarFile?.url ?? null}
   isResolvingAvatar={isLoadingAvatar}
-  isUploadingAvatar={uploadFile.isPending}
+  isUploadingAvatar={isUploadingAvatar}
   onUploadAvatar={uploadAvatar}
   onSaveName={saveName}
   actions={
     <UserProfileActionsMenu
       isActive={isActive}
-      isPending={isUpdatingUser}
+      isPending={isUpdating}
       onToggleStatus={() => setShowStatusDialog(true)}
     />
   }
 />
 ```
 
-- [ ] **Step 4: Verify**
+- [ ] **Step 5: Verify**
 
 Run:
 
@@ -351,17 +358,17 @@ pnpm vitest run src/__tests__/users
 
 Expected: typecheck clean for the changed files; users test suite passes (modulo pre-existing failures unrelated to this change).
 
-- [ ] **Step 5: Manual smoke**
+- [ ] **Step 6: Manual smoke**
 
 Run `pnpm dev`. Visit `/profile`. Confirm:
 - No top-right inline button anymore.
 - Three-dot menu appears next to the name; clicking it shows "Desativar" (or "Ativar") with destructive coloring when active.
 - Selecting the menu item opens the existing `UserProfileStatusDialog`.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```powershell
-git add src/features/users/components/user-profile-header.tsx src/features/users/components/user-profile.tsx
+git add src/features/users/components/user-profile-header.tsx src/features/users/components/user-profile.tsx src/features/users/hooks/use-user-profile-actions.ts
 git commit -m "refactor(profile): relocate status toggle into actions menu; remove dead header wrappers"
 ```
 
