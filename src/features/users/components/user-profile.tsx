@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   Card,
   CardContent,
   cn,
@@ -17,7 +11,6 @@ import {
   IGRPUserAvatar,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { Status } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useRef, useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
@@ -27,6 +20,7 @@ import ProfileRoleList from "@/features/profile/components/profile-role-list";
 import { useCurrentUser, useUpdateUser } from "@/features/users/use-users";
 import { getInitials } from "@/lib/utils";
 import { UserProfileEditableName } from "./user-profile-editable-name";
+import { UserProfileStatusDialog } from "./user-profile-status-dialog";
 import UserApplications from "./user-applications";
 import UserSignature from "./user-signature";
 
@@ -36,7 +30,6 @@ export function UserProfile() {
   const { igrpToast } = useIGRPToast();
 
   const [showStatusDialog, setShowStatusDialog] = useState(false);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = useUploadPublicFiles();
@@ -107,40 +100,6 @@ export function UserProfile() {
     } finally {
       URL.revokeObjectURL(preview);
       setLocalPreview(null);
-    }
-  };
-
-  const handleToggleStatus = async () => {
-    setIsUpdatingStatus(true);
-    try {
-      const newStatus = isActive ? "INACTIVE" : "ACTIVE";
-      const res = await updateUser({
-        id: user.id,
-        user: {
-          ...user,
-          status: newStatus as Status,
-        },
-      });
-
-      if (!res.success) {
-        throw new Error(res.error);
-      }
-
-      setShowStatusDialog(false);
-      igrpToast({
-        type: "success",
-        title: `Utilizador ${isActive ? "desativado" : "ativado"} com sucesso`,
-        duration: 4000,
-      });
-    } catch (err) {
-      igrpToast({
-        type: "error",
-        title: "Erro ao alterar estado",
-        description: (err as Error).message,
-        duration: 4000,
-      });
-    } finally {
-      setIsUpdatingStatus(false);
     }
   };
 
@@ -279,55 +238,33 @@ export function UserProfile() {
         orientation="horizontal"
       />
 
-      <AlertDialog open={showStatusDialog} onOpenChange={setShowStatusDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <IGRPIcon
-                iconName="AlertTriangle"
-                className="w-5 h-5 text-destructive"
-                strokeWidth={2}
-              />
-              {isActive ? "Desativar" : "Ativar"} Utilizador
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-              utilizador{" "}
-              <strong className="text-foreground">{user.name}</strong>?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <IGRPButton
-              disabled={isUpdatingStatus}
-              variant="outline"
-              onClick={() => setShowStatusDialog(false)}
-              type="button"
-              showIcon
-              iconPlacement="start"
-              iconName="X"
-            >
-              Cancelar
-            </IGRPButton>
-            <IGRPButton
-              onClick={handleToggleStatus}
-              disabled={isUpdatingStatus}
-              className={cn(
-                isActive
-                  ? "bg-destructive hover:bg-destructive/90"
-                  : "bg-primary hover:bg-primary/90",
-                "gap-2 text-white",
-              )}
-            >
-              {isUpdatingStatus ? (
-                <IGRPIcon iconName="LoaderCircle" className="animate-spin" />
-              ) : (
-                <IGRPIcon iconName={isActive ? "Ban" : "Check"} />
-              )}
-              {isActive ? "Confirmar Desativar" : "Confirmar Ativar"}
-            </IGRPButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <UserProfileStatusDialog
+        open={showStatusDialog}
+        isActive={isActive}
+        userName={user.name}
+        onOpenChange={setShowStatusDialog}
+        onConfirm={async (next) => {
+          const res = await updateUser({
+            id: user.id,
+            user: { ...user, status: next },
+          });
+          if (!res.success) {
+            igrpToast({
+              type: "error",
+              title: "Erro ao alterar estado",
+              description: res.error,
+              duration: 4000,
+            });
+            throw new Error(res.error);
+          }
+          setShowStatusDialog(false);
+          igrpToast({
+            type: "success",
+            title: `Utilizador ${next === "ACTIVE" ? "ativado" : "desativado"} com sucesso`,
+            duration: 4000,
+          });
+        }}
+      />
     </div>
   );
 }
