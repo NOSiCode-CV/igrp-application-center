@@ -20,6 +20,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { BackButton } from "@/components/back-button";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
+import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import {
@@ -35,7 +36,7 @@ import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
   const { igrpToast } = useIGRPToast();
-  const { data: app, isLoading, error } = useApplicationByCode(code);
+  const { data: app, isLoading, error, refetch } = useApplicationByCode(code);
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -66,7 +67,8 @@ export function ApplicationDetails({ code }: { code: string }) {
     return <AppCenterLoading description="A carregar aplicação..." />;
   }
 
-  if (error) throw error;
+  if (error)
+    return <InlineError message={error.message} onRetry={() => refetch()} />;
 
   if (!app) {
     return (

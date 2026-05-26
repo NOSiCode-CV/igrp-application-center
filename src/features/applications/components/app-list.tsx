@@ -18,6 +18,7 @@ import {
   Input,
 } from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
+import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";
 import { ApplicationCard } from "@/features/applications/components/app-card";
@@ -30,12 +31,11 @@ export function ApplicationList() {
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
 
-  const { data: applications, isLoading, error } = useApplications();
+  const { data: applications, isLoading, error, refetch } = useApplications();
 
-  if (isLoading && !error)
-    return <AppCenterLoading description="Carregando aplicações..." />;
+  if (isLoading) return <AppCenterLoading description="Carregando aplicações..." />;
 
-  if (error) throw error;
+  if (error) return <InlineError message={error.message} onRetry={() => refetch()} />;
 
   // if (!applications || applications.length === 0) {
   //   return (
