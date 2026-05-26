@@ -64,6 +64,7 @@ export default function UserSignature({
       }
 
       await queryClient.invalidateQueries({ queryKey: ["user", user.id] });
+      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
       igrpToast({
         type: "success",
         title: "Assinatura atualizada com sucesso",
