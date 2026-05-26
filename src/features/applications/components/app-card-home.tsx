@@ -14,6 +14,11 @@ import { config } from "@/lib/constants";
 
 export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   const { name, description, code, picture } = app;
+  const imageSrc = picture
+    ? picture.startsWith("http")
+      ? picture
+      : new URL(picture, config.minioUrl).toString()
+    : null;
   const href =
     code === "APP_IGRP_CENTER"
       ? "/applications"
@@ -41,9 +46,9 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
       <div className="relative h-full overflow-hidden rounded-sm border-2 border-border/40 bg-card p-5 hover:shadow-sm">
         <div className="flex gap-4">
           <div className="relative size-14 rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50">
-            {picture ? (
+            {imageSrc ? (
               <Image
-                src={config.minioUrl + picture}
+                src={imageSrc}
                 alt={name}
                 fill
                 className="object-cover"

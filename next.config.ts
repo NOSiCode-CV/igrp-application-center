@@ -12,7 +12,26 @@ const getRemotePatterns = () => {
   const patterns: Array<{
     protocol: RemotePattern["protocol"];
     hostname: RemotePattern["hostname"];
+    pathname?: RemotePattern["pathname"];
   }> = [];
+
+  // Whitelist the configured MinIO endpoint so next/image can load app pictures.
+  const minioUrl = process.env.NEXT_PUBLIC_IGRP_MINIO_URL;
+  if (minioUrl) {
+    try {
+      const parsed = new URL(minioUrl);
+      patterns.push({
+        protocol: parsed.protocol.replace(
+          ":",
+          "",
+        ) as RemotePattern["protocol"],
+        hostname: parsed.hostname,
+        pathname: "/**",
+      });
+    } catch {
+      // Ignore malformed URLs — they will simply not be whitelisted.
+    }
+  }
 
   // Add extra domains via env (comma-separated)
   // Ex: NEXT_PUBLIC_ALLOWED_DOMAINS=example.com,cdn.example.com

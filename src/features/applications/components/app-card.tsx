@@ -30,15 +30,20 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
   const href = slug ? formatSlug(slug) : url;
   const isSystem = isSystemApp(app);
   const appImage = app.picture;
+  const imageSrc = appImage
+    ? appImage.startsWith("http")
+      ? appImage
+      : new URL(appImage, config.minioUrl).toString()
+    : null;
 
   return (
     <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="relative size-12 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-            {appImage ? (
+            {imageSrc ? (
               <Image
-                src={config.minioUrl + appImage}
+                src={imageSrc}
                 alt={name}
                 fill
                 className="object-cover"
