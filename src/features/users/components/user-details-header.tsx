@@ -17,11 +17,10 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import type { Status } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useFiles } from "@/features/files/use-files";
-import { useUpdateUser } from "@/features/users/use-users";
+import { useUpdateUser, useUpdateUserStatus } from "@/features/users/use-users";
 import { getInitials } from "@/lib/utils";
 
 interface UserDetailsHeaderProps {
@@ -30,6 +29,8 @@ interface UserDetailsHeaderProps {
 
 export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
   const { mutateAsync: updateUser } = useUpdateUser();
+  const { mutateAsync: updateStatus, isPending: isUpdatingStatus } =
+    useUpdateUserStatus();
   const { igrpToast } = useIGRPToast();
   const queryClient = useQueryClient();
   const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -37,7 +38,6 @@ export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   const { data: avatarUrl, isLoading: isLoadingFile } = useFiles(
     user?.picture || "",
@@ -47,24 +47,10 @@ export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
   const currentAvatarUrl = avatarUrl?.url || null;
 
   const handleToggleStatus = async () => {
-    setIsUpdatingStatus(true);
+    const newStatus = isActive ? "INACTIVE" : "ACTIVE";
     try {
-      const newStatus = isActive ? "INACTIVE" : "ACTIVE";
-      const res = await updateUser({
-        id: user.id,
-        user: {
-          ...user,
-          status: newStatus as Status,
-        },
-      });
-
-      if (!res.success) {
-        throw new Error(res.error);
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: ["user", user.id],
-      });
+      const res = await updateStatus({ id: user.id, value: newStatus });
+      if (!res.success) throw new Error(res.error);
       setShowStatusDialog(false);
       igrpToast({
         type: "success",
@@ -78,8 +64,6 @@ export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
         description: (err as Error).message,
         duration: 4000,
       });
-    } finally {
-      setIsUpdatingStatus(false);
     }
   };
 
