@@ -25,9 +25,10 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import {
   appTypeCrud,
-  type CreateApplicationArgs,
   CreateApplicationSchema,
+  type FormVals,
   normalizeApplication,
+  UpdateApplicationSchema,
 } from "@/features/applications/app-schemas";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
 import {
@@ -52,7 +53,7 @@ export function ApplicationForm({
 
   const isEdit = !!application;
 
-  const defaultValues = useMemo<CreateApplicationArgs>(
+  const defaultValues = useMemo<FormVals>(
     () =>
       application
         ? {
@@ -80,14 +81,16 @@ export function ApplicationForm({
     [application],
   );
 
-  const form = useForm<CreateApplicationArgs>({
-    resolver: zodResolver(CreateApplicationSchema),
+  const form = useForm<FormVals>({
+    resolver: zodResolver(
+      isEdit ? UpdateApplicationSchema : CreateApplicationSchema,
+    ),
     defaultValues,
   });
 
   const type = form.watch("type");
 
-  const onSubmit = async (values: CreateApplicationArgs) => {
+  const onSubmit = async (values: FormVals) => {
     try {
       if (isEdit) {
         const payload = normalizeApplication(values, true);
