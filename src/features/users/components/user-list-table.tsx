@@ -399,15 +399,15 @@ export function UserListTable({
     { initialData: initialInvitations },
   );
 
-  const data = useMemo(() => users ?? [], [users]);
-  const pendingData = useMemo(
-    () => invites?.filter((invite) => invite.status === "PENDING") ?? [],
-    [invites],
-  );
-  const canceledData = useMemo(
-    () => invites?.filter((invite) => invite.status === "CANCELED") ?? [],
-    [invites],
-  );
+  const { pendingData, canceledData } = useMemo(() => {
+    const pending: InvitationDTO[] = [];
+    const canceled: InvitationDTO[] = [];
+    for (const inv of invites ?? []) {
+      if (inv.status === "PENDING") pending.push(inv);
+      else if (inv.status === "CANCELED") canceled.push(inv);
+    }
+    return { pendingData: pending, canceledData: canceled };
+  }, [invites]);
 
   const handleStatusClick = useCallback(
     (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => {
@@ -557,7 +557,7 @@ export function UserListTable({
             showPagination
             tableClassName="table-fixed"
             columns={activeColumns}
-            data={data}
+            data={users}
             clientFilters={activeFilters}
           />
         </TabsContent>
