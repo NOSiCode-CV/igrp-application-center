@@ -283,7 +283,7 @@ export function UserProfile() {
                     }
                     className={cn(
                       "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      isLoadingFile || (uploadFile.isPending && "animate-spin"),
+                      (isLoadingFile || uploadFile.isPending) && "animate-spin",
                     )}
                   />
                 </div>
