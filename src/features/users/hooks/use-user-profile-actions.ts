@@ -32,7 +32,7 @@ function handle(
 }
 
 export function useUserProfileActions(user: IGRPUserDTO) {
-  const { mutateAsync: updateUser } = useUpdateUser();
+  const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
   const uploadFile = useUploadPublicFiles();
   const { igrpToast } = useIGRPToast();
 
@@ -80,5 +80,6 @@ export function useUserProfileActions(user: IGRPUserDTO) {
     uploadAvatar,
     setStatus,
     isUploadingAvatar: uploadFile.isPending,
+    isUpdating,
   };
 }
