@@ -184,10 +184,10 @@ export const useUpdateUser = () => {
       updateUser(id, user),
     onSuccess: async (result) => {
       if (result.success) {
-        await queryClient.refetchQueries({
-          queryKey: ["users"],
-          type: "active",
-        });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["current-user"] }),
+          queryClient.refetchQueries({ queryKey: ["users"], type: "active" }),
+        ]);
       }
     },
     retry: false,

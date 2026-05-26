@@ -19,7 +19,6 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { Status } from "@igrp/platform-access-management-client-ts";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
@@ -35,7 +34,6 @@ export function UserProfile() {
   const { data: user, isLoading, error: userError, refetch } = useCurrentUser();
   const { mutateAsync: updateUser } = useUpdateUser();
   const { igrpToast } = useIGRPToast();
-  const queryClient = useQueryClient();
 
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -102,8 +100,6 @@ export function UserProfile() {
 
       if (!res.success) throw new Error(res.error);
 
-      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
-
       igrpToast({
         type: "success",
         title: "Avatar atualizado com sucesso",
@@ -141,9 +137,6 @@ export function UserProfile() {
         throw new Error(res.error);
       }
 
-      await queryClient.invalidateQueries({
-        queryKey: ["current-user"],
-      });
       setIsEditingName(false);
       igrpToast({
         type: "success",
@@ -176,9 +169,6 @@ export function UserProfile() {
         throw new Error(res.error);
       }
 
-      await queryClient.invalidateQueries({
-        queryKey: ["current-user"],
-      });
       setShowStatusDialog(false);
       igrpToast({
         type: "success",
