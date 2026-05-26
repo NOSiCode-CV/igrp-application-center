@@ -67,6 +67,8 @@ export function UserProfile() {
     }
   }, [user, isEditingName]);
 
+  if (userError) throw userError;
+
   if (isLoading) {
     return <AppCenterLoading description="Carregando utilizador..." />;
   }
@@ -75,12 +77,10 @@ export function UserProfile() {
     return (
       <AppCenterNotFound
         iconName="User"
-        title="Nenhum utilizador encontrada."
+        title="Nenhum utilizador encontrado."
       />
     );
   }
-
-  if (userError) throw userError;
 
   const isActive = user.status === "ACTIVE";
 
