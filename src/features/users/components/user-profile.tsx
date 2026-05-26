@@ -44,22 +44,20 @@ export function UserProfile() {
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = useUploadPublicFiles();
-  const [uploadedAvatarPath, setUploadedAvatarPath] = useState<string | null>(
-    null,
+
+  const { data: avatarFile, isLoading: isLoadingFile } = useFiles(
+    user?.picture ?? "",
   );
 
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
-  const { data: avatarUrl, isLoading: isLoadingFile } = useFiles(
-    user?.picture || uploadedAvatarPath || "",
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+  useEffect(
+    () => () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    },
+    [localPreview],
   );
 
-  useEffect(() => {
-    if (avatarUrl) {
-      setAvatarPreview(avatarUrl.url);
-      setUploadedAvatarPath(null);
-    }
-  }, [avatarUrl]);
+  const currentAvatarUrl = localPreview ?? avatarFile?.url ?? null;
 
   useEffect(() => {
     if (user && isEditingName) {
@@ -88,29 +86,24 @@ export function UserProfile() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    try {
-      const result = await uploadFile.mutateAsync({
-        file: file,
-        options: {
-          folder: `users/${user.id}/avatar`,
-        },
-      });
+    const preview = URL.createObjectURL(file);
+    setLocalPreview(preview);
 
-      setUploadedAvatarPath(result);
+    try {
+      const path = await uploadFile.mutateAsync({
+        file,
+        options: { folder: `users/${user.id}/avatar` },
+      });
 
       const res = await updateUser({
         id: user.id,
-        user: {
-          ...user,
-          picture: result,
-        },
+        user: { ...user, picture: path },
       });
 
-      if (!res.success) {
-        throw new Error(res.error);
-      }
+      if (!res.success) throw new Error(res.error);
 
-      refetch();
+      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+
       igrpToast({
         type: "success",
         title: "Avatar atualizado com sucesso",
@@ -123,6 +116,9 @@ export function UserProfile() {
         description: (err as Error).message,
         duration: 4000,
       });
+    } finally {
+      URL.revokeObjectURL(preview);
+      setLocalPreview(null);
     }
   };
 
@@ -200,8 +196,6 @@ export function UserProfile() {
       setIsUpdatingStatus(false);
     }
   };
-
-  const currentAvatarUrl = avatarPreview || avatarUrl?.url || null;
 
   const tabs: IGRPTabItem[] = [
     {
