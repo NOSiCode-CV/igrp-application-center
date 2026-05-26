@@ -1,16 +1,10 @@
 "use client";
 
 import {
-  Button,
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
   IGRPIcon,
   Input,
 } from "@igrp/igrp-framework-react-design-system";
+import { FacetedFilter } from "@/components/data-table/faceted-filter";
 import { STATUS_OPTIONS } from "@/lib/constants";
 
 interface ApplicationsToolbarProps {
@@ -46,44 +40,13 @@ export function ApplicationsToolbar({
         />
       </div>
       <div className="flex flex-wrap gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="gap-2" disabled={disabled}>
-              <IGRPIcon iconName="ListFilter" strokeWidth={2} />
-              Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-40">
-            <DropdownMenuSeparator />
-            {STATUS_OPTIONS.map(({ value, label }) => (
-              <DropdownMenuCheckboxItem
-                key={value}
-                checked={statusFilter.includes(value)}
-                onCheckedChange={(checked) => {
-                  onStatusFilterChange(
-                    checked
-                      ? [...statusFilter, value]
-                      : statusFilter.filter((s) => s !== value),
-                  );
-                }}
-              >
-                {label}
-              </DropdownMenuCheckboxItem>
-            ))}
-            {statusFilter.length > 0 && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => onStatusFilterChange([])}
-                  className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                >
-                  <IGRPIcon iconName="X" className="mr-1" strokeWidth={2} />
-                  Limpar
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <FacetedFilter
+          label="Estado"
+          options={STATUS_OPTIONS}
+          value={statusFilter}
+          onChange={onStatusFilterChange}
+          disabled={disabled}
+        />
       </div>
     </div>
   );
