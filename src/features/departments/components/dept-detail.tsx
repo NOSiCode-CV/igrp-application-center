@@ -54,7 +54,9 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
             </Badge>
           </div>
           <div className="flex items-center">
-            <span className="text-muted-foreground text-xs">#{department.code}</span>
+            <span className="font-mono text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded">
+              #{department.code}
+            </span>
             <CopyToClipboard value={department.code} />
           </div>
           <p className="text-muted-foreground text-sm">
