@@ -39,6 +39,7 @@ export function ApplicationDetails({ code }: { code: string }) {
   const { data: app, isLoading, error, refetch } = useApplicationByCode(code);
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const registeredFor = useRef<string | null>(null);
 
   const { mutate: registerAccess } = useRegisterCurrentUserApplicationAccess();
 
@@ -52,7 +53,8 @@ export function ApplicationDetails({ code }: { code: string }) {
   );
 
   useEffect(() => {
-    if (code) {
+    if (code && registeredFor.current !== code) {
+      registeredFor.current = code;
       registerAccess(code);
     }
   }, [code, registerAccess]);
