@@ -32,7 +32,7 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
     if (isFavorite) {
       await removeFavorite.mutateAsync(app.code);
     } else {
-      await addFavorite.mutateAsync(app.code);
+      await addFavorite.mutateAsync({ applicationCode: app.code, app });
     }
   };
 

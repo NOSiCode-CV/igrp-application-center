@@ -284,14 +284,36 @@ export function useAddCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (applicationCode: string) =>
-      addCurrentUserFavoriteApplication(applicationCode),
-    onSuccess: async (result) => {
-      if (result.success) {
-        await queryClient.invalidateQueries({
-          queryKey: ["favorite-applications"],
-        });
+    mutationFn: async (variables: { applicationCode: string; app?: ApplicationDTO }) =>
+      addCurrentUserFavoriteApplication(variables.applicationCode),
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["favorite-applications"] });
+      const previous = queryClient.getQueriesData<ApplicationDTO[]>({
+        queryKey: ["favorite-applications"],
+      });
+      if (variables.app) {
+        queryClient.setQueriesData<ApplicationDTO[]>(
+          { queryKey: ["favorite-applications"] },
+          (old) => {
+            if (!old) return old;
+            if (old.some((fav) => fav.code === variables.applicationCode)) return old;
+            return [...old, variables.app as ApplicationDTO];
+          },
+        );
       }
+      return { previous };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["favorite-applications"],
+      });
     },
     retry: false,
   });
@@ -303,12 +325,28 @@ export function useRemoveCurrentUserFavoriteApplication() {
   return useMutation({
     mutationFn: async (applicationCode: string) =>
       removeCurrentUserFavoriteApplication(applicationCode),
-    onSuccess: async (result) => {
-      if (result.success) {
-        await queryClient.invalidateQueries({
-          queryKey: ["favorite-applications"],
-        });
+    onMutate: async (applicationCode) => {
+      await queryClient.cancelQueries({ queryKey: ["favorite-applications"] });
+      const previous = queryClient.getQueriesData<ApplicationDTO[]>({
+        queryKey: ["favorite-applications"],
+      });
+      queryClient.setQueriesData<ApplicationDTO[]>(
+        { queryKey: ["favorite-applications"] },
+        (old) => old?.filter((fav) => fav.code !== applicationCode),
+      );
+      return { previous };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data);
+        }
       }
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["favorite-applications"],
+      });
     },
     retry: false,
   });
