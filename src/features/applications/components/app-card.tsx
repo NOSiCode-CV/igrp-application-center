@@ -45,9 +45,7 @@ export function ApplicationCard({ app }: { app: ApplicationDTO }) {
                   alt={name}
                   fill
                   className="object-cover"
-                  quality={100}
-                  sizes="56px"
-                  priority
+                  sizes="48px"
                 />
               ) : (
                 <IGRPIcon
