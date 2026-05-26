@@ -28,7 +28,6 @@ import type {
   InvitationDTO,
 } from "@igrp/platform-access-management-client-ts";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { ButtonLink } from "@/components/button-link";
 import { ConfirmDialog } from "@/components/confirmation-modal";
@@ -73,7 +72,6 @@ function ActiveRowActionsCell({
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void;
 }) {
   const state = String(row.getValue("status"));
-  const router = useRouter();
 
   return (
     <DropdownMenu>
@@ -101,10 +99,7 @@ function ActiveRowActionsCell({
           </DropdownMenuItem>
         )}
 
-        <DropdownMenuItem
-          variant="default"
-          onClick={() => router.push(`/settings/users/${row.original.id}`)}
-        >
+        <DropdownMenuItem variant="default" asChild>
           <Link
             className="flex gap-2"
             href={`/settings/users/${row.original.id}`}
