@@ -3,22 +3,19 @@
 import {
   Card,
   CardContent,
-  cn,
   IGRPButton,
-  IGRPIcon,
   type IGRPTabItem,
   IGRPTabs,
-  IGRPUserAvatar,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import ProfileRoleList from "@/features/profile/components/profile-role-list";
 import { useCurrentUser, useUpdateUser } from "@/features/users/use-users";
-import { getInitials } from "@/lib/utils";
+import { UserProfileAvatar } from "./user-profile-avatar";
 import { UserProfileEditableName } from "./user-profile-editable-name";
 import { UserProfileStatusDialog } from "./user-profile-status-dialog";
 import UserApplications from "./user-applications";
@@ -30,23 +27,12 @@ export function UserProfile() {
   const { igrpToast } = useIGRPToast();
 
   const [showStatusDialog, setShowStatusDialog] = useState(false);
-  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = useUploadPublicFiles();
 
   const { data: avatarFile, isLoading: isLoadingFile } = useFiles(
     user?.picture ?? "",
   );
-
-  const [localPreview, setLocalPreview] = useState<string | null>(null);
-  useEffect(
-    () => () => {
-      if (localPreview) URL.revokeObjectURL(localPreview);
-    },
-    [localPreview],
-  );
-
-  const currentAvatarUrl = localPreview ?? avatarFile?.url ?? null;
 
   if (userError) throw userError;
 
@@ -64,44 +50,6 @@ export function UserProfile() {
   }
 
   const isActive = user.status === "ACTIVE";
-
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const preview = URL.createObjectURL(file);
-    setLocalPreview(preview);
-
-    try {
-      const path = await uploadFile.mutateAsync({
-        file,
-        options: { folder: `users/${user.id}/avatar` },
-      });
-
-      const res = await updateUser({
-        id: user.id,
-        user: { ...user, picture: path },
-      });
-
-      if (!res.success) throw new Error(res.error);
-
-      igrpToast({
-        type: "success",
-        title: "Avatar atualizado com sucesso",
-        duration: 4000,
-      });
-    } catch (err) {
-      igrpToast({
-        type: "error",
-        title: "Erro ao atualizar avatar",
-        description: (err as Error).message,
-        duration: 4000,
-      });
-    } finally {
-      URL.revokeObjectURL(preview);
-      setLocalPreview(null);
-    }
-  };
 
   const tabs: IGRPTabItem[] = [
     {
@@ -146,57 +94,36 @@ export function UserProfile() {
               </IGRPButton>
             </div>
             <div className="flex items-center gap-6">
-              <button
-                type="button"
-                className="relative group cursor-pointer p-0 border-0 bg-transparent"
-                onClick={() => avatarInputRef.current?.click()}
-              >
-                <div className="absolute -inset-1 rounded-full blur opacity-75 group-hover:opacity-100 transition" />
-
-                <IGRPUserAvatar
-                  alt={user.name}
-                  image={currentAvatarUrl}
-                  fallbackContent={
-                    isLoadingFile ? (
-                      <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
-                        <IGRPIcon
-                          iconName="LoaderCircle"
-                          className="w-8 h-8 text-muted-foreground animate-spin"
-                        />
-                      </div>
-                    ) : (
-                      getInitials(
-                        user?.name || user?.username || user?.email || "",
-                      )
-                    )
+              <UserProfileAvatar
+                user={user}
+                resolvedUrl={avatarFile?.url ?? null}
+                isResolvingUrl={isLoadingFile}
+                isUploading={uploadFile.isPending}
+                onUpload={async (file) => {
+                  const path = await uploadFile.mutateAsync({
+                    file,
+                    options: { folder: `users/${user.id}/avatar` },
+                  });
+                  const res = await updateUser({
+                    id: user.id,
+                    user: { ...user, picture: path },
+                  });
+                  if (!res.success) {
+                    igrpToast({
+                      type: "error",
+                      title: "Erro ao atualizar avatar",
+                      description: res.error,
+                      duration: 4000,
+                    });
+                    throw new Error(res.error);
                   }
-                  className="relative size-28 bg-background border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105"
-                  fallbackClass="text-3xl"
-                />
-
-                <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-2 shadow-md border border-border group-hover:border-primary transition-colors">
-                  <IGRPIcon
-                    iconName={
-                      isLoadingFile || uploadFile.isPending
-                        ? "LoaderCircle"
-                        : "Camera"
-                    }
-                    className={cn(
-                      "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                      (isLoadingFile || uploadFile.isPending) && "animate-spin",
-                    )}
-                  />
-                </div>
-
-                <input
-                  ref={avatarInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                  disabled={uploadFile.isPending}
-                />
-              </button>
+                  igrpToast({
+                    type: "success",
+                    title: "Avatar atualizado com sucesso",
+                    duration: 4000,
+                  });
+                }}
+              />
 
               <div className="flex-1">
                 <UserProfileEditableName
