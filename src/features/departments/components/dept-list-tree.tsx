@@ -27,8 +27,12 @@ export function DepartmentListTree() {
 
   const { filtered } = useDepartmentTree(departments, searchTerm);
 
-  // Derived: explicit user pick wins, otherwise default to first dept.
-  const selectedCode = explicitSelected ?? departments?.[0]?.code ?? null;
+  // Derived: explicit user pick wins (if still present), otherwise default to first dept.
+  const selectedCode =
+    (explicitSelected &&
+    departments?.some((d) => d.code === explicitSelected)
+      ? explicitSelected
+      : departments?.[0]?.code) ?? null;
 
   // No second network round-trip — use the cached list.
   const selectedDepartment = useMemo<DepartmentDTO | undefined>(
