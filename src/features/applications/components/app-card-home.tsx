@@ -14,6 +14,11 @@ import { config } from "@/lib/constants";
 
 export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
   const { name, description, code, picture } = app;
+  const imageSrc = picture
+    ? picture.startsWith("http")
+      ? picture
+      : new URL(picture, config.minioUrl).toString()
+    : null;
   const href =
     code === "APP_IGRP_CENTER"
       ? "/applications"
@@ -32,7 +37,7 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
     if (isFavorite) {
       await removeFavorite.mutateAsync(app.code);
     } else {
-      await addFavorite.mutateAsync(app.code);
+      await addFavorite.mutateAsync({ applicationCode: app.code, app });
     }
   };
 
@@ -41,15 +46,13 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
       <div className="relative h-full overflow-hidden rounded-sm border-2 border-border/40 bg-card p-5 hover:shadow-sm">
         <div className="flex gap-4">
           <div className="relative size-14 rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50">
-            {picture ? (
+            {imageSrc ? (
               <Image
-                src={config.minioUrl + picture}
+                src={imageSrc}
                 alt={name}
                 fill
                 className="object-cover"
-                quality={100}
                 sizes="100px"
-                priority
               />
             ) : (
               <IGRPIcon iconName="AppWindow" className="size-7 text-primary" />
@@ -70,6 +73,10 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
             className="hover:scale-110 transition-transform cursor-pointer"
             disabled={addFavorite.isPending || removeFavorite.isPending}
             type="button"
+            aria-pressed={isFavorite}
+            aria-label={
+              isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
+            }
           >
             <IGRPIcon
               iconName="Star"

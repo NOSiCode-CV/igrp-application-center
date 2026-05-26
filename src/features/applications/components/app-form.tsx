@@ -21,12 +21,14 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import {
   appTypeCrud,
-  type CreateApplicationArgs,
   CreateApplicationSchema,
+  type FormVals,
   normalizeApplication,
+  UpdateApplicationSchema,
 } from "@/features/applications/app-schemas";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
 import {
@@ -51,36 +53,44 @@ export function ApplicationForm({
 
   const isEdit = !!application;
 
-  const form = useForm<CreateApplicationArgs>({
-    resolver: zodResolver(CreateApplicationSchema),
-    defaultValues: isEdit
-      ? {
-          name: application.name,
-          code: application.code,
-          owner: application.owner,
-          type: application.type as "INTERNAL" | "EXTERNAL",
-          slug: application.slug || "",
-          url: application.url || "",
-          description: application.description || "",
-          status: application.status,
-          picture: application.picture || "",
-        }
-      : {
-          name: "",
-          code: "",
-          owner: "",
-          type: appTypeCrud.enum.INTERNAL,
-          slug: "",
-          url: "",
-          description: "",
-          status: "ACTIVE",
-          picture: "",
-        },
+  const defaultValues = useMemo<FormVals>(
+    () =>
+      application
+        ? {
+            name: application.name,
+            code: application.code,
+            owner: application.owner,
+            type: application.type as "INTERNAL" | "EXTERNAL",
+            slug: application.slug || "",
+            url: application.url || "",
+            description: application.description || "",
+            status: application.status,
+            picture: application.picture || "",
+          }
+        : {
+            name: "",
+            code: "",
+            owner: "",
+            type: appTypeCrud.enum.INTERNAL,
+            slug: "",
+            url: "",
+            description: "",
+            status: "ACTIVE",
+            picture: "",
+          },
+    [application],
+  );
+
+  const form = useForm<FormVals>({
+    resolver: zodResolver(
+      isEdit ? UpdateApplicationSchema : CreateApplicationSchema,
+    ),
+    defaultValues,
   });
 
   const type = form.watch("type");
 
-  const onSubmit = async (values: CreateApplicationArgs) => {
+  const onSubmit = async (values: FormVals) => {
     try {
       if (isEdit) {
         const payload = normalizeApplication(values, true);
@@ -125,7 +135,7 @@ export function ApplicationForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
+        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem)] w-full scroll-auto">
           <div className="space-y-4">
             <FormField
               control={form.control}

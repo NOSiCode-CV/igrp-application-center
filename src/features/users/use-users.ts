@@ -14,6 +14,7 @@ import type {
   UserInvitationResponseDTO,
   UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import {
   useMutation,
   useQueries,
@@ -282,16 +283,45 @@ export function useCurrentUserFavoriteApplications(applicationName?: string) {
 
 export function useAddCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
+  const { igrpToast } = useIGRPToast();
 
   return useMutation({
-    mutationFn: async (applicationCode: string) =>
-      addCurrentUserFavoriteApplication(applicationCode),
-    onSuccess: async (result) => {
-      if (result.success) {
-        await queryClient.invalidateQueries({
-          queryKey: ["favorite-applications"],
-        });
+    mutationFn: async (variables: { applicationCode: string; app?: ApplicationDTO }) =>
+      addCurrentUserFavoriteApplication(variables.applicationCode),
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: ["favorite-applications"] });
+      const previous = queryClient.getQueriesData<ApplicationDTO[]>({
+        queryKey: ["favorite-applications"],
+      });
+      if (variables.app) {
+        queryClient.setQueriesData<ApplicationDTO[]>(
+          { queryKey: ["favorite-applications"] },
+          (old) => {
+            if (!old) return old;
+            if (old.some((fav) => fav.code === variables.applicationCode)) return old;
+            return [...old, variables.app as ApplicationDTO];
+          },
+        );
       }
+      return { previous };
+    },
+    onError: (err, _variables, context) => {
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+      igrpToast({
+        type: "error",
+        title: "Não foi possível atualizar os favoritos.",
+        description: (err as Error).message,
+        duration: 4000,
+      });
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["favorite-applications"],
+      });
     },
     retry: false,
   });
@@ -299,16 +329,39 @@ export function useAddCurrentUserFavoriteApplication() {
 
 export function useRemoveCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
+  const { igrpToast } = useIGRPToast();
 
   return useMutation({
     mutationFn: async (applicationCode: string) =>
       removeCurrentUserFavoriteApplication(applicationCode),
-    onSuccess: async (result) => {
-      if (result.success) {
-        await queryClient.invalidateQueries({
-          queryKey: ["favorite-applications"],
-        });
+    onMutate: async (applicationCode) => {
+      await queryClient.cancelQueries({ queryKey: ["favorite-applications"] });
+      const previous = queryClient.getQueriesData<ApplicationDTO[]>({
+        queryKey: ["favorite-applications"],
+      });
+      queryClient.setQueriesData<ApplicationDTO[]>(
+        { queryKey: ["favorite-applications"] },
+        (old) => old?.filter((fav) => fav.code !== applicationCode),
+      );
+      return { previous };
+    },
+    onError: (err, _variables, context) => {
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data);
+        }
       }
+      igrpToast({
+        type: "error",
+        title: "Não foi possível atualizar os favoritos.",
+        description: (err as Error).message,
+        duration: 4000,
+      });
+    },
+    onSettled: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["favorite-applications"],
+      });
     },
     retry: false,
   });

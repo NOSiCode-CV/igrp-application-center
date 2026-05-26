@@ -6,7 +6,6 @@ import {
   Badge,
   Card,
   CardContent,
-  cn,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -20,8 +19,13 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { BackButton } from "@/components/back-button";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
+import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
+import {
+  APP_DESCRIPTION_FALLBACK,
+  isSystemApp,
+} from "@/features/applications/app-utils";
 import {
   useApplicationByCode,
   useUpdateApplication,
@@ -30,7 +34,7 @@ import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
 import { ROUTES } from "@/lib/constants";
-import { getStatusColor } from "@/lib/utils";
+import { cn, getStatusColor } from "@/lib/utils";
 import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
@@ -38,6 +42,7 @@ export function ApplicationDetails({ code }: { code: string }) {
   const { data: app, isLoading, error, refetch } = useApplicationByCode(code);
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const registeredFor = useRef<string | null>(null);
 
   const { mutate: registerAccess } = useRegisterCurrentUserApplicationAccess();
 
@@ -46,27 +51,24 @@ export function ApplicationDetails({ code }: { code: string }) {
   const uploadPicture = useUploadPublicFiles();
   const [uploadedFilePath, setUploadedFilePath] = useState<string | null>(null);
 
-  const { data: fileUrl, isLoading: isLoadingFile } = useFiles(
-    uploadedFilePath || app?.picture || "",
-  );
+  const filePath = uploadedFilePath ?? app?.picture;
+  const { data: fileUrl, isLoading: isLoadingFile } = useFiles(filePath ?? "", {
+    enabled: Boolean(filePath),
+  });
 
   useEffect(() => {
-    if (code) {
+    if (code && registeredFor.current !== code) {
+      registeredFor.current = code;
       registerAccess(code);
     }
   }, [code, registerAccess]);
-
-  useEffect(() => {
-    if (fileUrl) {
-      setUploadedFilePath(null);
-    }
-  }, [fileUrl]);
 
   if (isLoading) {
     return <AppCenterLoading description="A carregar aplicação..." />;
   }
 
-  if (error) throw error;
+  if (error)
+    return <InlineError message={error.message} onRetry={() => refetch()} />;
 
   if (!app) {
     return (
@@ -84,26 +86,20 @@ export function ApplicationDetails({ code }: { code: string }) {
     try {
       const result = await uploadPicture.mutateAsync({
         file,
-        options: {
-          folder: code,
-        },
+        options: { folder: code },
       });
 
       setUploadedFilePath(result);
 
       await updateApplication({
         code: app.code,
-        data: {
-          ...app,
-          picture: result,
-        },
+        data: { picture: result },
       });
 
-      refetch();
       igrpToast({
         type: "success",
         title: "Upload Sucesso",
-        description: `A imagem foi carregada com sucesso`,
+        description: "A imagem foi carregada com sucesso",
         duration: 4000,
       });
     } catch (err) {
@@ -123,7 +119,7 @@ export function ApplicationDetails({ code }: { code: string }) {
         <CardContent className="px-4 py-1">
           <div className="flex items-center pb-2 justify-between">
             <BackButton label="Voltar" href={ROUTES.APPLICATIONS} />
-            {String(app?.type) !== "SYSTEM" && (
+            {app && !isSystemApp(app) && (
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                   <IGRPButton
@@ -150,13 +146,16 @@ export function ApplicationDetails({ code }: { code: string }) {
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div className="relative">
+              <div
+                className="relative"
+                aria-busy={uploadPicture.isPending || isLoadingFile}
+              >
                 <button
                   type="button"
                   className="relative group cursor-pointer disabled:cursor-not-allowed rounded-full"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={
-                    String(app?.type) === "SYSTEM" || uploadPicture.isPending
+                    (app ? isSystemApp(app) : false) || uploadPicture.isPending
                   }
                   aria-label="Alterar imagem da aplicação"
                 >
@@ -196,8 +195,8 @@ export function ApplicationDetails({ code }: { code: string }) {
                       }
                       className={cn(
                         "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
-                        isLoadingFile ||
-                          (uploadPicture.isPending && "animate-spin"),
+                        (isLoadingFile || uploadPicture.isPending) &&
+                          "animate-spin",
                       )}
                     />
                   </div>
@@ -209,8 +208,14 @@ export function ApplicationDetails({ code }: { code: string }) {
                   accept="image/*"
                   onChange={handleFileChange}
                   className="hidden"
-                  disabled={uploadPicture.isPending}
                 />
+                <span className="sr-only" aria-live="polite">
+                  {uploadPicture.isPending
+                    ? "A carregar imagem..."
+                    : isLoadingFile
+                      ? "A obter imagem..."
+                      : ""}
+                </span>
               </div>
 
               <div className="flex-1">
@@ -231,7 +236,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  {app.description || "Sem descrição."}
+                  {app.description || APP_DESCRIPTION_FALLBACK}
                 </p>
               </div>
             </div>

@@ -66,7 +66,7 @@ export function ApplicationsListHome() {
               {favoriteApps.length}
             </Badge>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
             {favoriteApps.map((app: ApplicationDTO) => (
               <ApplicationCardHome key={app.id} app={app} />
             ))}
@@ -83,7 +83,7 @@ export function ApplicationsListHome() {
               {recentApps.length}
             </Badge>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
             {recentApps.map((app: ApplicationDTO) => (
               <ApplicationCardHome key={app.id} app={app} />
             ))}
@@ -105,13 +105,13 @@ export function ApplicationsListHome() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Pesquisar aplicações..."
-          className="h-9 text-sm w-1/6"
+          className="h-9 text-sm w-full sm:w-64 md:w-72"
           iconName="Search"
           showIcon
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3! 2xl:grid-cols-4!">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
         {activeApps.map((app: ApplicationDTO) => (
           <ApplicationCardHome key={app.id} app={app} />
         ))}
