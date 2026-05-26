@@ -86,8 +86,7 @@ export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
 
       <TabsContent value="signature">
         <TabPanel>
-          {/* refetch is a no-op here; user data is fetched server-side */}
-          <UserSignature user={user} refetch={() => undefined} />
+          <UserSignature user={user} />
         </TabPanel>
       </TabsContent>
 

@@ -222,7 +222,7 @@ export function UserProfile() {
     {
       label: "Assinatura",
       value: "signature",
-      content: <UserSignature refetch={refetch} user={user} />,
+      content: <UserSignature user={user} />,
     },
   ];
 
