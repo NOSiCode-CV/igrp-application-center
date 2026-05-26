@@ -23,6 +23,7 @@ import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
+import { isSystemApp } from "@/features/applications/app-utils";
 import {
   useApplicationByCode,
   useUpdateApplication,
@@ -116,7 +117,7 @@ export function ApplicationDetails({ code }: { code: string }) {
         <CardContent className="px-4 py-1">
           <div className="flex items-center pb-2 justify-between">
             <BackButton label="Voltar" href={ROUTES.APPLICATIONS} />
-            {String(app?.type) !== "SYSTEM" && (
+            {app && !isSystemApp(app) && (
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                   <IGRPButton
@@ -149,7 +150,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                   className="relative group cursor-pointer disabled:cursor-not-allowed rounded-full"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={
-                    String(app?.type) === "SYSTEM" || uploadPicture.isPending
+                    (app ? isSystemApp(app) : false) || uploadPicture.isPending
                   }
                   aria-label="Alterar imagem da aplicação"
                 >

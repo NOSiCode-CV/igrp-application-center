@@ -8,14 +8,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
-import type {
-  ApplicationDTO,
-  ApplicationType,
-} from "@igrp/platform-access-management-client-ts";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import type { Route } from "next";
 import Image from "next/image";
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
-import { formatSlug } from "@/features/applications/app-utils";
+import { formatSlug, isSystemApp } from "@/features/applications/app-utils";
 import { config, ROUTES } from "@/lib/constants";
 import { cn, getStatusColor, showStatus } from "@/lib/utils";
 
@@ -25,9 +22,9 @@ interface ApplicationCardProps {
 }
 
 export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
-  const { name, code, status, description, slug, url, type } = app;
+  const { name, code, status, description, slug, url } = app;
   const href = slug ? formatSlug(slug) : url;
-  const isSystem = type === ("SYSTEM" as ApplicationType);
+  const isSystem = isSystemApp(app);
   const appImage = app.picture;
 
   return (
