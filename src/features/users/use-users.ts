@@ -62,7 +62,7 @@ export const useUsers = (
   options?: { initialData?: IGRPUserDTO[] },
 ) => {
   return useQuery<IGRPUserDTO[], Error>({
-    queryKey: ["users"],
+    queryKey: ["users", params ?? null],
     queryFn: async () => {
       const result = await getUsers(params);
       if (!result.success) throw new Error(result.error);
