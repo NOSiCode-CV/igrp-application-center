@@ -62,6 +62,9 @@ interface UserListTableProps {
 const isInviteStatus = (s: string) =>
   ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
 
+const isTerminalInviteStatus = (s: string) =>
+  s === "CANCELED" || s === "REJECTED";
+
 function ActiveRowActionsCell({
   row,
   onStatusClick,
@@ -175,30 +178,30 @@ function PendingRowActionsCell({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="min-w-44">
-        {String(row.original.status) !== "CANCELED" &&
-          String(row.original.status) !== "REJECTED" && (
-            <DropdownMenuItem onSelect={handleCopyUrl}>
-              <IGRPIcon iconName="Copy" />
-              Copiar URL
-            </DropdownMenuItem>
-          )}
+        {!isTerminalInviteStatus(String(row.original.status)) && (
+          <DropdownMenuItem onSelect={handleCopyUrl}>
+            <IGRPIcon iconName="Copy" />
+            Copiar URL
+          </DropdownMenuItem>
+        )}
 
-        <DropdownMenuItem onSelect={handleResend}>
-          <IGRPIcon iconName="Mail" />
-          Reenviar Convite
-        </DropdownMenuItem>
+        {!isTerminalInviteStatus(String(row.original.status)) && (
+          <DropdownMenuItem onSelect={handleResend}>
+            <IGRPIcon iconName="Mail" />
+            Reenviar Convite
+          </DropdownMenuItem>
+        )}
 
-        {String(row.original.status) !== "CANCELED" &&
-          String(row.original.status) !== "REJECTED" && (
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              variant="destructive"
-              onSelect={() => onCancelClick(row.original)}
-            >
-              <IGRPIcon iconName="Trash2" />
-              Cancelar Convite
-            </DropdownMenuItem>
-          )}
+        {!isTerminalInviteStatus(String(row.original.status)) && (
+          <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
+            variant="destructive"
+            onSelect={() => onCancelClick(row.original)}
+          >
+            <IGRPIcon iconName="Trash2" />
+            Cancelar Convite
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
