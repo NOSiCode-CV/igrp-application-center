@@ -1,410 +1,147 @@
 "use client";
 
-import {
-  Badge,
-  Button,
-  IGRPIcon,
-  type IGRPTabItem,
-  IGRPTabs,
-  Input,
-} from "@igrp/igrp-framework-react-design-system";
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
-import { useEffect, useState } from "react";
-import { ButtonLink } from "@/components/button-link";
-import { CopyToClipboard } from "@/components/copy-to-clipboard";
+import {
+  useCallback,
+  useDeferredValue,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { AppCenterLoading } from "@/components/loading";
-import { PermissionList } from "@/features/permissions/components/permission-list";
-import { RolesListTree } from "@/features/roles/components/role-tree-list";
-import { getStatusColor } from "@/lib/utils";
-import { useDepartmentByCode, useDepartments } from "../use-departments";
-import { DepartmentDeleteDialog } from "./dept-delete-dialog";
-import { DepartmentFormDialog } from "./dept-form-dialog";
-import { MenuPermissions } from "./dept-menu";
-import DepartmentTreeItem from "./dept-tree-item";
-import { ManageAppsModal } from "./Modal/manage-apps-modal";
-
-export type DepartmentWithChildren = DepartmentDTO & {
-  children?: DepartmentWithChildren[];
-};
-
-export const buildTree = (depts: DepartmentDTO[]): DepartmentWithChildren[] => {
-  const map = new Map<string, DepartmentWithChildren>();
-  const roots: DepartmentWithChildren[] = [];
-
-  depts?.forEach((dept) => {
-    map.set(dept.code, { ...dept, children: [] });
-  });
-
-  depts?.forEach((dept) => {
-    const node = map.get(dept.code);
-    if (!node) return;
-    if (dept.parentCode) {
-      const parent = map.get(dept.parentCode);
-      if (parent) {
-        parent.children?.push(node);
-      } else {
-        roots.push(node);
-      }
-    } else {
-      roots.push(node);
-    }
-  });
-
-  return roots;
-};
-
-export const filterTree = (
-  depts: DepartmentWithChildren[],
-  term: string,
-): DepartmentWithChildren[] => {
-  if (!term) return depts;
-
-  return depts
-    .map((dept) => {
-      const matchesCurrent =
-        dept.name.toLowerCase().includes(term.toLowerCase()) ||
-        dept.code.toLowerCase().includes(term.toLowerCase());
-
-      const filteredChildren = dept.children
-        ? filterTree(dept.children, term)
-        : [];
-
-      if (matchesCurrent || filteredChildren.length > 0) {
-        return { ...dept, children: filteredChildren };
-      }
-      return null;
-    })
-    .filter(Boolean) as DepartmentWithChildren[];
-};
+import { closedDialog, dialogReducer } from "../dept-dialog-state";
+import type { DepartmentWithChildren } from "../dept-tree-utils";
+import { useDepartments } from "../use-departments";
+import { useDepartmentTree } from "../use-dept-tree";
+import { DepartmentDetail } from "./dept-detail";
+import { DepartmentDialogs } from "./dept-dialogs";
+import { DepartmentEmptyState } from "./dept-empty-state";
+import { DepartmentSidebar } from "./dept-sidebar";
+import {
+  DeptTreeContext,
+  type DeptTreeContextValue,
+} from "./dept-tree-context";
 
 export function DepartmentListTree() {
-  const [selectedDeptCode, setSelectedDeptCode] = useState<string | null>(null);
-  const [openFormDialog, setOpenFormDialog] = useState(false);
-  const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [currentDept, setCurrentDept] = useState<DepartmentDTO | null>(null);
-  const [parentDeptId, setParentDeptId] = useState<DepartmentDTO | null>(null);
-  const [deptToDelete, setDeptToDelete] = useState<{
-    code: string;
-    name: string;
-  } | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showAppsModal, setShowAppsModal] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   const { data: departments, isLoading, error } = useDepartments();
-  const { data: selectedDepartment, isLoading: isLoadSelectedDep } =
-    useDepartmentByCode(selectedDeptCode || "");
 
-  const handleOpenCreate = () => {
-    setCurrentDept(null);
-    setDeptToDelete(null);
-    setParentDeptId(null);
-    setOpenFormDialog(true);
-  };
+  const counts = useMemo(
+    () => ({
+      active: departments?.filter((d) => d.status === "ACTIVE").length ?? 0,
+      inactive: departments?.filter((d) => d.status !== "ACTIVE").length ?? 0,
+    }),
+    [departments],
+  );
 
-  const handleDelete = (code: string, name: string) => {
-    setOpenFormDialog(false);
-    setCurrentDept(null);
-    setParentDeptId(null);
-    setDeptToDelete({ code, name });
-    setOpenDeleteDialog(true);
-  };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [explicitSelected, setExplicitSelected] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [dialog, dispatch] = useReducer(dialogReducer, closedDialog);
 
-  const handleEdit = (dept: DepartmentDTO) => {
-    setDeptToDelete(null);
-    setParentDeptId(null);
-    setCurrentDept(dept);
-    setOpenFormDialog(true);
-  };
+  const deferredSearchTerm = useDeferredValue(searchTerm);
+  const isFiltering = searchTerm !== deferredSearchTerm;
 
-  const handleCreateSubDept = (parent: DepartmentWithChildren) => {
-    setDeptToDelete(null);
-    setCurrentDept(null);
-    setParentDeptId(parent);
-    setOpenFormDialog(true);
-  };
+  const { filtered } = useDepartmentTree(departments, deferredSearchTerm);
 
-  const _handleSelectDept = (code: string) => {
-    setSelectedDeptCode(code);
+  // Derived: explicit user pick wins (if still present), otherwise default to first dept.
+  const selectedCode =
+    (explicitSelected &&
+    departments?.some((d) => d.code === explicitSelected)
+      ? explicitSelected
+      : departments?.[0]?.code) ?? null;
+
+  // No second network round-trip — use the cached list.
+  const selectedDepartment = useMemo<DepartmentDTO | undefined>(
+    () => departments?.find((d) => d.code === selectedCode),
+    [departments, selectedCode],
+  );
+
+  const select = useCallback((code: string) => {
+    setExplicitSelected(code);
     setIsSidebarOpen(false);
-  };
+  }, []);
 
-  useEffect(() => {
-    departments && setSelectedDeptCode(departments[0]?.code);
-  }, [departments]);
+  const toggle = useCallback((code: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      next.has(code) ? next.delete(code) : next.add(code);
+      return next;
+    });
+  }, []);
 
-  if (isLoading || (!departments && !error)) {
+  const onEdit = useCallback(
+    (dept: DepartmentDTO) => dispatch({ type: "openEdit", dept }),
+    [],
+  );
+  const onCreateSub = useCallback(
+    (parent: DepartmentWithChildren) =>
+      dispatch({ type: "openCreateSub", parent }),
+    [],
+  );
+  const onDelete = useCallback(
+    (code: string, name: string) =>
+      dispatch({ type: "openDelete", code, name }),
+    [],
+  );
+
+  const treeCtx = useMemo<DeptTreeContextValue>(
+    () => ({
+      selectedCode,
+      expanded,
+      select,
+      toggle,
+      onEdit,
+      onCreateSub,
+      onDelete,
+    }),
+    [selectedCode, expanded, select, toggle, onEdit, onCreateSub, onDelete],
+  );
+
+  if (isLoading)
     return <AppCenterLoading description="Carregando departamentos..." />;
-  }
-
   if (error) throw error;
-  const departmentTree = buildTree(departments ?? []);
-  const filteredTree = filterTree(departmentTree, searchTerm);
 
-  const tabs: IGRPTabItem[] = [
-    {
-      label: "Perfis (Roles)",
-      value: "roles",
-      content: <RolesListTree departmentCode={selectedDeptCode ?? ""} />,
-    },
-    {
-      label: "Permissões",
-      value: "permissions",
-      content: <PermissionList departmentCode={selectedDeptCode ?? ""} />,
-    },
-    {
-      label: "Menus",
-      value: "menus",
-      content: <MenuPermissions departmentCode={selectedDeptCode ?? ""} />,
-    },
-  ];
+  const showMainEmpty = !selectedDepartment && (departments?.length ?? 0) === 0;
 
   return (
-    <div className="flex flex-col overflow-hidden">
-      <div className="block! lg:hidden! mb-4">
-        <Button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          variant="outline"
-          className="w-full! cursor-pointer"
-        >
-          <IGRPIcon
-            iconName={isSidebarOpen ? "X" : "Menu"}
-            className="w-4 h-4"
-            strokeWidth={2}
+    <DeptTreeContext value={treeCtx}>
+      <div className="flex flex-col overflow-hidden">
+        <div className="flex h-full">
+          <DepartmentSidebar
+            filtered={filtered}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            onCreate={() => dispatch({ type: "openCreate" })}
+            isOpen={isSidebarOpen}
+            onOpenChange={setIsSidebarOpen}
+            isFiltering={isFiltering}
+            counts={counts}
           />
-          {isSidebarOpen ? "Fechar" : "Departamentos"}
-        </Button>
-      </div>
 
-      <div className="flex h-full">
-        <div
-          className={`
-            ${isSidebarOpen ? "block!" : "hidden!"} lg:block!
-            fixed! lg:relative! inset-0! lg:inset-auto!
-            z-50! lg:z-auto!
-            w-full! lg:w-80!
-            bg-background!
-            overflow-y-auto!
-            flex pr-0! lg:pr-2! border-accent flex-col
-            p-4! lg:p-0!
-          `}
-        >
-          <div className="flex! lg:hidden! justify-end mb-2">
-            <Button
-              onClick={() => setIsSidebarOpen(false)}
-              variant="ghost"
-              size="sm"
-              className="cursor-pointer"
-            >
-              <IGRPIcon iconName="X" className="w-5 h-5" strokeWidth={2} />
-            </Button>
-          </div>
-
-          <div className="flex flex-col min-w-0">
-            <h2 className="text-xl font-bold tracking-tight truncate">
-              Gestão de Departamentos
-            </h2>
-
-            <p className="text-muted-foreground text-sm mb-4">
-              Ver e gerir todos os departamentos do sistema.
-            </p>
-
-            <ButtonLink
-              onClick={handleOpenCreate}
-              icon="Plus"
-              href="#"
-              label="Novo Departamento"
-            />
-          </div>
-
-          <div className="mt-4">
-            <div className="relative">
-              <IGRPIcon
-                iconName="Search"
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
+          <div className="flex-1 overflow-y-auto">
+            {showMainEmpty && (
+              <DepartmentEmptyState
+                variant="main-no-departments"
+                onCreate={() => dispatch({ type: "openCreate" })}
               />
-              <Input
-                type="text"
-                placeholder="Pesquisar departamento..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-background pl-8"
+            )}
+            {selectedDepartment && (
+              <DepartmentDetail
+                department={selectedDepartment}
+                onEdit={onEdit}
+                onManageApps={() => dispatch({ type: "openManageApps" })}
               />
-            </div>
-          </div>
-
-          <div className="flex-1 mt-3 overflow-y-auto min-h-[200px]">
-            {filteredTree.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 px-4 text-center border border-dashed rounded-lg bg-muted/30">
-                <div className="p-3 rounded-full bg-muted mb-4">
-                  <IGRPIcon
-                    iconName="Building2"
-                    className="size-8 text-muted-foreground"
-                    strokeWidth={1.5}
-                  />
-                </div>
-                <h3 className="text-sm font-semibold mb-1">
-                  {searchTerm
-                    ? "Nenhum departamento encontrado"
-                    : "Nenhum departamento"}
-                </h3>
-                <p className="text-muted-foreground text-xs mb-4 max-w-[220px]">
-                  {searchTerm
-                    ? "Tente outro termo na pesquisa ou limpe o campo."
-                    : "Use o botão 'Novo Departamento' para criar o primeiro departamento para organizar perfis e permissões."}
-                </p>
-              </div>
-            ) : (
-              filteredTree.map((dept) => (
-                <DepartmentTreeItem
-                  expandedDepts={expandedDepts}
-                  setExpandedDepts={setExpandedDepts}
-                  setSelectedDeptCode={setSelectedDeptCode}
-                  selectedDeptCode={selectedDeptCode}
-                  handleEdit={handleEdit}
-                  handleCreateSubDept={handleCreateSubDept}
-                  handleDelete={handleDelete}
-                  key={dept.code}
-                  dept={dept}
-                />
-              ))
             )}
           </div>
         </div>
 
-        {/* Overlay for mobile */}
-        {isSidebarOpen && (
-          <button
-            type="button"
-            aria-label="Fechar menu de departamentos"
-            className="fixed! inset-0! bg-black/50! z-40! lg:hidden!"
-            onClick={() => setIsSidebarOpen(false)}
-          />
-        )}
-
-        {/* Main content */}
-        <div className="flex-1 overflow-y-auto">
-          {isLoadSelectedDep && (
-            <AppCenterLoading description="Carregando departamentos..." />
-          )}
-          {!isLoadSelectedDep &&
-            !selectedDepartment &&
-            departmentTree.length === 0 && (
-              <div className="flex flex-col items-center justify-center min-h-[320px] px-6 text-center">
-                <div className="p-4 rounded-full bg-muted/50 mb-5">
-                  <IGRPIcon
-                    iconName="Building2"
-                    className="size-12 text-muted-foreground"
-                    strokeWidth={1.5}
-                  />
-                </div>
-                <h2 className="text-lg font-semibold mb-2">
-                  Comece por um departamento
-                </h2>
-                <p className="text-muted-foreground text-sm max-w-sm mb-6">
-                  Os departamentos organizam perfis, permissões e menus. Crie o
-                  primeiro para configurar o sistema.
-                </p>
-                <ButtonLink
-                  onClick={handleOpenCreate}
-                  icon="Plus"
-                  href="#"
-                  label="Novo Departamento"
-                />
-              </div>
-            )}
-          {!isLoadSelectedDep && selectedDepartment && (
-            <div className="container mx-auto px-0 md:px-6!">
-              <div className="flex flex-col lg:flex-row! items-start justify-between mb-6 gap-4">
-                <div className="w-full! lg:w-auto!">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <h1 className="text-xl font-bold">
-                      {selectedDepartment.name}
-                    </h1>
-
-                    <Badge
-                      className={getStatusColor(
-                        selectedDepartment.status || "ACTIVE",
-                      )}
-                    >
-                      {selectedDepartment.status}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-muted-foreground text-xs">
-                      #{selectedDepartment.code}
-                    </span>
-                    <CopyToClipboard value={selectedDepartment?.code || ""} />
-                  </div>
-
-                  <p className="text-muted-foreground text-sm">
-                    {selectedDepartment?.description || "Sem descrição."}
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row! w-full! lg:w-auto! gap-2">
-                  <Button
-                    onClick={() =>
-                      handleEdit(selectedDepartment as DepartmentWithChildren)
-                    }
-                    variant="outline"
-                    className="cursor-pointer w-full! sm:w-auto!"
-                  >
-                    <IGRPIcon
-                      iconName="Pencil"
-                      className="w-4 h-4"
-                      strokeWidth={2}
-                    />
-                    Editar
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowAppsModal(true)}
-                    className="gap-2 cursor-pointer w-full! sm:w-auto!"
-                  >
-                    <IGRPIcon
-                      iconName="AppWindow"
-                      className="w-4 h-4"
-                      strokeWidth={2}
-                    />
-                    Gerenciar Apps
-                  </Button>
-                </div>
-              </div>
-
-              <IGRPTabs
-                defaultValue="roles"
-                items={tabs}
-                className="min-w-0"
-                tabContentClassName="px-0"
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      <DepartmentFormDialog
-        open={openFormDialog}
-        onOpenChange={setOpenFormDialog}
-        department={currentDept}
-        parentDeptId={parentDeptId}
-      />
-
-      {deptToDelete && (
-        <DepartmentDeleteDialog
-          open={openDeleteDialog}
-          onOpenChange={setOpenDeleteDialog}
-          deptToDelete={deptToDelete}
+        <DepartmentDialogs
+          state={dialog}
+          dispatch={dispatch}
+          selectedCode={selectedCode ?? ""}
         />
-      )}
-
-      <ManageAppsModal
-        departmentCode={selectedDeptCode ?? ""}
-        open={showAppsModal}
-        onOpenChange={setShowAppsModal}
-      />
-    </div>
+      </div>
+    </DeptTreeContext>
   );
 }
