@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { getApplicationByCode } from "@/actions/applications";
 import { ApplicationDetails } from "@/features/applications/components/app-details";
 import {
+  getApplicationByCodeCached,
   makeQueryClient,
   prefetchApplicationByCode,
 } from "@/features/applications/prefetch";
@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<{ code: string }>;
 }): Promise<Metadata> {
   const { code } = await params;
-  const result = await getApplicationByCode(code);
+  const result = await getApplicationByCodeCached(code);
   const title = result.success ? result.data.name : code;
   return {
     title: `${title} · Aplicações`,

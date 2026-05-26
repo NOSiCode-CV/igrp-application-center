@@ -17,6 +17,10 @@ describe("applicationsKeys", () => {
     ]);
   });
 
+  it("collapses an empty filter object to the bare list key", () => {
+    expect(applicationsKeys.list({})).toEqual(["applications", "list"]);
+  });
+
   it("returns a detail key per app code", () => {
     expect(applicationsKeys.detail("MY_APP")).toEqual([
       "applications",

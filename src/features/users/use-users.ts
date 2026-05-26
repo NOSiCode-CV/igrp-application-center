@@ -14,6 +14,7 @@ import type {
   UserInvitationResponseDTO,
   UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import {
   useMutation,
   useQueries,
@@ -282,6 +283,7 @@ export function useCurrentUserFavoriteApplications(applicationName?: string) {
 
 export function useAddCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
+  const { igrpToast } = useIGRPToast();
 
   return useMutation({
     mutationFn: async (variables: { applicationCode: string; app?: ApplicationDTO }) =>
@@ -303,12 +305,18 @@ export function useAddCurrentUserFavoriteApplication() {
       }
       return { previous };
     },
-    onError: (_err, _variables, context) => {
+    onError: (err, _variables, context) => {
       if (context?.previous) {
         for (const [key, data] of context.previous) {
           queryClient.setQueryData(key, data);
         }
       }
+      igrpToast({
+        type: "error",
+        title: "Não foi possível atualizar os favoritos.",
+        description: (err as Error).message,
+        duration: 4000,
+      });
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({
@@ -321,6 +329,7 @@ export function useAddCurrentUserFavoriteApplication() {
 
 export function useRemoveCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
+  const { igrpToast } = useIGRPToast();
 
   return useMutation({
     mutationFn: async (applicationCode: string) =>
@@ -336,12 +345,18 @@ export function useRemoveCurrentUserFavoriteApplication() {
       );
       return { previous };
     },
-    onError: (_err, _variables, context) => {
+    onError: (err, _variables, context) => {
       if (context?.previous) {
         for (const [key, data] of context.previous) {
           queryClient.setQueryData(key, data);
         }
       }
+      igrpToast({
+        type: "error",
+        title: "Não foi possível atualizar os favoritos.",
+        description: (err as Error).message,
+        duration: 4000,
+      });
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({

@@ -52,9 +52,7 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
                 alt={name}
                 fill
                 className="object-cover"
-                quality={100}
                 sizes="100px"
-                priority
               />
             ) : (
               <IGRPIcon iconName="AppWindow" className="size-7 text-primary" />

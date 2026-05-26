@@ -1,12 +1,15 @@
 import type { QueryClient } from "@tanstack/react-query";
+import { cache } from "react";
 import {
-  getApplicationByCode,
+  getApplicationByCode as getApplicationByCodeAction,
   getApplications,
 } from "@/actions/applications";
 import { makeQueryClient } from "@/providers/query-provider";
 import { applicationsKeys } from "./query-keys";
 
 export { makeQueryClient };
+
+export const getApplicationByCodeCached = cache(getApplicationByCodeAction);
 
 export async function prefetchApplicationsList(client: QueryClient) {
   await client.prefetchQuery({
@@ -26,7 +29,7 @@ export async function prefetchApplicationByCode(
   await client.prefetchQuery({
     queryKey: applicationsKeys.detail(code),
     queryFn: async () => {
-      const result = await getApplicationByCode(code);
+      const result = await getApplicationByCodeCached(code);
       if (!result.success) throw new Error(result.error);
       return result.data;
     },

@@ -3,7 +3,7 @@ import type { ApplicationFilters } from "@igrp/platform-access-management-client
 export const applicationsKeys = {
   all: ["applications"] as const,
   list: (filters?: ApplicationFilters) =>
-    filters
+    filters && Object.keys(filters).length > 0
       ? (["applications", "list", filters] as const)
       : (["applications", "list"] as const),
   detail: (code: string) => ["applications", "detail", code] as const,
