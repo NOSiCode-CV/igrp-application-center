@@ -10,63 +10,107 @@ import { useState } from "react";
 export interface UserProfileEditableNameProps {
   name: string;
   fallback?: string;
+  maxLength?: number;
   onSave: (next: string) => Promise<void>;
 }
 
 export function UserProfileEditableName({
   name,
   fallback,
+  maxLength = 120,
   onSave,
 }: UserProfileEditableNameProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const startEditing = () => {
     setDraft(name);
+    setError(null);
     setEditing(true);
   };
 
+  const cancel = () => {
+    if (saving) return;
+    setError(null);
+    setEditing(false);
+  };
+
   const commit = async () => {
+    if (saving) return;
     const next = draft.trim();
     if (!next || next === name) {
       setEditing(false);
+      setError(null);
       return;
     }
-    await onSave(next);
-    setEditing(false);
+
+    setSaving(true);
+    setError(null);
+    try {
+      await onSave(next);
+      setEditing(false);
+    } catch (err) {
+      setError((err as Error).message || "Erro ao guardar");
+      throw err;
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (editing) {
     return (
-      <div className="flex items-center gap-2 mb-1">
-        <IGRPInputText
-          value={draft}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setDraft(e.target.value)
-          }
-          onKeyDown={(e: React.KeyboardEvent) => {
-            if (e.key === "Enter") void commit();
-            if (e.key === "Escape") setEditing(false);
-          }}
-          className="text-2xl font-bold tracking-tight h-10"
-          autoFocus
-        />
-        <IGRPButton
-          size="sm"
-          variant="ghost"
-          onClick={() => void commit()}
-          aria-label="Guardar nome"
-        >
-          <IGRPIcon iconName="Check" className="w-4 h-4" />
-        </IGRPButton>
-        <IGRPButton
-          size="sm"
-          variant="ghost"
-          onClick={() => setEditing(false)}
-          aria-label="Cancelar edição"
-        >
-          <IGRPIcon iconName="X" className="w-4 h-4" />
-        </IGRPButton>
+      <div className="flex flex-col gap-1 mb-1">
+        <div className="flex items-center gap-2">
+          <IGRPInputText
+            value={draft}
+            maxLength={maxLength}
+            disabled={saving}
+            aria-invalid={!!error}
+            aria-describedby={error ? "user-profile-name-error" : undefined}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setDraft(e.target.value)
+            }
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === "Enter") void commit().catch(() => {});
+              if (e.key === "Escape") cancel();
+            }}
+            className="text-2xl font-bold tracking-tight h-12"
+            autoFocus
+          />
+          <IGRPButton
+            size="sm"
+            variant="ghost"
+            onClick={() => void commit().catch(() => {})}
+            disabled={saving}
+            aria-label="Guardar nome"
+          >
+            <IGRPIcon
+              iconName={saving ? "LoaderCircle" : "Check"}
+              className={saving ? "w-4 h-4 animate-spin" : "w-4 h-4"}
+            />
+          </IGRPButton>
+          <IGRPButton
+            size="sm"
+            variant="ghost"
+            onClick={cancel}
+            disabled={saving}
+            aria-label="Cancelar edição"
+          >
+            <IGRPIcon iconName="X" className="w-4 h-4" />
+          </IGRPButton>
+        </div>
+        {error ? (
+          <p
+            id="user-profile-name-error"
+            role="alert"
+            aria-live="polite"
+            className="text-sm text-destructive"
+          >
+            {error}
+          </p>
+        ) : null}
       </div>
     );
   }

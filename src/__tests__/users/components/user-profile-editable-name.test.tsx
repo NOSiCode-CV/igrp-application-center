@@ -7,13 +7,15 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   IGRPButton: ({
     children,
     onClick,
+    disabled,
     "aria-label": ariaLabel,
   }: {
     children?: React.ReactNode;
     onClick?: () => void;
+    disabled?: boolean;
     "aria-label"?: string;
   }) => (
-    <button onClick={onClick} aria-label={ariaLabel}>
+    <button onClick={onClick} disabled={disabled} aria-label={ariaLabel}>
       {children}
     </button>
   ),
@@ -23,17 +25,23 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     onChange,
     onKeyDown,
     autoFocus,
+    maxLength,
+    disabled,
   }: {
     value?: string;
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
     onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
     autoFocus?: boolean;
+    maxLength?: number;
+    disabled?: boolean;
   }) => (
     <input
       value={value}
       onChange={onChange}
       onKeyDown={onKeyDown}
       autoFocus={autoFocus}
+      maxLength={maxLength}
+      disabled={disabled}
     />
   ),
 }));
@@ -65,5 +73,46 @@ describe("UserProfileEditableName", () => {
     await userEvent.click(screen.getByRole("button", { name: /editar nome/i }));
     fireEvent.keyDown(screen.getByRole("textbox"), { key: "Escape" });
     expect(screen.queryByRole("textbox")).toBeNull();
+  });
+
+  it("respects maxLength on the input (default 120)", async () => {
+    render(<UserProfileEditableName name="Old" onSave={vi.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: /editar nome/i }));
+    expect(screen.getByRole("textbox")).toHaveAttribute("maxLength", "120");
+  });
+
+  it("disables save while onSave is in flight", async () => {
+    let resolveSave: () => void = () => {};
+    const onSave = vi.fn().mockImplementation(
+      () => new Promise<void>((r) => { resolveSave = r; }),
+    );
+
+    render(<UserProfileEditableName name="Old" onSave={onSave} />);
+    await userEvent.click(screen.getByRole("button", { name: /editar nome/i }));
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "New");
+
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    const save = await screen.findByRole("button", { name: /guardar nome/i });
+    expect(save).toBeDisabled();
+
+    resolveSave();
+  });
+
+  it("shows inline error when onSave rejects and stays in edit mode", async () => {
+    const onSave = vi.fn().mockRejectedValue(new Error("nope"));
+    render(<UserProfileEditableName name="Old" onSave={onSave} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /editar nome/i }));
+    const input = screen.getByRole("textbox");
+    await userEvent.clear(input);
+    await userEvent.type(input, "New");
+    fireEvent.keyDown(input, { key: "Enter" });
+
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("nope");
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
   });
 });
