@@ -88,7 +88,7 @@ export function UserProfileEditableName({
           >
             <IGRPIcon
               iconName={saving ? "LoaderCircle" : "Check"}
-              className={saving ? "w-4 h-4 animate-spin" : "w-4 h-4"}
+              className={saving ? "size-4 animate-spin" : "size-4"}
             />
           </IGRPButton>
           <IGRPButton
@@ -98,7 +98,7 @@ export function UserProfileEditableName({
             disabled={saving}
             aria-label="Cancelar edição"
           >
-            <IGRPIcon iconName="X" className="w-4 h-4" />
+            <IGRPIcon iconName="X" className="size-4" />
           </IGRPButton>
         </div>
         {error ? (
@@ -126,7 +126,7 @@ export function UserProfileEditableName({
         onClick={startEditing}
         aria-label="Editar nome"
       >
-        <IGRPIcon iconName="Pencil" className="w-4 h-4" />
+        <IGRPIcon iconName="Pencil" className="size-4" />
       </IGRPButton>
     </div>
   );

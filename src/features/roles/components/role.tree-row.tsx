@@ -45,13 +45,13 @@ export function RoleTreeRow({
             {hasChildren ? (
               <button
                 onClick={() => toggleExpand(role.code)}
-                className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors"
+                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors"
                 type="button"
               >
                 <IGRPIcon
                   iconName="ChevronRight"
                   className={cn(
-                    "w-4 h-4 transition-transform",
+                    "size-4 transition-transform",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
@@ -63,7 +63,7 @@ export function RoleTreeRow({
 
             <IGRPIcon
               iconName="ShieldCheck"
-              className="w-4 h-4 text-primary shrink-0"
+              className="size-4 text-primary shrink-0"
               strokeWidth={2}
             />
 

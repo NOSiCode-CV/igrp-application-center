@@ -322,7 +322,7 @@ export function RoleDetails({
         </DialogHeader>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
-          <section className="space-y-10 max-w-full">
+          <section className="flex flex-col gap-10 max-w-full">
             <div className="flex flex-col gap-4">
               <div className="relative py-4">
                 <Input

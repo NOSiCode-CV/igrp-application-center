@@ -35,6 +35,7 @@ import {
   RadioGroup,
   RadioGroupItem,
   ScrollArea,
+  Skeleton,
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -494,10 +495,10 @@ export function MenuFormDialog({
                                       <CommandGroup>
                                         {Array.from({ length: 10 }).map(
                                           (_, i) => (
-                                            <div
+                                            <Skeleton
                                               // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
                                               key={i}
-                                              className="h-9 animate-pulse rounded-sm bg-foreground/5 mx-2 my-1"
+                                              className="h-9 rounded-sm mx-2 my-1"
                                             />
                                           ),
                                         )}
@@ -658,7 +659,7 @@ export function MenuFormDialog({
                                   disabled={openType === "view"}
                                   className="flex flex-row"
                                 >
-                                  <div className="flex items-center space-x-2">
+                                  <div className="flex items-center gap-2">
                                     <RadioGroupItem
                                       value={menuTypeSchema.enum.MENU_PAGE}
                                       id="internal"
@@ -670,7 +671,7 @@ export function MenuFormDialog({
                                       Página Interna
                                     </label>
                                   </div>
-                                  <div className="flex items-center space-x-2">
+                                  <div className="flex items-center gap-2">
                                     <RadioGroupItem
                                       value={menuTypeSchema.enum.EXTERNAL_PAGE}
                                       id="external"

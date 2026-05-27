@@ -56,7 +56,7 @@ const DepartmentTreeItemSimple = ({
       >
         <button
           onClick={toggleExpand}
-          className="w-4 h-4 flex items-center justify-center shrink-0"
+          className="size-4 flex items-center justify-center shrink-0"
           type="button"
         >
           {hasChildren ? (
@@ -80,11 +80,11 @@ const DepartmentTreeItemSimple = ({
           <div className="relative">
             <IGRPIcon
               iconName={isExpanded ? "FolderOpen" : "Folder"}
-              className={cn("w-4 h-4 shrink-0", !isActive && "opacity-50")}
+              className={cn("size-4 shrink-0", !isActive && "opacity-50")}
               strokeWidth={2}
             />
             {!isActive && (
-              <div className="absolute -right-0.5 -bottom-0.5 w-2 h-2 rounded-full bg-red-500/50 border border-background" />
+              <div className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full bg-destructive/50 border border-background" />
             )}
           </div>
           <span className="flex-1 text-left truncate font-medium">

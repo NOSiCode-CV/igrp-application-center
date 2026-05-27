@@ -47,7 +47,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
       >
         <button
           type="button"
-          className="w-4 h-4 flex items-center justify-center shrink-0 disabled:cursor-default"
+          className="size-4 flex items-center justify-center shrink-0 disabled:cursor-default"
           onClick={() => hasChildren && toggle(dept.code)}
           disabled={!hasChildren}
           aria-expanded={hasChildren ? isExpanded : undefined}
@@ -98,7 +98,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               >
                 <IGRPIcon
                   iconName="EllipsisVertical"
-                  className="w-4 h-4"
+                  className="size-4"
                   strokeWidth={2}
                 />
               </Button>
@@ -111,7 +111,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               <DropdownMenuItem onSelect={() => onEdit(dept)}>
                 <IGRPIcon
                   iconName="Pencil"
-                  className="w-4 h-4 mr-2"
+                  className="size-4 mr-2"
                   strokeWidth={2}
                 />
                 Editar
@@ -119,7 +119,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               <DropdownMenuItem onSelect={() => onCreateSub(dept)}>
                 <IGRPIcon
                   iconName="FolderPlus"
-                  className="w-4 h-4 mr-2"
+                  className="size-4 mr-2"
                   strokeWidth={2}
                 />
                 Criar Sub-departamento
@@ -131,7 +131,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               >
                 <IGRPIcon
                   iconName="Trash"
-                  className="w-4 h-4 mr-2"
+                  className="size-4 mr-2"
                   strokeWidth={2}
                 />
                 Eliminar

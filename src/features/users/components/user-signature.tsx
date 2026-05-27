@@ -88,7 +88,7 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
   return (
     <Card className="py-2">
       <CardContent className="p-4">
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold flex items-center gap-2">
@@ -124,7 +124,7 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
                           : "Upload"
                       }
                       className={cn(
-                        "w-5 h-5 text-primary",
+                        "size-5 text-primary",
                         isLoadingFile ||
                           (uploadFile.isPending && "animate-spin"),
                       )}
@@ -134,10 +134,10 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
               </div>
             ) : (
               <div className="p-8 flex flex-col items-center justify-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <IGRPIcon
                     iconName="Upload"
-                    className="w-6 h-6 text-primary"
+                    className="size-6 text-primary"
                   />
                 </div>
                 <div className="text-center">

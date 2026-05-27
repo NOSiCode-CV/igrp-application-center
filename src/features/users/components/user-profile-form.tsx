@@ -99,7 +99,7 @@ export function ProfileUserForm() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="flex flex-col gap-6 animate-fade-in">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <BackButton />
@@ -196,7 +196,7 @@ export function ProfileUserForm() {
                   <span>
                     <IGRPIcon
                       iconName="LoaderCircle"
-                      className="w-4 h-4 animate-spin mr-2"
+                      className="size-4 animate-spin mr-2"
                     />
                     A processar...
                   </span>

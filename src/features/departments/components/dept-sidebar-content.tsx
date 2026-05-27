@@ -46,7 +46,7 @@ export function DepartmentSidebarContent({
         <div className="relative">
           <IGRPIcon
             iconName="Search"
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground"
           />
           <Input
             type="text"
@@ -58,7 +58,7 @@ export function DepartmentSidebarContent({
           {isFiltering && (
             <IGRPIcon
               iconName="LoaderCircle"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground animate-spin"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground animate-spin"
               aria-label="A filtrar"
             />
           )}

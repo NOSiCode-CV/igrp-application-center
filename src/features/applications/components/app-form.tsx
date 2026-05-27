@@ -16,6 +16,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Separator,
   Textarea,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -134,9 +135,9 @@ export function ApplicationForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem)] w-full scroll-auto">
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -290,7 +291,8 @@ export function ApplicationForm({
           </div>
         </ScrollArea>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
+        <Separator />
+        <div className="flex justify-end gap-2 pt-4">
           <IGRPButton
             type="button"
             showIcon

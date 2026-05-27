@@ -177,7 +177,7 @@ export function ManageAppsModal({
             <DialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AppWindow"
-                className="w-5 h-5"
+                className="size-5"
                 strokeWidth={2}
               />
               Gerenciar Aplicações
@@ -205,7 +205,7 @@ export function ManageAppsModal({
 
           <ScrollArea className="flex-1 h-[95vh] w-full ">
             {loading ? (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {Array.from({ length: 6 }).map((_, i) => (
                   // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
                   <Skeleton key={i} className="h-20 rounded-lg" />
@@ -215,7 +215,7 @@ export function ManageAppsModal({
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <IGRPIcon
                   iconName="AppWindow"
-                  className="w-16 h-16 mb-4 opacity-20"
+                  className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
                 <p className="font-semibold text-lg">
@@ -228,7 +228,7 @@ export function ManageAppsModal({
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {filteredApps.map((app) => (
                   <div
                     key={app.code}
@@ -242,7 +242,7 @@ export function ManageAppsModal({
                     <div className="flex items-center gap-4 p-4">
                       <div
                         className={cn(
-                          "flex items-center justify-center w-12 h-12 rounded-lg shrink-0 transition-colors",
+                          "flex items-center justify-center size-12 rounded-lg shrink-0 transition-colors",
                           app.isAssigned
                             ? "bg-primary/10 text-primary"
                             : "bg-muted text-muted-foreground",
@@ -250,7 +250,7 @@ export function ManageAppsModal({
                       >
                         <IGRPIcon
                           iconName="AppWindow"
-                          className="w-6 h-6"
+                          className="size-6"
                           strokeWidth={2}
                         />
                       </div>
@@ -288,7 +288,7 @@ export function ManageAppsModal({
                           </span>
                           {app.isAssigned && (
                             <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-success" />
                               Ativo
                             </div>
                           )}
@@ -300,7 +300,7 @@ export function ManageAppsModal({
                           }
                           disabled={processingApp !== null}
                           className={cn(
-                            "data-[state=checked]:bg-emerald-500",
+                            "data-[state=checked]:bg-success",
                             processingApp === app.code && "opacity-50",
                           )}
                         />
@@ -312,7 +312,7 @@ export function ManageAppsModal({
                         <div className="flex items-center gap-2 text-sm font-medium">
                           <IGRPIcon
                             iconName="LoaderCircle"
-                            className="w-4 h-4 animate-spin"
+                            className="size-4 animate-spin"
                             strokeWidth={2}
                           />
                           Processando...
@@ -340,7 +340,7 @@ export function ManageAppsModal({
               disabled={processingApp !== null}
               className="gap-2"
             >
-              <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
+              <IGRPIcon iconName="X" className="size-4" strokeWidth={2} />
               Fechar
             </Button>
           </div>
@@ -356,7 +356,7 @@ export function ManageAppsModal({
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
-                className="w-5 h-5 text-destructive"
+                className="size-5 text-destructive"
                 strokeWidth={2}
               />
               Remover Aplicação
@@ -390,7 +390,7 @@ export function ManageAppsModal({
                 <>
                   <IGRPIcon
                     iconName="LoaderCircle"
-                    className="w-4 h-4 animate-spin"
+                    className="size-4 animate-spin"
                     strokeWidth={2}
                   />
                   Removendo...
@@ -399,7 +399,7 @@ export function ManageAppsModal({
                 <>
                   <IGRPIcon
                     iconName="Trash"
-                    className="w-4 h-4"
+                    className="size-4"
                     strokeWidth={2}
                   />
                   Remover

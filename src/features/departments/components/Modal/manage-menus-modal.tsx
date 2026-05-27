@@ -290,13 +290,13 @@ export function ManageMenusModal({
             {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
-                className="w-8 h-8 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                className="size-8 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
                 type="button"
               >
                 <IGRPIcon
                   iconName="ChevronRight"
                   className={cn(
-                    "w-4 h-4 transition-transform",
+                    "size-4 transition-transform",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
@@ -306,7 +306,7 @@ export function ManageMenusModal({
 
             <div
               className={cn(
-                "flex items-center justify-center w-10 h-10 rounded-lg shrink-0 transition-colors",
+                "flex items-center justify-center size-10 rounded-lg shrink-0 transition-colors",
                 isAssigned
                   ? "bg-primary/10 text-primary"
                   : "bg-muted text-muted-foreground",
@@ -314,7 +314,7 @@ export function ManageMenusModal({
             >
               <IGRPIcon
                 iconName={getMenuIcon(menu.type)}
-                className="w-5 h-5"
+                className="size-5"
                 strokeWidth={2}
               />
             </div>
@@ -348,7 +348,7 @@ export function ManageMenusModal({
                 </span>
                 {isAssigned && (
                   <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-success" />
                     Ativo
                   </div>
                 )}
@@ -358,7 +358,7 @@ export function ManageMenusModal({
                 onCheckedChange={() => handleToggleMenu(menu.code, isAssigned)}
                 disabled={processingMenu !== null}
                 className={cn(
-                  "data-[state=checked]:bg-green-200",
+                  "data-[state=checked]:bg-success",
                   processingMenu === menu.code && "opacity-50",
                 )}
               />
@@ -370,7 +370,7 @@ export function ManageMenusModal({
               <div className="flex items-center gap-2 text-sm font-medium">
                 <IGRPIcon
                   iconName="LoaderCircle"
-                  className="w-4 h-4 animate-spin"
+                  className="size-4 animate-spin"
                   strokeWidth={2}
                 />
                 Processando...
@@ -380,7 +380,7 @@ export function ManageMenusModal({
         </div>
 
         {hasChildren && isExpanded && (
-          <div className="mt-2 space-y-2">
+          <div className="mt-2 flex flex-col gap-2">
             {menu.children?.map((child) => (
               <MenuTreeItem key={child.code} menu={child} level={level + 1} />
             ))}
@@ -401,7 +401,7 @@ export function ManageMenusModal({
         <DialogContent className="sm:min-w-2xl ! max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IGRPIcon iconName="Menu" className="w-5 h-5" strokeWidth={2} />
+              <IGRPIcon iconName="Menu" className="size-5" strokeWidth={2} />
               Gerenciar Menus
             </DialogTitle>
             <DialogDescription>
@@ -441,7 +441,7 @@ export function ManageMenusModal({
                       <div className="flex items-center gap-2">
                         <IGRPIcon
                           iconName="AppWindow"
-                          className="w-4 h-4"
+                          className="size-4"
                           strokeWidth={2}
                         />
                         {app.name}
@@ -455,7 +455,7 @@ export function ManageMenusModal({
 
           <ScrollArea className="h-[95vh] w-full ">
             {loading ? (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6"].map((key) => (
                   <Skeleton key={key} className="h-20 rounded-lg" />
                 ))}
@@ -464,7 +464,7 @@ export function ManageMenusModal({
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <IGRPIcon
                   iconName="Menu"
-                  className="w-16 h-16 mb-4 opacity-20"
+                  className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
                 <p className="font-semibold text-lg">Nenhum menu encontrado</p>
@@ -475,7 +475,7 @@ export function ManageMenusModal({
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {menuTree.map((menu) => (
                   <MenuTreeItem key={menu.code} menu={menu} />
                 ))}
@@ -498,7 +498,7 @@ export function ManageMenusModal({
               disabled={processingMenu !== null}
               className="gap-2"
             >
-              <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
+              <IGRPIcon iconName="X" className="size-4" strokeWidth={2} />
               Fechar
             </Button>
           </div>
@@ -514,7 +514,7 @@ export function ManageMenusModal({
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
-                className="w-5 h-5 text-destructive"
+                className="size-5 text-destructive"
                 strokeWidth={2}
               />
               Remover Menu
@@ -548,7 +548,7 @@ export function ManageMenusModal({
                 <>
                   <IGRPIcon
                     iconName="LoaderCircle"
-                    className="w-4 h-4 animate-spin"
+                    className="size-4 animate-spin"
                     strokeWidth={2}
                   />
                   Removendo...
@@ -557,7 +557,7 @@ export function ManageMenusModal({
                 <>
                   <IGRPIcon
                     iconName="Trash"
-                    className="w-4 h-4"
+                    className="size-4"
                     strokeWidth={2}
                   />
                   Remover

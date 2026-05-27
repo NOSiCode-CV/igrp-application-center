@@ -70,13 +70,13 @@ export function MenuTreeRow({
             {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
-                className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
                 type="button"
               >
                 <IGRPIcon
                   iconName="ChevronRight"
                   className={cn(
-                    "w-4 h-4 transition-transform",
+                    "size-4 transition-transform",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
@@ -86,7 +86,7 @@ export function MenuTreeRow({
 
             <IGRPIcon
               iconName={getMenuIcon(menu.type)}
-              className="w-4 h-4 text-primary shrink-0"
+              className="size-4 text-primary shrink-0"
               strokeWidth={2}
             />
 

@@ -4,6 +4,7 @@ import {
   Badge,
   IGRPButton,
   IGRPIcon,
+  Separator,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -68,7 +69,8 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
         {description || APP_DESCRIPTION_FALLBACK}
       </p>
 
-      <div className="flex items-center justify-end gap-1 pt-4 border-t">
+      <Separator />
+      <div className="flex items-center justify-end gap-1 pt-4">
         <ButtonLinkTooltip
           href={`${ROUTES.APPLICATIONS}/${code}` as Route}
           icon="Eye"

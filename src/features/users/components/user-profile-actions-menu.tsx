@@ -29,7 +29,7 @@ export function UserProfileActionsMenu({
           aria-label="Ações do utilizador"
           disabled={isPending}
         >
-          <IGRPIcon iconName="MoreHorizontal" className="w-4 h-4" />
+          <IGRPIcon iconName="MoreHorizontal" className="size-4" />
         </IGRPButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -42,7 +42,7 @@ export function UserProfileActionsMenu({
         >
           <IGRPIcon
             iconName={isActive ? "Ban" : "Check"}
-            className="w-4 h-4 mr-2"
+            className="size-4 mr-2"
           />
           {isActive ? "Desativar" : "Ativar"}
         </DropdownMenuItem>

@@ -13,6 +13,7 @@ import {
   DialogTrigger,
   IGRPButton,
   IGRPIcon,
+  Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import Image from "next/image";
@@ -161,12 +162,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                 >
                   <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
                     {isLoadingFile && (uploadedFilePath || app?.picture) ? (
-                      <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
-                        <IGRPIcon
-                          iconName="LoaderCircle"
-                          className="w-8 h-8 text-muted-foreground animate-spin"
-                        />
-                      </div>
+                      <Skeleton className="size-full" />
                     ) : fileUrl?.url ? (
                       <Image
                         src={fileUrl.url}
@@ -180,7 +176,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                       <AvatarFallback className="text-3xl bg-primary/10">
                         <IGRPIcon
                           iconName="AppWindow"
-                          className="w-12 h-12 text-primary"
+                          className="size-12 text-primary"
                         />
                       </AvatarFallback>
                     )}
@@ -194,7 +190,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                           : "Camera"
                       }
                       className={cn(
-                        "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
+                        "size-4 text-muted-foreground group-hover:text-primary transition-colors",
                         (isLoadingFile || uploadPicture.isPending) &&
                           "animate-spin",
                       )}

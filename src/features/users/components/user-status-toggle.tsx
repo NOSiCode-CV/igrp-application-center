@@ -65,7 +65,7 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
-                className="w-5 h-5 text-destructive"
+                className="size-5 text-destructive"
                 strokeWidth={2}
               />
               {isActive ? "Desativar" : "Ativar"} Utilizador
