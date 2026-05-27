@@ -19,7 +19,8 @@ export const RULES = [
   {
     id: "no-space-xy",
     level: "strict",
-    message: "Use `flex gap-*` (or `flex-col gap-*`) instead of space-x-*/space-y-*.",
+    message:
+      "Use `flex gap-*` (or `flex-col gap-*`) instead of space-x-*/space-y-*.",
     pattern: () => /\bspace-[xy]-[\w./[\]-]+/g,
   },
   {
@@ -34,7 +35,10 @@ export const RULES = [
     message:
       "Use Badge variants or semantic tokens (bg-primary, text-muted-foreground), not raw color literals.",
     pattern: () =>
-      new RegExp(`\\b(?:bg|text|border|fill|ring)-(?:${COLOR_NAMES})-\\d{2,3}\\b`, "g"),
+      new RegExp(
+        `\\b(?:bg|text|border|fill|ring)-(?:${COLOR_NAMES})-\\d{2,3}\\b`,
+        "g",
+      ),
   },
   {
     id: "no-animate-pulse",
@@ -47,7 +51,8 @@ export const RULES = [
     level: "strict",
     message:
       "Remove manual dark: color overrides — semantic tokens handle dark mode.",
-    pattern: () => new RegExp(`\\bdark:(?:bg|text|border|fill|ring)-[^\\s"']+`, "g"),
+    pattern: () =>
+      new RegExp(`\\bdark:(?:bg|text|border|fill|ring)-[^\\s"']+`, "g"),
   },
   {
     id: "use-separator",
@@ -109,9 +114,11 @@ export function formatViolations(violations, filePath) {
 
 /** @returns {string[]} */
 function listTsxFiles(root = "src") {
-  return readdirSync(root, { recursive: true })
-    .filter((p) => typeof p === "string" && p.endsWith(".tsx"))
-    .map((p) => join(root, p));
+  return /** @type {string[]} */ (
+    readdirSync(root, { recursive: true }).filter(
+      (p) => typeof p === "string" && p.endsWith(".tsx"),
+    )
+  ).map((p) => join(root, p));
 }
 
 function main() {
@@ -131,6 +138,9 @@ function main() {
   process.exitCode = strictCount > 0 ? 1 : 0;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   main();
 }
