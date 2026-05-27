@@ -11,9 +11,9 @@ interface InviteStepHeaderProps {
 
 const TONE: Record<NonNullable<InviteStepHeaderProps["tone"]>, string> = {
   neutral: "bg-primary/10 text-primary",
-  warning: "bg-amber-500/10 text-amber-600",
+  warning: "bg-warning/10 text-warning",
   destructive: "bg-destructive/10 text-destructive",
-  success: "bg-emerald-500/10 text-emerald-600",
+  success: "bg-success/10 text-success",
 };
 
 export function InviteStepHeader({

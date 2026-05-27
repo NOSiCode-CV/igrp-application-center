@@ -84,7 +84,7 @@ const DepartmentTreeItemSimple = ({
               strokeWidth={2}
             />
             {!isActive && (
-              <div className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full bg-red-500/50 border border-background" />
+              <div className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full bg-destructive/50 border border-background" />
             )}
           </div>
           <span className="flex-1 text-left truncate font-medium">

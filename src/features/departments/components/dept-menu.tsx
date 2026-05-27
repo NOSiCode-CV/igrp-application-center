@@ -546,7 +546,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="TriangleAlert"
-                className="size-5 text-amber-500"
+                className="size-5 text-warning"
                 strokeWidth={2}
               />
               Alterações por guardar

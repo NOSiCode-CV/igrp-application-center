@@ -227,7 +227,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                                   )
                                 }
                                 className={cn(
-                                  "data-[state=checked]:bg-emerald-500",
+                                  "data-[state=checked]:bg-success",
                                   isProcessing && "opacity-50",
                                 )}
                               />

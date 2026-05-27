@@ -288,7 +288,7 @@ export function ManageAppsModal({
                           </span>
                           {app.isAssigned && (
                             <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-success" />
                               Ativo
                             </div>
                           )}
@@ -300,7 +300,7 @@ export function ManageAppsModal({
                           }
                           disabled={processingApp !== null}
                           className={cn(
-                            "data-[state=checked]:bg-emerald-500",
+                            "data-[state=checked]:bg-success",
                             processingApp === app.code && "opacity-50",
                           )}
                         />

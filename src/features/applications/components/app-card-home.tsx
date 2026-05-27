@@ -80,7 +80,7 @@ export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
           >
             <IGRPIcon
               iconName="Star"
-              className={`size-4 ${isFavorite ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`}
+              className={`size-4 ${isFavorite ? "fill-warning text-warning" : "text-muted-foreground"}`}
             />
           </button>
         </div>

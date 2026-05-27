@@ -240,7 +240,7 @@ export function ManageResourcesModal({
               </span>
               {isAssigned && (
                 <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
                   Ativo
                 </div>
               )}
@@ -250,7 +250,7 @@ export function ManageResourcesModal({
               onCheckedChange={() => handleToggleResource(resource, isAssigned)}
               disabled={processingResource !== null}
               className={cn(
-                "data-[state=checked]:bg-green-200",
+                "data-[state=checked]:bg-success",
                 processingResource === resource.name && "opacity-50",
               )}
             />

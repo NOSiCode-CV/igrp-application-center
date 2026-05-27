@@ -39,12 +39,10 @@ export default function LogoutPage() {
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               A encerrar sessão
             </h2>
-            <p className="text-slate-600 dark:text-slate-400">
-              Por favor aguarde...
-            </p>
+            <p className="text-muted-foreground">Por favor aguarde...</p>
           </div>
 
           <div className="flex justify-center mt-6">

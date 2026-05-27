@@ -84,10 +84,7 @@ export default function ProfileRoleList() {
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm">{role.name}</p>
                         {isRoleActive(role.code) && (
-                          <Badge
-                            variant={"secondary"}
-                            className="bg-green-800 text-white text-xs"
-                          >
+                          <Badge variant={"default"} className="text-xs">
                             Ativado
                           </Badge>
                         )}
