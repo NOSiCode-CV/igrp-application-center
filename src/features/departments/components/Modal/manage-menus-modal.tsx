@@ -348,7 +348,7 @@ export function ManageMenusModal({
                 </span>
                 {isAssigned && (
                   <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                     Ativo
                   </div>
                 )}

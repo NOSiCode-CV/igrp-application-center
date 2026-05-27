@@ -2,6 +2,7 @@
 
 import {
   IGRPButton,
+  Skeleton,
   Tabs,
   TabsContent,
   TabsList,
@@ -20,10 +21,10 @@ import UserSignature from "./user-signature";
 
 function TabSkeleton() {
   return (
-    <div className="flex flex-col gap-3 p-4 animate-pulse">
-      <div className="h-4 w-3/4 rounded bg-muted" />
-      <div className="h-4 w-1/2 rounded bg-muted" />
-      <div className="h-4 w-2/3 rounded bg-muted" />
+    <div className="flex flex-col gap-3 p-4">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+      <Skeleton className="h-4 w-2/3" />
     </div>
   );
 }

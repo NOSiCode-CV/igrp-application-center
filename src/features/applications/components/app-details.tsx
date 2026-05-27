@@ -13,6 +13,7 @@ import {
   DialogTrigger,
   IGRPButton,
   IGRPIcon,
+  Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import Image from "next/image";
@@ -161,12 +162,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                 >
                   <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
                     {isLoadingFile && (uploadedFilePath || app?.picture) ? (
-                      <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
-                        <IGRPIcon
-                          iconName="LoaderCircle"
-                          className="size-8 text-muted-foreground animate-spin"
-                        />
-                      </div>
+                      <Skeleton className="size-full" />
                     ) : fileUrl?.url ? (
                       <Image
                         src={fileUrl.url}

@@ -18,7 +18,7 @@ export default function LogoutPage() {
         <div className=" rounded-2xl shadow-2xl p-8 bg-card ">
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="size-20 rounded-full flex items-center justify-center animate-pulse">
+              <div className="size-20 rounded-full flex items-center justify-center">
                 <svg
                   className="size-10 text-white"
                   fill="none"

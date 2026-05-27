@@ -35,6 +35,7 @@ import {
   RadioGroup,
   RadioGroupItem,
   ScrollArea,
+  Skeleton,
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -494,10 +495,10 @@ export function MenuFormDialog({
                                       <CommandGroup>
                                         {Array.from({ length: 10 }).map(
                                           (_, i) => (
-                                            <div
+                                            <Skeleton
                                               // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
                                               key={i}
-                                              className="h-9 animate-pulse rounded-sm bg-foreground/5 mx-2 my-1"
+                                              className="h-9 rounded-sm mx-2 my-1"
                                             />
                                           ),
                                         )}

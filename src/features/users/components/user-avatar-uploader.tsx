@@ -4,6 +4,7 @@ import {
   cn,
   IGRPIcon,
   IGRPUserAvatar,
+  Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
@@ -85,12 +86,7 @@ export function UserAvatarUploader({ user }: UserAvatarUploaderProps) {
           image={currentAvatarUrl}
           fallbackContent={
             busy ? (
-              <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
-                <IGRPIcon
-                  iconName="LoaderCircle"
-                  className="size-8 text-muted-foreground animate-spin"
-                />
-              </div>
+              <Skeleton className="size-full" />
             ) : (
               getInitials(user?.name || user?.email || "")
             )
