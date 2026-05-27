@@ -18,6 +18,24 @@ stages:
   - manifest
   - deploy
 
+# Enforced gate: shadcn/UI rules must stay clean. Blocks merges.
+check-ui:
+  stage: validate
+  image: node:22-alpine
+  tags:
+    - nosi-runner
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm check:ui
+
+# Advisory: surfaces lint/typecheck/test status without blocking.
+# allow_failure stays true until the pre-existing lint/typecheck/test debt
+# is cleared, then it can be removed to make these blocking too.
 validate:
   stage: validate
   image: node:22-alpine
@@ -25,8 +43,6 @@ validate:
     - nosi-runner
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-  # allow_failure stays true until the UI-rule cleanup lands,
-  # then it is removed so strict UI rules block merges.
   allow_failure: true
   before_script:
     - corepack enable
@@ -36,7 +52,6 @@ validate:
     - pnpm lint
     - pnpm typecheck
     - pnpm test
-    - pnpm check:ui
 
 .build-template:
   tags:
