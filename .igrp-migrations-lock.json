@@ -118,6 +118,39 @@
         ".env.example": "ad43477152a6e6d1",
         "package.json": "6c200414da4c929a"
       }
+    },
+    {
+      "id": "09-sync-on-code-menus",
+      "appliedAt": "2026-05-27T23:46:10.734Z",
+      "cliVersion": "0.1.0-beta.119",
+      "manifestHash": "e5f1d534226dfef5",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/igrp.template.config.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": ".env.example",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.139",
+            "@igrp/framework-next-types": "0.1.0-beta.134"
+          }
+        }
+      ],
+      "fileHashes": {
+        "src/igrp.template.config.ts": "3b09a115b5ea6d82",
+        ".env.example": "991ab5731e4767a4",
+        "package.json": "a0dd331663ff6da0"
+      }
     }
   ]
 }

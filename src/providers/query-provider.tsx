@@ -1,27 +1,9 @@
 "use client";
 
-import {
-  isServer,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { isServer, QueryClientProvider } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-
-export function makeQueryClient(): QueryClient {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 30_000,
-        gcTime: 5 * 60_000,
-        refetchOnWindowFocus: false,
-        retry: false,
-      },
-      mutations: {
-        retry: false,
-      },
-    },
-  });
-}
+import { makeQueryClient } from "./query-client";
 
 let browserClient: QueryClient | undefined;
 

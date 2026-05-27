@@ -6,6 +6,7 @@ import type {
 import { fontVariables } from "@/lib/fonts";
 import { isPreviewMode } from "@/lib/utils";
 import { getMockApps } from "@/temp/applications/use-mock-apps";
+import { IGRP_DEFAULT_MENU } from "@/temp/menus/menus";
 import { getMockMenus } from "@/temp/menus/use-mock-menus";
 import { getMockUser } from "@/temp/users/use-mock-user";
 import { getPackageJson } from "./lib/config/get-pkj";
@@ -69,7 +70,8 @@ export function createConfig(
       serviceId: process.env.IGRP_SERVICE_ID || "",
       m2mClientId: process.env.IGRP_M2M_CLIENT_ID || "",
       m2mClientSecret: process.env.IGRP_M2M_CLIENT_SECRET || "",
-      m2mScope: process.env.IGRP_M2M_SCOPE || undefined,
+      syncOnCodeMenus: process.env.IGRP_SYNC_ON_CODE_MENUS === "true",
+      onCodeMenus: IGRP_DEFAULT_MENU,
       appRoutes,
       paramMapBody,
     },

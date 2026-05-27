@@ -276,7 +276,6 @@ export function useCurrentUserFavoriteApplications(applicationName?: string) {
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
-    throwOnError: true,
     retry: false,
   });
 }

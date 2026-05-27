@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-import { auth } from "@/lib/auth";
+import { auth, PREVIEW_SESSION_STUB } from "@/lib/auth";
 import { isAuthBypass } from "@/lib/utils";
 
 export async function getTheme() {
@@ -15,11 +15,7 @@ type AccessTokenSession = Awaited<ReturnType<typeof auth.getAccessToken>>;
 
 export async function configLayout() {
   const session: AccessTokenSession = isAuthBypass()
-    ? ({
-        user: { name: "Preview User", email: "preview@example.com" },
-        accessToken: "preview-token",
-        expires: "9999-12-31T23:59:59.999Z",
-      } as unknown as AccessTokenSession)
+    ? (PREVIEW_SESSION_STUB as unknown as AccessTokenSession)
     : await auth.getAccessToken();
   const { activeThemeValue, isScaled } = await getTheme();
   return { session, activeThemeValue, isScaled };

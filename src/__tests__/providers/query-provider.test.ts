@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { makeQueryClient } from "@/providers/query-provider";
+import { makeQueryClient } from "@/providers/query-client";
 
 describe("makeQueryClient", () => {
   it("returns a client with sane defaults for hydration", () => {

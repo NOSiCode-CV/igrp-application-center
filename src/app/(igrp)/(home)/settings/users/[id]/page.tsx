@@ -2,7 +2,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import { getUser } from "@/actions/user";
 import { UserDetailView } from "@/features/users/components/user-detail-view";
-import { makeQueryClient } from "@/providers/query-provider";
+import { makeQueryClient } from "@/providers/query-client";
 
 export const dynamic = "force-dynamic";
 

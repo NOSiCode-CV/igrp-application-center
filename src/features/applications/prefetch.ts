@@ -4,7 +4,7 @@ import {
   getApplicationByCode as getApplicationByCodeAction,
   getApplications,
 } from "@/actions/applications";
-import { makeQueryClient } from "@/providers/query-provider";
+import { makeQueryClient } from "@/providers/query-client";
 import { applicationsKeys } from "./query-keys";
 
 export { makeQueryClient };

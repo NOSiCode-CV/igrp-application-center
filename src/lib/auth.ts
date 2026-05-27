@@ -3,8 +3,20 @@ import { isIgrpError } from "@igrp/framework-next/errors";
 import { assertAuthProviderEnv } from "@igrp/framework-next-auth";
 import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { reportError } from "@/lib/report-error";
 import { isAuthBypass } from "@/lib/utils";
+
+/**
+ * Minimal session shape used in bypass mode (IGRP_PREVIEW_MODE or
+ * AUTH_PROVIDER=none). Covers only the fields layouts/actions read; callers
+ * cast to their concrete session type. Single source of truth — do not inline.
+ */
+export const PREVIEW_SESSION_STUB = {
+  user: { name: "Preview User", email: "preview@example.com" },
+  accessToken: "preview-token",
+  expires: "9999-12-31T23:59:59.999Z",
+} as const;
 
 /**
  * Central IGRP auth instance.
@@ -29,7 +41,7 @@ export const auth = withIGRPAuth({
  *
  * @returns Session or null
  */
-export async function serverSession() {
+export const serverSession = cache(async () => {
   const apiManagement = process.env.IGRP_ACCESS_MANAGEMENT_API || "";
 
   if (!process.env.NEXTAUTH_SECRET) {
@@ -69,7 +81,7 @@ export async function serverSession() {
     reportError(error, { segment: "lib/auth.serverSession" });
     return null;
   }
-}
+});
 
 /**
  * Gets the current session for layout use.

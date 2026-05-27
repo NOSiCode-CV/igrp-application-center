@@ -15,7 +15,7 @@ vi.mock("@/actions/user", () => ({
   })),
 }));
 
-import { makeQueryClient } from "@/providers/query-provider";
+import { makeQueryClient } from "@/providers/query-client";
 import { prefetchCurrentUserDashboard } from "./prefetch";
 
 describe("prefetchCurrentUserDashboard", () => {

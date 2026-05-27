@@ -4,7 +4,7 @@ import {
   getCurrentUserFavoriteApplications,
   getCurrentUserRecentApplications,
 } from "@/actions/user";
-import { makeQueryClient } from "@/providers/query-provider";
+import { makeQueryClient } from "@/providers/query-client";
 
 export { makeQueryClient };
 
