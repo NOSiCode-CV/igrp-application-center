@@ -135,10 +135,7 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
             ) : (
               <div className="p-8 flex flex-col items-center justify-center gap-3">
                 <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <IGRPIcon
-                    iconName="Upload"
-                    className="size-6 text-primary"
-                  />
+                  <IGRPIcon iconName="Upload" className="size-6 text-primary" />
                 </div>
                 <div className="text-center">
                   <p className="font-medium text-sm">Clique para carregar</p>

@@ -5,11 +5,17 @@ describe("scanContent", () => {
   it("flags space-x/space-y as strict", () => {
     const v = scanContent('<div className="space-y-4">');
     expect(v).toHaveLength(1);
-    expect(v[0]).toMatchObject({ ruleId: "no-space-xy", level: "strict", line: 1 });
+    expect(v[0]).toMatchObject({
+      ruleId: "no-space-xy",
+      level: "strict",
+      line: 1,
+    });
   });
 
   it("does not flag flex gap utilities", () => {
-    expect(scanContent('<div className="flex flex-col gap-4">')).toHaveLength(0);
+    expect(scanContent('<div className="flex flex-col gap-4">')).toHaveLength(
+      0,
+    );
   });
 
   it("flags equal w-N h-N pairs as advisory", () => {
@@ -38,7 +44,9 @@ describe("scanContent", () => {
   });
 
   it("does not flag semantic tokens", () => {
-    expect(scanContent('<div className="bg-primary text-muted-foreground" />')).toHaveLength(0);
+    expect(
+      scanContent('<div className="bg-primary text-muted-foreground" />'),
+    ).toHaveLength(0);
   });
 
   it("flags animate-pulse as strict", () => {

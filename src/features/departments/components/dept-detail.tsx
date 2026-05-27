@@ -78,11 +78,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
             onClick={onManageApps}
             className="gap-2 cursor-pointer w-full sm:w-auto"
           >
-            <IGRPIcon
-              iconName="AppWindow"
-              className="size-4"
-              strokeWidth={2}
-            />
+            <IGRPIcon iconName="AppWindow" className="size-4" strokeWidth={2} />
             Gerenciar Apps
           </Button>
         </div>

@@ -1,7 +1,8 @@
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import { getUser } from "@/actions/user";
-import { UserDetailsHeader } from "@/features/users/components/user-details-header";
-import { UserDetailsTabs } from "@/features/users/components/user-details-tabs";
+import { UserDetailView } from "@/features/users/components/user-detail-view";
+import { makeQueryClient } from "@/providers/query-provider";
 
 export const dynamic = "force-dynamic";
 
@@ -11,16 +12,22 @@ export default async function UserPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const result = await getUser(id);
-
-  if (!result.success) notFound();
-
-  const user = result.data;
-
+  const queryClient = makeQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["user", id],
+    queryFn: async () => {
+      const result = await getUser(id);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+  });
+  // prefetchQuery swallows the error; if the user wasn't loaded, 404.
+  if (!queryClient.getQueryData(["user", id])) {
+    notFound();
+  }
   return (
-    <div className="flex flex-col gap-6 p-6">
-      <UserDetailsHeader user={user} />
-      <UserDetailsTabs user={user} />
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <UserDetailView id={id} />
+    </HydrationBoundary>
   );
 }

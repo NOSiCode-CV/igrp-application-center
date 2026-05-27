@@ -150,7 +150,10 @@ export function UserInviteDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-6"
+          >
             <fieldset className="border border-accent p-4 rounded-md flex flex-col gap-4">
               <legend className="text-base font-semibold px-2 mb-1">
                 Informação do Utilizador

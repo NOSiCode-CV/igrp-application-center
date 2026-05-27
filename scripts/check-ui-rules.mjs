@@ -51,8 +51,7 @@ export const RULES = [
     level: "strict",
     message:
       "Remove manual dark: color overrides — semantic tokens handle dark mode.",
-    pattern: () =>
-      new RegExp(`\\bdark:(?:bg|text|border|fill|ring)-[^\\s"']+`, "g"),
+    pattern: () => /\bdark:(?:bg|text|border|fill|ring)-[^\s"']+/g,
   },
   {
     id: "use-separator",
