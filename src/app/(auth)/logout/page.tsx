@@ -34,7 +34,7 @@ export default function LogoutPage() {
                   />
                 </svg>
               </div>
-              <div className="absolute inset-0 w-20 h-20 bg-cardrounded-full opacity-20 animate-ping" />
+              <div className="absolute inset-0 w-20 h-20 bg-card rounded-full opacity-20 animate-ping" />
             </div>
           </div>
 

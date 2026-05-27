@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { Session } from "next-auth";
 import { cache } from "react";
 
+import { configLayout } from "@/actions/igrp/layout";
 import { getSession } from "@/lib/auth";
 import { isAuthBypass } from "@/lib/utils";
 
@@ -27,6 +28,13 @@ export const verifySession = cache(async (): Promise<Session> => {
   if (!session) redirect("/login");
   return session;
 });
+
+/**
+ * Resolves the layout config (session + active theme) for a request.
+ * The root layout and the (home) layout both need it; this cache ensures the
+ * underlying auth + cookies work runs once per request instead of per layout.
+ */
+export const getLayoutConfig = cache(configLayout);
 
 /**
  * Returns only the user fields UI components need — never the raw JWT,

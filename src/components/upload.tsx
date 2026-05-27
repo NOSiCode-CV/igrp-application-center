@@ -13,6 +13,7 @@ interface ImageUploadProps {
 export function Upload({
   value = null,
   onChange = () => {},
+  alt = "Profile preview",
 }: ImageUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -102,8 +103,10 @@ export function Upload({
           <div className="relative h-24 w-24 overflow-hidden rounded-full border">
             <Image
               src={previewUrl || "/placeholder.svg"}
-              alt="Profile preview"
-              className="h-full w-full object-cover"
+              alt={alt}
+              fill
+              sizes="96px"
+              className="object-cover"
             />
           </div>
         ) : (

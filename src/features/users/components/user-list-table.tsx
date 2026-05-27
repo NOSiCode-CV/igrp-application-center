@@ -7,6 +7,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  IGRPButton,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
   IGRPDataTableFacetedFilterFn,
@@ -29,7 +30,6 @@ import type {
 } from "@igrp/platform-access-management-client-ts";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
-import { ButtonLink } from "@/components/button-link";
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";
@@ -521,12 +521,13 @@ export function UserListTable({
         description="Ver e gerir todos os utilizadores do sistema."
         showActions
       >
-        <ButtonLink
+        <IGRPButton
+          showIcon
+          iconName="UserRoundPlus"
           onClick={() => setInviteDialogOpen(true)}
-          icon="UserRoundPlus"
-          href="#"
-          label="Convidar Utilizador"
-        />
+        >
+          Convidar Utilizador
+        </IGRPButton>
       </PageHeader>
 
       <Tabs defaultValue="active">

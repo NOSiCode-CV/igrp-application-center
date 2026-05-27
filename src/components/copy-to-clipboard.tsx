@@ -60,7 +60,7 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
             className="disabled:opacity-100 size-7"
             onClick={handleCopy}
             aria-label={
-              copied ? "Copiado" : "Copiar para a área de transferênciawwwww"
+              copied ? "Copiado" : "Copiar para a área de transferência"
             }
             disabled={copied}
           >

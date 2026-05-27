@@ -56,6 +56,17 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
         </tbody>
       </table>
     ),
+    IGRPButton: ({
+      children,
+      onClick,
+    }: {
+      children?: React.ReactNode;
+      onClick?: () => void;
+    }) => (
+      <button type="button" onClick={onClick}>
+        {children}
+      </button>
+    ),
     IGRPDataTableFacetedFilterFn: () => true,
     IGRPDataTableFilterFaceted: () => null,
     IGRPDataTableFilterInput: () => null,
@@ -80,9 +91,6 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
 });
 
 // Stub local components / utils that have unrelated imports.
-vi.mock("@/components/button-link", () => ({
-  ButtonLink: () => null,
-}));
 vi.mock("@/components/confirmation-modal", () => ({
   ConfirmDialog: () => null,
 }));

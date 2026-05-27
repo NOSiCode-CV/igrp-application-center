@@ -89,7 +89,7 @@ export function RoleDeleteDialog({
                   Esta ação é irreversível. O menu e todos os seus dados serão
                   eliminados permanentemente. Para confirmar, escreva
                 </span>{" "}
-                <span className="font-semibold italic bg-emerald-50bg-destructive/20 dark:bg-destructive/50 dark:text-white p-0.5 rounded-sm ">
+                <span className="font-semibold italic bg-destructive/20 dark:bg-destructive/50 dark:text-white p-0.5 rounded-sm">
                   {roleToDelete}
                 </span>{" "}
                 abaixo:
