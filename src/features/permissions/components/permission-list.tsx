@@ -168,7 +168,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
             <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
               <IGRPIcon
                 iconName="ShieldOff"
-                className="w-16 h-16 mb-4 opacity-30"
+                className="size-16 mb-4 opacity-30"
                 strokeWidth={1.5}
               />
               <p className="text-lg font-medium mb-2">
@@ -213,7 +213,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                               {isProcessing && (
                                 <IGRPIcon
                                   iconName="LoaderCircle"
-                                  className="w-4 h-4 animate-spin text-muted-foreground"
+                                  className="size-4 animate-spin text-muted-foreground"
                                   strokeWidth={2}
                                 />
                               )}

@@ -187,7 +187,7 @@ export function RoleFormDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
             {isSubRole && (
               <div className="p-3 rounded-md bg-muted/50 border text-sm text-muted-foreground flex items-center gap-2">
                 <IGRPIcon iconName="Info" className="size-4" />

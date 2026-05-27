@@ -71,7 +71,7 @@ export function ConfirmDialog({
               <>
                 <IGRPIcon
                   iconName="LoaderCircle"
-                  className="w-4 h-4 animate-spin"
+                  className="size-4 animate-spin"
                   strokeWidth={2}
                 />
                 {loadingText}
@@ -82,7 +82,7 @@ export function ConfirmDialog({
                   iconName={
                     variant === "destructive" ? (iconName ?? "Trash") : "Check"
                   }
-                  className="w-4 h-4"
+                  className="size-4"
                   strokeWidth={2}
                 />
                 {confirmText}

@@ -190,13 +190,13 @@ export function ManageResourcesModal({
         <div className="flex items-center gap-3 p-3">
           <div
             className={cn(
-              "flex items-center justify-center w-10 h-10 rounded-lg shrink-0 transition-colors",
+              "flex items-center justify-center size-10 rounded-lg shrink-0 transition-colors",
               isAssigned
                 ? "bg-primary/10 text-primary"
                 : "bg-muted text-muted-foreground",
             )}
           >
-            <IGRPIcon iconName="Shield" className="w-5 h-5" strokeWidth={2} />
+            <IGRPIcon iconName="Shield" className="size-5" strokeWidth={2} />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -262,7 +262,7 @@ export function ManageResourcesModal({
             <div className="flex items-center gap-2 text-sm font-medium">
               <IGRPIcon
                 iconName="LoaderCircle"
-                className="w-4 h-4 animate-spin"
+                className="size-4 animate-spin"
                 strokeWidth={2}
               />
               Processando...
@@ -279,7 +279,7 @@ export function ManageResourcesModal({
         <DialogContent className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IGRPIcon iconName="Shield" className="w-5 h-5" strokeWidth={2} />
+              <IGRPIcon iconName="Shield" className="size-5" strokeWidth={2} />
               Gerenciar Recursos
             </DialogTitle>
             <DialogDescription>
@@ -305,7 +305,7 @@ export function ManageResourcesModal({
 
           <ScrollArea className="h-[95vh] w-full">
             {loading ? (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {Array.from({ length: 6 }).map((_, i) => (
                   // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
                   <Skeleton key={i} className="h-20 rounded-lg" />
@@ -315,7 +315,7 @@ export function ManageResourcesModal({
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <IGRPIcon
                   iconName="Shield"
-                  className="w-16 h-16 mb-4 opacity-20"
+                  className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
                 <p className="font-semibold text-lg">
@@ -328,7 +328,7 @@ export function ManageResourcesModal({
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {filteredResources.map((resource) => (
                   <ResourceItem
                     key={resource.id || resource.name}
@@ -354,7 +354,7 @@ export function ManageResourcesModal({
               disabled={processingResource !== null}
               className="gap-2"
             >
-              <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
+              <IGRPIcon iconName="X" className="size-4" strokeWidth={2} />
               Fechar
             </Button>
           </div>
@@ -370,7 +370,7 @@ export function ManageResourcesModal({
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
-                className="w-5 h-5 text-destructive"
+                className="size-5 text-destructive"
                 strokeWidth={2}
               />
               Remover Recurso
@@ -404,7 +404,7 @@ export function ManageResourcesModal({
                 <>
                   <IGRPIcon
                     iconName="LoaderCircle"
-                    className="w-4 h-4 animate-spin"
+                    className="size-4 animate-spin"
                     strokeWidth={2}
                   />
                   Removendo...
@@ -413,7 +413,7 @@ export function ManageResourcesModal({
                 <>
                   <IGRPIcon
                     iconName="Trash"
-                    className="w-4 h-4"
+                    className="size-4"
                     strokeWidth={2}
                   />
                   Remover

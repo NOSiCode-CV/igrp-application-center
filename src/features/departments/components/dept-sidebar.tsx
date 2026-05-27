@@ -53,7 +53,7 @@ export function DepartmentSidebar({
           className="w-full"
           aria-label="Abrir lista de departamentos"
         >
-          <IGRPIcon iconName="Menu" className="w-4 h-4" strokeWidth={2} />
+          <IGRPIcon iconName="Menu" className="size-4" strokeWidth={2} />
           Departamentos
         </Button>
       </div>

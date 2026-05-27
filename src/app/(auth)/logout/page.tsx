@@ -18,9 +18,9 @@ export default function LogoutPage() {
         <div className=" rounded-2xl shadow-2xl p-8 bg-card ">
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="w-20 h-20 rounded-full flex items-center justify-center animate-pulse">
+              <div className="size-20 rounded-full flex items-center justify-center animate-pulse">
                 <svg
-                  className="w-10 h-10 text-white"
+                  className="size-10 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -34,7 +34,7 @@ export default function LogoutPage() {
                   />
                 </svg>
               </div>
-              <div className="absolute inset-0 w-20 h-20 bg-card rounded-full opacity-20 animate-ping" />
+              <div className="absolute inset-0 size-20 bg-card rounded-full opacity-20 animate-ping" />
             </div>
           </div>
 
@@ -49,9 +49,9 @@ export default function LogoutPage() {
 
           <div className="flex justify-center mt-6">
             <div className="flex gap-2">
-              <div className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <div className="w-2 h-2 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <div className="w-2 h-2 bg-accent rounded-full animate-bounce" />
+              <div className="size-2 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <div className="size-2 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <div className="size-2 bg-accent rounded-full animate-bounce" />
             </div>
           </div>
         </div>

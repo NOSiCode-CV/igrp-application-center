@@ -285,7 +285,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               onClick={() => setShowMenusModal(true)}
               className="gap-2"
             >
-              <IGRPIcon iconName="Menu" className="w-4 h-4" strokeWidth={2} />
+              <IGRPIcon iconName="Menu" className="size-4" strokeWidth={2} />
               <span>Gerenciar Menus</span>
             </Button>
           </div>
@@ -326,7 +326,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                       <div className="flex items-center gap-2">
                         <IGRPIcon
                           iconName="AppWindow"
-                          className="w-4 h-4"
+                          className="size-4"
                           strokeWidth={2}
                         />
                         <span>{app.name}</span>
@@ -345,7 +345,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon
               iconName="Menu"
-              className="w-16 h-16 mb-4 opacity-30"
+              className="size-16 mb-4 opacity-30"
               strokeWidth={1.5}
             />
             <p className="text-lg font-medium mb-2">Nenhum menu encontrado</p>
@@ -360,7 +360,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 onClick={() => setShowMenusModal(true)}
                 className="gap-2"
               >
-                <IGRPIcon iconName="Menu" className="w-4 h-4" strokeWidth={2} />
+                <IGRPIcon iconName="Menu" className="size-4" strokeWidth={2} />
                 Gerenciar Menus
               </Button>
             </div>
@@ -372,7 +372,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 <Badge variant="secondary" className="gap-1">
                   <IGRPIcon
                     iconName="Filter"
-                    className="w-3 h-3"
+                    className="size-3"
                     strokeWidth={2}
                   />
                   Filtrado por:{" "}
@@ -399,7 +399,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                           <div className="flex items-center gap-2">
                             {/* <IGRPIcon
                               iconName="ShieldCheck"
-                              className="w-4 h-4 text-primary"
+                              className="size-4 text-primary"
                               strokeWidth={2}
                             /> */}
                             <TooltipProvider delayDuration={350}>
@@ -422,7 +422,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                             : "Square"
                                       }
                                       className={cn(
-                                        "w-4 h-4 transition-colors",
+                                        "size-4 transition-colors",
                                         getColumnCheckState(role.code) === true
                                           ? "text-primary"
                                           : getColumnCheckState(role.code) ===
@@ -494,7 +494,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 >
                   <IGRPIcon
                     iconName="X"
-                    className="w-4 h-4 mr-1"
+                    className="size-4 mr-1"
                     strokeWidth={2}
                   />
                   Cancelar
@@ -509,7 +509,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     <>
                       <IGRPIcon
                         iconName="LoaderCircle"
-                        className="w-4 h-4 animate-spin"
+                        className="size-4 animate-spin"
                         strokeWidth={2}
                       />
                       Guardando...
@@ -518,7 +518,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     <>
                       <IGRPIcon
                         iconName="Save"
-                        className="w-4 h-4"
+                        className="size-4"
                         strokeWidth={2}
                       />
                       Guardar Permissões
@@ -546,7 +546,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="TriangleAlert"
-                className="w-5 h-5 text-amber-500"
+                className="size-5 text-amber-500"
                 strokeWidth={2}
               />
               Alterações por guardar
@@ -563,7 +563,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 onClick={() => setPendingAppSwitch(null)}
                 className="gap-2 w-full sm:w-auto"
               >
-                <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
+                <IGRPIcon iconName="X" className="size-4" strokeWidth={2} />
                 Cancelar
               </Button>
             </div>
@@ -576,7 +576,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               >
                 <IGRPIcon
                   iconName="Trash2"
-                  className="w-4 h-4"
+                  className="size-4"
                   strokeWidth={2}
                 />
                 Descartar e mudar
@@ -590,7 +590,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   <>
                     <IGRPIcon
                       iconName="LoaderCircle"
-                      className="w-4 h-4 animate-spin"
+                      className="size-4 animate-spin"
                       strokeWidth={2}
                     />
                     Guardando...
@@ -599,7 +599,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   <>
                     <IGRPIcon
                       iconName="Save"
-                      className="w-4 h-4"
+                      className="size-4"
                       strokeWidth={2}
                     />
                     Guardar e mudar

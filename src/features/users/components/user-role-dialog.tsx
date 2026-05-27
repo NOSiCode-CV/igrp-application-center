@@ -353,7 +353,7 @@ export function UserRolesDialog({
         </DialogHeader>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
-          <section className="space-y-8 max-w-full">
+          <section className="flex flex-col gap-8 max-w-full">
             <div className="flex flex-col gap-4">
               <div className="flex gap-2 ">
                 <div className="relative flex-1">
@@ -395,7 +395,7 @@ export function UserRolesDialog({
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-col gap-2">
                   <Popover
                     open={deptPopoverOpen}
                     onOpenChange={setDeptPopoverOpen}

@@ -70,7 +70,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
             variant="outline"
             className="cursor-pointer w-full sm:w-auto"
           >
-            <IGRPIcon iconName="Pencil" className="w-4 h-4" strokeWidth={2} />
+            <IGRPIcon iconName="Pencil" className="size-4" strokeWidth={2} />
             Editar
           </Button>
           <Button
@@ -80,7 +80,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
           >
             <IGRPIcon
               iconName="AppWindow"
-              className="w-4 h-4"
+              className="size-4"
               strokeWidth={2}
             />
             Gerenciar Apps

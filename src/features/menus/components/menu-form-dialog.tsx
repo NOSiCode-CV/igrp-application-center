@@ -658,7 +658,7 @@ export function MenuFormDialog({
                                   disabled={openType === "view"}
                                   className="flex flex-row"
                                 >
-                                  <div className="flex items-center space-x-2">
+                                  <div className="flex items-center gap-2">
                                     <RadioGroupItem
                                       value={menuTypeSchema.enum.MENU_PAGE}
                                       id="internal"
@@ -670,7 +670,7 @@ export function MenuFormDialog({
                                       Página Interna
                                     </label>
                                   </div>
-                                  <div className="flex items-center space-x-2">
+                                  <div className="flex items-center gap-2">
                                     <RadioGroupItem
                                       value={menuTypeSchema.enum.EXTERNAL_PAGE}
                                       id="external"

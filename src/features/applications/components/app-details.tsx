@@ -164,7 +164,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                       <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
                         <IGRPIcon
                           iconName="LoaderCircle"
-                          className="w-8 h-8 text-muted-foreground animate-spin"
+                          className="size-8 text-muted-foreground animate-spin"
                         />
                       </div>
                     ) : fileUrl?.url ? (
@@ -180,7 +180,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                       <AvatarFallback className="text-3xl bg-primary/10">
                         <IGRPIcon
                           iconName="AppWindow"
-                          className="w-12 h-12 text-primary"
+                          className="size-12 text-primary"
                         />
                       </AvatarFallback>
                     )}
@@ -194,7 +194,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                           : "Camera"
                       }
                       className={cn(
-                        "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
+                        "size-4 text-muted-foreground group-hover:text-primary transition-colors",
                         (isLoadingFile || uploadPicture.isPending) &&
                           "animate-spin",
                       )}

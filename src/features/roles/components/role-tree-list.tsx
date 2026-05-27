@@ -248,7 +248,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
             <IGRPIcon
               iconName="UserLock"
-              className="w-16 h-16 mb-4 opacity-30"
+              className="size-16 mb-4 opacity-30"
               strokeWidth={1.5}
             />
             <p className="text-lg font-medium mb-2">Nenhum perfil criado</p>

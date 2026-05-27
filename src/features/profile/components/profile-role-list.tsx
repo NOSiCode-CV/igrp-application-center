@@ -65,7 +65,7 @@ export default function ProfileRoleList() {
             <h2 className="text-lg font-semibold">Perfis Atribuídos</h2>
           </div>
 
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3">
             {userRoles.map((role) => (
               <div
                 key={role.id}
@@ -79,7 +79,7 @@ export default function ProfileRoleList() {
                     />
                   </div>
 
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 flex flex-col gap-2">
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm">{role.name}</p>

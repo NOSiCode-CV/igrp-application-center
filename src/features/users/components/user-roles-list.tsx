@@ -56,10 +56,10 @@ function UserRoleItem({ role }: UserRoleItemProps) {
   return (
     <div className="flex items-start gap-3 rounded-md p-3 transition-colors hover:bg-accent/50">
       <div className="rounded-md p-2 shrink-0 bg-primary/10 text-primary">
-        <IGRPIcon iconName="Shield" className="h-4 w-4" />
+        <IGRPIcon iconName="Shield" className="size-4" />
       </div>
 
-      <div className="flex-1 min-w-0 space-y-2">
+      <div className="flex-1 min-w-0 flex flex-col gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <h4 className="font-semibold text-sm">{role.name}</h4>
           <Badge

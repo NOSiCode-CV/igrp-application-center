@@ -74,10 +74,10 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
           autoFocus
         />
         <IGRPButton size="sm" variant="ghost" onClick={save}>
-          <IGRPIcon iconName="Check" className="w-4 h-4" />
+          <IGRPIcon iconName="Check" className="size-4" />
         </IGRPButton>
         <IGRPButton size="sm" variant="ghost" onClick={() => setEditing(false)}>
-          <IGRPIcon iconName="X" className="w-4 h-4" />
+          <IGRPIcon iconName="X" className="size-4" />
         </IGRPButton>
       </div>
     );
@@ -94,7 +94,7 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
         className="opacity-100 transition-opacity"
         onClick={open}
       >
-        <IGRPIcon iconName="Pencil" className="w-4 h-4" />
+        <IGRPIcon iconName="Pencil" className="size-4" />
       </IGRPButton>
     </div>
   );

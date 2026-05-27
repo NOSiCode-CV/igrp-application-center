@@ -150,8 +150,8 @@ export function UserInviteDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <fieldset className="border border-accent p-4 rounded-md space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+            <fieldset className="border border-accent p-4 rounded-md flex flex-col gap-4">
               <legend className="text-base font-semibold px-2 mb-1">
                 Informação do Utilizador
               </legend>
@@ -175,7 +175,7 @@ export function UserInviteDialog({
               />
             </fieldset>
 
-            <fieldset className="border border-accent p-4 rounded-md space-y-4">
+            <fieldset className="border border-accent p-4 rounded-md flex flex-col gap-4">
               <legend className="text-base font-semibold px-2 mb-1">
                 Atribuir Perfis
               </legend>

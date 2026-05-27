@@ -71,7 +71,7 @@ export function UserProfileAvatar({
             <div className="flex items-center justify-center w-full h-full bg-muted/50 animate-pulse">
               <IGRPIcon
                 iconName="LoaderCircle"
-                className="w-8 h-8 text-muted-foreground animate-spin"
+                className="size-8 text-muted-foreground animate-spin"
               />
             </div>
           ) : (
@@ -86,7 +86,7 @@ export function UserProfileAvatar({
         <IGRPIcon
           iconName={spinning ? "LoaderCircle" : "Camera"}
           className={cn(
-            "w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors",
+            "size-4 text-muted-foreground group-hover:text-primary transition-colors",
             spinning && "animate-spin",
           )}
         />

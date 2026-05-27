@@ -43,7 +43,7 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
         <div className="relative mb-4 max-w-md">
           <IGRPIcon
             iconName="Search"
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground"
           />
           <Input
             type="text"
