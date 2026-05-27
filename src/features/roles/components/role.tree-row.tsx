@@ -13,27 +13,24 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import { showStatus, statusClass } from "@/lib/utils";
+import { useRoleTree } from "./role-tree-context";
 import type { RoleWithChildren } from "./role-tree-list";
 
 export function RoleTreeRow({
   role,
   level = 0,
-  handlePermissions,
-  expandedRoles,
-  handleNewSubRole,
-  handleEdit,
-  handleDelete,
-  toggleExpand,
 }: {
   role: RoleWithChildren;
   level?: number;
-  handlePermissions: (role: RoleWithChildren) => void;
-  expandedRoles: Set<string>;
-  handleNewSubRole: (role: RoleWithChildren) => void;
-  handleEdit: (role: RoleWithChildren) => void;
-  handleDelete: (roleCode: string) => void;
-  toggleExpand: (roleCode: string) => void;
 }) {
+  const {
+    expandedRoles,
+    toggleExpand,
+    handleEdit,
+    handleNewSubRole,
+    handlePermissions,
+    handleDelete,
+  } = useRoleTree();
   const hasChildren = role.children && role.children.length > 0;
   const isExpanded = expandedRoles.has(role.code);
 
@@ -140,17 +137,7 @@ export function RoleTreeRow({
       {hasChildren &&
         isExpanded &&
         role.children?.map((child) => (
-          <RoleTreeRow
-            key={child.code}
-            role={child}
-            level={level + 1}
-            handlePermissions={handlePermissions}
-            expandedRoles={expandedRoles}
-            handleNewSubRole={handleNewSubRole}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            toggleExpand={toggleExpand}
-          />
+          <RoleTreeRow key={child.code} role={child} level={level + 1} />
         ))}
     </>
   );

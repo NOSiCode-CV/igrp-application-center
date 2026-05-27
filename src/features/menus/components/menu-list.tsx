@@ -39,6 +39,7 @@ import { statusSchema } from "@/schemas/global";
 import { MenuDeleteDialog } from "./menu-delete-dialog";
 import { MenuFormDialog } from "./menu-form-dialog";
 import { SortableMenuItem } from "./menu-sortable-item";
+import { MenuTreeContext } from "./menu-tree-context";
 
 export function MenuList({ app }: { app: ApplicationDTO }) {
   const { code } = app;
@@ -338,29 +339,24 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
               items={rootMenus.map((m) => m.code)}
               strategy={verticalListSortingStrategy}
             >
-              <div>
-                {rootMenus.map((menu) => {
-                  const childMenus = filteredMenus.filter(
-                    (m) => m.parentCode === menu.code,
-                  );
-
-                  return (
-                    <SortableMenuItem
-                      app={app}
-                      key={menu.code}
-                      menu={menu}
-                      onView={handleView}
-                      onEdit={handleEdit}
-                      onAddChild={handleAddChild}
-                      onDelete={handleDelete}
-                      subMenus={childMenus}
-                      allMenus={filteredMenus}
-                      onAddInternalPage={handleAddInternalPage}
-                      onAddExternalPage={handleAddExternalPage}
-                    />
-                  );
-                })}
-              </div>
+              <MenuTreeContext
+                value={{
+                  app,
+                  allMenus: filteredMenus,
+                  onView: handleView,
+                  onEdit: handleEdit,
+                  onAddChild: handleAddChild,
+                  onDelete: handleDelete,
+                  onAddInternalPage: handleAddInternalPage,
+                  onAddExternalPage: handleAddExternalPage,
+                }}
+              >
+                <div>
+                  {rootMenus.map((menu) => (
+                    <SortableMenuItem key={menu.code} menu={menu} />
+                  ))}
+                </div>
+              </MenuTreeContext>
             </SortableContext>
           </DndContext>
         )}

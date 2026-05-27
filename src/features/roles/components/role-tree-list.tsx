@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
 import { useRoles } from "@/features/departments/use-departments";
@@ -27,6 +27,7 @@ import { RoleTreeRow } from "./role.tree-row";
 import { RoleDeleteDialog } from "./role-delete-dialog";
 import { RoleFormDialog } from "./role-form-dialog";
 import { RoleDetails } from "./role-permissions-dialog";
+import { RoleTreeContext } from "./role-tree-context";
 
 interface RolesListProps {
   departmentCode: string;
@@ -74,15 +75,13 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     return roots;
   };
 
-  const toggleExpand = (roleCode: string) => {
-    const newExpanded = new Set(expandedRoles);
-    if (newExpanded.has(roleCode)) {
-      newExpanded.delete(roleCode);
-    } else {
-      newExpanded.add(roleCode);
-    }
-    setExpandedRoles(newExpanded);
-  };
+  const toggleExpand = useCallback((roleCode: string) => {
+    setExpandedRoles((prev) => {
+      const next = new Set(prev);
+      next.has(roleCode) ? next.delete(roleCode) : next.add(roleCode);
+      return next;
+    });
+  }, []);
 
   const handleNewRole = () => {
     setSelectedRole(undefined);
@@ -91,33 +90,52 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     setOpenFormDialog(true);
   };
 
-  const handleDelete = (code: string) => {
+  const handleDelete = useCallback((code: string) => {
     setRoleToDelete(code);
     setOpenDeleteDialog(true);
-  };
+  }, []);
 
-  const handleEdit = (role: RoleArgs) => {
+  const handleEdit = useCallback((role: RoleArgs) => {
     setSelectedRole(role);
     setParentRoleName(null);
     setRoleToDelete(null);
     setOpenDetailsDialog(false);
     setOpenFormDialog(true);
-  };
+  }, []);
 
-  const handleNewSubRole = (role: RoleArgs) => {
+  const handleNewSubRole = useCallback((role: RoleArgs) => {
     setSelectedRole(undefined);
     setParentRoleName(role.code);
     setRoleToDelete(null);
     setOpenDetailsDialog(false);
     setOpenFormDialog(true);
-  };
+  }, []);
 
-  const handlePermissions = (role: RoleArgs) => {
+  const handlePermissions = useCallback((role: RoleArgs) => {
     setSelectedRole(role);
     setRoleToDelete(null);
     setOpenFormDialog(false);
     setOpenDetailsDialog(true);
-  };
+  }, []);
+
+  const treeContextValue = useMemo(
+    () => ({
+      expandedRoles,
+      toggleExpand,
+      handleEdit,
+      handleNewSubRole,
+      handlePermissions,
+      handleDelete,
+    }),
+    [
+      expandedRoles,
+      toggleExpand,
+      handleEdit,
+      handleNewSubRole,
+      handlePermissions,
+      handleDelete,
+    ],
+  );
 
   if (error) {
     return (
@@ -258,18 +276,11 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {roleTree.map((role) => (
-                  <RoleTreeRow
-                    key={role.id}
-                    role={role}
-                    handlePermissions={handlePermissions}
-                    expandedRoles={expandedRoles}
-                    toggleExpand={toggleExpand}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    handleNewSubRole={handleNewSubRole}
-                  />
-                ))}
+                <RoleTreeContext value={treeContextValue}>
+                  {roleTree.map((role) => (
+                    <RoleTreeRow key={role.id} role={role} />
+                  ))}
+                </RoleTreeContext>
               </TableBody>
             </Table>
           </div>

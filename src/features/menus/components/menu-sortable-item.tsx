@@ -18,24 +18,13 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useMenuTree } from "./menu-tree-context";
 
 interface SortableMenuItemProps {
   menu: IGRPMenuItemArgs;
-  onView: (menu: IGRPMenuItemArgs) => void;
-  onEdit: (menu: IGRPMenuItemArgs) => void;
-  onDelete?: (code: string, name: string) => void;
-  onAddChild?: (menu: IGRPMenuItemArgs) => void;
   depth?: number;
-  isChild?: boolean;
-  subMenus?: IGRPMenuItemArgs[];
-  allMenus?: IGRPMenuItemArgs[];
-  appCode?: string;
-  onAddInternalPage: (menu: IGRPMenuItemArgs) => void;
-  onAddExternalPage: (menu: IGRPMenuItemArgs) => void;
-  app: ApplicationDTO;
 }
 
 const MENU_TYPE_FALLBACK = { icon: "FileText", label: "Página" } as const;
@@ -61,20 +50,19 @@ const MENU_TYPE_CONFIG: Partial<
   },
 };
 
-export function SortableMenuItem({
-  app,
-  menu,
-  onView,
-  onEdit,
-  onDelete,
-  onAddChild,
-  depth = 0,
-  subMenus,
-  allMenus,
-  onAddInternalPage,
-  onAddExternalPage,
-}: SortableMenuItemProps) {
+export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
+  const {
+    app,
+    allMenus,
+    onView,
+    onEdit,
+    onDelete,
+    onAddChild,
+    onAddInternalPage,
+  } = useMenuTree();
   const [isExpanded, setIsExpanded] = useState(true);
+
+  const subMenus = allMenus.filter((m) => m.parentCode === menu.code);
 
   const {
     attributes,
@@ -281,27 +269,13 @@ export function SortableMenuItem({
           strategy={verticalListSortingStrategy}
         >
           <div>
-            {sortedSubMenus.map((child) => {
-              const childSubMenus =
-                allMenus?.filter((m) => m.parentCode === child.code) || [];
-
-              return (
-                <SortableMenuItem
-                  app={app}
-                  key={child.code}
-                  menu={child}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onView={onView}
-                  depth={depth + 1}
-                  isChild={true}
-                  subMenus={childSubMenus}
-                  allMenus={allMenus}
-                  onAddExternalPage={onAddExternalPage}
-                  onAddInternalPage={onAddInternalPage}
-                />
-              );
-            })}
+            {sortedSubMenus.map((child) => (
+              <SortableMenuItem
+                key={child.code}
+                menu={child}
+                depth={depth + 1}
+              />
+            ))}
           </div>
         </SortableContext>
       )}
