@@ -15,11 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { useUpdateUser } from "../use-users";
 
-export default function UserSignature({
-  user,
-}: {
-  user: IGRPUserDTO;
-}) {
+export default function UserSignature({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: updateUser } = useUpdateUser();
   const queryClient = useQueryClient();

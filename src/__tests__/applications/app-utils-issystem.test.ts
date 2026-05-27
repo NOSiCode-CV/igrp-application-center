@@ -10,12 +10,12 @@ describe("isSystemApp", () => {
   });
 
   it("returns false for INTERNAL or EXTERNAL", () => {
-    expect(
-      isSystemApp({ type: "INTERNAL" } as unknown as ApplicationDTO),
-    ).toBe(false);
-    expect(
-      isSystemApp({ type: "EXTERNAL" } as unknown as ApplicationDTO),
-    ).toBe(false);
+    expect(isSystemApp({ type: "INTERNAL" } as unknown as ApplicationDTO)).toBe(
+      false,
+    );
+    expect(isSystemApp({ type: "EXTERNAL" } as unknown as ApplicationDTO)).toBe(
+      false,
+    );
   });
 
   it("returns false when type is missing", () => {

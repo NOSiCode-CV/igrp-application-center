@@ -1,7 +1,7 @@
+import { notFound } from "next/navigation";
 import { getUser } from "@/actions/user";
 import { UserDetailsHeader } from "@/features/users/components/user-details-header";
 import { UserDetailsTabs } from "@/features/users/components/user-details-tabs";
-import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 

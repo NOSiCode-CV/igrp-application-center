@@ -1,8 +1,5 @@
 "use client";
 
-import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { Suspense, useState } from "react";
-import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import {
   IGRPButton,
   Tabs,
@@ -10,13 +7,16 @@ import {
   TabsList,
   TabsTrigger,
 } from "@igrp/igrp-framework-react-design-system";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { Suspense, useState } from "react";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
 import UserApplications from "./user-applications";
-import UserRoleList from "./user-role-list";
-import UserSignature from "./user-signature";
 import { UserAuditLogTab } from "./user-audit-tab";
 import { UserMetadataPanel } from "./user-metadata-panel";
+import UserRoleList from "./user-role-list";
 import { UserSessionsTab } from "./user-sessions-tab";
+import UserSignature from "./user-signature";
 
 function TabSkeleton() {
   return (

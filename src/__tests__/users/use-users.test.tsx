@@ -1,8 +1,8 @@
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { useUsers, useUpdateUserStatus } from "@/features/users/use-users";
+import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as actions from "@/actions/user";
+import { useUpdateUserStatus, useUsers } from "@/features/users/use-users";
 
 vi.mock("@/actions/user", () => ({
   getUsers: vi.fn(),
@@ -18,7 +18,9 @@ vi.mock("@/actions/user-sessions", () => ({
 
 function wrapperWith(client: QueryClient) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    return (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
   };
 }
 
@@ -31,7 +33,9 @@ describe("useUsers", () => {
   });
 
   it("caches separately for different params", async () => {
-    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
     const wrapper = wrapperWith(client);
 
     const a = renderHook(() => useUsers({ status: "ACTIVE" }), { wrapper });
@@ -55,7 +59,9 @@ describe("useUpdateUserStatus", () => {
       data: { id: "u1", status: "INACTIVE" },
     } as Awaited<ReturnType<typeof actions.updateUserStatus>>);
 
-    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
     const spy = vi.spyOn(client, "invalidateQueries");
     const wrapper = wrapperWith(client);
 

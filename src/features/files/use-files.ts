@@ -7,10 +7,7 @@ import {
   uploadPublicFile,
 } from "@/actions/file";
 
-export const useFiles = (
-  path: string,
-  options?: { enabled?: boolean },
-) => {
+export const useFiles = (path: string, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["files", path ?? ""],
     queryFn: async ({ queryKey: [, p] }) => {

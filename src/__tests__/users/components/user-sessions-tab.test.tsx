@@ -1,9 +1,9 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserSessionsTab } from "@/features/users/components/user-sessions-tab";
-import { useUserSession, useKillUserSession } from "@/features/users/use-users";
+import { useKillUserSession, useUserSession } from "@/features/users/use-users";
 
 const mockSession = {
   sessionId: "abc123def456",

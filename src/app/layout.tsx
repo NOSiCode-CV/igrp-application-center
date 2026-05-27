@@ -3,11 +3,9 @@ import "@/styles/globals.css";
 import { IGRPRootLayout } from "@igrp/framework-next";
 import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
 import { IGRP_META_THEME_COLORS } from "@igrp/igrp-framework-react-design-system";
-
-import type { Metadata, Viewport } from "next";
-
-import { configLayout } from "@/actions/igrp/layout";
 import { createConfig } from "@igrp/template-config";
+import type { Metadata, Viewport } from "next";
+import { configLayout } from "@/actions/igrp/layout";
 
 export const metadata: Metadata = {
   title: "IGRP | Centro de Aplicações",

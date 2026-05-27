@@ -13,7 +13,7 @@ import { UserProfileStatusDialog } from "./user-profile-status-dialog";
 import { UserProfileTabs } from "./user-profile-tabs";
 
 export function UserProfile() {
-  const { data: user, isLoading, error, refetch } = useCurrentUser();
+  const { data: user, isLoading, error } = useCurrentUser();
   if (error) throw error;
   if (isLoading)
     return <AppCenterLoading description="Carregando utilizador..." />;
@@ -24,16 +24,10 @@ export function UserProfile() {
         title="Nenhum utilizador encontrado."
       />
     );
-  return <UserProfileView user={user} onUserChange={refetch} />;
+  return <UserProfileView user={user} />;
 }
 
-function UserProfileView({
-  user,
-  onUserChange,
-}: {
-  user: IGRPUserDTO;
-  onUserChange: () => Promise<unknown> | undefined;
-}) {
+function UserProfileView({ user }: { user: IGRPUserDTO }) {
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const { data: avatarFile, isLoading: isLoadingAvatar } = useFiles(
     user.picture ?? "",
@@ -59,7 +53,7 @@ function UserProfileView({
           />
         }
       />
-      <UserProfileTabs user={user} onUserChange={onUserChange} />
+      <UserProfileTabs user={user} />
       <UserProfileStatusDialog
         open={showStatusDialog}
         isActive={isActive}

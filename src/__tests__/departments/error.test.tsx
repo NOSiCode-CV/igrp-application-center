@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/report-error", () => ({
   reportError: vi.fn(),
@@ -24,8 +24,8 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   ),
 }));
 
-import { reportError } from "@/lib/report-error";
 import DepartmentsError from "@/app/(igrp)/(home)/settings/departments/error";
+import { reportError } from "@/lib/report-error";
 
 describe("DepartmentsError", () => {
   beforeEach(() => {

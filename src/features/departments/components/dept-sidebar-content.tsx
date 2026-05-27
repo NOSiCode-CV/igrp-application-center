@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  IGRPIcon,
-  Input,
-} from "@igrp/igrp-framework-react-design-system";
+import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
 import { ButtonLink } from "@/components/button-link";
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { DepartmentEmptyState } from "./dept-empty-state";

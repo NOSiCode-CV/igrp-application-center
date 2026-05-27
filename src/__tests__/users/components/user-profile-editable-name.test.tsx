@@ -84,7 +84,10 @@ describe("UserProfileEditableName", () => {
   it("disables save while onSave is in flight", async () => {
     let resolveSave: () => void = () => {};
     const onSave = vi.fn().mockImplementation(
-      () => new Promise<void>((r) => { resolveSave = r; }),
+      () =>
+        new Promise<void>((r) => {
+          resolveSave = r;
+        }),
     );
 
     render(<UserProfileEditableName name="Old" onSave={onSave} />);

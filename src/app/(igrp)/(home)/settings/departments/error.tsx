@@ -29,11 +29,7 @@ export default function DepartmentsError({ error, reset }: Props) {
         contacta o suporte.
       </p>
       <Button onClick={reset} variant="outline">
-        <IGRPIcon
-          iconName="RefreshCw"
-          className="size-4"
-          strokeWidth={2}
-        />
+        <IGRPIcon iconName="RefreshCw" className="size-4" strokeWidth={2} />
         Tentar novamente
       </Button>
       {error.digest && (

@@ -20,9 +20,10 @@ describe("dialogReducer", () => {
 
   it("opens create with a parent", () => {
     const parent = dept("HR");
-    expect(
-      dialogReducer(closed, { type: "openCreateSub", parent }),
-    ).toEqual({ kind: "create", parent });
+    expect(dialogReducer(closed, { type: "openCreateSub", parent })).toEqual({
+      kind: "create",
+      parent,
+    });
   });
 
   it("opens edit", () => {
@@ -46,7 +47,8 @@ describe("dialogReducer", () => {
   });
 
   it("closes from any state", () => {
-    expect(dialogReducer({ kind: "edit", dept: dept("X") }, { type: "close" }))
-      .toEqual(closed);
+    expect(
+      dialogReducer({ kind: "edit", dept: dept("X") }, { type: "close" }),
+    ).toEqual(closed);
   });
 });

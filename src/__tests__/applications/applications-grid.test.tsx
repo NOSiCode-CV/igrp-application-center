@@ -48,9 +48,9 @@ describe("filterApplications", () => {
   });
 
   it("filters by status", () => {
-    expect(
-      filterApplications(apps, "", ["ACTIVE"]).map((a) => a.code),
-    ).toEqual(["ALPHA", "GAMMA"]);
+    expect(filterApplications(apps, "", ["ACTIVE"]).map((a) => a.code)).toEqual(
+      ["ALPHA", "GAMMA"],
+    );
   });
 
   it("combines search and status", () => {

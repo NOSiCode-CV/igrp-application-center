@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { useUpdateUser } from "@/features/users/use-users";
 
 vi.mock("server-only", () => ({}));
@@ -40,9 +40,7 @@ vi.mock("@/actions/user", () => ({
   resendUserInvitation: vi.fn(),
   respondUserInvitation: vi.fn(),
   setCurrentUserActiveRole: vi.fn(),
-  updateUser: vi
-    .fn()
-    .mockResolvedValue({ success: true, data: { id: "u1" } }),
+  updateUser: vi.fn().mockResolvedValue({ success: true, data: { id: "u1" } }),
   updateUserMetadata: vi.fn(),
   updateUserStatus: vi.fn(),
   validateInvitationEmail: vi.fn(),

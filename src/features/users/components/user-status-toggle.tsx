@@ -72,7 +72,8 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
             </AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-              utilizador <strong className="text-foreground">{user.name}</strong>?
+              utilizador{" "}
+              <strong className="text-foreground">{user.name}</strong>?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

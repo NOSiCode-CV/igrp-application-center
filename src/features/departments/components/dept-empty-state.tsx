@@ -41,14 +41,24 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
           : "flex flex-col items-center justify-center py-8 px-4 text-center border border-dashed rounded-lg bg-muted/30"
       }
     >
-      <div className={isMain ? "p-4 rounded-full bg-muted/50 mb-5" : "p-3 rounded-full bg-muted mb-4"}>
+      <div
+        className={
+          isMain
+            ? "p-4 rounded-full bg-muted/50 mb-5"
+            : "p-3 rounded-full bg-muted mb-4"
+        }
+      >
         <IGRPIcon
           iconName="Building2"
           className={`${c.iconSize} text-muted-foreground`}
           strokeWidth={c.iconStroke}
         />
       </div>
-      <h3 className={isMain ? "text-lg font-semibold mb-2" : "text-sm font-semibold mb-1"}>
+      <h3
+        className={
+          isMain ? "text-lg font-semibold mb-2" : "text-sm font-semibold mb-1"
+        }
+      >
         {c.title}
       </h3>
       <p
@@ -61,7 +71,12 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
         {c.body}
       </p>
       {onCreate && (
-        <ButtonLink onClick={onCreate} icon="Plus" href="#" label="Novo Departamento" />
+        <ButtonLink
+          onClick={onCreate}
+          icon="Plus"
+          href="#"
+          label="Novo Departamento"
+        />
       )}
     </div>
   );

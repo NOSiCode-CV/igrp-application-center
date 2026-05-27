@@ -8,8 +8,8 @@ import {
   useCurrentUserDepartments,
   useUserDepartments,
 } from "@/features/users/use-users";
-import DepartmentTreeItemSimple from "./dept-list-simple-tree";
 import { buildTree, filterTree } from "../dept-tree-utils";
+import DepartmentTreeItemSimple from "./dept-list-simple-tree";
 
 export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   const [searchTerm, setSearchTerm] = useState("");

@@ -1,11 +1,10 @@
-import { withIGRPAuth } from "@igrp/framework-next-auth/config";
-import { redirect } from "next/navigation";
-
 import { igrpSetAccessClientConfig } from "@igrp/framework-next";
 import { isIgrpError } from "@igrp/framework-next/errors";
 import { assertAuthProviderEnv } from "@igrp/framework-next-auth";
-import { isAuthBypass } from "@/lib/utils";
+import { withIGRPAuth } from "@igrp/framework-next-auth/config";
+import { redirect } from "next/navigation";
 import { reportError } from "@/lib/report-error";
+import { isAuthBypass } from "@/lib/utils";
 
 /**
  * Central IGRP auth instance.

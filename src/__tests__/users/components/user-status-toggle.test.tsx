@@ -1,7 +1,7 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserStatusToggle } from "@/features/users/components/user-status-toggle";
 
 const mutateAsync = vi.fn().mockResolvedValue({ success: true });
@@ -15,7 +15,8 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
     <button onClick={onClick}>{children}</button>
   ),
   IGRPIcon: () => null,
-  AlertDialog: ({ open, children }: any) => (open ? <div>{children}</div> : null),
+  AlertDialog: ({ open, children }: any) =>
+    open ? <div>{children}</div> : null,
   AlertDialogContent: ({ children }: any) => <div>{children}</div>,
   AlertDialogHeader: ({ children }: any) => <div>{children}</div>,
   AlertDialogTitle: ({ children }: any) => <h2>{children}</h2>,
@@ -36,7 +37,9 @@ function wrapper({ children }: { children: React.ReactNode }) {
 describe("UserStatusToggle", () => {
   it("invokes updateStatus with INACTIVE when toggling an active user", async () => {
     render(
-      <UserStatusToggle user={{ id: "u1", name: "A", status: "ACTIVE" } as any} />,
+      <UserStatusToggle
+        user={{ id: "u1", name: "A", status: "ACTIVE" } as any}
+      />,
       { wrapper },
     );
 

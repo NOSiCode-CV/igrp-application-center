@@ -1,20 +1,20 @@
+import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import type {
   AddRolesToUserRequestDTO,
   ApplicationDTO,
   AuditLogFilters,
   DepartmentDTO,
   IGRPUserDTO,
+  InvitationDTO,
   InviteUserDTO,
   PageResponse,
   RoleDTO,
   SecurityAuditLogDTO,
   SessionResponseDTO,
   UserFilters,
-  InvitationDTO,
   UserInvitationResponseDTO,
   UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
-import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import {
   useMutation,
   useQueries,
@@ -286,8 +286,10 @@ export function useAddCurrentUserFavoriteApplication() {
   const { igrpToast } = useIGRPToast();
 
   return useMutation({
-    mutationFn: async (variables: { applicationCode: string; app?: ApplicationDTO }) =>
-      addCurrentUserFavoriteApplication(variables.applicationCode),
+    mutationFn: async (variables: {
+      applicationCode: string;
+      app?: ApplicationDTO;
+    }) => addCurrentUserFavoriteApplication(variables.applicationCode),
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: ["favorite-applications"] });
       const previous = queryClient.getQueriesData<ApplicationDTO[]>({
@@ -298,7 +300,8 @@ export function useAddCurrentUserFavoriteApplication() {
           { queryKey: ["favorite-applications"] },
           (old) => {
             if (!old) return old;
-            if (old.some((fav) => fav.code === variables.applicationCode)) return old;
+            if (old.some((fav) => fav.code === variables.applicationCode))
+              return old;
             return [...old, variables.app as ApplicationDTO];
           },
         );
@@ -469,7 +472,9 @@ export function useUpdateUserStatus() {
     onSuccess: async (result, variables) => {
       if (result.success) {
         await queryClient.invalidateQueries({ queryKey: ["users"] });
-        await queryClient.invalidateQueries({ queryKey: ["user", variables.id] });
+        await queryClient.invalidateQueries({
+          queryKey: ["user", variables.id],
+        });
       }
     },
     retry: false,

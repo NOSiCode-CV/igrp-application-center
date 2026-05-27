@@ -4,13 +4,21 @@ import { vi } from "vitest";
 import { UserProfileActionsMenu } from "@/features/users/components/user-profile-actions-menu";
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
-  DropdownMenu: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
-  DropdownMenuTrigger: ({ children }: { children?: React.ReactNode; asChild?: boolean }) => (
-    <>{children}</>
+  DropdownMenu: ({ children }: { children?: React.ReactNode }) => (
+    <div>{children}</div>
   ),
-  DropdownMenuContent: ({ children }: { children?: React.ReactNode; align?: string }) => (
-    <div role="menu">{children}</div>
-  ),
+  DropdownMenuTrigger: ({
+    children,
+  }: {
+    children?: React.ReactNode;
+    asChild?: boolean;
+  }) => <>{children}</>,
+  DropdownMenuContent: ({
+    children,
+  }: {
+    children?: React.ReactNode;
+    align?: string;
+  }) => <div role="menu">{children}</div>,
   DropdownMenuItem: ({
     children,
     onSelect,
@@ -47,7 +55,12 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     type?: "button" | "submit" | "reset";
     "aria-label"?: string;
   }) => (
-    <button onClick={onClick} disabled={disabled} type={type ?? "button"} aria-label={ariaLabel}>
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      type={type ?? "button"}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   ),
@@ -64,7 +77,9 @@ it("calls onToggleStatus with the destructive item when active", async () => {
     />,
   );
 
-  await userEvent.click(screen.getByRole("button", { name: /ações do utilizador/i }));
+  await userEvent.click(
+    screen.getByRole("button", { name: /ações do utilizador/i }),
+  );
   await userEvent.click(screen.getByRole("menuitem", { name: /desativar/i }));
 
   expect(onToggleStatus).toHaveBeenCalledTimes(1);
@@ -80,7 +95,9 @@ it("calls onToggleStatus with the activate label when inactive", async () => {
     />,
   );
 
-  await userEvent.click(screen.getByRole("button", { name: /ações do utilizador/i }));
+  await userEvent.click(
+    screen.getByRole("button", { name: /ações do utilizador/i }),
+  );
   await userEvent.click(screen.getByRole("menuitem", { name: /ativar/i }));
 
   expect(onToggleStatus).toHaveBeenCalledTimes(1);

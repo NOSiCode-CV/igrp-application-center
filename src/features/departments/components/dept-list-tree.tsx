@@ -46,8 +46,7 @@ export function DepartmentListTree() {
 
   // Derived: explicit user pick wins (if still present), otherwise default to first dept.
   const selectedCode =
-    (explicitSelected &&
-    departments?.some((d) => d.code === explicitSelected)
+    (explicitSelected && departments?.some((d) => d.code === explicitSelected)
       ? explicitSelected
       : departments?.[0]?.code) ?? null;
 

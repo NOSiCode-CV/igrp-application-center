@@ -54,7 +54,9 @@ it("shows the object-URL preview while uploading and clears it after success", a
   fireEvent.change(input, { target: { files: [file] } });
 
   await waitFor(() => expect(onUpload).toHaveBeenCalledWith(file));
-  await waitFor(() => expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeUrl));
+  await waitFor(() =>
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeUrl),
+  );
 });
 
 it("clears object URL when upload errors", async () => {
@@ -70,9 +72,13 @@ it("clears object URL when upload errors", async () => {
   );
 
   const input = screen.getByLabelText(/alterar avatar/i, { selector: "input" });
-  fireEvent.change(input, { target: { files: [new File(["x"], "x.png", { type: "image/png" })] } });
+  fireEvent.change(input, {
+    target: { files: [new File(["x"], "x.png", { type: "image/png" })] },
+  });
 
-  await waitFor(() => expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeUrl));
+  await waitFor(() =>
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith(fakeUrl),
+  );
 });
 
 it("exposes aria-label and disables trigger while resolving URL", () => {

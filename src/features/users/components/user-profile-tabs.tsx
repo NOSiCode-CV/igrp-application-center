@@ -34,10 +34,9 @@ const UserSignature = dynamic(() => import("./user-signature"), {
 
 export interface UserProfileTabsProps {
   user: IGRPUserDTO;
-  onUserChange: () => Promise<unknown> | undefined;
 }
 
-export function UserProfileTabs({ user, onUserChange }: UserProfileTabsProps) {
+export function UserProfileTabs({ user }: UserProfileTabsProps) {
   const tabs = useMemo<IGRPTabItem[]>(
     () => [
       {
@@ -54,10 +53,10 @@ export function UserProfileTabs({ user, onUserChange }: UserProfileTabsProps) {
       {
         label: "Assinatura",
         value: "signature",
-        content: <UserSignature refetch={onUserChange} user={user} />,
+        content: <UserSignature user={user} />,
       },
     ],
-    [user, onUserChange],
+    [user],
   );
 
   return (

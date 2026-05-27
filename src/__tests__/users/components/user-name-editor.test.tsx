@@ -1,7 +1,7 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserNameEditor } from "@/features/users/components/user-name-editor";
 
 const mutateAsync = vi.fn().mockResolvedValue({ success: true });
@@ -29,9 +29,12 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 describe("UserNameEditor", () => {
   it("calls updateUser with trimmed new name", async () => {
-    render(<UserNameEditor user={{ id: "u1", name: "Old", email: "a@b" } as any} />, {
-      wrapper,
-    });
+    render(
+      <UserNameEditor user={{ id: "u1", name: "Old", email: "a@b" } as any} />,
+      {
+        wrapper,
+      },
+    );
 
     await userEvent.click(screen.getByRole("button", { name: "" }));
     const input = screen.getByDisplayValue("Old");
@@ -51,9 +54,12 @@ describe("UserNameEditor", () => {
 
   it("does not call updateUser when name is unchanged", async () => {
     mutateAsync.mockClear();
-    render(<UserNameEditor user={{ id: "u1", name: "Same", email: "a@b" } as any} />, {
-      wrapper,
-    });
+    render(
+      <UserNameEditor user={{ id: "u1", name: "Same", email: "a@b" } as any} />,
+      {
+        wrapper,
+      },
+    );
 
     await userEvent.click(screen.getByRole("button", { name: "" }));
     await userEvent.keyboard("{Enter}");

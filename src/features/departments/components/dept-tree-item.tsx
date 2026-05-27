@@ -144,11 +144,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
       {hasChildren &&
         isExpanded &&
         dept.children?.map((child) => (
-          <DepartmentTreeItem
-            key={child.code}
-            dept={child}
-            level={level + 1}
-          />
+          <DepartmentTreeItem key={child.code} dept={child} level={level + 1} />
         ))}
     </div>
   );

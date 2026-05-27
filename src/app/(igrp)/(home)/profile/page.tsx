@@ -1,4 +1,4 @@
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import { getCurrentUser } from "@/actions/user";
 import { UserProfile } from "@/features/users/components/user-profile";

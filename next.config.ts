@@ -21,10 +21,7 @@ const getRemotePatterns = () => {
     try {
       const parsed = new URL(minioUrl);
       patterns.push({
-        protocol: parsed.protocol.replace(
-          ":",
-          "",
-        ) as RemotePattern["protocol"],
+        protocol: parsed.protocol.replace(":", "") as RemotePattern["protocol"],
         hostname: parsed.hostname,
         pathname: "/**",
       });

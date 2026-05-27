@@ -24,7 +24,13 @@ export function InlineError({
         <p className="text-sm text-muted-foreground">{message}</p>
       </div>
       {onRetry && (
-        <IGRPButton variant="outline" size="sm" showIcon iconName="RotateCw" onClick={onRetry}>
+        <IGRPButton
+          variant="outline"
+          size="sm"
+          showIcon
+          iconName="RotateCw"
+          onClick={onRetry}
+        >
           Tentar novamente
         </IGRPButton>
       )}

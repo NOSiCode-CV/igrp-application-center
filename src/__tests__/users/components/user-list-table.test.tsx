@@ -1,7 +1,7 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Mock the DS surface inline — the real package has heavy transitive imports
 // (server-only, IGRP framework wiring) that break under vitest/jsdom.
@@ -31,13 +31,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
         {children}
       </button>
     ),
-    IGRPDataTable: ({
-      columns,
-      data,
-    }: {
-      columns: any[];
-      data: any[];
-    }) => (
+    IGRPDataTable: ({ columns, data }: { columns: any[]; data: any[] }) => (
       <table>
         <tbody>
           {data.map((row, i) => (
@@ -69,7 +63,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
     IGRPDataTableHeaderSortToggle: () => null,
     IGRPIcon: () => null,
     IGRPUserAvatar: () => null,
-    Tabs: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
+    Tabs: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
     TabsContent: ({ children }: { children?: React.ReactNode }) => (
       <div>{children}</div>
     ),
@@ -94,7 +90,9 @@ vi.mock("@/components/loading", () => ({
   AppCenterLoading: () => null,
 }));
 vi.mock("@/components/page-header", () => ({
-  PageHeader: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
+  PageHeader: ({ children }: { children?: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }));
 vi.mock("@/features/users/components/user-invite-dialog", () => ({
   UserInviteDialog: () => null,

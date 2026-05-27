@@ -64,12 +64,12 @@ import {
   useDepartments,
   useRoles,
 } from "@/features/departments/use-departments";
+import { computeRoleDiff } from "@/features/users/lib/role-diff";
 import {
   useAddUserRole,
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
-import { computeRoleDiff } from "@/features/users/lib/role-diff";
 import { getStatusColor, showStatus } from "@/lib/utils";
 
 const norm = (s: string) => s.trim().toLowerCase();

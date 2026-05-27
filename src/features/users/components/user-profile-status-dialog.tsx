@@ -45,12 +45,16 @@ export function UserProfileStatusDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
-            <IGRPIcon iconName="AlertTriangle" className="w-5 h-5 text-destructive" strokeWidth={2} />
+            <IGRPIcon
+              iconName="AlertTriangle"
+              className="w-5 h-5 text-destructive"
+              strokeWidth={2}
+            />
             {isActive ? "Desativar" : "Ativar"} Utilizador
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja {isActive ? "desativar" : "ativar"} o utilizador{" "}
-            <strong className="text-foreground">{userName}</strong>?
+            Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
+            utilizador <strong className="text-foreground">{userName}</strong>?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
