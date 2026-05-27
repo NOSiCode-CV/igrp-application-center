@@ -73,10 +73,20 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
           className="text-2xl font-bold tracking-tight h-10"
           autoFocus
         />
-        <IGRPButton size="sm" variant="ghost" onClick={save}>
+        <IGRPButton
+          size="sm"
+          variant="ghost"
+          onClick={save}
+          aria-label="Guardar nome"
+        >
           <IGRPIcon iconName="Check" className="size-4" />
         </IGRPButton>
-        <IGRPButton size="sm" variant="ghost" onClick={() => setEditing(false)}>
+        <IGRPButton
+          size="sm"
+          variant="ghost"
+          onClick={() => setEditing(false)}
+          aria-label="Cancelar edição"
+        >
           <IGRPIcon iconName="X" className="size-4" />
         </IGRPButton>
       </div>
@@ -93,6 +103,7 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
         variant="ghost"
         className="opacity-100 transition-opacity"
         onClick={open}
+        aria-label="Editar nome"
       >
         <IGRPIcon iconName="Pencil" className="size-4" />
       </IGRPButton>

@@ -5,6 +5,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
   IGRPIcon,
   Input,
   Label,
@@ -52,6 +53,9 @@ function IGRPDialogDelete({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="sr-only">{textHeader}</DialogTitle>
+        </DialogHeader>
         <div className="flex flex-col gap-4 bg-destructive/10 p-4 rounded-lg mt-3">
           <div className="flex items-center">
             <IGRPIcon
