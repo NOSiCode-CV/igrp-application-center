@@ -1,2 +1,4 @@
 allowBuilds:
   sharp: true
+overrides:
+  react-hook-form: 7.76.1

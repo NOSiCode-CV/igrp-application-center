@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  react-hook-form: 7.76.1
+
 importers:
 
   .:
@@ -75,7 +78,7 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2(react@19.2.6)
       react-hook-form:
-        specifier: ^7.76.1
+        specifier: 7.76.1
         version: 7.76.1(react@19.2.6)
       sonner:
         specifier: ^2.0.7
@@ -324,12 +327,12 @@ packages:
   '@hookform/resolvers@5.2.2':
     resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
     peerDependencies:
-      react-hook-form: ^7.55.0
+      react-hook-form: 7.76.1
 
   '@hookform/resolvers@5.4.0':
     resolution: {integrity: sha512-EIsqr/t/qbinPIhGjMdtvutIN1Kk4uwbROE9/UQ93CAVGR7GkA7Y92+fX80OzXi/OB67jVFYwKGO1WzkxmkFZw==}
     peerDependencies:
-      react-hook-form: ^7.55.0
+      react-hook-form: 7.76.1
 
   '@igrp/framework-next-auth@0.1.0-beta.131':
     resolution: {integrity: sha512-KALt9CrdFoRtLB7KA4vQUyW9Q1YA0KT5s1Bp6TmHFQd0Uw3fgO3qK4jXCbAkKshpzzGimmSVFHiraaHagCYN6Q==}
@@ -2126,12 +2129,6 @@ packages:
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
 
-  react-hook-form@7.76.0:
-    resolution: {integrity: sha512-eKtLGgFeSgkHqQD8J59AMZ9a4uD1D83iSIzt4YlTGD7liDen5rrjcUO1rVIGd9yC1gofryjtHbv+4ny4hkLWlw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18 || ^19
-
   react-hook-form@7.76.1:
     resolution: {integrity: sha512-rYM7tPiWlu3nZchkR/ex7piyzui2vFPyaLnXnI/RnblB/L4qfMmyses8llJVtF1NpE9WBBsJlGtcSZzPCXW1qQ==}
     engines: {node: '>=18.0.0'}
@@ -2662,10 +2659,10 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
-  '@hookform/resolvers@5.2.2(react-hook-form@7.76.0(react@19.2.6))':
+  '@hookform/resolvers@5.2.2(react-hook-form@7.76.1(react@19.2.6))':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.76.0(react@19.2.6)
+      react-hook-form: 7.76.1(react@19.2.6)
 
   '@hookform/resolvers@5.4.0(react-hook-form@7.76.1(react@19.2.6))':
     dependencies:
@@ -2727,7 +2724,7 @@ snapshots:
 
   '@igrp/igrp-framework-react-design-system@0.1.0-beta.129(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(next@15.5.18(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@hookform/resolvers': 5.2.2(react-hook-form@7.76.0(react@19.2.6))
+      '@hookform/resolvers': 5.2.2(react-hook-form@7.76.1(react@19.2.6))
       '@origin-space/image-cropper': 0.1.9(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@radix-ui/react-accordion': 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@radix-ui/react-alert-dialog': 1.1.15(@types/react-dom@19.2.3(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -2769,7 +2766,7 @@ snapshots:
       react-day-picker: 9.14.0(react@19.2.6)
       react-dom: 19.2.6(react@19.2.6)
       react-dropzone: 15.0.0(react@19.2.6)
-      react-hook-form: 7.76.0(react@19.2.6)
+      react-hook-form: 7.76.1(react@19.2.6)
       react-phone-number-input: 3.4.16(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-resizable-panels: 3.0.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       recharts: 2.15.4(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -4342,10 +4339,6 @@ snapshots:
       react: 19.2.6
 
   react-error-boundary@6.1.2(react@19.2.6):
-    dependencies:
-      react: 19.2.6
-
-  react-hook-form@7.76.0(react@19.2.6):
     dependencies:
       react: 19.2.6
 
