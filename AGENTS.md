@@ -58,9 +58,11 @@ Server actions live in `src/actions/` (one file per resource, plus `src/actions/
 
 **This is load-bearing.** See [AGENTS.md](AGENTS.md) and [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) for the full rule. Summary:
 
+- `@igrp/igrp-framework-react-design-system` **is a shadcn-based design system, not a separate UI kit.** It ships three layers under `dist/components/`: `primitives/` = vanilla shadcn components (built on Radix + class-variance-authority + tailwind-merge/clsx + cmdk + sonner + vaul + lucide-react), `horizon/` = IGRP-branded wrappers, `custom/` = composites. Because it is shadcn underneath, the **shadcn skill's Critical Rules apply directly** to all UI in this repo.
 - All UI imports from `@igrp/igrp-framework-react-design-system` (published package — there is no local design-system folder).
 - Prefer **Horizon** components (`IGRPButton`, `IGRPInputText`, `IGRPForm`, `IGRPFormField`, `IGRPDataTable`, `IGRPCard`, `IGRPModalDialog`, etc.) before primitives.
 - Do not introduce other UI kits or hand-roll components when a Horizon component exists.
+- Follow shadcn conventions: `Skeleton` (never custom `animate-pulse`), `Badge`/semantic tokens (never raw `bg-emerald-600` or manual `dark:` color overrides), `gap-*` (never `space-x/y-*`), `size-N` (never `w-N h-N`), `Field`/`FieldGroup` for form layout, `Separator` (never `<hr>`).
 - Tokens come from `@igrp/igrp-framework-react-design-system/tokens` via `src/styles/globals.css`. Do not import prebuilt `*/styles.css` files.
 - Tailwind v4 via `@tailwindcss/postcss`.
 
@@ -74,7 +76,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 | `vercel-composition-patterns` | Component-API and composition refactors |
 | `tanstack-query` | TanStack Query patterns — use when writing `use-<domain>.ts` hooks or server-state data fetching |
 | `tanstack-table` | TanStack Table patterns — use when building `IGRPDataTable` columns or custom table logic |
-| `shadcn` | Reference only — this project uses IGRP Horizon, not raw shadcn primitives |
+| `shadcn` | **Applies directly** — the IGRP design system is shadcn-based (primitives + Horizon wrappers), so the shadcn Critical Rules govern all UI here |
 | `web-design-guidelines` | General web design guidelines and principles |
 
 ### Data layer
