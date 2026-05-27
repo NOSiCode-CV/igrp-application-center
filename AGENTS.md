@@ -84,6 +84,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 - Server: server actions in `src/actions/` → `@igrp/platform-access-management-client-ts`.
 - Client: `@tanstack/react-query` via `use-<domain>.ts` hooks.
 - Forms: `react-hook-form` + `@hookform/resolvers` + Zod schemas from the feature's `*-schemas.ts`. IGRP `IGRPForm` wires these together.
+- Error handling: throw to the route `error.tsx` only for **page-critical** data (the primary query a page exists to show); use `InlineError`/`Alert` + retry for **supplementary** data (e.g. dashboard favorites/recent) so one non-essential failure doesn't blank the page.
 
 ### Path aliases
 
@@ -107,8 +108,8 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 - Test runner: Vitest ^4.1.6 with `@testing-library/react`. Run with `pnpm test`. Tests live alongside features.
 - `optimizePackageImports` is set for the IGRP framework packages and React Query — keep imports tree-shakable (named imports, no deep default imports into those packages).
 - `output: "standalone"` — Dockerfile builds rely on this; don't change without updating the Dockerfile.
-- CI gate: merge-request pipelines run a `validate` stage (`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm check:ui`) before build. See [.gitlab-ci.yml](.gitlab-ci.yml).
-- `pnpm check:ui` ([scripts/check-ui-rules.mjs](scripts/check-ui-rules.mjs)) enforces shadcn Critical Rules on `src/**/*.tsx`. **Strict** (fail build): `space-x/y-*`, raw color literals, `animate-pulse`, manual `dark:` color overrides, `<hr>`/`border-t` dividers. **Advisory** (report only): equal `w-N h-N` → `size-N`. The validate job is `allow_failure: true` until the initial cleanup lands, then flipped to blocking.
+- CI gate: merge-request pipelines run two jobs in the `validate` stage before build (see [.gitlab-ci.yml](.gitlab-ci.yml)): `check-ui` (`pnpm check:ui`) is **blocking**, and `validate` (`pnpm lint`, `pnpm typecheck`, `pnpm test`) is **advisory** (`allow_failure: true`) until the pre-existing lint/typecheck/test debt is cleared, after which it can be made blocking too.
+- `pnpm check:ui` ([scripts/check-ui-rules.mjs](scripts/check-ui-rules.mjs)) enforces shadcn Critical Rules on `src/**/*.tsx` and **blocks merges**. **Strict** (fail): `space-x/y-*`, raw color literals, `animate-pulse`, manual `dark:` color overrides, `<hr>`/`border-t` dividers. **Advisory** (report only): equal `w-N h-N` → `size-N`.
 
 ## Maintenance
 

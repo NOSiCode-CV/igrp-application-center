@@ -135,7 +135,10 @@ export function ApplicationForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
         <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem)] w-full scroll-auto">
           <div className="flex flex-col gap-4">
             <FormField

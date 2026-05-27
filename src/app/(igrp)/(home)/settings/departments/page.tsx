@@ -1,13 +1,10 @@
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getDepartments } from "@/actions/departments";
 import { DepartmentListTree } from "@/features/departments/components/dept-list-tree";
+import { makeQueryClient } from "@/providers/query-provider";
 
 export default async function DepartmentListPage() {
-  const queryClient = new QueryClient();
+  const queryClient = makeQueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: ["departments"],

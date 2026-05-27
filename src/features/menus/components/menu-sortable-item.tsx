@@ -119,6 +119,7 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
             {...listeners}
             className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md shrink-0"
             type="button"
+            aria-label="Arrastar para reordenar"
           >
             <IGRPIcon
               iconName="GripVertical"
@@ -135,6 +136,8 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
               size="icon"
               className="h-7 w-7 p-0 shrink-0"
               onClick={() => setIsExpanded(!isExpanded)}
+              aria-label={isExpanded ? "Recolher" : "Expandir"}
+              aria-expanded={isExpanded}
             >
               <IGRPIcon
                 iconName={isExpanded ? "ChevronDown" : "ChevronRight"}
