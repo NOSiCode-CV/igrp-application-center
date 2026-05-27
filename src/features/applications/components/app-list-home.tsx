@@ -7,6 +7,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
+import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import {
@@ -19,14 +20,22 @@ import { ApplicationCardHome } from "./app-card-home";
 export function ApplicationsListHome() {
   const [search, setSearch] = useState("");
   const { data: applications, isLoading, error } = useCurrentUserApplications();
-  const { data: favorites, isLoading: favoritesLoading } =
-    useCurrentUserFavoriteApplications();
-  const { data: recent, isLoading: recentLoading } =
-    useGetCurrentUserRecentApplications();
+  const {
+    data: favorites,
+    isError: favoritesError,
+    refetch: refetchFavorites,
+  } = useCurrentUserFavoriteApplications();
+  const {
+    data: recent,
+    isError: recentError,
+    refetch: refetchRecent,
+  } = useGetCurrentUserRecentApplications();
 
-  if (isLoading || favoritesLoading || recentLoading)
+  // Block the full page only on the primary (page-critical) query.
+  if (isLoading)
     return <AppCenterLoading description="Carregando aplicações..." />;
 
+  // Only the primary query failure escalates to the route error boundary.
   if (error) throw error;
 
   if (!applications || applications.length === 0) {
@@ -47,48 +56,82 @@ export function ApplicationsListHome() {
       search ? app.name?.toLowerCase().includes(search.toLowerCase()) : true,
     );
 
-  const favoriteApps = activeApps.filter((app: ApplicationDTO) =>
-    favorites?.some((fav) => fav.id === app.id),
-  );
+  const favoriteApps = favoritesError
+    ? []
+    : activeApps.filter((app: ApplicationDTO) =>
+        favorites?.some((fav) => fav.id === app.id),
+      );
 
-  const recentApps = activeApps.filter((app: ApplicationDTO) =>
-    recent?.some((rec) => rec.id === app.id),
-  );
+  const recentApps = recentError
+    ? []
+    : activeApps.filter((app: ApplicationDTO) =>
+        recent?.some((rec) => rec.id === app.id),
+      );
 
   return (
     <>
-      {favoriteApps.length > 0 && (
+      {favoritesError ? (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <IGRPIcon iconName="Star" className="size-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Favoritos</h2>
-            <Badge variant="secondary" className="text-xs">
-              {favoriteApps.length}
-            </Badge>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
-            {favoriteApps.map((app: ApplicationDTO) => (
-              <ApplicationCardHome key={app.id} app={app} />
-            ))}
-          </div>
+          <InlineError
+            message="Não foi possível carregar os favoritos."
+            onRetry={() => refetchFavorites()}
+          />
         </div>
+      ) : (
+        favoriteApps.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <IGRPIcon iconName="Star" className="size-4 text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">
+                Favoritos
+              </h2>
+              <Badge variant="secondary" className="text-xs">
+                {favoriteApps.length}
+              </Badge>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+              {favoriteApps.map((app: ApplicationDTO) => (
+                <ApplicationCardHome key={app.id} app={app} />
+              ))}
+            </div>
+          </div>
+        )
       )}
 
-      {recentApps.length > 0 && (
+      {recentError ? (
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <IGRPIcon iconName="Clock" className="size-4 text-primary" />
             <h2 className="text-sm font-semibold text-foreground">Recentes</h2>
-            <Badge variant="secondary" className="text-xs">
-              {recentApps.length}
-            </Badge>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
-            {recentApps.map((app: ApplicationDTO) => (
-              <ApplicationCardHome key={app.id} app={app} />
-            ))}
-          </div>
+          <InlineError
+            message="Não foi possível carregar os recentes."
+            onRetry={() => refetchRecent()}
+          />
         </div>
+      ) : (
+        recentApps.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <IGRPIcon iconName="Clock" className="size-4 text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">
+                Recentes
+              </h2>
+              <Badge variant="secondary" className="text-xs">
+                {recentApps.length}
+              </Badge>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+              {recentApps.map((app: ApplicationDTO) => (
+                <ApplicationCardHome key={app.id} app={app} />
+              ))}
+            </div>
+          </div>
+        )
       )}
 
       <div className="flex items-center gap-2 mb-4">

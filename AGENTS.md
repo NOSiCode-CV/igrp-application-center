@@ -84,6 +84,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 - Server: server actions in `src/actions/` → `@igrp/platform-access-management-client-ts`.
 - Client: `@tanstack/react-query` via `use-<domain>.ts` hooks.
 - Forms: `react-hook-form` + `@hookform/resolvers` + Zod schemas from the feature's `*-schemas.ts`. IGRP `IGRPForm` wires these together.
+- Error handling: throw to the route `error.tsx` only for **page-critical** data (the primary query a page exists to show); use `InlineError`/`Alert` + retry for **supplementary** data (e.g. dashboard favorites/recent) so one non-essential failure doesn't blank the page.
 
 ### Path aliases
 
