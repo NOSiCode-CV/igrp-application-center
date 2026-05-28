@@ -102,15 +102,17 @@ const updateOmit = {
 const emptyToUndefined = (v: unknown) =>
   typeof v === "string" && v.trim() === "" ? undefined : v;
 
-const PartialBase = BaseApp.partial().omit(updateOmit).extend({
-  url: z.preprocess(
-    emptyToUndefined,
-    z.string().url("URL inválida").optional(),
-  ),
-  slug: z.preprocess(emptyToUndefined, z.string().optional()),
-  description: z.preprocess(emptyToUndefined, z.string().optional()),
-  picture: z.preprocess(emptyToUndefined, z.string().optional()),
-});
+const PartialBase = BaseApp.partial()
+  .omit(updateOmit)
+  .extend({
+    url: z.preprocess(
+      emptyToUndefined,
+      z.string().url("URL inválida").optional(),
+    ),
+    slug: z.preprocess(emptyToUndefined, z.string().optional()),
+    description: z.preprocess(emptyToUndefined, z.string().optional()),
+    picture: z.preprocess(emptyToUndefined, z.string().optional()),
+  });
 
 const PartialInternal = PartialBase.merge(
   z.object({
