@@ -36,8 +36,6 @@ interface UserListTableProps {
   initialInvitations: InvitationDTO[];
 }
 
-// ─── Main component ──────────────────────────────────────────────────────────
-
 type DialogState =
   | { kind: "none" }
   | { kind: "status"; user: IGRPUserDTO; newStatus: "ACTIVE" | "INACTIVE" }
@@ -70,6 +68,9 @@ export function UserListTable({
       if (inv.status === "PENDING") pending.push(inv);
       else if (inv.status === "CANCELED") canceled.push(inv);
     }
+
+    console.log("pending", pending);
+    console.log("canceled", canceled);
     return { pendingData: pending, canceledData: canceled };
   }, [invites]);
 
@@ -144,7 +145,7 @@ export function UserListTable({
             type: "success",
             title: "Estado alterado",
             description: "O estado do utilizador foi alterado com sucesso",
-            duration: 4000,
+            duration: 8000,
           });
           closeDialog();
         },
@@ -153,7 +154,7 @@ export function UserListTable({
             type: "error",
             title: "Erro",
             description: "Não foi possível alterar o estado do utilizador",
-            duration: 4000,
+            duration: 8000,
           });
         },
       },
@@ -168,7 +169,7 @@ export function UserListTable({
           type: "success",
           title: "Convite cancelado",
           description: "O convite foi cancelado com sucesso",
-          duration: 4000,
+          duration: 8000,
         });
         closeDialog();
       },
@@ -177,7 +178,7 @@ export function UserListTable({
           type: "error",
           title: "Erro",
           description: "Não foi possível cancelar o convite",
-          duration: 4000,
+          duration: 8000,
         });
       },
     });

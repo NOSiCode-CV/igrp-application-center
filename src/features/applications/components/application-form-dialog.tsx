@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@igrp/igrp-framework-react-design-system";
@@ -23,11 +24,16 @@ export function ApplicationFormDialog({
   const isEdit = !!application;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:min-w-2xl max-h-[90vh]">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
             {isEdit ? "Editar Aplicação" : "Nova Aplicação"}
           </DialogTitle>
+          <DialogDescription>
+            {isEdit
+              ? "Atualize os detalhes da aplicação."
+              : "Preencha os detalhes para registar uma nova aplicação."}
+          </DialogDescription>
         </DialogHeader>
         <ApplicationForm
           application={application}

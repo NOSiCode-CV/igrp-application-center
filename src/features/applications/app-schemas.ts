@@ -1,6 +1,8 @@
 import type {
   ApplicationType,
+  CreateApplicationRequest,
   Status,
+  UpdateApplicationRequest,
 } from "@igrp/platform-access-management-client-ts";
 import { z } from "zod";
 import { fileWithPreviewSchema } from "@/features/files/files-schema";
@@ -97,19 +99,33 @@ const updateOmit = {
   lastModifiedDate: true,
 } as const;
 
-const PartialBase = BaseApp.partial().omit(updateOmit);
+const emptyToUndefined = (v: unknown) =>
+  typeof v === "string" && v.trim() === "" ? undefined : v;
+
+const PartialBase = BaseApp.partial().omit(updateOmit).extend({
+  url: z.preprocess(
+    emptyToUndefined,
+    z.string().url("URL inválida").optional(),
+  ),
+  slug: z.preprocess(emptyToUndefined, z.string().optional()),
+  description: z.preprocess(emptyToUndefined, z.string().optional()),
+  picture: z.preprocess(emptyToUndefined, z.string().optional()),
+});
 
 const PartialInternal = PartialBase.merge(
   z.object({
     type: z.literal(appTypeCrud.enum.INTERNAL).optional(),
-    slug: z.string().optional(),
+    slug: z.preprocess(emptyToUndefined, z.string().optional()),
   }),
 );
 
 const PartialExternal = PartialBase.merge(
   z.object({
     type: z.literal(appTypeCrud.enum.EXTERNAL).optional(),
-    url: z.string().url("URL inválida").optional(),
+    url: z.preprocess(
+      emptyToUndefined,
+      z.string().url("URL inválida").optional(),
+    ),
   }),
 );
 
@@ -138,25 +154,42 @@ export const FormSchema = z.union([
   CreateApplicationSchema,
   UpdateApplicationSchema,
 ]);
-export type FormVals = z.input<typeof FormSchema>;
-export type FormValsParsed = z.output<typeof FormSchema>;
 
-export function normalizeApplication(values: FormVals, _isEdit: boolean) {
+export type CreateApplicationFormValues = z.output<
+  typeof CreateApplicationSchema
+>;
+export type UpdateApplicationFormValues = z.output<
+  typeof UpdateApplicationSchema
+>;
+export type ApplicationFormValues =
+  | CreateApplicationFormValues
+  | UpdateApplicationFormValues;
+
+function toNullableString(value: unknown): string | null {
+  if (value == null) return null;
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length === 0 ? null : trimmed;
+}
+
+export function normalizeCreateApplication(
+  values: CreateApplicationFormValues,
+): CreateApplicationRequest {
   const base = {
-    code: values.code as string,
-    name: values.name as string,
+    code: values.code,
+    name: values.name,
     type: values.type as ApplicationType,
     status: values.status as Status,
-    description: values.description ?? null,
-    owner: values.owner as string,
-    picture: values.picture ?? null,
+    description: toNullableString(values.description),
+    owner: values.owner ?? "",
+    picture: toNullableString(values.picture),
     departments: [],
   };
 
   if (values.type === appTypeCrud.enum.INTERNAL) {
     return {
       ...base,
-      slug: values.slug ?? null,
+      slug: toNullableString(values.slug),
       url: null,
     };
   }
@@ -165,4 +198,35 @@ export function normalizeApplication(values: FormVals, _isEdit: boolean) {
     url: values.url ?? null,
     slug: null,
   };
+}
+
+export function normalizeUpdateApplication(
+  values: UpdateApplicationFormValues,
+): UpdateApplicationRequest {
+  const base = {
+    code: values.code,
+    name: values.name,
+    type: values.type as ApplicationType | undefined,
+    status: values.status as Status | undefined,
+    description: toNullableString(values.description),
+    owner: values.owner,
+    picture: toNullableString(values.picture),
+    departments: [],
+  };
+
+  if (values.type === appTypeCrud.enum.INTERNAL) {
+    return {
+      ...base,
+      slug: toNullableString(values.slug),
+      url: null,
+    };
+  }
+  if (values.type === appTypeCrud.enum.EXTERNAL) {
+    return {
+      ...base,
+      url: values.url ?? null,
+      slug: null,
+    };
+  }
+  return base;
 }

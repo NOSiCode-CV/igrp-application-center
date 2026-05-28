@@ -28,7 +28,8 @@ interface ApplicationCardProps {
 
 export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
   const { name, code, status, description, slug, url } = app;
-  const href = slug ? formatSlug(slug) : url;
+  // const href = slug ? formatSlug(slug) : url;
+  const href = slug ?? url;
   const isSystem = isSystemApp(app);
   const appImage = app.picture;
   const imageSrc = appImage
@@ -38,7 +39,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
     : null;
 
   return (
-    <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
+    <div className="relative overflow-hidden rounded-lg border bg-card p-6 pb-2 transition-all duration-300 hover:shadow-lg">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="relative size-12 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
@@ -70,7 +71,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
       </p>
 
       <Separator />
-      <div className="flex items-center justify-end gap-1 pt-4">
+      <div className="flex items-center justify-end gap-1 pt-3">
         <ButtonLinkTooltip
           href={`${ROUTES.APPLICATIONS}/${code}` as Route}
           icon="Eye"
@@ -97,14 +98,16 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
           </Tooltip>
         )}
 
-        <ButtonLinkTooltip
-          href={(href || "") as Route}
-          icon="ExternalLink"
-          label="Abrir"
-          size="icon"
-          variant="ghost"
-          btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-        />
+        {href && (
+          <ButtonLinkTooltip
+            href={href as Route}
+            icon="ExternalLink"
+            label="Abrir"
+            size="icon"
+            variant="ghost"
+            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+          />
+        )}
       </div>
     </div>
   );

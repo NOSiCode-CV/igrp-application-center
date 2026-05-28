@@ -10,7 +10,6 @@ import {
   FormMessage,
   IGRPButton,
   Input,
-  ScrollArea,
   Select,
   SelectContent,
   SelectItem,
@@ -23,12 +22,15 @@ import {
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { type Resolver, useForm } from "react-hook-form";
 import {
+  type ApplicationFormValues,
   appTypeCrud,
+  type CreateApplicationFormValues,
   CreateApplicationSchema,
-  type FormVals,
-  normalizeApplication,
+  normalizeCreateApplication,
+  normalizeUpdateApplication,
+  type UpdateApplicationFormValues,
   UpdateApplicationSchema,
 } from "@/features/applications/app-schemas";
 import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
@@ -54,13 +56,13 @@ export function ApplicationForm({
 
   const isEdit = !!application;
 
-  const defaultValues = useMemo<FormVals>(
+  const defaultValues = useMemo<ApplicationFormValues>(
     () =>
       application
         ? {
             name: application.name,
             code: application.code,
-            owner: application.owner,
+            owner: application.owner ?? "",
             type: application.type as "INTERNAL" | "EXTERNAL",
             slug: application.slug || "",
             url: application.url || "",
@@ -82,19 +84,21 @@ export function ApplicationForm({
     [application],
   );
 
-  const form = useForm<FormVals>({
+  const form = useForm<ApplicationFormValues>({
     resolver: zodResolver(
       isEdit ? UpdateApplicationSchema : CreateApplicationSchema,
-    ),
+    ) as Resolver<ApplicationFormValues>,
     defaultValues,
   });
 
   const type = form.watch("type");
 
-  const onSubmit = async (values: FormVals) => {
+  const onSubmit = async (values: ApplicationFormValues) => {
     try {
       if (isEdit) {
-        const payload = normalizeApplication(values, true);
+        const payload = normalizeUpdateApplication(
+          values as UpdateApplicationFormValues,
+        );
         const created = await updateApplication({
           code: application.code,
           data: payload,
@@ -110,7 +114,9 @@ export function ApplicationForm({
           description: "A aplicação foi atualizada com sucesso!",
         });
       } else {
-        const payload = normalizeApplication(values, false);
+        const payload = normalizeCreateApplication(
+          values as CreateApplicationFormValues,
+        );
         await createApplication(payload);
 
         igrpToast({
@@ -139,134 +145,158 @@ export function ApplicationForm({
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col gap-4"
       >
-        <ScrollArea className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem)] w-full scroll-auto">
-          <div className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='after:content-["*"] after:text-destructive'>
-                    Nome
-                  </FormLabel>
-                  <FormControl>
-                    <Input {...field} required />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <div className="flex flex-col gap-4 max-h-[75vh] overflow-y-auto px-1 pb-2">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='after:content-["*"] after:text-destructive'>
+                  Nome
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Nome da aplicação"
+                    required
+                    className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          <FormField
+            control={form.control}
+            name="code"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='after:content-["*"] after:text-destructive'>
+                  Código
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="EX: APP_CENTER"
+                    className={`uppercase placeholder:truncate placeholder:normal-case border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30 ${
+                      isEdit ? "bg-muted" : ""
+                    }`}
+                    required
+                    disabled={isEdit}
+                    onChange={(e) => {
+                      if (!isEdit) {
+                        const v = e.target.value
+                          .toUpperCase()
+                          .replace(/[^A-Z0-9_]/g, "");
+                        field.onChange(v);
+                      }
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tipo</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    if (value === "INTERNAL") {
+                      form.setValue("url", "");
+                    } else {
+                      form.setValue("slug", "");
+                    }
+                  }}
+                  value={field.value}
+                >
+                  <FormControl className="w-full">
+                    <SelectTrigger className="border-primary/30 focus:ring-2 focus:ring-primary/30">
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {APPLICATIONS_TYPES_FILTERED.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {type === "INTERNAL" && (
             <FormField
               control={form.control}
-              name="code"
+              name="slug"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='after:content-["*"] after:text-destructive'>
-                    Código
-                  </FormLabel>
+                  <FormLabel>Slug</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      className={isEdit ? "bg-muted uppercase" : "uppercase"}
-                      required
-                      disabled={isEdit}
-                      onChange={(e) => {
-                        if (!isEdit) {
-                          const v = e.target.value
-                            .toUpperCase()
-                            .replace(/[^A-Z0-9_]/g, "");
-                          field.onChange(v);
-                        }
-                      }}
+                      value={field.value || ""}
+                      placeholder="/apps/exemplo"
+                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          )}
 
+          {type === "EXTERNAL" && (
             <FormField
               control={form.control}
-              name="type"
+              name="url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tipo</FormLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      if (value === "INTERNAL") {
-                        form.setValue("url", "");
-                      } else {
-                        form.setValue("slug", "");
-                      }
-                    }}
-                    value={field.value}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {APPLICATIONS_TYPES_FILTERED.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {type === "INTERNAL" && (
-              <FormField
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Slug</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value || ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            {type === "EXTERNAL" && (
-              <FormField
-                control={form.control}
-                name="url"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value || ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição</FormLabel>
+                  <FormLabel>URL</FormLabel>
                   <FormControl>
-                    <Textarea {...field} value={field.value || ""} rows={3} />
+                    <Input
+                      {...field}
+                      value={field.value || ""}
+                      placeholder="https://exemplo.com"
+                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          )}
 
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descrição</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    value={field.value || ""}
+                    rows={3}
+                    placeholder="Breve descrição da aplicação"
+                    className="resize-none placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {isEdit && (
             <FormField
               control={form.control}
               name="status"
@@ -275,7 +305,7 @@ export function ApplicationForm({
                   <FormLabel>Estado</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full border-primary/30 focus:ring-2 focus:ring-primary/30">
                         <SelectValue placeholder="Selecionar estado" />
                       </SelectTrigger>
                     </FormControl>
@@ -291,11 +321,11 @@ export function ApplicationForm({
                 </FormItem>
               )}
             />
-          </div>
-        </ScrollArea>
+          )}
+        </div>
 
         <Separator />
-        <div className="flex justify-end gap-2 pt-4">
+        <div className="flex justify-end gap-2 pt-2">
           <IGRPButton
             type="button"
             showIcon

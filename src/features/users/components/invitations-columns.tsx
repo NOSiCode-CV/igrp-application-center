@@ -113,8 +113,6 @@ function PendingRowActionsCell({
   );
 }
 
-// ─── Column factory ──────────────────────────────────────────────────────────
-
 export function getInvitationColumns(
   onCancelClick: (invitation: InvitationDTO) => void,
 ): ColumnDef<InvitationDTO>[] {

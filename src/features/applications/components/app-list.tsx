@@ -56,7 +56,7 @@ export function ApplicationList() {
     <div className="flex flex-col gap-10 animate-fade-in">
       <PageHeader
         title="Gerir Aplicações"
-        description="Gerir Menus de Aplicações."
+        description=""
         showActions
       >
         <IGRPButton showIcon iconName="Grid2x2Plus" onClick={openCreate}>
