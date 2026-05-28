@@ -15,8 +15,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 COPY ./env/.env.development .env.production
 
-
 RUN pnpm build
+
 FROM base AS runner
 WORKDIR /app
 
