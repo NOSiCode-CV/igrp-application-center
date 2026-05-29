@@ -10,7 +10,7 @@ export default async function HomeIGRP() {
   await prefetchCurrentUserDashboard(queryClient);
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="mx-auto p-6">
+      <div className="max-h-[var(--home-scroll-h)] overflow-hidden flex flex-col">
         <ApplicationsListHome />
       </div>
     </HydrationBoundary>
