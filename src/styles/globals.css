@@ -147,6 +147,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Home launcher viewport-fit height.
+   * 100dvh — IGRP header (~4rem) — framework p-4 wrapper top padding (1rem).
+   * Adjust the rem value here if the framework header height changes. */
+  --home-scroll-h: calc(100dvh - 5rem);
 }
 
 .dark {
@@ -275,6 +279,22 @@
 
 .status-pending {
   @apply bg-warning/15 text-warning;
+}
+
+.home-scroll-viewport {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.home-scroll-viewport::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.home-scroll-viewport::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.home-scroll-viewport::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* Grid layouts */
