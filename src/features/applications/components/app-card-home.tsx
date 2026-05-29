@@ -5,86 +5,128 @@ import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts"
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  useAddCurrentUserFavoriteApplication,
-  useCurrentUserFavoriteApplications,
-  useRemoveCurrentUserFavoriteApplication,
-} from "@/features/users/use-users";
 import { config } from "@/lib/constants";
+import { relativeTimePt } from "../lib/app-visual";
+import { FavoriteToggle } from "./favorite-toggle";
 
-export function ApplicationCardHome({ app }: { app: ApplicationDTO }) {
-  const { name, description, code, picture } = app;
+type Variant = "default" | "featured";
+
+export function ApplicationCardHome({
+  app,
+  variant = "default",
+  showLastAccess = false,
+}: {
+  app: ApplicationDTO;
+  variant?: Variant;
+  showLastAccess?: boolean;
+}) {
+  const { name, description, code, picture, type, lastAccess } = app;
   const imageSrc = picture
     ? picture.startsWith("http")
       ? picture
       : new URL(picture, config.minioUrl).toString()
     : null;
-  const href =
-    code === "APP_IGRP_CENTER"
-      ? "/applications"
-      : (app.url ?? app?.slug ?? "#");
+  const rawHref =
+    code === "APP_IGRP_CENTER" ? "/applications" : (app.url ?? app?.slug ?? "");
+  const isDisabled = !rawHref;
+  const isExternal = type === "EXTERNAL";
+  const isFeatured = variant === "featured";
 
-  const { data: favorites } = useCurrentUserFavoriteApplications();
-  const addFavorite = useAddCurrentUserFavoriteApplication();
-  const removeFavorite = useRemoveCurrentUserFavoriteApplication();
+  const iconSize = isFeatured ? "size-11" : "size-10";
+  const ago = showLastAccess ? relativeTimePt(lastAccess) : "";
 
-  const isFavorite = favorites?.some((fav) => fav.id === app.id);
+  const cardClasses = [
+    "relative h-full overflow-hidden rounded-lg border bg-card transition-all duration-200",
+    "p-3.5",
+    isDisabled
+      ? "border-dashed border-border/40 opacity-60 cursor-not-allowed"
+      : "border-border/60 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm",
+  ].join(" ");
 
-  const toggleFavorite = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const inner = (
+    <div className={cardClasses}>
+      <div className="absolute top-2.5 right-2.5 z-10">
+        <FavoriteToggle app={app} size="sm" />
+      </div>
+      <div className="flex items-start gap-3 pr-7">
+        <div
+          className={`relative ${iconSize} rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50 bg-muted/30 transition-transform duration-200 group-hover:scale-105`}
+        >
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt={name}
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
+          ) : (
+            <IGRPIcon iconName="AppWindow" className="size-5 text-primary" />
+          )}
+        </div>
 
-    if (isFavorite) {
-      await removeFavorite.mutateAsync(app.code);
-    } else {
-      await addFavorite.mutateAsync({ applicationCode: app.code, app });
-    }
-  };
-
-  return (
-    <Link href={(href || "") as Route} className="group block h-full">
-      <div className="relative h-full overflow-hidden rounded-sm border-2 border-border/40 bg-card p-5 hover:shadow-sm">
-        <div className="flex gap-4">
-          <div className="relative size-14 rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50">
-            {imageSrc ? (
-              <Image
-                src={imageSrc}
-                alt={name}
-                fill
-                className="object-cover"
-                sizes="100px"
-              />
-            ) : (
-              <IGRPIcon iconName="AppWindow" className="size-7 text-primary" />
-            )}
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors mb-1">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h3 className="text-sm font-semibold line-clamp-1 group-hover:text-primary transition-colors min-w-0">
               {name}
             </h3>
-            <p className="text-xs text-muted-foreground mt-1 leading-snug line-clamp-2">
-              {description}
-            </p>
+            {isExternal && !isDisabled && (
+              <IGRPIcon
+                iconName="ArrowUpRight"
+                className="size-3 text-muted-foreground shrink-0"
+                aria-label="Aplicação externa"
+              />
+            )}
           </div>
-
-          <button
-            onClick={toggleFavorite}
-            className="hover:scale-110 transition-transform cursor-pointer"
-            disabled={addFavorite.isPending || removeFavorite.isPending}
-            type="button"
-            aria-pressed={isFavorite}
-            aria-label={
-              isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
-            }
-          >
-            <IGRPIcon
-              iconName="Star"
-              className={`size-4 ${isFavorite ? "fill-warning text-warning" : "text-muted-foreground"}`}
-            />
-          </button>
+          <p className="text-xs text-muted-foreground leading-snug line-clamp-2 mt-0.5">
+            {description}
+          </p>
+          {(ago || isDisabled) && (
+            <p
+              className={`text-[10px] uppercase tracking-wide mt-1.5 ${
+                isDisabled ? "text-muted-foreground/70" : "text-primary/70"
+              }`}
+            >
+              {isDisabled ? "Indisponível" : ago}
+            </p>
+          )}
         </div>
       </div>
+    </div>
+  );
+
+  if (isDisabled) {
+    return (
+      <div
+        className="group block h-full"
+        aria-disabled="true"
+        title="Aplicação sem destino configurado"
+      >
+        {inner}
+      </div>
+    );
+  }
+
+  // External apps (absolute URLs or EXTERNAL type) open in a new tab via a
+  // plain <a>. next/link does not reliably handle absolute URLs in Next 15
+  // typed-routes mode and would silently no-op the click.
+  const isAbsolute = /^https?:\/\//i.test(rawHref);
+  if (isExternal || isAbsolute) {
+    return (
+      <a
+        href={rawHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block h-full"
+      >
+        {inner}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={rawHref as Route} className="group block h-full">
+      {inner}
     </Link>
   );
 }
