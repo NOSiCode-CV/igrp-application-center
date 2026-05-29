@@ -89,6 +89,8 @@ export function ApplicationForm({
       isEdit ? UpdateApplicationSchema : CreateApplicationSchema,
     ) as Resolver<ApplicationFormValues>,
     defaultValues,
+    mode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const type = form.watch("type");
@@ -126,6 +128,7 @@ export function ApplicationForm({
         });
 
         router.push(`${ROUTES.APPLICATIONS}/${values.code}`);
+        return;
       }
 
       onSuccess();
@@ -261,10 +264,14 @@ export function ApplicationForm({
               name="url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>URL</FormLabel>
+                  <FormLabel className='after:content-["*"] after:text-destructive'>
+                    URL
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
+                      type="url"
+                      inputMode="url"
                       value={field.value || ""}
                       placeholder="https://exemplo.com"
                       className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"

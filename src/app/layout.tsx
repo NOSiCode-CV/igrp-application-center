@@ -6,6 +6,9 @@ import { IGRP_META_THEME_COLORS } from "@igrp/igrp-framework-react-design-system
 import { createConfig } from "@igrp/template-config";
 import type { Metadata, Viewport } from "next";
 import { getLayoutConfig } from "@/lib/dal";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "IGRP | Centro de Aplicações",

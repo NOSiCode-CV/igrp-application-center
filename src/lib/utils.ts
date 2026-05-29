@@ -187,10 +187,6 @@ export function extractApiError(error: unknown): string {
     return getDefaultErrorMessage(e.status);
   }
 
-  if (e.message) {
-    return e.message;
-  }
-
   return e.message || "Erro desconhecido";
 }
 
@@ -208,6 +204,8 @@ function getDefaultErrorMessage(status?: number): string {
       return "Conflito de dados";
     case 422:
       return "Dados inválidos";
+    case 429:
+      return "Muitas requisições, tente novamente mais tarde";
     case 500:
       return "Erro interno do servidor";
     case 502:
