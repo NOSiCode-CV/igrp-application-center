@@ -37,6 +37,43 @@ function firstName(full?: string) {
   return full?.trim().split(/\s+/)[0] ?? "";
 }
 
+/** Title-case each whitespace- or hyphen-separated word, accent-aware. */
+function titleCase(s: string): string {
+  return s.replace(
+    /(^|\s|-)([a-zà-ÿ])/g,
+    (_m, sep: string, ch: string) => sep + ch.toUpperCase(),
+  );
+}
+
+/**
+ * Live clock + date for the hero widget. Ticks once a minute. Returns
+ * `null` on the server / before mount to avoid hydration mismatch — the
+ * widget renders a placeholder until the first client tick.
+ */
+function useLiveClock() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    tick();
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, []);
+  if (!now) return { time: null, date: null };
+  return {
+    time: now.toLocaleTimeString("pt-PT", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    date: titleCase(
+      now.toLocaleDateString("pt-PT", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      }),
+    ),
+  };
+}
+
 function resolveImage(picture?: string | null) {
   if (!picture) return null;
   return picture.startsWith("http")
@@ -47,6 +84,49 @@ function resolveImage(picture?: string | null) {
 function resolveHref(app: ApplicationDTO) {
   if (app.code === "APP_IGRP_CENTER") return "/applications";
   return app.url ?? app.slug ?? "";
+}
+
+/**
+ * Hero side widget: live clock + Portuguese date + apps/favorites counts.
+ * Uses useLiveClock so the time stays accurate without a full rerender.
+ */
+function HeroStatsWidget({
+  appCount,
+  favoriteCount,
+}: {
+  appCount: number;
+  favoriteCount: number;
+}) {
+  const { date } = useLiveClock();
+  return (
+    <aside className="relative shrink-0 w-full md:w-auto md:min-w-[200px] rounded-xl border border-border/60 bg-card/70 backdrop-blur-sm px-4 py-3">
+      {date ? (
+        <>
+          <div className="text-sm md:text-base font-semibold text-center text-foreground leading-tight">
+            {date}
+          </div>
+          <div className="mt-2.5 flex items-center justify-center gap-3 text-xs text-muted-foreground">
+            <span>
+              <strong className="font-semibold tabular-nums text-foreground">
+                {appCount}
+              </strong>{" "}
+              apps
+            </span>
+            <span aria-hidden className="h-3 w-px bg-border" />
+            <span>
+              <strong className="font-semibold tabular-nums text-foreground">
+                {favoriteCount}
+              </strong>{" "}
+              favoritos
+            </span>
+          </div>
+        </>
+      ) : (
+        // Placeholder during pre-mount / first render to avoid hydration mismatch.
+        <div className="h-12" />
+      )}
+    </aside>
+  );
 }
 
 function GridSkeleton({ count = 6 }: { count?: number }) {
@@ -197,10 +277,18 @@ export function ApplicationsListHome() {
     );
   }, [typeFilter, deptFilter]);
 
-  const { data: currentUser } = useCurrentUser();
-  const { data: activeRole } = useCurrentUserActiveRole();
-  const { data: userRoles } = useGetCurrentUserRoles();
-  const { data: userDepartments } = useCurrentUserDepartments();
+  const { data: currentUser, isPending: isUserPending } = useCurrentUser();
+  const { data: activeRole, isPending: isActiveRolePending } =
+    useCurrentUserActiveRole();
+  const { data: userRoles, isPending: isUserRolesPending } =
+    useGetCurrentUserRoles();
+  const { data: userDepartments, isPending: isUserDepartmentsPending } =
+    useCurrentUserDepartments();
+  const isIdentityReady =
+    !isUserPending &&
+    !isActiveRolePending &&
+    !isUserRolesPending &&
+    !isUserDepartmentsPending;
   const { data: applications, isLoading, error } = useCurrentUserApplications();
   const {
     data: favorites,
@@ -285,7 +373,7 @@ export function ApplicationsListHome() {
   ) as string[];
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       <CommandPalette
         open={paletteOpen}
         onOpenChange={setPaletteOpen}
@@ -293,21 +381,27 @@ export function ApplicationsListHome() {
         favoriteIds={favoriteIds}
         recentIds={recentIds}
       />
-      <header className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 md:p-6 max-w-3xl">
-        {/* Layer 1 — "sunrise" radial: warm amber wash in the top-right
-            corner. Echoes the time-of-day greeting and gives the card a
-            direction (the eye reads from the bright corner inward). */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(110% 90% at 100% 0%, color-mix(in oklab, var(--warning) 22%, transparent) 0%, transparent 55%), radial-gradient(120% 100% at 0% 100%, color-mix(in oklab, var(--primary) 8%, transparent) 0%, transparent 60%)",
-          }}
-        />
-        {/* Layer 2 — fine diagonal hatch pattern at very low opacity. Adds
+
+      <div className="home-scroll-viewport flex-1 min-h-0 overflow-y-auto px-6 py-6">
+        {/* Sentinel — 1px element above the sticky row. Task 5 will add a ref
+            to this and an IntersectionObserver that toggles `isStuck`. */}
+        <div aria-hidden className="h-px" />
+
+        <header className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 md:p-6">
+          {/* Layer 1 — soft radial wash anchored to the top-right corner,
+            with a quieter echo in the bottom-left. Both use the primary
+            token so the card stays neutral and theme-respecting. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(110% 90% at 100% 0%, color-mix(in oklab, var(--primary) 10%, transparent) 0%, transparent 55%), radial-gradient(120% 100% at 0% 100%, color-mix(in oklab, var(--primary) 6%, transparent) 0%, transparent 60%)",
+            }}
+          />
+          {/* Layer 2 — fine diagonal hatch pattern at very low opacity. Adds
             a "designed" texture without screaming pattern. */}
-        <div
+          {/* <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-multiply"
           style={{
@@ -315,227 +409,249 @@ export function ApplicationsListHome() {
               "repeating-linear-gradient(135deg, currentColor 0 1px, transparent 1px 8px)",
             color: "var(--foreground)",
           }}
-        />
-        {/* Layer 3 — SVG noise grain for tactile depth. Pulled from a
+        /> */}
+          {/* Layer 3 — SVG noise grain for tactile depth. Pulled from a
             tiny inline turbulence filter so there's no asset request. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-overlay"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
-          }}
-        />
-        {/* Layer 4 — bottom hairline, fades in from the warm side. Anchors
-            the card to the page below it and works as a signature detail. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-5 md:inset-x-6 bottom-0 h-px bg-gradient-to-l from-warning/40 via-primary/15 to-transparent"
-        />
-
-        <div className="relative flex flex-col gap-1">
-          <p className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-primary/80 font-semibold">
-            <span aria-hidden className="size-1.5 rounded-full bg-primary/70" />
-            Centro de Aplicações
-          </p>
-          <h1 className="text-2xl md:text-3xl tracking-tight leading-[1.1]">
-            <span className="font-medium text-foreground/55">
-              {greeting()}
-              {userFirst ? "," : "."}
-            </span>
-            {userFirst && (
-              <>
-                {" "}
-                <span className="font-bold text-foreground underline decoration-primary/80 decoration-[3px] underline-offset-[5px]">
-                  {userFirst}
-                </span>
-                <span className="font-medium text-foreground/55">.</span>
-              </>
-            )}
-          </h1>
-          {contextBits.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mt-0.5">
-              {contextBits.map((bit, i) => (
-                <span key={bit} className="flex items-center gap-2">
-                  {i > 0 && (
-                    <span
-                      aria-hidden
-                      className="size-1 rounded-full bg-border"
-                    />
-                  )}
-                  <span>{bit}</span>
-                </span>
-              ))}
-              <span aria-hidden className="size-1 rounded-full bg-border" />
-              <span>Encontre e abra as suas aplicações.</span>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Encontre e abra as suas aplicações.
-            </p>
-          )}
-        </div>
-      </header>
-
-      <section className="flex flex-col gap-6">
-        <button
-          ref={searchWrapperRef}
-          type="button"
-          onClick={() => setPaletteOpen(true)}
-          aria-label="Abrir paleta de comandos para pesquisar aplicações"
-          className="group relative w-full sm:w-80 md:w-96 h-10 flex items-center gap-2 rounded-md border border-border bg-card pl-3 pr-2 text-sm text-muted-foreground hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors cursor-pointer"
-        >
-          <IGRPIcon
-            iconName="Search"
-            className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-overlay"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+            }}
           />
-          <span className="flex-1 text-left truncate">
-            Pesquisar aplicações…
-          </span>
-          <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-            <span className="text-[11px] leading-none">⌘</span>K
-          </kbd>
-        </button>
 
-        {isLoading ? (
-          <GridSkeleton />
-        ) : !applications || applications.length === 0 ? (
-          <AppCenterNotFound
-            iconName="AppWindow"
-            title="Nenhuma aplicação encontrada."
-          >
-            Parece que você ainda não tem aplicações disponíveis.
-          </AppCenterNotFound>
-        ) : (
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="flex-1 min-w-0 flex flex-col gap-10 order-2 lg:order-1">
-              {recentError && (
-                <section>
-                  <SectionHeader iconName="Clock" label="Recentes" />
-                  <InlineError
-                    message="Não foi possível carregar os recentes."
-                    onRetry={() => refetchRecent()}
-                  />
-                </section>
-              )}
-
-              {!recentError && recentApps.length > 0 && (
-                <section
-                  className="animate-slide-in-up opacity-0"
-                  style={{ animationDelay: "60ms" }}
-                >
-                  <SectionHeader
-                    iconName="Clock"
-                    label="Recentes"
-                    count={recentApps.length}
-                    tone="primary"
-                    collapsible
-                    collapsed={collapsed.recentes}
-                    onToggle={() => toggleSection("recentes")}
-                  />
-                  {!collapsed.recentes && (
-                    <GridNavigator className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
-                      {recentApps.map((app) => (
-                        <ApplicationCardHome
-                          key={app.id}
-                          app={app}
-                          variant="featured"
-                          showLastAccess
-                        />
-                      ))}
-                    </GridNavigator>
-                  )}
-                </section>
-              )}
-
-              <section
-                className="animate-slide-in-up opacity-0"
-                style={{ animationDelay: "140ms" }}
+          <div className="relative flex flex-col md:flex-row md:items-center gap-5 md:gap-6">
+            <div className="flex-1 min-w-0 flex flex-col gap-1">
+              <Badge
+                variant="secondary"
+                className="self-start gap-2 px-2.5 py-1 rounded-full bg-success/15 text-success border border-success/30 text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-success/20"
               >
-                <SectionHeader
-                  iconName="AppWindow"
-                  label="Todas as Aplicações"
-                  count={filteredApps.length}
-                  tone="muted"
-                  collapsible
-                  collapsed={collapsed.todas}
-                  onToggle={() => toggleSection("todas")}
+                <span
+                  aria-hidden
+                  className="size-1.5 rounded-full bg-success"
                 />
-                {!collapsed.todas && (
-                  <>
-                    <FilterChipRow
-                      typeFilter={typeFilter}
-                      onTypeChange={setTypeFilter}
-                      deptFilter={deptFilter}
-                      onDeptChange={setDeptFilter}
-                      departments={departmentChips}
+                Centro de Aplicações
+              </Badge>
+              {isIdentityReady ? (
+                <>
+                  <h1 className="text-xl md:text-2xl font-medium tracking-tight leading-[1.15] text-foreground">
+                    {greeting()}
+                    {userFirst ? "," : "."}
+                    {userFirst && (
+                      <>
+                        {" "}
+                        <span className="font-bold text-primary">
+                          {userFirst}
+                        </span>
+                        .
+                      </>
+                    )}
+                  </h1>
+                  {contextBits.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground mt-0.5">
+                      {contextBits.map((bit, i) => (
+                        <span key={bit} className="flex items-center gap-2">
+                          {i > 0 && (
+                            <span
+                              aria-hidden
+                              className="size-1 rounded-full bg-border"
+                            />
+                          )}
+                          <span>{bit}</span>
+                        </span>
+                      ))}
+                      <span
+                        aria-hidden
+                        className="size-1 rounded-full bg-border"
+                      />
+                      <span>Encontre e abra as suas aplicações</span>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      Encontre e abra as suas aplicações
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div
+                  className="flex flex-col gap-2"
+                  aria-busy="true"
+                  aria-live="polite"
+                >
+                  <Skeleton className="h-9 md:h-11 w-64" />
+                  <Skeleton className="h-4 w-80 mt-0.5" />
+                </div>
+              )}
+            </div>
+
+            <HeroStatsWidget
+              appCount={visibleApps.length}
+              favoriteCount={favorites?.length ?? 0}
+            />
+          </div>
+        </header>
+
+        <section className="flex flex-col gap-6 mt-6">
+          <button
+            ref={searchWrapperRef}
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Abrir paleta de comandos para pesquisar aplicações"
+            className="group relative w-full sm:w-80 md:w-96 h-10 shrink-0 flex items-center gap-2 rounded-md border border-border bg-card pl-3 pr-2 text-sm text-muted-foreground hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors cursor-pointer"
+          >
+            <IGRPIcon
+              iconName="Search"
+              className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
+            />
+            <span className="flex-1 text-left truncate">
+              Pesquisar aplicações…
+            </span>
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <span className="text-[11px] leading-none">⌘</span>K
+            </kbd>
+          </button>
+
+          {isLoading ? (
+            <GridSkeleton />
+          ) : !applications || applications.length === 0 ? (
+            <AppCenterNotFound
+              iconName="AppWindow"
+              title="Nenhuma aplicação encontrada."
+            >
+              Parece que você ainda não tem aplicações disponíveis.
+            </AppCenterNotFound>
+          ) : (
+            <div className="flex flex-col lg:flex-row gap-8">
+              <div className="flex-1 min-w-0 flex flex-col gap-10 order-2 lg:order-1">
+                {recentError && (
+                  <section>
+                    <SectionHeader iconName="Clock" label="Recentes" />
+                    <InlineError
+                      message="Não foi possível carregar os recentes."
+                      onRetry={() => refetchRecent()}
                     />
-                    {filteredApps.length === 0 ? (
-                      <p className="text-sm text-muted-foreground py-8 text-center">
-                        Nenhuma aplicação corresponde aos filtros.
-                      </p>
-                    ) : (
+                  </section>
+                )}
+
+                {!recentError && recentApps.length > 0 && (
+                  <section
+                    className="animate-slide-in-up opacity-0"
+                    style={{ animationDelay: "60ms" }}
+                  >
+                    <SectionHeader
+                      iconName="Clock"
+                      label="Recentes"
+                      count={recentApps.length}
+                      tone="primary"
+                      collapsible
+                      collapsed={collapsed.recentes}
+                      onToggle={() => toggleSection("recentes")}
+                    />
+                    {!collapsed.recentes && (
                       <GridNavigator className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
-                        {filteredApps.map((app) => (
+                        {recentApps.map((app) => (
                           <ApplicationCardHome
                             key={app.id}
                             app={app}
                             variant="featured"
+                            showLastAccess
                           />
                         ))}
                       </GridNavigator>
                     )}
-                  </>
+                  </section>
                 )}
-              </section>
-            </div>
 
-            <aside
-              className="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-6 lg:self-start order-1 lg:order-2 animate-slide-in-up opacity-0"
-              style={{ animationDelay: "20ms" }}
-            >
-              <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <IGRPIcon iconName="Star" className="size-4 text-warning" />
-                  <h2 className="text-sm font-semibold tracking-tight">
-                    Favoritos
-                  </h2>
-                  {!favoritesError && favoriteApps.length > 0 && (
-                    <Badge variant="secondary" className="text-xs">
-                      {favoriteApps.length}
-                    </Badge>
+                <section
+                  className="animate-slide-in-up opacity-0"
+                  style={{ animationDelay: "140ms" }}
+                >
+                  <SectionHeader
+                    iconName="AppWindow"
+                    label="Todas as Aplicações"
+                    count={filteredApps.length}
+                    tone="muted"
+                    collapsible
+                    collapsed={collapsed.todas}
+                    onToggle={() => toggleSection("todas")}
+                  />
+                  {!collapsed.todas && (
+                    <>
+                      <FilterChipRow
+                        typeFilter={typeFilter}
+                        onTypeChange={setTypeFilter}
+                        deptFilter={deptFilter}
+                        onDeptChange={setDeptFilter}
+                        departments={departmentChips}
+                      />
+                      {filteredApps.length === 0 ? (
+                        <p className="text-sm text-muted-foreground py-8 text-center">
+                          Nenhuma aplicação corresponde aos filtros.
+                        </p>
+                      ) : (
+                        <GridNavigator className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+                          {filteredApps.map((app) => (
+                            <ApplicationCardHome
+                              key={app.id}
+                              app={app}
+                              variant="featured"
+                            />
+                          ))}
+                        </GridNavigator>
+                      )}
+                    </>
+                  )}
+                </section>
+              </div>
+
+              <aside
+                className="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-6 lg:self-start order-1 lg:order-2 animate-slide-in-up opacity-0"
+                style={{ animationDelay: "20ms" }}
+              >
+                <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <IGRPIcon iconName="Star" className="size-4 text-warning" />
+                    <h2 className="text-sm font-semibold tracking-tight">
+                      Favoritos
+                    </h2>
+                    {!favoritesError && favoriteApps.length > 0 && (
+                      <Badge variant="secondary" className="text-xs">
+                        {favoriteApps.length}
+                      </Badge>
+                    )}
+                  </div>
+                  {favoritesError ? (
+                    <InlineError
+                      message="Não foi possível carregar os favoritos."
+                      onRetry={() => refetchFavorites()}
+                    />
+                  ) : favoriteApps.length === 0 ? (
+                    <div className="flex flex-col items-center text-center gap-2 py-4">
+                      <div className="size-10 rounded-full bg-warning/10 flex items-center justify-center">
+                        <IGRPIcon
+                          iconName="Star"
+                          className="size-5 text-warning/70"
+                        />
+                      </div>
+                      <p className="text-sm font-medium">Sem favoritos</p>
+                      <p className="text-xs text-muted-foreground leading-snug">
+                        Toque na estrela de uma aplicação para a fixar aqui.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {favoriteApps.map((app) => (
+                        <RecentPill key={app.id} app={app} />
+                      ))}
+                    </div>
                   )}
                 </div>
-                {favoritesError ? (
-                  <InlineError
-                    message="Não foi possível carregar os favoritos."
-                    onRetry={() => refetchFavorites()}
-                  />
-                ) : favoriteApps.length === 0 ? (
-                  <div className="flex flex-col items-center text-center gap-2 py-4">
-                    <div className="size-10 rounded-full bg-warning/10 flex items-center justify-center">
-                      <IGRPIcon
-                        iconName="Star"
-                        className="size-5 text-warning/70"
-                      />
-                    </div>
-                    <p className="text-sm font-medium">Sem favoritos</p>
-                    <p className="text-xs text-muted-foreground leading-snug">
-                      Toque na estrela de uma aplicação para a fixar aqui.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {favoriteApps.map((app) => (
-                      <RecentPill key={app.id} app={app} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </aside>
-          </div>
-        )}
-      </section>
+              </aside>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
