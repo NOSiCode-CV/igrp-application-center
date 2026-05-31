@@ -225,6 +225,9 @@ export function ApplicationsListHome() {
     todas: false,
   });
   const searchWrapperRef = useRef<HTMLButtonElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isStuck, setIsStuck] = useState(false);
 
   // Restore collapsed state from localStorage on first mount.
   useEffect(() => {
@@ -276,6 +279,21 @@ export function ApplicationsListHome() {
       JSON.stringify({ type: typeFilter, dept: deptFilter }),
     );
   }, [typeFilter, deptFilter]);
+
+  // Toggle isStuck based on whether the sentinel (1px element above the
+  // sticky search row) is still visible inside the ScrollViewport. When
+  // the sentinel scrolls out of view, the search row is stuck at top-0.
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    const root = scrollRef.current;
+    if (!sentinel || !root) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsStuck(!entry.isIntersecting),
+      { root, threshold: 0 },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   const { data: currentUser, isPending: isUserPending } = useCurrentUser();
   const { data: activeRole, isPending: isActiveRolePending } =
@@ -382,10 +400,14 @@ export function ApplicationsListHome() {
         recentIds={recentIds}
       />
 
-      <div className="home-scroll-viewport flex-1 min-h-0 overflow-y-auto px-6 py-6">
-        {/* Sentinel — 1px element above the sticky row. Task 5 will add a ref
-            to this and an IntersectionObserver that toggles `isStuck`. */}
-        <div aria-hidden className="h-px" />
+      <div
+        ref={scrollRef}
+        className="home-scroll-viewport flex-1 min-h-0 overflow-y-auto px-6 py-6"
+      >
+        {/* Sentinel — 1px element above the sticky row. An
+            IntersectionObserver toggles `isStuck` when this leaves the
+            ScrollViewport, which Task 6 uses to style the sticky row. */}
+        <div ref={sentinelRef} aria-hidden className="h-px" />
 
         <header className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 md:p-6">
           {/* Layer 1 — soft radial wash anchored to the top-right corner,
