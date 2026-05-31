@@ -636,7 +636,7 @@ export function ApplicationsListHome() {
               </div>
 
               <aside
-                className="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-6 lg:self-start order-1 lg:order-2 animate-slide-in-up opacity-0"
+                className="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-20 lg:self-start order-1 lg:order-2 animate-slide-in-up opacity-0"
                 style={{ animationDelay: "20ms" }}
               >
                 <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-4">
