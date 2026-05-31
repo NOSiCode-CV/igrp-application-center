@@ -639,7 +639,7 @@ export function ApplicationsListHome() {
                 className="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-20 lg:self-start order-1 lg:order-2 animate-slide-in-up opacity-0"
                 style={{ animationDelay: "20ms" }}
               >
-                <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 via-card to-card p-4">
+                <div className="rounded-lg border border-primary/20 bg-linear-to-br from-primary/5 via-card to-card p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <IGRPIcon iconName="Star" className="size-4 text-warning" />
                     <h2 className="text-sm font-semibold tracking-tight">
@@ -913,8 +913,8 @@ function SectionHeader({
       className={[
         "ml-3 flex-1 h-px",
         isPrimary
-          ? "bg-gradient-to-r from-primary/30 to-transparent"
-          : "bg-gradient-to-r from-border to-transparent",
+          ? "bg-linear-to-r from-primary/30 to-transparent"
+          : "bg-linear-to-r from-border to-transparent",
       ].join(" ")}
     />
   );
