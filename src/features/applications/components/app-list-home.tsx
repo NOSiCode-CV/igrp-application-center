@@ -515,24 +515,32 @@ export function ApplicationsListHome() {
         </header>
 
         <section className="flex flex-col gap-6 mt-6">
-          <button
-            ref={searchWrapperRef}
-            type="button"
-            onClick={() => setPaletteOpen(true)}
-            aria-label="Abrir paleta de comandos para pesquisar aplicações"
-            className="group relative w-full sm:w-80 md:w-96 h-10 shrink-0 flex items-center gap-2 rounded-md border border-border bg-card pl-3 pr-2 text-sm text-muted-foreground hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors cursor-pointer"
+          <div
+            className={`sticky top-0 z-20 -mx-6 px-6 py-3 transition-colors ${
+              isStuck
+                ? "bg-background/90 backdrop-blur-sm border-b border-border"
+                : "bg-transparent border-b border-transparent"
+            }`}
           >
-            <IGRPIcon
-              iconName="Search"
-              className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
-            />
-            <span className="flex-1 text-left truncate">
-              Pesquisar aplicações…
-            </span>
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-              <span className="text-[11px] leading-none">⌘</span>K
-            </kbd>
-          </button>
+            <button
+              ref={searchWrapperRef}
+              type="button"
+              onClick={() => setPaletteOpen(true)}
+              aria-label="Abrir paleta de comandos para pesquisar aplicações"
+              className="group relative w-full sm:w-80 md:w-96 h-10 flex items-center gap-2 rounded-md border border-border bg-card pl-3 pr-2 text-sm text-muted-foreground hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors cursor-pointer"
+            >
+              <IGRPIcon
+                iconName="Search"
+                className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
+              />
+              <span className="flex-1 text-left truncate">
+                Pesquisar aplicações…
+              </span>
+              <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                <span className="text-[11px] leading-none">⌘</span>K
+              </kbd>
+            </button>
+          </div>
 
           {isLoading ? (
             <GridSkeleton />
