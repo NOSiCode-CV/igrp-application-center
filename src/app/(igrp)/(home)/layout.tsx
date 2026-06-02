@@ -33,7 +33,7 @@ export default async function HomeLayout({
 
   return (
     <IGRPLayoutFull config={config} showSidebar={false}>
-      <div className="container mx-auto max-w-7xl">{children}</div>
+      <div className="mx-auto max-w-7xl">{children}</div>
     </IGRPLayoutFull>
   );
 }
