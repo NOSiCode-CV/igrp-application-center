@@ -30,10 +30,16 @@ body {
 .theme-default-scaled {
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
+  --ring: oklch(0.205 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
 
   @variant dark {
     --primary: oklch(0.922 0 0);
     --primary-foreground: oklch(0.205 0 0);
+    --ring: oklch(0.922 0 0);
+    --sidebar-primary: oklch(0.922 0 0);
+    --sidebar-primary-foreground: oklch(0.205 0 0);
   }
 }
 
@@ -41,10 +47,18 @@ body {
 .theme-blue-scaled {
   --primary: var(--color-blue-600);
   --primary-foreground: var(--color-blue-50);
+  --ring: var(--color-blue-600);
+  --chart-1: var(--color-blue-500);
+  --sidebar-primary: var(--color-blue-600);
+  --sidebar-primary-foreground: var(--color-blue-50);
 
   @variant dark {
     --primary: var(--color-blue-400);
     --primary-foreground: var(--color-blue-50);
+    --ring: var(--color-blue-400);
+    --chart-1: var(--color-blue-400);
+    --sidebar-primary: var(--color-blue-500);
+    --sidebar-primary-foreground: var(--color-blue-50);
   }
 }
 
@@ -52,10 +66,18 @@ body {
 .theme-green-scaled {
   --primary: var(--color-emerald-600);
   --primary-foreground: var(--color-emerald-50);
+  --ring: var(--color-emerald-600);
+  --chart-1: var(--color-emerald-500);
+  --sidebar-primary: var(--color-emerald-600);
+  --sidebar-primary-foreground: var(--color-emerald-50);
 
   @variant dark {
     --primary: var(--color-emerald-400);
     --primary-foreground: var(--color-emerald-50);
+    --ring: var(--color-emerald-400);
+    --chart-1: var(--color-emerald-400);
+    --sidebar-primary: var(--color-emerald-500);
+    --sidebar-primary-foreground: var(--color-emerald-50);
   }
 }
 
@@ -63,10 +85,18 @@ body {
 .theme-amber-scaled {
   --primary: var(--color-amber-600);
   --primary-foreground: var(--color-amber-50);
+  --ring: var(--color-amber-600);
+  --chart-1: var(--color-amber-500);
+  --sidebar-primary: var(--color-amber-600);
+  --sidebar-primary-foreground: var(--color-amber-50);
 
   @variant dark {
     --primary: var(--color-amber-400);
     --primary-foreground: var(--color-amber-50);
+    --ring: var(--color-amber-400);
+    --chart-1: var(--color-amber-400);
+    --sidebar-primary: var(--color-amber-500);
+    --sidebar-primary-foreground: var(--color-amber-50);
   }
 }
 
@@ -75,10 +105,16 @@ body {
   --font-sans: var(--font-mono);
   --primary: var(--color-neutral-600);
   --primary-foreground: var(--color-neutral-50);
+  --ring: var(--color-neutral-600);
+  --sidebar-primary: var(--color-neutral-600);
+  --sidebar-primary-foreground: var(--color-neutral-50);
 
   @variant dark {
     --primary: var(--color-neutral-500);
     --primary-foreground: var(--color-neutral-50);
+    --ring: var(--color-neutral-500);
+    --sidebar-primary: var(--color-neutral-500);
+    --sidebar-primary-foreground: var(--color-neutral-50);
   }
 
   .rounded-xs,
@@ -86,7 +122,7 @@ body {
   .rounded-md,
   .rounded-lg,
   .rounded-xl {
-    @apply !rounded-none;
+    @apply rounded-none!;
     border-radius: 0;
   }
 
@@ -95,11 +131,11 @@ body {
   .shadow-md,
   .shadow-lg,
   .shadow-xl {
-    @apply !shadow-none;
+    @apply shadow-none!;
   }
 
   [data-slot="toggle-group"],
   [data-slot="toggle-group-item"] {
-    @apply !rounded-none !shadow-none;
+    @apply rounded-none! shadow-none!;
   }
 }

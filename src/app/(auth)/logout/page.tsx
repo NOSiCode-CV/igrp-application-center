@@ -1,59 +1,97 @@
 "use client";
 
 import { signOut } from "@igrp/framework-next-auth/client";
+import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
 import { useEffect } from "react";
+
+import { getLogoutUrl } from "@/actions/igrp/auth";
+import { reportError } from "@/lib/report-error";
+
+// Module-scoped guard so a remount of this page (e.g. provider re-renders that
+// briefly null out the subtree) cannot kick off a SECOND signOut. A `useRef`
+// is component-instance scoped and gets re-created on remount, which is how
+// the previous guard let two `POST /api/auth/signout` calls slip through in
+// dev.
+let logoutStarted = false;
+
+function buildLoginUrl(): string {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  return `${window.location.origin}${basePath}/login`;
+}
 
 export default function LogoutPage() {
   useEffect(() => {
-    const performLogout = async () => {
-      await signOut({ redirect: false });
+    if (logoutStarted) return;
+    logoutStarted = true;
+
+    let settled = false;
+    const hardNavigate = (url: string) => {
+      if (settled) return;
+      settled = true;
+      // Hard navigation rather than `router.replace`: logout must tear down
+      // every client cache/provider that still holds the now-dead session.
+      window.location.replace(url);
     };
 
-    performLogout();
+    // Hard fallback: only meant for the case where getLogoutUrl + signOut
+    // never resolve (IdP revoke/end-session round-trip hangs). Generous so it
+    // does NOT pre-empt a slow-but-successful single-logout.
+    //
+    // Deliberately NOT cleared on unmount. The `logoutStarted` module guard
+    // makes the effect body run exactly ONCE per module lifetime, so a remount
+    // during the logout window (React Strict Mode's mount→unmount→mount in dev,
+    // or `IGRPSessionWatcher` re-rendering the subtree on a session refetch)
+    // cannot re-arm this timer. If the unmount cleanup cleared it, that remount
+    // would strip away the only safety net and — should the async logout stall
+    // on a hanging IdP round-trip — leave the page rendering the spinner
+    // forever. The `settled` flag already prevents a double navigation, so a
+    // surviving timer that fires after a successful navigate is a harmless
+    // no-op (the page has already hard-navigated away).
+    const fallbackTimeout = setTimeout(
+      () => hardNavigate(buildLoginUrl()),
+      8000,
+    );
+
+    (async () => {
+      try {
+        // Fetch end-session URL BEFORE clearing local session — token is
+        // required to build the id_token_hint parameter and is gone after
+        // signOut().
+        const endSessionUrl = await getLogoutUrl(buildLoginUrl());
+
+        await signOut({ redirect: false });
+
+        clearTimeout(fallbackTimeout);
+        if (settled) return;
+
+        if (endSessionUrl) {
+          if (process.env.NODE_ENV !== "production") {
+            console.debug(
+              "[logout] navigating to end-session URL",
+              endSessionUrl,
+            );
+          }
+          hardNavigate(endSessionUrl);
+        } else {
+          if (process.env.NODE_ENV !== "production") {
+            console.warn(
+              "[logout] no end-session URL — IdP SSO session may persist; falling back to /login",
+            );
+          }
+          hardNavigate(buildLoginUrl());
+        }
+      } catch (error) {
+        reportError(error, { segment: "(auth)/logout" });
+        clearTimeout(fallbackTimeout);
+        hardNavigate(buildLoginUrl());
+      }
+    })();
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-accent">
-      <div className="w-full max-w-md">
-        <div className=" rounded-2xl shadow-2xl p-8 bg-card ">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="size-20 rounded-full flex items-center justify-center">
-                <svg
-                  className="size-10 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <title>Logout</title>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-              </div>
-              <div className="absolute inset-0 size-20 bg-card rounded-full opacity-20 animate-ping" />
-            </div>
-          </div>
-
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-foreground mb-2">
-              A encerrar sessão
-            </h2>
-            <p className="text-muted-foreground">Por favor aguarde...</p>
-          </div>
-
-          <div className="flex justify-center mt-6">
-            <div className="flex gap-2">
-              <div className="size-2 bg-accent rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <div className="size-2 bg-accent rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <div className="size-2 bg-accent rounded-full animate-bounce" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <IGRPTemplateLoading
+      text="A terminar sessão..."
+      appCode={process.env.NEXT_PUBLIC_IGRP_APP_CODE}
+    />
   );
 }

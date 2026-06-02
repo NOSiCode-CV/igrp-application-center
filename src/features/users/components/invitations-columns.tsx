@@ -1,6 +1,5 @@
 "use client";
 
-import type { Row } from "@igrp/igrp-framework-react-design-system";
 import {
   Badge,
   type ColumnDef,
@@ -13,6 +12,7 @@ import {
   IGRPDataTableHeaderSortToggle,
   IGRPIcon,
   IGRPUserAvatar,
+  type Row,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { InvitationDTO } from "@igrp/platform-access-management-client-ts";

@@ -1,14 +1,16 @@
-import { TooltipProvider } from "@igrp/igrp-framework-react-design-system";
+import { IGRPLayoutFull } from "@igrp/framework-next";
+import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
+import { configLayout } from "@/actions/igrp/layout";
+import { createConfig } from "@/igrp.template.config";
 import { verifySession } from "@/lib/dal";
-import { QueryProvider } from "@/providers/query-provider";
 
 export default async function IGRPRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   await verifySession();
-  return (
-    <QueryProvider>
-      <TooltipProvider>{children}</TooltipProvider>
-    </QueryProvider>
-  );
+
+  const layoutConfig = await configLayout();
+  const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs);
+
+  return <IGRPLayoutFull config={config}>{children}</IGRPLayoutFull>;
 }

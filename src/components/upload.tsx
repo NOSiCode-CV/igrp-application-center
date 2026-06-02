@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useState } from "react";
 
 interface ImageUploadProps {
   value?: File | string | null;
@@ -60,7 +59,7 @@ export function Upload({
     }
   }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
 
     if (previewUrl?.startsWith("blob:")) {

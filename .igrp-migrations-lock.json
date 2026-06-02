@@ -151,6 +151,73 @@
         ".env.example": "991ab5731e4767a4",
         "package.json": "a0dd331663ff6da0"
       }
+    },
+    {
+      "id": "10-session-refetch-and-menu-role-sync",
+      "appliedAt": "2026-06-02T17:07:58.966Z",
+      "cliVersion": "0.1.0-beta.120",
+      "manifestHash": "87ba35eb165dc791",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": ".env.example",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/igrp.template.config.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/config/get-session-args.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.delete",
+          "path": "src/app/(auth)/logout/page.tsx"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(igrp)/layout.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/styles/globals.css",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/styles/themes.css",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.142",
+            "@igrp/framework-next-types": "0.1.0-beta.136",
+            "@igrp/framework-next-ui": "0.1.0-beta.141",
+            "@igrp/platform-access-management-client-ts": "0.2.0-beta.10"
+          }
+        }
+      ],
+      "fileHashes": {
+        ".env.example": "d167476c38ae0a6a",
+        "src/igrp.template.config.ts": "7fe0cd34cdeb1623",
+        "src/lib/config/get-session-args.ts": "c0eeabc789111b4e",
+        "src/app/(igrp)/layout.tsx": "f878f2fdaf718dfc",
+        "src/styles/globals.css": "02f6f461095368f6",
+        "src/styles/themes.css": "9051889e53cded36",
+        "package.json": "d49ecabdaff008fc"
+      }
     }
   ]
 }
