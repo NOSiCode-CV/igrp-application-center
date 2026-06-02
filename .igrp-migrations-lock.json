@@ -218,6 +218,83 @@
         "src/styles/themes.css": "9051889e53cded36",
         "package.json": "d49ecabdaff008fc"
       }
+    },
+    {
+      "id": "11-callbackurl-hardening-and-error-copy",
+      "appliedAt": "2026-06-02T19:14:53.472Z",
+      "cliVersion": "0.1.0-beta.122",
+      "manifestHash": "9688a14cda39798d",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/middleware.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/dal.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/login/page.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/errors.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/config/error-messages.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/global-error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/config/get-pkj.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.142",
+            "@igrp/framework-next-auth": "0.1.0-beta.134",
+            "@igrp/framework-next-types": "0.1.0-beta.136",
+            "@igrp/framework-next-ui": "0.1.0-beta.141"
+          }
+        }
+      ],
+      "fileHashes": {
+        "src/middleware.ts": "212b0e64b215db4e",
+        "src/lib/auth.ts": "0ab8f6b4f9eba833",
+        "src/lib/dal.ts": "13caa1cbbc29e0dd",
+        "src/app/(auth)/login/page.tsx": "44538d026cf12864",
+        "src/lib/errors.ts": "b7c2e43542c74c91",
+        "src/config/error-messages.ts": "700210bc74e74bdb",
+        "src/app/global-error.tsx": "f8e9164905faef2f",
+        "src/lib/config/get-pkj.ts": "eea6e3cb04d20fcc",
+        "package.json": "d49ecabdaff008fc"
+      }
     }
   ]
 }

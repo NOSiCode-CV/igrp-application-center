@@ -1,9 +1,10 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Session } from "next-auth";
 import { cache } from "react";
 
 import { configLayout } from "@/actions/igrp/layout";
-import { getSession, PREVIEW_SESSION_STUB } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { isAuthBypass } from "@/lib/utils";
 
 /**
@@ -15,11 +16,25 @@ import { isAuthBypass } from "@/lib/utils";
  * - If no session exists: redirects to /login.
  */
 export const verifySession = cache(async (): Promise<Session> => {
-  // Cast is safe in dev/preview only.
-  if (isAuthBypass()) return PREVIEW_SESSION_STUB as unknown as Session;
+  if (isAuthBypass()) {
+    // Stub covers the minimal fields the layout needs; cast is safe in dev/preview only.
+    return {
+      user: { name: "Preview User", email: "preview@example.com" },
+      accessToken: "preview-token",
+      expires: "9999-12-31T23:59:59.999Z",
+    } as unknown as Session;
+  }
 
   const session = await getSession();
-  if (!session) redirect("/login");
+  if (!session) {
+    const h = await headers();
+    const callbackUrl = h.get("x-current-path");
+    redirect(
+      callbackUrl
+        ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+        : "/login",
+    );
+  }
   return session;
 });
 

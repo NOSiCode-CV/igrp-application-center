@@ -1,4 +1,17 @@
-export type ErrorCopy = { title: string; description: string };
+// ─────────────────────────────────────────────────────────────────────────────
+// User-facing error copy, keyed by framework `IgrpError.code`.
+//
+// The framework throws typed errors carrying stable machine codes. This file
+// maps those codes to Portuguese copy for the UI. Later, swap the const
+// objects out for a real i18n library without changing call sites.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { parsePublicDigest } from "@/lib/errors";
+
+export type ErrorCopy = {
+  title: string;
+  description: string;
+};
 
 const COPY_BY_CODE: Record<string, ErrorCopy> = {
   IGRP_CONFIG_NOT_INITIALIZED: {
@@ -39,10 +52,32 @@ const FALLBACK_COPY: ErrorCopy = {
     "Tente novamente. Se o problema persistir, contacte a equipa de suporte e indique o ID de referência apresentado abaixo.",
 };
 
+/**
+ * Resolves a `{ title, description }` pair for an error. Preference order:
+ *
+ *   1. If the error carries a known `code` (framework `IgrpError` subclasses),
+ *      return the mapped Portuguese copy from `COPY_BY_CODE`.
+ *   2. If the error was thrown as an `AppError`, the public message is encoded
+ *      in `error.digest` — extract and use it as the description.
+ *   3. Fall back to a generic message.
+ *
+ * Works in both dev (where the error is the real instance) and production
+ * (where Next may have serialized the error across the server→client edge —
+ * `code`, `name`, and `digest` all survive that transport).
+ */
 export function resolveErrorCopy(error: unknown): ErrorCopy {
   if (!error || typeof error !== "object") return FALLBACK_COPY;
-  const maybe = error as { code?: unknown };
+  const maybe = error as { code?: unknown; digest?: string };
+
+  // 1. Framework typed error (IgrpError subclass) → look up by stable code.
   const code = typeof maybe.code === "string" ? maybe.code : undefined;
   if (code && code in COPY_BY_CODE) return COPY_BY_CODE[code];
+
+  // 2. AppError → user message is encoded in digest as "errorId|message".
+  const { message } = parsePublicDigest(maybe.digest);
+  if (message) {
+    return { title: FALLBACK_COPY.title, description: message };
+  }
+
   return FALLBACK_COPY;
 }

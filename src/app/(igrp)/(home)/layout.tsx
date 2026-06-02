@@ -29,11 +29,7 @@ export default async function HomeLayout({
     redirect("/invite/pending");
   }
 
-  const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs);
-
   return (
-    <IGRPLayoutFull config={config} showSidebar={false}>
-      <div className="container mx-auto max-w-7xl">{children}</div>
-    </IGRPLayoutFull>
+    <div>{children}</div>
   );
 }

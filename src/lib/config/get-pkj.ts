@@ -7,6 +7,7 @@ export function getPackageJson() {
     version: pkg.version,
     description: pkg.description,
     displayName: pkg.displayName,
+    slug: process.env.NEXT_PUBLIC_BASE_PATH || "",
   };
   return appInfo;
 }
