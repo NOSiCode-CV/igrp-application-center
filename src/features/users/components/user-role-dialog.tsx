@@ -70,7 +70,7 @@ import {
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
-import { getStatusColor, showStatus } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utilities";
 
 const norm = (s: string) => s.trim().toLowerCase();
 

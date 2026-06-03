@@ -151,6 +151,167 @@
         ".env.example": "991ab5731e4767a4",
         "package.json": "a0dd331663ff6da0"
       }
+    },
+    {
+      "id": "10-session-refetch-and-menu-role-sync",
+      "appliedAt": "2026-06-03T15:47:40.037Z",
+      "cliVersion": "0.1.0-beta.122",
+      "manifestHash": "2fe8951c4ef8b1af",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": ".env.example",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/igrp.template.config.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/config/get-session-args.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/actions/igrp/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/utils.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/logout/page.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(igrp)/layout.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/styles/globals.css",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/styles/themes.css",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.143",
+            "@igrp/framework-next-types": "0.1.0-beta.137",
+            "@igrp/framework-next-ui": "0.1.0-beta.142",
+            "@igrp/platform-access-management-client-ts": "0.2.0-beta.10"
+          }
+        }
+      ],
+      "fileHashes": {
+        ".env.example": "a3ac9ed39a9c8b3b",
+        "src/igrp.template.config.ts": "62254594f30975c1",
+        "src/lib/config/get-session-args.ts": "ae0c497f43319b3d",
+        "src/actions/igrp/auth.ts": "b52467ddc19cdb4a",
+        "src/lib/utils.ts": "65f3d36923890d21",
+        "src/app/(auth)/logout/page.tsx": "f160ba34f8a35a66",
+        "src/app/(igrp)/layout.tsx": "ceeb1797523315ce",
+        "src/styles/globals.css": "2cd44e4acad1c94e",
+        "src/styles/themes.css": "9051889e53cded36",
+        "package.json": "3697099b84271524"
+      }
+    },
+    {
+      "id": "11-callbackurl-hardening-and-error-copy",
+      "appliedAt": "2026-06-03T15:50:58.403Z",
+      "cliVersion": "0.1.0-beta.122",
+      "manifestHash": "9688a14cda39798d",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/middleware.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/dal.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/login/page.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/errors.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/config/error-messages.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/global-error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/config/get-pkj.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.142",
+            "@igrp/framework-next-auth": "0.1.0-beta.135",
+            "@igrp/framework-next-types": "0.1.0-beta.136",
+            "@igrp/framework-next-ui": "0.1.0-beta.141"
+          }
+        }
+      ],
+      "fileHashes": {
+        "src/middleware.ts": "8de1dcd8514bf9d0",
+        "src/lib/auth.ts": "fb326b1888628703",
+        "src/lib/dal.ts": "d055fbdb0675bde2",
+        "src/app/(auth)/login/page.tsx": "c61761f1eb713978",
+        "src/lib/errors.ts": "96e8e4bdbd6a7dfc",
+        "src/config/error-messages.ts": "b81518f48e7666ba",
+        "src/app/global-error.tsx": "234b75bd13345191",
+        "src/lib/config/get-pkj.ts": "211266ac5e26a1e9",
+        "package.json": "8e43f96c142b943f"
+      }
     }
   ]
 }

@@ -71,6 +71,7 @@ export function createConfig(
       m2mClientId: process.env.IGRP_M2M_CLIENT_ID || "",
       m2mClientSecret: process.env.IGRP_M2M_CLIENT_SECRET || "",
       syncOnCodeMenus: process.env.IGRP_SYNC_ON_CODE_MENUS === "true",
+      syncOnCodeMenuRoles: process.env.IGRP_SYNC_ON_CODE_MENU_ROLES !== "false",
       onCodeMenus: IGRP_DEFAULT_MENU,
       appRoutes,
       paramMapBody,

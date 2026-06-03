@@ -31,7 +31,7 @@ import {
 import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApplications } from "@/features/applications/use-applications";
-import { getMenuIcon } from "@/lib/utils";
+import { getMenuIcon } from "@/lib/utilities";
 import { buildMenuTree } from "../../dept-lib";
 import {
   useAddMenusToDepartment,

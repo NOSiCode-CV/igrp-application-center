@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { PermissionList } from "@/features/permissions/components/permission-list";
 import { RolesListTree } from "@/features/roles/components/role-tree-list";
-import { getStatusColor } from "@/lib/utils";
+import { getStatusColor } from "@/lib/utilities";
 import { MenuPermissions } from "./dept-menu";
 
 interface Props {

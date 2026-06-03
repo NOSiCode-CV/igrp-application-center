@@ -124,7 +124,7 @@ export function UserListTable({
     useMemo(
       () => [
         {
-          columnId: "email",
+          columnId: "identifierValue",
           component: ({ column }) => (
             <IGRPDataTableFilterInput column={column} />
           ),
@@ -309,8 +309,8 @@ export function UserListTable({
           dialog.kind === "cancel" ? (
             <>
               Tem certeza que deseja cancelar o convite para{" "}
-              <strong>{dialog.invitation.email}</strong>? Esta ação não pode ser
-              desfeita.
+              <strong>{dialog.invitation.identifierValue}</strong>? Esta ação
+              não pode ser desfeita.
             </>
           ) : null
         }

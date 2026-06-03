@@ -17,7 +17,7 @@ import {
   mapperListMenusCRUD,
   mapperMenuCRUD,
 } from "@/features/menus/menu-mapper";
-import { extractApiError } from "@/lib/utils";
+import { extractApiError } from "@/lib/utilities";
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
 

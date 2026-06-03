@@ -33,6 +33,20 @@ function greeting(now = new Date()) {
   return "Boa noite";
 }
 
+/**
+ * Time-based greeting resolved client-side after mount. Returns `null` on the
+ * server / first client render so SSR and hydration agree — the server's hour
+ * (or timezone) can differ from the client's, which would otherwise produce a
+ * hydration mismatch on the greeting word.
+ */
+function useGreeting() {
+  const [greet, setGreet] = useState<string | null>(null);
+  useEffect(() => {
+    setGreet(greeting());
+  }, []);
+  return greet;
+}
+
 function firstName(full?: string) {
   return full?.trim().split(/\s+/)[0] ?? "";
 }
@@ -225,6 +239,7 @@ export function ApplicationsListHome() {
     todas: false,
   });
   const searchWrapperRef = useRef<HTMLButtonElement>(null);
+  const greet = useGreeting();
 
   // Restore collapsed state from localStorage on first mount.
   useEffect(() => {
@@ -433,7 +448,7 @@ export function ApplicationsListHome() {
               {isIdentityReady ? (
                 <>
                   <h1 className="text-base md:text-lg font-medium tracking-tight leading-[1.2] text-foreground">
-                    {greeting()}
+                    {greet ?? "Olá"}
                     {userFirst ? "," : "."}
                     {userFirst && (
                       <>

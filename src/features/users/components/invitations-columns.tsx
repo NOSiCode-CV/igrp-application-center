@@ -17,7 +17,8 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { InvitationDTO } from "@igrp/platform-access-management-client-ts";
 import { useResendUserInvitation } from "@/features/users/use-users";
-import { cn, geInviteTitle, getInitials, statusInviteClass } from "@/lib/utils";
+import { geInviteTitle, getInitials, statusInviteClass } from "@/lib/utilities";
+import { cn } from "@/lib/utils";
 
 // ─── Module-level helpers ────────────────────────────────────────────────────
 

@@ -17,13 +17,13 @@ import {
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import Link from "next/link";
 import {
-  cn,
   geInviteTitle,
   getInitials,
   getStatusColor,
   showStatus,
   statusInviteClass,
-} from "@/lib/utils";
+} from "@/lib/utilities";
+import { cn } from "@/lib/utils";
 
 // ─── Module-level helpers ────────────────────────────────────────────────────
 
