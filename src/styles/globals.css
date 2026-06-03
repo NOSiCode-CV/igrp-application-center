@@ -282,19 +282,24 @@
 }
 
 .home-scroll-viewport {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-width: none; /* Firefox / standard */
+  -ms-overflow-style: none; /* IE / old Edge */
 }
 .home-scroll-viewport::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none; /* WebKit (Chrome, Safari, Edge) */
 }
-.home-scroll-viewport::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
+
+/* Hide the document-level scrollbar globally. Scrolling still works on
+ * routes that need it (settings, profile) — only the visible scrollbar
+ * is removed. Required so the home launcher reads as fully scroll-free. */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
-.home-scroll-viewport::-webkit-scrollbar-track {
-  background: transparent;
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 /* Grid layouts */

@@ -225,9 +225,6 @@ export function ApplicationsListHome() {
     todas: false,
   });
   const searchWrapperRef = useRef<HTMLButtonElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const [isStuck, setIsStuck] = useState(false);
 
   // Restore collapsed state from localStorage on first mount.
   useEffect(() => {
@@ -279,21 +276,6 @@ export function ApplicationsListHome() {
       JSON.stringify({ type: typeFilter, dept: deptFilter }),
     );
   }, [typeFilter, deptFilter]);
-
-  // Toggle isStuck based on whether the sentinel (1px element above the
-  // sticky search row) is still visible inside the ScrollViewport. When
-  // the sentinel scrolls out of view, the search row is stuck at top-0.
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    const root = scrollRef.current;
-    if (!sentinel || !root) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsStuck(!entry.isIntersecting),
-      { root, threshold: 0 },
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, []);
 
   const { data: currentUser, isPending: isUserPending } = useCurrentUser();
   const { data: activeRole, isPending: isActiveRolePending } =
@@ -391,7 +373,7 @@ export function ApplicationsListHome() {
   ) as string[];
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden p-6 gap-6">
       <CommandPalette
         open={paletteOpen}
         onOpenChange={setPaletteOpen}
@@ -400,15 +382,8 @@ export function ApplicationsListHome() {
         recentIds={recentIds}
       />
 
-      <div
-        ref={scrollRef}
-        className="home-scroll-viewport flex-1 min-h-0 overflow-y-auto px-6 py-6"
-      >
-        {/* Sentinel — 1px element above the sticky row. An
-            IntersectionObserver toggles `isStuck` when this leaves the
-            ScrollViewport, which Task 6 uses to style the sticky row. */}
-        <div ref={sentinelRef} aria-hidden className="h-px" />
-
+      {/* Hero — always visible, doesn't scroll. */}
+      <div className="shrink-0">
         <header className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 md:p-6">
           {/* Layer 1 — soft radial wash anchored to the top-right corner,
             with a quieter echo in the bottom-left. Both use the primary
@@ -457,7 +432,7 @@ export function ApplicationsListHome() {
               </Badge>
               {isIdentityReady ? (
                 <>
-                  <h1 className="text-xl md:text-2xl font-medium tracking-tight leading-[1.15] text-foreground">
+                  <h1 className="text-base md:text-lg font-medium tracking-tight leading-[1.2] text-foreground">
                     {greeting()}
                     {userFirst ? "," : "."}
                     {userFirst && (
@@ -513,35 +488,34 @@ export function ApplicationsListHome() {
             />
           </div>
         </header>
+      </div>
 
-        <section className="flex flex-col gap-6 mt-6">
-          <div
-            className={`sticky top-0 z-20 -mx-6 px-6 py-3 transition-colors ${
-              isStuck
-                ? "bg-background/90 backdrop-blur-sm border-b border-border"
-                : "bg-transparent border-b border-transparent"
-            }`}
+      {/* Apps container — search is its header (fixed), body scrolls. */}
+      <section className="flex-1 min-h-0 flex flex-col rounded-2xl border border-border/60 bg-card overflow-hidden">
+        {/* Container header — search trigger (always visible) */}
+        <div className="shrink-0 px-4 py-3 border-b border-border/60 bg-card">
+          <button
+            ref={searchWrapperRef}
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Abrir paleta de comandos para pesquisar aplicações"
+            className="group relative w-full sm:w-80 md:w-96 h-10 flex items-center gap-2 rounded-md border border-border bg-background pl-3 pr-2 text-sm text-muted-foreground hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors cursor-pointer"
           >
-            <button
-              ref={searchWrapperRef}
-              type="button"
-              onClick={() => setPaletteOpen(true)}
-              aria-label="Abrir paleta de comandos para pesquisar aplicações"
-              className="group relative w-full sm:w-80 md:w-96 h-10 flex items-center gap-2 rounded-md border border-border bg-card pl-3 pr-2 text-sm text-muted-foreground hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors cursor-pointer"
-            >
-              <IGRPIcon
-                iconName="Search"
-                className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
-              />
-              <span className="flex-1 text-left truncate">
-                Pesquisar aplicações…
-              </span>
-              <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                <span className="text-[11px] leading-none">⌘</span>K
-              </kbd>
-            </button>
-          </div>
+            <IGRPIcon
+              iconName="Search"
+              className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors"
+            />
+            <span className="flex-1 text-left truncate">
+              Pesquisar aplicações…
+            </span>
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <span className="text-[11px] leading-none">⌘</span>K
+            </kbd>
+          </button>
+        </div>
 
+        {/* Container body — the only thing that scrolls. */}
+        <div className="flex-1 min-h-0 p-4 flex flex-col gap-6 overflow-y-auto lg:overflow-hidden home-scroll-viewport">
           {isLoading ? (
             <GridSkeleton />
           ) : !applications || applications.length === 0 ? (
@@ -552,8 +526,8 @@ export function ApplicationsListHome() {
               Parece que você ainda não tem aplicações disponíveis.
             </AppCenterNotFound>
           ) : (
-            <div className="flex flex-col lg:flex-row gap-8">
-              <div className="flex-1 min-w-0 flex flex-col gap-10 order-2 lg:order-1">
+            <div className="flex flex-col lg:flex-row gap-8 lg:flex-1 lg:min-h-0">
+              <div className="flex-1 min-w-0 flex flex-col gap-10 order-2 lg:order-1 lg:min-h-0 lg:overflow-y-auto lg:pr-2 home-scroll-viewport">
                 {recentError && (
                   <section>
                     <SectionHeader iconName="Clock" label="Recentes" />
@@ -636,7 +610,7 @@ export function ApplicationsListHome() {
               </div>
 
               <aside
-                className="w-full lg:w-72 xl:w-80 shrink-0 lg:sticky lg:top-20 lg:self-start order-1 lg:order-2 animate-slide-in-up opacity-0"
+                className="w-full lg:w-72 xl:w-80 shrink-0 lg:self-start order-1 lg:order-2 animate-slide-in-up opacity-0"
                 style={{ animationDelay: "20ms" }}
               >
                 <div className="rounded-lg border border-primary/20 bg-linear-to-br from-primary/5 via-card to-card p-4">
@@ -670,7 +644,8 @@ export function ApplicationsListHome() {
                       </p>
                     </div>
                   ) : (
-                    <div className="flex flex-wrap gap-2">
+                    /* Pills container — caps at ~5 visible items (≈200px), scrolls if more. */
+                    <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto pr-1 home-scroll-viewport">
                       {favoriteApps.map((app) => (
                         <RecentPill key={app.id} app={app} />
                       ))}
@@ -680,8 +655,8 @@ export function ApplicationsListHome() {
               </aside>
             </div>
           )}
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

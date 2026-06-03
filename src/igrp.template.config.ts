@@ -40,7 +40,7 @@ export function createConfig(
           showUser: true,
           showThemeSwitcher: true,
           showIGRPSidebarTrigger: false,
-          showIGRPHeaderTitle: false,
+          showIGRPHeaderTitle: true,
           showIGRPHeaderLogo: true,
           showSettings: true,
           settingsUrl: process.env.NEXT_PUBLIC_IGRP_SETTINGS_URL || "",
