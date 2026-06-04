@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
+
 import { UserProfileAvatar } from "@/features/users/components/user-profile-avatar";
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({

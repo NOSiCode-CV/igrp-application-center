@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+
 import {
   Avatar,
   AvatarFallback,
@@ -16,8 +19,7 @@ import {
   Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+
 import { BackButton } from "@/components/back-button";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { InlineError } from "@/components/inline-error";
@@ -37,6 +39,7 @@ import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-us
 import { ROUTES } from "@/lib/constants";
 import { getStatusColor } from "@/lib/utilities";
 import { cn } from "@/lib/utils";
+
 import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {

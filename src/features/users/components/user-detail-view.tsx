@@ -1,7 +1,9 @@
 "use client";
 
 import { notFound } from "next/navigation";
+
 import { useUser } from "@/features/users/use-users";
+
 import { UserDetailsHeader } from "./user-details-header";
 import { UserDetailsTabs } from "./user-details-tabs";
 

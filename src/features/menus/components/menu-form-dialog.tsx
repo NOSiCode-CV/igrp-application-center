@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
@@ -41,8 +43,8 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { CreateMenuRequest } from "@igrp/platform-access-management-client-ts";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+
 import {
   useCreateMenu,
   useUpdateMenu,
@@ -59,6 +61,7 @@ import {
 import { formatIconString } from "@/lib/utilities";
 import { cn } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
+
 import { MenuTypeSelector } from "./menu-type-selector";
 
 export const LUCIDE_ICON_OPTIONS: IGRPOptionsProps[] = (

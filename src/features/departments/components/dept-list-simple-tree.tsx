@@ -1,8 +1,9 @@
 "use client";
 
-import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { Route } from "next";
 import Link from "next/link";
+
+import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 type Department = {
   id: number;

@@ -1,12 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { useMemo } from "react";
+
 import {
   type IGRPTabItem,
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import dynamic from "next/dynamic";
-import { useMemo } from "react";
+
 import { TabLoading } from "./tab-loading";
 
 const DepartmentListSimple = dynamic(

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { makeQueryClient } from "@/providers/query-client";
 
 describe("makeQueryClient", () => {

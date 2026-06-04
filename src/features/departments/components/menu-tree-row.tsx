@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Checkbox,
   cn,
@@ -5,8 +7,9 @@ import {
   TableCell,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
+
 import { getMenuIcon } from "@/lib/utilities";
+
 import type { MenuWithChildren } from "./dept-menu";
 
 const MenuTreeRow = ({

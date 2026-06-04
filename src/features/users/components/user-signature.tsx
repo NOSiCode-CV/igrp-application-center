@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
+
 import {
   Card,
   CardContent,
@@ -9,10 +12,9 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
-import Image from "next/image";
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
+
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
+
 import { useUpdateUser } from "../use-users";
 
 export default function UserSignature({ user }: { user: IGRPUserDTO }) {
@@ -32,9 +34,7 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
   const uploadFile = useUploadPublicFiles();
   const signatureInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSignatureChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleSignatureChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 

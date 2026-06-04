@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Badge,
   Table,
@@ -9,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
+
 import { useUserAuditLogs } from "../use-users";
 
 const EVENT_BADGE_VARIANT: Record<

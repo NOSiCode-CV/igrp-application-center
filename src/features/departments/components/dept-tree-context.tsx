@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, use } from "react";
+
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 
 export interface DeptTreeContextValue {

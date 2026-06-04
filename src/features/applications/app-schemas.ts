@@ -5,8 +5,10 @@ import type {
   UpdateApplicationRequest,
 } from "@igrp/platform-access-management-client-ts";
 import { z } from "zod";
+
 import { fileWithPreviewSchema } from "@/features/files/files-schema";
 import { emptyToNull, statusSchema } from "@/schemas/global";
+
 import { APPLICATIONS_TYPES } from "./app-utils";
 
 export const appTypeCrud = z.enum(APPLICATIONS_TYPES);

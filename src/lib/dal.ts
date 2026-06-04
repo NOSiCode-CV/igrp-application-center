@@ -1,7 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import type { Session } from "next-auth";
 import { cache } from "react";
+
+import type { Session } from "next-auth";
 
 import { configLayout } from "@/actions/igrp/layout";
 import { getSession } from "@/lib/auth";

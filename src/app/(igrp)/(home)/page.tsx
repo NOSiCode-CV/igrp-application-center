@@ -1,4 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
 import { ApplicationsListHome } from "@/features/applications/components/app-list-home";
 import {
   makeQueryClient,

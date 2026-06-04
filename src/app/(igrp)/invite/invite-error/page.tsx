@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+
 import { AppCenterLoading } from "@/components/loading";
 
 export default function InviteErrorPage() {

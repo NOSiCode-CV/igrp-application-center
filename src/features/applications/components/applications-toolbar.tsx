@@ -1,6 +1,7 @@
 "use client";
 
 import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
+
 import { FacetedFilter } from "@/components/data-table/faceted-filter";
 import { STATUS_OPTIONS } from "@/lib/constants";
 

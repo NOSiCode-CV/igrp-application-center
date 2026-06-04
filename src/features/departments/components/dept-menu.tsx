@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -29,12 +31,13 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
-import { useEffect, useMemo, useState } from "react";
+
 import { AppCenterLoading } from "@/components/loading";
 import {
   useAddRolesToMenu,
   useRemoveRolesFromMenu,
 } from "@/features/applications/use-applications";
+
 import { buildMenuTree } from "../dept-lib";
 import {
   useDepartmentApplications,

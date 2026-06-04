@@ -1,12 +1,13 @@
 "use client";
 
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
+
 import {
   cn,
   IGRPIcon,
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
-import type { Route } from "next";
-import { useRouter } from "next/navigation";
 
 interface SettingsItem {
   id: string;

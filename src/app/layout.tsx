@@ -1,11 +1,13 @@
 import "@/styles/globals.css";
 
+import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
+
 import { IGRPRootLayout } from "@igrp/framework-next";
 import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
 import { IGRP_META_THEME_COLORS } from "@igrp/igrp-framework-react-design-system";
 import { createConfig } from "@igrp/template-config";
-import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+
 import { getLayoutConfig } from "@/lib/dal";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });

@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+
 import { ApplicationForm } from "./app-form";
 
 interface ApplicationFormDialogProps {

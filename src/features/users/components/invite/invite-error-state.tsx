@@ -1,8 +1,14 @@
 "use client";
 
 import { Button } from "@igrp/igrp-framework-react-design-system";
-import type { LucideIcon } from "lucide-react";
-import { AlertTriangle, ArrowLeft, Clock, MailX } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  Clock,
+  type LucideIcon,
+  MailX,
+} from "lucide-react";
+
 import { InviteStepHeader } from "./invite-step-header";
 
 export type InviteErrorKind = "invalid" | "mismatch" | "expired";

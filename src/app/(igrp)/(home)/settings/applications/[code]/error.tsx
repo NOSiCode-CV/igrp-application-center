@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+
 import { InlineError } from "@/components/inline-error";
 
 export default function ApplicationDetailsError({

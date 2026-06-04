@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+
 import { getCurrentUser } from "@/actions/user";
 import { getLayoutConfig, verifySession } from "@/lib/dal";
 

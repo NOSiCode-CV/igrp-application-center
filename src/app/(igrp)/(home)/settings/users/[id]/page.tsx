@@ -1,5 +1,7 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
+
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
 import { getUser } from "@/actions/user";
 import { UserDetailView } from "@/features/users/components/user-detail-view";
 import { makeQueryClient } from "@/providers/query-client";

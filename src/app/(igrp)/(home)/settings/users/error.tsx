@@ -1,7 +1,8 @@
 "use client";
 
-import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { useEffect } from "react";
+
+import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 export default function UsersError({
   error,

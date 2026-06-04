@@ -1,6 +1,5 @@
 "use client";
 
-import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import {
   useCallback,
   useDeferredValue,
@@ -8,7 +7,11 @@ import {
   useReducer,
   useState,
 } from "react";
+
+import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
+
 import { AppCenterLoading } from "@/components/loading";
+
 import { closedDialog, dialogReducer } from "../dept-dialog-state";
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { useDepartments } from "../use-departments";

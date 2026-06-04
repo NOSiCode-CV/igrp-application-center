@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+
 import { AcceptInvitePage } from "@/features/users/components/invite/accept-invite-page";
 import { InviteCardShell } from "@/features/users/components/invite/invite-card-shell";
 

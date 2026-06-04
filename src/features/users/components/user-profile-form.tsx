@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -20,15 +23,15 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
+
 import { updateUser } from "@/actions/user";
 import { BackButton } from "@/components/back-button";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import { ROUTES } from "@/lib/constants";
+
 import { useCurrentUser } from "../use-users";
 import { type UpdateUserArgs, UpdateUserSchema } from "../user-schema";
 import { ProfileImageUpload } from "./user-profile-image-upload";

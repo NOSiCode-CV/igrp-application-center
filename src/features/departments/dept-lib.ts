@@ -1,4 +1,5 @@
 import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+
 import type { MenuWithChildren } from "./components/dept-menu";
 import type { DepartmentArgs } from "./dept-schemas";
 

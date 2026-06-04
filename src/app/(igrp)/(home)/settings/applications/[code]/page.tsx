@@ -1,5 +1,7 @@
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import type { Metadata } from "next";
+
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
 import { ApplicationDetails } from "@/features/applications/components/app-details";
 import {
   getApplicationByCodeCached,

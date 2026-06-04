@@ -1,7 +1,9 @@
 import "server-only";
 
-import { AccessManagementClient } from "@igrp/platform-access-management-client-ts";
 import { redirect } from "next/navigation";
+
+import { AccessManagementClient } from "@igrp/platform-access-management-client-ts";
+
 import { serverSession } from "@/lib/auth";
 
 export async function getClientAccess() {

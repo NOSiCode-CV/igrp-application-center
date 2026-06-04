@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
+
 import { UserProfileStatusDialog } from "@/features/users/components/user-profile-status-dialog";
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({

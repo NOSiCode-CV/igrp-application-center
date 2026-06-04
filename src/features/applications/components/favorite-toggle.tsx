@@ -2,6 +2,7 @@
 
 import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+
 import {
   useAddCurrentUserFavoriteApplication,
   useCurrentUserFavoriteApplications,

@@ -1,5 +1,6 @@
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { describe, expect, it } from "vitest";
+
 import { isSystemApp } from "@/features/applications/app-utils";
 
 describe("isSystemApp", () => {

@@ -1,5 +1,6 @@
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import { describe, expect, it } from "vitest";
+
 import {
   type DialogState,
   dialogReducer,

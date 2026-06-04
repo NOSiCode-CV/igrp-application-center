@@ -1,10 +1,13 @@
-import type { QueryClient } from "@tanstack/react-query";
 import { cache } from "react";
+
+import type { QueryClient } from "@tanstack/react-query";
+
 import {
   getApplicationByCode as getApplicationByCodeAction,
   getApplications,
 } from "@/actions/applications";
 import { makeQueryClient } from "@/providers/query-client";
+
 import { applicationsKeys } from "./query-keys";
 
 export { makeQueryClient };

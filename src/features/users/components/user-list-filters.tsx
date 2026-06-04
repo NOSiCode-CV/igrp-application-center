@@ -1,8 +1,9 @@
 "use client";
 
-import { Input } from "@igrp/igrp-framework-react-design-system";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+
+import { Input } from "@igrp/igrp-framework-react-design-system";
 
 export function UserListFilters() {
   const router = useRouter();

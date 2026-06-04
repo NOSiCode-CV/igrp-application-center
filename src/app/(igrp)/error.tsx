@@ -8,10 +8,11 @@
 // `error.tsx` / `global-error.tsx` catches those.
 
 import { useEffect } from "react";
+
 import { IGRPSegmentError } from "@igrp/framework-next-ui";
 
-import { reportError } from "@/lib/report-error";
 import { resolveErrorCopy } from "@/config/error-messages";
+import { reportError } from "@/lib/report-error";
 
 export default function IgrpSegmentError({
   error,

@@ -3,6 +3,7 @@
 import { Button } from "@igrp/igrp-framework-react-design-system";
 import { LogOut, Mail } from "lucide-react";
 import { signOut } from "next-auth/react";
+
 import { InviteStepHeader } from "./invite-step-header";
 
 export function InvitePendingState() {

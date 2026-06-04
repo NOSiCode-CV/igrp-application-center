@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
+
 import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { useState } from "react";
+
 import { AppCenterLoading } from "@/components/loading";
 import {
   useCurrentUserDepartments,
   useUserDepartments,
 } from "@/features/users/use-users";
+
 import { buildTree, filterTree } from "../dept-tree-utils";
 import DepartmentTreeItemSimple from "./dept-list-simple-tree";
 

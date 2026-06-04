@@ -1,7 +1,9 @@
 "use client";
 
-import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
 import type { ReactNode } from "react";
+
+import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
+
 import { cn } from "@/lib/utils";
 
 export type InviteStepIndex = 0 | 1 | 2;

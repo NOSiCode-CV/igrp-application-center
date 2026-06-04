@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -13,7 +15,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { useState } from "react";
+
 import { useUpdateUserStatus } from "@/features/users/use-users";
 
 interface UserStatusToggleProps {

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import {
   cn,
   IGRPIcon,
@@ -7,7 +9,7 @@ import {
   Skeleton,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { useEffect, useRef, useState } from "react";
+
 import { getInitials } from "@/lib/utilities";
 
 export interface UserProfileAvatarProps {

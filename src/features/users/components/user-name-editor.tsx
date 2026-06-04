@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   IGRPButton,
   IGRPIcon,
@@ -8,7 +10,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+
 import { useUpdateUser } from "@/features/users/use-users";
 
 interface UserNameEditorProps {

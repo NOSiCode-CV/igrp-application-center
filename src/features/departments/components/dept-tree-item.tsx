@@ -1,3 +1,5 @@
+import type { MouseEvent } from "react";
+
 import {
   Button,
   cn,
@@ -8,7 +10,7 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import type React from "react";
+
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { useDeptTree } from "./dept-tree-context";
 
@@ -93,7 +95,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               <Button
                 variant="ghost"
                 className="h-6 w-6 p-0"
-                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                onClick={(e: MouseEvent) => e.stopPropagation()}
                 aria-label="Abrir menu"
               >
                 <IGRPIcon
