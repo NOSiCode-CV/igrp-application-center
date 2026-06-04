@@ -12,10 +12,7 @@ export default async function HomeLayout({
   // redirects to /login instead of racing the data calls below.
   await verifySession();
 
-  const [user] = await Promise.all([
-    getCurrentUser(),
-    getLayoutConfig(),
-  ]);
+  const [user] = await Promise.all([getCurrentUser(), getLayoutConfig()]);
 
   // A failed current-user load can't be reasoned about — surface it to the
   // error boundary rather than silently rendering (which would also skip the
@@ -26,5 +23,5 @@ export default async function HomeLayout({
     redirect("/invite/pending");
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

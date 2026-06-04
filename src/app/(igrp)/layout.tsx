@@ -5,8 +5,6 @@ import { createConfig } from "@/igrp.template.config";
 import { verifySession } from "@/lib/dal";
 import { QueryProvider } from "@/providers/query-provider";
 
-
-
 export default async function IGRPRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -17,8 +15,9 @@ export default async function IGRPRootLayout({
 
   return (
     <QueryProvider>
-      <IGRPLayoutFull config={config} showSidebar={false}>{children}</IGRPLayoutFull>
+      <IGRPLayoutFull config={config} showSidebar={false}>
+        {children}
+      </IGRPLayoutFull>
     </QueryProvider>
   );
-
 }

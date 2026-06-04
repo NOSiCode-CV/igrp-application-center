@@ -1,12 +1,14 @@
 import { isPreviewMode } from "../utils";
 import { getBasePath } from "./get-base-path";
 
-// Default tuned for Spring Authorization Server's default 5-minute (300s)
-// access-token lifetime: 180s polls comfortably inside the token's life (and
-// ahead of the jwt callback's 60s proactive-refresh window), leaving ~2 min of
-// margin. Override via IGRP_SESSION_REFETCH_INTERVAL if your access-token TTL
-// differs.
-const DEFAULT_REFETCH_INTERVAL_SECONDS = 180;
+// Default tuned to sit BELOW the IGRP IdP's measured ~177s access-token
+// lifetime: a 150s poll lands inside the token's life (and ahead of the jwt
+// callback's 60s proactive-refresh window) so the rotating refresh persists via
+// the client poll before the cookie's expiry trips a middleware /login bounce.
+// A poll interval >= the access-token TTL lets the persisted cookie expire
+// between polls, bouncing healthy sessions to /login. Override via
+// IGRP_SESSION_REFETCH_INTERVAL if your access-token TTL differs.
+const DEFAULT_REFETCH_INTERVAL_SECONDS = 150;
 
 /**
  * Session refetch cadence (in seconds) for the client `SessionProvider`. This
@@ -15,7 +17,7 @@ const DEFAULT_REFETCH_INTERVAL_SECONDS = 180;
  * when it's near/after expiry.
  *
  * Set `IGRP_SESSION_REFETCH_INTERVAL` *below* your IdP access-token lifetime so
- * a refresh reliably lands within the token's life. Falls back to 180s when the
+ * a refresh reliably lands within the token's life. Falls back to 150s when the
  * var is unset, non-numeric, or <= 0.
  */
 function getRefetchInterval(): number {

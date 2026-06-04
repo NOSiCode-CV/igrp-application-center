@@ -1,11 +1,11 @@
-import { cache } from "react";
-import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { Session } from "next-auth";
+import { cache } from "react";
 
+import { configLayout } from "@/actions/igrp/layout";
 import { getSession } from "@/lib/auth";
 import { isAuthBypass } from "@/lib/utils";
-import { configLayout } from "@/actions/igrp/layout";
 
 /**
  * Verifies the current request is authenticated.

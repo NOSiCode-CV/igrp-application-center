@@ -1,4 +1,11 @@
 "use client";
+
+// Segment-level error boundary for the `(auth)` route group — covers
+// /login, /logout, and anything else rendered under the auth layout.
+//
+// Auth failures are the most common concrete reason a user sees this screen,
+// so the fallback copy is tuned toward provider / config issues.
+
 import {
   IGRPSegmentError,
   type IGRPSegmentErrorProps,
@@ -17,8 +24,11 @@ const resolveAuthCopy: NonNullable<IGRPSegmentErrorProps["resolveCopy"]> = (
   error,
 ) => {
   const typed = resolveErrorCopy(error);
-  if (!error || typeof error !== "object" || !("code" in (error as object)))
+  // If the framework didn't tag the error with a known code, swap in the
+  // auth-scoped fallback instead of the generic one.
+  if (!error || typeof error !== "object" || !("code" in (error as object))) {
     return AUTH_FALLBACK;
+  }
   return typed;
 };
 
@@ -32,6 +42,7 @@ export default function AuthSegmentError({
   useEffect(() => {
     reportError(error, { segment: "(auth)" });
   }, [error]);
+
   return (
     <IGRPSegmentError
       error={error}

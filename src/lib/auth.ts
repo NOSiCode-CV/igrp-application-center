@@ -1,11 +1,10 @@
-import { withIGRPAuth } from "@igrp/framework-next-auth/config";
-import { redirect } from "next/navigation";
-
 import { igrpSetAccessClientConfig } from "@igrp/framework-next";
 import { isIgrpError } from "@igrp/framework-next/errors";
+import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { assertAuthProviderEnv } from "@igrp/framework-next-auth/providers";
-import { isAuthBypass } from "@/lib/utils";
+import { redirect } from "next/navigation";
 import { reportError } from "@/lib/report-error";
+import { isAuthBypass } from "@/lib/utils";
 
 /**
  * Minimal session shape used in bypass mode (IGRP_PREVIEW_MODE or
@@ -50,8 +49,26 @@ function deriveAppBaseUrl(baseUrlFromNextAuth: string): string {
 
 const AUTH_UI_PATH = /^\/(login|logout)(\/|$)/;
 
+/**
+ * Optional explicit NextAuth session-cookie lifetime, in seconds. Align this to
+ * your IdP's refresh-token lifetime so the session cookie expires with the
+ * refresh token instead of lingering for NextAuth's ~30-day default. Unset (or
+ * non-numeric / <= 0) leaves the NextAuth default in place — no behavior change.
+ */
+function getSessionMaxAge(): number | undefined {
+  const raw = process.env.IGRP_SESSION_MAX_AGE?.trim();
+  if (!raw) return undefined;
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+const sessionMaxAge = getSessionMaxAge();
+
 export const auth = withIGRPAuth({
   onSessionExpired: () => redirect("/logout"),
+  // Explicit session lifetime when IGRP_SESSION_MAX_AGE is set; otherwise omit
+  // so withIGRPAuth keeps NextAuth's default (no `session` override).
+  ...(sessionMaxAge ? { session: { maxAge: sessionMaxAge } } : {}),
   // Point NextAuth at our custom sign-in page so its internal "needs sign-in"
   // redirects (e.g. when a future caller uses `useSession({ required: true })`
   // or `withAuth`) land on /login instead of the framework default page.

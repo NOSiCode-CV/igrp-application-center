@@ -11,6 +11,18 @@ import { FavoriteToggle } from "./favorite-toggle";
 
 type Variant = "default" | "featured";
 
+/**
+ * Application launcher tile.
+ *
+ * Resting state is calm: a clean card with a dim primary accent bar on the
+ * left edge. On hover the bar ignites to full primary, a faint primary wash
+ * sweeps in from that edge, the card lifts slightly, and the title + icon
+ * react — on-brand and tactile without a permanent solid border on every card.
+ *
+ * - `featured` bumps the icon from 40px to 44px.
+ * - `showLastAccess` renders the relative "last opened" time under the body.
+ * - Apps with no resolvable destination render disabled (dashed, dimmed).
+ */
 export function ApplicationCardHome({
   app,
   variant = "default",
@@ -21,11 +33,13 @@ export function ApplicationCardHome({
   showLastAccess?: boolean;
 }) {
   const { name, description, code, picture, type, lastAccess } = app;
+
   const imageSrc = picture
     ? picture.startsWith("http")
       ? picture
       : new URL(picture, config.minioUrl).toString()
     : null;
+
   const rawHref =
     code === "APP_IGRP_CENTER" ? "/applications" : (app.url ?? app?.slug ?? "");
   const isDisabled = !rawHref;
@@ -36,21 +50,40 @@ export function ApplicationCardHome({
   const ago = showLastAccess ? relativeTimePt(lastAccess) : "";
 
   const cardClasses = [
-    "relative h-full overflow-hidden rounded-lg border bg-card transition-all duration-200",
-    "p-3.5",
+    "relative h-full overflow-hidden rounded-lg border bg-card",
+    "transition-[transform,box-shadow,border-color] duration-200 ease-out",
+    "shadow-sm p-3.5 pl-4 motion-reduce:transition-none",
     isDisabled
-      ? "border-dashed border-border/40 opacity-60 cursor-not-allowed"
-      : "border-border/60 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-sm",
+      ? "border-dashed border-border/40 opacity-60 cursor-not-allowed shadow-none"
+      : "border-border/60 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md active:translate-y-0 active:shadow-sm motion-reduce:hover:translate-y-0",
   ].join(" ");
+
+  const wrapperClasses =
+    "group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
   const inner = (
     <div className={cardClasses}>
+      {!isDisabled && (
+        <span
+          aria-hidden
+          className="absolute inset-y-0 left-0 w-1 bg-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        />
+      )}
+
+      {!isDisabled && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-linear-to-r from-primary/[0.07] via-transparent to-transparent"
+        />
+      )}
+
       <div className="absolute top-2.5 right-2.5 z-10">
         <FavoriteToggle app={app} size="sm" />
       </div>
-      <div className="flex items-start gap-3 pr-7">
+
+      <div className="relative flex items-start gap-3 pr-7">
         <div
-          className={`relative ${iconSize} rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50 bg-muted/30 transition-transform duration-200 group-hover:scale-105`}
+          className={`relative ${iconSize} rounded-md overflow-hidden flex items-center justify-center shrink-0 ring-1 ring-border/50 bg-muted/30 transition-[transform,box-shadow] duration-200 group-hover:scale-105 group-hover:ring-primary/30 group-hover:shadow-sm motion-reduce:group-hover:scale-100`}
         >
           {imageSrc ? (
             <Image
@@ -73,20 +106,23 @@ export function ApplicationCardHome({
             {isExternal && !isDisabled && (
               <IGRPIcon
                 iconName="ArrowUpRight"
-                className="size-3 text-muted-foreground shrink-0"
+                className="size-3 text-muted-foreground shrink-0 transition-[transform,color] duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0"
                 aria-label="Aplicação externa"
               />
             )}
           </div>
+
           <p className="text-xs text-muted-foreground leading-snug line-clamp-2 mt-0.5">
-            {description}
+            {description || "Sem descrição."}
           </p>
+
           {(ago || isDisabled) && (
             <p
-              className={`text-[10px] uppercase tracking-wide mt-1.5 ${
+              className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-wide mt-1.5 ${
                 isDisabled ? "text-muted-foreground/70" : "text-primary/70"
               }`}
             >
+              {!isDisabled && <IGRPIcon iconName="Clock" className="size-3" />}
               {isDisabled ? "Indisponível" : ago}
             </p>
           )}
@@ -107,9 +143,6 @@ export function ApplicationCardHome({
     );
   }
 
-  // External apps (absolute URLs or EXTERNAL type) open in a new tab via a
-  // plain <a>. next/link does not reliably handle absolute URLs in Next 15
-  // typed-routes mode and would silently no-op the click.
   const isAbsolute = /^https?:\/\//i.test(rawHref);
   if (isExternal || isAbsolute) {
     return (
@@ -117,7 +150,7 @@ export function ApplicationCardHome({
         href={rawHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="group block h-full"
+        className={wrapperClasses}
       >
         {inner}
       </a>
@@ -125,7 +158,7 @@ export function ApplicationCardHome({
   }
 
   return (
-    <Link href={rawHref as Route} className="group block h-full">
+    <Link href={rawHref as Route} className={wrapperClasses}>
       {inner}
     </Link>
   );

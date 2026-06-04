@@ -59,35 +59,6 @@ function titleCase(s: string): string {
   );
 }
 
-/**
- * Live clock + date for the hero widget. Ticks once a minute. Returns
- * `null` on the server / before mount to avoid hydration mismatch — the
- * widget renders a placeholder until the first client tick.
- */
-function useLiveClock() {
-  const [now, setNow] = useState<Date | null>(null);
-  useEffect(() => {
-    const tick = () => setNow(new Date());
-    tick();
-    const id = setInterval(tick, 60_000);
-    return () => clearInterval(id);
-  }, []);
-  if (!now) return { time: null, date: null };
-  return {
-    time: now.toLocaleTimeString("pt-PT", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    date: titleCase(
-      now.toLocaleDateString("pt-PT", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-      }),
-    ),
-  };
-}
-
 function resolveImage(picture?: string | null) {
   if (!picture) return null;
   return picture.startsWith("http")
@@ -104,44 +75,33 @@ function resolveHref(app: ApplicationDTO) {
  * Hero side widget: live clock + Portuguese date + apps/favorites counts.
  * Uses useLiveClock so the time stays accurate without a full rerender.
  */
-function HeroStatsWidget({
-  appCount,
-  favoriteCount,
-}: {
-  appCount: number;
-  favoriteCount: number;
-}) {
-  const { date } = useLiveClock();
-  return (
-    <aside className="relative shrink-0 w-full md:w-auto md:min-w-[200px] rounded-xl border border-border/60 bg-card/70 backdrop-blur-sm px-4 py-3">
-      {date ? (
-        <>
-          <div className="text-sm md:text-base font-semibold text-center text-foreground leading-tight">
-            {date}
-          </div>
-          <div className="mt-2.5 flex items-center justify-center gap-3 text-xs text-muted-foreground">
-            <span>
-              <strong className="font-semibold tabular-nums text-foreground">
-                {appCount}
-              </strong>{" "}
-              apps
-            </span>
-            <span aria-hidden className="h-3 w-px bg-border" />
-            <span>
-              <strong className="font-semibold tabular-nums text-foreground">
-                {favoriteCount}
-              </strong>{" "}
-              favoritos
-            </span>
-          </div>
-        </>
-      ) : (
-        // Placeholder during pre-mount / first render to avoid hydration mismatch.
-        <div className="h-12" />
-      )}
-    </aside>
-  );
-}
+// function HeroStatsWidget({
+//   appCount,
+//   favoriteCount,
+// }: {
+//   appCount: number;
+//   favoriteCount: number;
+// }) {
+//   return (
+//     <aside className="relative shrink-0 w-full md:w-auto md:min-w-[200px] rounded-xl border border-border/60 bg-card/70 backdrop-blur-sm px-4 py-3">
+//       <div className="mt-2.5 flex items-center justify-center gap-3 text-xs text-muted-foreground">
+//         <span>
+//           <strong className="font-semibold tabular-nums text-foreground">
+//             {appCount}
+//           </strong>{" "}
+//           apps
+//         </span>
+//         <span aria-hidden className="h-3 w-px bg-border" />
+//         <span>
+//           <strong className="font-semibold tabular-nums text-foreground">
+//             {favoriteCount}
+//           </strong>{" "}
+//           favoritos
+//         </span>
+//       </div>
+//     </aside>
+//   );
+// }
 
 function GridSkeleton({ count = 6 }: { count?: number }) {
   return (
@@ -221,6 +181,110 @@ function RecentPill({ app }: { app: ApplicationDTO }) {
         </Link>
       )}
       <FavoriteToggle app={app} size="sm" />
+    </div>
+  );
+}
+
+/** Rows visible before the favorites list caps its height and scrolls. */
+const FAVORITES_VISIBLE_ROWS = 5;
+/** Matches the `gap-2` (0.5rem) between rows, in px — used to size 5 rows. */
+const FAVORITES_ROW_GAP = 8;
+
+/**
+ * Renders favorites as a vertical list (one pill per row). Once there are more
+ * than FAVORITES_VISIBLE_ROWS favorites the list caps its height to exactly
+ * that many rows — measured from the real pills, so the cutoff is precise — and
+ * scrolls. A bottom fade + chevron then signals there's more below the fold (the
+ * only cue, since the scrollbar is hidden) and hides once scrolled to the end.
+ */
+function ScrollableFavorites({
+  children,
+  count,
+}: {
+  children: React.ReactNode;
+  count: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [maxHeight, setMaxHeight] = useState<number | null>(null);
+  const [canScrollDown, setCanScrollDown] = useState(false);
+  const scrollable = count > FAVORITES_VISIBLE_ROWS;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !scrollable) {
+      setMaxHeight(null);
+      setCanScrollDown(false);
+      return;
+    }
+    const measure = () => {
+      const rows = Array.from(el.children) as HTMLElement[];
+      const visible = Math.min(FAVORITES_VISIBLE_ROWS, rows.length);
+      if (visible === 0) return;
+      // offsetHeight is scroll-independent, so this stays correct mid-scroll.
+      let h = 0;
+      for (let i = 0; i < visible; i++) h += rows[i].offsetHeight;
+      h += FAVORITES_ROW_GAP * (visible - 1);
+      setMaxHeight(h);
+    };
+    const updateScroll = () => {
+      // 1px tolerance absorbs sub-pixel rounding at the scroll end.
+      setCanScrollDown(el.scrollHeight - el.scrollTop - el.clientHeight > 1);
+    };
+    measure();
+    updateScroll();
+    el.addEventListener("scroll", updateScroll, { passive: true });
+    const ro = new ResizeObserver(() => {
+      measure();
+      updateScroll();
+    });
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateScroll);
+      ro.disconnect();
+    };
+    // ResizeObserver re-measures when rows are added/removed, so `count`
+    // itself isn't needed as a dependency.
+  }, [scrollable]);
+
+  return (
+    <div className="relative">
+      <div
+        ref={ref}
+        className={[
+          "flex flex-col items-start gap-2 pr-1",
+          scrollable ? "overflow-y-auto home-scroll-viewport" : "",
+        ].join(" ")}
+        style={scrollable && maxHeight ? { maxHeight } : undefined}
+      >
+        {children}
+      </div>
+      {/* Fade — purely visual, never intercepts clicks. */}
+      <div
+        aria-hidden
+        className={[
+          "pointer-events-none absolute inset-x-0 bottom-0 h-8",
+          "bg-linear-to-t from-card via-card/80 to-transparent",
+          "transition-opacity duration-200",
+          canScrollDown ? "opacity-100" : "opacity-0",
+        ].join(" ")}
+      />
+      {/* Small scroll affordance — fixed footprint so clicks here scroll the
+          list instead of falling through to the favorite item beneath it. */}
+      {canScrollDown && (
+        <button
+          type="button"
+          aria-label="Ver mais favoritos"
+          onClick={() =>
+            ref.current?.scrollBy({
+              top: ref.current.clientHeight * 0.8,
+              behavior: "smooth",
+            })
+          }
+          className="absolute bottom-1 left-1/2 size-6 -translate-x-1/2 flex items-center justify-center rounded-full border border-border/60 bg-card/90 text-muted-foreground shadow-sm transition-colors hover:text-foreground hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer"
+        >
+          <IGRPIcon iconName="ChevronDown" className="size-4" />
+        </button>
+      )}
     </div>
   );
 }
@@ -388,7 +452,7 @@ export function ApplicationsListHome() {
   ) as string[];
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 overflow-hidden p-6 gap-6">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden gap-6">
       <CommandPalette
         open={paletteOpen}
         onOpenChange={setPaletteOpen}
@@ -400,9 +464,6 @@ export function ApplicationsListHome() {
       {/* Hero — always visible, doesn't scroll. */}
       <div className="shrink-0">
         <header className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 md:p-6">
-          {/* Layer 1 — soft radial wash anchored to the top-right corner,
-            with a quieter echo in the bottom-left. Both use the primary
-            token so the card stays neutral and theme-respecting. */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0"
@@ -411,19 +472,6 @@ export function ApplicationsListHome() {
                 "radial-gradient(110% 90% at 100% 0%, color-mix(in oklab, var(--primary) 10%, transparent) 0%, transparent 55%), radial-gradient(120% 100% at 0% 100%, color-mix(in oklab, var(--primary) 6%, transparent) 0%, transparent 60%)",
             }}
           />
-          {/* Layer 2 — fine diagonal hatch pattern at very low opacity. Adds
-            a "designed" texture without screaming pattern. */}
-          {/* <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-multiply"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(135deg, currentColor 0 1px, transparent 1px 8px)",
-            color: "var(--foreground)",
-          }}
-        /> */}
-          {/* Layer 3 — SVG noise grain for tactile depth. Pulled from a
-            tiny inline turbulence filter so there's no asset request. */}
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-overlay"
@@ -473,17 +521,8 @@ export function ApplicationsListHome() {
                           <span>{bit}</span>
                         </span>
                       ))}
-                      <span
-                        aria-hidden
-                        className="size-1 rounded-full bg-border"
-                      />
-                      <span>Encontre e abra as suas aplicações</span>
                     </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      Encontre e abra as suas aplicações
-                    </p>
-                  )}
+                  ) : null}
                 </>
               ) : (
                 <div
@@ -497,17 +536,15 @@ export function ApplicationsListHome() {
               )}
             </div>
 
-            <HeroStatsWidget
+            {/* <HeroStatsWidget
               appCount={visibleApps.length}
               favoriteCount={favorites?.length ?? 0}
-            />
+            /> */}
           </div>
         </header>
       </div>
 
-      {/* Apps container — search is its header (fixed), body scrolls. */}
       <section className="flex-1 min-h-0 flex flex-col rounded-2xl border border-border/60 bg-card overflow-hidden">
-        {/* Container header — search trigger (always visible) */}
         <div className="shrink-0 px-4 py-3 border-b border-border/60 bg-card">
           <button
             ref={searchWrapperRef}
@@ -529,7 +566,6 @@ export function ApplicationsListHome() {
           </button>
         </div>
 
-        {/* Container body — the only thing that scrolls. */}
         <div className="flex-1 min-h-0 p-4 flex flex-col gap-6 overflow-y-auto lg:overflow-hidden home-scroll-viewport">
           {isLoading ? (
             <GridSkeleton />
@@ -660,11 +696,11 @@ export function ApplicationsListHome() {
                     </div>
                   ) : (
                     /* Pills container — caps at ~5 visible items (≈200px), scrolls if more. */
-                    <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto pr-1 home-scroll-viewport">
+                    <ScrollableFavorites count={favoriteApps.length}>
                       {favoriteApps.map((app) => (
                         <RecentPill key={app.id} app={app} />
                       ))}
-                    </div>
+                    </ScrollableFavorites>
                   )}
                 </div>
               </aside>

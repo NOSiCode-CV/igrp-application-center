@@ -136,6 +136,11 @@
    * 100dvh — IGRP header (~4rem) — framework p-4 wrapper top padding (1rem).
    * Adjust the rem value here if the framework header height changes. */
   --home-scroll-h: calc(100dvh - 5rem);
+  /* At >=lg the inner columns own the scroll, so the launcher must fit the
+   * framework content box exactly. Unlike --home-scroll-h, this also accounts
+   * for the p-4 wrapper's *bottom* padding (1rem) — otherwise the wrapper is
+   * 1rem too tall and the whole page scrolls. */
+  --home-scroll-h-lg: calc(100dvh - 6rem);
 }
 
 .dark {

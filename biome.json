@@ -13,7 +13,11 @@
       "!.next",
       "!dist",
       "!build",
-      "!**/*.css"
+      "!**/*.css",
+      "!.igrpstudio",
+      "!src/app/(igrp)/(generated)",
+      "!.igrp-migrations-lock.json",
+      "!.npmignore"
     ]
   },
   "formatter": {
