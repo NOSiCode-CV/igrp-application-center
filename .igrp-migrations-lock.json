@@ -154,9 +154,9 @@
     },
     {
       "id": "10-session-refetch-and-menu-role-sync",
-      "appliedAt": "2026-06-02T17:07:58.966Z",
-      "cliVersion": "0.1.0-beta.120",
-      "manifestHash": "87ba35eb165dc791",
+      "appliedAt": "2026-06-03T15:47:40.037Z",
+      "cliVersion": "0.1.0-beta.122",
+      "manifestHash": "2fe8951c4ef8b1af",
       "undo": [
         {
           "type": "file.write",
@@ -177,8 +177,22 @@
           "from": "__undo__"
         },
         {
-          "type": "file.delete",
-          "path": "src/app/(auth)/logout/page.tsx"
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/actions/igrp/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/utils.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/logout/page.tsx",
+          "from": "__undo__"
         },
         {
           "type": "file.write",
@@ -202,26 +216,29 @@
           "type": "deps.bump",
           "manifest": "package.json",
           "ranges": {
-            "@igrp/framework-next": "0.1.0-beta.142",
-            "@igrp/framework-next-types": "0.1.0-beta.136",
-            "@igrp/framework-next-ui": "0.1.0-beta.141",
+            "@igrp/framework-next": "0.1.0-beta.143",
+            "@igrp/framework-next-types": "0.1.0-beta.137",
+            "@igrp/framework-next-ui": "0.1.0-beta.142",
             "@igrp/platform-access-management-client-ts": "0.2.0-beta.10"
           }
         }
       ],
       "fileHashes": {
-        ".env.example": "d167476c38ae0a6a",
-        "src/igrp.template.config.ts": "7fe0cd34cdeb1623",
-        "src/lib/config/get-session-args.ts": "c0eeabc789111b4e",
-        "src/app/(igrp)/layout.tsx": "f878f2fdaf718dfc",
-        "src/styles/globals.css": "02f6f461095368f6",
+        ".env.example": "a3ac9ed39a9c8b3b",
+        "src/igrp.template.config.ts": "62254594f30975c1",
+        "src/lib/config/get-session-args.ts": "ae0c497f43319b3d",
+        "src/actions/igrp/auth.ts": "b52467ddc19cdb4a",
+        "src/lib/utils.ts": "65f3d36923890d21",
+        "src/app/(auth)/logout/page.tsx": "f160ba34f8a35a66",
+        "src/app/(igrp)/layout.tsx": "ceeb1797523315ce",
+        "src/styles/globals.css": "2cd44e4acad1c94e",
         "src/styles/themes.css": "9051889e53cded36",
-        "package.json": "d49ecabdaff008fc"
+        "package.json": "3697099b84271524"
       }
     },
     {
       "id": "11-callbackurl-hardening-and-error-copy",
-      "appliedAt": "2026-06-02T19:14:53.472Z",
+      "appliedAt": "2026-06-03T15:50:58.403Z",
       "cliVersion": "0.1.0-beta.122",
       "manifestHash": "9688a14cda39798d",
       "undo": [
@@ -278,22 +295,171 @@
           "manifest": "package.json",
           "ranges": {
             "@igrp/framework-next": "0.1.0-beta.142",
-            "@igrp/framework-next-auth": "0.1.0-beta.134",
+            "@igrp/framework-next-auth": "0.1.0-beta.135",
             "@igrp/framework-next-types": "0.1.0-beta.136",
             "@igrp/framework-next-ui": "0.1.0-beta.141"
           }
         }
       ],
       "fileHashes": {
-        "src/middleware.ts": "212b0e64b215db4e",
-        "src/lib/auth.ts": "0ab8f6b4f9eba833",
-        "src/lib/dal.ts": "13caa1cbbc29e0dd",
-        "src/app/(auth)/login/page.tsx": "44538d026cf12864",
-        "src/lib/errors.ts": "b7c2e43542c74c91",
-        "src/config/error-messages.ts": "700210bc74e74bdb",
-        "src/app/global-error.tsx": "f8e9164905faef2f",
-        "src/lib/config/get-pkj.ts": "eea6e3cb04d20fcc",
-        "package.json": "d49ecabdaff008fc"
+        "src/middleware.ts": "8de1dcd8514bf9d0",
+        "src/lib/auth.ts": "fb326b1888628703",
+        "src/lib/dal.ts": "d055fbdb0675bde2",
+        "src/app/(auth)/login/page.tsx": "c61761f1eb713978",
+        "src/lib/errors.ts": "96e8e4bdbd6a7dfc",
+        "src/config/error-messages.ts": "b81518f48e7666ba",
+        "src/app/global-error.tsx": "234b75bd13345191",
+        "src/lib/config/get-pkj.ts": "211266ac5e26a1e9",
+        "package.json": "8e43f96c142b943f"
+      }
+    },
+    {
+      "id": "12-template-resync",
+      "appliedAt": "2026-06-04T22:49:27.217Z",
+      "cliVersion": "0.1.0-beta.124",
+      "manifestHash": "8e0f381e9df1df50",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/actions/igrp/layout.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/config/get-session-args.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/config/get-routes.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/config/get-base-path.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/dal.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/report-error.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/api/auth/[...nextauth]/route.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(igrp)/error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/logout/page.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": ".env.example",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.create",
+          "path": "src/app/[...not-found]/page.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.144",
+            "@igrp/framework-next-auth": "0.1.0-beta.136",
+            "@igrp/framework-next-types": "0.1.0-beta.138",
+            "@igrp/framework-next-ui": "0.1.0-beta.143",
+            "@igrp/igrp-framework-react-design-system": "0.1.0-beta.134",
+            "@igrp/platform-access-management-client-ts": "0.2.0-beta.10",
+            "next": "15.5.19",
+            "react": "19.2.7",
+            "react-dom": "19.2.7"
+          }
+        }
+      ],
+      "fileHashes": {
+        "src/actions/igrp/layout.ts": "3c781141e0702058",
+        "src/lib/config/get-session-args.ts": "41be591e936cbd0f",
+        "src/lib/config/get-routes.ts": "fa9baee8e0ee410f",
+        "src/lib/config/get-base-path.ts": "38879a90908a32bc",
+        "src/lib/auth.ts": "b5cffcff88992d27",
+        "src/lib/dal.ts": "4ec5ac3b64bf3562",
+        "src/lib/report-error.ts": "7ccea391a42a2ecc",
+        "src/app/api/auth/[...nextauth]/route.ts": "f312a7a6d28a8e02",
+        "src/app/error.tsx": "3eb468816eda4381",
+        "src/app/(auth)/error.tsx": "f12a2f363498dcb9",
+        "src/app/(igrp)/error.tsx": "f4b6cd9e7b7c6c05",
+        "src/app/(auth)/logout/page.tsx": "5f031c7033656ad4",
+        ".env.example": "9bd871de87ae7154",
+        "package.json": "abbd523f432d44c1"
+      }
+    },
+    {
+      "id": "13-resync-beta145",
+      "appliedAt": "2026-06-04T22:49:28.522Z",
+      "cliVersion": "0.1.0-beta.124",
+      "manifestHash": "94bab738249c2f0d",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/dal.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.144",
+            "@igrp/framework-next-ui": "0.1.0-beta.143",
+            "@igrp/igrp-framework-react-design-system": "0.1.0-beta.134"
+          }
+        }
+      ],
+      "fileHashes": {
+        "src/lib/dal.ts": "567d058a50c8f66c",
+        "package.json": "685d80e3b443b02a"
       }
     }
   ]

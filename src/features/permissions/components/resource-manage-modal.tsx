@@ -34,7 +34,7 @@ import {
   useDepartmentResources,
   useRemoveResourcesFromDepartment,
 } from "@/features/departments/use-departments";
-import { getStatusColor, showStatus } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utilities";
 
 interface ManageResourcesModalProps {
   departmentCode: string;

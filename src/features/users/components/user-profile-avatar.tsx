@@ -8,7 +8,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useEffect, useRef, useState } from "react";
-import { getInitials } from "@/lib/utils";
+import { getInitials } from "@/lib/utilities";
 
 export interface UserProfileAvatarProps {
   user: IGRPUserDTO;

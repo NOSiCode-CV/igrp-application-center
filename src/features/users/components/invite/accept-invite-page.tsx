@@ -195,10 +195,7 @@ export function AcceptInvitePage() {
   const handleAccept = useCallback(() => {
     if (!token || !invitation) return;
     respond.mutate(
-      {
-        response: { accept: true, observation: "Aceite pelo utilizador" },
-        token,
-      },
+      { response: { accept: true, observation: "Convite aceito" }, token },
       {
         onSuccess: (result) => {
           if (!result.success) {
@@ -223,10 +220,7 @@ export function AcceptInvitePage() {
   const handleReject = useCallback(() => {
     if (!token || !invitation) return;
     respond.mutate(
-      {
-        response: { accept: false, observation: "Rejeitado pelo utilizador!" },
-        token,
-      },
+      { response: { accept: false, observation: "Convite rejeitado" }, token },
       {
         onSuccess: (result) => {
           if (!result.success) {

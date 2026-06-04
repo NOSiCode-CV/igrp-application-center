@@ -12,7 +12,7 @@ import {
   TableCell,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
-import { showStatus, statusClass } from "@/lib/utils";
+import { showStatus, statusClass } from "@/lib/utilities";
 import { useRoleTree } from "./role-tree-context";
 import type { RoleWithChildren } from "./role-tree-list";
 

@@ -1,7 +1,7 @@
 "use server";
 
 import type { SessionResponseDTO } from "@igrp/platform-access-management-client-ts";
-import { extractApiError } from "@/lib/utils";
+import { extractApiError } from "@/lib/utilities";
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
 

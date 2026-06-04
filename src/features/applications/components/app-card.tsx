@@ -15,11 +15,11 @@ import Image from "next/image";
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import {
   APP_DESCRIPTION_FALLBACK,
-  formatSlug,
   isSystemApp,
 } from "@/features/applications/app-utils";
 import { config, ROUTES } from "@/lib/constants";
-import { cn, getStatusColor, showStatus } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utilities";
+import { cn } from "@/lib/utils";
 
 interface ApplicationCardProps {
   app: ApplicationDTO;

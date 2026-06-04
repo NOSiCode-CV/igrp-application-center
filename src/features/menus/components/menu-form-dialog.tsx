@@ -56,7 +56,8 @@ import {
   normalizeMenu,
   type UpdateMenu,
 } from "@/features/menus/menu-schemas";
-import { cn, formatIconString } from "@/lib/utils";
+import { formatIconString } from "@/lib/utilities";
+import { cn } from "@/lib/utils";
 import { statusSchema } from "@/schemas/global";
 import { MenuTypeSelector } from "./menu-type-selector";
 

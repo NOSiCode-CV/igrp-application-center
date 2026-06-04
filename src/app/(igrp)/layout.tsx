@@ -15,7 +15,9 @@ export default async function IGRPRootLayout({
 
   return (
     <QueryProvider>
-      <IGRPLayoutFull config={config} showSidebar={false}>{children}</IGRPLayoutFull>
+      <IGRPLayoutFull config={config} showSidebar={false}>
+        {children}
+      </IGRPLayoutFull>
     </QueryProvider>
   );
 }
