@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -24,7 +26,6 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ResourceDTO } from "@igrp/platform-access-management-client-ts";
-import { useEffect, useMemo, useState } from "react";
 
 type ResourceWithAssignment = ResourceDTO & { isAssigned: boolean };
 

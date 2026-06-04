@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -23,8 +25,9 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect, useMemo, useRef, useState } from "react";
+
 import { useApplications } from "@/features/applications/use-applications";
+
 import {
   useAddApplicationsToDepartment,
   useDepartmentAvailableApps,

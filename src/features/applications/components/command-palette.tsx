@@ -1,5 +1,10 @@
 "use client";
 
+import type { Route } from "next";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo } from "react";
+
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,10 +15,7 @@ import {
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import type { Route } from "next";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+
 import { config } from "@/lib/constants";
 
 function resolveHref(app: ApplicationDTO): string {

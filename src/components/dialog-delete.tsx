@@ -1,3 +1,5 @@
+import { useId, useState } from "react";
+
 import {
   Button,
   Dialog,
@@ -10,7 +12,6 @@ import {
   Input,
   Label,
 } from "@igrp/igrp-framework-react-design-system";
-import { useId, useState } from "react";
 
 interface IGRPDialogDeleteProps {
   open: boolean;

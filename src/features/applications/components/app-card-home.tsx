@@ -1,11 +1,14 @@
 "use client";
 
-import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
-import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+
 import { config } from "@/lib/constants";
+
 import { relativeTimePt } from "../lib/app-visual";
 import { FavoriteToggle } from "./favorite-toggle";
 

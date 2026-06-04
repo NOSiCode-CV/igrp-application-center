@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+
 import { UserProfileAvatar } from "./user-profile-avatar";
 import { UserProfileEditableName } from "./user-profile-editable-name";
 

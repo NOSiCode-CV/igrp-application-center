@@ -7,13 +7,14 @@
 // so the fallback copy is tuned toward provider / config issues.
 
 import { useEffect } from "react";
+
 import {
   IGRPSegmentError,
   type IGRPSegmentErrorProps,
 } from "@igrp/framework-next-ui";
 
-import { reportError } from "@/lib/report-error";
 import { resolveErrorCopy } from "@/config/error-messages";
+import { reportError } from "@/lib/report-error";
 
 const AUTH_FALLBACK = {
   title: "Não foi possível concluir a autenticação.",

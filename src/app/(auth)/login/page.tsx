@@ -1,6 +1,7 @@
+import { redirect } from "next/navigation";
+
 import { getAuthProviderIdFromEnv } from "@igrp/framework-next-auth";
 import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
-import { redirect } from "next/navigation";
 
 import { carouselItems, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";

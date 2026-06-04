@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -13,7 +15,7 @@ import {
   Label,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
+
 import { useDeleteRole } from "@/features/departments/use-departments";
 
 interface RoleDeleteDialogProps {

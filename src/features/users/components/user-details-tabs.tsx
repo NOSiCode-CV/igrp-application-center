@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense, useState } from "react";
+
 import {
   IGRPButton,
   Skeleton,
@@ -9,9 +11,10 @@ import {
   TabsTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { Suspense, useState } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
+
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
+
 import UserApplications from "./user-applications";
 import { UserAuditLogTab } from "./user-audit-tab";
 import { UserMetadataPanel } from "./user-metadata-panel";

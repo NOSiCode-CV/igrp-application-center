@@ -1,3 +1,5 @@
+import type { MouseEvent } from "react";
+
 import {
   Button,
   cn,
@@ -8,7 +10,7 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import type { MouseEvent } from "react";
+
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { useDeptTree } from "./dept-tree-context";
 

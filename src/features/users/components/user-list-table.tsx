@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useMemo, useState } from "react";
+
 import {
   IGRPButton,
   IGRPDataTable,
@@ -16,7 +18,7 @@ import type {
   IGRPUserDTO,
   InvitationDTO,
 } from "@igrp/platform-access-management-client-ts";
-import { useCallback, useMemo, useState } from "react";
+
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";

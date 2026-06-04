@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import {
   cn,
   IGRPIcon,
@@ -13,7 +15,7 @@ import {
   TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useMemo, useState } from "react";
+
 import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
 import {
@@ -22,6 +24,7 @@ import {
   useDepartmentPermissions,
   useRemovePermissionsFromDepartment,
 } from "@/features/departments/use-departments";
+
 import { ManageResourcesModal } from "./resource-manage-modal";
 
 interface PermissionListProps {

@@ -1,6 +1,15 @@
 "use client";
 
 import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import {
   Badge,
   Button,
   Checkbox,
@@ -43,16 +52,8 @@ import {
   type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { AppCenterLoading } from "@/components/loading";
 
+import { AppCenterLoading } from "@/components/loading";
 import {
   useAddPermissionsToRole,
   useDepartmentPermissions,

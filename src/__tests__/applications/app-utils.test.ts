@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import {
   APPLICATIONS_TYPES,
   APPLICATIONS_TYPES_FILTERED,

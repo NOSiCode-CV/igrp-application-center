@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -10,7 +12,6 @@ import {
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import type { ReactNode } from "react";
 
 interface ConfirmDialogProps {
   open: boolean;

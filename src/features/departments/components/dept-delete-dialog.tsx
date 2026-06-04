@@ -1,7 +1,9 @@
 "use client";
 
 import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
+
 import { IGRPDialogDelete } from "@/components/dialog-delete";
+
 import { useDeleteDepartment } from "../use-departments";
 
 interface DepartmentDeleteDialogProps {

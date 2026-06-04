@@ -5,7 +5,9 @@ import {
   TableCell,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
+
 import { getMenuIcon } from "@/lib/utilities";
+
 import type { MenuWithChildren } from "./dept-menu";
 
 export function MenuTreeRow({

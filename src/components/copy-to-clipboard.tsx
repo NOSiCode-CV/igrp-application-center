@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Button,
   IGRPIcon,
@@ -9,7 +11,7 @@ import {
   TooltipTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
+
 import { cn } from "@/lib/utils";
 
 interface CopyToClipboardProps {

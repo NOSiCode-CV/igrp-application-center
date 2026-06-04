@@ -1,12 +1,15 @@
 "use client";
 
-import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useState } from "react";
+
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
 import { useFiles } from "@/features/files/use-files";
 import { useUserProfileActions } from "@/features/users/hooks/use-user-profile-actions";
 import { useCurrentUser } from "@/features/users/use-users";
+
 import { UserProfileActionsMenu } from "./user-profile-actions-menu";
 import { UserProfileHeader } from "./user-profile-header";
 import { UserProfileStatusDialog } from "./user-profile-status-dialog";

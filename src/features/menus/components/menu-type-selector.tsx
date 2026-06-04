@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+
 import { menuTypeSchema } from "@/features/menus/menu-schemas";
 
 interface MenuTypeSelectorProps {

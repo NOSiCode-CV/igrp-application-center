@@ -1,7 +1,9 @@
 "use client";
 
-import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { useDeferredValue, useMemo } from "react";
+
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+
 import { ApplicationCard } from "./app-card";
 
 export function filterApplications(

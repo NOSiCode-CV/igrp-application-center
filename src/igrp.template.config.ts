@@ -3,12 +3,14 @@ import type {
   IGRPConfigArgs,
   IGRPLayoutConfigArgs,
 } from "@igrp/framework-next-types";
+
 import { fontVariables } from "@/lib/fonts";
 import { isPreviewMode } from "@/lib/utils";
 import { getMockApps } from "@/temp/applications/use-mock-apps";
 import { IGRP_DEFAULT_MENU } from "@/temp/menus/menus";
 import { getMockMenus } from "@/temp/menus/use-mock-menus";
 import { getMockUser } from "@/temp/users/use-mock-user";
+
 import { getPackageJson } from "./lib/config/get-pkj";
 import { getRoutes } from "./lib/config/get-routes";
 import { getSessionArgs } from "./lib/config/get-session-args";

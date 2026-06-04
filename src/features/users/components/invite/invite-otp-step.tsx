@@ -1,5 +1,7 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -12,8 +14,8 @@ import {
   InputOTPSlot,
 } from "@igrp/igrp-framework-react-design-system";
 import { Loader2, ShieldCheck } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+
 import { type InviteOtpFormArgs, InviteOtpFormSchema } from "../../user-schema";
 import { InviteStepHeader } from "./invite-step-header";
 

@@ -8,6 +8,7 @@ import {
   type LucideIcon,
   MailX,
 } from "lucide-react";
+
 import { InviteStepHeader } from "./invite-step-header";
 
 export type InviteErrorKind = "invalid" | "mismatch" | "expired";

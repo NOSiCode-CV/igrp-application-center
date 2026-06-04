@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { computeRoleDiff } from "@/features/users/lib/role-diff";
 
 describe("UserRoleDialog — expiresAt via computeRoleDiff", () => {

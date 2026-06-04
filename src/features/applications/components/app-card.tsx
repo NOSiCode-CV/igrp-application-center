@@ -1,5 +1,8 @@
 "use client";
 
+import type { Route } from "next";
+import Image from "next/image";
+
 import {
   Badge,
   IGRPButton,
@@ -10,8 +13,7 @@ import {
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import type { Route } from "next";
-import Image from "next/image";
+
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import {
   APP_DESCRIPTION_FALLBACK,

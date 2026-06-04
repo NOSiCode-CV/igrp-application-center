@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   IGRPButton,
   Input,
@@ -7,7 +9,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { nanoid } from "nanoid";
-import { useEffect, useState } from "react";
+
 import { useUpdateUserMetadata, useUserMetadata } from "../use-users";
 
 interface MetadataRow {

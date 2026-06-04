@@ -1,4 +1,5 @@
 import { IGRPPackageJson } from "@igrp/framework-next-types";
+
 import pkg from "../../../package.json";
 
 export function getPackageJson() {

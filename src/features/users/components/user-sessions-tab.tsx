@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -12,7 +14,7 @@ import {
   Label,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
+
 import { useKillUserSession, useUserSession } from "../use-users";
 
 interface UserSessionsTabProps {

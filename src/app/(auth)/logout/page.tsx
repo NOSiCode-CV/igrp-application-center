@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
-import { useEffect, useRef, useState } from "react";
 
 import { getLogoutUrl } from "@/actions/igrp/auth";
 import { reportError } from "@/lib/report-error";
@@ -36,21 +37,6 @@ function buildLoginUrl(): string {
 // Shape for the IdP end-session request, split so it can be submitted as a
 // top-level POST (params in the body) instead of a GET (params in the URL).
 type EndSessionPost = { action: string; fields: Record<string, string> };
-
-import { getLogoutUrl } from "@/actions/igrp/auth";
-import { reportError } from "@/lib/report-error";
-
-// Module-scoped guard so a remount of this page (e.g. provider re-renders that
-// briefly null out the subtree) cannot kick off a SECOND signOut. A `useRef`
-// is component-instance scoped and gets re-created on remount, which is how
-// the previous guard let two `POST /api/auth/signout` calls slip through in
-// dev.
-let logoutStarted = false;
-
-function buildLoginUrl(): string {
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-  return `${window.location.origin}${basePath}/login`;
-}
 
 export default function LogoutPage() {
   // When set, the end-session POST form is rendered and auto-submitted. We use

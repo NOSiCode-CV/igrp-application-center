@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -27,10 +29,11 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusSchema } from "@/schemas/global";
+
 import {
   type DepartmentArgs,
   departmentSchema,

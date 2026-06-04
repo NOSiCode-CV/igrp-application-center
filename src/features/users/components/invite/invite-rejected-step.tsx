@@ -2,6 +2,7 @@
 
 import { Button } from "@igrp/igrp-framework-react-design-system";
 import { ArrowLeft, X } from "lucide-react";
+
 import { InviteStepHeader } from "./invite-step-header";
 
 interface InviteRejectedStepProps {

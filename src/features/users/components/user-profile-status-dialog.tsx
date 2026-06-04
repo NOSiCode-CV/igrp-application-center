@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogContent,
@@ -11,7 +13,6 @@ import {
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import { Status } from "@igrp/platform-access-management-client-ts";
-import { useState } from "react";
 
 export interface UserProfileStatusDialogProps {
   open: boolean;

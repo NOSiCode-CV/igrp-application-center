@@ -1,8 +1,9 @@
 "use client";
 
+import { createContext, use } from "react";
+
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { createContext, use } from "react";
 
 export interface MenuTreeContextValue {
   app: ApplicationDTO;

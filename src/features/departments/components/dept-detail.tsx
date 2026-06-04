@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import {
   Badge,
   Button,
@@ -8,11 +10,12 @@ import {
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
-import { useMemo } from "react";
+
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { PermissionList } from "@/features/permissions/components/permission-list";
 import { RolesListTree } from "@/features/roles/components/role-tree-list";
 import { getStatusColor } from "@/lib/utilities";
+
 import { MenuPermissions } from "./dept-menu";
 
 interface Props {

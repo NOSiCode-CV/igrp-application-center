@@ -1,16 +1,19 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useReducer } from "react";
+
+import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+
 import {
   useGetUserInvitationByToken,
   useRespondUserInvitation,
   useValidateInvitationEmail,
   useValidateInvitationOtp,
 } from "@/features/users/use-users";
+
 import { InviteCardShell, type InviteStepIndex } from "./invite-card-shell";
 import { InviteEmailStep } from "./invite-email-step";
 import { InviteErrorState } from "./invite-error-state";

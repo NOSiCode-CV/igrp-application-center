@@ -1,7 +1,9 @@
 "use client";
 
-import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { useEffect } from "react";
+
+import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+
 import { reportError } from "@/lib/report-error";
 
 interface Props {

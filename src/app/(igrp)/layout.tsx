@@ -1,5 +1,6 @@
 import { IGRPLayoutFull } from "@igrp/framework-next";
 import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
+
 import { configLayout } from "@/actions/igrp/layout";
 import { createConfig } from "@/igrp.template.config";
 import { verifySession } from "@/lib/dal";

@@ -1,11 +1,12 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   IGRPButton,
   IGRPIcon,
   IGRPInputText,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
 
 export interface UserProfileEditableNameProps {
   name: string;

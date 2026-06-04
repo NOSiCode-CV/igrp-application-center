@@ -1,12 +1,12 @@
-import { withIGRPAuth } from "@igrp/framework-next-auth/config";
-import { assertAuthProviderEnv } from "@igrp/framework-next-auth/providers";
 import { redirect } from "next/navigation";
 
 import { igrpSetAccessClientConfig } from "@igrp/framework-next";
 import { isIgrpError } from "@igrp/framework-next/errors";
+import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { assertAuthProviderEnv } from "@igrp/framework-next-auth/providers";
-import { isAuthBypass } from "@/lib/utils";
+
 import { reportError } from "@/lib/report-error";
+import { isAuthBypass } from "@/lib/utils";
 
 /**
  * Minimal session shape used in bypass mode (IGRP_PREVIEW_MODE or
@@ -18,7 +18,6 @@ export const PREVIEW_SESSION_STUB = {
   accessToken: "preview-token",
   expires: "9999-12-31T23:59:59.999Z",
 } as const;
-
 
 /**
  * Central IGRP auth instance.

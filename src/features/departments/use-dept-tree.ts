@@ -1,5 +1,7 @@
-import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import { useMemo } from "react";
+
+import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
+
 import {
   buildTree,
   type DepartmentWithChildren,

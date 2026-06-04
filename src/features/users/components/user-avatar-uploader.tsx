@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef, useState } from "react";
+
 import {
   cn,
   IGRPIcon,
@@ -9,7 +11,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { useUpdateUser } from "@/features/users/use-users";
 import { getInitials } from "@/lib/utilities";

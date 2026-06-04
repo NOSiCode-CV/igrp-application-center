@@ -6,6 +6,7 @@ import {
   Separator,
 } from "@igrp/igrp-framework-react-design-system";
 import { Building2, Check, Loader2, Mail, Shield, X } from "lucide-react";
+
 import { InviteStepHeader } from "./invite-step-header";
 
 interface CodeDescriptionLike {
