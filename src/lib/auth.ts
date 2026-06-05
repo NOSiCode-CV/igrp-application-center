@@ -181,6 +181,17 @@ export async function serverSession() {
 
     return session;
   } catch (error) {
+    // Next.js static-render bailout: `headers()`/cookies were read during
+    // prerender. This is control flow, not an error — re-throw so Next marks
+    // the route dynamic. Swallowing it both masks the bailout as "no session"
+    // and floods the error reporter at build time.
+    if (
+      error instanceof Error &&
+      (error as { digest?: string }).digest === "DYNAMIC_SERVER_USAGE"
+    ) {
+      throw error;
+    }
+
     // Only swallow the "no session / cookie decode failed" branch. Typed
     // IgrpError instances and IGRPAuthConfigError indicate config-level problems
     // and must surface so error boundaries can render a proper diagnosis.

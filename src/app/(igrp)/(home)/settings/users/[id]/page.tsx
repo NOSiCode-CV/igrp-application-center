@@ -6,8 +6,6 @@ import { getUser } from "@/actions/user";
 import { UserDetailView } from "@/features/users/components/user-detail-view";
 import { makeQueryClient } from "@/providers/query-client";
 
-export const dynamic = "force-dynamic";
-
 export default async function UserPage({
   params,
 }: {
