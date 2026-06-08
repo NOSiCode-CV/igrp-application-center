@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useReducer } from "react";
 
 import { Loader2 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import {
@@ -100,6 +100,15 @@ export function AcceptInvitePage() {
   ]);
 
   const goHome = useCallback(() => router.push("/"), [router]);
+
+  // Sign out and return to this invite link, so the user can re-authenticate
+  // with the account the invitation was actually sent to.
+  const handleSignOut = useCallback(() => {
+    const callbackUrl = token
+      ? `/invite/accept?token=${encodeURIComponent(token)}`
+      : "/";
+    signOut({ callbackUrl });
+  }, [token]);
 
   const dispatchEmailFailure = useCallback((message: string | undefined) => {
     const cls = classifyInviteError(message);
@@ -292,6 +301,7 @@ export function AcceptInvitePage() {
           kind="mismatch"
           description={step.message}
           onBackHome={goHome}
+          onSignOut={handleSignOut}
         />
       ) : null}
 
@@ -324,13 +334,23 @@ export function AcceptInvitePage() {
         />
       ) : null}
 
-      {step.kind === "response" && invitation ? (
-        <InviteResponseStep
-          invitation={toInvitationLike(invitation)}
-          isSubmitting={respond.isPending}
-          onAccept={handleAccept}
-          onReject={handleReject}
-        />
+      {step.kind === "response" ? (
+        invitation ? (
+          <InviteResponseStep
+            invitation={toInvitationLike(invitation)}
+            isSubmitting={respond.isPending}
+            onAccept={handleAccept}
+            onReject={handleReject}
+          />
+        ) : isLoadingInvitation ? (
+          <LoadingState label="A carregar convite..." />
+        ) : (
+          <InviteErrorState
+            kind="invalid"
+            onBackHome={goHome}
+            onSignOut={handleSignOut}
+          />
+        )
       ) : null}
 
       {step.kind === "rejected" ? (

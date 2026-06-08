@@ -1,11 +1,14 @@
-import { redirect } from "next/navigation";
-
 import { getAuthProviderIdFromEnv } from "@igrp/framework-next-auth";
 import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import { carouselItems, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
+import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { cn, isAuthBypass, sanitizeCallbackUrl } from "@/lib/utils";
+
+import { LogoutCompletion } from "./logout-completion";
 
 const { sliderPosition, texts } = loginConfig;
 const { logo, name } = siteConfig;
@@ -20,6 +23,17 @@ export default async function AuthPage({
   // rendering a login form that would only 404 on submit.
   if (isAuthBypass()) {
     redirect("/");
+  }
+
+  // Deferred logout (Option A): the logout page set this marker and left for
+  // the IdP without clearing the local session. The browser is now back on
+  // /login (the IdP's redirect-back = confirmation), or the middleware backstop
+  // sent us here with a still-live session. Either way, complete the teardown:
+  // render LogoutCompletion (it runs signOut, clears the marker, reloads) and
+  // skip the login form until that round-trip finishes.
+  const cookieStore = await cookies();
+  if (cookieStore.has(LOGOUT_PENDING_COOKIE)) {
+    return <LogoutCompletion />;
   }
 
   const { callbackUrl } = await searchParams;

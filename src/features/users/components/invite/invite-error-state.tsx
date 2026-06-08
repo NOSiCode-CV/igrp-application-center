@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   Clock,
+  LogOut,
   type LucideIcon,
   MailX,
 } from "lucide-react";
@@ -17,6 +18,8 @@ interface InviteErrorStateProps {
   kind: InviteErrorKind;
   description?: string;
   onBackHome: () => void;
+  /** When provided, offers a sign-out action so the user can retry with another account. */
+  onSignOut?: () => void;
 }
 
 const COPY: Record<
@@ -50,6 +53,7 @@ export function InviteErrorState({
   kind,
   description,
   onBackHome,
+  onSignOut,
 }: InviteErrorStateProps) {
   const copy = COPY[kind];
 
@@ -62,10 +66,18 @@ export function InviteErrorState({
         description={description ?? copy.description}
         tone="destructive"
       />
-      <Button variant="outline" size="lg" onClick={onBackHome}>
-        <ArrowLeft data-icon="inline-start" />
-        Voltar ao início
-      </Button>
+      <div className="flex flex-col gap-3">
+        {onSignOut ? (
+          <Button size="lg" onClick={onSignOut}>
+            <LogOut data-icon="inline-start" />
+            Terminar sessão e usar outra conta
+          </Button>
+        ) : null}
+        <Button variant="outline" size="lg" onClick={onBackHome}>
+          <ArrowLeft data-icon="inline-start" />
+          Voltar ao início
+        </Button>
+      </div>
     </div>
   );
 }

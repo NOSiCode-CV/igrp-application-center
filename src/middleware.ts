@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
+import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { sanitizeCallbackUrl } from "@/lib/utils";
 
 /** Security headers applied to all responses in production. */
@@ -96,6 +97,24 @@ export async function middleware(request: NextRequest) {
   }
 
   if (isPublicPath(pathname)) return nextWithPath();
+
+  // Logout backstop (Option A): a `logout_pending` marker means a logout left
+  // for the IdP but the local session teardown is still owed (e.g. the IdP
+  // never redirected back). Force the user through /login — which completes the
+  // deferred signOut and clears the marker — instead of letting a still-live
+  // session back into the app. /login and /api/auth/* are already past the
+  // isPublicPath check above, so this only fires on protected routes and cannot
+  // loop. No callbackUrl: a completed logout should land on /login, not bounce
+  // back into the app.
+  if (request.cookies.has(LOGOUT_PENDING_COOKIE)) {
+    console.warn(
+      "[logout][middleware] logout_pending marker on protected route — forcing /login to complete teardown",
+      { pathname },
+    );
+    return withSecurityHeaders(
+      NextResponse.redirect(new URL(`${BASE_PATH}/login`, request.url)),
+    );
+  }
 
   let token: Awaited<ReturnType<typeof auth.getTokenFromRequest>>;
   try {

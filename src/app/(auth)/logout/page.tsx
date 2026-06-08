@@ -5,6 +5,7 @@ import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
 import { useEffect, useRef, useState } from "react";
 
 import { getLogoutUrl } from "@/actions/igrp/auth";
+import { markLogoutPending } from "@/lib/logout-pending";
 import { reportError } from "@/lib/report-error";
 
 // Module-scoped guard so a remount of this page (e.g. provider re-renders that
@@ -15,17 +16,19 @@ import { reportError } from "@/lib/report-error";
 let logoutStarted = false;
 
 // Cap on the IdP end-session URL lookup (which does an OIDC discovery
-// round-trip). Bounding it is what lets the mandatory local signOut() run
-// unconditionally: a slow/hanging IdP can only cost us the OPTIONAL IdP
-// redirect, never the local teardown.
+// round-trip). Bounding it keeps a slow/hanging IdP from stranding the logout:
+// on timeout we fall back to a local-only signOut() + navigation rather than
+// waiting on the IdP redirect that may never come.
 // TRADE-OFF: if your IdP's discovery latency routinely exceeds this, every
 // logout degrades to local-only (the IdP SSO session then persists). Tune to
 // sit just above real-world discovery latency.
 const LOOKUP_TIMEOUT_MS = 3000;
 
-// Last-resort watchdog. Only fires if signOut() ITSELF hangs — the lookup
-// above is already bounded by LOOKUP_TIMEOUT_MS, so it can no longer stall the
-// effect this long. MUST be greater than LOOKUP_TIMEOUT_MS.
+// Last-resort watchdog for a hung local signOut() on the no-IdP fallback path
+// (it is awaited while this timer is still armed). The IdP-POST path clears
+// this timer before handing off to the form-submit effect, so a wedged submit
+// there is NOT covered — same as before this change. MUST be greater than
+// LOOKUP_TIMEOUT_MS.
 const FALLBACK_TIMEOUT_MS = 8000;
 
 function buildLoginUrl(): string {
@@ -162,34 +165,23 @@ export default function LogoutPage() {
         clearTimeout(lookupTimer);
       }
 
-      // The one step that must never be skipped: clear the local NextAuth
-      // session. Isolated in its own try so a rejection still falls through to
-      // the navigation below rather than leaving the spinner up forever.
-      try {
-        console.log(
-          "[logout][client] clearing local NextAuth session (signOut)…",
-        );
-        await signOut({ redirect: false });
-        console.log("[logout][client] local signOut complete");
-      } catch (error) {
-        console.error("[logout][client] signOut threw", error);
-        reportError(error, { segment: "(auth)/logout" });
-      }
-
-      clearTimeout(fallbackTimeout);
+      // We have NOT torn down the local session yet. Decide the path.
       if (settled) {
+        clearTimeout(fallbackTimeout);
         console.log(
-          "[logout][client] already settled after signOut — no further navigation",
+          "[logout][client] already settled before teardown — no further action",
         );
         return;
       }
 
       if (endSessionUrl) {
-        // Commit to the IdP-POST path: mark settled so the fallback timer /
-        // hardNavigate can no longer fire, then split the URL into a bare
-        // endpoint (form action) + params (hidden fields) and let the render
-        // below auto-submit it.
+        // IdP round-trip path: DEFER the local signOut(). The IdP's redirect
+        // back to /login is our confirmation, and LogoutCompletion runs
+        // signOut() there. Set the marker so that landing — and the middleware
+        // backstop, if the browser never returns — knows a teardown is owed.
         settled = true;
+        clearTimeout(fallbackTimeout);
+        markLogoutPending();
         const url = new URL(endSessionUrl);
         // Endpoint + param NAMES only — the values include id_token_hint.
         console.log("[logout][client] POSTing to IdP end-session endpoint", {
@@ -203,12 +195,29 @@ export default function LogoutPage() {
           action: `${url.origin}${url.pathname}`,
           fields: Object.fromEntries(url.searchParams),
         });
-      } else {
-        console.warn(
-          "[logout][client] no end-session URL — IdP SSO session may persist; falling back to /login",
-        );
-        hardNavigate(buildLoginUrl());
+        return;
       }
+
+      // No IdP round-trip possible (no token / no end_session_endpoint / lookup
+      // timed out). There is nothing to confirm, so clear the local session
+      // right here — exactly the previous behaviour. signOut() runs while the
+      // watchdog is still armed so a hang is still covered.
+      try {
+        console.log(
+          "[logout][client] no end-session URL — clearing local NextAuth session (signOut)…",
+        );
+        await signOut({ redirect: false });
+        console.log("[logout][client] local signOut complete");
+      } catch (error) {
+        console.error("[logout][client] signOut threw", error);
+        reportError(error, { segment: "(auth)/logout" });
+      }
+
+      clearTimeout(fallbackTimeout);
+      console.warn(
+        "[logout][client] IdP SSO session may persist; falling back to /login",
+      );
+      hardNavigate(buildLoginUrl());
     })();
   }, []);
 
