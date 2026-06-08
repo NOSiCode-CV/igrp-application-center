@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
+import { useEffect, useRef, useState } from "react";
 
 import { getLogoutUrl } from "@/actions/igrp/auth";
 import { reportError } from "@/lib/report-error";
@@ -31,7 +30,19 @@ const FALLBACK_TIMEOUT_MS = 8000;
 
 function buildLoginUrl(): string {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-  return `${window.location.origin}${basePath}/login`;
+  const url = `${window.location.origin}${basePath}/login`;
+  // [logout] This is what we send to the IdP as `post_logout_redirect_uri`. It
+  // is derived from the LIVE browser origin — so on a domain other than
+  // http://localhost:3000 this becomes e.g. https://your-domain/<base>/login.
+  // The IdP (Spring AS) only redirects back when this exact string is registered
+  // in the client's postLogoutRedirectUris. Compare this against what you have
+  // registered on the auth server.
+  console.log("[logout][client] buildLoginUrl", {
+    origin: window.location.origin,
+    basePath,
+    postLogoutRedirectUri: url,
+  });
+  return url;
 }
 
 // Shape for the IdP end-session request, split so it can be submitted as a
@@ -50,16 +61,31 @@ export default function LogoutPage() {
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (logoutStarted) return;
+    if (logoutStarted) {
+      console.log("[logout][client] effect skipped — logout already started");
+      return;
+    }
     logoutStarted = true;
+    console.log("[logout][client] logout flow started", {
+      href: window.location.href,
+      origin: window.location.origin,
+    });
 
     // Single source of truth for "we've already committed to navigating away".
     // Shared by the fallback timer, the async logout body, and the IdP-POST
     // branch so only ONE of them ever triggers a navigation.
     let settled = false;
     const hardNavigate = (url: string) => {
-      if (settled) return;
+      if (settled) {
+        console.log("[logout][client] hardNavigate ignored — already settled", {
+          url,
+        });
+        return;
+      }
       settled = true;
+      console.log("[logout][client] hardNavigate → replacing location", {
+        url,
+      });
       // Hard navigation rather than `router.replace`: logout must tear down
       // every client cache/provider that still holds the now-dead session.
       //
@@ -85,10 +111,12 @@ export default function LogoutPage() {
     // prevents a double navigation, so a surviving timer that fires after a
     // successful navigate is a harmless no-op (the page has already
     // hard-navigated away).
-    const fallbackTimeout = setTimeout(
-      () => hardNavigate(buildLoginUrl()),
-      FALLBACK_TIMEOUT_MS,
-    );
+    const fallbackTimeout = setTimeout(() => {
+      console.warn(
+        "[logout][client] FALLBACK watchdog fired — signOut() appears hung; forcing navigation to /login",
+      );
+      hardNavigate(buildLoginUrl());
+    }, FALLBACK_TIMEOUT_MS);
 
     (async () => {
       // Best-effort: fetch the end-session URL BEFORE clearing the local
@@ -109,13 +137,23 @@ export default function LogoutPage() {
       let endSessionUrl: string | null = null;
       let lookupTimer: ReturnType<typeof setTimeout> | undefined;
       try {
+        console.log("[logout][client] requesting end-session URL from server…");
         endSessionUrl = await Promise.race([
           getLogoutUrl(buildLoginUrl()),
           new Promise<null>((resolve) => {
-            lookupTimer = setTimeout(() => resolve(null), LOOKUP_TIMEOUT_MS);
+            lookupTimer = setTimeout(() => {
+              console.warn(
+                `[logout][client] end-session lookup timed out after ${LOOKUP_TIMEOUT_MS}ms — proceeding with local-only logout`,
+              );
+              resolve(null);
+            }, LOOKUP_TIMEOUT_MS);
           }),
         ]);
+        console.log("[logout][client] end-session URL lookup resolved", {
+          hasEndSessionUrl: !!endSessionUrl,
+        });
       } catch (error) {
+        console.error("[logout][client] end-session URL lookup threw", error);
         reportError(error, { segment: "(auth)/logout" });
       } finally {
         // Clear the race timer if getLogoutUrl won — otherwise it lingers and
@@ -128,13 +166,23 @@ export default function LogoutPage() {
       // session. Isolated in its own try so a rejection still falls through to
       // the navigation below rather than leaving the spinner up forever.
       try {
+        console.log(
+          "[logout][client] clearing local NextAuth session (signOut)…",
+        );
         await signOut({ redirect: false });
+        console.log("[logout][client] local signOut complete");
       } catch (error) {
+        console.error("[logout][client] signOut threw", error);
         reportError(error, { segment: "(auth)/logout" });
       }
 
       clearTimeout(fallbackTimeout);
-      if (settled) return;
+      if (settled) {
+        console.log(
+          "[logout][client] already settled after signOut — no further navigation",
+        );
+        return;
+      }
 
       if (endSessionUrl) {
         // Commit to the IdP-POST path: mark settled so the fallback timer /
@@ -143,22 +191,22 @@ export default function LogoutPage() {
         // below auto-submit it.
         settled = true;
         const url = new URL(endSessionUrl);
-        if (process.env.NODE_ENV !== "production") {
-          console.debug(
-            "[logout] posting to end-session endpoint",
-            `${url.origin}${url.pathname}`,
-          );
-        }
+        // Endpoint + param NAMES only — the values include id_token_hint.
+        console.log("[logout][client] POSTing to IdP end-session endpoint", {
+          action: `${url.origin}${url.pathname}`,
+          fieldKeys: [...url.searchParams.keys()],
+          postLogoutRedirectUri: url.searchParams.get(
+            "post_logout_redirect_uri",
+          ),
+        });
         setEndSessionPost({
           action: `${url.origin}${url.pathname}`,
           fields: Object.fromEntries(url.searchParams),
         });
       } else {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            "[logout] no end-session URL — IdP SSO session may persist; falling back to /login",
-          );
-        }
+        console.warn(
+          "[logout][client] no end-session URL — IdP SSO session may persist; falling back to /login",
+        );
         hardNavigate(buildLoginUrl());
       }
     })();
@@ -169,7 +217,17 @@ export default function LogoutPage() {
   // from an effect (rather than building the form imperatively) keeps React in
   // charge of the DOM node and is SSR-safe.
   useEffect(() => {
-    if (endSessionPost) formRef.current?.requestSubmit();
+    if (endSessionPost) {
+      // After this submit, the browser navigates to the IdP. If the IdP shows
+      // its own "logged out" / error page instead of returning to
+      // post_logout_redirect_uri, the cause is on the auth server: the redirect
+      // URI above is not registered for this domain (or id_token_hint is stale).
+      console.log(
+        "[logout][client] auto-submitting end-session form → leaving app for IdP",
+        { action: endSessionPost.action },
+      );
+      formRef.current?.requestSubmit();
+    }
   }, [endSessionPost]);
 
   return (
