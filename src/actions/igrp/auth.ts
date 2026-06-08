@@ -1,7 +1,6 @@
 "use server";
 
 import { buildEndSessionUrl } from "@igrp/framework-next-auth/oidc";
-
 import { auth } from "@/lib/auth";
 
 /**
@@ -66,14 +65,15 @@ export async function getLogoutUrl(
       "[logout][server] buildEndSessionUrl returned null — IdP may not support end_session_endpoint or auth is disabled",
     );
   } else {
-    // Log endpoint + path only — the query carries the id_token_hint, never log it.
+    // SECURITY: `params` includes the FULL id_token_hint (a signed ID token /
+    // credential). This dumps it in cleartext to the server console/log sink —
+    // strip this log (or share its output) only while actively debugging.
     const parsed = new URL(url);
+    const params = Object.fromEntries(parsed.searchParams);
     console.log("[logout][server] end-session URL built", {
       endpoint: `${parsed.origin}${parsed.pathname}`,
-      paramKeys: [...parsed.searchParams.keys()],
-      postLogoutRedirectUri: parsed.searchParams.get(
-        "post_logout_redirect_uri",
-      ),
+      params, // ← full values, incl. id_token_hint (sensitive)
+      fullUrl: url, // ← the exact URL the form will POST to
     });
   }
 
