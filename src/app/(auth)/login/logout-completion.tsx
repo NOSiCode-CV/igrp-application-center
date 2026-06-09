@@ -29,10 +29,8 @@ export function LogoutCompletion() {
     startedRef.current = true;
 
     (async () => {
-      console.log("[logout][client] completing deferred signOut on /login…");
       try {
         await signOut({ redirect: false });
-        console.log("[logout][client] deferred signOut complete");
       } catch (error) {
         console.error("[logout][client] deferred signOut threw", error);
         reportError(error, { segment: "(auth)/login:logout-completion" });

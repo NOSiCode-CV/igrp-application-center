@@ -461,6 +461,155 @@
         "src/lib/dal.ts": "567d058a50c8f66c",
         "package.json": "685d80e3b443b02a"
       }
+    },
+    {
+      "id": "14-deferred-logout-and-cleanup",
+      "appliedAt": "2026-06-09T23:52:00.974Z",
+      "cliVersion": "0.1.0-beta.125",
+      "manifestHash": "a54fcd0150c31d62",
+      "undo": [
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "next.config.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/actions/igrp/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/login/logout-completion.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/login/page.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(auth)/logout/page.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(igrp)/error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/(igrp)/layout.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.delete",
+          "path": "src/app/(igrp)/page.tsx"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/global-error.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/app/not-found.tsx",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/auth.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/errors.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/lib/logout-pending.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "file.write",
+          "mode": "replace",
+          "path": "src/middleware.ts",
+          "from": "__undo__"
+        },
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.149",
+            "@igrp/framework-next-auth": "0.1.0-beta.139",
+            "@igrp/framework-next-types": "0.1.0-beta.141",
+            "@igrp/framework-next-ui": "0.1.0-beta.148"
+          }
+        }
+      ],
+      "fileHashes": {
+        "next.config.ts": "f1899017d2a5f2ae",
+        "src/actions/igrp/auth.ts": "576576a496d9eb0a",
+        "src/app/(auth)/error.tsx": "2f880dbd12b8318a",
+        "src/app/(auth)/login/logout-completion.tsx": "a52787859df13e4a",
+        "src/app/(auth)/login/page.tsx": "1a4212fa729a9d38",
+        "src/app/(auth)/logout/page.tsx": "3a3652949877459c",
+        "src/app/(igrp)/error.tsx": "0c1b433b14296a04",
+        "src/app/(igrp)/layout.tsx": "1578bb73cf87e4d2",
+        "src/app/error.tsx": "838e089958208e91",
+        "src/app/global-error.tsx": "85899775351fe045",
+        "src/app/not-found.tsx": "dc912ac36c8e7768",
+        "src/lib/auth.ts": "d01fb2e0c293e58d",
+        "src/lib/errors.ts": "f143f6d51903b8c4",
+        "src/lib/logout-pending.ts": "564b3deb5495055a",
+        "src/middleware.ts": "6564ac5934266b0e",
+        "package.json": "33bbf052c1486027"
+      }
+    },
+    {
+      "id": "15-resync-beta149",
+      "appliedAt": "2026-06-09T23:52:04.940Z",
+      "cliVersion": "0.1.0-beta.125",
+      "manifestHash": "b7c95bb649bfc7db",
+      "undo": [
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.1.0-beta.148",
+            "@igrp/framework-next-ui": "0.1.0-beta.147"
+          }
+        }
+      ],
+      "fileHashes": {
+        "package.json": "f64768425124c4a6"
+      }
     }
   ]
 }

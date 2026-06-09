@@ -165,10 +165,6 @@ export async function serverSession() {
           sessionError,
           "→ user will be treated as unauthenticated; check OIDC refresh token / issuer logs",
         );
-      } else if (session === null) {
-        console.debug(
-          "[serverSession] no session (unauthenticated request, or cookie failed to decode)",
-        );
       }
     }
 

@@ -12,10 +12,8 @@
 // hands logging off to `reportError`, which in prod is the single hook to
 // wire a real observability backend into.
 
-import { useEffect } from "react";
-
 import { IGRPGlobalError } from "@igrp/framework-next-ui";
-
+import { useEffect } from "react";
 import { resolveErrorCopy } from "@/config/error-messages";
 import { reportError } from "@/lib/report-error";
 
