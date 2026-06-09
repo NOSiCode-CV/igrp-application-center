@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useReducer } from "react";
 
 import { Loader2 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import {
@@ -101,14 +101,14 @@ export function AcceptInvitePage() {
 
   const goHome = useCallback(() => router.push("/"), [router]);
 
-  // Sign out and return to this invite link, so the user can re-authenticate
-  // with the account the invitation was actually sent to.
+  // Wrong account: route through /logout so the IdP SSO session is actually
+  // terminated (a plain next-auth signOut clears only the local session, and
+  // the IdP would silently re-authenticate the same wrong account on return,
+  // trapping the user). After the full logout + fresh login the user lands on
+  // the app home and re-opens the invite link as the correct account.
   const handleSignOut = useCallback(() => {
-    const callbackUrl = token
-      ? `/invite/accept?token=${encodeURIComponent(token)}`
-      : "/";
-    signOut({ callbackUrl });
-  }, [token]);
+    router.push("/logout");
+  }, [router]);
 
   const dispatchEmailFailure = useCallback((message: string | undefined) => {
     const cls = classifyInviteError(message);

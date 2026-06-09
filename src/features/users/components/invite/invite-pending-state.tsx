@@ -2,11 +2,13 @@
 
 import { Button } from "@igrp/igrp-framework-react-design-system";
 import { LogOut, Mail } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import { InviteStepHeader } from "./invite-step-header";
 
 export function InvitePendingState() {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
@@ -18,7 +20,7 @@ export function InvitePendingState() {
       <Button
         variant="outline"
         size="lg"
-        onClick={() => signOut({ callbackUrl: "/" })}
+        onClick={() => router.push("/logout")}
       >
         <LogOut data-icon="inline-start" />
         Terminar sessão
