@@ -81,3 +81,35 @@ export function resolveErrorCopy(error: unknown): ErrorCopy {
 
   return FALLBACK_COPY;
 }
+
+// ── Status-code error pages (401/403/404/500/503) ────────────────────────────
+
+export const STATUS_ERROR_COPY: Record<number, ErrorCopy> = {
+  401: {
+    title: "Acesso não autorizado",
+    description:
+      "Inicie sessão com as credenciais adequadas para aceder a este recurso.",
+  },
+  403: {
+    title: "Acesso negado",
+    description: "Não tem permissões para ver este recurso.",
+  },
+  404: {
+    title: "Página não encontrada",
+    description: "A página que procura não existe ou foi removida.",
+  },
+  500: {
+    title: "Ocorreu um erro",
+    description: "Pedimos desculpa pelo incómodo. Tente novamente mais tarde.",
+  },
+  503: {
+    title: "Serviço em manutenção",
+    description:
+      "O serviço não está disponível de momento. Voltaremos em breve.",
+  },
+};
+
+export const FALLBACK_STATUS_COPY: ErrorCopy = {
+  title: "Ocorreu um erro",
+  description: "Tente novamente. Se o problema persistir, contacte o suporte.",
+};
