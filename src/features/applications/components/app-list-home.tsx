@@ -465,7 +465,7 @@ export function ApplicationsListHome() {
       />
 
       {/* Hero — always visible, doesn't scroll. */}
-      <div className="shrink-0">
+      {/* <div className="shrink-0">
         <header className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 md:p-6">
           <div
             aria-hidden
@@ -537,15 +537,10 @@ export function ApplicationsListHome() {
                   <Skeleton className="h-4 w-80 mt-0.5" />
                 </div>
               )}
-            </div>
-
-            {/* <HeroStatsWidget
-              appCount={visibleApps.length}
-              favoriteCount={favorites?.length ?? 0}
-            /> */}
+            </div>            
           </div>
         </header>
-      </div>
+      </div> */}
 
       <section className="flex-1 min-h-0 flex flex-col rounded-2xl border border-border/60 bg-card overflow-hidden">
         <div className="shrink-0 px-4 py-3 border-b border-border/60 bg-card">
