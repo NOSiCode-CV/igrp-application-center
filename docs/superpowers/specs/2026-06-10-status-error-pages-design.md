@@ -68,8 +68,15 @@ framework's `AppError`).
   muted description, two buttons — "Voltar" (router.back()) and
   "Início" (link to home). Uses IGRP design-system components
   (`IGRPButton`) and Tailwind, consistent with existing error UIs.
-- Props: `status?: number`, `message?: string` (API message overrides the
-  default description when present).
+- Props: `status?: number`, `message?: string`.
+- The default copy (title + description) for the status is ALWAYS shown.
+  When an API message is present, it is rendered additionally, smaller and
+  visually secondary, below the default description (e.g. `text-xs
+  text-muted-foreground`). It never replaces the default copy.
+- The API message is suppressed when it merely duplicates the default copy
+  (i.e. `extractApiError` fell back to `getDefaultErrorMessage(status)`,
+  which would repeat the same idea) — compare against the known default
+  strings and skip rendering in that case.
 
 Copy lives in `src/config/error-messages.ts`:
 
@@ -124,8 +131,9 @@ resources may degrade gracefully (documented per page during planning).
 - Unit: `parseHttpStatusDigest` round-trip with `HttpStatusError`
   (status present, absent, malformed digest).
 - Unit: `toActionError` extracts message + status from SDK-shaped errors.
-- Component: `StatusErrorPage` renders correct copy per status and
-  prefers the API message when given.
+- Component: `StatusErrorPage` always renders the default copy per
+  status, shows the API message as secondary text when given, and hides
+  it when it duplicates the default message.
 - Manual: force a 401/403/500 from the access-manager (expired token /
   removed permission / stopped backend) and verify each page renders in
   place in the settings segments.
