@@ -170,3 +170,34 @@ function getDefaultErrorMessage(status?: number): string {
       return "Erro na operação";
   }
 }
+
+/** Every string `getDefaultErrorMessage` can produce. */
+const DEFAULT_API_ERROR_MESSAGES = new Set(
+  [400, 401, 403, 404, 409, 422, 429, 500, 502, 503, undefined].map(
+    getDefaultErrorMessage,
+  ),
+);
+
+/**
+ * True when `message` is one of the generic per-status fallbacks produced
+ * by `extractApiError`, i.e. NOT a real message from the API. Used by the
+ * status error page to avoid repeating the default copy twice.
+ */
+export function isDefaultApiErrorMessage(message: string): boolean {
+  return DEFAULT_API_ERROR_MESSAGES.has(message);
+}
+
+/**
+ * Builds the failure payload for `ActionResult`: the human message from
+ * `extractApiError` plus the raw HTTP status when the SDK error carries one.
+ */
+export function toActionError(error: unknown): {
+  error: string;
+  status?: number;
+} {
+  const e = (error ?? {}) as ApiErrorLike;
+  return {
+    error: extractApiError(error),
+    status: typeof e.status === "number" ? e.status : undefined,
+  };
+}
