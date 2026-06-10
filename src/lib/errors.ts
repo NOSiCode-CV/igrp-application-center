@@ -53,3 +53,49 @@ export class AuthError extends Error {
     Object.setPrototypeOf(this, AuthError.prototype);
   }
 }
+
+// ── HTTP status errors (status-aware error pages) ────────────────────────────
+
+const HTTP_STATUS_DIGEST_PREFIX = "HTTP_STATUS_";
+
+/**
+ * Thrown by server pages when an access-manager fetch fails with an HTTP
+ * status. Next.js redacts `error.message` across the server→client boundary
+ * in production but leaves `error.digest` untouched (same trick as
+ * `AppError`), so the status and public message are encoded into `digest`
+ * as `HTTP_STATUS_<status>|<message>` and recovered client-side by
+ * `parseHttpStatusDigest` inside an `error.tsx` boundary.
+ */
+export class HttpStatusError extends Error {
+  digest: string;
+
+  constructor(
+    public readonly status?: number,
+    publicMessage?: string,
+  ) {
+    super(publicMessage || `HTTP ${status ?? "error"}`);
+    this.name = "HttpStatusError";
+    this.digest = `${HTTP_STATUS_DIGEST_PREFIX}${status ?? ""}|${publicMessage ?? ""}`;
+    Object.setPrototypeOf(this, HttpStatusError.prototype);
+  }
+}
+
+/**
+ * Recovers `{ status, message }` from a digest written by `HttpStatusError`.
+ * Returns `null` for any other digest (AppError digests, React digests, …)
+ * so callers can fall through to their existing error handling.
+ */
+export function parseHttpStatusDigest(
+  digest: string | undefined,
+): { status?: number; message?: string } | null {
+  if (!digest?.startsWith(HTTP_STATUS_DIGEST_PREFIX)) return null;
+  const rest = digest.slice(HTTP_STATUS_DIGEST_PREFIX.length);
+  const sep = rest.indexOf("|");
+  if (sep === -1) return null;
+  const statusRaw = rest.slice(0, sep);
+  const status = statusRaw ? Number(statusRaw) : undefined;
+  return {
+    status: Number.isFinite(status) ? status : undefined,
+    message: rest.slice(sep + 1) || undefined,
+  };
+}
