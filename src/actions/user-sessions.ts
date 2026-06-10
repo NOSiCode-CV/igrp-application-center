@@ -2,7 +2,7 @@
 
 import type { SessionResponseDTO } from "@igrp/platform-access-management-client-ts";
 
-import { extractApiError } from "@/lib/utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
@@ -20,7 +20,7 @@ export async function getUserSession(
       "[user-session] Erro ao carregar sessão do utilizador:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -38,6 +38,6 @@ export async function killUserSession(
     return { success: true, data: undefined };
   } catch (error) {
     console.error("[user-session] Erro ao terminar sessão:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }

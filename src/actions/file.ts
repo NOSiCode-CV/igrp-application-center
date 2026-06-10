@@ -5,7 +5,7 @@ import type {
   UploadFileOptions,
 } from "@igrp/platform-access-management-client-ts";
 
-import { extractApiError } from "@/lib/utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
@@ -20,7 +20,7 @@ export async function getFileUrl(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[files-get] Não foi possível obter a imagem:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -46,7 +46,7 @@ export async function uploadPublicFile(
       "[files-upload-public] Não foi possível carregar o ficheiro:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -64,6 +64,6 @@ export async function uploadPrivateFile(
       "[files-upload-private] Não foi possível carregar o ficheiro:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }

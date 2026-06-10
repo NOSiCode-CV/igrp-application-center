@@ -12,7 +12,7 @@ import type {
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
 
-import { extractApiError } from "@/lib/utilities";
+import { extractApiError, toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { AccessClient, ActionResult, SdkData } from "./types";
@@ -25,7 +25,7 @@ export async function getDepartments(): Promise<ActionResult<DepartmentDTO[]>> {
     return { success: true, data: result.data as DepartmentDTO[] };
   } catch (error) {
     console.error("[departments] Erro ao carregar departamentos:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -39,7 +39,7 @@ export async function createDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[create-department] Erro ao criar departamento:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -54,7 +54,7 @@ export async function updateDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[update-department] Erro ao atualizar departamento:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -68,7 +68,7 @@ export async function deleteDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[delete-department] Erro ao eliminar departamento:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -82,7 +82,7 @@ export async function getDepartmentByCode(
     return { success: true, data: result.data as DepartmentDTO };
   } catch (error) {
     console.error("[department-by-code] Erro ao obter departamento:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -103,7 +103,7 @@ export async function getAvailableApplications(
     return { success: true, data: result.data as ApplicationDTO[] };
   } catch (error) {
     console.error("[department-available-apps] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -117,7 +117,7 @@ export async function getDepartmentApplications(
     return { success: true, data: result.data as ApplicationDTO[] };
   } catch (error) {
     console.error("[department-applications] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -134,7 +134,7 @@ export async function addApplicationsToDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[department-add-applications] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -151,7 +151,7 @@ export async function removeApplicationsFromDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[department-remove-applications] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -178,7 +178,7 @@ export async function getAvailableMenus(
     return { success: true, data: result.data as MenuEntryDTO[] };
   } catch (error) {
     console.error("[department-available-menus] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -203,7 +203,7 @@ export async function getDepartmentMenus(
     return { success: true, data: result.data as MenuEntryDTO[] };
   } catch (error) {
     console.error("[department-menus] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -222,7 +222,7 @@ export async function addMenusToDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[department-add-menus] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -241,7 +241,7 @@ export async function removeMenusFromDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[department-remove-menus] Erro:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -257,7 +257,7 @@ export async function getRoles(
     return { success: true, data: result.data as RoleDTO[] };
   } catch (error) {
     console.error("[roles] Erro ao obter perfis:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -272,7 +272,7 @@ export async function createRole(
     return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error("[create-roles] Erro ao criar perfil:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -295,7 +295,7 @@ export async function updateRole(
       `[update-roles] Erro ao atualizar perfil ${roleCode}:`,
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -317,7 +317,7 @@ export async function deleteRole(
       return { success: true, data: { code: roleCode } };
     }
     console.error(`[delete-role] Erro ao eliminar perfil ${roleCode}:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -336,7 +336,7 @@ export async function addResourcesToDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[add-resources-department] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -354,7 +354,7 @@ export async function removeResourcesFromDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[remove-resources-department] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -375,7 +375,7 @@ export async function getAvailableResources(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[available-resources-department] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -397,7 +397,7 @@ export async function getDepartmentResources(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[department-resources] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -421,7 +421,7 @@ export async function getDepartmentPermissions(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[department-permissions] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -445,7 +445,7 @@ export async function getAvailablePermissions(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[available-department-permissions] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -463,7 +463,7 @@ export async function addPermissionsToDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[add-department-permissions] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -481,7 +481,7 @@ export async function removePermissionsFromDepartment(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[remove-department-permissions] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -502,7 +502,7 @@ export async function addPermissionsToRole(
     return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error(`[add-permissions-role] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -522,7 +522,7 @@ export async function removePermissionsFromRole(
     return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error(`[remove-permissions-role] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -541,7 +541,7 @@ export async function getPermissionsByRole(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[permissions-by-role] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -563,6 +563,6 @@ export async function getAvailablePermissionsForRole(
     return { success: true, data: result.data };
   } catch (error) {
     console.error(`[available-permissions-role] Erro:`, error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }

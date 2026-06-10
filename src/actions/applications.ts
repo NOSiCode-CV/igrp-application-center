@@ -18,7 +18,7 @@ import {
   mapperListMenusCRUD,
   mapperMenuCRUD,
 } from "@/features/menus/menu-mapper";
-import { extractApiError } from "@/lib/utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
@@ -33,7 +33,7 @@ export async function getApplications(
     return { success: true, data: result.data as ApplicationDTO[] };
   } catch (error) {
     console.error("[apps] Não foi possível obter os dados:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -50,7 +50,7 @@ export async function getApplicationByCode(
       "[app-by-code] Não foi possível obter os dados da aplicação:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -64,7 +64,7 @@ export async function createApplication(
     return { success: true, data: result.data as ApplicationDTO };
   } catch (error) {
     console.error("[app-create] Não foi possível criar à aplicação:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -82,7 +82,7 @@ export async function updateApplication(
       "[app-update] Não foi possível atualizar à aplicação:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -101,7 +101,7 @@ export async function getMenus(
       "[menus-get]: Erro ao carregar os menus da aplicação:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -117,7 +117,7 @@ export async function createMenu(
     return { success: true, data: app };
   } catch (error) {
     console.error("[menu-create] Não foi possível criar menu:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -138,7 +138,7 @@ export async function updateMenu(
     return { success: true, data: app };
   } catch (error) {
     console.error("[menu-update] Não foi possível atualizar menu:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -153,7 +153,7 @@ export async function deleteMenu(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[menu-delete] Não foi possível eliminar menu:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -177,7 +177,7 @@ export async function removeRolesFromMenu(
       "[menu-remove-roles] Não foi possível remover os papéis do menu:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -201,6 +201,6 @@ export async function addRolesToMenu(
       "[menu-assign-roles] Não foi possível atribuir os papéis ao menu:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }

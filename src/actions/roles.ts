@@ -2,7 +2,7 @@
 
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
-import { extractApiError } from "@/lib/utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
@@ -20,7 +20,7 @@ export async function getRoleByCode(
       `[role-by-code] Não foi possível obter dado do perfil ${name}:`,
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -35,6 +35,6 @@ export async function getRoleById(id: number): Promise<ActionResult<RoleDTO>> {
       `[role-by-id] Não foi possível obter dado do perfil ${id}:`,
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }

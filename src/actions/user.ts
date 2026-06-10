@@ -12,7 +12,7 @@ import type {
   UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
 
-import { extractApiError } from "@/lib/utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { AccessClient, ActionResult, SdkData } from "./types";
@@ -27,7 +27,7 @@ export async function getUsers(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[users] Erro ao carregar lista de utilizadores:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -42,7 +42,7 @@ export async function getCurrentUser(): Promise<ActionResult<IGRPUserDTO>> {
       "[user-current] Erro ao carregar os dados do utilizador atual:",
       error,
     );
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -56,7 +56,7 @@ export async function inviteUser(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-invite] Erro ao enviar convite ao utilizador:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -76,7 +76,7 @@ export async function addRolesToUser(
     return { success: true, data: result.data };
   } catch (error: unknown) {
     console.error("[user-add-roles] Erro ao adicionar perfis:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -96,7 +96,7 @@ export async function removeRolesFromUser(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-remove-roles] Erro ao remover perfis:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -107,7 +107,7 @@ export async function getCurrentUserRoles(): Promise<ActionResult<RoleDTO[]>> {
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter roles:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -121,7 +121,7 @@ export async function getUserRoles(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-role] Erro ao obter perfis de utilizador:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -136,7 +136,7 @@ export async function updateUser(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-update] Erro ao editar utilizador:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -150,7 +150,7 @@ export async function getCurrentUserDepartments(): Promise<
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-departments] Erro ao carregar departamentos:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -164,7 +164,7 @@ export async function getCurrentUserApplications(): Promise<
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-applications] Erro ao obter aplicações:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -178,7 +178,7 @@ export async function getUserApplications(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-applications] Erro ao obter aplicações:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -192,7 +192,7 @@ export async function getUserDepartments(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-departments] Erro ao obter departamentos:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -204,7 +204,7 @@ export async function getUser(id: string): Promise<ActionResult<IGRPUserDTO>> {
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter utilizador:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -219,7 +219,7 @@ export async function getCurrentUserFavoriteApplications(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter favorites applications:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -233,7 +233,7 @@ export async function addCurrentUserFavoriteApplication(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao adicionar favorite application:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -247,7 +247,7 @@ export async function removeCurrentUserFavoriteApplication(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao remover favorite application:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -265,7 +265,7 @@ export async function getCurrentUserRecentApplications(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter recent applications:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -280,7 +280,7 @@ export async function registerCurrentUserApplicationAccess(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao registo de acesso:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -294,7 +294,7 @@ export async function getUserInvitations(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter convites:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -310,7 +310,7 @@ export async function resendUserInvitation(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao reenviar convite:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -327,7 +327,7 @@ export async function respondUserInvitation(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao responder convite:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -343,7 +343,7 @@ export async function cancelUserInvitation(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao cancelar convite:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -358,7 +358,7 @@ export async function updateUserStatus(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao atualizar status:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -374,7 +374,7 @@ export async function getUserInvitationByToken(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter dados convite:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -388,7 +388,7 @@ export async function getCurrentUserActiveRole(): Promise<
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao obter active role:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -404,7 +404,7 @@ export async function setCurrentUserActiveRole(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-get] Erro ao definir active role:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -420,7 +420,7 @@ export async function validateInvitationEmail(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[invitation] Erro ao validar email de convite:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -436,7 +436,7 @@ export async function validateInvitationOtp(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[invitation] Erro ao validar código OTP de convite:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -450,7 +450,7 @@ export async function getUserMetadata(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-metadata] Erro ao carregar metadados:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }
 
@@ -465,6 +465,6 @@ export async function updateUserMetadata(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-metadata] Erro ao atualizar metadados:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }

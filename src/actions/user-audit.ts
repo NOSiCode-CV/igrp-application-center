@@ -6,7 +6,7 @@ import type {
   SecurityAuditLogDTO,
 } from "@igrp/platform-access-management-client-ts";
 
-import { extractApiError } from "@/lib/utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
@@ -22,6 +22,6 @@ export async function getUserAuditLogs(
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[user-audit] Erro ao carregar logs de auditoria:", error);
-    return { success: false, error: extractApiError(error) };
+    return { success: false, ...toActionError(error) };
   }
 }

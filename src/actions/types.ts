@@ -6,7 +6,7 @@ import type { getClientAccess } from "./access-client";
  */
 export type ActionResult<T> =
   | { success: true; data: T }
-  | { success: false; error: string };
+  | { success: false; error: string; status?: number };
 
 /**
  * Resolves the SDK access-client type once so action files can extract
