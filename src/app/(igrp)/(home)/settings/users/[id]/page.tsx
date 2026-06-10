@@ -1,9 +1,8 @@
-import { notFound } from "next/navigation";
-
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { getUser } from "@/actions/user";
 import { UserDetailView } from "@/features/users/components/user-detail-view";
+import { HttpStatusError } from "@/lib/errors";
 import { makeQueryClient } from "@/providers/query-client";
 
 export const dynamic = "force-dynamic";
@@ -15,18 +14,18 @@ export default async function UserPage({
 }) {
   const { id } = await params;
   const queryClient = makeQueryClient();
-  await queryClient.prefetchQuery({
+  // fetchQuery (unlike prefetchQuery) rethrows the queryFn error, so an
+  // HTTP failure reaches the segment error boundary as a status page.
+  await queryClient.fetchQuery({
     queryKey: ["user", id],
     queryFn: async () => {
       const result = await getUser(id);
-      if (!result.success) throw new Error(result.error);
+      if (!result.success) {
+        throw new HttpStatusError(result.status, result.error);
+      }
       return result.data;
     },
   });
-  // prefetchQuery swallows the error; if the user wasn't loaded, 404.
-  if (!queryClient.getQueryData(["user", id])) {
-    notFound();
-  }
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <UserDetailView id={id} />

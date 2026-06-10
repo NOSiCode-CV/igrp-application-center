@@ -9,6 +9,7 @@ import {
   getCurrentUserRecentApplications,
   getCurrentUserRoles,
 } from "@/actions/user";
+import { HttpStatusError } from "@/lib/errors";
 import { makeQueryClient } from "@/providers/query-client";
 
 export { makeQueryClient };
@@ -22,11 +23,14 @@ export { makeQueryClient };
  */
 export async function prefetchCurrentUserDashboard(client: QueryClient) {
   await Promise.all([
-    client.prefetchQuery({
+    // Primary resource: without the current user the launcher is unusable,
+    // so a failure here surfaces the status error page (fetchQuery throws;
+    // the secondary prefetchQuery calls below degrade gracefully).
+    client.fetchQuery({
       queryKey: ["current-user"],
       queryFn: async () => {
         const r = await getCurrentUser();
-        if (!r.success) throw new Error(r.error);
+        if (!r.success) throw new HttpStatusError(r.status, r.error);
         return r.data;
       },
     }),
