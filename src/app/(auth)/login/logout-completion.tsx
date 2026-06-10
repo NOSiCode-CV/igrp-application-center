@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
-import { useEffect, useRef } from "react";
 
 import { clearLogoutPending } from "@/lib/logout-pending";
 import { reportError } from "@/lib/report-error";

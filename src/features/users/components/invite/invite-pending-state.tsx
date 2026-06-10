@@ -1,8 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { Button } from "@igrp/igrp-framework-react-design-system";
 import { LogOut, Mail } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 import { InviteStepHeader } from "./invite-step-header";
 

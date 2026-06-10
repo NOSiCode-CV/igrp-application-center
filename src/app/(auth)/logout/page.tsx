@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
-import { useEffect, useRef, useState } from "react";
 
 import { getLogoutUrl } from "@/actions/igrp/auth";
 import { markLogoutPending } from "@/lib/logout-pending";

@@ -19,7 +19,6 @@ export {
   type PublicErrorMessage,
   parsePublicDigest,
 } from "@igrp/framework-next/app-error";
-
 export { logger } from "@igrp/framework-next/logger";
 
 // ── Template-specific errors ─────────────────────────────────────────────────

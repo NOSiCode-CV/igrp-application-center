@@ -7,8 +7,10 @@
 // Errors thrown by `(igrp)/layout.tsx` itself propagate higher — the root
 // `error.tsx` / `global-error.tsx` catches those.
 
-import { IGRPSegmentError } from "@igrp/framework-next-ui";
 import { useEffect } from "react";
+
+import { IGRPSegmentError } from "@igrp/framework-next-ui";
+
 import { resolveErrorCopy } from "@/config/error-messages";
 import { reportError } from "@/lib/report-error";
 

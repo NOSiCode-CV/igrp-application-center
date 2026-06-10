@@ -74,7 +74,7 @@ const nextConfig: NextConfig = {
       "@tanstack/react-virtual",
       "lucide-react",
       "radix-ui",
-      "shadcn",      
+      "shadcn",
     ],
   },
 };

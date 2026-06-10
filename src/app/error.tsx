@@ -7,8 +7,10 @@
 // the `(igrp)` layout group. Errors thrown by the ROOT layout itself bubble
 // past this file to `global-error.tsx`.
 
-import { IGRPSegmentError } from "@igrp/framework-next-ui";
 import { useEffect } from "react";
+
+import { IGRPSegmentError } from "@igrp/framework-next-ui";
+
 import { resolveErrorCopy } from "@/config/error-messages";
 import { reportError } from "@/lib/report-error";
 
