@@ -19,6 +19,17 @@ describe("toActionError", () => {
     expect(result).toEqual({ error: "Não autorizado", status: 401 });
   });
 
+  it("handles null and undefined gracefully", () => {
+    expect(toActionError(null)).toEqual({
+      error: "Erro desconhecido",
+      status: undefined,
+    });
+    expect(toActionError(undefined)).toEqual({
+      error: "Erro desconhecido",
+      status: undefined,
+    });
+  });
+
   it("returns undefined status when the error has none", () => {
     const result = toActionError(new Error("network down"));
     expect(result).toEqual({ error: "network down", status: undefined });
@@ -35,6 +46,7 @@ describe("isDefaultApiErrorMessage", () => {
     expect(isDefaultApiErrorMessage("Não autorizado")).toBe(true);
     expect(isDefaultApiErrorMessage("Acesso negado")).toBe(true);
     expect(isDefaultApiErrorMessage("Erro na operação")).toBe(true);
+    expect(isDefaultApiErrorMessage("Erro desconhecido")).toBe(true);
   });
 
   it("rejects real API messages", () => {

@@ -171,12 +171,13 @@ function getDefaultErrorMessage(status?: number): string {
   }
 }
 
-/** Every string `getDefaultErrorMessage` can produce. */
-const DEFAULT_API_ERROR_MESSAGES = new Set(
-  [400, 401, 403, 404, 409, 422, 429, 500, 502, 503, undefined].map(
+/** Every generic fallback string `extractApiError` can produce. */
+const DEFAULT_API_ERROR_MESSAGES = new Set([
+  ...[400, 401, 403, 404, 409, 422, 429, 500, 502, 503, undefined].map(
     getDefaultErrorMessage,
   ),
-);
+  "Erro desconhecido",
+]);
 
 /**
  * True when `message` is one of the generic per-status fallbacks produced
