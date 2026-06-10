@@ -47,8 +47,24 @@ describe("prefetchCurrentUserDashboard", () => {
       status: 401,
     });
     const client = makeQueryClient();
-    await expect(prefetchCurrentUserDashboard(client)).rejects.toBeInstanceOf(
-      HttpStatusError,
-    );
+    const result = prefetchCurrentUserDashboard(client);
+    await expect(result).rejects.toBeInstanceOf(HttpStatusError);
+    await expect(result).rejects.toMatchObject({
+      digest: "HTTP_STATUS_401|Unauthorized",
+    });
+  });
+
+  it("resolves even when a secondary fetch fails", async () => {
+    const { getCurrentUserActiveRole } = await import("@/actions/user");
+    vi.mocked(getCurrentUserActiveRole).mockResolvedValueOnce({
+      success: false,
+      error: "boom",
+      status: 500,
+    });
+    const client = makeQueryClient();
+    await expect(
+      prefetchCurrentUserDashboard(client),
+    ).resolves.toBeUndefined();
+    expect(client.getQueryData(["current-user"])).toEqual({ id: "u1" });
   });
 });
