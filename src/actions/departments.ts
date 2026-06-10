@@ -12,7 +12,7 @@ import type {
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
 
-import { extractApiError, toActionError } from "@/lib/utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { AccessClient, ActionResult, SdkData } from "./types";
@@ -93,7 +93,7 @@ export async function getAvailableApplications(
   if (!departmentCode) {
     return {
       success: false,
-      error: extractApiError("Informação do departamento é obrigatório"),
+      error: "Informação do departamento é obrigatório",
     };
   }
   const client = await getClientAccess();
@@ -163,9 +163,7 @@ export async function getAvailableMenus(
   if (!appCode || !departmentCode) {
     return {
       success: false,
-      error: extractApiError(
-        "Informação de aplicação e departamento são obrigatórios",
-      ),
+      error: "Informação de aplicação e departamento são obrigatórios",
     };
   }
   const client = await getClientAccess();
@@ -189,9 +187,7 @@ export async function getDepartmentMenus(
   if (!appCode || !departmentCode) {
     return {
       success: false,
-      error: extractApiError(
-        "Informação de aplicação e departamento são obrigatórios",
-      ),
+      error: "Informação de aplicação e departamento são obrigatórios",
     };
   }
   const client = await getClientAccess();
@@ -364,7 +360,7 @@ export async function getAvailableResources(
   if (!departmentCode) {
     return {
       success: false,
-      error: extractApiError("Informação do departamento é obrigatória"),
+      error: "Informação do departamento é obrigatória",
     };
   }
   const client = await getClientAccess();
@@ -385,7 +381,7 @@ export async function getDepartmentResources(
   if (!departmentCode) {
     return {
       success: false,
-      error: extractApiError("Informação do departamento é obrigatória"),
+      error: "Informação do departamento é obrigatória",
     };
   }
 
@@ -410,7 +406,7 @@ export async function getDepartmentPermissions(
   if (!departmentCode) {
     return {
       success: false,
-      error: extractApiError("Informação do departamento é obrigatória"),
+      error: "Informação do departamento é obrigatória",
     };
   }
   const client = await getClientAccess();
@@ -433,7 +429,7 @@ export async function getAvailablePermissions(
   if (!departmentCode) {
     return {
       success: false,
-      error: extractApiError("Informação do departamento é obrigatória"),
+      error: "Informação do departamento é obrigatória",
     };
   }
 
