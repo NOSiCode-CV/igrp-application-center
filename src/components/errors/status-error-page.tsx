@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { Button } from "@igrp/igrp-framework-react-design-system";
+import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
 
 import {
   FALLBACK_STATUS_COPY,
@@ -31,11 +31,14 @@ export function StatusErrorPage({ status, message }: StatusErrorPageProps) {
     message && !isDefaultApiErrorMessage(message) ? message : undefined;
 
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
+    <div
+      role="alert"
+      className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center"
+    >
       {status !== undefined && (
         <span className="text-8xl font-extrabold tracking-tight">{status}</span>
       )}
-      <h1 className="text-lg font-semibold">{copy.title}</h1>
+      <h2 className="text-lg font-semibold">{copy.title}</h2>
       <p className="text-muted-foreground max-w-md text-sm">
         {copy.description}
       </p>
@@ -45,10 +48,10 @@ export function StatusErrorPage({ status, message }: StatusErrorPageProps) {
         </p>
       )}
       <div className="mt-2 flex gap-3">
-        <Button variant="outline" onClick={() => router.back()}>
+        <IGRPButton variant="outline" onClick={() => router.back()}>
           Voltar
-        </Button>
-        <Button onClick={() => router.push("/")}>Início</Button>
+        </IGRPButton>
+        <IGRPButton onClick={() => router.push("/")}>Início</IGRPButton>
       </div>
     </div>
   );

@@ -10,18 +10,13 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
-  Button: ({
+  IGRPButton: ({
     children,
     onClick,
-    ...rest
   }: {
     children?: React.ReactNode;
     onClick?: () => void;
-  } & Record<string, unknown>) => (
-    <button onClick={onClick} {...rest}>
-      {children}
-    </button>
-  ),
+  } & Record<string, unknown>) => <button onClick={onClick}>{children}</button>,
 }));
 
 import { StatusErrorPage } from "@/components/errors/status-error-page";
