@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { InlineError } from "@/components/inline-error";
 
 export default function ApplicationDetailsError({
@@ -16,10 +17,15 @@ export default function ApplicationDetailsError({
   }, [error]);
 
   return (
-    <InlineError
-      title="Não foi possível carregar esta aplicação."
-      message={error.message}
-      onRetry={reset}
+    <StatusAwareError
+      error={error}
+      fallback={
+        <InlineError
+          title="Não foi possível carregar esta aplicação."
+          message={error.message}
+          onRetry={reset}
+        />
+      }
     />
   );
 }
