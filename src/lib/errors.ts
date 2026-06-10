@@ -67,13 +67,13 @@ const HTTP_STATUS_DIGEST_PREFIX = "HTTP_STATUS_";
  * `parseHttpStatusDigest` inside an `error.tsx` boundary.
  */
 export class HttpStatusError extends Error {
-  digest: string;
+  readonly digest: string;
 
   constructor(
     public readonly status?: number,
     publicMessage?: string,
   ) {
-    super(publicMessage || `HTTP ${status ?? "error"}`);
+    super(publicMessage ?? `HTTP ${status ?? "error"}`);
     this.name = "HttpStatusError";
     this.digest = `${HTTP_STATUS_DIGEST_PREFIX}${status ?? ""}|${publicMessage ?? ""}`;
     Object.setPrototypeOf(this, HttpStatusError.prototype);
