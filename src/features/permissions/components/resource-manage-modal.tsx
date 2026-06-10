@@ -20,7 +20,6 @@ import {
   IGRPButton,
   IGRPIcon,
   Input,
-  ScrollArea,
   Skeleton,
   Switch,
   useIGRPToast,
@@ -304,7 +303,7 @@ export function ManageResourcesModal({
             </div>
           </div>
 
-          <ScrollArea className="h-[95vh] w-full">
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1">
             {loading ? (
               <div className="flex flex-col gap-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -338,7 +337,7 @@ export function ManageResourcesModal({
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </div>
 
           <div className="flex justify-between items-center py-4">
             <div className="text-sm text-muted-foreground">

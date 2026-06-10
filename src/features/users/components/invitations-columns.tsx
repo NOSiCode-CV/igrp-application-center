@@ -123,19 +123,19 @@ export function getInvitationColumns(
       header: ({ column }) => (
         <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
       ),
-      accessorKey: "email",
+      accessorKey: "identifierValue",
       cell: ({ row }) => {
-        const email = String(row.getValue("email") ?? "");
+        const identifier = String(row.getValue("identifierValue") ?? "");
         return (
           <div className="flex items-center gap-3">
             <IGRPUserAvatar
-              alt={email}
-              fallbackContent={getInitials(email)}
+              alt={identifier}
+              fallbackContent={getInitials(identifier)}
               className="size-10"
               fallbackClass="text-base bg-primary text-primary-foreground"
             />
             <div>
-              <div className="text-sm leading-none">{email}</div>
+              <div className="text-sm leading-none">{identifier}</div>
             </div>
           </div>
         );

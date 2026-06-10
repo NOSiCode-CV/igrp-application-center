@@ -20,7 +20,6 @@ import {
   IGRPButton,
   IGRPIcon,
   Input,
-  ScrollArea,
   Skeleton,
   Switch,
   useIGRPToast,
@@ -175,7 +174,7 @@ export function ManageAppsModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:min-w-2xl ! max-h-[95vh] overflow-hidden flex flex-col">
+        <DialogContent className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <IGRPIcon
@@ -206,7 +205,7 @@ export function ManageAppsModal({
             </div>
           </div>
 
-          <ScrollArea className="flex-1 h-[95vh] w-full ">
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1">
             {loading ? (
               <div className="flex flex-col gap-2">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -326,7 +325,7 @@ export function ManageAppsModal({
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </div>
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">
