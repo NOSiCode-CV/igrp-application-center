@@ -10,6 +10,13 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test-setup.ts"],
     pool: "threads",
+    server: {
+      deps: {
+        // @igrp/framework-next ships ESM with extensionless relative imports
+        // (e.g. app-error.js → './logger'); inlining lets Vite resolve them.
+        inline: [/@igrp\/framework-next/],
+      },
+    },
     maxWorkers: 1,
     vmMemoryLimit: "4096MB",
   },
