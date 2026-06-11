@@ -485,7 +485,7 @@ export function ApplicationsListHome() {
           />
 
           <div className="relative flex flex-col md:flex-row md:items-center gap-5 md:gap-6">
-            <div className="flex-1 min-w-0 flex flex-col gap-1">              
+            <div className="flex-1 min-w-0 flex flex-col gap-1">
               {isIdentityReady ? (
                 <>
                   <h1 className="text-base md:text-lg font-medium tracking-tight leading-[1.2] text-foreground">
@@ -527,7 +527,7 @@ export function ApplicationsListHome() {
                   <Skeleton className="h-4 w-80 mt-0.5" />
                 </div>
               )}
-            </div>            
+            </div>
           </div>
         </header>
       </div>

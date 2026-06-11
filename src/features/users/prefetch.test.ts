@@ -62,9 +62,7 @@ describe("prefetchCurrentUserDashboard", () => {
       status: 500,
     });
     const client = makeQueryClient();
-    await expect(
-      prefetchCurrentUserDashboard(client),
-    ).resolves.toBeUndefined();
+    await expect(prefetchCurrentUserDashboard(client)).resolves.toBeUndefined();
     expect(client.getQueryData(["current-user"])).toEqual({ id: "u1" });
   });
 });
