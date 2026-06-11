@@ -465,7 +465,7 @@ export function ApplicationsListHome() {
       />
 
       {/* Hero — always visible, doesn't scroll. */}
-      {/* <div className="shrink-0">
+      <div className="shrink-0">
         <header className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-5 md:p-6">
           <div
             aria-hidden
@@ -485,17 +485,7 @@ export function ApplicationsListHome() {
           />
 
           <div className="relative flex flex-col md:flex-row md:items-center gap-5 md:gap-6">
-            <div className="flex-1 min-w-0 flex flex-col gap-1">
-              <Badge
-                variant="secondary"
-                className="self-start gap-2 px-2.5 py-1 rounded-full bg-success/15 text-success border border-success/30 text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-success/20"
-              >
-                <span
-                  aria-hidden
-                  className="size-1.5 rounded-full bg-success"
-                />
-                Centro de Aplicações
-              </Badge>
+            <div className="flex-1 min-w-0 flex flex-col gap-1">              
               {isIdentityReady ? (
                 <>
                   <h1 className="text-base md:text-lg font-medium tracking-tight leading-[1.2] text-foreground">
@@ -540,7 +530,7 @@ export function ApplicationsListHome() {
             </div>            
           </div>
         </header>
-      </div> */}
+      </div>
 
       <section className="flex-1 min-h-0 flex flex-col rounded-2xl border border-border/60 bg-card overflow-hidden">
         <div className="shrink-0 px-4 py-3 border-b border-border/60 bg-card">
