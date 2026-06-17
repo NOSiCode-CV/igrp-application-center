@@ -276,7 +276,8 @@ export function AcceptInvitePage() {
             }
             toast.error("Verificação automática de email falhou", {
               description:
-                result.error ?? "O email da sua conta não corresponde ao convite.",
+                result.error ??
+                "O email da sua conta não corresponde ao convite.",
             });
             dispatch({ type: "email-error", message: "" });
             return;
@@ -291,7 +292,8 @@ export function AcceptInvitePage() {
             return;
           }
           toast.error("Verificação automática de email falhou", {
-            description: message ?? "Não foi possível verificar o email automaticamente.",
+            description:
+              message ?? "Não foi possível verificar o email automaticamente.",
           });
           dispatch({ type: "email-error", message: "" });
         },
