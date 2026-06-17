@@ -251,7 +251,10 @@ export function AcceptInvitePage() {
     );
   }, [token, invitation, respond]);
 
-  // Auto-submit email when the session already carries one.
+  // Auto-submit email when the session already carries one. On success the user
+  // is already authenticated so OTP is not needed — jump straight to "response".
+  // On failure, fall back to the email-entry step with an inline error instead
+  // of the hard mismatch screen, so the user can see what went wrong.
   // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
   useEffect(() => {
     if (
@@ -266,12 +269,31 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            dispatchEmailFailure(result.error);
+            const cls = classifyInviteError(result.error);
+            if (cls === "expired") {
+              dispatch({ type: "token-expired", message: result.error });
+            } else {
+              dispatch({
+                type: "email-error",
+                message: result.error ?? "Email não corresponde ao convite",
+              });
+            }
             return;
           }
-          dispatch({ type: "email-validated", email: stepEmail });
+          dispatch({ type: "email-auto-validated" });
         },
-        onError: (err) => dispatchEmailFailure((err as Error).message),
+        onError: (err) => {
+          const message = (err as Error).message;
+          const cls = classifyInviteError(message);
+          if (cls === "expired") {
+            dispatch({ type: "token-expired", message });
+          } else {
+            dispatch({
+              type: "email-error",
+              message: message ?? "Erro ao validar email",
+            });
+          }
+        },
       },
     );
   }, [stepEmail, token]);
@@ -315,6 +337,7 @@ export function AcceptInvitePage() {
 
       {step.kind === "email-entry" ? (
         <InviteEmailStep
+          defaultEmail={session?.user?.email ?? undefined}
           error={step.error}
           isSubmitting={validateEmail.isPending}
           onSubmit={handleEmailSubmit}

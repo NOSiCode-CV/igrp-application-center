@@ -20,6 +20,7 @@ export type Action =
   | { type: "bootstrap-fail"; message?: string }
   | { type: "bootstrap-expired"; message?: string }
   | { type: "email-validated"; email: string }
+  | { type: "email-auto-validated" }
   | { type: "email-error"; message: string }
   | { type: "email-mismatch"; message?: string }
   | { type: "token-expired"; message?: string }
@@ -73,6 +74,10 @@ export function inviteFlowReducer(state: Step, action: Action): Step {
     case "bootstrap-expired":
       if (state.kind !== "bootstrapping") return state;
       return { kind: "token-expired", message: action.message };
+
+    case "email-auto-validated":
+      if (state.kind !== "email-auto-submit") return state;
+      return { kind: "response" };
 
     case "email-validated":
       if (state.kind !== "email-entry" && state.kind !== "email-auto-submit")
