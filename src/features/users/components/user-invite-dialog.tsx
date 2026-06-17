@@ -63,7 +63,7 @@ export function UserInviteDialog({
   const [openRoles, setOpenRoles] = useState(false);
   const { igrpToast } = useIGRPToast();
 
-  const { mutateAsync: userInvite, isPending: isInviting } = useInviteUser();
+  const { mutate: userInvite, isPending: isInviting } = useInviteUser();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -95,15 +95,14 @@ export function UserInviteDialog({
   const { data: roles, error: rolesError } = useRoles(departmentCode || "");
 
   const isValid = form.formState.isValid;
-  const isSubmitting = form.formState.isSubmitting;
-  const btnDisabled = !isValid || isSubmitting || isInviting;
+  const btnDisabled = !isValid || isInviting;
 
   const parentSelected = useMemo(
     () => depts?.find((o) => o.code === departmentCode) ?? null,
     [departmentCode, depts],
   );
 
-  const onSubmit = async (values: FormSchema) => {
+  const onSubmit = (values: FormSchema) => {
     const { email, roleCodes = [] } = values;
 
     const userPayload: InviteUserDTO = {
@@ -112,35 +111,42 @@ export function UserInviteDialog({
       roles: roleCodes,
     };
 
-    try {
-      const created = await userInvite({ user: userPayload });
-
-      if (!created.success) {
-        throw new Error(created.error);
-      }
-
-      igrpToast({
-        type: "success",
-        description: "Convite enviado com sucesso!",
-      });
-
-      form.reset({
-        email: "",
-        departmentCode: undefined,
-        roleCodes: [] as string[],
-      });
-      onOpenChange(false);
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : `Falha ao convidar: ${String(error)}`;
-      igrpToast({
-        type: "error",
-        title: "Falha ao convidar",
-        description: message,
-      });
-    }
+    userInvite(
+      { user: userPayload },
+      {
+        onSuccess: (result) => {
+          if (!result.success) {
+            igrpToast({
+              type: "error",
+              title: "Falha ao convidar",
+              description: result.error,
+            });
+            return;
+          }
+          igrpToast({
+            type: "success",
+            description: "Convite enviado com sucesso!",
+          });
+          form.reset({
+            email: "",
+            departmentCode: undefined,
+            roleCodes: [] as string[],
+          });
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          const message =
+            error instanceof Error
+              ? error.message
+              : `Falha ao convidar: ${String(error)}`;
+          igrpToast({
+            type: "error",
+            title: "Falha ao convidar",
+            description: message,
+          });
+        },
+      },
+    );
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

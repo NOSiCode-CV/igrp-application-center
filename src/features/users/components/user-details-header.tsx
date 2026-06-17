@@ -3,6 +3,8 @@
 import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
+import { useCurrentUser } from "@/features/users/use-users";
+
 import { UserAvatarUploader } from "./user-avatar-uploader";
 import { UserNameEditor } from "./user-name-editor";
 import { UserStatusToggle } from "./user-status-toggle";
@@ -12,13 +14,16 @@ interface UserDetailsHeaderProps {
 }
 
 export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
+  const { data: currentUser } = useCurrentUser();
+  const isCurrentUser = currentUser?.id === user.id;
+
   return (
     <div className="relative">
       <div className="absolute inset-0 rounded-xl -z-10" />
       <Card className="py-2 border-0 shadow-sm">
         <CardContent className="px-4 py-1">
           <div className="flex items-center mb-2 justify-end">
-            <UserStatusToggle user={user} />
+            {!isCurrentUser && <UserStatusToggle user={user} />}
           </div>
           <div className="flex items-center gap-6">
             <UserAvatarUploader user={user} />

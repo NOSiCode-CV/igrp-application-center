@@ -48,14 +48,14 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
       igrpToast({
         type: "success",
         title: "Nome atualizado com sucesso",
-        duration: 4000,
+        duration: 6000,
       });
     } catch (err) {
       igrpToast({
         type: "error",
         title: "Erro ao atualizar nome",
         description: (err as Error).message,
-        duration: 4000,
+        duration: 6000,
       });
     }
   };

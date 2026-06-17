@@ -59,6 +59,7 @@ function ActiveRowActionsCell({
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
+            className="text-green-600 focus:text-green-600 focus:bg-green-50 dark:text-green-400 dark:focus:text-green-400 dark:focus:bg-green-950"
             onSelect={() => onStatusClick(row.original, "ACTIVE")}
             variant="default"
           >

@@ -94,8 +94,14 @@ export const useInviteUser = () => {
     mutationFn: async ({ user }: { user: InviteUserDTO }) => inviteUser(user),
     onSuccess: async (result) => {
       if (result.success) {
-        await queryClient.invalidateQueries({ queryKey: ["users"] });
-        await queryClient.refetchQueries({ queryKey: ["users"] });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["users"] }),
+          queryClient.invalidateQueries({ queryKey: ["user-invitations"] }),
+        ]);
+        await Promise.all([
+          queryClient.refetchQueries({ queryKey: ["users"] }),
+          queryClient.refetchQueries({ queryKey: ["user-invitations"] }),
+        ]);
       }
     },
     retry: false,

@@ -154,18 +154,26 @@ export async function serverSession() {
     //  - session is null while a NextAuth cookie is present (cookie decode
     //    failed, NEXTAUTH_SECRET changed, or the cookie was issued by a
     //    different basePath/domain).
-    if (process.env.NODE_ENV !== "production") {
-      const sessionError =
-        session && typeof session === "object" && "error" in session
-          ? (session as { error?: unknown }).error
-          : undefined;
-      if (sessionError) {
-        console.warn(
-          "[serverSession] session present but carries error flag:",
-          sessionError,
-          "→ user will be treated as unauthenticated; check OIDC refresh token / issuer logs",
-        );
-      }
+    const sessionError =
+      session && typeof session === "object" && "error" in session
+        ? (session as { error?: unknown }).error
+        : undefined;
+
+    if (sessionError) {
+      // Refresh failed (RefreshAccessTokenError) — the session cookie still
+      // carries the old, expired access token. Do NOT pass it to
+      // igrpSetAccessClientConfig: any downstream API call with that token
+      // will get a 401 which surfaces as an error page rather than a proper
+      // logout redirect. Return null so callers (getClientAccess, etc.) treat
+      // the request as unauthenticated. verifySession() / auth.getSession()
+      // will catch the forceLogout flag and redirect to /logout on the next
+      // render that goes through the (igrp) layout.
+      console.warn(
+        "[serverSession] refresh failed — treating session as unauthenticated:",
+        sessionError,
+        "→ check IdP refresh-token endpoint / client credentials / token rotation config",
+      );
+      return null;
     }
 
     if (session !== null) {
