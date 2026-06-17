@@ -232,7 +232,11 @@ export function AcceptInvitePage() {
           toast.success("Convite aceite", {
             description: "Tem agora acesso à aplicação.",
           });
-          router.push("/");
+          // Full reload so the session is re-initialized with the new
+          // roles/department granted by the accepted invite. A client-side
+          // router.push("/") reuses the stale session, which causes the IGRP
+          // layout header to fail when it tries to fetch the updated user data.
+          window.location.assign("/");
         },
         onError: (err) =>
           toast.error("Erro ao aceitar convite", {
