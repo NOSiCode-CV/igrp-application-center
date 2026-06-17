@@ -54,8 +54,11 @@ export function AcceptInvitePage() {
 
   // `session.user.email` is not reliably populated by the IGRP OIDC provider —
   // use the API user record as the authoritative email source.
-  const { data: currentUser, isLoading: isLoadingCurrentUser } =
-    useCurrentUser();
+  // Only fire after the session is confirmed — calling the server action before
+  // that risks getClientAccess() hitting a null session and redirecting to /login.
+  const { data: currentUser, isLoading: isLoadingCurrentUser } = useCurrentUser(
+    { enabled: sessionStatus === "authenticated" },
+  );
 
   const {
     data: invitation,
@@ -244,7 +247,7 @@ export function AcceptInvitePage() {
           }),
       },
     );
-  }, [token, invitation, respond, router]);
+  }, [token, invitation, respond]);
 
   const handleReject = useCallback(() => {
     if (!token || !invitation) return;

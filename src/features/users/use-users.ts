@@ -75,7 +75,7 @@ export const useUsers = (
   });
 };
 
-export const useCurrentUser = () => {
+export const useCurrentUser = (options?: { enabled?: boolean }) => {
   return useQuery<IGRPUserDTO, Error>({
     queryKey: ["current-user"],
     queryFn: async () => {
@@ -83,6 +83,7 @@ export const useCurrentUser = () => {
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
+    ...options,
     retry: false,
   });
 };
