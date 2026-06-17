@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 import {
+  useCurrentUser,
   useGetUserInvitationByToken,
   useRespondUserInvitation,
   useValidateInvitationEmail,
@@ -51,6 +52,11 @@ export function AcceptInvitePage() {
     required: true,
   });
 
+  // `session.user.email` is not reliably populated by the IGRP OIDC provider —
+  // use the API user record as the authoritative email source.
+  const { data: currentUser, isLoading: isLoadingCurrentUser } =
+    useCurrentUser();
+
   const {
     data: invitation,
     isLoading: isLoadingInvitation,
@@ -71,7 +77,12 @@ export function AcceptInvitePage() {
       dispatch({ type: "bootstrap-fail" });
       return;
     }
-    if (sessionStatus !== "authenticated" || isLoadingInvitation) return;
+    if (
+      sessionStatus !== "authenticated" ||
+      isLoadingInvitation ||
+      isLoadingCurrentUser
+    )
+      return;
 
     if (invitationError || !invitation) {
       const message = (invitationError as Error | null)?.message;
@@ -83,7 +94,7 @@ export function AcceptInvitePage() {
       return;
     }
 
-    const claimEmail = session?.user?.email;
+    const claimEmail = currentUser?.email ?? session?.user?.email ?? null;
     if (!claimEmail) {
       dispatch({ type: "bootstrap-ok-no-claim" });
     } else {
@@ -94,8 +105,10 @@ export function AcceptInvitePage() {
     token,
     sessionStatus,
     isLoadingInvitation,
+    isLoadingCurrentUser,
     invitationError,
     invitation,
+    currentUser?.email,
     session?.user?.email,
   ]);
 
