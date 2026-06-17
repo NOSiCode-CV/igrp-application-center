@@ -295,7 +295,7 @@ export function AcceptInvitePage() {
             dispatch({ type: "email-error", message: "" });
             return;
           }
-          dispatch({ type: "email-auto-validated" });
+          dispatch({ type: "email-validated", email: stepEmail });
         },
         onError: (err) => {
           const message = (err as Error).message;
