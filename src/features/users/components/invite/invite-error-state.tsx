@@ -13,12 +13,10 @@ import {
 import { InviteStepHeader } from "./invite-step-header";
 
 export type InviteErrorKind = "invalid" | "mismatch" | "expired";
-
 interface InviteErrorStateProps {
   kind: InviteErrorKind;
   description?: string;
   onBackHome: () => void;
-  /** When provided, offers a sign-out action so the user can retry with another account. */
   onSignOut?: () => void;
 }
 
@@ -73,7 +71,7 @@ export function InviteErrorState({
             Terminar sessão e usar outra conta
           </Button>
         ) : null}
-        <Button variant="outline" size="lg" onClick={onBackHome}>
+        <Button size="lg" onClick={onBackHome}>
           <ArrowLeft data-icon="inline-start" />
           Voltar ao início
         </Button>

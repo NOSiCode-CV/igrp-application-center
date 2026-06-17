@@ -15,10 +15,14 @@ export default async function HomeLayout({
 
   const [user] = await Promise.all([getCurrentUser(), getLayoutConfig()]);
 
-  // A failed current-user load can't be reasoned about — surface it to the
-  // error boundary rather than silently rendering (which would also skip the
-  // TEMPORARY redirect below).
-  if (!user.success) throw new Error(user.error);
+  // A 403 from ACCESS MANAGEMENT means the session's access token doesn't
+  // carry the required role — most likely a TEMPORARY user navigating directly
+  // to "/", or a user whose token hasn't been refreshed after accepting an
+  // invite.  Send them to the pending page instead of crashing.
+  if (!user.success) {
+    if (user.status === 403) redirect("/invite/pending");
+    throw new Error(user.error);
+  }
 
   if ((user.data?.status as string | undefined) === TEMPORARY_STATUS) {
     redirect("/invite/pending");

@@ -60,11 +60,16 @@ export function AcceptInvitePage() {
     { enabled: sessionStatus === "authenticated" },
   );
 
+  // Mirror the same session guard applied to useCurrentUser: don't call the
+  // server action until the session is confirmed to avoid a 403 from the
+  // ACCESS MANAGEMENT API when the access token hasn't been validated yet.
   const {
     data: invitation,
     isLoading: isLoadingInvitation,
     error: invitationError,
-  } = useGetUserInvitationByToken(token ?? "");
+  } = useGetUserInvitationByToken(token ?? "", {
+    enabled: sessionStatus === "authenticated",
+  });
 
   const [step, dispatch] = useReducer(inviteFlowReducer, initialStep);
 

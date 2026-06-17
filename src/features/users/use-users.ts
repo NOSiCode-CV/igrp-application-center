@@ -488,7 +488,10 @@ export function useUpdateUserStatus() {
   });
 }
 
-export function useGetUserInvitationByToken(token: string) {
+export function useGetUserInvitationByToken(
+  token: string,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: ["user-invitation-by-token", token],
     queryFn: async () => {
@@ -496,7 +499,8 @@ export function useGetUserInvitationByToken(token: string) {
       if (!result.success) throw new Error(result.error);
       return result.data;
     },
-    enabled: !!token,
+    ...options,
+    enabled: !!token && (options?.enabled ?? true),
     retry: false,
   });
 }
