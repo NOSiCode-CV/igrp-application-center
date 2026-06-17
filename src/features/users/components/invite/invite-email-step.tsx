@@ -49,7 +49,7 @@ export function InviteEmailStep({
     <div className="flex flex-col gap-8">
       <InviteStepHeader
         icon={Mail}
-        eyebrow="Identificação"
+        eyebrow="Confirmação"
         title="Bem-vindo"
         description="Introduza o seu email para aceder ao convite."
       />

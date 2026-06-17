@@ -253,8 +253,8 @@ export function AcceptInvitePage() {
 
   // Auto-submit email when the session already carries one. On success the user
   // is already authenticated so OTP is not needed — jump straight to "response".
-  // On failure, fall back to the email-entry step with an inline error instead
-  // of the hard mismatch screen, so the user can see what went wrong.
+  // On failure, surface the reason via toast and fall back to the clean email
+  // entry step so the user can manually identify themselves.
   // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
   useEffect(() => {
     if (
@@ -272,12 +272,13 @@ export function AcceptInvitePage() {
             const cls = classifyInviteError(result.error);
             if (cls === "expired") {
               dispatch({ type: "token-expired", message: result.error });
-            } else {
-              dispatch({
-                type: "email-error",
-                message: result.error ?? "Email não corresponde ao convite",
-              });
+              return;
             }
+            toast.error("Verificação automática de email falhou", {
+              description:
+                result.error ?? "O email da sua conta não corresponde ao convite.",
+            });
+            dispatch({ type: "email-error", message: "" });
             return;
           }
           dispatch({ type: "email-auto-validated" });
@@ -287,12 +288,12 @@ export function AcceptInvitePage() {
           const cls = classifyInviteError(message);
           if (cls === "expired") {
             dispatch({ type: "token-expired", message });
-          } else {
-            dispatch({
-              type: "email-error",
-              message: message ?? "Erro ao validar email",
-            });
+            return;
           }
+          toast.error("Verificação automática de email falhou", {
+            description: message ?? "Não foi possível verificar o email automaticamente.",
+          });
+          dispatch({ type: "email-error", message: "" });
         },
       },
     );
@@ -337,7 +338,6 @@ export function AcceptInvitePage() {
 
       {step.kind === "email-entry" ? (
         <InviteEmailStep
-          defaultEmail={session?.user?.email ?? undefined}
           error={step.error}
           isSubmitting={validateEmail.isPending}
           onSubmit={handleEmailSubmit}
