@@ -107,16 +107,18 @@ export const getMenuIcon = (type: string) => {
 };
 
 interface ApiErrorLike {
-  details?: string;
+  details?: unknown;
   status?: number;
   message?: string;
+  title?: string;
 }
 
 export function extractApiError(error: unknown): string {
   const e = (error ?? {}) as ApiErrorLike;
-  if (e.details) {
+  const detailsStr = typeof e.details === "string" ? e.details : null;
+  if (detailsStr) {
     try {
-      const parsed = JSON.parse(e.details) as {
+      const parsed = JSON.parse(detailsStr) as {
         errors?: Record<string, string>;
         details?: string;
         title?: string;
@@ -133,8 +135,12 @@ export function extractApiError(error: unknown): string {
 
       return parsed.title || getDefaultErrorMessage(e.status);
     } catch {
-      return e.details;
+      return detailsStr;
     }
+  }
+
+  if (typeof e.title === "string" && e.title) {
+    return e.title;
   }
 
   if (e.status) {
