@@ -343,6 +343,7 @@ export function AcceptInvitePage() {
           kind="invalid"
           description={step.message}
           onBackHome={goHome}
+          onSignOut={handleSignOut}
         />
       ) : null}
 
@@ -360,6 +361,7 @@ export function AcceptInvitePage() {
           kind="expired"
           description={step.message}
           onBackHome={goHome}
+          onSignOut={handleSignOut}
         />
       ) : null}
 
