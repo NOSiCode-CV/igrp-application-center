@@ -68,13 +68,15 @@ export function InviteErrorState({
         {onSignOut ? (
           <Button size="lg" onClick={onSignOut}>
             <LogOut data-icon="inline-start" />
-            Terminar sessão e usar outra conta
+            Usar outra conta
           </Button>
         ) : null}
-        <Button size="lg" onClick={onBackHome}>
-          <ArrowLeft data-icon="inline-start" />
-          Voltar ao início
-        </Button>
+        {kind !== "mismatch" ? (
+          <Button variant="outline" size="lg" onClick={onBackHome}>
+            <ArrowLeft data-icon="inline-start" />
+            Voltar ao início
+          </Button>
+        ) : null}
       </div>
     </div>
   );
