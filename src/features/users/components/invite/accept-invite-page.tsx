@@ -120,7 +120,11 @@ export function AcceptInvitePage() {
     session?.user?.email,
   ]);
 
-  const goHome = useCallback(() => router.push("/"), [router]);
+  // Full reload so the session is re-initialized with the correct roles.
+  // A client-side router.push("/") reuses the stale access token, which can
+  // still carry TEMPORARY status and cause the home layout to redirect back to
+  // /invite/pending even when the user already has valid permissions.
+  const goHome = useCallback(() => window.location.assign("/"), []);
 
   // Wrong account: route through /logout so the IdP SSO session is actually
   // terminated (a plain next-auth signOut clears only the local session, and

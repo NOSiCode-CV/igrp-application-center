@@ -72,7 +72,7 @@ export function InviteErrorState({
           </Button>
         ) : null}
         {onSignOut ? (
-          <Button size="lg" onClick={onSignOut}>
+          <Button size="lg" onClick={onSignOut} variant="destructive">
             <LogOut data-icon="inline-start" />
             Usar outra conta
           </Button>
