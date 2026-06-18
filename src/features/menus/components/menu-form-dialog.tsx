@@ -233,18 +233,9 @@ function MenuFormBody({
   const menuType = form.watch("type");
   const isLoading = form.formState.isSubmitting;
 
-  const parentOptions = useMemo(() => {
-    if (menuType === menuTypeSchema.enum.FOLDER) {
-      return groupMenus;
-    }
-    if (
-      menuType === menuTypeSchema.enum.MENU_PAGE ||
-      menuType === menuTypeSchema.enum.EXTERNAL_PAGE
-    ) {
-      return folderMenus;
-    }
-    return [];
-  }, [menuType, groupMenus, folderMenus]);
+  const isPageType =
+    menuType === menuTypeSchema.enum.MENU_PAGE ||
+    menuType === menuTypeSchema.enum.EXTERNAL_PAGE;
 
   useEffect(() => {
     const parentCode = menu?.parentCode ?? undefined;
@@ -359,7 +350,10 @@ function MenuFormBody({
     form.setValue("code", code);
   };
 
-  const showParentSelect = parentOptions.length > 0;
+  const showParentSelect =
+    menuType === menuTypeSchema.enum.FOLDER
+      ? groupMenus.length > 0
+      : isPageType && (groupMenus.length > 0 || folderMenus.length > 0);
 
   return (
     <ScrollArea className="max-h-[70vh] px-6">
@@ -474,7 +468,8 @@ function MenuFormBody({
               <MenuParentCombobox
                 control={form.control}
                 menuType={menuType}
-                parentOptions={parentOptions}
+                groupOptions={groupMenus}
+                folderOptions={folderMenus}
                 disabled={isViewMode}
               />
             )}
