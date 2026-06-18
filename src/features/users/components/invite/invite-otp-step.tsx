@@ -145,27 +145,31 @@ export function InviteOtpStep({
           {isSubmitting ? "A verificar..." : "Verificar código"}
         </Button>
 
-        <div className="flex flex-col items-center gap-1.5 text-sm">
-          <button
+        <div className="flex flex-col items-center gap-0.5">
+          <Button
             type="button"
+            variant="link"
+            size="sm"
             onClick={onResend}
             disabled={inCooldown || isResending}
-            className="font-medium text-primary transition-colors hover:text-primary/80 disabled:cursor-not-allowed disabled:text-muted-foreground"
+            className="h-auto p-0 font-medium"
           >
             {isResending
               ? "A reenviar..."
               : inCooldown
                 ? `Reenviar em ${remainingSeconds}s`
                 : "Reenviar código"}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="link"
+            size="sm"
             onClick={onChangeEmail}
             disabled={isSubmitting}
-            className="text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed"
+            className="h-auto p-0 text-muted-foreground hover:text-foreground"
           >
             Alterar email
-          </button>
+          </Button>
         </div>
       </form>
     </div>

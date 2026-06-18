@@ -45,8 +45,8 @@ export default function InviteSegmentError({
 
   return (
     <InviteCardShell>
-      <InviteErrorState 
-        kind={kind} 
+      <InviteErrorState
+        kind={kind}
         onBackHome={() => router.push("/")}
         onSignOut={handleSignOut}
       />

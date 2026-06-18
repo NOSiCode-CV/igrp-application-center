@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 
 import type { LucideIcon } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+
 interface InviteStepHeaderProps {
   icon: LucideIcon;
   eyebrow?: string;
@@ -27,7 +29,10 @@ export function InviteStepHeader({
   return (
     <header className="flex flex-col items-center gap-4 text-center">
       <div
-        className={`inline-flex size-14 items-center justify-center rounded-2xl ${TONE[tone]}`}
+        className={cn(
+          "inline-flex size-14 items-center justify-center rounded-2xl",
+          TONE[tone],
+        )}
       >
         <Icon aria-hidden="true" className="size-7" strokeWidth={1.75} />
       </div>

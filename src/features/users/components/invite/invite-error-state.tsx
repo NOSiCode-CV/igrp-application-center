@@ -65,16 +65,16 @@ export function InviteErrorState({
         tone="destructive"
       />
       <div className="flex flex-col gap-3">
-        {onSignOut ? (
-          <Button size="lg" onClick={onSignOut}>
-            <LogOut data-icon="inline-start" />
-            Usar outra conta
-          </Button>
-        ) : null}
         {kind !== "mismatch" ? (
           <Button variant="outline" size="lg" onClick={onBackHome}>
             <ArrowLeft data-icon="inline-start" />
             Voltar ao início
+          </Button>
+        ) : null}
+        {onSignOut ? (
+          <Button size="lg" onClick={onSignOut}>
+            <LogOut data-icon="inline-start" />
+            Usar outra conta
           </Button>
         ) : null}
       </div>
