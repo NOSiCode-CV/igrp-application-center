@@ -1,57 +1,35 @@
-"use client";
-
-import type { Route } from "next";
-import { useRouter } from "next/navigation";
-
 import {
-  cn,
-  IGRPIcon,
-  type IGRPIconName,
-} from "@igrp/igrp-framework-react-design-system";
+  SettingsCard,
+  type SettingsItem,
+} from "@/features/settings/components/settings-card";
 
-interface SettingsItem {
-  id: string;
-  title: string;
-  description: string;
-  icon: IGRPIconName;
-  // Some settings entries (e.g. status="inativo") may not yet exist as
-  // typed routes; allow plain strings so the typed-routes gate stays
-  // permissive for placeholder destinations.
-  href: Route | string;
-  status?: "ativo" | "inativo";
-}
-
-const settingsConfig: { personal: SettingsItem[] } = {
-  personal: [
+const settingsConfig: { general: SettingsItem[] } = {
+  general: [
     {
       id: "gestao-de-aplicacoes",
       title: "Gestão de Aplicações",
-      description:
-        "Aqui voce pode gerenciar as suas aplicações, incluindo criar, editar e excluir.",
+      description: "Crie, edite e gerencie as suas aplicações.",
       icon: "AppWindow",
       href: "/settings/applications",
     },
     {
       id: "gestao-de-utilizadores",
       title: "Gestão de Utilizadores",
-      description:
-        "Aqui voce pode gerenciar os seus utilizadores, convidar e gerenciar as suas permissões.",
+      description: "Convide utilizadores e gerencie as suas permissões.",
       icon: "Users",
       href: "/settings/users",
     },
     {
       id: "gestao-de-acessos",
       title: "Gestão de Acessos",
-      description:
-        "Aqui voce pode gerenciar os seus acessos, departamentos e perfis e aplicações.",
+      description: "Gerencie departamentos, perfis e acessos às aplicações.",
       icon: "ShieldCheck",
       href: "/settings/departments",
     },
     {
       id: "customizacao",
       title: "Customização",
-      description:
-        "Aqui voce pode personalizar a sua interface, incluindo cores, fontes e imagens.",
+      description: "Personalize cores, fontes e imagens da interface.",
       icon: "Palette",
       href: "/settings/theme",
       status: "inativo",
@@ -60,45 +38,16 @@ const settingsConfig: { personal: SettingsItem[] } = {
 };
 
 export default function SettingsPage() {
-  const router = useRouter();
-
-  const handleNavigate = (href: string) => {
-    router.push(href as Route);
-  };
-
   return (
-    <div className="mx-auto flex flex-col gap-12">
+    <div className="flex flex-col gap-12">
       <section>
-        <h2 className="text-xl font-semibold mb-6">Configurações Gerais</h2>
-        <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
-          {settingsConfig.personal.map((item) => (
-            <button
-              type="button"
-              key={item.id}
-              onClick={() => handleNavigate(item.href)}
-              disabled={item.status === "inativo"}
-              className={cn(
-                "text-left p-5 rounded-lg border-0 bg-accent/20 cursor-pointer hover:bg-accent/50 transition-colors",
-                {
-                  "opacity-50 cursor-not-allowed": item.status === "inativo",
-                },
-              )}
-            >
-              <div className="flex items-start gap-4">
-                <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
-                  <IGRPIcon
-                    iconName={item.icon}
-                    className="size-5 text-primary"
-                  />
-                </div>
-                <div className="flex flex-col gap-1 min-w-0">
-                  <h3 className="font-medium text-primary">{item.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-snug">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            </button>
+        <h2 className="text-xl font-semibold">Configurações Gerais</h2>
+        <p className="text-sm text-muted-foreground mt-1 mb-6">
+          Gerencie aplicações, utilizadores e acessos da plataforma.
+        </p>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+          {settingsConfig.general.map((item) => (
+            <SettingsCard key={item.id} item={item} />
           ))}
         </div>
       </section>

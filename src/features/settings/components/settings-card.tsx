@@ -49,7 +49,7 @@ export function SettingsCard({ item }: SettingsCardProps) {
   const sharedClassName = cn(
     "relative text-left p-5 rounded-lg border-0 bg-accent/20 transition-colors",
     isDisabled
-      ? "opacity-50 cursor-not-allowed"
+      ? "opacity-50 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       : "cursor-pointer hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   );
 
