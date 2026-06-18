@@ -63,8 +63,6 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     return <AppCenterLoading description="Carregando perfis..." />;
   }
 
-  console.log({ userRoles });
-
   return (
     <div>
       {userRoles && userRoles.length > 0 ? (
