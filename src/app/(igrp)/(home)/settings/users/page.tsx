@@ -1,5 +1,5 @@
 import { getUserInvitations, getUsers } from "@/actions/user";
-import { UserListTable } from "@/features/users/components/user-list-table";
+import { UserList } from "@/features/users/components/user-list";
 import { HttpStatusError } from "@/lib/errors";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export default async function UserPage() {
     : [];
 
   return (
-    <UserListTable
+    <UserList
       initialUsers={usersResult.data}
       initialInvitations={initialInvitations}
     />

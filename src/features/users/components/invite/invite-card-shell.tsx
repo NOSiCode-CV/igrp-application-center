@@ -2,9 +2,8 @@
 
 import type { ReactNode } from "react";
 
-import { Check, Globe } from "lucide-react";
-
 import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
+import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -36,27 +35,14 @@ export function InviteCardShell({
       {/* Primary colour wash from top */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-b from-primary/5 via-transparent to-transparent"
+        className="pointer-events-none fixed inset-0 -z-10 bg-linear-to-b from-primary/5 via-transparent to-transparent"
       />
-
-      {/* Brand mark */}
-      <div className="flex flex-col items-center gap-2">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-primary shadow-md">
-          <Globe
-            aria-hidden="true"
-            className="size-5 text-primary-foreground"
-          />
-        </div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-          Plataforma IGRP
-        </p>
-      </div>
 
       {/* Card */}
       <Card className="w-full max-w-md overflow-hidden rounded-3xl border-border/60 shadow-2xl">
         <div
           aria-hidden="true"
-          className="h-0.5 bg-gradient-to-r from-transparent via-primary/50 to-transparent"
+          className="h-0.5 bg-linear-to-r from-transparent via-primary/50 to-transparent"
         />
         <CardContent
           className="flex flex-col gap-8 p-8 sm:p-10"

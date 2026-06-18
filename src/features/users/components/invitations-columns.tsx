@@ -21,8 +21,6 @@ import { useResendUserInvitation } from "@/features/users/use-users";
 import { geInviteTitle, getInitials, statusInviteClass } from "@/lib/utilities";
 import { cn } from "@/lib/utils";
 
-// ─── Module-level helpers ────────────────────────────────────────────────────
-
 const isTerminalInviteStatus = (s: string) =>
   s === "CANCELED" || s === "REJECTED";
 
@@ -43,15 +41,15 @@ function PendingRowActionsCell({
       igrpToast({
         type: "success",
         title: "URL copiado",
-        description: "URL do convite copiado para a área de transferência",
-        duration: 4000,
+        description: "URL do convite copiado para a área de transferência.",
+        duration: 6000,
       });
     } else {
       igrpToast({
         type: "error",
-        title: "Erro",
-        description: "URL do convite não disponível",
-        duration: 4000,
+        title: "Convite não disponível",
+        description: "URL do convite não disponível.",
+        duration: 6000,
       });
     }
   };
@@ -63,16 +61,16 @@ function PendingRowActionsCell({
           igrpToast({
             type: "success",
             title: "Convite reenviado",
-            description: "O convite foi reenviado com sucesso",
-            duration: 4000,
+            description: "O convite foi reenviado com sucesso.",
+            duration: 6000,
           });
         },
         onError: () => {
           igrpToast({
             type: "error",
-            title: "Erro",
-            description: "Não foi possível reenviar o convite",
-            duration: 4000,
+            title: "Convite não reenviado",
+            description: "Não foi possível reenviar o convite.",
+            duration: 6000,
           });
         },
       });
@@ -80,38 +78,36 @@ function PendingRowActionsCell({
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="p-1 rounded-sm">
-        <IGRPIcon iconName="Ellipsis" />
-      </DropdownMenuTrigger>
+    <>
+      {!isTerminalInviteStatus(String(row.original.status)) && (
+        <DropdownMenu>
+          <DropdownMenuTrigger className="p-1 rounded-sm">
+            <IGRPIcon iconName="Ellipsis" />
+          </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="min-w-44">
-        {!isTerminalInviteStatus(String(row.original.status)) && (
-          <DropdownMenuItem onSelect={handleCopyUrl}>
-            <IGRPIcon iconName="Copy" />
-            Copiar URL
-          </DropdownMenuItem>
-        )}
+          <DropdownMenuContent align="end" className="min-w-44">
+            <DropdownMenuItem onSelect={handleCopyUrl}>
+              <IGRPIcon iconName="Copy" />
+              Copiar URL
+            </DropdownMenuItem>
 
-        {!isTerminalInviteStatus(String(row.original.status)) && (
-          <DropdownMenuItem onSelect={handleResend}>
-            <IGRPIcon iconName="Mail" />
-            Reenviar Convite
-          </DropdownMenuItem>
-        )}
+            <DropdownMenuItem onSelect={handleResend}>
+              <IGRPIcon iconName="Mail" />
+              Reenviar Convite
+            </DropdownMenuItem>
 
-        {!isTerminalInviteStatus(String(row.original.status)) && (
-          <DropdownMenuItem
-            className="text-destructive focus:text-destructive"
-            variant="destructive"
-            onSelect={() => onCancelClick(row.original)}
-          >
-            <IGRPIcon iconName="Trash2" />
-            Cancelar Convite
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              variant="destructive"
+              onSelect={() => onCancelClick(row.original)}
+            >
+              <IGRPIcon iconName="Trash2" />
+              Cancelar Convite
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </>
   );
 }
 
