@@ -366,7 +366,7 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
       </div>
 
       <MenuFormDialog
-        aplicationCode={app.code}
+        appCode={app.code}
         open={openFormDialog}
         onOpenChange={(open) => {
           setOpenFormDialog(open);
@@ -377,9 +377,9 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
         }}
         menu={selectedMenu}
         setMenus={setMenus}
+        allMenus={menus}
         groupMenus={groupMenus}
         folderMenus={folderMenus}
-        appCode={app.code}
         openType={openTypeFormDialog}
       />
 

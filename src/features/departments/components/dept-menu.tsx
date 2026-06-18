@@ -294,27 +294,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          {!loading && menus && menus.length > 0 && (
-            <div className="w-10/12">
-              <div className="relative">
-                <IGRPIcon
-                  iconName="Search"
-                  className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
-                />
-                <Input
-                  type="search"
-                  placeholder="Pesquisar menu..."
-                  className="pl-8"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-          )}
-
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           {sortedApps.length !== 0 && (
-            <div className="w-2/12">
+            <div className="w-full sm:w-auto sm:min-w-[220px]">
               <Select
                 value={selectedApp}
                 onValueChange={handleAppChange}
@@ -340,12 +322,30 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               </Select>
             </div>
           )}
+
+          {!loading && menus && menus.length > 0 && (
+            <div className="flex-1">
+              <div className="relative">
+                <IGRPIcon
+                  iconName="Search"
+                  className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
+                />
+                <Input
+                  type="search"
+                  placeholder="Pesquisar menu..."
+                  className="pl-8"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {loading || isLoadingRoles ? (
           <AppCenterLoading description="A carregar menus..." />
         ) : menuTree.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
             <IGRPIcon
               iconName="Menu"
               className="size-16 mb-4 opacity-30"

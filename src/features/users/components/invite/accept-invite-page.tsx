@@ -336,8 +336,8 @@ export function AcceptInvitePage() {
         <LoadingState
           label={
             step.kind === "bootstrapping"
-              ? "A validar convite..."
-              : "A validar email..."
+              ? "A validar convite…"
+              : "A validar email…"
           }
         />
       ) : null}
@@ -399,7 +399,7 @@ export function AcceptInvitePage() {
             onReject={handleReject}
           />
         ) : isLoadingInvitation ? (
-          <LoadingState label="A carregar convite..." />
+          <LoadingState label="A carregar convite…" />
         ) : (
           <InviteErrorState
             kind="invalid"

@@ -68,21 +68,20 @@ export function InviteEmailStep({
                 id="email"
                 type="email"
                 autoComplete="email"
+                spellCheck={false}
                 placeholder="exemplo@email.cv"
                 disabled={isSubmitting}
                 aria-invalid={fieldInvalid}
                 {...form.register("email")}
               />
             </InputGroup>
-            {form.formState.errors.email ? (
-              <FieldDescription className="text-destructive">
-                {form.formState.errors.email.message}
-              </FieldDescription>
-            ) : error ? (
-              <FieldDescription role="alert" className="text-destructive">
-                {error}
-              </FieldDescription>
-            ) : null}
+            <FieldDescription
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-destructive"
+            >
+              {form.formState.errors.email?.message ?? error ?? null}
+            </FieldDescription>
           </Field>
         </FieldGroup>
 
@@ -95,7 +94,7 @@ export function InviteEmailStep({
           {isSubmitting ? (
             <Loader2 data-icon="inline-start" className="animate-spin" />
           ) : null}
-          {isSubmitting ? "A enviar..." : "Enviar código"}
+          {isSubmitting ? "A enviar…" : "Enviar código"}
           {!isSubmitting ? <ArrowRight data-icon="inline-end" /> : null}
         </Button>
       </form>

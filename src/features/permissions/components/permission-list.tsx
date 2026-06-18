@@ -168,7 +168,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
           </div>
 
           {permissionEmpty ? (
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
               <IGRPIcon
                 iconName="ShieldOff"
                 className="size-16 mb-4 opacity-30"

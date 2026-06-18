@@ -40,6 +40,7 @@ import {
   updateDepartment,
   updateRole,
 } from "@/actions/departments";
+import { applicationsKeys } from "@/features/applications/query-keys";
 
 export const useDepartments = () => {
   return useQuery<DepartmentDTO[], Error>({
@@ -157,11 +158,11 @@ export const useAddApplicationsToDepartment = () => {
         await queryClient.invalidateQueries({ queryKey: ["departments"] });
 
         await queryClient.invalidateQueries({
-          queryKey: ["applications", { departmentCode: variables.code }],
+          queryKey: applicationsKeys.list({ departmentCode: variables.code }),
         });
 
         await queryClient.invalidateQueries({
-          queryKey: ["department-available-apps", variables.code],
+          queryKey: ["department-available-menus-for-roles", variables.code],
         });
 
         await queryClient.invalidateQueries({
@@ -190,10 +191,10 @@ export const useRemoveApplicationsFromDepartment = () => {
       if (result.success) {
         await Promise.all([
           queryClient.invalidateQueries({
-            queryKey: ["applications", { departmentCode: variables.code }],
+            queryKey: applicationsKeys.list({ departmentCode: variables.code }),
           }),
           queryClient.invalidateQueries({
-            queryKey: ["department-available-apps", variables.code],
+            queryKey: ["department-available-menus-for-roles", variables.code],
           }),
           queryClient.invalidateQueries({
             queryKey: ["departments"],

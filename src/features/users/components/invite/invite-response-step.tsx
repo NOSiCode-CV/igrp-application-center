@@ -1,6 +1,14 @@
 "use client";
 
+import { useState } from "react";
+
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   Badge,
   Button,
   Separator,
@@ -46,82 +54,122 @@ export function InviteResponseStep({
   onAccept,
   onReject,
 }: InviteResponseStepProps) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const departments = toArray(invitation.department);
   const roles = invitation.roles ?? [];
 
   return (
-    <div className="flex flex-col gap-8">
-      <InviteStepHeader
-        icon={Mail}
-        eyebrow="Convite"
-        title="Aceitar acesso"
-        description="Revise os detalhes antes de confirmar."
-      />
+    <>
+      <div className="flex flex-col gap-8">
+        <InviteStepHeader
+          icon={Mail}
+          eyebrow="Convite"
+          title="Aceitar Acesso"
+          description="Revise os detalhes antes de confirmar."
+        />
 
-      <dl className="flex flex-col gap-5 rounded-2xl border border-border/60 bg-muted/30 p-5">
-        <InvitationRow icon={Mail} label="Email">
-          <span className="font-medium text-foreground">
-            {invitation.email}
-          </span>
-        </InvitationRow>
+        <dl className="flex flex-col gap-5 rounded-2xl border border-border/60 bg-muted/30 p-5">
+          <InvitationRow icon={Mail} label="Email">
+            <span className="font-medium text-foreground">
+              {invitation.email}
+            </span>
+          </InvitationRow>
 
-        {departments.length > 0 ? (
-          <>
-            <Separator />
-            <InvitationRow icon={Building2} label="Departamento">
-              <div className="flex flex-wrap gap-1.5">
-                {departments.map((dept) => (
-                  <Badge
-                    key={dept.code ?? dept.description}
-                    variant="secondary"
-                  >
-                    {dept.description || dept.code}
-                  </Badge>
-                ))}
-              </div>
-            </InvitationRow>
-          </>
-        ) : null}
+          {departments.length > 0 ? (
+            <>
+              <Separator />
+              <InvitationRow icon={Building2} label="Departamento">
+                <div className="flex flex-wrap gap-1.5">
+                  {departments.map((dept) => (
+                    <Badge
+                      key={dept.code ?? dept.description}
+                      variant="secondary"
+                    >
+                      {dept.description || dept.code}
+                    </Badge>
+                  ))}
+                </div>
+              </InvitationRow>
+            </>
+          ) : null}
 
-        {roles.length > 0 ? (
-          <>
-            <Separator />
-            <InvitationRow icon={Shield} label="Perfis">
-              <div className="flex flex-wrap gap-1.5">
-                {roles.map((role) => (
-                  <Badge
-                    key={role.code ?? role.description}
-                    variant="secondary"
-                  >
-                    {role.description || role.code}
-                  </Badge>
-                ))}
-              </div>
-            </InvitationRow>
-          </>
-        ) : null}
-      </dl>
+          {roles.length > 0 ? (
+            <>
+              <Separator />
+              <InvitationRow icon={Shield} label="Perfis">
+                <div className="flex flex-wrap gap-1.5">
+                  {roles.map((role) => (
+                    <Badge
+                      key={role.code ?? role.description}
+                      variant="secondary"
+                    >
+                      {role.description || role.code}
+                    </Badge>
+                  ))}
+                </div>
+              </InvitationRow>
+            </>
+          ) : null}
+        </dl>
 
-      <div className="grid grid-cols-2 gap-3">
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={onReject}
-          disabled={isSubmitting}
-        >
-          <X data-icon="inline-start" />
-          Rejeitar
-        </Button>
-        <Button size="lg" onClick={onAccept} disabled={isSubmitting}>
-          {isSubmitting ? (
-            <Loader2 data-icon="inline-start" className="animate-spin" />
-          ) : (
-            <Check data-icon="inline-start" />
-          )}
-          {isSubmitting ? "A processar..." : "Aceitar"}
-        </Button>
+        <div className="flex flex-col gap-3">
+          <Button
+            size="lg"
+            className="w-full"
+            onClick={onAccept}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <Loader2 data-icon="inline-start" className="animate-spin" />
+            ) : (
+              <Check data-icon="inline-start" />
+            )}
+            {isSubmitting ? "A processar…" : "Aceitar Convite"}
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full"
+            onClick={() => setConfirmOpen(true)}
+            disabled={isSubmitting}
+          >
+            <X data-icon="inline-start" />
+            Rejeitar
+          </Button>
+        </div>
       </div>
-    </div>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Rejeitar convite?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Terá de solicitar um novo convite
+              ao administrador se mudar de ideias.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmOpen(false)}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                setConfirmOpen(false);
+                onReject();
+              }}
+              disabled={isSubmitting}
+            >
+              Rejeitar convite
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 

@@ -29,6 +29,7 @@ export function InviteStepHeader({
   return (
     <header className="flex flex-col items-center gap-4 text-center">
       <div
+        aria-hidden="true"
         className={cn(
           "inline-flex size-14 items-center justify-center rounded-2xl",
           TONE[tone],

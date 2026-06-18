@@ -122,14 +122,13 @@ export function InviteOtpStep({
                 ))}
               </InputOTPGroup>
             </InputOTP>
-            {otpError || form.formState.errors.otpCode ? (
-              <FieldDescription
-                role="alert"
-                className="text-center text-destructive"
-              >
-                {form.formState.errors.otpCode?.message ?? otpError}
-              </FieldDescription>
-            ) : null}
+            <FieldDescription
+              aria-live="polite"
+              aria-atomic="true"
+              className="text-center text-destructive"
+            >
+              {form.formState.errors.otpCode?.message ?? otpError ?? null}
+            </FieldDescription>
           </Field>
         </FieldGroup>
 
@@ -142,7 +141,7 @@ export function InviteOtpStep({
           {isSubmitting ? (
             <Loader2 data-icon="inline-start" className="animate-spin" />
           ) : null}
-          {isSubmitting ? "A verificar..." : "Verificar código"}
+          {isSubmitting ? "A verificar…" : "Verificar código"}
         </Button>
 
         <div className="flex flex-col items-center gap-0.5">
@@ -155,7 +154,7 @@ export function InviteOtpStep({
             className="h-auto p-0 font-medium"
           >
             {isResending
-              ? "A reenviar..."
+              ? "A reenviar…"
               : inCooldown
                 ? `Reenviar em ${remainingSeconds}s`
                 : "Reenviar código"}
