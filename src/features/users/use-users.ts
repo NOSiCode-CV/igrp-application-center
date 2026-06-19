@@ -447,9 +447,14 @@ export function useRespondUserInvitation() {
       response: UserInvitationResponseDTO;
       token: string;
     }) => respondUserInvitation(response, token),
-    onSuccess: async (result) => {
+    onSuccess: async (result, { token }) => {
       if (result.success) {
-        await queryClient.invalidateQueries({ queryKey: ["user-invitations"] });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["user-invitations"] }),
+          queryClient.invalidateQueries({
+            queryKey: ["user-invitation-by-token", token],
+          }),
+        ]);
       }
     },
     retry: false,

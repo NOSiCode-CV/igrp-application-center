@@ -21,6 +21,7 @@ export type Action =
   | { type: "bootstrap-expired"; message?: string }
   | { type: "email-validated"; email: string }
   | { type: "email-error"; message: string }
+  | { type: "auto-submit-failed" }
   | { type: "email-mismatch"; message?: string }
   | { type: "token-expired"; message?: string }
   | { type: "otp-validated" }
@@ -47,6 +48,14 @@ const MISMATCH_PATTERNS = [
 
 export type InviteErrorClass = "expired" | "mismatch" | "other";
 
+// NOTE: classification is driven by matching the *text* of the error message
+// returned by the ACCESS MANAGEMENT API server actions (validateInvitationEmail
+// / validateInvitationOtp / getUserInvitationByToken), because those actions
+// surface only a free-form `error` string — no structured error code. This is
+// intentionally coupled to the backend's wording (PT + EN variants below); if
+// the API ever rewords these messages, the patterns must be updated in lockstep
+// or the user will be shown the wrong terminal screen. Prefer migrating to a
+// structured error code on the API side if/when one becomes available.
 export function classifyInviteError(
   message: string | undefined | null,
 ): InviteErrorClass {
@@ -88,10 +97,31 @@ export function inviteFlowReducer(state: Step, action: Action): Step {
         return state;
       return { kind: "email-entry", error: action.message };
 
+    // Auto email validation failed for a non-classified reason (the reason is
+    // surfaced via toast). Fall back to manual email entry with no inline error.
+    case "auto-submit-failed":
+      if (state.kind !== "email-auto-submit") return state;
+      return { kind: "email-entry" };
+
     case "email-mismatch":
+      // Only reachable from an in-flight email/OTP validation; guard against a
+      // late async failure yanking the user off a terminal step (response /
+      // rejected / another error screen).
+      if (
+        state.kind !== "email-entry" &&
+        state.kind !== "email-auto-submit" &&
+        state.kind !== "otp-entry"
+      )
+        return state;
       return { kind: "email-mismatch", message: action.message };
 
     case "token-expired":
+      if (
+        state.kind !== "email-entry" &&
+        state.kind !== "email-auto-submit" &&
+        state.kind !== "otp-entry"
+      )
+        return state;
       return { kind: "token-expired", message: action.message };
 
     case "otp-validated":

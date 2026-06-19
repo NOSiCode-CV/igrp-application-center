@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -72,6 +72,11 @@ export function AcceptInvitePage() {
   });
 
   const [step, dispatch] = useReducer(inviteFlowReducer, initialStep);
+
+  // Guards the auto-submit effect against React StrictMode's double-invoke (and
+  // any re-render before the mutation's `isPending` flips), which could
+  // otherwise fire two OTP emails for the same address.
+  const autoSubmittedEmailRef = useRef<string | null>(null);
 
   const validateEmail = useValidateInvitationEmail();
   const validateOtp = useValidateInvitationOtp();
@@ -208,6 +213,12 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
+            // Mirror handleOtpSubmit: an expired token surfaces the dedicated
+            // expired screen rather than a generic resend toast.
+            if (classifyInviteError(result.error) === "expired") {
+              dispatch({ type: "token-expired", message: result.error });
+              return;
+            }
             toast.error("Não foi possível reenviar o código", {
               description: result.error,
             });
@@ -216,10 +227,16 @@ export function AcceptInvitePage() {
           dispatch({ type: "resend-sent" });
           toast.success("Novo código enviado");
         },
-        onError: (err) =>
+        onError: (err) => {
+          const message = (err as Error).message;
+          if (classifyInviteError(message) === "expired") {
+            dispatch({ type: "token-expired", message });
+            return;
+          }
           toast.error("Não foi possível reenviar o código", {
-            description: (err as Error).message,
-          }),
+            description: message,
+          });
+        },
       },
     );
   }, [step, token, validateEmail]);
@@ -232,7 +249,7 @@ export function AcceptInvitePage() {
   const handleAccept = useCallback(() => {
     if (!token || !invitation) return;
     respond.mutate(
-      { response: { accept: true, observation: "Convite aceito" }, token },
+      { response: { accept: true, observation: "Convite aceite" }, token },
       {
         onSuccess: (result) => {
           if (!result.success) {
@@ -280,10 +297,11 @@ export function AcceptInvitePage() {
     );
   }, [token, invitation, respond]);
 
-  // Auto-submit email when the session already carries one. On success the user
-  // is already authenticated so OTP is not needed — jump straight to "response".
-  // On failure, surface the reason via toast and fall back to the clean email
-  // entry step so the user can manually identify themselves.
+  // Auto-submit the email the session already carries so the user doesn't have
+  // to retype it. On success the flow proceeds to the OTP step exactly like the
+  // manual path — the emailed code is still required. On failure, surface the
+  // reason via toast and fall back to the clean email entry step so the user can
+  // manually identify themselves.
   // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
   useEffect(() => {
     if (
@@ -293,6 +311,8 @@ export function AcceptInvitePage() {
       validateEmail.isSuccess
     )
       return;
+    if (autoSubmittedEmailRef.current === stepEmail) return;
+    autoSubmittedEmailRef.current = stepEmail;
     validateEmail.mutate(
       { token, email: stepEmail },
       {
@@ -308,7 +328,7 @@ export function AcceptInvitePage() {
                 result.error ??
                 "O email da sua conta não corresponde ao convite.",
             });
-            dispatch({ type: "email-error", message: "" });
+            dispatch({ type: "auto-submit-failed" });
             return;
           }
           dispatch({ type: "email-validated", email: stepEmail });
@@ -324,7 +344,7 @@ export function AcceptInvitePage() {
             description:
               message ?? "Não foi possível verificar o email automaticamente.",
           });
-          dispatch({ type: "email-error", message: "" });
+          dispatch({ type: "auto-submit-failed" });
         },
       },
     );
@@ -371,6 +391,7 @@ export function AcceptInvitePage() {
 
       {step.kind === "email-entry" ? (
         <InviteEmailStep
+          defaultEmail={currentUser?.email ?? session?.user?.email ?? undefined}
           error={step.error}
           isSubmitting={validateEmail.isPending}
           onSubmit={handleEmailSubmit}
@@ -416,9 +437,13 @@ export function AcceptInvitePage() {
   );
 }
 
-function LoadingState({ label }: { label: string }) {
+export function LoadingState({ label }: { label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-4 py-8 text-center text-muted-foreground">
+    <div
+      role="status"
+      aria-live="polite"
+      className="flex flex-col items-center justify-center gap-4 py-8 text-center text-muted-foreground"
+    >
       <Loader2
         aria-hidden="true"
         className="size-8 animate-spin text-primary"

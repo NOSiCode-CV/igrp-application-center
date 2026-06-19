@@ -44,8 +44,15 @@ function toArray(
 
 // The SDK's `getUserInvitationByToken` returns `InvitationDTO`, but its runtime
 // shape (department-as-array, embedded roles) doesn't match the declared types.
+// Normalize defensively into the known shape so a null/drifted payload renders
+// as empty rather than throwing on field access.
 export function toInvitationLike(dto: unknown): InvitationLike {
-  return dto as InvitationLike;
+  const record = (dto ?? {}) as Record<string, unknown>;
+  return {
+    email: typeof record.email === "string" ? record.email : "",
+    department: record.department as InvitationLike["department"],
+    roles: record.roles as InvitationLike["roles"],
+  };
 }
 
 export function InviteResponseStep({

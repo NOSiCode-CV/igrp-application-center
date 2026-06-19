@@ -12,23 +12,19 @@ export type InviteStepIndex = 0 | 1 | 2;
 interface InviteCardShellProps {
   children: ReactNode;
   step?: InviteStepIndex;
-  totalSteps?: 2 | 3;
 }
 
-export function InviteCardShell({
-  children,
-  step,
-  totalSteps = 3,
-}: InviteCardShellProps) {
+export function InviteCardShell({ children, step }: InviteCardShellProps) {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">
-      {/* Subtle dot grid */}
+      {/* Subtle dot grid — currentColor inherits the low-opacity foreground so
+          the dots adapt to light/dark themes. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10"
+        className="pointer-events-none fixed inset-0 -z-10 text-foreground/[0.055]"
         style={{
           backgroundImage:
-            "radial-gradient(circle, rgba(0,0,0,0.055) 1px, transparent 1px)",
+            "radial-gradient(circle, currentColor 1px, transparent 1px)",
           backgroundSize: "28px 28px",
         }}
       />
@@ -43,7 +39,7 @@ export function InviteCardShell({
         {/* Vertical stepper — desktop only */}
         {step !== undefined ? (
           <div className="hidden shrink-0 pt-9 md:block">
-            <VerticalStepIndicator current={step} total={totalSteps} />
+            <VerticalStepIndicator current={step} />
           </div>
         ) : null}
 
@@ -62,7 +58,7 @@ export function InviteCardShell({
       {/* Horizontal stepper — mobile only, below card */}
       {step !== undefined ? (
         <div className="mt-6 md:hidden">
-          <HorizontalStepIndicator current={step} total={totalSteps} />
+          <HorizontalStepIndicator current={step} />
         </div>
       ) : null}
     </main>
@@ -71,34 +67,22 @@ export function InviteCardShell({
 
 // ── Step data ──────────────────────────────────────────────────────────────────
 
-const STEP_DATA_3 = [
+const STEP_DATA = [
   { label: "Email", sub: "Confirmação" },
   { label: "Código", sub: "Verificação" },
   { label: "Confirmar", sub: "Convite" },
 ] as const;
 
-const STEP_DATA_2 = [
-  { label: "Email", sub: "Confirmação" },
-  { label: "Confirmar", sub: "Convite" },
-] as const;
+const TOTAL_STEPS = STEP_DATA.length;
 
 // ── Vertical stepper (desktop, left side) ─────────────────────────────────────
 
-function VerticalStepIndicator({
-  current,
-  total,
-}: {
-  current: InviteStepIndex;
-  total: 2 | 3;
-}) {
-  const steps = (total === 2 ? STEP_DATA_2 : STEP_DATA_3) as readonly {
-    label: string;
-    sub: string;
-  }[];
+function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
+  const steps = STEP_DATA;
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${total}`}
+      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
       className="flex flex-col"
     >
       {steps.map((step, idx) => {
@@ -183,22 +167,15 @@ function VerticalStepIndicator({
 
 // ── Horizontal stepper (mobile fallback, below card) ──────────────────────────
 
-const STEP_LABELS_3 = ["Email", "Código", "Confirmar"] as const;
-const STEP_LABELS_2 = ["Email", "Confirmar"] as const;
+const STEP_LABELS = ["Email", "Código", "Confirmar"] as const;
 
-function HorizontalStepIndicator({
-  current,
-  total,
-}: {
-  current: InviteStepIndex;
-  total: 2 | 3;
-}) {
-  const labels = total === 2 ? STEP_LABELS_2 : STEP_LABELS_3;
-  const itemCount = total * 2 - 1;
+function HorizontalStepIndicator({ current }: { current: InviteStepIndex }) {
+  const labels = STEP_LABELS;
+  const itemCount = TOTAL_STEPS * 2 - 1;
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${total}`}
+      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
       className="flex items-start"
     >
       {Array.from({ length: itemCount }, (_, i) => {
