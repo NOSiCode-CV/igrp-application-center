@@ -73,8 +73,11 @@ export function ProfileUserForm() {
 
   async function onSubmit(values: z.infer<typeof UpdateUserSchema>) {
     const formData = new FormData();
-    formData.append("fullname", values.name || "");
+    formData.append("name", values.name || "");
     formData.append("email", values.email || "");
+    if (user) {
+      formData.append("status", user.status);
+    }
 
     if (values.picture) {
       formData.append("picture", values.picture);

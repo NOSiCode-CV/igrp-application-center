@@ -135,7 +135,18 @@ export async function updateUser(
     const result = await client.users.updateUser(id, user);
     return { success: true, data: result.data };
   } catch (error) {
-    console.error("[user-update] Erro ao editar utilizador:", error);
+    console.error(
+      "[user-update] Erro ao editar utilizador:",
+      JSON.stringify(
+        {
+          status: (error as { status?: number }).status,
+          details: (error as { details?: unknown }).details,
+          problemDetail: (error as { problemDetail?: unknown }).problemDetail,
+        },
+        null,
+        2,
+      ),
+    );
     return { success: false, ...toActionError(error) };
   }
 }
