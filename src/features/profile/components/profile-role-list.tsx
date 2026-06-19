@@ -1,7 +1,10 @@
 "use client";
+import { useState } from "react";
+
 import {
   Badge,
   Button,
+  cn,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -20,6 +23,7 @@ export default function ProfileRoleList() {
   const { data: activeRole } = useCurrentUserActiveRole();
   const { mutateAsync: setActiveRole, isPending: isSettingActive } =
     useSetCurrentUserActiveRole();
+  const [activatingCode, setActivatingCode] = useState<string | null>(null);
 
   const handleActivateRole = async (role: {
     code: string;
@@ -29,6 +33,7 @@ export default function ProfileRoleList() {
       roleCode: role.code,
       departmentCode: role.departmentCode,
     };
+    setActivatingCode(role.code);
     try {
       const res = await setActiveRole(payload);
 
@@ -47,6 +52,8 @@ export default function ProfileRoleList() {
         description:
           error instanceof Error ? error.message : "Erro desconhecido.",
       });
+    } finally {
+      setActivatingCode(null);
     }
   };
 
@@ -55,7 +62,7 @@ export default function ProfileRoleList() {
   };
 
   if (isLoading) {
-    return <AppCenterLoading description="Carregando perfis..." />;
+    return <AppCenterLoading description="Carregando perfis…" />;
   }
 
   return (
@@ -84,11 +91,6 @@ export default function ProfileRoleList() {
                     <div>
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm">{role.name}</p>
-                        {isRoleActive(role.code) && (
-                          <Badge variant={"default"} className="text-xs">
-                            Ativado
-                          </Badge>
-                        )}
                       </div>
                       {role.code && (
                         <p className="text-xs text-muted-foreground">
@@ -105,11 +107,11 @@ export default function ProfileRoleList() {
 
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <IGRPIcon iconName="Building2" className="h-3 w-3" />
+                        <IGRPIcon iconName="Building2" className="size-3" />
                         <span>{role.departmentCode}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <IGRPIcon iconName="Shield" className="h-3 w-3" />
+                        <IGRPIcon iconName="Shield" className="size-3" />
                         <span>
                           {role.permissions.length}{" "}
                           {role.permissions.length === 1
@@ -148,15 +150,26 @@ export default function ProfileRoleList() {
                   </div>
                 </div>
 
-                <Button
-                  variant={isRoleActive(role.code) ? "secondary" : "ghost"}
-                  size="sm"
-                  onClick={() => handleActivateRole(role)}
-                  disabled={isRoleActive(role.code) || isSettingActive}
-                  className="shrink-0 cursor-pointer"
-                >
-                  {isRoleActive(role.code) ? "Ativo" : "Ativar"}
-                </Button>
+                {!isRoleActive(role.code) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleActivateRole(role)}
+                    disabled={isSettingActive}
+                    className="shrink-0 cursor-pointer gap-1.5 transition-colors hover:border-primary hover:text-primary"
+                  >
+                    <IGRPIcon
+                      iconName={
+                        activatingCode === role.code ? "LoaderCircle" : "Check"
+                      }
+                      className={cn(
+                        "size-4",
+                        activatingCode === role.code && "animate-spin",
+                      )}
+                    />
+                    {activatingCode === role.code ? "A ativar…" : "Ativar"}
+                  </Button>
+                )}
               </div>
             ))}
           </div>
@@ -170,7 +183,7 @@ export default function ProfileRoleList() {
           <div>
             <p className="font-medium text-sm">Sem perfis atribuídos</p>
             <p className="text-xs text-muted-foreground">
-              Este utilizador não tem perfis.
+              Ainda não tem perfis atribuídos.
             </p>
           </div>
         </div>

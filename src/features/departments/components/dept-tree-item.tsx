@@ -17,12 +17,15 @@ import { useDeptTree } from "./dept-tree-context";
 interface Props {
   dept: DepartmentWithChildren;
   level?: number;
+  /** Codes of ancestors in the current render path — guards against cycles. */
+  ancestorCodes?: ReadonlySet<string>;
 }
 
-const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
+const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
   const {
     selectedCode,
     expanded,
+    searchActive,
     select,
     toggle,
     onEdit,
@@ -31,7 +34,9 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
   } = useDeptTree();
 
   const hasChildren = !!dept.children?.length;
-  const isExpanded = expanded.has(dept.code);
+  // During an active search the filtered tree is shown fully expanded so
+  // nested matches aren't hidden behind collapsed parents.
+  const isExpanded = searchActive || expanded.has(dept.code);
   const isSelected = selectedCode === dept.code;
   const isActive = dept.status === "ACTIVE";
 
@@ -49,9 +54,9 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
       >
         <button
           type="button"
-          className="size-4 flex items-center justify-center shrink-0 disabled:cursor-default"
+          className="size-4 flex items-center justify-center shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
           onClick={() => hasChildren && toggle(dept.code)}
-          disabled={!hasChildren}
+          disabled={!hasChildren || searchActive}
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-label={
             hasChildren
@@ -64,8 +69,9 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
           {hasChildren ? (
             <IGRPIcon
               iconName="ChevronRight"
+              aria-hidden
               className={cn(
-                "w-3.5 h-3.5 transition-transform",
+                "w-3.5 h-3.5 transition-transform motion-reduce:transition-none",
                 isExpanded && "rotate-90",
               )}
               strokeWidth={2}
@@ -78,7 +84,8 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
         <button
           type="button"
           onClick={() => select(dept.code)}
-          className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
+          aria-current={isSelected ? "true" : undefined}
+          className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {!isActive && (
             <span
@@ -89,7 +96,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
           <span className="flex-1 text-left truncate">{dept.name}</span>
         </button>
 
-        <div className="opacity-40 group-hover:opacity-100 transition-opacity">
+        <div className="opacity-40 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity motion-reduce:transition-none">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -100,19 +107,18 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               >
                 <IGRPIcon
                   iconName="EllipsisVertical"
+                  aria-hidden
                   className="size-4"
                   strokeWidth={2}
                 />
               </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              onCloseAutoFocus={(e) => e.preventDefault()}
-              align="end"
-            >
+            <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => onEdit(dept)}>
                 <IGRPIcon
                   iconName="Pencil"
+                  aria-hidden
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
@@ -121,6 +127,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               <DropdownMenuItem onSelect={() => onCreateSub(dept)}>
                 <IGRPIcon
                   iconName="FolderPlus"
+                  aria-hidden
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
@@ -133,6 +140,7 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
               >
                 <IGRPIcon
                   iconName="Trash"
+                  aria-hidden
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
@@ -145,9 +153,18 @@ const DepartmentTreeItem = ({ dept, level = 0 }: Props) => {
 
       {hasChildren &&
         isExpanded &&
-        dept.children?.map((child) => (
-          <DepartmentTreeItem key={child.code} dept={child} level={level + 1} />
-        ))}
+        dept.children?.map((child) =>
+          // Skip any child already in the render path — guards against a
+          // malformed cycle (e.g. A→B→A) causing infinite recursion.
+          ancestorCodes?.has(child.code) ? null : (
+            <DepartmentTreeItem
+              key={child.code}
+              dept={child}
+              level={level + 1}
+              ancestorCodes={new Set(ancestorCodes ?? []).add(dept.code)}
+            />
+          ),
+        )}
     </div>
   );
 };

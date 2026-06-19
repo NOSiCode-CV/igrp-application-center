@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 import {
@@ -39,6 +40,9 @@ export interface UserProfileTabsProps {
 }
 
 export function UserProfileTabs({ user }: UserProfileTabsProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const tabs = useMemo<IGRPTabItem[]>(
     () => [
       {
@@ -61,9 +65,22 @@ export function UserProfileTabs({ user }: UserProfileTabsProps) {
     [user],
   );
 
+  const requested = searchParams.get("tab");
+  const value =
+    requested && tabs.some((t) => t.value === requested)
+      ? requested
+      : tabs[0].value;
+
+  const handleValueChange = (next: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", next);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <IGRPTabs
-      defaultValue="departments"
+      value={value}
+      onValueChange={handleValueChange}
       items={tabs}
       className="min-w-0"
       tabContentClassName="px-0"

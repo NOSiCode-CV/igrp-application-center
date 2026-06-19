@@ -87,17 +87,29 @@ export function DepartmentListTree() {
     [],
   );
 
+  const searchActive = deferredSearchTerm.length > 0;
+
   const treeCtx = useMemo<DeptTreeContextValue>(
     () => ({
       selectedCode,
       expanded,
+      searchActive,
       select,
       toggle,
       onEdit,
       onCreateSub,
       onDelete,
     }),
-    [selectedCode, expanded, select, toggle, onEdit, onCreateSub, onDelete],
+    [
+      selectedCode,
+      expanded,
+      searchActive,
+      select,
+      toggle,
+      onEdit,
+      onCreateSub,
+      onDelete,
+    ],
   );
 
   if (isLoading)

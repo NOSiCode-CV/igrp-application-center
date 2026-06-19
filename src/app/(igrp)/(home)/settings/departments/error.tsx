@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 import { StatusAwareError } from "@/components/errors/status-aware-error";
+import { parseHttpStatusDigest } from "@/lib/errors";
 import { reportError } from "@/lib/report-error";
 
 interface Props {
@@ -14,7 +15,14 @@ interface Props {
 
 export default function DepartmentsError({ error, reset }: Props) {
   useEffect(() => {
-    reportError(error, { segment: "settings/departments" });
+    // Skip reporting expected client errors (4xx like 401/403/404) — they are
+    // routine authorization/not-found outcomes, not observability signal.
+    const status = parseHttpStatusDigest(error.digest)?.status;
+    const isExpectedClientError =
+      status !== undefined && status >= 400 && status < 500;
+    if (!isExpectedClientError) {
+      reportError(error, { segment: "settings/departments" });
+    }
   }, [error]);
 
   return (

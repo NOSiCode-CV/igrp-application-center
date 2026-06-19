@@ -7,9 +7,11 @@ import {
   IGRPIcon,
   IGRPUserAvatar,
   Skeleton,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
+import { validateImageUpload } from "@/features/files/file-validation";
 import { getInitials } from "@/lib/utilities";
 
 export interface UserProfileAvatarProps {
@@ -29,6 +31,7 @@ export function UserProfileAvatar({
 }: UserProfileAvatarProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
+  const { igrpToast } = useIGRPToast();
 
   useEffect(() => {
     return () => {
@@ -39,6 +42,18 @@ export function UserProfileAvatar({
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Validate before previewing so an invalid file never flickers on screen.
+    const validationError = validateImageUpload(file);
+    if (validationError) {
+      igrpToast({
+        type: "error",
+        title: "Avatar inválido",
+        description: validationError,
+        duration: 4000,
+      });
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
     const preview = URL.createObjectURL(file);
     setLocalPreview(preview);
     try {

@@ -125,6 +125,33 @@ export async function getUserRoles(
   }
 }
 
+// Maximum length the server enforces on `nic` (@Size(max=13)).
+const NIC_MAX_LENGTH = 13;
+
+// `updateUser` is a full PUT: every call re-sends the whole DTO, including
+// fields the UI never touches. Pre-existing rows can carry values that violate
+// constraints added later server-side (e.g. an over-length `nic`, or an empty
+// `phoneNumber` that fails the E.164 `@Pattern`). Normalize those here so an
+// unrelated edit (name, avatar, status) is not rejected by stale data.
+function sanitizeUserForUpdate(user: IGRPUserDTO): IGRPUserDTO {
+  const sanitized: IGRPUserDTO = { ...user };
+
+  const nic = sanitized.nic?.trim();
+  if (!nic || nic.length > NIC_MAX_LENGTH) {
+    // Drop invalid/empty values rather than truncate — silently shortening an
+    // identity number would be worse than omitting it.
+    sanitized.nic = null;
+  } else {
+    sanitized.nic = nic;
+  }
+
+  // Empty string fails the server `@Pattern`; null means "no phone".
+  const phone = sanitized.phoneNumber?.trim();
+  sanitized.phoneNumber = phone ? phone : null;
+
+  return sanitized;
+}
+
 export async function updateUser(
   id: string,
   user: IGRPUserDTO,
@@ -132,7 +159,10 @@ export async function updateUser(
   const client = await getClientAccess();
 
   try {
-    const result = await client.users.updateUser(id, user);
+    const result = await client.users.updateUser(
+      id,
+      sanitizeUserForUpdate(user),
+    );
     return { success: true, data: result.data };
   } catch (error) {
     console.error(

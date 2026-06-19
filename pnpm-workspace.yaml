@@ -1,5 +1,3 @@
 allowBuilds:
   msw: true
   sharp: true
-#overrides:
-#  react-hook-form: 7.76.0

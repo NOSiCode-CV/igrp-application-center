@@ -16,7 +16,11 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
 }));
 
 vi.mock("next/link", () => ({
-  default: ({ href, children, className }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
+  default: ({
+    href,
+    children,
+    className,
+  }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string }) => (
     <a href={href} className={className}>
       {children}
     </a>
@@ -50,9 +54,7 @@ describe("SettingsCard", () => {
 
     it("renders title and description", () => {
       render(<SettingsCard item={activeItem} />);
-      expect(
-        screen.getByText("Gestão de Aplicações"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Gestão de Aplicações")).toBeInTheDocument();
       expect(
         screen.getByText("Crie, edite e gerencie suas aplicações."),
       ).toBeInTheDocument();

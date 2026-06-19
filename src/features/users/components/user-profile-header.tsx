@@ -1,7 +1,14 @@
 "use client";
 
-import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
+import {
+  Badge,
+  Card,
+  CardContent,
+  cn,
+} from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+
+import { getStatusColor } from "@/lib/utilities";
 
 import { UserProfileAvatar } from "./user-profile-avatar";
 import { UserProfileEditableName } from "./user-profile-editable-name";
@@ -45,9 +52,12 @@ export function UserProfileHeader(props: UserProfileHeaderProps) {
                 fallback="N/A"
                 onSave={onSaveName}
               />
+              <Badge className={cn(getStatusColor(user.status ?? ""))}>
+                {user.status === "ACTIVE" ? "Ativo" : "Inativo"}
+              </Badge>
               {actions ? <div className="ml-auto">{actions}</div> : null}
             </div>
-            <p className="text-muted-foreground">{user.email}</p>
+            <p className="text-muted-foreground truncate">{user.email}</p>
           </div>
         </div>
       </CardContent>

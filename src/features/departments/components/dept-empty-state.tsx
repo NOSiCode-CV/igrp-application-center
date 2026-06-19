@@ -1,8 +1,6 @@
 "use client";
 
-import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
-
-import { ButtonLink } from "@/components/button-link";
+import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 interface Props {
   variant: "sidebar-empty" | "sidebar-no-results" | "main-no-departments";
@@ -51,6 +49,7 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
       >
         <IGRPIcon
           iconName="Building2"
+          aria-hidden
           className={`${c.iconSize} text-muted-foreground`}
           strokeWidth={c.iconStroke}
         />
@@ -72,12 +71,15 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
         {c.body}
       </p>
       {onCreate && (
-        <ButtonLink
-          onClick={onCreate}
-          icon="Plus"
-          href="#"
-          label="Novo Departamento"
-        />
+        <Button onClick={onCreate}>
+          <IGRPIcon
+            iconName="Plus"
+            aria-hidden
+            className="size-4"
+            strokeWidth={2}
+          />
+          Novo Departamento
+        </Button>
       )}
     </div>
   );

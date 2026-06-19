@@ -9,6 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  cn,
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
@@ -74,7 +75,11 @@ export function UserProfileStatusDialog({
             onClick={handleConfirm}
             disabled={pending}
             variant={isActive ? "destructive" : "default"}
-            className="gap-2"
+            className={cn(
+              "gap-2",
+              !isActive &&
+                "bg-success text-success-foreground hover:bg-success/90",
+            )}
           >
             {pending ? (
               <IGRPIcon iconName="LoaderCircle" className="animate-spin" />

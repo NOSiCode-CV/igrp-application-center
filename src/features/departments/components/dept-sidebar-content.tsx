@@ -1,8 +1,10 @@
 "use client";
 
-import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
-
-import { ButtonLink } from "@/components/button-link";
+import {
+  Button,
+  IGRPIcon,
+  Input,
+} from "@igrp/igrp-framework-react-design-system";
 
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { DepartmentEmptyState } from "./dept-empty-state";
@@ -36,33 +38,44 @@ export function DepartmentSidebarContent({
             ? `${counts.active} ativos · ${counts.inactive} inativos`
             : `${counts.active} departamento${counts.active === 1 ? "" : "s"}`}
         </p>
-        <ButtonLink
-          onClick={onCreate}
-          icon="Plus"
-          href="#"
-          label="Novo Departamento"
-        />
+        <Button onClick={onCreate} className="w-full sm:w-auto">
+          <IGRPIcon
+            iconName="Plus"
+            aria-hidden
+            className="size-4"
+            strokeWidth={2}
+          />
+          Novo Departamento
+        </Button>
       </div>
 
       <div className="mt-4">
         <div className="relative">
           <IGRPIcon
             iconName="Search"
+            aria-hidden
             className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground"
           />
           <Input
-            type="text"
-            placeholder="Pesquisar departamento..."
+            type="search"
+            aria-label="Pesquisar departamento"
+            autoComplete="off"
+            placeholder="Pesquisar departamento…"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full bg-background pl-8 pr-8"
           />
           {isFiltering && (
-            <IGRPIcon
-              iconName="LoaderCircle"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground animate-spin"
-              aria-label="A filtrar"
-            />
+            <>
+              <IGRPIcon
+                iconName="LoaderCircle"
+                aria-hidden
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground animate-spin motion-reduce:animate-none"
+              />
+              <span role="status" aria-live="polite" className="sr-only">
+                A filtrar…
+              </span>
+            </>
           )}
         </div>
       </div>

@@ -41,7 +41,7 @@ export function UserProfileEditableName({
   const commit = async () => {
     if (saving) return;
     const next = draft.trim();
-    if (!next || next === name) {
+    if (!next || next === name.trim()) {
       setEditing(false);
       setError(null);
       return;

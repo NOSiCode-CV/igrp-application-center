@@ -7,6 +7,8 @@ import type { DepartmentWithChildren } from "../dept-tree-utils";
 export interface DeptTreeContextValue {
   selectedCode: string | null;
   expanded: Set<string>;
+  /** While a search filter is active, matching branches render expanded. */
+  searchActive: boolean;
   select(code: string): void;
   toggle(code: string): void;
   onEdit(dept: DepartmentWithChildren): void;

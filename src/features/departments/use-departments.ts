@@ -41,13 +41,18 @@ import {
   updateRole,
 } from "@/actions/departments";
 import { applicationsKeys } from "@/features/applications/query-keys";
+import { HttpStatusError } from "@/lib/errors";
 
 export const useDepartments = () => {
   return useQuery<DepartmentDTO[], Error>({
     queryKey: ["departments"],
     queryFn: async () => {
       const result = await getDepartments();
-      if (!result.success) throw new Error(result.error);
+      // Throw HttpStatusError (not a plain Error) so a client-side fetch
+      // failure routes to the status error page via the segment boundary,
+      // matching the server prefetch in `prefetchDepartments`.
+      if (!result.success)
+        throw new HttpStatusError(result.status, result.error);
       return result.data;
     },
     retry: false,
