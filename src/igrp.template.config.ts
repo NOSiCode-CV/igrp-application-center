@@ -42,7 +42,7 @@ export function createConfig(
           showUser: true,
           showThemeSwitcher: true,
           showIGRPSidebarTrigger: false,
-          showIGRPHeaderTitle: true,
+          showIGRPHeaderTitle: false,
           showIGRPHeaderLogo: true,
           showSettings: true,
           settingsUrl: process.env.NEXT_PUBLIC_IGRP_SETTINGS_URL || "",
@@ -59,6 +59,7 @@ export function createConfig(
           showAppSwitcher: true,
           apps: apps ?? [],
           appCenterUrl: process.env.NEXT_IGRP_APP_CENTER_URL || "",
+          showMenuSearch: true,
         };
       },
     },
