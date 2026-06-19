@@ -49,7 +49,7 @@ export function ApplicationsGrid({
 
   if (filtered.length === 0) {
     return (
-      <div className="text-center py-6 text-muted-foreground">
+      <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
         Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou filtros.
       </div>
     );

@@ -22,7 +22,7 @@ export default function ApplicationsError({
       fallback={
         <InlineError
           title="Não foi possível carregar as aplicações."
-          message={error.message}
+          message="Tente novamente. Se o problema persistir, contacte o suporte."
           onRetry={reset}
         />
       }

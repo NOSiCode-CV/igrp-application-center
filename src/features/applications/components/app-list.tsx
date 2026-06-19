@@ -33,10 +33,16 @@ export function ApplicationList() {
   };
 
   if (isLoading)
-    return <AppCenterLoading description="Carregando aplicações..." />;
+    return <AppCenterLoading description="Carregando aplicações…" />;
 
   if (error)
-    return <InlineError message={error.message} onRetry={() => refetch()} />;
+    return (
+      <InlineError
+        title="Não foi possível carregar as aplicações."
+        message="Tente novamente. Se o problema persistir, contacte o suporte."
+        onRetry={() => refetch()}
+      />
+    );
 
   const allApps = applications ?? [];
   const appEmpty = allApps.length === 0;
@@ -50,14 +56,14 @@ export function ApplicationList() {
         iconName="Grid2x2Plus"
         onClick={openCreate}
       >
-        Criar Nova Aplicação
+        Nova Aplicação
       </IGRPButton>
     </div>
   );
 
   return (
     <div className="flex flex-col gap-10 animate-fade-in">
-      <PageHeader title="Gerir Aplicações" description="" showActions>
+      <PageHeader title="Gerir Aplicações" showActions>
         <IGRPButton showIcon iconName="Grid2x2Plus" onClick={openCreate}>
           Nova Aplicação
         </IGRPButton>

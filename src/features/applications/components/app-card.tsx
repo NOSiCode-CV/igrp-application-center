@@ -17,6 +17,7 @@ import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts"
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import {
   APP_DESCRIPTION_FALLBACK,
+  formatSlug,
   isSystemApp,
 } from "@/features/applications/app-utils";
 import { config, ROUTES } from "@/lib/constants";
@@ -28,10 +29,12 @@ interface ApplicationCardProps {
   onEdit?: (app: ApplicationDTO) => void;
 }
 
+const ACTION_BUTTON_HOVER =
+  "hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50";
+
 export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
   const { name, code, status, description, slug, url } = app;
-  // const href = slug ? formatSlug(slug) : url;
-  const href = slug ?? url;
+  const href = slug ? formatSlug(slug) : url;
   const isSystem = isSystemApp(app);
   const appImage = app.picture;
   const imageSrc = appImage
@@ -80,7 +83,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
           label="Ver"
           size="icon"
           variant="ghost"
-          btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+          btnClassName={ACTION_BUTTON_HOVER}
         />
 
         {!isSystem && onEdit && (
@@ -92,7 +95,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
                 showIcon
                 iconName="SquarePen"
                 onClick={() => onEdit(app)}
-                className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+                className={ACTION_BUTTON_HOVER}
                 aria-label={`Editar ${name}`}
               />
             </TooltipTrigger>
@@ -107,7 +110,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
             label="Abrir"
             size="icon"
             variant="ghost"
-            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
+            btnClassName={ACTION_BUTTON_HOVER}
           />
         )}
       </div>

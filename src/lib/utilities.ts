@@ -1,7 +1,7 @@
 import { STATUS_OPTIONS } from "./constants";
 
 export function getStatusColor(status: string) {
-  return status === "ACTIVE" ? "status-active" : "bg-amber-100 text-amber-800";
+  return status === "ACTIVE" ? "status-active" : "status-inactive";
 }
 
 export function statusClass(status: string): import("clsx").ClassValue {

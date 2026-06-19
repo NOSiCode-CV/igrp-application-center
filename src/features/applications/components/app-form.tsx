@@ -129,6 +129,7 @@ export function ApplicationForm({
           description: "A aplicação foi criada com sucesso!",
         });
 
+        onSuccess();
         router.push(`${ROUTES.APPLICATIONS}/${values.code}`);
         return;
       }
@@ -156,14 +157,18 @@ export function ApplicationForm({
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='after:content-["*"] after:text-destructive'>
-                  Nome
+                <FormLabel>
+                  Nome{" "}
+                  <span aria-hidden="true" className="text-destructive">
+                    *
+                  </span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Nome da aplicação"
-                    required
+                    placeholder="Nome da aplicação…"
+                    autoComplete="off"
+                    aria-required="true"
                     className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                   />
                 </FormControl>
@@ -177,17 +182,22 @@ export function ApplicationForm({
             name="code"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className='after:content-["*"] after:text-destructive'>
-                  Código
+                <FormLabel>
+                  Código{" "}
+                  <span aria-hidden="true" className="text-destructive">
+                    *
+                  </span>
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     placeholder="EX: APP_CENTER"
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-required="true"
                     className={`uppercase placeholder:truncate placeholder:normal-case border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30 ${
                       isEdit ? "bg-muted" : ""
                     }`}
-                    required
                     disabled={isEdit}
                     onChange={(e) => {
                       if (!isEdit) {
@@ -266,14 +276,19 @@ export function ApplicationForm({
               name="url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='after:content-["*"] after:text-destructive'>
-                    URL
+                  <FormLabel>
+                    URL{" "}
+                    <span aria-hidden="true" className="text-destructive">
+                      *
+                    </span>
                   </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       type="url"
                       inputMode="url"
+                      autoComplete="off"
+                      aria-required="true"
                       value={field.value || ""}
                       placeholder="https://exemplo.com"
                       className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
@@ -296,7 +311,7 @@ export function ApplicationForm({
                     {...field}
                     value={field.value || ""}
                     rows={3}
-                    placeholder="Breve descrição da aplicação"
+                    placeholder="Breve descrição da aplicação…"
                     className="resize-none placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                   />
                 </FormControl>

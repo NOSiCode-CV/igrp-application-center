@@ -35,12 +35,11 @@ export function FacetedFilter({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="gap-2" disabled={disabled}>
-          <IGRPIcon iconName="ListFilter" strokeWidth={2} />
+          <IGRPIcon iconName="ListFilter" aria-hidden="true" strokeWidth={2} />
           {label} {value.length > 0 && `(${value.length})`}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-40">
-        <DropdownMenuSeparator />
         {options.map((option) => (
           <DropdownMenuCheckboxItem
             key={option.value}
@@ -63,7 +62,12 @@ export function FacetedFilter({
               onClick={() => onChange([])}
               className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
             >
-              <IGRPIcon iconName="X" className="mr-1" strokeWidth={2} />
+              <IGRPIcon
+                iconName="X"
+                aria-hidden="true"
+                className="mr-1"
+                strokeWidth={2}
+              />
               Limpar
             </DropdownMenuItem>
           </>

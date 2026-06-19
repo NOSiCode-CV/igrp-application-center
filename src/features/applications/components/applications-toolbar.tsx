@@ -25,12 +25,15 @@ export function ApplicationsToolbar({
       <div className="relative w-full max-w-sm">
         <IGRPIcon
           iconName="Search"
+          aria-hidden="true"
           className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
           strokeWidth={2}
         />
         <Input
           type="search"
-          placeholder="Pesquisar aplicações..."
+          aria-label="Pesquisar aplicações"
+          spellCheck={false}
+          placeholder="Pesquisar aplicações…"
           className="w-full bg-background pl-8"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}

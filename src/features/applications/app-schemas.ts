@@ -12,7 +12,6 @@ import { emptyToNull, statusSchema } from "@/schemas/global";
 import { APPLICATIONS_TYPES } from "./app-utils";
 
 export const appTypeCrud = z.enum(APPLICATIONS_TYPES);
-export const types = z.enum(APPLICATIONS_TYPES);
 
 const BaseApp = z
   .object({
@@ -36,7 +35,7 @@ const BaseApp = z
     owner: z.string().optional(),
     description: z.string().optional(),
     picture: z.string().optional(),
-    type: types,
+    type: appTypeCrud,
     url: z.string().url().optional(),
     slug: z.string().optional(),
     createdBy: z.string().optional(),
@@ -72,14 +71,10 @@ const ExternalSpecific = z
 const InternalApp = BaseApp.merge(InternalSpecific);
 const ExternalApp = BaseApp.merge(ExternalSpecific);
 
-// export const applicationSchema = z.discriminatedUnion("type", [
-//   InternalApp,
-//   ExternalApp,
-// ]);
-
 export type ApplicationArgs = z.infer<typeof BaseApp>;
 
-const createOmit = {
+// Server-managed fields omitted from both create and update payloads.
+const serverManagedOmit = {
   id: true,
   createdBy: true,
   createdDate: true,
@@ -88,24 +83,16 @@ const createOmit = {
 } as const;
 
 export const CreateApplicationSchema = z.discriminatedUnion("type", [
-  InternalApp.omit(createOmit),
-  ExternalApp.omit(createOmit),
+  InternalApp.omit(serverManagedOmit),
+  ExternalApp.omit(serverManagedOmit),
 ]);
 export type CreateApplicationArgs = z.infer<typeof CreateApplicationSchema>;
-
-const updateOmit = {
-  id: true,
-  createdBy: true,
-  createdDate: true,
-  lastModifiedBy: true,
-  lastModifiedDate: true,
-} as const;
 
 const emptyToUndefined = (v: unknown) =>
   typeof v === "string" && v.trim() === "" ? undefined : v;
 
 const PartialBase = BaseApp.partial()
-  .omit(updateOmit)
+  .omit(serverManagedOmit)
   .extend({
     url: z.preprocess(
       emptyToUndefined,

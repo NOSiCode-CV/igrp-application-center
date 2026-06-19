@@ -20,6 +20,7 @@ import {
   updateApplication,
   updateMenu,
 } from "@/actions/applications";
+import { HttpStatusError } from "@/lib/errors";
 
 import { applicationsKeys, menusKeys } from "./query-keys";
 
@@ -28,7 +29,8 @@ export const useApplications = (filters?: ApplicationFilters) => {
     queryKey: applicationsKeys.list(filters),
     queryFn: async () => {
       const result = await getApplications(filters);
-      if (!result.success) throw new Error(result.error);
+      if (!result.success)
+        throw new HttpStatusError(result.status, result.error);
       return result.data;
     },
   });
@@ -39,7 +41,8 @@ export const useApplicationByCode = (code: string) => {
     queryKey: applicationsKeys.detail(code),
     queryFn: async () => {
       const result = await getApplicationByCode(code);
-      if (!result.success) throw new Error(result.error);
+      if (!result.success)
+        throw new HttpStatusError(result.status, result.error);
       return result.data;
     },
     enabled: !!code,
