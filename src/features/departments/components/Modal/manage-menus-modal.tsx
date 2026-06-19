@@ -269,9 +269,11 @@ export function ManageMenusModal({
   const MenuTreeItem = ({
     menu,
     level = 0,
+    ancestorCodes,
   }: {
     menu: MenuWithChildren;
     level?: number;
+    ancestorCodes?: ReadonlySet<string>;
   }) => {
     const hasChildren = menu.children && menu.children.length > 0;
     const isExpanded = expandedMenus.has(menu.code);
@@ -354,7 +356,7 @@ export function ManageMenusModal({
                 </span>
                 {isAssigned && (
                   <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                    <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                    <div className="size-1.5 rounded-full bg-success" />
                     Ativo
                   </div>
                 )}
@@ -396,9 +398,18 @@ export function ManageMenusModal({
 
         {hasChildren && isExpanded && (
           <div className="mt-2 flex flex-col gap-2">
-            {menu.children?.map((child) => (
-              <MenuTreeItem key={child.code} menu={child} level={level + 1} />
-            ))}
+            {menu.children?.map((child) =>
+              // Skip any child already in the render path — guards against a
+              // malformed cycle causing infinite recursion.
+              ancestorCodes?.has(child.code) ? null : (
+                <MenuTreeItem
+                  key={child.code}
+                  menu={child}
+                  level={level + 1}
+                  ancestorCodes={new Set(ancestorCodes ?? []).add(menu.code)}
+                />
+              ),
+            )}
           </div>
         )}
       </>

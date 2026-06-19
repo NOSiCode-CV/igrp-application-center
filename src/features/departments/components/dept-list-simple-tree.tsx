@@ -76,7 +76,7 @@ const DepartmentTreeItemSimple = ({
               iconName="ChevronRight"
               aria-hidden
               className={cn(
-                "w-3.5 h-3.5 transition-transform motion-reduce:transition-none",
+                "size-3.5 transition-transform motion-reduce:transition-none",
                 isExpanded && "rotate-90",
               )}
               strokeWidth={2}

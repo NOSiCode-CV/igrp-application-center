@@ -18,6 +18,7 @@ const MenuTreeRow = ({
   setMenuRoleAssignments,
   roles,
   menuRoleAssignments,
+  ancestorCodes,
 }: {
   menu: MenuWithChildren;
   level?: number;
@@ -26,6 +27,7 @@ const MenuTreeRow = ({
   >;
   roles?: { name: string; code: string }[];
   menuRoleAssignments: Map<string, Set<string>>;
+  ancestorCodes?: ReadonlySet<string>;
 }) => {
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
@@ -123,16 +125,21 @@ const MenuTreeRow = ({
 
       {hasChildren &&
         isExpanded &&
-        menu.children?.map((child) => (
-          <MenuTreeRow
-            key={child.code}
-            menu={child}
-            level={level + 1}
-            setMenuRoleAssignments={setMenuRoleAssignments}
-            roles={roles}
-            menuRoleAssignments={menuRoleAssignments}
-          />
-        ))}
+        menu.children?.map((child) =>
+          // Skip any child already in the render path — guards against a
+          // malformed cycle causing infinite recursion.
+          ancestorCodes?.has(child.code) ? null : (
+            <MenuTreeRow
+              key={child.code}
+              menu={child}
+              level={level + 1}
+              setMenuRoleAssignments={setMenuRoleAssignments}
+              roles={roles}
+              menuRoleAssignments={menuRoleAssignments}
+              ancestorCodes={new Set(ancestorCodes ?? []).add(menu.code)}
+            />
+          ),
+        )}
     </>
   );
 };

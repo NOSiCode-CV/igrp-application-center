@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { Button, cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 interface Props {
   variant: "sidebar-empty" | "sidebar-no-results" | "main-no-departments";
@@ -50,7 +50,7 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
         <IGRPIcon
           iconName="Building2"
           aria-hidden
-          className={`${c.iconSize} text-muted-foreground`}
+          className={cn(c.iconSize, "text-muted-foreground")}
           strokeWidth={c.iconStroke}
         />
       </div>

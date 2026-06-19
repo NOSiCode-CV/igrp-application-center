@@ -2,6 +2,7 @@
 
 import {
   Button,
+  cn,
   IGRPIcon,
   Input,
 } from "@igrp/igrp-framework-react-design-system";
@@ -81,9 +82,10 @@ export function DepartmentSidebarContent({
       </div>
 
       <div
-        className={`flex-1 mt-3 overflow-y-auto min-h-[200px] transition-opacity ${
-          isFiltering ? "opacity-70" : "opacity-100"
-        }`}
+        className={cn(
+          "flex-1 mt-3 overflow-y-auto min-h-[200px] transition-opacity motion-reduce:transition-none",
+          isFiltering ? "opacity-70" : "opacity-100",
+        )}
       >
         {filtered.length === 0 ? (
           <DepartmentEmptyState

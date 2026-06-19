@@ -1,7 +1,7 @@
 import type { DepartmentStatus } from "@igrp/platform-access-management-client-ts";
 import { z } from "zod";
 
-import { emptyToNull, statusSchema, trimmed } from "@/schemas/global";
+import { statusSchema, trimmed } from "@/schemas/global";
 
 export const departmentSchema = z
   .object({
@@ -17,17 +17,10 @@ export const departmentSchema = z
       .string()
       .min(2, "Nome é obrigatório (min 2 carateres)")
       .regex(
-        /^[a-zA-Z0-9\sÀ-ÿ()]+$/,
+        /^[a-zA-Z0-9\sÀ-ÿ()&.,/-]+$/,
         "O nome não pode conter caracteres especiais",
       ),
-    description: z
-      .string()
-      // .regex(
-      //   /^[a-zA-Z0-9\sÀ-ÿ]+$/,
-      //   "A descrição não pode conter caracteres especiais"
-      // )
-      .optional()
-      .nullable(),
+    description: z.string().optional().nullable(),
     status: statusSchema,
     parentCode: trimmed.optional(),
   })
@@ -35,26 +28,7 @@ export const departmentSchema = z
 
 export type DepartmentArgs = z.infer<typeof departmentSchema>;
 
-export const createDepartmentSchema = departmentSchema.omit({
-  id: true,
-  status: true,
-});
-
-export type CreateDepartment = z.infer<typeof createDepartmentSchema>;
-
-export const updateDepartmentSchema = departmentSchema
-  .omit({ id: true })
-  .partial()
-  .extend({
-    description: emptyToNull.optional(),
-  })
-  .refine((v) => Object.keys(v).length > 0, {
-    message: "É necessário fornecer pelo menos um campo para atualização.",
-  });
-
-export type UpdateDepartment = z.infer<typeof updateDepartmentSchema>;
-
-export const normalizeDeptartment = (data: DepartmentArgs) => {
+export const normalizeDepartment = (data: DepartmentArgs) => {
   return {
     code: data.code?.trim(),
     name: data.name,

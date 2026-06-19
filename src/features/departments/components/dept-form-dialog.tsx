@@ -37,7 +37,7 @@ import { statusSchema } from "@/schemas/global";
 import {
   type DepartmentArgs,
   departmentSchema,
-  normalizeDeptartment,
+  normalizeDepartment,
 } from "../dept-schemas";
 import { useCreateDepartment, useUpdateDepartment } from "../use-departments";
 
@@ -127,7 +127,7 @@ export function DepartmentFormDialog({
   const isLoading = isCreating || isUpdating;
 
   const onSubmit = async (values: DepartmentArgs) => {
-    const payload = normalizeDeptartment(values);
+    const payload = normalizeDepartment(values);
 
     try {
       if (department) {

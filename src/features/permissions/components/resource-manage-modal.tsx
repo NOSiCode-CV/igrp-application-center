@@ -245,7 +245,7 @@ export function ManageResourcesModal({
               </span>
               {isAssigned && (
                 <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                  <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                  <div className="size-1.5 rounded-full bg-success" />
                   Ativo
                 </div>
               )}
