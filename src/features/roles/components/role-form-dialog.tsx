@@ -196,7 +196,7 @@ export function RoleFormDialog({
           >
             {isSubRole && (
               <div className="p-3 rounded-md bg-muted/50 border text-sm text-muted-foreground flex items-center gap-2">
-                <IGRPIcon iconName="Info" className="size-4" />
+                <IGRPIcon iconName="Info" aria-hidden className="size-4" />
                 <span>
                   Este será um sub-perfil de:{" "}
                   <strong className="text-foreground">{parentRoleName}</strong>
@@ -298,9 +298,10 @@ export function RoleFormDialog({
                   <>
                     <IGRPIcon
                       iconName="LoaderCircle"
-                      className="mr-2 h-4 w-4 animate-spin"
+                      aria-hidden
+                      className="mr-2 h-4 w-4 animate-spin motion-reduce:animate-none"
                     />
-                    {isEdit ? "A guardar..." : "A criar..."}
+                    {isEdit ? "A guardar…" : "A criar…"}
                   </>
                 ) : isEdit ? (
                   "Guardar Alterações"

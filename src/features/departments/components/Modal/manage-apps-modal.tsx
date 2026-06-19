@@ -179,10 +179,11 @@ export function ManageAppsModal({
             <DialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AppWindow"
+                aria-hidden
                 className="size-5"
                 strokeWidth={2}
               />
-              Gerenciar Aplicações
+              Gerir Aplicações
             </DialogTitle>
             <DialogDescription>
               Adicione ou remova aplicações do departamento com um clique.
@@ -193,11 +194,14 @@ export function ManageAppsModal({
             <div className="relative">
               <IGRPIcon
                 iconName="Search"
+                aria-hidden
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
               <Input
                 type="search"
-                placeholder="Pesquisar por nome, código ou descrição..."
+                aria-label="Pesquisar aplicação"
+                autoComplete="off"
+                placeholder="Pesquisar por nome, código ou descrição…"
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -217,6 +221,7 @@ export function ManageAppsModal({
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <IGRPIcon
                   iconName="AppWindow"
+                  aria-hidden
                   className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
@@ -252,6 +257,7 @@ export function ManageAppsModal({
                       >
                         <IGRPIcon
                           iconName="AppWindow"
+                          aria-hidden
                           className="size-6"
                           strokeWidth={2}
                         />
@@ -301,6 +307,11 @@ export function ManageAppsModal({
                             handleToggleApp(app.code, app.isAssigned)
                           }
                           disabled={processingApp !== null}
+                          aria-label={
+                            app.isAssigned
+                              ? `Remover ${app.name} do departamento`
+                              : `Adicionar ${app.name} ao departamento`
+                          }
                           className={cn(
                             "data-[state=checked]:bg-success",
                             processingApp === app.code && "opacity-50",
@@ -311,13 +322,17 @@ export function ManageAppsModal({
 
                     {processingApp === app.code && (
                       <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] rounded-lg flex items-center justify-center">
-                        <div className="flex items-center gap-2 text-sm font-medium">
+                        <div
+                          role="status"
+                          className="flex items-center gap-2 text-sm font-medium"
+                        >
                           <IGRPIcon
                             iconName="LoaderCircle"
-                            className="size-4 animate-spin"
+                            aria-hidden
+                            className="size-4 animate-spin motion-reduce:animate-none"
                             strokeWidth={2}
                           />
-                          Processando...
+                          A processar…
                         </div>
                       </div>
                     )}
@@ -342,7 +357,12 @@ export function ManageAppsModal({
               disabled={processingApp !== null}
               className="gap-2"
             >
-              <IGRPIcon iconName="X" className="size-4" strokeWidth={2} />
+              <IGRPIcon
+                iconName="X"
+                aria-hidden
+                className="size-4"
+                strokeWidth={2}
+              />
               Fechar
             </Button>
           </div>
@@ -358,6 +378,7 @@ export function ManageAppsModal({
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
+                aria-hidden
                 className="size-5 text-destructive"
                 strokeWidth={2}
               />
@@ -392,15 +413,17 @@ export function ManageAppsModal({
                 <>
                   <IGRPIcon
                     iconName="LoaderCircle"
-                    className="size-4 animate-spin"
+                    aria-hidden
+                    className="size-4 animate-spin motion-reduce:animate-none"
                     strokeWidth={2}
                   />
-                  Removendo...
+                  A remover…
                 </>
               ) : (
                 <>
                   <IGRPIcon
                     iconName="Trash"
+                    aria-hidden
                     className="size-4"
                     strokeWidth={2}
                   />

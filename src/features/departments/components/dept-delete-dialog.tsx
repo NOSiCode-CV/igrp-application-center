@@ -24,16 +24,17 @@ export function DepartmentDeleteDialog({
   async function confirmDelete() {
     try {
       const result = await deleteDepartment(deptToDelete.code);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
       igrpToast({
         type: "success",
         title: "Departamento Eliminado",
         description: `Departamento '${deptToDelete.name}' foi eliminado com sucesso.`,
         duration: 4000,
       });
-
-      if (!result.success) {
-        throw new Error(result.error);
-      }
 
       onOpenChange(false);
     } catch (error) {

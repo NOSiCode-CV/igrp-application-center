@@ -113,7 +113,7 @@ export function DepartmentListTree() {
   );
 
   if (isLoading)
-    return <AppCenterLoading description="Carregando departamentos..." />;
+    return <AppCenterLoading description="A carregar departamentos…" />;
   if (error) throw error;
 
   const showMainEmpty = !selectedDepartment && (departments?.length ?? 0) === 0;

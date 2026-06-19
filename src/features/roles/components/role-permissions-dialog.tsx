@@ -93,7 +93,7 @@ const columns: ColumnDef<PermissionLike>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label="Selecionar todas as permissões"
         className="ring ring-current/50"
       />
     ),
@@ -101,7 +101,7 @@ const columns: ColumnDef<PermissionLike>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={`Selecionar permissão ${row.original.name}`}
         className="ring ring-current/50"
       />
     ),
@@ -340,24 +340,25 @@ export function RoleDetails({
                   onChange={(e) =>
                     table.getColumn("name")?.setFilterValue(e.target.value)
                   }
-                  placeholder="Filtar por nome..."
-                  type="text"
-                  aria-label="Filtar por nome"
+                  placeholder="Filtrar por nome…"
+                  type="search"
+                  autoComplete="off"
+                  aria-label="Filtrar por nome"
                 />
                 <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-                  <IGRPIcon iconName="Search" />
+                  <IGRPIcon iconName="Search" aria-hidden />
                 </div>
                 {Boolean(table.getColumn("name")?.getFilterValue()) && (
                   <button
                     className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Clear filter"
+                    aria-label="Limpar filtro"
                     onClick={() => {
                       table.getColumn("name")?.setFilterValue("");
                       inputRef.current?.focus();
                     }}
                     type="button"
                   >
-                    <IGRPIcon iconName="CircleX" />
+                    <IGRPIcon iconName="CircleX" aria-hidden />
                   </button>
                 )}
               </div>
@@ -366,7 +367,7 @@ export function RoleDetails({
                 <Badge>{selectedRows.length} selecionado(s)</Badge>
               </div>
               {isLoading ? (
-                <AppCenterLoading description="Carregando permissões..." />
+                <AppCenterLoading description="A carregar permissões…" />
               ) : (
                 <>
                   <div className="bg-background overflow-hidden rounded-md border">
@@ -444,7 +445,7 @@ export function RoleDetails({
                           id={`${id}-per-page`}
                           className="w-fit whitespace-nowrap"
                         >
-                          <SelectValue placeholder="Select number of results" />
+                          <SelectValue placeholder="Selecionar número de resultados" />
                         </SelectTrigger>
                         <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
                           {[5, 10].map((pageSize) => (
@@ -496,9 +497,9 @@ export function RoleDetails({
                               className="disabled:pointer-events-none disabled:opacity-50"
                               onClick={() => table.firstPage()}
                               disabled={!table.getCanPreviousPage()}
-                              aria-label="Go to first page"
+                              aria-label="Ir para a primeira página"
                             >
-                              <IGRPIcon iconName="ChevronFirst" />
+                              <IGRPIcon iconName="ChevronFirst" aria-hidden />
                             </Button>
                           </PaginationItem>
                           <PaginationItem>
@@ -508,9 +509,9 @@ export function RoleDetails({
                               className="disabled:pointer-events-none disabled:opacity-50"
                               onClick={() => table.previousPage()}
                               disabled={!table.getCanPreviousPage()}
-                              aria-label="Go to previous page"
+                              aria-label="Ir para a página anterior"
                             >
-                              <IGRPIcon iconName="ChevronLeft" />
+                              <IGRPIcon iconName="ChevronLeft" aria-hidden />
                             </Button>
                           </PaginationItem>
                           <PaginationItem>
@@ -520,9 +521,9 @@ export function RoleDetails({
                               className="disabled:pointer-events-none disabled:opacity-50"
                               onClick={() => table.nextPage()}
                               disabled={!table.getCanNextPage()}
-                              aria-label="Go to next page"
+                              aria-label="Ir para a página seguinte"
                             >
-                              <IGRPIcon iconName="ChevronRight" />
+                              <IGRPIcon iconName="ChevronRight" aria-hidden />
                             </Button>
                           </PaginationItem>
                           <PaginationItem>
@@ -532,9 +533,9 @@ export function RoleDetails({
                               className="disabled:pointer-events-none disabled:opacity-50"
                               onClick={() => table.lastPage()}
                               disabled={!table.getCanNextPage()}
-                              aria-label="Go to last page"
+                              aria-label="Ir para a última página"
                             >
-                              <IGRPIcon iconName="ChevronLast" />
+                              <IGRPIcon iconName="ChevronLast" aria-hidden />
                             </Button>
                           </PaginationItem>
                         </PaginationContent>

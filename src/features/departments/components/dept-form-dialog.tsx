@@ -355,8 +355,8 @@ export function DepartmentFormDialog({
                     onClick={() => setShouldClose(false)}
                     className="flex items-center gap-1"
                   >
-                    <IGRPIcon iconName="Save" className="size-4" />
-                    {isLoading ? "Guardando..." : "Guardar e Novo"}
+                    <IGRPIcon iconName="Save" aria-hidden className="size-4" />
+                    {isLoading ? "A guardar…" : "Guardar e Novo"}
                   </Button>
                 )}
 
@@ -366,8 +366,8 @@ export function DepartmentFormDialog({
                   onClick={() => setShouldClose(true)}
                   className="flex items-center gap-1"
                 >
-                  <IGRPIcon iconName="Save" className="size-4" />
-                  {isLoading ? "Guardando..." : "Guardar"}
+                  <IGRPIcon iconName="Save" aria-hidden className="size-4" />
+                  {isLoading ? "A guardar…" : "Guardar"}
                 </Button>
               </div>
             </DialogFooter>

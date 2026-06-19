@@ -21,9 +21,11 @@ import type { RoleWithChildren } from "./role-tree-list";
 export function RoleTreeRow({
   role,
   level = 0,
+  ancestorCodes,
 }: {
   role: RoleWithChildren;
   level?: number;
+  ancestorCodes?: ReadonlySet<string>;
 }) {
   const {
     expandedRoles,
@@ -47,13 +49,16 @@ export function RoleTreeRow({
             {hasChildren ? (
               <button
                 onClick={() => toggleExpand(role.code)}
-                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors"
+                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 type="button"
+                aria-expanded={isExpanded}
+                aria-label={isExpanded ? "Recolher perfil" : "Expandir perfil"}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
+                  aria-hidden
                   className={cn(
-                    "size-4 transition-transform",
+                    "size-4 transition-transform motion-reduce:transition-none",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
@@ -65,6 +70,7 @@ export function RoleTreeRow({
 
             <IGRPIcon
               iconName="ShieldCheck"
+              aria-hidden
               className="size-4 text-primary shrink-0"
               strokeWidth={2}
             />
@@ -88,6 +94,7 @@ export function RoleTreeRow({
                 <span className="sr-only">Abrir Menu</span>
                 <IGRPIcon
                   iconName="Ellipsis"
+                  aria-hidden
                   className="size-4"
                   strokeWidth={2}
                 />
@@ -98,6 +105,7 @@ export function RoleTreeRow({
               <DropdownMenuItem onSelect={() => handleEdit(role)}>
                 <IGRPIcon
                   iconName="Pencil"
+                  aria-hidden
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
@@ -106,6 +114,7 @@ export function RoleTreeRow({
               <DropdownMenuItem onSelect={() => handleNewSubRole(role)}>
                 <IGRPIcon
                   iconName="Plus"
+                  aria-hidden
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
@@ -114,6 +123,7 @@ export function RoleTreeRow({
               <DropdownMenuItem onSelect={() => handlePermissions(role)}>
                 <IGRPIcon
                   iconName="ShieldCheck"
+                  aria-hidden
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
@@ -126,6 +136,7 @@ export function RoleTreeRow({
               >
                 <IGRPIcon
                   iconName="Trash"
+                  aria-hidden
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
@@ -138,9 +149,18 @@ export function RoleTreeRow({
 
       {hasChildren &&
         isExpanded &&
-        role.children?.map((child) => (
-          <RoleTreeRow key={child.code} role={child} level={level + 1} />
-        ))}
+        role.children?.map((child) =>
+          // Skip any child already in the render path — guards against a
+          // malformed cycle causing infinite recursion.
+          ancestorCodes?.has(child.code) ? null : (
+            <RoleTreeRow
+              key={child.code}
+              role={child}
+              level={level + 1}
+              ancestorCodes={new Set(ancestorCodes ?? []).add(role.code)}
+            />
+          ),
+        )}
     </>
   );
 }

@@ -80,6 +80,7 @@ export function RoleDeleteDialog({
               >
                 <IGRPIcon
                   iconName="CircleAlertIcon"
+                  aria-hidden
                   className="opacity-80 size-4"
                 />
               </div>
@@ -139,7 +140,7 @@ export function RoleDeleteDialog({
             showIcon
             iconName="Trash"
           >
-            {isPending ? "Aguarde..." : "Eliminar"}
+            {isPending ? "Aguarde…" : "Eliminar"}
           </IGRPButton>
         </DialogFooter>
       </DialogContent>

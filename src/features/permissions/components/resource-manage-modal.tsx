@@ -196,7 +196,12 @@ export function ManageResourcesModal({
                 : "bg-muted text-muted-foreground",
             )}
           >
-            <IGRPIcon iconName="Shield" className="size-5" strokeWidth={2} />
+            <IGRPIcon
+              iconName="Shield"
+              aria-hidden
+              className="size-5"
+              strokeWidth={2}
+            />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -249,6 +254,11 @@ export function ManageResourcesModal({
               checked={isAssigned}
               onCheckedChange={() => handleToggleResource(resource, isAssigned)}
               disabled={processingResource !== null}
+              aria-label={
+                isAssigned
+                  ? `Remover recurso ${resource.name}`
+                  : `Adicionar recurso ${resource.name}`
+              }
               className={cn(
                 "data-[state=checked]:bg-success",
                 processingResource === resource.name && "opacity-50",
@@ -262,10 +272,11 @@ export function ManageResourcesModal({
             <div className="flex items-center gap-2 text-sm font-medium">
               <IGRPIcon
                 iconName="LoaderCircle"
-                className="size-4 animate-spin"
+                aria-hidden
+                className="size-4 animate-spin motion-reduce:animate-none"
                 strokeWidth={2}
               />
-              Processando...
+              A processar…
             </div>
           </div>
         )}
@@ -279,8 +290,13 @@ export function ManageResourcesModal({
         <DialogContent className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IGRPIcon iconName="Shield" className="size-5" strokeWidth={2} />
-              Gerenciar Recursos
+              <IGRPIcon
+                iconName="Shield"
+                aria-hidden
+                className="size-5"
+                strokeWidth={2}
+              />
+              Gerir Recursos
             </DialogTitle>
             <DialogDescription>
               Adicione ou remova recursos do departamento com um clique.
@@ -291,11 +307,14 @@ export function ManageResourcesModal({
             <div className="relative">
               <IGRPIcon
                 iconName="Search"
+                aria-hidden
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
               <Input
                 type="search"
-                placeholder="Pesquisar por nome, tipo ou descrição..."
+                aria-label="Pesquisar recursos por nome, tipo ou descrição"
+                autoComplete="off"
+                placeholder="Pesquisar por nome, tipo ou descrição…"
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -315,6 +334,7 @@ export function ManageResourcesModal({
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <IGRPIcon
                   iconName="Shield"
+                  aria-hidden
                   className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
@@ -354,7 +374,12 @@ export function ManageResourcesModal({
               disabled={processingResource !== null}
               className="gap-2"
             >
-              <IGRPIcon iconName="X" className="size-4" strokeWidth={2} />
+              <IGRPIcon
+                iconName="X"
+                aria-hidden
+                className="size-4"
+                strokeWidth={2}
+              />
               Fechar
             </Button>
           </div>
@@ -370,6 +395,7 @@ export function ManageResourcesModal({
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
+                aria-hidden
                 className="size-5 text-destructive"
                 strokeWidth={2}
               />
@@ -404,15 +430,17 @@ export function ManageResourcesModal({
                 <>
                   <IGRPIcon
                     iconName="LoaderCircle"
-                    className="size-4 animate-spin"
+                    aria-hidden
+                    className="size-4 animate-spin motion-reduce:animate-none"
                     strokeWidth={2}
                   />
-                  Removendo...
+                  A remover…
                 </>
               ) : (
                 <>
                   <IGRPIcon
                     iconName="Trash"
+                    aria-hidden
                     className="size-4"
                     strokeWidth={2}
                   />

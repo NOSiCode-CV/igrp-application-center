@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import {
+  Button,
   cn,
   IGRPIcon,
   Input,
@@ -16,7 +17,6 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 
-import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
 import {
   useAddPermissionsToDepartment,
@@ -122,7 +122,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   };
 
   if (isLoading) {
-    return <AppCenterLoading description="Carregando permissões..." />;
+    return <AppCenterLoading description="A carregar permissões…" />;
   }
 
   const permissionEmpty = allPermissions.length === 0;
@@ -139,13 +139,18 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
               </div>
             </div>
             <div className="flex justify-end shrink-0">
-              <ButtonLink
-                onClick={() => setOpenManageResources(true)}
-                icon="Shield"
-                href="#"
-                label="Gerenciar Recursos"
+              <Button
                 variant="outline"
-              />
+                onClick={() => setOpenManageResources(true)}
+              >
+                <IGRPIcon
+                  iconName="Shield"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
+                Gerir Recursos
+              </Button>
             </div>
           </div>
         </div>
@@ -155,11 +160,14 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
             <div className="relative w-full max-w-full">
               <IGRPIcon
                 iconName="Search"
+                aria-hidden
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
               <Input
                 type="search"
-                placeholder="Pesquisar permissões..."
+                aria-label="Pesquisar permissões"
+                autoComplete="off"
+                placeholder="Pesquisar permissões…"
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -171,6 +179,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
               <IGRPIcon
                 iconName="ShieldOff"
+                aria-hidden
                 className="size-16 mb-4 opacity-30"
                 strokeWidth={1.5}
               />
@@ -216,7 +225,8 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                               {isProcessing && (
                                 <IGRPIcon
                                   iconName="LoaderCircle"
-                                  className="size-4 animate-spin text-muted-foreground"
+                                  aria-hidden
+                                  className="size-4 animate-spin motion-reduce:animate-none text-muted-foreground"
                                   strokeWidth={2}
                                 />
                               )}
@@ -228,6 +238,11 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                                     permission.name,
                                     checked,
                                   )
+                                }
+                                aria-label={
+                                  permission.isAssigned
+                                    ? `Remover permissão ${permission.name}`
+                                    : `Adicionar permissão ${permission.name}`
                                 }
                                 className={cn(
                                   "data-[state=checked]:bg-success",

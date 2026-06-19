@@ -20,7 +20,6 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
-import { ButtonLink } from "@/components/button-link";
 import { AppCenterLoading } from "@/components/loading";
 import { useRoles } from "@/features/departments/use-departments";
 import { STATUS_OPTIONS } from "@/lib/constants";
@@ -177,12 +176,15 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
           </div>
           {!roleEmpty && (
             <div className="flex justify-end">
-              <ButtonLink
-                onClick={handleNewRole}
-                icon="UserLock"
-                href="#"
-                label="Novo Perfil"
-              />
+              <Button onClick={handleNewRole}>
+                <IGRPIcon
+                  iconName="UserLock"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
+                Novo Perfil
+              </Button>
             </div>
           )}
         </div>
@@ -193,21 +195,24 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
           <div className="relative w-full max-w-sm">
             <IGRPIcon
               iconName="Search"
+              aria-hidden
               className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
             />
             <Input
               type="search"
-              placeholder="Pesquisar perfil..."
+              aria-label="Pesquisar perfil"
+              autoComplete="off"
+              placeholder="Pesquisar perfil…"
               className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex flex-wrap gap-2 flex-shirnk-0">
+          <div className="flex flex-wrap gap-2 flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
-                  <IGRPIcon iconName="ListFilter" strokeWidth={2} />
+                  <IGRPIcon iconName="ListFilter" aria-hidden strokeWidth={2} />
                   Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
                 </Button>
               </DropdownMenuTrigger>
@@ -235,7 +240,12 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                       onClick={() => setStatusFilter([])}
                       className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
                     >
-                      <IGRPIcon iconName="X" className="mr-1" strokeWidth={2} />
+                      <IGRPIcon
+                        iconName="X"
+                        aria-hidden
+                        className="mr-1"
+                        strokeWidth={2}
+                      />
                       Limpar
                     </DropdownMenuItem>
                   </>
@@ -246,11 +256,12 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
         </div>
 
         {isLoading ? (
-          <AppCenterLoading description="Carregando Roles..." />
+          <AppCenterLoading description="A carregar perfis…" />
         ) : roleEmpty ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
             <IGRPIcon
               iconName="UserLock"
+              aria-hidden
               className="size-16 mb-4 opacity-30"
               strokeWidth={1.5}
             />
@@ -259,12 +270,15 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
             {searchTerm ? (
               "Tente ajustar a sua pesquisa."
             ) : (
-              <ButtonLink
-                onClick={handleNewRole}
-                icon="UserLock"
-                href="#"
-                label="Novo Perfil"
-              />
+              <Button onClick={handleNewRole}>
+                <IGRPIcon
+                  iconName="UserLock"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
+                Novo Perfil
+              </Button>
             )}
           </div>
         ) : (

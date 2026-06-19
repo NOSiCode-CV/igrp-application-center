@@ -278,7 +278,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
           <div>
             <div className="leading-none font-semibold mb-1">Menus</div>
             <div className="text-muted-foreground text-sm">
-              Gerencie aplicações, menus e perfis do departamento.
+              Faça a gestão de aplicações, menus e perfis do departamento.
             </div>
           </div>
 
@@ -288,8 +288,13 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               onClick={() => setShowMenusModal(true)}
               className="gap-2"
             >
-              <IGRPIcon iconName="Menu" className="size-4" strokeWidth={2} />
-              <span>Gerenciar Menus</span>
+              <IGRPIcon
+                iconName="Menu"
+                aria-hidden
+                className="size-4"
+                strokeWidth={2}
+              />
+              <span>Gerir Menus</span>
             </Button>
           </div>
         </div>
@@ -311,6 +316,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                       <div className="flex items-center gap-2">
                         <IGRPIcon
                           iconName="AppWindow"
+                          aria-hidden
                           className="size-4"
                           strokeWidth={2}
                         />
@@ -328,11 +334,14 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               <div className="relative">
                 <IGRPIcon
                   iconName="Search"
+                  aria-hidden
                   className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
                 />
                 <Input
                   type="search"
-                  placeholder="Pesquisar menu..."
+                  aria-label="Pesquisar menu"
+                  autoComplete="off"
+                  placeholder="Pesquisar menu…"
                   className="pl-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -343,11 +352,12 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         </div>
 
         {loading || isLoadingRoles ? (
-          <AppCenterLoading description="A carregar menus..." />
+          <AppCenterLoading description="A carregar menus…" />
         ) : menuTree.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
             <IGRPIcon
               iconName="Menu"
+              aria-hidden
               className="size-16 mb-4 opacity-30"
               strokeWidth={1.5}
             />
@@ -363,8 +373,13 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 onClick={() => setShowMenusModal(true)}
                 className="gap-2"
               >
-                <IGRPIcon iconName="Menu" className="size-4" strokeWidth={2} />
-                Gerenciar Menus
+                <IGRPIcon
+                  iconName="Menu"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
+                Gerir Menus
               </Button>
             </div>
           </div>
@@ -375,6 +390,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 <Badge variant="secondary" className="gap-1">
                   <IGRPIcon
                     iconName="Filter"
+                    aria-hidden
                     className="size-3"
                     strokeWidth={2}
                   />
@@ -400,11 +416,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                       >
                         <div className="flex flex-col items-center gap-2 py-2">
                           <div className="flex items-center gap-2">
-                            {/* <IGRPIcon
-                              iconName="ShieldCheck"
-                              className="size-4 text-primary"
-                              strokeWidth={2}
-                            /> */}
                             <TooltipProvider delayDuration={350}>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -416,6 +427,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                     type="button"
                                   >
                                     <IGRPIcon
+                                      aria-hidden
                                       iconName={
                                         getColumnCheckState(role.code) === true
                                           ? "Check"
@@ -482,27 +494,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               </div>
 
               <div className="flex gap-2">
-                {/* <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (menus) {
-                      const reset = new Map<string, Set<string>>();
-                      menus.forEach((menu) => {
-                        reset.set(menu.code, new Set(menu.roles || []));
-                      });
-                      setMenuRoleAssignments(reset);
-                    }
-                  }}
-                  disabled={saving}
-                >
-                  <IGRPIcon
-                    iconName="X"
-                    className="size-4 mr-1"
-                    strokeWidth={2}
-                  />
-                  Cancelar
-                </Button> */}
-
                 <Button
                   onClick={handleSave}
                   disabled={saving || !hasChanges}
@@ -512,15 +503,17 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     <>
                       <IGRPIcon
                         iconName="LoaderCircle"
-                        className="size-4 animate-spin"
+                        aria-hidden
+                        className="size-4 animate-spin motion-reduce:animate-none"
                         strokeWidth={2}
                       />
-                      Guardando...
+                      A guardar…
                     </>
                   ) : (
                     <>
                       <IGRPIcon
                         iconName="Save"
+                        aria-hidden
                         className="size-4"
                         strokeWidth={2}
                       />
@@ -549,6 +542,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
             <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="TriangleAlert"
+                aria-hidden
                 className="size-5 text-warning"
                 strokeWidth={2}
               />
@@ -566,7 +560,12 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 onClick={() => setPendingAppSwitch(null)}
                 className="gap-2 w-full sm:w-auto"
               >
-                <IGRPIcon iconName="X" className="size-4" strokeWidth={2} />
+                <IGRPIcon
+                  iconName="X"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
                 Cancelar
               </Button>
             </div>
@@ -579,6 +578,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               >
                 <IGRPIcon
                   iconName="Trash2"
+                  aria-hidden
                   className="size-4"
                   strokeWidth={2}
                 />
@@ -593,15 +593,17 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   <>
                     <IGRPIcon
                       iconName="LoaderCircle"
-                      className="size-4 animate-spin"
+                      aria-hidden
+                      className="size-4 animate-spin motion-reduce:animate-none"
                       strokeWidth={2}
                     />
-                    Guardando...
+                    A guardar…
                   </>
                 ) : (
                   <>
                     <IGRPIcon
                       iconName="Save"
+                      aria-hidden
                       className="size-4"
                       strokeWidth={2}
                     />

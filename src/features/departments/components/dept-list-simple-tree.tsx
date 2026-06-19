@@ -24,11 +24,13 @@ const DepartmentTreeItemSimple = ({
   level = 0,
   expandedDepts,
   setExpandedDepts,
+  ancestorCodes,
 }: {
   dept: DepartmentWithChildren;
   level?: number;
   expandedDepts: Set<string>;
   setExpandedDepts: React.Dispatch<React.SetStateAction<Set<string>>>;
+  ancestorCodes?: ReadonlySet<string>;
 }) => {
   const hasChildren = dept.children && dept.children.length > 0;
   const isExpanded = expandedDepts.has(dept.code);
@@ -57,14 +59,24 @@ const DepartmentTreeItemSimple = ({
       >
         <button
           onClick={toggleExpand}
-          className="size-4 flex items-center justify-center shrink-0"
+          className="size-4 flex items-center justify-center shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
           type="button"
+          disabled={!hasChildren}
+          aria-expanded={hasChildren ? isExpanded : undefined}
+          aria-label={
+            hasChildren
+              ? isExpanded
+                ? "Recolher departamento"
+                : "Expandir departamento"
+              : undefined
+          }
         >
           {hasChildren ? (
             <IGRPIcon
               iconName="ChevronRight"
+              aria-hidden
               className={cn(
-                "w-3.5 h-3.5 transition-transform",
+                "w-3.5 h-3.5 transition-transform motion-reduce:transition-none",
                 isExpanded && "rotate-90",
               )}
               strokeWidth={2}
@@ -81,6 +93,7 @@ const DepartmentTreeItemSimple = ({
           <div className="relative">
             <IGRPIcon
               iconName={isExpanded ? "FolderOpen" : "Folder"}
+              aria-hidden
               className={cn("size-4 shrink-0", !isActive && "opacity-50")}
               strokeWidth={2}
             />
@@ -96,15 +109,20 @@ const DepartmentTreeItemSimple = ({
 
       {hasChildren &&
         isExpanded &&
-        dept.children?.map((child) => (
-          <DepartmentTreeItemSimple
-            key={child.code}
-            dept={child}
-            level={level + 1}
-            expandedDepts={expandedDepts}
-            setExpandedDepts={setExpandedDepts}
-          />
-        ))}
+        dept.children?.map((child) =>
+          // Skip any child already in the render path — guards against a
+          // malformed cycle causing infinite recursion.
+          ancestorCodes?.has(child.code) ? null : (
+            <DepartmentTreeItemSimple
+              key={child.code}
+              dept={child}
+              level={level + 1}
+              expandedDepts={expandedDepts}
+              setExpandedDepts={setExpandedDepts}
+              ancestorCodes={new Set(ancestorCodes ?? []).add(dept.code)}
+            />
+          ),
+        )}
     </div>
   );
 };

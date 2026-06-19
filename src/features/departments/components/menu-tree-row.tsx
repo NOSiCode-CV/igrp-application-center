@@ -71,13 +71,16 @@ const MenuTreeRow = ({
             {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
-                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 type="button"
+                aria-expanded={isExpanded}
+                aria-label={isExpanded ? "Recolher menu" : "Expandir menu"}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
+                  aria-hidden
                   className={cn(
-                    "size-4 transition-transform",
+                    "size-4 transition-transform motion-reduce:transition-none",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
@@ -87,6 +90,7 @@ const MenuTreeRow = ({
 
             <IGRPIcon
               iconName={getMenuIcon(menu.type)}
+              aria-hidden
               className="size-4 text-primary shrink-0"
               strokeWidth={2}
             />
@@ -110,6 +114,7 @@ const MenuTreeRow = ({
                   menuRoleAssignments.get(menu.code)?.has(role.code) ?? false
                 }
                 onCheckedChange={() => toggleMenuRole(menu.code, role.code)}
+                aria-label={`${role.name} — ${menu.name}`}
               />
             </div>
           </TableCell>

@@ -32,7 +32,7 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   });
 
   if (isLoadingMyDeps || (isLoading && !error && !errorMyDeps)) {
-    return <AppCenterLoading description="Carregando departamentos..." />;
+    return <AppCenterLoading description="A carregar departamentos…" />;
   }
 
   const departments = user ? userDepts : currentUserDepts;
@@ -46,11 +46,14 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
         <div className="relative mb-4 max-w-md">
           <IGRPIcon
             iconName="Search"
+            aria-hidden
             className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground"
           />
           <Input
-            type="text"
-            placeholder="Pesquisar departamento..."
+            type="search"
+            aria-label="Pesquisar departamento"
+            autoComplete="off"
+            placeholder="Pesquisar departamento…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-background pl-8"
