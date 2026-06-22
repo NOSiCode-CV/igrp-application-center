@@ -36,7 +36,7 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-function isPublicPath(pathname: string): boolean {
+export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -44,7 +44,7 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-function isAuthUiPath(pathname: string): boolean {
+export function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
