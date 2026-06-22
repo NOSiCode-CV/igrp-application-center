@@ -5,10 +5,13 @@ import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { sanitizeCallbackUrl } from "@/lib/utils";
 
 /** Security headers applied to all responses in production. */
+// TODO: Add a Content-Security-Policy header with app-specific directives
+// (script/style/connect/img/font sources) once they have been audited — a
+// misconfigured CSP can silently break the app, so it needs dedicated tuning.
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
-  "X-XSS-Protection": "1; mode=block",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy":
     "camera=(), microphone=(), geolocation=(), interest-cohort=()",

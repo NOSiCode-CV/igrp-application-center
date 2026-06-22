@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
@@ -431,24 +431,29 @@ function MenuFormBody({
                     name="status"
                     render={({ field }) => (
                       <FormItem className="w-full">
-                        <FormLabel>Estado</FormLabel>
+                        <FormLabel htmlFor="menu-status-switch">
+                          Estado
+                        </FormLabel>
                         <div className="flex items-center justify-between h-10 px-3 border border-input rounded-md bg-background">
                           <span className="text-sm">
                             {field.value === statusSchema.enum.ACTIVE
                               ? "Ativo"
                               : "Inativo"}
                           </span>
-                          <Switch
-                            checked={field.value === statusSchema.enum.ACTIVE}
-                            onCheckedChange={(checked) =>
-                              field.onChange(
-                                checked
-                                  ? statusSchema.enum.ACTIVE
-                                  : statusSchema.enum.INACTIVE,
-                              )
-                            }
-                            disabled={isViewMode}
-                          />
+                          <FormControl>
+                            <Switch
+                              id="menu-status-switch"
+                              checked={field.value === statusSchema.enum.ACTIVE}
+                              onCheckedChange={(checked) =>
+                                field.onChange(
+                                  checked
+                                    ? statusSchema.enum.ACTIVE
+                                    : statusSchema.enum.INACTIVE,
+                                )
+                              }
+                              disabled={isViewMode}
+                            />
+                          </FormControl>
                         </div>
                         <FormMessage />
                       </FormItem>

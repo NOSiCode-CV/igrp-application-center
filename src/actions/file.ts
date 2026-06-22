@@ -10,6 +10,10 @@ import { toActionError } from "@/lib/utilities";
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
 
+// Uploads carry large payloads and hit slow storage backends, so they need a
+// far more generous timeout than the default fast-path JSON calls.
+const UPLOAD_TIMEOUT_MS = 60_000;
+
 export async function getFileUrl(
   path: string,
 ): Promise<ActionResult<FileUrlDTO>> {
@@ -28,7 +32,7 @@ export async function uploadPublicFile(
   file: File | Blob,
   options: UploadFileOptions,
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
+  const client = await getClientAccess({ timeout: UPLOAD_TIMEOUT_MS });
 
   if (!file) {
     return { success: false, error: "Nenhum arquivo encontrado" };
@@ -54,7 +58,7 @@ export async function uploadPrivateFile(
   file: File | Blob,
   options: UploadFileOptions,
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
+  const client = await getClientAccess({ timeout: UPLOAD_TIMEOUT_MS });
 
   try {
     const result = await client.files.uploadPrivateFile(file, options);

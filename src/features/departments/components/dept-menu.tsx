@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   AlertDialog,
@@ -201,30 +201,57 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     }
   };
 
-  const filteredByApp = selectedApp
-    ? (menus || []).filter((menu) => menu.applicationCode === selectedApp)
-    : menus || [];
+  const filteredByApp = useMemo(
+    () =>
+      selectedApp
+        ? (menus || []).filter((menu) => menu.applicationCode === selectedApp)
+        : menus || [],
+    [menus, selectedApp],
+  );
 
-  const filteredMenus = filteredByApp.filter((menu) => {
-    if (!searchTerm) return true;
-    return (
-      menu.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      menu.code.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const filteredMenus = useMemo(
+    () =>
+      filteredByApp.filter((menu) => {
+        if (!searchTerm) return true;
+        return (
+          menu.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          menu.code.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }),
+    [filteredByApp, searchTerm],
+  );
 
-  const menuTree = buildMenuTree(filteredMenus as MenuWithChildren[]);
+  const menuTree = useMemo(
+    () => buildMenuTree(filteredMenus as MenuWithChildren[]),
+    [filteredMenus],
+  );
 
-  const getColumnCheckState = (roleCode: string) => {
+  // Precompute the header check state for each role once per relevant change,
+  // instead of recomputing it on every (role × render) call site below.
+  const columnCheckState = useMemo(() => {
     const visibleMenuCodes = filteredMenus.map((m) => m.code);
-    const menusWithRole = visibleMenuCodes.filter((code) =>
-      menuRoleAssignments.get(code)?.has(roleCode),
-    );
+    const map = new Map<string, boolean | "indeterminate">();
+    for (const role of roles ?? []) {
+      const menusWithRole = visibleMenuCodes.filter((code) =>
+        menuRoleAssignments.get(code)?.has(role.code),
+      );
+      map.set(
+        role.code,
+        menusWithRole.length === 0
+          ? false
+          : menusWithRole.length === visibleMenuCodes.length
+            ? true
+            : "indeterminate",
+      );
+    }
+    return map;
+  }, [roles, filteredMenus, menuRoleAssignments]);
 
-    if (menusWithRole.length === 0) return false;
-    if (menusWithRole.length === visibleMenuCodes.length) return true;
-    return "indeterminate";
-  };
+  const getColumnCheckState = useCallback(
+    (roleCode: string): boolean | "indeterminate" =>
+      columnCheckState.get(roleCode) ?? false,
+    [columnCheckState],
+  );
 
   const toggleAllMenusForRole = (roleCode: string) => {
     const visibleMenuCodes = filteredMenus.map((m) => m.code);
@@ -249,21 +276,25 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     });
   };
 
-  const hasChanges = Array.from(menuRoleAssignments.entries()).some(
-    ([menuCode, currentRoles]) => {
-      const originalMenu = menus?.find((m) => m.code === menuCode);
-      const originalRoles = new Set(
-        originalMenu?.roles.map((r) => r?.roleCode) || [],
-      );
+  const hasChanges = useMemo(
+    () =>
+      Array.from(menuRoleAssignments.entries()).some(
+        ([menuCode, currentRoles]) => {
+          const originalMenu = menus?.find((m) => m.code === menuCode);
+          const originalRoles = new Set(
+            originalMenu?.roles.map((r) => r?.roleCode) || [],
+          );
 
-      if (currentRoles.size !== originalRoles.size) return true;
+          if (currentRoles.size !== originalRoles.size) return true;
 
-      for (const role of currentRoles) {
-        if (!originalRoles.has(role)) return true;
-      }
+          for (const role of currentRoles) {
+            if (!originalRoles.has(role)) return true;
+          }
 
-      return false;
-    },
+          return false;
+        },
+      ),
+    [menuRoleAssignments, menus],
   );
 
   const sortedApps = useMemo(() => {

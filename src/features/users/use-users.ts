@@ -16,12 +16,14 @@ import type {
   UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
 import {
+  keepPreviousData,
   useMutation,
   useQueries,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 
+import { unwrap } from "@/actions/types";
 import {
   addCurrentUserFavoriteApplication,
   addRolesToUser,
@@ -59,32 +61,25 @@ import {
 import { getUserAuditLogs } from "@/actions/user-audit";
 import { getUserSession, killUserSession } from "@/actions/user-sessions";
 
+import { currentUserKeys, invitationKeys, userKeys } from "./query-keys";
+
 export const useUsers = (
   params?: UserFilters,
   options?: { initialData?: IGRPUserDTO[] },
 ) => {
   return useQuery<IGRPUserDTO[], Error>({
-    queryKey: ["users", params ?? null],
-    queryFn: async () => {
-      const result = await getUsers(params);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.list(params),
+    queryFn: async () => unwrap(await getUsers(params)),
     initialData: options?.initialData,
-    retry: false,
+    placeholderData: keepPreviousData,
   });
 };
 
 export const useCurrentUser = (options?: { enabled?: boolean }) => {
   return useQuery<IGRPUserDTO, Error>({
-    queryKey: ["current-user"],
-    queryFn: async () => {
-      const result = await getCurrentUser();
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: currentUserKeys.detail(),
+    queryFn: async () => unwrap(await getCurrentUser()),
     ...options,
-    retry: false,
   });
 };
 
@@ -96,16 +91,11 @@ export const useInviteUser = () => {
     onSuccess: async (result) => {
       if (result.success) {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["users"] }),
-          queryClient.invalidateQueries({ queryKey: ["user-invitations"] }),
-        ]);
-        await Promise.all([
-          queryClient.refetchQueries({ queryKey: ["users"] }),
-          queryClient.refetchQueries({ queryKey: ["user-invitations"] }),
+          queryClient.invalidateQueries({ queryKey: userKeys.all }),
+          queryClient.invalidateQueries({ queryKey: invitationKeys.all }),
         ]);
       }
     },
-    retry: false,
   });
 };
 
@@ -124,11 +114,9 @@ export const useAddUserRole = () => {
     }) => addRolesToUser(id, departmentCode, request),
     onSuccess: async (result) => {
       if (result.success) {
-        await queryClient.invalidateQueries({ queryKey: ["users"] });
-        await queryClient.refetchQueries({ queryKey: ["users"] });
+        await queryClient.invalidateQueries({ queryKey: userKeys.all });
       }
     },
-    retry: false,
   });
 };
 
@@ -148,39 +136,28 @@ export const useRemoveUserRole = () => {
     onSuccess: async (result, variables) => {
       if (result.success) {
         await queryClient.invalidateQueries({
-          queryKey: ["userRoles", variables.id],
+          queryKey: userKeys.roles(variables.id),
         });
-        await queryClient.invalidateQueries({ queryKey: ["users"] });
+        await queryClient.invalidateQueries({ queryKey: userKeys.all });
       }
     },
-    retry: false,
   });
 };
 
 export const useUserRoles = (id: string) => {
   return useQuery<RoleDTO[], Error>({
-    queryKey: ["userRoles", id],
-    queryFn: async () => {
-      const result = await getUserRoles(id);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.roles(id),
+    queryFn: async () => unwrap(await getUserRoles(id)),
     enabled: !!id,
-    retry: false,
   });
 };
 
 export const useUserRolesMulti = (id: string[]) => {
   return useQueries({
     queries: id.map((u) => ({
-      queryKey: ["userRoles", u],
-      queryFn: async () => {
-        const result = await getUserRoles(u);
-        if (!result.success) throw new Error(result.error);
-        return result.data;
-      },
+      queryKey: userKeys.roles(u),
+      queryFn: async () => unwrap(await getUserRoles(u)),
       enabled: !!u,
-      retry: false,
     })),
   });
 };
@@ -194,38 +171,27 @@ export const useUpdateUser = () => {
     onSuccess: async (result) => {
       if (result.success) {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["current-user"] }),
-          queryClient.refetchQueries({ queryKey: ["users"], type: "active" }),
+          queryClient.invalidateQueries({ queryKey: currentUserKeys.detail() }),
+          queryClient.invalidateQueries({ queryKey: userKeys.all }),
         ]);
       }
     },
-    retry: false,
   });
 };
 
 export const useCurrentUserDepartments = (options?: { enabled?: boolean }) => {
   return useQuery<DepartmentDTO[], Error>({
-    queryKey: ["current-user-departments"],
-    queryFn: async () => {
-      const result = await getCurrentUserDepartments();
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: currentUserKeys.departments(),
+    queryFn: async () => unwrap(await getCurrentUserDepartments()),
     ...options,
-    retry: false,
   });
 };
 
 export const useCurrentUserApplications = (options?: { enabled?: boolean }) => {
   return useQuery<ApplicationDTO[], Error>({
-    queryKey: ["current-user-applications"],
-    queryFn: async () => {
-      const result = await getCurrentUserApplications();
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: currentUserKeys.applications(),
+    queryFn: async () => unwrap(await getCurrentUserApplications()),
     ...options,
-    retry: false,
   });
 };
 
@@ -234,15 +200,10 @@ export function useUserApplications(
   options?: { enabled?: boolean },
 ) {
   return useQuery<ApplicationDTO[], Error>({
-    queryKey: ["user-applications", userId],
-    queryFn: async () => {
-      const result = await getUserApplications(userId);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.applications(userId),
+    queryFn: async () => unwrap(await getUserApplications(userId)),
     enabled: !!userId,
     ...options,
-    retry: false,
   });
 }
 
@@ -251,40 +212,26 @@ export function useUserDepartments(
   options?: { enabled?: boolean },
 ) {
   return useQuery<DepartmentDTO[], Error>({
-    queryKey: ["user-departments", userId],
-    queryFn: async () => {
-      const result = await getUserDepartments(userId);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.departments(userId),
+    queryFn: async () => unwrap(await getUserDepartments(userId)),
     enabled: !!userId,
     ...options,
-    retry: false,
   });
 }
 
 export function useUser(userId: string) {
   return useQuery<IGRPUserDTO, Error>({
-    queryKey: ["user", userId],
-    queryFn: async () => {
-      const result = await getUser(userId);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.detail(userId),
+    queryFn: async () => unwrap(await getUser(userId)),
     enabled: !!userId,
-    retry: false,
   });
 }
 
 export function useCurrentUserFavoriteApplications(applicationName?: string) {
   return useQuery<ApplicationDTO[], Error>({
-    queryKey: ["favorite-applications", applicationName],
-    queryFn: async () => {
-      const result = await getCurrentUserFavoriteApplications(applicationName);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
-    retry: false,
+    queryKey: currentUserKeys.favoriteApplications(applicationName),
+    queryFn: async () =>
+      unwrap(await getCurrentUserFavoriteApplications(applicationName)),
   });
 }
 
@@ -298,13 +245,15 @@ export function useAddCurrentUserFavoriteApplication() {
       app?: ApplicationDTO;
     }) => addCurrentUserFavoriteApplication(variables.applicationCode),
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({ queryKey: ["favorite-applications"] });
+      await queryClient.cancelQueries({
+        queryKey: currentUserKeys.favoriteApplicationsRoot(),
+      });
       const previous = queryClient.getQueriesData<ApplicationDTO[]>({
-        queryKey: ["favorite-applications"],
+        queryKey: currentUserKeys.favoriteApplicationsRoot(),
       });
       if (variables.app) {
         queryClient.setQueriesData<ApplicationDTO[]>(
-          { queryKey: ["favorite-applications"] },
+          { queryKey: currentUserKeys.favoriteApplicationsRoot() },
           (old) => {
             if (!old) return old;
             if (old.some((fav) => fav.code === variables.applicationCode))
@@ -330,10 +279,9 @@ export function useAddCurrentUserFavoriteApplication() {
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["favorite-applications"],
+        queryKey: currentUserKeys.favoriteApplicationsRoot(),
       });
     },
-    retry: false,
   });
 }
 
@@ -345,12 +293,14 @@ export function useRemoveCurrentUserFavoriteApplication() {
     mutationFn: async (applicationCode: string) =>
       removeCurrentUserFavoriteApplication(applicationCode),
     onMutate: async (applicationCode) => {
-      await queryClient.cancelQueries({ queryKey: ["favorite-applications"] });
+      await queryClient.cancelQueries({
+        queryKey: currentUserKeys.favoriteApplicationsRoot(),
+      });
       const previous = queryClient.getQueriesData<ApplicationDTO[]>({
-        queryKey: ["favorite-applications"],
+        queryKey: currentUserKeys.favoriteApplicationsRoot(),
       });
       queryClient.setQueriesData<ApplicationDTO[]>(
-        { queryKey: ["favorite-applications"] },
+        { queryKey: currentUserKeys.favoriteApplicationsRoot() },
         (old) => old?.filter((fav) => fav.code !== applicationCode),
       );
       return { previous };
@@ -370,10 +320,9 @@ export function useRemoveCurrentUserFavoriteApplication() {
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["favorite-applications"],
+        queryKey: currentUserKeys.favoriteApplicationsRoot(),
       });
     },
-    retry: false,
   });
 }
 
@@ -386,23 +335,18 @@ export function useRegisterCurrentUserApplicationAccess() {
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({
-          queryKey: ["recent-applications"],
+          queryKey: currentUserKeys.recentApplicationsRoot(),
         });
       }
     },
-    retry: false,
   });
 }
 
 export function useGetCurrentUserRecentApplications(applicationName?: string) {
   return useQuery<ApplicationDTO[], Error>({
-    queryKey: ["recent-applications", applicationName],
-    queryFn: async () => {
-      const result = await getCurrentUserRecentApplications(applicationName);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
-    retry: false,
+    queryKey: currentUserKeys.recentApplications(applicationName),
+    queryFn: async () =>
+      unwrap(await getCurrentUserRecentApplications(applicationName)),
   });
 }
 
@@ -411,14 +355,9 @@ export function useGetUserInvitations(
   options?: { initialData?: InvitationDTO[] },
 ) {
   return useQuery({
-    queryKey: ["user-invitations", email],
-    queryFn: async () => {
-      const result = await getUserInvitations(email);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: invitationKeys.list(email),
+    queryFn: async () => unwrap(await getUserInvitations(email)),
     initialData: options?.initialData,
-    retry: false,
   });
 }
 
@@ -429,10 +368,9 @@ export function useResendUserInvitation() {
     mutationFn: async (id: number) => resendUserInvitation(id),
     onSuccess: async (result) => {
       if (result.success) {
-        await queryClient.invalidateQueries({ queryKey: ["user-invitations"] });
+        await queryClient.invalidateQueries({ queryKey: invitationKeys.all });
       }
     },
-    retry: false,
   });
 }
 
@@ -450,14 +388,13 @@ export function useRespondUserInvitation() {
     onSuccess: async (result, { token }) => {
       if (result.success) {
         await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ["user-invitations"] }),
+          queryClient.invalidateQueries({ queryKey: invitationKeys.all }),
           queryClient.invalidateQueries({
-            queryKey: ["user-invitation-by-token", token],
+            queryKey: invitationKeys.byToken(token),
           }),
         ]);
       }
     },
-    retry: false,
   });
 }
 
@@ -468,10 +405,9 @@ export function useCancelUserInvitation() {
     mutationFn: async (id: number) => cancelUserInvitation(id),
     onSuccess: async (result) => {
       if (result.success) {
-        await queryClient.invalidateQueries({ queryKey: ["user-invitations"] });
+        await queryClient.invalidateQueries({ queryKey: invitationKeys.all });
       }
     },
-    retry: false,
   });
 }
 
@@ -483,13 +419,12 @@ export function useUpdateUserStatus() {
       updateUserStatus(id, value),
     onSuccess: async (result, variables) => {
       if (result.success) {
-        await queryClient.invalidateQueries({ queryKey: ["users"] });
+        await queryClient.invalidateQueries({ queryKey: userKeys.all });
         await queryClient.invalidateQueries({
-          queryKey: ["user", variables.id],
+          queryKey: userKeys.detail(variables.id),
         });
       }
     },
-    retry: false,
   });
 }
 
@@ -498,40 +433,25 @@ export function useGetUserInvitationByToken(
   options?: { enabled?: boolean },
 ) {
   return useQuery({
-    queryKey: ["user-invitation-by-token", token],
-    queryFn: async () => {
-      const result = await getUserInvitationByToken(token);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: invitationKeys.byToken(token),
+    queryFn: async () => unwrap(await getUserInvitationByToken(token)),
     ...options,
     enabled: !!token && (options?.enabled ?? true),
-    retry: false,
   });
 }
 
 export function useGetCurrentUserRoles() {
   return useQuery({
-    queryKey: ["current-user-roles"],
-    queryFn: async () => {
-      const result = await getCurrentUserRoles();
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
-    retry: false,
+    queryKey: currentUserKeys.roles(),
+    queryFn: async () => unwrap(await getCurrentUserRoles()),
   });
 }
 
 export function useCurrentUserActiveRole(options?: { enabled?: boolean }) {
   return useQuery({
-    queryKey: ["current-user-active-role"],
-    queryFn: async () => {
-      const result = await getCurrentUserActiveRole();
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: currentUserKeys.activeRole(),
+    queryFn: async () => unwrap(await getCurrentUserActiveRole()),
     ...options,
-    retry: false,
   });
 }
 
@@ -544,14 +464,13 @@ export function useSetCurrentUserActiveRole() {
     onSuccess: async (result) => {
       if (result.success) {
         await queryClient.invalidateQueries({
-          queryKey: ["current-user-active-role"],
+          queryKey: currentUserKeys.activeRole(),
         });
         await queryClient.invalidateQueries({
-          queryKey: ["current-user"],
+          queryKey: currentUserKeys.detail(),
         });
       }
     },
-    retry: false,
   });
 }
 
@@ -560,7 +479,6 @@ export function useValidateInvitationEmail() {
     mutationFn: async (
       request: Parameters<typeof validateInvitationEmail>[0],
     ) => validateInvitationEmail(request),
-    retry: false,
   });
 }
 
@@ -568,20 +486,14 @@ export function useValidateInvitationOtp() {
   return useMutation({
     mutationFn: async (request: Parameters<typeof validateInvitationOtp>[0]) =>
       validateInvitationOtp(request),
-    retry: false,
   });
 }
 
 export const useUserMetadata = (id: string) => {
   return useQuery<UserMetadataDTO, Error>({
-    queryKey: ["userMetadata", id],
-    queryFn: async () => {
-      const result = await getUserMetadata(id);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.metadata(id),
+    queryFn: async () => unwrap(await getUserMetadata(id)),
     enabled: !!id,
-    retry: false,
   });
 };
 
@@ -599,24 +511,18 @@ export const useUpdateUserMetadata = () => {
     onSuccess: async (result, variables) => {
       if (result.success) {
         await queryClient.invalidateQueries({
-          queryKey: ["userMetadata", variables.id],
+          queryKey: userKeys.metadata(variables.id),
         });
       }
     },
-    retry: false,
   });
 };
 
 export const useUserSession = (userExternalId: string) => {
   return useQuery<SessionResponseDTO, Error>({
-    queryKey: ["userSession", userExternalId],
-    queryFn: async () => {
-      const result = await getUserSession(userExternalId);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.session(userExternalId),
+    queryFn: async () => unwrap(await getUserSession(userExternalId)),
     enabled: !!userExternalId,
-    retry: false,
   });
 };
 
@@ -627,7 +533,6 @@ export const useKillUserSession = () => {
     mutationFn: async ({
       sessionId,
       reason,
-      userExternalId,
     }: {
       sessionId: string;
       reason: string;
@@ -636,23 +541,18 @@ export const useKillUserSession = () => {
     onSuccess: async (result, variables) => {
       if (result.success) {
         await queryClient.invalidateQueries({
-          queryKey: ["userSession", variables.userExternalId],
+          queryKey: userKeys.session(variables.userExternalId),
         });
       }
     },
-    retry: false,
   });
 };
 
 export const useUserAuditLogs = (userId: string, filters?: AuditLogFilters) => {
   return useQuery<PageResponse<SecurityAuditLogDTO>, Error>({
-    queryKey: ["userAuditLogs", userId, filters],
-    queryFn: async () => {
-      const result = await getUserAuditLogs(userId, filters);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: userKeys.auditLogs(userId, filters),
+    queryFn: async () => unwrap(await getUserAuditLogs(userId, filters)),
     enabled: !!userId,
-    retry: false,
+    placeholderData: keepPreviousData,
   });
 };

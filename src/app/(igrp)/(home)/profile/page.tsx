@@ -6,6 +6,7 @@ import { getFileUrl } from "@/actions/file";
 import { getCurrentUser } from "@/actions/user";
 import { filesKeys } from "@/features/files/query-keys";
 import { UserProfile } from "@/features/users/components/user-profile";
+import { currentUserKeys } from "@/features/users/query-keys";
 import { HttpStatusError } from "@/lib/errors";
 import { getQueryClient } from "@/providers/query-client.server";
 
@@ -18,7 +19,7 @@ export default async function UserProfilePage() {
 
   // fetchQuery rethrows on failure so the boundary shows the status page.
   const user = await queryClient.fetchQuery({
-    queryKey: ["current-user"],
+    queryKey: currentUserKeys.detail(),
     queryFn: async () => {
       const result = await getCurrentUser();
       if (!result.success) {

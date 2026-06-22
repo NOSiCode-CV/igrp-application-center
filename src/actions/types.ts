@@ -1,3 +1,5 @@
+import { HttpStatusError } from "@/lib/errors";
+
 import type { getClientAccess } from "./access-client";
 
 /**
@@ -7,6 +9,18 @@ import type { getClientAccess } from "./access-client";
 export type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: string; status?: number };
+
+/**
+ * Narrows an `ActionResult` inside a TanStack `queryFn`: returns `data` on
+ * success, otherwise throws `HttpStatusError` so the client failure carries
+ * the HTTP status (used by the status error boundaries). Standardizes what
+ * was previously a mix of `throw new Error(result.error)` and
+ * `throw new HttpStatusError(...)` across queryFns.
+ */
+export function unwrap<T>(result: ActionResult<T>): T {
+  if (!result.success) throw new HttpStatusError(result.status, result.error);
+  return result.data;
+}
 
 /**
  * Resolves the SDK access-client type once so action files can extract

@@ -56,7 +56,6 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   type PaginationState,
   type RowSelectionState,
   useReactTable,
@@ -194,7 +193,8 @@ export function UserRolesDialog({
     refetch: refetchUserRoles,
   } = useUserRoles(id);
 
-  const [data, setData] = useState<RoleDTO[]>([]);
+  // Derived directly from the query — no state mirror / sync effect.
+  const data = useMemo(() => (open ? (roles ?? []) : []), [open, roles]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 5,
@@ -223,35 +223,28 @@ export function UserRolesDialog({
     if (!open) {
       setDepartmentCode(undefined);
       setRowSelection({});
-      setData([]);
       setColumnFilters([]);
       setPagination({ pageIndex: 0, pageSize: 5 });
       setExpiresAt("");
     }
   }, [open]);
 
+  // When the role list (or the user's preselected roles) changes, reset the
+  // selection to the preselected set and jump back to the first page.
   useEffect(() => {
-    setData(roles ?? []);
-    setRowSelection({});
-    setPagination((p) => ({ ...p, pageIndex: 0 }));
-  }, [roles]);
-
-  useEffect(() => {
-    if (!data?.length) return;
     const next: RowSelectionState = {};
-    for (const row of data) {
+    for (const row of roles ?? []) {
       const key = getRowKey(row);
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [data, preselectedKeys, getRowKey]);
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  }, [roles, preselectedKeys, getRowKey]);
 
   const table = useReactTable({
     data,
     columns,
-    enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getRowId: (row) => getRowKey(row),
@@ -565,7 +558,7 @@ export function UserRolesDialog({
                         htmlFor={`${idValue}-per-page`}
                         className="max-sm:sr-only"
                       >
-                        Rows per page
+                        Linhas por página
                       </Label>
                       <Select
                         value={table.getState().pagination.pageSize.toString()}
@@ -612,7 +605,7 @@ export function UserRolesDialog({
                             table.getRowCount(),
                           )}
                         </span>{" "}
-                        of{" "}
+                        de{" "}
                         <span className="text-foreground">
                           {table.getRowCount().toString()}
                         </span>

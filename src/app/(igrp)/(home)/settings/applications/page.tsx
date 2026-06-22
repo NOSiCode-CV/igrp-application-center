@@ -3,10 +3,8 @@ import type { Metadata } from "next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { ApplicationList } from "@/features/applications/components/app-list";
-import {
-  makeQueryClient,
-  prefetchApplicationsList,
-} from "@/features/applications/prefetch";
+import { prefetchApplicationsList } from "@/features/applications/prefetch";
+import { getQueryClient } from "@/providers/query-client.server";
 
 export const metadata: Metadata = {
   title: "Aplicações",
@@ -14,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ApplicationsPage() {
-  const queryClient = makeQueryClient();
+  const queryClient = getQueryClient();
   await prefetchApplicationsList(queryClient);
 
   return (

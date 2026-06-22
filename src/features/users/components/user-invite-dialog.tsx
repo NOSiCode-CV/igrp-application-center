@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Badge,
   Button,
   Command,
   CommandEmpty,
@@ -394,9 +395,10 @@ export function UserInviteDialog({
                       {selectedroleCodes.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
                           {selectedroleCodes.map((role) => (
-                            <span
+                            <Badge
                               key={role.code}
-                              className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs"
+                              variant="secondary"
+                              className="gap-1"
                             >
                               {role.name}
                               <button
@@ -407,7 +409,7 @@ export function UserInviteDialog({
                               >
                                 ×
                               </button>
-                            </span>
+                            </Badge>
                           ))}
                         </div>
                       )}

@@ -5,30 +5,29 @@ export function getStatusColor(status: string) {
 }
 
 export function statusClass(status: string): import("clsx").ClassValue {
-  if (!status) return "bg-gray-100 text-gray-800";
+  if (!status) return "status-inactive";
 
-  switch (status.toLowerCase().trim()) {
+  switch (status.trim()) {
     case "ACTIVE":
-      return "bg-emerald-100 text-emerald-800";
-    case "INATIVE":
-      return "bg-yellow-100 text-yellow-800";
+      return "status-active";
+    case "INACTIVE":
+      return "status-inactive";
     case "DELETED":
-      return "bg-red-100 text-red-800";
+      return "status-deleted";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "status-inactive";
   }
 }
 
 export function statusInviteClass(status: string): import("clsx").ClassValue {
-  if (!status) return "bg-gray-100 text-gray-800";
+  if (!status) return "status-inactive";
 
   switch (status.trim()) {
     case "REJECTED":
-      return "bg-rose-100 text-rose-800";
     case "CANCELED":
-      return "bg-red-100 text-red-800";
+      return "status-deleted";
     default:
-      return "bg-amber-100 text-amber-800";
+      return "status-pending";
   }
 }
 

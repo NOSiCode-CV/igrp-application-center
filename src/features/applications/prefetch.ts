@@ -7,11 +7,8 @@ import {
   getApplications,
 } from "@/actions/applications";
 import { HttpStatusError } from "@/lib/errors";
-import { makeQueryClient } from "@/providers/query-client";
 
 import { applicationsKeys } from "./query-keys";
-
-export { makeQueryClient };
 
 export const getApplicationByCodeCached = cache(getApplicationByCodeAction);
 

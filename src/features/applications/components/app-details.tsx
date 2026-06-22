@@ -164,7 +164,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                   }
                   aria-label="Alterar imagem da aplicação"
                 >
-                  <Avatar className="w-28! h-28! border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
+                  <Avatar className="size-28 border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
                     {isLoadingFile && (uploadedFilePath || app?.picture) ? (
                       <Skeleton className="size-full" />
                     ) : fileUrl?.url ? (

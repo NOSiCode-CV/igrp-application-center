@@ -2,17 +2,13 @@ import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import { useQuery } from "@tanstack/react-query";
 
 import { getRoleByCode, getRoleById } from "@/actions/roles";
+import { unwrap } from "@/actions/types";
 
 export const useRoleByCode = (name: string) => {
   return useQuery<RoleDTO>({
     queryKey: ["roleByCode", name.toLowerCase()] as const,
-    queryFn: async () => {
-      const result = await getRoleByCode(name);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryFn: async () => unwrap(await getRoleByCode(name)),
     enabled: !!name,
-    retry: false,
     throwOnError: true,
   });
 };
@@ -20,13 +16,8 @@ export const useRoleByCode = (name: string) => {
 export const useRoleById = (id: number) => {
   return useQuery<RoleDTO>({
     queryKey: ["roleById", id] as const,
-    queryFn: async () => {
-      const result = await getRoleById(id);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryFn: async () => unwrap(await getRoleById(id)),
     enabled: !!id,
-    retry: false,
     throwOnError: true,
   });
 };

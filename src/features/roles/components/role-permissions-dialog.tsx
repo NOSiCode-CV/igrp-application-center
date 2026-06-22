@@ -47,7 +47,6 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   type PaginationState,
   type RowSelectionState,
   useReactTable,
@@ -221,9 +220,7 @@ export function RoleDetails({
   const table = useReactTable({
     data: allPermissions,
     columns,
-    enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
 
@@ -305,12 +302,14 @@ export function RoleDetails({
     }
   }
 
-  if (errorPermissionsByRole) {
-    igrpToast({
-      type: "error",
-      title: "Perfil tem permissões associadas, mas não foram carregadas.",
-    });
-  }
+  useEffect(() => {
+    if (errorPermissionsByRole) {
+      igrpToast({
+        type: "error",
+        title: "Perfil tem permissões associadas, mas não foram carregadas.",
+      });
+    }
+  }, [errorPermissionsByRole, igrpToast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>

@@ -2,8 +2,9 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { getUser } from "@/actions/user";
 import { UserDetailView } from "@/features/users/components/user-detail-view";
+import { userKeys } from "@/features/users/query-keys";
 import { HttpStatusError } from "@/lib/errors";
-import { makeQueryClient } from "@/providers/query-client";
+import { getQueryClient } from "@/providers/query-client.server";
 
 export const dynamic = "force-dynamic";
 
@@ -13,11 +14,11 @@ export default async function UserPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const queryClient = makeQueryClient();
+  const queryClient = getQueryClient();
   // fetchQuery (unlike prefetchQuery) rethrows the queryFn error, so an
   // HTTP failure reaches the segment error boundary as a status page.
   await queryClient.fetchQuery({
-    queryKey: ["user", id],
+    queryKey: userKeys.detail(id),
     queryFn: async () => {
       const result = await getUser(id);
       if (!result.success) {

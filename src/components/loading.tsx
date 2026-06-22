@@ -12,7 +12,7 @@ export function AppCenterLoading({ description }: { description: string }) {
           iconName="LoaderCircle"
           strokeWidth={1}
           aria-hidden="true"
-          className="size-16 animate-spin mx-auto mb-4"
+          className="size-16 animate-spin motion-reduce:animate-none mx-auto mb-4"
         />
         <p className="text-primary">{description}</p>
       </div>

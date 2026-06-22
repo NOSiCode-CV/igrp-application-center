@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { validateImageUpload } from "@/features/files/file-validation";
 import { useUploadPublicFiles } from "@/features/files/use-files";
+import { currentUserKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
 
 type UpdateRes = Awaited<
@@ -43,7 +44,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   // Merge onto the freshest cached user so concurrent edits in other tabs
   // (e.g. the signature upload) are not clobbered by a stale snapshot.
   const latestUser = () =>
-    queryClient.getQueryData<IGRPUserDTO>(["current-user"]) ?? user;
+    queryClient.getQueryData<IGRPUserDTO>(currentUserKeys.detail()) ?? user;
 
   const saveName = async (next: string) => {
     const current = latestUser();

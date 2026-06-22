@@ -6,7 +6,12 @@ import type {
   UpdateApplicationRequest,
   UpdateMenuRequest,
 } from "@igrp/platform-access-management-client-ts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import {
   addRolesToMenu,
@@ -20,31 +25,22 @@ import {
   updateApplication,
   updateMenu,
 } from "@/actions/applications";
-import { HttpStatusError } from "@/lib/errors";
+import { unwrap } from "@/actions/types";
 
 import { applicationsKeys, menusKeys } from "./query-keys";
 
 export const useApplications = (filters?: ApplicationFilters) => {
   return useQuery<ApplicationDTO[], Error>({
     queryKey: applicationsKeys.list(filters),
-    queryFn: async () => {
-      const result = await getApplications(filters);
-      if (!result.success)
-        throw new HttpStatusError(result.status, result.error);
-      return result.data;
-    },
+    queryFn: async () => unwrap(await getApplications(filters)),
+    placeholderData: keepPreviousData,
   });
 };
 
 export const useApplicationByCode = (code: string) => {
   return useQuery<ApplicationDTO, Error>({
     queryKey: applicationsKeys.detail(code),
-    queryFn: async () => {
-      const result = await getApplicationByCode(code);
-      if (!result.success)
-        throw new HttpStatusError(result.status, result.error);
-      return result.data;
-    },
+    queryFn: async () => unwrap(await getApplicationByCode(code)),
     enabled: !!code,
   });
 };
@@ -85,11 +81,7 @@ export const useUpdateApplication = () => {
 export const useMenus = (code: string) => {
   return useQuery<IGRPMenuItemArgs[], Error>({
     queryKey: menusKeys.byApplication(code),
-    queryFn: async () => {
-      const result = await getMenus(code);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryFn: async () => unwrap(await getMenus(code)),
     enabled: !!code,
   });
 };

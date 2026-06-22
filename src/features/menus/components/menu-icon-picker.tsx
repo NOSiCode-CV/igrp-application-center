@@ -82,6 +82,7 @@ export function MenuIconPicker({
               variant="outline"
               role="combobox"
               aria-expanded={open}
+              aria-label="Selecionar ícone"
               className="w-full justify-between"
             >
               {currentIcon ? (

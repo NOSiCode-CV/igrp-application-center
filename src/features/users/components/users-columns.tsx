@@ -59,14 +59,11 @@ function ActiveRowActionsCell({
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
-            className="text-green-600 focus:text-green-600 focus:bg-green-50 dark:text-green-400 dark:focus:text-green-400 dark:focus:bg-green-950"
+            className="text-success focus:text-success focus:bg-success/10"
             onSelect={() => onStatusClick(row.original, "ACTIVE")}
             variant="default"
           >
-            <IGRPIcon
-              iconName="CircleCheck"
-              className="text-green-600 dark:text-green-400"
-            />
+            <IGRPIcon iconName="CircleCheck" className="text-success" />
             Ativar
           </DropdownMenuItem>
         )}

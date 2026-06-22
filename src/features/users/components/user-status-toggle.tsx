@@ -9,7 +9,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  cn,
   IGRPButton,
   IGRPIcon,
   useIGRPToast,
@@ -93,12 +92,8 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
             <IGRPButton
               onClick={handleConfirm}
               disabled={isPending}
-              className={cn(
-                isActive
-                  ? "bg-destructive hover:bg-destructive/90"
-                  : "bg-primary hover:bg-primary/90",
-                "gap-2 text-white",
-              )}
+              variant={isActive ? "destructive" : "default"}
+              className="gap-2"
             >
               {isPending ? (
                 <IGRPIcon iconName="LoaderCircle" className="animate-spin" />

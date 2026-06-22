@@ -286,6 +286,10 @@
   @apply bg-warning/15 text-warning;
 }
 
+.status-deleted {
+  @apply bg-destructive/10 text-destructive;
+}
+
 .home-scroll-viewport {
   scrollbar-width: none; /* Firefox / standard */
   -ms-overflow-style: none; /* IE / old Edge */

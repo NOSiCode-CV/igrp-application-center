@@ -112,16 +112,16 @@ export function formatViolations(violations, filePath) {
 }
 
 /** @returns {string[]} */
-function listTsxFiles(root = "src") {
+function listSourceFiles(root = "src") {
   return /** @type {string[]} */ (
     readdirSync(root, { recursive: true }).filter(
-      (p) => typeof p === "string" && p.endsWith(".tsx"),
+      (p) => typeof p === "string" && (p.endsWith(".tsx") || p.endsWith(".ts")),
     )
   ).map((p) => join(root, p));
 }
 
 function main() {
-  const files = listTsxFiles();
+  const files = listSourceFiles();
   let strictCount = 0;
   let advisoryCount = 0;
   for (const file of files) {

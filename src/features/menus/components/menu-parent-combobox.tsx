@@ -21,6 +21,8 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  RadioGroup,
+  RadioGroupItem,
 } from "@igrp/igrp-framework-react-design-system";
 import type { Control } from "react-hook-form";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -89,10 +91,18 @@ export function MenuParentCombobox({
       <legend className="text-base font-semibold px-2">Hierarquia</legend>
 
       {isPage && (
-        <div className="flex gap-2 mb-4">
+        <RadioGroup
+          value={parentType}
+          onValueChange={(value) =>
+            handleParentTypeChange(value as "GROUP" | "FOLDER")
+          }
+          disabled={disabled}
+          className="flex flex-row gap-2 mb-4"
+        >
           {(["GROUP", "FOLDER"] as const).map((type) => (
             <label
               key={type}
+              htmlFor={`parentType-${type}`}
               className={cn(
                 "flex flex-1 items-center gap-2 px-3 py-2 rounded-md border cursor-pointer text-sm font-medium transition-colors",
                 parentType === type
@@ -101,19 +111,11 @@ export function MenuParentCombobox({
                 disabled && "pointer-events-none opacity-50",
               )}
             >
-              <input
-                type="radio"
-                name="parentType"
-                value={type}
-                checked={parentType === type}
-                disabled={disabled}
-                onChange={() => handleParentTypeChange(type)}
-                className="accent-primary"
-              />
+              <RadioGroupItem id={`parentType-${type}`} value={type} />
               {type === "GROUP" ? "Grupo" : "Pasta"}
             </label>
           ))}
-        </div>
+        </RadioGroup>
       )}
 
       <FormField

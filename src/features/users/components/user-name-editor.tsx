@@ -11,6 +11,7 @@ import {
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
 
+import { userKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
 
 interface UserNameEditorProps {
@@ -42,8 +43,10 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
         user: { ...user, name: trimmed },
       });
       if (!res.success) throw new Error(res.error);
-      await queryClient.invalidateQueries({ queryKey: ["user", user.id] });
-      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      await queryClient.invalidateQueries({
+        queryKey: userKeys.detail(user.id),
+      });
+      await queryClient.invalidateQueries({ queryKey: userKeys.all });
       setEditing(false);
       igrpToast({
         type: "success",

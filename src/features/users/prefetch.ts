@@ -10,9 +10,8 @@ import {
   getCurrentUserRoles,
 } from "@/actions/user";
 import { HttpStatusError } from "@/lib/errors";
-import { makeQueryClient } from "@/providers/query-client";
 
-export { makeQueryClient };
+import { currentUserKeys } from "./query-keys";
 
 /**
  * Prefetch every query the home launcher reads on first paint.
@@ -27,7 +26,7 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
     // so a failure here surfaces the status error page (fetchQuery throws;
     // the secondary prefetchQuery calls below degrade gracefully).
     client.fetchQuery({
-      queryKey: ["current-user"],
+      queryKey: currentUserKeys.detail(),
       queryFn: async () => {
         const r = await getCurrentUser();
         if (!r.success) throw new HttpStatusError(r.status, r.error);
@@ -35,7 +34,7 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
       },
     }),
     client.prefetchQuery({
-      queryKey: ["current-user-active-role"],
+      queryKey: currentUserKeys.activeRole(),
       queryFn: async () => {
         const r = await getCurrentUserActiveRole();
         if (!r.success) throw new Error(r.error);
@@ -43,7 +42,7 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
       },
     }),
     client.prefetchQuery({
-      queryKey: ["current-user-roles"],
+      queryKey: currentUserKeys.roles(),
       queryFn: async () => {
         const r = await getCurrentUserRoles();
         if (!r.success) throw new Error(r.error);
@@ -51,7 +50,7 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
       },
     }),
     client.prefetchQuery({
-      queryKey: ["current-user-departments"],
+      queryKey: currentUserKeys.departments(),
       queryFn: async () => {
         const r = await getCurrentUserDepartments();
         if (!r.success) throw new Error(r.error);
@@ -59,7 +58,7 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
       },
     }),
     client.prefetchQuery({
-      queryKey: ["current-user-applications"],
+      queryKey: currentUserKeys.applications(),
       queryFn: async () => {
         const r = await getCurrentUserApplications();
         if (!r.success) throw new Error(r.error);
@@ -67,7 +66,7 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
       },
     }),
     client.prefetchQuery({
-      queryKey: ["favorite-applications", undefined],
+      queryKey: currentUserKeys.favoriteApplications(),
       queryFn: async () => {
         const r = await getCurrentUserFavoriteApplications();
         if (!r.success) throw new Error(r.error);
@@ -75,7 +74,7 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
       },
     }),
     client.prefetchQuery({
-      queryKey: ["recent-applications", undefined],
+      queryKey: currentUserKeys.recentApplications(),
       queryFn: async () => {
         const r = await getCurrentUserRecentApplications();
         if (!r.success) throw new Error(r.error);

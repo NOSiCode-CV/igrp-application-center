@@ -20,6 +20,7 @@ export interface ButtonLinkProps extends React.ComponentProps<typeof Link> {
   variant?: IGRPBtnProps["variant"];
   btnClassName?: string;
   size?: IGRPBtnProps["size"];
+  "aria-label"?: string;
 }
 
 export function ButtonLink({
@@ -29,8 +30,14 @@ export function ButtonLink({
   variant,
   btnClassName,
   size,
+  "aria-label": ariaLabel,
   ...props
 }: ButtonLinkProps) {
+  // Icon-only links have no visible text, so they need an explicit accessible
+  // name. When there is no visible label, fall back to the provided aria-label
+  // (or the label text) so the rendered link still has an accessible name.
+  const linkAriaLabel = label ? ariaLabel : (ariaLabel ?? label);
+
   return (
     <Button
       asChild
@@ -38,7 +45,7 @@ export function ButtonLink({
       className={btnClassName}
       size={size}
     >
-      <Link {...props}>
+      <Link aria-label={linkAriaLabel} {...props}>
         <LinkLoadingIndicator iconName={icon} iconClassName={iconClassName} />
         {label}
       </Link>

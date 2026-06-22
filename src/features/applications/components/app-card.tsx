@@ -30,7 +30,7 @@ interface ApplicationCardProps {
 }
 
 const ACTION_BUTTON_HOVER =
-  "hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50";
+  "hover:bg-primary/90 hover:text-primary-foreground/90";
 
 export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
   const { name, code, status, description, slug, url } = app;
