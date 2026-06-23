@@ -37,10 +37,10 @@ describe("getUsers action", () => {
     const users = [{ id: "user-2", username: "bob" }];
     mockGetUsers.mockResolvedValue({ data: users });
 
-    const result = await getUsers({ username: "bob" });
+    const result = await getUsers({ name: "bob" });
 
     expect(result).toEqual({ success: true, data: users });
-    expect(mockGetUsers).toHaveBeenCalledWith({ username: "bob" });
+    expect(mockGetUsers).toHaveBeenCalledWith({ name: "bob" });
   });
 
   it("maps an SDK error with no title to a default status message", async () => {

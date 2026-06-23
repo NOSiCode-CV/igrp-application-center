@@ -20,7 +20,7 @@ import { auth as authMock } from "@/lib/auth";
 import { middleware } from "@/middleware";
 
 // Cast to get typed mock helpers
-const auth = authMock as {
+const auth = authMock as unknown as {
   isAuthDisabled: ReturnType<typeof vi.fn>;
   isPreviewMode: ReturnType<typeof vi.fn>;
   getTokenFromRequest: ReturnType<typeof vi.fn>;
