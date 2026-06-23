@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useLocalStorageState } from "@/lib/hooks/use-local-storage-state";
+
 import {
   Badge,
   IGRPIcon,
@@ -298,66 +300,27 @@ type TypeFilter = "ALL" | "INTERNAL" | "EXTERNAL";
 type SectionKey = "recentes" | "todas";
 
 export function ApplicationsListHome() {
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>("ALL");
-  const [deptFilter, setDeptFilter] = useState<string | null>(null);
+  const [filterState, setFilterState] = useLocalStorageState<{
+    type: TypeFilter;
+    dept: string | null;
+  }>(FILTER_STORAGE_KEY, { type: "ALL", dept: null });
+  const typeFilter = filterState.type;
+  const deptFilter = filterState.dept;
+  const setTypeFilter = (type: TypeFilter) =>
+    setFilterState((prev) => ({ ...prev, type }));
+  const setDeptFilter = (dept: string | null) =>
+    setFilterState((prev) => ({ ...prev, dept }));
+
+  const [collapsed, setCollapsed] = useLocalStorageState<
+    Record<SectionKey, boolean>
+  >(COLLAPSE_STORAGE_KEY, { recentes: false, todas: false });
+
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState<Record<SectionKey, boolean>>({
-    recentes: false,
-    todas: false,
-  });
   const searchWrapperRef = useRef<HTMLButtonElement>(null);
   const greet = useGreeting();
 
-  // Restore collapsed state from localStorage on first mount.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(COLLAPSE_STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as Partial<Record<SectionKey, boolean>>;
-      setCollapsed((prev) => ({ ...prev, ...parsed }));
-    } catch {
-      // ignore malformed storage
-    }
-  }, []);
-
-  // Persist collapsed state.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(
-      COLLAPSE_STORAGE_KEY,
-      JSON.stringify(collapsed),
-    );
-  }, [collapsed]);
-
   const toggleSection = (key: SectionKey) =>
     setCollapsed((prev) => ({ ...prev, [key]: !prev[key] }));
-
-  // Restore filter selection from localStorage on first mount.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = window.localStorage.getItem(FILTER_STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as {
-        type?: TypeFilter;
-        dept?: string | null;
-      };
-      if (parsed.type) setTypeFilter(parsed.type);
-      if (parsed.dept !== undefined) setDeptFilter(parsed.dept);
-    } catch {
-      // ignore malformed storage
-    }
-  }, []);
-
-  // Persist filter selection.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(
-      FILTER_STORAGE_KEY,
-      JSON.stringify({ type: typeFilter, dept: deptFilter }),
-    );
-  }, [typeFilter, deptFilter]);
 
   const { data: currentUser, isPending: isUserPending } = useCurrentUser();
   const { data: activeRole, isPending: isActiveRolePending } =
