@@ -25,11 +25,9 @@ import {
   getAvailablePermissionsForRole,
   getAvailableResources,
   getDepartmentApplications,
-  getDepartmentByCode,
   getDepartmentMenus,
   getDepartmentPermissions,
   getDepartmentResources,
-  getDepartments,
   getPermissionsByRole,
   getRoles,
   removeApplicationsFromDepartment,
@@ -44,15 +42,16 @@ import { unwrap } from "@/actions/types";
 import { applicationsKeys } from "@/features/applications/query-keys";
 
 import { departmentKeys, roleKeys } from "./query-keys";
+import {
+  departmentByCodeOptions,
+  departmentListOptions,
+} from "./query-options";
 
 export const useDepartments = () => {
-  return useQuery<DepartmentDTO[], Error>({
-    queryKey: departmentKeys.list(),
-    // unwrap throws HttpStatusError (not a plain Error) so a client-side fetch
-    // failure routes to the status error page via the segment boundary,
-    // matching the server prefetch in `prefetchDepartments`.
-    queryFn: async () => unwrap(await getDepartments()),
-  });
+  // unwrap throws HttpStatusError (not a plain Error) so a client-side fetch
+  // failure routes to the status error page via the segment boundary,
+  // matching the server prefetch in `prefetchDepartments`.
+  return useQuery(departmentListOptions());
 };
 
 export const useCreateDepartment = () => {
@@ -104,11 +103,7 @@ export const useDeleteDepartment = () => {
 };
 
 export const useDepartmentByCode = (code?: string) => {
-  return useQuery<DepartmentDTO, Error>({
-    queryKey: departmentKeys.detail(code),
-    queryFn: async () => unwrap(await getDepartmentByCode(code || "")),
-    enabled: !!code,
-  });
+  return useQuery(departmentByCodeOptions(code));
 };
 
 export const useDepartmentAvailableApps = (departmentCode?: string) => {
