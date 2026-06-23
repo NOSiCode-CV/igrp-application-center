@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   AlertDialog,
@@ -83,21 +83,7 @@ export function ManageMenusModal({
 
   const loading = loadingAvailable || loadingAssigned;
 
-  const seenMenusRef = useRef(new Map());
-
-  useEffect(() => {
-    if (availableMenus) {
-      availableMenus.forEach((menu) => {
-        seenMenusRef.current.set(menu.code, menu);
-      });
-    }
-    if (assignedMenus) {
-      assignedMenus.forEach((menu) => {
-        seenMenusRef.current.set(menu.code, menu);
-      });
-    }
-  }, [availableMenus, assignedMenus]);
-
+  // Reset UI state when the modal opens or closes.
   useEffect(() => {
     if (open) {
       setSearchTerm("");
@@ -105,52 +91,37 @@ export function ManageMenusModal({
     }
   }, [open]);
 
-  const assignedCodes = new Set(assignedMenus?.map((menu) => menu.code) || []);
-
+  // Derive a stable label map from the current query data — no ref mutation needed.
+  // Both available and assigned menus are merged so items that move between the
+  // two lists keep their labels even across refetches.
   const allMenus = useMemo(() => {
-    const menusArray = Array.from(seenMenusRef.current.values()).map(
-      (menu) => ({
-        ...menu,
-        isAssigned: assignedCodes.has(menu.code),
-      }),
-    );
+    const byCode = new Map<
+      string,
+      NonNullable<typeof availableMenus>[number]
+    >();
+    availableMenus?.forEach((menu) => {
+      byCode.set(menu.code, menu);
+    });
+    assignedMenus?.forEach((menu) => {
+      byCode.set(menu.code, menu);
+    });
 
-    return menusArray.sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [assignedCodes]);
-
-  const appsFromMenus = useMemo(() => {
-    if (allMenus.length === 0) return [];
-    const uniqueAppCodes = new Set(
-      allMenus.map((menu) => menu.applicationCode),
-    );
-    return Array.from(uniqueAppCodes)
-      .map((appCode) => ({
-        code: appCode,
-        name: appCode,
-      }))
+    const assignedCodes = new Set(assignedMenus?.map((menu) => menu.code));
+    return Array.from(byCode.values())
+      .map((menu) => ({ ...menu, isAssigned: assignedCodes.has(menu.code) }))
       .sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [allMenus]);
+  }, [availableMenus, assignedMenus]);
 
+  // Set the default selected app once when the modal opens and app data is available.
+  // Uses assignedApps (the department's app list) as the single authoritative source.
   useEffect(() => {
-    if (open && appsFromMenus.length > 0 && !selectedApp) {
-      setSelectedApp(appsFromMenus[0].code);
-    }
-  }, [open, appsFromMenus, selectedApp]);
-
-  useEffect(() => {
-    if (open) {
-      setSearchTerm("");
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (assignedApps && assignedApps.length > 0 && !selectedApp) {
+    if (open && assignedApps && assignedApps.length > 0 && !selectedApp) {
       const sortedApps = [...assignedApps].sort((a, b) =>
         a.name.localeCompare(b.name, "pt"),
       );
       setSelectedApp(sortedApps[0].code);
     }
-  }, [assignedApps, selectedApp]);
+  }, [open, assignedApps, selectedApp]);
 
   const toggleExpand = (menuCode: string) => {
     setExpandedMenus((prev) => {
