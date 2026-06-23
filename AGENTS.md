@@ -52,6 +52,8 @@ All auth flows through `@igrp/framework-next-auth`, wrapping NextAuth v4.
 - `components/` — feature UI.
 - Optional `*-utils.ts` / `*-mapper.ts` / `*-constants.ts`.
 
+`menus`, `permissions`, `profile`, and `settings` are intentionally component-only or share another domain's hooks (e.g. `profile` reuses `use-users.ts`); they have no `use-<domain>.ts` by design, so the convention list is not expected to be uniform across all domains.
+
 Server actions live in `src/actions/` (one file per resource, plus `src/actions/igrp/` for framework integration actions like layout). Actions call the `@igrp/platform-access-management-client-ts` SDK; the SDK is configured by `serverSession()` so calling `serverSession()` (or otherwise ensuring auth) before SDK calls is required.
 
 ### UI — use the IGRP design system
