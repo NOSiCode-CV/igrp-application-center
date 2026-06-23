@@ -28,23 +28,9 @@ import {
   IGRPIcon,
   Input,
   Label,
-  Pagination,
-  PaginationContent,
-  PaginationItem,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
@@ -52,7 +38,6 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type FilterFn,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -61,6 +46,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { SelectableDataTable } from "@/components/data-table/selectable-data-table";
 import {
   useDepartments,
   useRoles,
@@ -494,180 +480,10 @@ export function UserRolesDialog({
                   </p>
                 </div>
               ) : (
-                <>
-                  <div className="bg-background overflow-hidden rounded-md border ">
-                    <Table className="table-fixed">
-                      <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                          <TableRow
-                            key={headerGroup.id}
-                            className="hover:bg-transparent"
-                          >
-                            {headerGroup.headers.map((header) => (
-                              <TableHead
-                                key={header.id}
-                                style={{ width: `${header.getSize()}px` }}
-                                className="h-12"
-                              >
-                                {header.isPlaceholder
-                                  ? null
-                                  : flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext(),
-                                    )}
-                              </TableHead>
-                            ))}
-                          </TableRow>
-                        ))}
-                      </TableHeader>
-
-                      <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                          table.getRowModel().rows.map((row) => (
-                            <TableRow
-                              key={row.id}
-                              data-state={row.getIsSelected() && "selected"}
-                            >
-                              {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
-                                  )}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell
-                              colSpan={columns.length}
-                              className="h-24 text-center"
-                            >
-                              Sem resultados!
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-8">
-                    <div className="flex items-center justify-end gap-3">
-                      <Label
-                        htmlFor={`${idValue}-per-page`}
-                        className="max-sm:sr-only"
-                      >
-                        Linhas por página
-                      </Label>
-                      <Select
-                        value={table.getState().pagination.pageSize.toString()}
-                        onValueChange={(value) =>
-                          table.setPageSize(Number(value))
-                        }
-                      >
-                        <SelectTrigger
-                          id={`${idValue}-per-page`}
-                          className="w-fit whitespace-nowrap"
-                        >
-                          <SelectValue placeholder="Select number of results" />
-                        </SelectTrigger>
-                        <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
-                          {[5, 10].map((pageSize) => (
-                            <SelectItem
-                              key={pageSize}
-                              value={pageSize.toString()}
-                            >
-                              {pageSize}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
-                      <p
-                        className="text-muted-foreground text-sm whitespace-nowrap"
-                        aria-live="polite"
-                      >
-                        <span className="text-foreground">
-                          {table.getState().pagination.pageIndex *
-                            table.getState().pagination.pageSize +
-                            1}
-                          -
-                          {Math.min(
-                            Math.max(
-                              table.getState().pagination.pageIndex *
-                                table.getState().pagination.pageSize +
-                                table.getState().pagination.pageSize,
-                              0,
-                            ),
-                            table.getRowCount(),
-                          )}
-                        </span>{" "}
-                        de{" "}
-                        <span className="text-foreground">
-                          {table.getRowCount().toString()}
-                        </span>
-                      </p>
-                    </div>
-
-                    <div>
-                      <Pagination>
-                        <PaginationContent>
-                          <PaginationItem>
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.firstPage()}
-                              disabled={!table.getCanPreviousPage()}
-                              aria-label="Go to first page"
-                            >
-                              <IGRPIcon iconName="ChevronFirst" />
-                            </Button>
-                          </PaginationItem>
-                          <PaginationItem>
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.previousPage()}
-                              disabled={!table.getCanPreviousPage()}
-                              aria-label="Go to previous page"
-                            >
-                              <IGRPIcon iconName="ChevronLeft" />
-                            </Button>
-                          </PaginationItem>
-                          <PaginationItem>
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.nextPage()}
-                              disabled={!table.getCanNextPage()}
-                              aria-label="Go to next page"
-                            >
-                              <IGRPIcon iconName="ChevronRight" />
-                            </Button>
-                          </PaginationItem>
-                          <PaginationItem>
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.lastPage()}
-                              disabled={!table.getCanNextPage()}
-                              aria-label="Go to last page"
-                            >
-                              <IGRPIcon iconName="ChevronLast" />
-                            </Button>
-                          </PaginationItem>
-                        </PaginationContent>
-                      </Pagination>
-                    </div>
-                  </div>
-                </>
+                <SelectableDataTable
+                  table={table}
+                  columnCount={columns.length}
+                />
               )}
 
               <div className="flex items-center justify-between gap-3">
