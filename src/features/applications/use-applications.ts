@@ -1,6 +1,5 @@
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import type {
-  ApplicationDTO,
   ApplicationFilters,
   CreateMenuRequest,
   UpdateApplicationRequest,
@@ -18,8 +17,6 @@ import {
   createApplication,
   createMenu,
   deleteMenu,
-  getApplicationByCode,
-  getApplications,
   getMenus,
   removeRolesFromMenu,
   updateApplication,
@@ -28,21 +25,20 @@ import {
 import { unwrap } from "@/actions/types";
 
 import { applicationsKeys, menusKeys } from "./query-keys";
+import {
+  applicationByCodeOptions,
+  applicationsListOptions,
+} from "./query-options";
 
 export const useApplications = (filters?: ApplicationFilters) => {
-  return useQuery<ApplicationDTO[], Error>({
-    queryKey: applicationsKeys.list(filters),
-    queryFn: async () => unwrap(await getApplications(filters)),
+  return useQuery({
+    ...applicationsListOptions(filters),
     placeholderData: keepPreviousData,
   });
 };
 
 export const useApplicationByCode = (code: string) => {
-  return useQuery<ApplicationDTO, Error>({
-    queryKey: applicationsKeys.detail(code),
-    queryFn: async () => unwrap(await getApplicationByCode(code)),
-    enabled: !!code,
-  });
+  return useQuery(applicationByCodeOptions(code));
 };
 
 export const useCreateApplication = () => {

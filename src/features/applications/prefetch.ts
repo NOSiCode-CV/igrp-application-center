@@ -2,29 +2,20 @@ import { cache } from "react";
 
 import type { QueryClient } from "@tanstack/react-query";
 
-import {
-  getApplicationByCode as getApplicationByCodeAction,
-  getApplications,
-} from "@/actions/applications";
-import { HttpStatusError } from "@/lib/errors";
+import { getApplicationByCode as getApplicationByCodeAction } from "@/actions/applications";
+import { unwrap } from "@/actions/types";
 
-import { applicationsKeys } from "./query-keys";
+import {
+  applicationByCodeOptions,
+  applicationsListOptions,
+} from "./query-options";
 
 export const getApplicationByCodeCached = cache(getApplicationByCodeAction);
 
 export async function prefetchApplicationsList(client: QueryClient) {
   // fetchQuery rethrows on failure so the segment boundary can render the
   // status error page (prefetchQuery would swallow the error).
-  await client.fetchQuery({
-    queryKey: applicationsKeys.list(),
-    queryFn: async () => {
-      const result = await getApplications();
-      if (!result.success) {
-        throw new HttpStatusError(result.status, result.error);
-      }
-      return result.data;
-    },
-  });
+  await client.fetchQuery(applicationsListOptions());
 }
 
 export async function prefetchApplicationByCode(
@@ -32,13 +23,8 @@ export async function prefetchApplicationByCode(
   code: string,
 ) {
   await client.fetchQuery({
-    queryKey: applicationsKeys.detail(code),
-    queryFn: async () => {
-      const result = await getApplicationByCodeCached(code);
-      if (!result.success) {
-        throw new HttpStatusError(result.status, result.error);
-      }
-      return result.data;
-    },
+    ...applicationByCodeOptions(code),
+    // Use the React-cached action for SSR deduplication.
+    queryFn: async () => unwrap(await getApplicationByCodeCached(code)),
   });
 }
