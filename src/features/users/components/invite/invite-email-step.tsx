@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import {
   type InviteEmailFormArgs,
   InviteEmailFormSchema,
-} from "../../user-schema";
+} from "../../user-schemas";
 import { InviteStepHeader } from "./invite-step-header";
 
 interface InviteEmailStepProps {

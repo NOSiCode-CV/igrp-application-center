@@ -6,7 +6,7 @@ import type {
 } from "@igrp/platform-access-management-client-ts";
 import { z } from "zod";
 
-import { fileWithPreviewSchema } from "@/features/files/files-schema";
+import { fileWithPreviewSchema } from "@/features/files/files-schemas";
 import { emptyToNull, statusSchema } from "@/schemas/global";
 
 import { APPLICATIONS_TYPES } from "./app-utils";

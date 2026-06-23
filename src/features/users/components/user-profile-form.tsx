@@ -33,7 +33,7 @@ import { AppCenterNotFound } from "@/components/not-found";
 import { ROUTES } from "@/lib/constants";
 
 import { useCurrentUser } from "../use-users";
-import { type UpdateUserArgs, UpdateUserSchema } from "../user-schema";
+import { type UpdateUserArgs, UpdateUserSchema } from "../user-schemas";
 import { ProfileImageUpload } from "./user-profile-image-upload";
 import { ProfileSignature } from "./user-profile-signature";
 
