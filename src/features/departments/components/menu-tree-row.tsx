@@ -15,16 +15,14 @@ import type { MenuWithChildren } from "./dept-menu";
 const MenuTreeRow = ({
   menu,
   level = 0,
-  setMenuRoleAssignments,
+  toggleMenuRole,
   roles,
   menuRoleAssignments,
   ancestorCodes,
 }: {
   menu: MenuWithChildren;
   level?: number;
-  setMenuRoleAssignments: React.Dispatch<
-    React.SetStateAction<Map<string, Set<string>>>
-  >;
+  toggleMenuRole: (menuCode: string, roleCode: string) => void;
   roles?: { name: string; code: string }[];
   menuRoleAssignments: Map<string, Set<string>>;
   ancestorCodes?: ReadonlySet<string>;
@@ -33,22 +31,6 @@ const MenuTreeRow = ({
 
   const hasChildren = menu.children && menu.children.length > 0;
   const isExpanded = expandedMenus.has(menu.code);
-
-  const toggleMenuRole = (menuCode: string, roleCode: string) => {
-    setMenuRoleAssignments((prev) => {
-      const newMap = new Map(prev);
-      const currentRoles = new Set(newMap.get(menuCode) || []);
-
-      if (currentRoles.has(roleCode)) {
-        currentRoles.delete(roleCode);
-      } else {
-        currentRoles.add(roleCode);
-      }
-
-      newMap.set(menuCode, currentRoles);
-      return newMap;
-    });
-  };
 
   const toggleExpand = (menuCode: string) => {
     setExpandedMenus((prev) => {
@@ -133,7 +115,7 @@ const MenuTreeRow = ({
               key={child.code}
               menu={child}
               level={level + 1}
-              setMenuRoleAssignments={setMenuRoleAssignments}
+              toggleMenuRole={toggleMenuRole}
               roles={roles}
               menuRoleAssignments={menuRoleAssignments}
               ancestorCodes={new Set(ancestorCodes ?? []).add(menu.code)}

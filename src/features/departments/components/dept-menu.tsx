@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   AlertDialog,
@@ -44,6 +44,7 @@ import {
   useDepartmentMenus,
   useRoles,
 } from "../use-departments";
+import { useMenuRoleAssignments } from "../use-menu-role-assignments";
 import { ManageMenusModal } from "./Modal/manage-menus-modal";
 import MenuTreeRow from "./menu-tree-row";
 
@@ -58,9 +59,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
   const [selectedApp, setSelectedApp] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [menuRoleAssignments, setMenuRoleAssignments] = useState<
-    Map<string, Set<string>>
-  >(new Map());
 
   const [showMenusModal, setShowMenusModal] = useState(false);
   const [pendingAppSwitch, setPendingAppSwitch] = useState<string | null>(null);
@@ -88,54 +86,64 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
     }
   }, [assignedApps, selectedApp]);
 
-  useEffect(() => {
-    if (menus && menus.length > 0 && menuRoleAssignments.size === 0) {
-      const initialAssignments = new Map<string, Set<string>>();
-      menus.forEach((menu) => {
-        initialAssignments.set(
-          menu.code,
-          new Set(menu.roles.map((r) => r?.roleCode) || []),
+  const filteredByApp = useMemo(
+    () =>
+      selectedApp
+        ? (menus || []).filter((menu) => menu.applicationCode === selectedApp)
+        : menus || [],
+    [menus, selectedApp],
+  );
+
+  const filteredMenus = useMemo(
+    () =>
+      filteredByApp.filter((menu) => {
+        if (!searchTerm) return true;
+        return (
+          menu.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          menu.code.toLowerCase().includes(searchTerm.toLowerCase())
         );
-      });
-      setMenuRoleAssignments(initialAssignments);
-    }
-  }, [menus, menuRoleAssignments.size]);
+      }),
+    [filteredByApp, searchTerm],
+  );
+
+  const menuTree = useMemo(
+    () => buildMenuTree(filteredMenus as MenuWithChildren[]),
+    [filteredMenus],
+  );
+
+  const {
+    assignments: menuRoleAssignments,
+    hasChanges,
+    columnCheckState,
+    toggleMenuRole,
+    toggleAllMenusForRole,
+    reset,
+    diffForSave,
+  } = useMenuRoleAssignments({ menus, roles, filteredMenus, selectedApp });
 
   const handleSave = async (): Promise<boolean> => {
     try {
       const promises = [];
 
-      for (const [menuCode, currentRoles] of menuRoleAssignments.entries()) {
-        const originalMenu = menus?.find((m) => m.code === menuCode);
-        const originalRoles = new Set(
-          originalMenu?.roles.map((r) => r?.roleCode) || [],
-        );
-
-        const rolesToAdd = Array.from(currentRoles).filter(
-          (role) => !originalRoles.has(role),
-        );
-        const rolesToRemove = Array.from(originalRoles).filter(
-          (role) => !currentRoles.has(role),
-        );
-
-        if (rolesToAdd.length > 0) {
+      for (const { menuCode, toAdd, toRemove } of diffForSave()) {
+        if (toAdd.length > 0) {
           promises.push(
             addRolesMutation.mutateAsync({
               appCode: selectedApp,
               menuCode,
               departmentCode,
-              roleNames: rolesToAdd,
+              roleNames: toAdd,
             }),
           );
         }
 
-        if (rolesToRemove.length > 0) {
+        if (toRemove.length > 0) {
           promises.push(
             removeRolesMutation.mutateAsync({
               appCode: selectedApp,
               menuCode,
               departmentCode,
-              roleNames: rolesToRemove,
+              roleNames: toRemove,
             }),
           );
         }
@@ -186,7 +194,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
   const handleDiscardAndSwitch = () => {
     if (pendingAppSwitch != null) {
-      setMenuRoleAssignments(new Map());
+      reset();
       setSelectedApp(pendingAppSwitch);
       setPendingAppSwitch(null);
     }
@@ -200,102 +208,6 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
       setPendingAppSwitch(null);
     }
   };
-
-  const filteredByApp = useMemo(
-    () =>
-      selectedApp
-        ? (menus || []).filter((menu) => menu.applicationCode === selectedApp)
-        : menus || [],
-    [menus, selectedApp],
-  );
-
-  const filteredMenus = useMemo(
-    () =>
-      filteredByApp.filter((menu) => {
-        if (!searchTerm) return true;
-        return (
-          menu.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          menu.code.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }),
-    [filteredByApp, searchTerm],
-  );
-
-  const menuTree = useMemo(
-    () => buildMenuTree(filteredMenus as MenuWithChildren[]),
-    [filteredMenus],
-  );
-
-  // Precompute the header check state for each role once per relevant change,
-  // instead of recomputing it on every (role × render) call site below.
-  const columnCheckState = useMemo(() => {
-    const visibleMenuCodes = filteredMenus.map((m) => m.code);
-    const map = new Map<string, boolean | "indeterminate">();
-    for (const role of roles ?? []) {
-      const menusWithRole = visibleMenuCodes.filter((code) =>
-        menuRoleAssignments.get(code)?.has(role.code),
-      );
-      map.set(
-        role.code,
-        menusWithRole.length === 0
-          ? false
-          : menusWithRole.length === visibleMenuCodes.length
-            ? true
-            : "indeterminate",
-      );
-    }
-    return map;
-  }, [roles, filteredMenus, menuRoleAssignments]);
-
-  const getColumnCheckState = useCallback(
-    (roleCode: string): boolean | "indeterminate" =>
-      columnCheckState.get(roleCode) ?? false,
-    [columnCheckState],
-  );
-
-  const toggleAllMenusForRole = (roleCode: string) => {
-    const visibleMenuCodes = filteredMenus.map((m) => m.code);
-    const currentState = getColumnCheckState(roleCode);
-
-    setMenuRoleAssignments((prev) => {
-      const newMap = new Map(prev);
-
-      visibleMenuCodes.forEach((menuCode) => {
-        const currentRoles = new Set(newMap.get(menuCode) || []);
-
-        if (currentState === true) {
-          currentRoles.delete(roleCode);
-        } else {
-          currentRoles.add(roleCode);
-        }
-
-        newMap.set(menuCode, currentRoles);
-      });
-
-      return newMap;
-    });
-  };
-
-  const hasChanges = useMemo(
-    () =>
-      Array.from(menuRoleAssignments.entries()).some(
-        ([menuCode, currentRoles]) => {
-          const originalMenu = menus?.find((m) => m.code === menuCode);
-          const originalRoles = new Set(
-            originalMenu?.roles.map((r) => r?.roleCode) || [],
-          );
-
-          if (currentRoles.size !== originalRoles.size) return true;
-
-          for (const role of currentRoles) {
-            if (!originalRoles.has(role)) return true;
-          }
-
-          return false;
-        },
-      ),
-    [menuRoleAssignments, menus],
-  );
 
   const sortedApps = useMemo(() => {
     if (!assignedApps) return [];
@@ -460,19 +372,21 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                     <IGRPIcon
                                       aria-hidden
                                       iconName={
-                                        getColumnCheckState(role.code) === true
+                                        (columnCheckState.get(role.code) ??
+                                          false) === true
                                           ? "Check"
-                                          : getColumnCheckState(role.code) ===
-                                              "indeterminate"
+                                          : (columnCheckState.get(role.code) ??
+                                                false) === "indeterminate"
                                             ? "Check"
                                             : "Square"
                                       }
                                       className={cn(
                                         "size-4 transition-colors",
-                                        getColumnCheckState(role.code) === true
+                                        (columnCheckState.get(role.code) ??
+                                          false) === true
                                           ? "text-primary"
-                                          : getColumnCheckState(role.code) ===
-                                              "indeterminate"
+                                          : (columnCheckState.get(role.code) ??
+                                                false) === "indeterminate"
                                             ? "text-primary/60"
                                             : "text-muted-foreground group-hover:text-primary",
                                       )}
@@ -504,7 +418,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 <TableBody>
                   {menuTree.map((menu) => (
                     <MenuTreeRow
-                      setMenuRoleAssignments={setMenuRoleAssignments}
+                      toggleMenuRole={toggleMenuRole}
                       key={menu.code}
                       menu={menu}
                       roles={roles?.map((role) => ({
