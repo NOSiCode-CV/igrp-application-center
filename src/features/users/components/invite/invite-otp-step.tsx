@@ -16,7 +16,10 @@ import {
 import { Loader2, ShieldCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 
-import { type InviteOtpFormArgs, InviteOtpFormSchema } from "../../user-schemas";
+import {
+  type InviteOtpFormArgs,
+  InviteOtpFormSchema,
+} from "../../user-schemas";
 import { InviteStepHeader } from "./invite-step-header";
 
 interface InviteOtpStepProps {
