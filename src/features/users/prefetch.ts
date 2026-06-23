@@ -12,6 +12,7 @@ import {
 import { HttpStatusError } from "@/lib/errors";
 
 import { currentUserKeys } from "./query-keys";
+import { currentUserOptions } from "./query-options";
 
 /**
  * Prefetch every query the home launcher reads on first paint.
@@ -25,8 +26,10 @@ export async function prefetchCurrentUserDashboard(client: QueryClient) {
     // Primary resource: without the current user the launcher is unusable,
     // so a failure here surfaces the status error page (fetchQuery throws;
     // the secondary prefetchQuery calls below degrade gracefully).
+    // Uses the shared query key from currentUserOptions; overrides queryFn to
+    // throw HttpStatusError so the segment boundary renders the status error page.
     client.fetchQuery({
-      queryKey: currentUserKeys.detail(),
+      ...currentUserOptions(),
       queryFn: async () => {
         const r = await getCurrentUser();
         if (!r.success) throw new HttpStatusError(r.status, r.error);

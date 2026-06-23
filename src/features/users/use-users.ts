@@ -28,7 +28,6 @@ import {
   addCurrentUserFavoriteApplication,
   addRolesToUser,
   cancelUserInvitation,
-  getCurrentUser,
   getCurrentUserActiveRole,
   //getCurrentUserActiveRole,
   getCurrentUserApplications,
@@ -36,14 +35,12 @@ import {
   getCurrentUserFavoriteApplications,
   getCurrentUserRecentApplications,
   getCurrentUserRoles,
-  getUser,
   getUserApplications,
   getUserDepartments,
   getUserInvitationByToken,
   getUserInvitations,
   getUserMetadata,
   getUserRoles,
-  getUsers,
   inviteUser,
   registerCurrentUserApplicationAccess,
   removeCurrentUserFavoriteApplication,
@@ -62,23 +59,26 @@ import { getUserAuditLogs } from "@/actions/user-audit";
 import { getUserSession, killUserSession } from "@/actions/user-sessions";
 
 import { currentUserKeys, invitationKeys, userKeys } from "./query-keys";
+import {
+  currentUserOptions,
+  userByIdOptions,
+  userListOptions,
+} from "./query-options";
 
 export const useUsers = (
   params?: UserFilters,
   options?: { initialData?: IGRPUserDTO[] },
 ) => {
-  return useQuery<IGRPUserDTO[], Error>({
-    queryKey: userKeys.list(params),
-    queryFn: async () => unwrap(await getUsers(params)),
+  return useQuery({
+    ...userListOptions(params),
     initialData: options?.initialData,
     placeholderData: keepPreviousData,
   });
 };
 
 export const useCurrentUser = (options?: { enabled?: boolean }) => {
-  return useQuery<IGRPUserDTO, Error>({
-    queryKey: currentUserKeys.detail(),
-    queryFn: async () => unwrap(await getCurrentUser()),
+  return useQuery({
+    ...currentUserOptions(),
     ...options,
   });
 };
@@ -220,11 +220,7 @@ export function useUserDepartments(
 }
 
 export function useUser(userId: string) {
-  return useQuery<IGRPUserDTO, Error>({
-    queryKey: userKeys.detail(userId),
-    queryFn: async () => unwrap(await getUser(userId)),
-    enabled: !!userId,
-  });
+  return useQuery(userByIdOptions(userId));
 }
 
 export function useCurrentUserFavoriteApplications(applicationName?: string) {
