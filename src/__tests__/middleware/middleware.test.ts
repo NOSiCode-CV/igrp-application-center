@@ -69,4 +69,15 @@ describe("security headers (production)", () => {
     expect(res.headers.get("X-XSS-Protection")).toBeNull();
     vi.unstubAllEnvs();
   });
+
+  it("ships a Report-Only CSP in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    auth.getTokenFromRequest.mockResolvedValue({ sub: "u1" });
+    const res = await middleware(req("/settings/users"));
+    expect(res.headers.get("Content-Security-Policy-Report-Only")).toContain(
+      "default-src 'self'",
+    );
+    expect(res.headers.get("Content-Security-Policy")).toBeNull();
+    vi.unstubAllEnvs();
+  });
 });

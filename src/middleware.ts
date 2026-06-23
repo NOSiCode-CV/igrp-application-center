@@ -5,9 +5,7 @@ import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { sanitizeCallbackUrl } from "@/lib/utils";
 
 /** Security headers applied to all responses in production. */
-// TODO: Add a Content-Security-Policy header with app-specific directives
-// (script/style/connect/img/font sources) once they have been audited — a
-// misconfigured CSP can silently break the app, so it needs dedicated tuning.
+// Goal: graduate Report-Only → enforcing once the violation report stream is clean.
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
@@ -15,6 +13,18 @@ const SECURITY_HEADERS: Record<string, string> = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy":
     "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+  // Report-Only first: log violations without blocking. Tighten and switch to
+  // "Content-Security-Policy" (enforcing) once the report stream is clean.
+  "Content-Security-Policy-Report-Only": [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+  ].join("; "),
 };
 
 function withSecurityHeaders(response: NextResponse): NextResponse {
