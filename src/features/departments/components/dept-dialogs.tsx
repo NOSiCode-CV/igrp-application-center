@@ -3,7 +3,7 @@
 import type { DialogAction, DialogState } from "../dept-dialog-state";
 import { DepartmentDeleteDialog } from "./dept-delete-dialog";
 import { DepartmentFormDialog } from "./dept-form-dialog";
-import { ManageAppsModal } from "./Modal/manage-apps-modal";
+import { ManageAppsModal } from "./modal/manage-apps-modal";
 
 interface Props {
   state: DialogState;

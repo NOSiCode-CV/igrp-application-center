@@ -45,7 +45,7 @@ import {
   useRoles,
 } from "../use-departments";
 import { useMenuRoleAssignments } from "../use-menu-role-assignments";
-import { ManageMenusModal } from "./Modal/manage-menus-modal";
+import { ManageMenusModal } from "./modal/manage-menus-modal";
 import MenuTreeRow from "./menu-tree-row";
 
 interface MenuPermissionsProps {
