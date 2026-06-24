@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   AlertDialog,
@@ -63,9 +63,12 @@ export function ManageAppsModal({
 
   const loading = loadingAvailable || loadingAssigned;
 
-  // Derive a stable label map from the current query data — no ref mutation needed.
-  // Both available and assigned apps are merged so items that move between the
-  // two lists keep their labels even across refetches.
+  // Derive a stable label map from the current query data — no ref mutation in
+  // an effect. Both available and assigned apps are merged so items that move
+  // between the two lists keep their labels even across refetches.
+  const retainedAppsRef = useRef<
+    (NonNullable<typeof availableApps>[number] & { isAssigned: boolean })[]
+  >([]);
   const allApps = useMemo(() => {
     const byCode = new Map<string, NonNullable<typeof availableApps>[number]>();
     availableApps?.forEach((app) => {
@@ -75,11 +78,17 @@ export function ManageAppsModal({
       byCode.set(app.code, app);
     });
 
+    // Guarantee label stability across a slow refetch: if both queries
+    // momentarily yield no data, keep the last known list rather than blanking.
+    // This is a render-time cache, not the effect-accumulator that was removed.
+    if (byCode.size === 0) return retainedAppsRef.current;
+
     const assignedCodes = new Set(assignedApps?.map((app) => app.code));
     return Array.from(byCode.values())
       .map((app) => ({ ...app, isAssigned: assignedCodes.has(app.code) }))
       .sort((a, b) => a.name.localeCompare(b.name, "pt"));
   }, [availableApps, assignedApps]);
+  retainedAppsRef.current = allApps;
 
   const filteredApps = useMemo(() => {
     if (!searchTerm) return allApps;

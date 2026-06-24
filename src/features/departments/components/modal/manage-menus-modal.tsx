@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   AlertDialog,
@@ -91,9 +91,12 @@ export function ManageMenusModal({
     }
   }, [open]);
 
-  // Derive a stable label map from the current query data — no ref mutation needed.
-  // Both available and assigned menus are merged so items that move between the
-  // two lists keep their labels even across refetches.
+  // Derive a stable label map from the current query data — no ref mutation in
+  // an effect. Both available and assigned menus are merged so items that move
+  // between the two lists keep their labels even across refetches.
+  const retainedMenusRef = useRef<(MenuEntryDTO & { isAssigned: boolean })[]>(
+    [],
+  );
   const allMenus = useMemo(() => {
     const byCode = new Map<
       string,
@@ -106,22 +109,31 @@ export function ManageMenusModal({
       byCode.set(menu.code, menu);
     });
 
+    // Guarantee label stability across a slow refetch: if both queries
+    // momentarily yield no data, keep the last known list rather than blanking.
+    // This is a render-time cache, not the effect-accumulator that was removed.
+    if (byCode.size === 0) return retainedMenusRef.current;
+
     const assignedCodes = new Set(assignedMenus?.map((menu) => menu.code));
     return Array.from(byCode.values())
       .map((menu) => ({ ...menu, isAssigned: assignedCodes.has(menu.code) }))
       .sort((a, b) => a.name.localeCompare(b.name, "pt"));
   }, [availableMenus, assignedMenus]);
+  retainedMenusRef.current = allMenus;
+
+  // Department apps sorted once — reused by the Select and the default-selection effect.
+  const sortedApps = useMemo(() => {
+    if (!assignedApps) return [];
+    return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
+  }, [assignedApps]);
 
   // Set the default selected app once when the modal opens and app data is available.
-  // Uses assignedApps (the department's app list) as the single authoritative source.
+  // Uses the department's app list (sortedApps) as the single authoritative source.
   useEffect(() => {
-    if (open && assignedApps && assignedApps.length > 0 && !selectedApp) {
-      const sortedApps = [...assignedApps].sort((a, b) =>
-        a.name.localeCompare(b.name, "pt"),
-      );
+    if (open && sortedApps.length > 0 && !selectedApp) {
       setSelectedApp(sortedApps[0].code);
     }
-  }, [open, assignedApps, selectedApp]);
+  }, [open, sortedApps, selectedApp]);
 
   const toggleExpand = (menuCode: string) => {
     setExpandedMenus((prev) => {
@@ -386,11 +398,6 @@ export function ManageMenusModal({
       </>
     );
   };
-
-  const sortedApps = useMemo(() => {
-    if (!assignedApps) return [];
-    return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [assignedApps]);
 
   return (
     <>
