@@ -41,6 +41,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | `pnpm release` | Install + build + start (one command) |
 | `pnpm lint` | Lint and autofix (Biome) |
 | `pnpm format` | Format code (Biome) |
+| `pnpm typecheck` | Type-check without emitting (`tsc --noEmit`) |
+| `pnpm check:ui` | Enforce design-system UI rules (blocking CI merge gate) |
 | `pnpm clean-all` | Remove `node_modules` and `.next` |
 | `pnpm test` | Run tests (Vitest) |
 | `pnpm test:watch` | Run tests in watch mode |
@@ -55,38 +57,43 @@ Copy `.env.example` to `.env` and fill in the required variables:
 
 | Variable | Description |
 |---|---|
-| `AUTH_PROVIDER` | Provider to use: `igrp-auth` \| `keycloak` \| `autentika` \| `none` |
+| `AUTH_PROVIDER` | Provider to use: `igrp-auth` \| `none` (custom providers require code changes) |
 | `IGRP_AUTH_CLIENT_ID` | OAuth2 client identifier |
 | `IGRP_AUTH_CLIENT_SECRET` | OAuth2 client secret |
-| `IGRP_AUTH_ISSUER` | Authorization server base URL |
-| `IGRP_AUTH_SCOPES` | OAuth2 scopes (default: `openid`) |
+| `IGRP_AUTH_ISSUER` | Authorization server base URL (OIDC issuer) |
+| `IGRP_AUTH_SCOPES` | Space-separated OAuth2 scopes (default: `openid`) |
 | `NEXTAUTH_URL` | Public app URL (e.g. `http://localhost:3000`) |
-| `NEXTAUTH_SECRET` | JWT encryption secret (**required in production**) |
-| `NEXTAUTH_URL_INTERNAL` | Internal server URL (for SSR) |
+| `NEXTAUTH_SECRET` | JWT/cookie encryption secret (**required in production**) |
+| `NEXTAUTH_URL_INTERNAL` | Internal server URL (for SSR / server-to-server) |
+| `IGRP_SESSION_MAX_AGE` | Optional session-cookie lifetime in seconds (align to IdP refresh-token lifetime) |
 
 ### IGRP Framework
 
 | Variable | Description |
 |---|---|
-| `IGRP_ACCESS_MANAGEMENT_API` | Platform API base URL |
+| `IGRP_ACCESS_MANAGEMENT_API` | Platform Access Management API base URL |
 | `IGRP_APP_CODE` | App identifier in the IGRP system |
 | `IGRP_PREVIEW_MODE` | Skip auth (`true`/`false`) — useful for demos |
-| `IGRP_SYNC_ON_CODE_MENUS` | Sync code-based menus on startup |
-| `IGRP_SYNC_ACCESS` | Sync apps/resources with Access Management API |
-| `IGRP_M2M_SERVICE_ID` | M2M auth service ID |
-| `IGRP_M2M_TOKEN` | M2M auth token |
+| `IGRP_SYNC_ACCESS` | Sync app, resources, and menus with Access Management at startup |
+| `IGRP_SYNC_ON_CODE_MENUS` | Push on-code menus (`src/temp/menus/menus.ts`); requires `IGRP_SYNC_ACCESS=true` |
+| `IGRP_SYNC_ON_CODE_MENU_ROLES` | Also sync menu↔role assignments during the menu push (default: `true`) |
+| `IGRP_SERVICE_ID` | Service identity — resource name + `X-Machine-Service-ID` header |
+| `IGRP_M2M_CLIENT_ID` | OAuth2 `client_credentials` client ID for M2M sync |
+| `IGRP_M2M_CLIENT_SECRET` | OAuth2 `client_credentials` client secret for M2M sync |
 
-### Public (Client-side)
+> `IGRP_SERVICE_ID` and the `IGRP_M2M_*` credentials are only required when `IGRP_SYNC_ACCESS=true`.
+
+### Public & App URLs
 
 | Variable | Description |
 |---|---|
 | `NEXT_PUBLIC_BASE_PATH` | Base path for subdirectory deployments |
-| `NEXT_PUBLIC_ALLOWED_DOMAINS` | Comma-separated image domains |
-| `NEXT_PUBLIC_IGRP_MINIO_URL` | MinIO URL for images |
-| `NEXT_PUBLIC_IGRP_APP_CENTER_URL` | App center URL |
+| `NEXT_PUBLIC_ALLOWED_DOMAINS` | Comma-separated allowed image domains |
 | `NEXT_PUBLIC_IGRP_APP_HOME_SLUG` | Default post-login route |
-| `NEXT_PUBLIC_IGRP_PROFILE_URL` | Profile page URL |
-| `NEXT_PUBLIC_IGRP_NOTIFICATION_URL` | Notifications URL |
+| `NEXT_IGRP_APP_CENTER_URL` | Application Center URL (used for app switching) |
+| `NEXT_PUBLIC_IGRP_PROFILE_URL` | External profile page URL |
+| `NEXT_PUBLIC_IGRP_NOTIFICATION_URL` | External notifications URL |
+| `NEXT_PUBLIC_IGRP_SETTINGS_URL` | External settings URL |
 
 ---
 
@@ -107,22 +114,25 @@ See [docs/DOCKER-RUN.md](docs/DOCKER-RUN.md) for full instructions.
 src/
 ├── app/                  # Next.js App Router
 │   ├── (auth)/           # Public routes: /login, /logout
-│   ├── (invite)/         # Public invite acceptance: /invite/accept
-│   ├── (igrp)/           # Protected app shell
-│   │   ├── (home)/       # Dashboard, /profile, /settings, /settings/users
-│   │   ├── (app-center)/ # Application center features
-│   │   └── invite/       # Invite pending + invite-error pages
+│   ├── (invite)/         # Public invite flow: /invite/accept, /pending, /invite-error
+│   ├── (igrp)/           # Protected app shell (layout, error, loading)
+│   │   ├── (home)/       # Dashboard, /profile, /settings (applications, departments, users)
+│   │   └── (generated)/  # Reserved for generated routes (empty)
+│   ├── (my-app)/         # Reserved for per-app subroutes
 │   └── api/
 │       ├── auth/         # NextAuth route handler
 │       └── health/       # Health check endpoint
-├── features/             # Feature modules (applications, departments, files, menus, permissions, profile, roles, users)
-├── actions/              # Next.js server actions
+├── features/             # Feature modules (applications, departments, files, menus, permissions, profile, roles, settings, users)
+├── actions/              # Server actions (one file per resource + igrp/ framework actions)
 ├── lib/                  # Auth config, utilities, data access layer
 ├── components/           # Shared UI components
 ├── providers/            # React context providers
 ├── schemas/              # Zod validation schemas
 ├── config/               # Site config, error messages, login config
-└── temp/                 # Mock data (development only)
+├── styles/               # Global CSS + design tokens (globals.css)
+├── temp/                 # On-code menu definitions + mock data
+├── __tests__/            # Cross-cutting tests (most tests live beside features)
+└── test-stubs/           # Test stubs/mocks for Vitest
 ```
 
 ---
