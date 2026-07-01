@@ -8,7 +8,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
-import { getStatusColor } from "@/lib/utilities";
+import { getStatusColor } from "@/lib/app-utilities";
 
 import { UserProfileAvatar } from "./user-profile-avatar";
 import { UserProfileEditableName } from "./user-profile-editable-name";

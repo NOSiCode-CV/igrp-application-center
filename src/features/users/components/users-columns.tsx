@@ -24,7 +24,7 @@ import {
   getStatusColor,
   showStatus,
   statusInviteClass,
-} from "@/lib/utilities";
+} from "@/lib/app-utilities";
 import { cn } from "@/lib/utils";
 
 // ─── Module-level helpers ────────────────────────────────────────────────────

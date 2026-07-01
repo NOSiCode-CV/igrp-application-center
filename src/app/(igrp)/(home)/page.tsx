@@ -1,7 +1,8 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
 import { prefetchCurrentUserDashboard } from "@/features/users/prefetch";
-import { getQueryClient } from "@/providers/query-client.server";
 import { EnterpriseWorkspace } from "@/features/workspace";
+import { getQueryClient } from "@/providers/query-client.server";
 
 export default async function HomeIGRP() {
   const queryClient = getQueryClient();

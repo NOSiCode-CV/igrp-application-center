@@ -82,8 +82,8 @@ export function scanContent(content) {
   lines.forEach((line, i) => {
     for (const rule of RULES) {
       const re = rule.pattern();
-      let m;
-      while ((m = re.exec(line)) !== null) {
+      let m = re.exec(line);
+      while (m !== null) {
         out.push({
           ruleId: rule.id,
           level: rule.level,
@@ -91,6 +91,7 @@ export function scanContent(content) {
           match: m[0],
           message: rule.message,
         });
+        m = re.exec(line);
       }
     }
   });

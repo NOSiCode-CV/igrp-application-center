@@ -12,7 +12,7 @@ import {
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
 import { validateImageUpload } from "@/features/files/file-validation";
-import { getInitials } from "@/lib/utilities";
+import { getInitials } from "@/lib/app-utilities";
 
 export interface UserProfileAvatarProps {
   user: IGRPUserDTO;

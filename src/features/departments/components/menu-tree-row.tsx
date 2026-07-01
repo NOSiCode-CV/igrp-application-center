@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 
-import { getMenuIcon } from "@/lib/utilities";
+import { getMenuIcon } from "@/lib/app-utilities";
 
 import type { MenuWithChildren } from "./dept-menu";
 

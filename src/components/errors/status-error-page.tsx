@@ -8,7 +8,7 @@ import {
   FALLBACK_STATUS_COPY,
   STATUS_ERROR_COPY,
 } from "@/config/error-messages";
-import { isDefaultApiErrorMessage } from "@/lib/utilities";
+import { isDefaultApiErrorMessage } from "@/lib/app-utilities";
 
 export interface StatusErrorPageProps {
   /** HTTP status from the failed access-manager call, when known. */

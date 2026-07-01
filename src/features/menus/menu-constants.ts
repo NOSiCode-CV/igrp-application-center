@@ -5,7 +5,7 @@ import {
   type IGRPOptionsProps,
 } from "@igrp/igrp-framework-react-design-system";
 
-import { formatIconString } from "@/lib/utilities";
+import { formatIconString } from "@/lib/app-utilities";
 
 import { menuTargetSchema, menuTypeSchema } from "./menu-schemas";
 

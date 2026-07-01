@@ -61,6 +61,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     typedEnv: true,
+    authInterrupts: true,
     browserDebugInfoInTerminal: {
       depthLimit: 5,
       edgeLimit: 1000,

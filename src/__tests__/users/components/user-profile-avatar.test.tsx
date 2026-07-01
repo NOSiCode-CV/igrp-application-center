@@ -16,6 +16,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     fallbackContent?: React.ReactNode;
   }) =>
     image ? (
+      // biome-ignore lint/performance/noImgElement: lightweight test mock, not a real page image
       <img src={image} alt={alt} />
     ) : (
       <span data-testid="avatar-fallback">{fallbackContent}</span>

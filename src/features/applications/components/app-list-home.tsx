@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useLocalStorageState } from "@/lib/hooks/use-local-storage-state";
-
 import {
   Badge,
   IGRPIcon,
@@ -25,6 +23,7 @@ import {
   useGetCurrentUserRecentApplications,
   useGetCurrentUserRoles,
 } from "@/features/users/use-users";
+import { useLocalStorageState } from "@/hooks/use-local-storage-state";
 import { config } from "@/lib/constants";
 
 import { ApplicationCardHome } from "./app-card-home";
@@ -54,14 +53,6 @@ function useGreeting() {
 
 function firstName(full?: string) {
   return full?.trim().split(/\s+/)[0] ?? "";
-}
-
-/** Title-case each whitespace- or hyphen-separated word, accent-aware. */
-function titleCase(s: string): string {
-  return s.replace(
-    /(^|\s|-)([a-zà-ÿ])/g,
-    (_m, sep: string, ch: string) => sep + ch.toUpperCase(),
-  );
 }
 
 function resolveImage(picture?: string | null) {

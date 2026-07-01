@@ -32,7 +32,7 @@ import {
 import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 
 import { useApplications } from "@/features/applications/use-applications";
-import { getMenuIcon } from "@/lib/utilities";
+import { getMenuIcon } from "@/lib/app-utilities";
 
 import { buildMenuTree } from "../../dept-lib";
 import {

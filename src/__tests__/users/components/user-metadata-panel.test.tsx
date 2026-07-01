@@ -17,7 +17,12 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     disabled?: boolean;
     "aria-label"?: string;
   }) => (
-    <button onClick={onClick} disabled={disabled} aria-label={ariaLabel}>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   ),
@@ -36,7 +41,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   }: {
     children?: React.ReactNode;
     className?: string;
-  }) => <label className={className}>{children}</label>,
+  }) => <span className={className}>{children}</span>,
   useIGRPToast: () => ({ igrpToast: vi.fn() }),
 }));
 
@@ -88,7 +93,7 @@ describe("UserMetadataPanel", () => {
     vi.mocked(useUpdateUserMetadata).mockReturnValue({
       mutateAsync,
       isPending: false,
-    } as any);
+    } as unknown as ReturnType<typeof useUpdateUserMetadata>);
 
     render(<UserMetadataPanel userId={1} />, { wrapper });
     await userEvent.click(screen.getByRole("button", { name: /save/i }));

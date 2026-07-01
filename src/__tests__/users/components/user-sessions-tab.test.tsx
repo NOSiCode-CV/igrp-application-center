@@ -24,7 +24,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     onClick?: () => void;
     disabled?: boolean;
   }) => (
-    <button onClick={onClick} disabled={disabled}>
+    <button type="button" onClick={onClick} disabled={disabled}>
       {children}
     </button>
   ),
@@ -38,7 +38,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
   }) => <input placeholder={placeholder} value={value} onChange={onChange} />,
   Label: ({ children }: { children?: React.ReactNode }) => (
-    <label>{children}</label>
+    <span>{children}</span>
   ),
   AlertDialog: ({
     children,

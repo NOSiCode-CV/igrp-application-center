@@ -27,7 +27,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   ),
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
   IGRPButton: ({ children }: { children?: React.ReactNode }) => (
-    <button>{children}</button>
+    <button type="button">{children}</button>
   ),
   IGRPIcon: () => <span />,
   IGRPInputText: () => <input />,

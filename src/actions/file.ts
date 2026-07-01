@@ -5,7 +5,7 @@ import type {
   UploadFileOptions,
 } from "@igrp/platform-access-management-client-ts";
 
-import { toActionError } from "@/lib/utilities";
+import { toActionError } from "@/lib/app-utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";

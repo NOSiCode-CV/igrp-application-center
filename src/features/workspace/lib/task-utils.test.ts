@@ -52,8 +52,6 @@ describe("getDueDateLabel", () => {
 });
 
 describe("computeTaskStats", () => {
-  const now = new Date();
-
   function taskWith(overrides: Partial<Task>): Task {
     return {
       id: "1",

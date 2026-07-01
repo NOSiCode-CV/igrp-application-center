@@ -1,10 +1,10 @@
-import { IGRPLayoutFull } from "@igrp/framework-next";
+import { IGRPLayoutFull, igrpGetClaims } from "@igrp/framework-next";
 import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
+import { IGRPSectionPermissions } from "@igrp/framework-next-ui";
 
-import { configLayout } from "@/actions/igrp/layout";
 import { createConfig } from "@/igrp.template.config";
-import { verifySession } from "@/lib/dal";
-import { QueryProvider } from "@/providers/query-provider";
+import { getLayoutConfig, verifySession } from "@/lib/dal";
+import { IGRPQueryProvider } from "@/providers/query-provider";
 
 // Every route under this layout is authenticated and reads the session
 // (cookies/headers) per request, so it can never be statically prerendered.
@@ -17,14 +17,16 @@ export default async function IGRPRootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   await verifySession();
 
-  const layoutConfig = await configLayout();
+  const layoutConfig = await getLayoutConfig();
   const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs);
+  // verifySession() above seeds the per-request access-client config that igrpGetClaims() reads.
+  const claims = await igrpGetClaims();
 
   return (
-    <QueryProvider>
-      <IGRPLayoutFull config={config} showSidebar={false}>
-        {children}
-      </IGRPLayoutFull>
-    </QueryProvider>
+    <IGRPSectionPermissions state={claims}>
+      <IGRPQueryProvider>
+        <IGRPLayoutFull config={config}>{children}</IGRPLayoutFull>
+      </IGRPQueryProvider>
+    </IGRPSectionPermissions>
   );
 }

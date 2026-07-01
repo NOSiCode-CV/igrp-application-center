@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import type { Route } from "next";
+import Link from "next/link";
 
 import {
   cn,
   IGRPIcon,
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -58,6 +59,7 @@ export function SettingsCard({ item }: SettingsCardProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
+            {/* biome-ignore lint/a11y/useSemanticElements: disabled placeholder has no href, so a real <a> isn't valid here */}
             <div
               role="link"
               tabIndex={0}

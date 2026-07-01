@@ -88,6 +88,7 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
           </span>
           <div className="flex gap-2">
             <button
+              type="button"
               disabled={data.first}
               onClick={() => setPage((p) => p - 1)}
               className="disabled:opacity-40"
@@ -95,6 +96,7 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
               ← Anterior
             </button>
             <button
+              type="button"
               disabled={data.last}
               onClick={() => setPage((p) => p + 1)}
               className="disabled:opacity-40"

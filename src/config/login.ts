@@ -1,8 +1,6 @@
-const bp = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
 export const loginConfig = {
   texts: {
-    welcome: "Benvindo ao IGRP",
+    welcome: "Bem-vindo ao IGRP",
     description: "Introduza as suas credenciais para aceder.",
     loginButton: "Login Now",
     copyright: "Desenvolvido por",
@@ -18,19 +16,19 @@ export type LoginConfig = typeof loginConfig;
 
 export const carouselItems = [
   {
-    image: `${bp}/placeholder-carousel.png`,
+    image: "/placeholder-carousel.png",
     title: "Streamlined Workflow",
     description:
       "Boost your productivity with our intuitive interface and powerful tools.",
   },
   {
-    image: `${bp}/placeholder-carousel.png`,
+    image: "/placeholder-carousel.png",
     title: "Secure by Design",
     description:
       "Your data is protected with enterprise-grade security and encryption.",
   },
   {
-    image: `${bp}/placeholder-carousel.png`,
+    image: "/placeholder-carousel.png",
     title: "Collaborative Platform",
     description: "Work together seamlessly with your team in real-time.",
   },

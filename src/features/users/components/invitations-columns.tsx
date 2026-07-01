@@ -18,7 +18,11 @@ import {
 import type { InvitationDTO } from "@igrp/platform-access-management-client-ts";
 
 import { useResendUserInvitation } from "@/features/users/use-users";
-import { geInviteTitle, getInitials, statusInviteClass } from "@/lib/utilities";
+import {
+  geInviteTitle,
+  getInitials,
+  statusInviteClass,
+} from "@/lib/app-utilities";
 import { cn } from "@/lib/utils";
 
 const isTerminalInviteStatus = (s: string) =>

@@ -11,7 +11,6 @@ type MockProps = {
 };
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => {
-  // biome-ignore lint/correctness/noNodejsModules: vitest mock factory runs in a Node context.
   const React = require("react");
   return {
     Button: ({ children, disabled, ...rest }: MockProps) =>

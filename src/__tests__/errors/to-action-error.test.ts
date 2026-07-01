@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isDefaultApiErrorMessage, toActionError } from "@/lib/utilities";
+import { isDefaultApiErrorMessage, toActionError } from "@/lib/app-utilities";
 
 describe("toActionError", () => {
   it("extracts message and numeric status from an SDK-shaped error", () => {

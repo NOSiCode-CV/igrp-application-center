@@ -16,7 +16,6 @@ export function useLocalStorageState<T>(
     } catch {
       /* ignore malformed/unavailable storage */
     }
-    // biome-ignore lint/correctness/useExhaustiveDependencies: read-once-on-mount
   }, [key]);
 
   const set = useCallback(

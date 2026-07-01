@@ -20,8 +20,8 @@ import {
   formatSlug,
   isSystemApp,
 } from "@/features/applications/app-utils";
+import { getStatusColor, showStatus } from "@/lib/app-utilities";
 import { config, ROUTES } from "@/lib/constants";
-import { getStatusColor, showStatus } from "@/lib/utilities";
 import { cn } from "@/lib/utils";
 
 interface ApplicationCardProps {

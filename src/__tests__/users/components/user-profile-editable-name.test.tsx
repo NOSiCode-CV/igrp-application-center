@@ -16,7 +16,12 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     disabled?: boolean;
     "aria-label"?: string;
   }) => (
-    <button onClick={onClick} disabled={disabled} aria-label={ariaLabel}>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   ),
@@ -40,6 +45,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
       value={value}
       onChange={onChange}
       onKeyDown={onKeyDown}
+      // biome-ignore lint/a11y/noAutofocus: forwards the real component's autoFocus prop for behavior parity in tests
       autoFocus={autoFocus}
       maxLength={maxLength}
       disabled={disabled}

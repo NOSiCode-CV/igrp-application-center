@@ -31,12 +31,13 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
         {children}
       </button>
     ),
+    // biome-ignore lint/suspicious/noExplicitAny: <any is not recommmend to use>
     IGRPDataTable: ({ columns, data }: { columns: any[]; data: any[] }) => (
       <table>
         <tbody>
-          {data.map((row, i) => (
-            <tr key={i}>
-              {columns.map((col, j) => {
+          {data.map((row) => (
+            <tr key={row.id}>
+              {columns.map((col) => {
                 const cell = col.cell;
                 const original = row;
                 const tableRow = {
@@ -44,7 +45,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
                   getValue: (k: string) => row[k],
                 };
                 return (
-                  <td key={j}>
+                  <td key={col.id ?? col.accessorKey}>
                     {typeof cell === "function"
                       ? cell({ row: tableRow })
                       : null}

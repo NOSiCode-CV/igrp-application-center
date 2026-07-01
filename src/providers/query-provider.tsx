@@ -15,7 +15,7 @@ function getQueryClient(): QueryClient {
   return browserClient;
 }
 
-export function QueryProvider({ children }: { children: ReactNode }) {
+export function IGRPQueryProvider({ children }: { children: ReactNode }) {
   const client = getQueryClient();
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }

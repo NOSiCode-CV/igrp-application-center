@@ -2,29 +2,16 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
-import { sanitizeCallbackUrl } from "@/lib/utils";
+import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 
 /** Security headers applied to all responses in production. */
-// Goal: graduate Report-Only → enforcing once the violation report stream is clean.
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
-  "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+  "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy":
     "camera=(), microphone=(), geolocation=(), interest-cohort=()",
-  // Report-Only first: log violations without blocking. Tighten and switch to
-  // "Content-Security-Policy" (enforcing) once the report stream is clean.
-  "Content-Security-Policy-Report-Only": [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https:",
-    "font-src 'self' data:",
-    "connect-src 'self'",
-    "frame-ancestors 'none'",
-    "base-uri 'self'",
-  ].join("; "),
 };
 
 function withSecurityHeaders(response: NextResponse): NextResponse {
@@ -46,7 +33,7 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-export function isPublicPath(pathname: string): boolean {
+function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -54,7 +41,7 @@ export function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-export function isAuthUiPath(pathname: string): boolean {
+function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
@@ -100,7 +87,9 @@ export async function middleware(request: NextRequest) {
     return withSecurityHeaders(NextResponse.redirect(loginUrl));
   };
 
-  if (auth.isAuthDisabled() || auth.isPreviewMode()) {
+  // Use the template's single hardened bypass predicate (handles quoted /
+  // whitespaced env values) so middleware agrees with the rest of the app.
+  if (isAuthBypass()) {
     if (isAuthUiPath(pathname)) {
       return withSecurityHeaders(
         NextResponse.redirect(new URL(`${BASE_PATH}/`, request.url)),

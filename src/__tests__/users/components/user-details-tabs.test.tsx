@@ -97,7 +97,7 @@ function wrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe("UserDetailsTabs lazy mounting", () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: <any is not recommmend to use>
   const user = { id: "u1", username: "u1" } as any;
 
   it("mounts only the active tab on initial render", () => {

@@ -1,7 +1,6 @@
 import type {
   ApplicationDTO,
   CreateRoleRequest,
-  DepartmentDTO,
   MenuEntryDTO,
   RoleDTO,
   UpdateDepartmentRequest,

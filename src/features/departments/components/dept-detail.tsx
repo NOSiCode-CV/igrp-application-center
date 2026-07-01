@@ -15,8 +15,8 @@ import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { PermissionList } from "@/features/permissions/components/permission-list";
 import { RolesListTree } from "@/features/roles/components/role-tree-list";
+import { getStatusColor } from "@/lib/app-utilities";
 import { STATUS_OPTIONS } from "@/lib/constants";
-import { getStatusColor } from "@/lib/utilities";
 
 import { MenuPermissions } from "./dept-menu";
 

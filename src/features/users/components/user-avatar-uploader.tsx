@@ -14,7 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { useUpdateUser } from "@/features/users/use-users";
-import { getInitials } from "@/lib/utilities";
+import { getInitials } from "@/lib/app-utilities";
 
 interface UserAvatarUploaderProps {
   user: IGRPUserDTO;

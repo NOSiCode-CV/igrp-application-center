@@ -5,7 +5,7 @@ import type {
 } from "@igrp/framework-next-types";
 
 import { fontVariables } from "@/lib/fonts";
-import { isPreviewMode } from "@/lib/utils";
+import { isAuthBypass } from "@/lib/utilities";
 import { getMockApps } from "@/temp/applications/use-mock-apps";
 import { IGRP_DEFAULT_MENU } from "@/temp/menus/menus";
 import { getMockMenus } from "@/temp/menus/use-mock-menus";
@@ -18,7 +18,9 @@ import { getSessionArgs } from "./lib/config/get-session-args";
 export function createConfig(
   config: IGRPLayoutConfigArgs,
 ): Promise<IGRPConfigArgs> {
-  const preview = isPreviewMode();
+  // Mock data + framework preview behavior apply under EITHER bypass mode
+  // (IGRP_PREVIEW_MODE=true or AUTH_PROVIDER=none) — they must behave the same.
+  const bypass = isAuthBypass();
 
   const routes = getRoutes();
   const appRoutes = routes?.appRoutes ?? [];
@@ -26,22 +28,22 @@ export function createConfig(
 
   return igrpBuildConfig({
     appCode: process.env.IGRP_APP_CODE || "",
-    previewMode: preview,
+    previewMode: bypass,
     syncAccess: process.env.IGRP_SYNC_ACCESS === "true",
     appInformation: getPackageJson(),
     layoutMockData: {
       getHeaderData: async () => {
-        const user = preview ? getMockUser().mockUser : undefined;
+        const user = bypass ? getMockUser().mockUser : undefined;
         return {
           user: user,
           userProfileUrl: process.env.NEXT_PUBLIC_IGRP_PROFILE_URL || "",
           notificationsUrl: process.env.NEXT_PUBLIC_IGRP_NOTIFICATION_URL || "",
           showBreadcrumb: true,
-          showSearch: false,
-          showNotifications: false,
+          showSearch: true,
+          showNotifications: true,
           showUser: true,
           showThemeSwitcher: true,
-          showIGRPSidebarTrigger: false,
+          showIGRPSidebarTrigger: true,
           showIGRPHeaderTitle: false,
           showIGRPHeaderLogo: true,
           showSettings: true,
@@ -49,9 +51,9 @@ export function createConfig(
         };
       },
       getSidebarData: async () => {
-        const user = preview ? getMockUser().mockUser : undefined;
-        const menu = preview ? getMockMenus().mockMenus : undefined;
-        const apps = preview ? getMockApps().mockApps : undefined;
+        const user = bypass ? getMockUser().mockUser : undefined;
+        const menu = bypass ? getMockMenus().mockMenus : undefined;
+        const apps = bypass ? getMockApps().mockApps : undefined;
         return {
           menuItems: menu ?? [],
           user: user,
@@ -60,6 +62,7 @@ export function createConfig(
           apps: apps ?? [],
           appCenterUrl: process.env.NEXT_IGRP_APP_CENTER_URL || "",
           showMenuSearch: true,
+          showNotifications: true,
         };
       },
     },

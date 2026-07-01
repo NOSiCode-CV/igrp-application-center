@@ -6,7 +6,7 @@ import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { assertAuthProviderEnv } from "@igrp/framework-next-auth/providers";
 
 import { reportError } from "@/lib/report-error";
-import { isAuthBypass } from "@/lib/utils";
+import { isAuthBypass } from "@/lib/utilities";
 
 /**
  * Minimal session shape used in bypass mode (IGRP_PREVIEW_MODE or
@@ -154,26 +154,18 @@ export async function serverSession() {
     //  - session is null while a NextAuth cookie is present (cookie decode
     //    failed, NEXTAUTH_SECRET changed, or the cookie was issued by a
     //    different basePath/domain).
-    const sessionError =
-      session && typeof session === "object" && "error" in session
-        ? (session as { error?: unknown }).error
-        : undefined;
-
-    if (sessionError) {
-      // Refresh failed (RefreshAccessTokenError) — the session cookie still
-      // carries the old, expired access token. Do NOT pass it to
-      // igrpSetAccessClientConfig: any downstream API call with that token
-      // will get a 401 which surfaces as an error page rather than a proper
-      // logout redirect. Return null so callers (getClientAccess, etc.) treat
-      // the request as unauthenticated. verifySession() / auth.getSession()
-      // will catch the forceLogout flag and redirect to /logout on the next
-      // render that goes through the (igrp) layout.
-      console.warn(
-        "[serverSession] refresh failed — treating session as unauthenticated:",
-        sessionError,
-        "→ check IdP refresh-token endpoint / client credentials / token rotation config",
-      );
-      return null;
+    if (process.env.NODE_ENV !== "production") {
+      const sessionError =
+        session && typeof session === "object" && "error" in session
+          ? (session as { error?: unknown }).error
+          : undefined;
+      if (sessionError) {
+        console.warn(
+          "[serverSession] session present but carries error flag:",
+          sessionError,
+          "→ user will be treated as unauthenticated; check OIDC refresh token / issuer logs",
+        );
+      }
     }
 
     if (session !== null) {
@@ -224,5 +216,16 @@ export async function serverSession() {
  */
 export async function getSession() {
   if (isAuthBypass()) return null;
-  return auth.getSession();
+  const session = await auth.getSession();
+  // Seed the per-request access-client config so downstream consumers in the
+  // same request (e.g. igrpGetClaims, server actions) can read the token.
+  // Mirrors serverSession(); IGRPLayoutFull also seeds later but renders after
+  // the (igrp) layout body where igrpGetClaims() runs.
+  if (session) {
+    igrpSetAccessClientConfig({
+      token: (session.accessToken as string) ?? "",
+      baseUrl: process.env.IGRP_ACCESS_MANAGEMENT_API || "",
+    });
+  }
+  return session;
 }

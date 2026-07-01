@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 
 import { IGRPRootLayout } from "@igrp/framework-next";
 import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
@@ -10,12 +9,12 @@ import { createConfig } from "@igrp/template-config";
 
 import { getLayoutConfig } from "@/lib/dal";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export const metadata: Metadata = {
   title: "IGRP | Centro de Aplicações",
   description: "IGRP | Centro de Aplicações",
-  icons: { icon: "/logo-no-text.png" },
+  icons: { icon: `${basePath}/logo-no-text.png` },
 };
 
 export const viewport: Viewport = {
