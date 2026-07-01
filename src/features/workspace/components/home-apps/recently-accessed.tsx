@@ -7,6 +7,10 @@ import {
   useGetCurrentUserRecentApplications,
   useRemoveCurrentUserFavoriteApplication,
 } from "@/features/users/use-users";
+import {
+  APP_CATALOG_SECTION_ID,
+  getLastOpenedLabel,
+} from "../../lib/app-utils";
 import { AppTileCard } from "./app-tile-card";
 
 export function RecentlyAccessed() {
@@ -35,6 +39,11 @@ export function RecentlyAccessed() {
         </span>
         <button
           type="button"
+          onClick={() =>
+            document
+              .getElementById(APP_CATALOG_SECTION_ID)
+              ?.scrollIntoView({ behavior: "smooth", block: "start" })
+          }
           className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
         >
           View all catalog →
@@ -48,7 +57,7 @@ export function RecentlyAccessed() {
               app={app}
               isFavorite={favCodes.has(app.code)}
               onToggleFavorite={handleToggle}
-              lastOpenedLabel="Recently opened"
+              lastOpenedLabel={getLastOpenedLabel(app.lastAccess)}
             />
           </div>
         ))}

@@ -9,6 +9,7 @@ import {
   useCurrentUserFavoriteApplications,
   useRemoveCurrentUserFavoriteApplication,
 } from "@/features/users/use-users";
+import { APP_CATALOG_SECTION_ID } from "../../lib/app-utils";
 import { AppTileCard } from "./app-tile-card";
 
 type ViewMode = "grid" | "list";
@@ -56,7 +57,7 @@ export function AppCatalog() {
   const gridKey = `${showFavoritesOnly}-${search}-${sortBy}`;
 
   return (
-    <section>
+    <section id={APP_CATALOG_SECTION_ID}>
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
           Application Directory{" "}
@@ -165,6 +166,7 @@ export function AppCatalog() {
               app={app}
               isFavorite={favCodes.has(app.code)}
               onToggleFavorite={handleToggle}
+              description={app.description ?? undefined}
             />
           ))}
         </div>
