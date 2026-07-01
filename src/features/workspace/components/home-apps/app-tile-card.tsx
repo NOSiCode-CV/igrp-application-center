@@ -43,12 +43,6 @@ export function AppTileCard({ app, isFavorite, onToggleFavorite, lastOpenedLabel
           )}
         </div>
       </div>
-
-      {(app.status as string) === "MAINTENANCE" && (
-        <span className="self-start rounded-full bg-amber-100 text-amber-700 text-xs font-medium px-2 py-0.5">
-          Maintenance
-        </span>
-      )}
     </div>
   )
 }
