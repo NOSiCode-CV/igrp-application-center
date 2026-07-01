@@ -48,3 +48,19 @@
     --sidebar-active-foreground: oklch(0.984 0.003 247.858);
   }
 */
+
+/* ── Workspace animations ──────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-fadeIn {
+  animation: fadeIn 150ms ease-out both;
+}
