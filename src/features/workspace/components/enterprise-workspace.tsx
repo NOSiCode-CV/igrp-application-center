@@ -25,14 +25,15 @@ export function EnterpriseWorkspace() {
   const [demoState, setDemoState] = useState<DemoState>("default")
   const [demoMenuOpen, setDemoMenuOpen] = useState(false)
 
-  const tasks = DEMO_STATES.find((s) => s.value === demoState)?.tasks ?? defaultTasks
+  const tasks =
+    DEMO_STATES.find((s) => s.value === demoState)?.tasks ?? defaultTasks
   const stats = computeTaskStats(tasks)
   const pendingCount = stats.totalPending
 
   return (
     <div className="relative min-h-0 flex flex-col">
       {/* Tab bar */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-10">
+      <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-0 z-10">
         <div className="flex gap-0 px-4 overflow-x-auto">
           <button
             type="button"
@@ -40,7 +41,7 @@ export function EnterpriseWorkspace() {
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
               activeTab === "home"
                 ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             <Home size={15} />
@@ -53,13 +54,13 @@ export function EnterpriseWorkspace() {
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
               activeTab === "tasks"
                 ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             <CheckSquare size={15} />
             My Tasks Workspace
             {pendingCount > 0 && (
-              <span className="rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold px-1.5 py-0.5 leading-none">
+              <span className="rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-1.5 py-0.5 leading-none">
                 {pendingCount}
               </span>
             )}
@@ -79,7 +80,7 @@ export function EnterpriseWorkspace() {
       {/* Demo States Menu — fixed bottom-right */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
         {demoMenuOpen && (
-          <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-2 w-48 flex flex-col gap-1">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg p-2 w-48 flex flex-col gap-1">
             {DEMO_STATES.map((s) => (
               <button
                 key={s.value}
@@ -90,8 +91,8 @@ export function EnterpriseWorkspace() {
                 }}
                 className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${
                   demoState === s.value
-                    ? "bg-indigo-50 text-indigo-700 font-medium"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 font-medium"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 }`}
               >
                 {s.label}
@@ -103,7 +104,7 @@ export function EnterpriseWorkspace() {
         <button
           type="button"
           onClick={() => setDemoMenuOpen((v) => !v)}
-          className="flex items-center gap-2 rounded-full bg-gray-900 text-white px-4 py-2 shadow-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+          className="flex items-center gap-2 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-4 py-2 shadow-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
         >
           <LayoutDashboard size={14} />
           Demo States Menu

@@ -3,16 +3,16 @@ import { getDueDateLabel } from "../../lib/task-utils"
 import type { Task } from "../../types"
 
 const PRIORITY_STYLES: Record<Task["priority"], string> = {
-  HIGH: "bg-amber-100 text-amber-700",
-  MEDIUM: "bg-blue-100 text-blue-700",
-  NORMAL: "bg-gray-100 text-gray-600",
-  OVERDUE: "bg-red-100 text-red-700",
+  HIGH: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
+  MEDIUM: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+  NORMAL: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+  OVERDUE: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
 }
 
 const DUE_COLOR: Record<"red" | "amber" | "normal", string> = {
   red: "text-red-500 font-semibold",
   amber: "text-amber-500 font-semibold",
-  normal: "text-gray-700",
+  normal: "text-gray-700 dark:text-gray-300",
 }
 
 function relativeTime(date: Date): string {
@@ -31,7 +31,7 @@ export function TaskRow({ task }: Props) {
   const due = getDueDateLabel(task.dueDate)
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 hover:shadow-sm transition-shadow">
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:shadow-sm dark:hover:shadow-gray-800 transition-shadow">
       <div className="flex items-start gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -40,13 +40,19 @@ export function TaskRow({ task }: Props) {
             >
               {task.priority}
             </span>
-            <span className="font-mono text-xs text-gray-400">{task.ticketCode}</span>
-            <span className="text-xs text-indigo-600 font-medium">{task.category}</span>
+            <span className="font-mono text-xs text-gray-400 dark:text-gray-500">
+              {task.ticketCode}
+            </span>
+            <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+              {task.category}
+            </span>
           </div>
 
-          <p className="font-semibold text-sm text-gray-900 mb-1.5">{task.title}</p>
+          <p className="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-1.5">
+            {task.title}
+          </p>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
             <span>Requester: {task.requester}</span>
             <span>•</span>
             <span>{relativeTime(task.submittedAt)}</span>
@@ -55,7 +61,8 @@ export function TaskRow({ task }: Props) {
                 <span>•</span>
                 <span className="flex items-center gap-0.5">
                   <Paperclip size={11} />
-                  {task.attachmentCount} attachment{task.attachmentCount !== 1 ? "s" : ""}
+                  {task.attachmentCount} attachment
+                  {task.attachmentCount !== 1 ? "s" : ""}
                 </span>
               </>
             )}
@@ -64,12 +71,16 @@ export function TaskRow({ task }: Props) {
 
         <div className="flex flex-col items-end gap-2 shrink-0 ml-2">
           <div className="text-right">
-            <p className="text-xs text-gray-400">Due date threshold</p>
-            <p className={`text-sm mt-0.5 ${DUE_COLOR[due.color]}`}>{due.label}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Due date threshold
+            </p>
+            <p className={`text-sm mt-0.5 ${DUE_COLOR[due.color]}`}>
+              {due.label}
+            </p>
           </div>
           <button
             type="button"
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-800 transition-colors whitespace-nowrap"
+            className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors whitespace-nowrap"
           >
             Review →
           </button>
