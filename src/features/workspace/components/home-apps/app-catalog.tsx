@@ -25,7 +25,10 @@ export function AppCatalog() {
   const addFav = useAddCurrentUserFavoriteApplication()
   const removeFav = useRemoveCurrentUserFavoriteApplication()
 
-  const favCodes = useMemo(() => new Set(favorites.map((f) => f.code)), [favorites])
+  const favCodes = useMemo(
+    () => new Set(favorites.map((f) => f.code)),
+    [favorites],
+  )
 
   const filtered = useMemo(() => {
     let list = apps
@@ -50,6 +53,8 @@ export function AppCatalog() {
     }
   }
 
+  const gridKey = `${showFavoritesOnly}-${search}-${sortBy}`
+
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
@@ -67,37 +72,47 @@ export function AppCatalog() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search available applications catalogue..."
-          className="flex-1 min-w-[200px] rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          aria-label="Search applications"
+          className="flex-1 min-w-[200px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
         />
 
         <button
           type="button"
           onClick={() => setShowFavoritesOnly((v) => !v)}
-          className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+          className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out ${
             showFavoritesOnly
-              ? "border-amber-400 bg-amber-50 text-amber-700"
-              : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+              ? "border-amber-400 bg-amber-50 text-amber-700 dark:border-amber-500 dark:bg-amber-950 dark:text-amber-400"
+              : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
           }`}
         >
-          <Star size={14} className={showFavoritesOnly ? "fill-amber-400 text-amber-400" : ""} />
+          <Star
+            size={14}
+            className={
+              showFavoritesOnly
+                ? "fill-amber-400 text-amber-400 transition-colors duration-150"
+                : "transition-colors duration-150"
+            }
+          />
           Favorites
         </button>
 
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as SortBy)}
-          className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
         >
           <option value="default">Sort: Recommended</option>
           <option value="name">Sort: Name A–Z</option>
         </select>
 
-        <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+        <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
           <button
             type="button"
             onClick={() => setViewMode("grid")}
             className={`p-1.5 transition-colors ${
-              viewMode === "grid" ? "bg-indigo-50 text-indigo-600" : "bg-white text-gray-500 hover:bg-gray-50"
+              viewMode === "grid"
+                ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400"
+                : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
             aria-label="Grid view"
           >
@@ -107,7 +122,9 @@ export function AppCatalog() {
             type="button"
             onClick={() => setViewMode("list")}
             className={`p-1.5 transition-colors ${
-              viewMode === "list" ? "bg-indigo-50 text-indigo-600" : "bg-white text-gray-500 hover:bg-gray-50"
+              viewMode === "list"
+                ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400"
+                : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
             }`}
             aria-label="List view"
           >
@@ -116,16 +133,30 @@ export function AppCatalog() {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 py-12 text-center text-sm text-gray-400">
+      {showFavoritesOnly && filtered.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 py-12 text-center">
+          <Star
+            size={24}
+            className="mx-auto text-amber-300 dark:text-amber-600 mb-3"
+          />
+          <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
+            No favorites yet
+          </p>
+          <p className="text-xs text-amber-500 dark:text-amber-500 mt-1">
+            Click the ★ on any app to add it here
+          </p>
+        </div>
+      ) : !showFavoritesOnly && filtered.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-12 text-center text-sm text-gray-400 dark:text-gray-500">
           No applications match your search.
         </div>
       ) : (
         <div
+          key={gridKey}
           className={
             viewMode === "grid"
-              ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
-              : "flex flex-col gap-2"
+              ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 animate-fadeIn"
+              : "flex flex-col gap-2 animate-fadeIn"
           }
         >
           {filtered.map((app) => (
