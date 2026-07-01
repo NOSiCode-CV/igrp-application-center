@@ -18,6 +18,8 @@ type Props = {
   onToggleFavorite: (app: ApplicationDTO, isFavorite: boolean) => void;
   lastOpenedLabel?: string;
   description?: string;
+  /** Compact horizontal layout for the "Recently Accessed" row. */
+  compact?: boolean;
 };
 
 export function AppTileCard({
@@ -26,11 +28,88 @@ export function AppTileCard({
   onToggleFavorite,
   lastOpenedLabel,
   description,
+  compact = false,
 }: Props) {
   const color = getAppTileColor(app.code);
   const initial = (app.name ?? app.code).charAt(0).toUpperCase();
   const href = getAppHref(app);
   const isExternal = href ? isExternalAppHref(app, href) : false;
+
+  const star = (
+    <button
+      type="button"
+      aria-label={isFavorite ? "Remove from favourites" : "Add to favourites"}
+      className={
+        compact
+          ? "shrink-0 text-gray-300 dark:text-gray-600 hover:text-amber-400 transition-colors"
+          : "absolute top-3 right-3 z-10 text-gray-300 dark:text-gray-600 hover:text-amber-400 transition-colors"
+      }
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onToggleFavorite(app, isFavorite);
+      }}
+    >
+      <Star
+        size={16}
+        className={isFavorite ? "fill-amber-400 text-amber-400" : ""}
+      />
+    </button>
+  );
+
+  const nameClass = `font-semibold text-sm text-gray-900 dark:text-gray-100 truncate ${
+    href ? "group-hover:text-indigo-600 dark:group-hover:text-indigo-400" : ""
+  }`;
+
+  if (compact) {
+    const inner = (
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div
+          className={`flex items-center justify-center size-10 rounded-lg font-bold text-sm shrink-0 ${color.bg} ${color.text}`}
+        >
+          {initial}
+        </div>
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <span className={nameClass}>{app.name}</span>
+          {lastOpenedLabel && (
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              {lastOpenedLabel}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+
+    return (
+      <div
+        className={`group relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 flex items-center gap-3 transition-all ${
+          href
+            ? "hover:border-indigo-300 dark:hover:border-indigo-500/60 hover:shadow-md dark:hover:shadow-gray-800"
+            : ""
+        }`}
+      >
+        {href ? (
+          isExternal ? (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 min-w-0 outline-none"
+            >
+              {inner}
+            </a>
+          ) : (
+            <Link href={href as Route} className="flex-1 min-w-0 outline-none">
+              {inner}
+            </Link>
+          )
+        ) : (
+          inner
+        )}
+        {star}
+      </div>
+    );
+  }
 
   const content = (
     <>
@@ -42,15 +121,7 @@ export function AppTileCard({
         </div>
 
         <div className="flex flex-col gap-0.5 min-w-0 pr-5">
-          <span
-            className={`font-semibold text-sm text-gray-900 dark:text-gray-100 truncate ${
-              href
-                ? "group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
-                : ""
-            }`}
-          >
-            {app.name}
-          </span>
+          <span className={nameClass}>{app.name}</span>
           {lastOpenedLabel && (
             <span className="text-xs text-gray-400 dark:text-gray-500">
               {lastOpenedLabel}
@@ -85,21 +156,7 @@ export function AppTileCard({
         href ? "hover:border-indigo-300 dark:hover:border-indigo-600" : ""
       }`}
     >
-      <button
-        type="button"
-        aria-label={isFavorite ? "Remove from favourites" : "Add to favourites"}
-        className="absolute top-3 right-3 z-10 text-gray-300 dark:text-gray-600 hover:text-amber-400 transition-colors"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onToggleFavorite(app, isFavorite);
-        }}
-      >
-        <Star
-          size={16}
-          className={isFavorite ? "fill-amber-400 text-amber-400" : ""}
-        />
-      </button>
+      {star}
 
       {href ? (
         isExternal ? (

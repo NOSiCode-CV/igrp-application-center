@@ -54,12 +54,13 @@ export function RecentlyAccessed() {
 
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
         {recent.slice(0, 8).map((app) => (
-          <div key={app.code} className="min-w-[180px]">
+          <div key={app.code} className="min-w-[220px]">
             <AppTileCard
               app={app}
               isFavorite={favCodes.has(app.code)}
               onToggleFavorite={handleToggle}
               lastOpenedLabel={getLastOpenedLabel(app.lastAccess)}
+              compact
             />
           </div>
         ))}
