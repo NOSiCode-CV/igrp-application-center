@@ -58,7 +58,7 @@ export function TaskList({ tasks, roleScope }: Props) {
             onClick={() => setActiveTab(status)}
             className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
               activeTab === status
-                ? "border-indigo-600 text-indigo-600"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
