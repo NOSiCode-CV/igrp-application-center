@@ -69,6 +69,8 @@ export function computeTaskStats(tasks: Task[]): TaskStats {
       continue
     }
     totalPending++
+    // Trusts the static `priority` field rather than deriving from `dueDate` — fine for
+    // hand-kept mock data, but a real task source should compute overdue from the date.
     if (task.priority === 'OVERDUE') overdueCount++
     const due = new Date(task.dueDate)
     due.setHours(0, 0, 0, 0)

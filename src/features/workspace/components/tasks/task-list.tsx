@@ -81,6 +81,7 @@ export function TaskList({ tasks, roleScope }: Props) {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Filter task titles, workflow names, codes..."
+          aria-label="Filter tasks"
           className="flex-1 min-w-[200px] rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
         />
       </div>
