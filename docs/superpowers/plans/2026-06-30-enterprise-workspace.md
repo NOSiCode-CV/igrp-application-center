@@ -32,7 +32,7 @@
 | `src/features/workspace/lib/app-utils.ts` | Create | Pure helper (app tile color derivation) |
 | `src/features/workspace/lib/task-utils.test.ts` | Create | Unit tests for task-utils |
 | `src/features/workspace/lib/app-utils.test.ts` | Create | Unit tests for app-utils |
-| `src/features/workspace/components/home-apps/app-tile-card.tsx` | Create | Reusable app card (star, maintenance pill, colored icon) |
+| `src/features/workspace/components/home-apps/app-tile-card.tsx` | Create | Reusable app card (star, colored icon) |
 | `src/features/workspace/components/home-apps/recently-accessed.tsx` | Create | Horizontal scroll row of recent apps |
 | `src/features/workspace/components/home-apps/app-catalog.tsx` | Create | Full catalog with search/filter/grid-list toggle |
 | `src/features/workspace/components/home-apps/welcome-banner.tsx` | Create | Greeting banner with user info and task counts |
@@ -684,12 +684,6 @@ export function AppTileCard({ app, isFavorite, onToggleFavorite, lastOpenedLabel
           )}
         </div>
       </div>
-
-      {app.status === "MAINTENANCE" && (
-        <span className="self-start rounded-full bg-amber-100 text-amber-700 text-xs font-medium px-2 py-0.5">
-          Maintenance
-        </span>
-      )}
     </div>
   )
 }

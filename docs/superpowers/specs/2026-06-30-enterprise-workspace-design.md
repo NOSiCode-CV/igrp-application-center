@@ -126,7 +126,7 @@ Three named exports in `data/mock-tasks.ts`:
 ### `app-tile-card.tsx`
 - Receives app + `onToggleFavorite` callback
 - Star toggle calls existing favorite mutation; falls back to local state if mutation unavailable
-- Maintenance status pill rendered when `app.status === 'maintenance'`
+- No status pill: `ApplicationDTO.status` is `ACTIVE | INACTIVE | DELETED` — no maintenance concept exists in the real API
 
 ### `task-list.tsx`
 - Client; owns `activeSubTab: TaskStatus`, `filter: string`, `processFilter`

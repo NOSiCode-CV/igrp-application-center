@@ -25,7 +25,7 @@
 | File | Action | What changes |
 |------|--------|-------------|
 | `src/styles/globals.css` | Modify | Add `@keyframes fadeIn` + `@utility animate-fadeIn` |
-| `src/features/workspace/components/home-apps/app-tile-card.tsx` | Replace | description prop, extended status badges, dark mode, stopPropagation |
+| `src/features/workspace/components/home-apps/app-tile-card.tsx` | Replace | description prop, dark mode, stopPropagation |
 | `src/features/workspace/components/home-apps/app-catalog.tsx` | Replace | pill animation, grid fade-in key, no-favorites empty state, dark mode |
 | `src/features/workspace/components/home-apps/recently-accessed.tsx` | Modify | dark: variants on link and label |
 | `src/features/workspace/components/home-apps/welcome-banner.tsx` | Replace | dark: variants throughout |
@@ -83,7 +83,7 @@ git commit -m "feat(workspace): add fadeIn animation utility to globals.css"
 
 ---
 
-## Task B: AppTileCard — Description, Status Badges, Dark Mode, stopPropagation
+## Task B: AppTileCard — Description, Dark Mode, stopPropagation
 
 **Files:**
 - Replace: `src/features/workspace/components/home-apps/app-tile-card.tsx`
@@ -92,9 +92,10 @@ git commit -m "feat(workspace): add fadeIn animation utility to globals.css"
 - Consumes: `ApplicationDTO` from `@igrp/platform-access-management-client-ts`, `getAppTileColor` from `../../lib/app-utils`
 - Produces: `<AppTileCard app isFavorite onToggleFavorite lastOpenedLabel? description? />`
 
+> **Note:** The original design spec called for MAINTENANCE/OPERATIONAL status badges, but `ApplicationDTO.status` (from `@igrp/platform-access-management-client-ts`) is typed as `Status` enum with only `ACTIVE | INACTIVE | DELETED` — there is no maintenance/operational concept in the real API. Decided during implementation: **drop the status badge feature entirely** rather than build UI for values the backend can never send.
+
 Changes from original:
-- Adds `description?: string` prop — renders below name with `line-clamp-2`; when present, a `<hr>` divider separates it from the status badge
-- Extends status mapping to include `OPERATIONAL` (emerald) alongside `MAINTENANCE` (amber)
+- Adds `description?: string` prop — renders below name with `line-clamp-2`; when present, a `<hr>` divider separates it from the bottom of the card
 - Adds `dark:` variants on all surface classes
 - Adds `e.stopPropagation()` to star button click handler
 
@@ -116,13 +117,6 @@ type Props = {
   description?: string
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  OPERATIONAL:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300",
-  MAINTENANCE:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
-}
-
 export function AppTileCard({
   app,
   isFavorite,
@@ -132,7 +126,6 @@ export function AppTileCard({
 }: Props) {
   const color = getAppTileColor(app.code)
   const initial = (app.name ?? app.code).charAt(0).toUpperCase()
-  const statusStyle = app.status ? STATUS_STYLES[app.status] : undefined
 
   return (
     <div className="relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:shadow-md dark:hover:shadow-gray-800 transition-shadow flex flex-col gap-3 min-w-0">
@@ -178,14 +171,6 @@ export function AppTileCard({
           <hr className="border-gray-100 dark:border-gray-800" />
         </>
       )}
-
-      {statusStyle && (
-        <span
-          className={`self-start rounded-full text-xs font-medium px-2 py-0.5 ${statusStyle}`}
-        >
-          {app.status}
-        </span>
-      )}
     </div>
   )
 }
@@ -203,7 +188,7 @@ Expected: No errors.
 
 ```bash
 git add src/features/workspace/components/home-apps/app-tile-card.tsx
-git commit -m "feat(workspace): enhance AppTileCard with description, status badges, dark mode"
+git commit -m "feat(workspace): enhance AppTileCard with description, dark mode, stopPropagation"
 ```
 
 ---
@@ -1076,7 +1061,6 @@ git commit -m "feat(workspace): add dark mode to task components and EnterpriseW
 - [ ] Search for an app while favorites filter is on — both filters apply simultaneously
 - [ ] Enable Favorites filter with zero favorited apps — amber empty state panel appears
 - [ ] Change the sort order — grid fades in with the new order
-- [ ] On a card with `status: "OPERATIONAL"` — emerald status badge renders
 - [ ] On a card with a description prop — description + divider render below the name
 - [ ] Click a star — `stopPropagation` prevents any parent click handler from firing
 - [ ] Switch demo states (Default / Empty / Heavy overdue) in dark mode — all stat cards render correctly

@@ -10,7 +10,7 @@
 
 This spec amends the Enterprise Workspace design with three focused additions:
 
-1. **App card structure enhancements** — description field, extended status badges, richer layout
+1. **App card structure enhancements** — description field, richer layout
 2. **App catalog interaction polish** — animated favorites pill, grid fade-in on filter change, empty state
 3. **Full dark mode** — `dark:` Tailwind variants on all 8 workspace surface components
 
@@ -21,7 +21,7 @@ These run as an addendum plan executed after the original 13-task plan completes
 ## Scope
 
 **In scope:**
-- `AppTileCard` — description prop, divider, OPERATIONAL badge, dark mode
+- `AppTileCard` — description prop, divider, dark mode
 - `AppCatalog` — pill animation, grid fade-in, no-favorites empty state, dark mode
 - All other workspace surface components — dark mode `dark:` variants only
 - `globals.css` — `@keyframes fadeIn` + `animate-fadeIn` utility
@@ -47,6 +47,8 @@ These run as an addendum plan executed after the original 13-task plan completes
 
 ## Task A: AppTileCard Enhancements
 
+> **Decision:** The original mockup called for MAINTENANCE/OPERATIONAL status badges. `ApplicationDTO.status` (from `@igrp/platform-access-management-client-ts`) is typed as `Status` enum with only `ACTIVE | INACTIVE | DELETED` — no maintenance/operational concept exists in the real API. **Dropped the status badge feature entirely** rather than build UI for values the backend can never send.
+
 ### New prop
 
 ```ts
@@ -67,17 +69,8 @@ type Props = {
 │          description text here       │  ← shown only when description provided
 │          (2 lines max, muted)         │
 │  ─────────────────────────────────── │  ← <hr> divider, only when description exists
-│  [OPERATIONAL] or [MAINTENANCE]      │  ← status badge (conditional)
 └──────────────────────────────────────┘
 ```
-
-### Status badge color mapping
-
-| `app.status` value | Classes |
-|---|---|
-| `"OPERATIONAL"` | `bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300` |
-| `"MAINTENANCE"` | `bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300` |
-| anything else / absent | no badge rendered |
 
 ### Dark mode token mapping for AppTileCard
 
