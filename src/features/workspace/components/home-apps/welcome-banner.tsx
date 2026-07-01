@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { CalendarDays, Settings2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { CalendarDays, Settings2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   useCurrentUser,
   useCurrentUserActiveRole,
-} from "@/features/users/use-users"
-import { computeTaskStats, getGreeting } from "../../lib/task-utils"
-import type { Task } from "../../types"
+} from "@/features/users/use-users";
+import { computeTaskStats, getGreeting } from "../../lib/task-utils";
+import type { Task } from "../../types";
 
-type Props = { tasks: Task[] }
+type Props = { tasks: Task[] };
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString("en-GB", {
@@ -17,24 +17,24 @@ function formatDate(d: Date): string {
     day: "numeric",
     month: "long",
     year: "numeric",
-  })
+  });
 }
 
 function firstName(full?: string): string {
-  return full?.trim().split(/\s+/)[0] ?? ""
+  return full?.trim().split(/\s+/)[0] ?? "";
 }
 
 export function WelcomeBanner({ tasks }: Props) {
-  const { data: user } = useCurrentUser()
-  const { data: activeRole } = useCurrentUserActiveRole()
+  const { data: user } = useCurrentUser();
+  const { data: activeRole } = useCurrentUserActiveRole();
 
-  const [greeting, setGreeting] = useState<string | null>(null)
+  const [greeting, setGreeting] = useState<string | null>(null);
   useEffect(() => {
-    setGreeting(getGreeting())
-  }, [])
+    setGreeting(getGreeting());
+  }, []);
 
-  const stats = computeTaskStats(tasks)
-  const roleName = activeRole?.roleCode ?? "STAFF"
+  const stats = computeTaskStats(tasks);
+  const roleName = activeRole?.roleCode ?? "STAFF";
 
   return (
     <div className="rounded-xl border border-indigo-100 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -60,7 +60,10 @@ export function WelcomeBanner({ tasks }: Props) {
             {stats.totalPending} pending tasks
           </strong>
           , including{" "}
-          <strong className="text-amber-600">{stats.dueTodayCount} due today</strong>.
+          <strong className="text-amber-600">
+            {stats.dueTodayCount} due today
+          </strong>
+          .
         </p>
       </div>
 
@@ -78,5 +81,5 @@ export function WelcomeBanner({ tasks }: Props) {
         </button>
       </div>
     </div>
-  )
+  );
 }

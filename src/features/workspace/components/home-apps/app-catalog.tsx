@@ -1,59 +1,59 @@
-"use client"
+"use client";
 
-import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts"
-import { LayoutGrid, List, Star } from "lucide-react"
-import { useMemo, useState } from "react"
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { LayoutGrid, List, Star } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   useAddCurrentUserFavoriteApplication,
   useCurrentUserApplications,
   useCurrentUserFavoriteApplications,
   useRemoveCurrentUserFavoriteApplication,
-} from "@/features/users/use-users"
-import { AppTileCard } from "./app-tile-card"
+} from "@/features/users/use-users";
+import { AppTileCard } from "./app-tile-card";
 
-type ViewMode = "grid" | "list"
-type SortBy = "name" | "default"
+type ViewMode = "grid" | "list";
+type SortBy = "name" | "default";
 
 export function AppCatalog() {
-  const [search, setSearch] = useState("")
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
-  const [viewMode, setViewMode] = useState<ViewMode>("grid")
-  const [sortBy, setSortBy] = useState<SortBy>("default")
+  const [search, setSearch] = useState("");
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [sortBy, setSortBy] = useState<SortBy>("default");
 
-  const { data: apps = [] } = useCurrentUserApplications()
-  const { data: favorites = [] } = useCurrentUserFavoriteApplications()
-  const addFav = useAddCurrentUserFavoriteApplication()
-  const removeFav = useRemoveCurrentUserFavoriteApplication()
+  const { data: apps = [] } = useCurrentUserApplications();
+  const { data: favorites = [] } = useCurrentUserFavoriteApplications();
+  const addFav = useAddCurrentUserFavoriteApplication();
+  const removeFav = useRemoveCurrentUserFavoriteApplication();
 
   const favCodes = useMemo(
     () => new Set(favorites.map((f) => f.code)),
     [favorites],
-  )
+  );
 
   const filtered = useMemo(() => {
-    let list = apps
+    let list = apps;
     if (search.trim()) {
-      const q = search.toLowerCase()
-      list = list.filter((a) => a.name.toLowerCase().includes(q))
+      const q = search.toLowerCase();
+      list = list.filter((a) => a.name.toLowerCase().includes(q));
     }
     if (showFavoritesOnly) {
-      list = list.filter((a) => favCodes.has(a.code))
+      list = list.filter((a) => favCodes.has(a.code));
     }
     if (sortBy === "name") {
-      list = [...list].sort((a, b) => a.name.localeCompare(b.name))
+      list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     }
-    return list
-  }, [apps, search, showFavoritesOnly, sortBy, favCodes])
+    return list;
+  }, [apps, search, showFavoritesOnly, sortBy, favCodes]);
 
   function handleToggle(app: ApplicationDTO, isFavorite: boolean) {
     if (isFavorite) {
-      removeFav.mutate(app.code)
+      removeFav.mutate(app.code);
     } else {
-      addFav.mutate({ applicationCode: app.code, app })
+      addFav.mutate({ applicationCode: app.code, app });
     }
   }
 
-  const gridKey = `${showFavoritesOnly}-${search}-${sortBy}`
+  const gridKey = `${showFavoritesOnly}-${search}-${sortBy}`;
 
   return (
     <section>
@@ -170,5 +170,5 @@ export function AppCatalog() {
         </div>
       )}
     </section>
-  )
+  );
 }

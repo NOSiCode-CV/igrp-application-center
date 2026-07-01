@@ -1,17 +1,17 @@
-import { Bookmark } from "lucide-react"
-import { computeTaskStats } from "../../lib/task-utils"
-import type { Task } from "../../types"
+import { Bookmark } from "lucide-react";
+import { computeTaskStats } from "../../lib/task-utils";
+import type { Task } from "../../types";
 
-type Props = { tasks: Task[] }
+type Props = { tasks: Task[] };
 
 type StatCardProps = {
-  count: number
-  label: string
-  description: string
-  accentClass: string
-  bgClass: string
-  badgeClass: string
-}
+  count: number;
+  label: string;
+  description: string;
+  accentClass: string;
+  bgClass: string;
+  badgeClass: string;
+};
 
 function StatCard({
   count,
@@ -33,19 +33,21 @@ function StatCard({
           {description}
         </p>
       </div>
-      <span className={`rounded-full px-2.5 py-1 text-sm font-bold ${badgeClass}`}>
+      <span
+        className={`rounded-full px-2.5 py-1 text-sm font-bold ${badgeClass}`}
+      >
         {count}
       </span>
     </div>
-  )
+  );
 }
 
 export function WorkSummarySidebar({ tasks }: Props) {
-  const stats = computeTaskStats(tasks)
+  const stats = computeTaskStats(tasks);
   const pct =
     stats.total > 0
       ? Math.round((stats.completedCount / stats.total) * 100)
-      : 0
+      : 0;
 
   return (
     <aside className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 flex flex-col gap-4">
@@ -109,5 +111,5 @@ export function WorkSummarySidebar({ tasks }: Props) {
         </p>
       </div>
     </aside>
-  )
+  );
 }

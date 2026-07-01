@@ -1,39 +1,39 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import type { Task, TaskStatus } from "../../types"
-import { TaskRow } from "./task-row"
+import { useState } from "react";
+import type { Task, TaskStatus } from "../../types";
+import { TaskRow } from "./task-row";
 
 const TABS: { label: string; status: TaskStatus }[] = [
   { label: "Assigned to me", status: "assigned" },
   { label: "Candidate tasks", status: "candidate" },
   { label: "Created by me", status: "created" },
   { label: "Completed", status: "completed" },
-]
+];
 
-type Props = { tasks: Task[]; roleScope: string }
+type Props = { tasks: Task[]; roleScope: string };
 
 export function TaskList({ tasks, roleScope }: Props) {
-  const [activeTab, setActiveTab] = useState<TaskStatus>("assigned")
-  const [filter, setFilter] = useState("")
+  const [activeTab, setActiveTab] = useState<TaskStatus>("assigned");
+  const [filter, setFilter] = useState("");
 
   const counts: Record<TaskStatus, number> = {
     assigned: tasks.filter((t) => t.status === "assigned").length,
     candidate: tasks.filter((t) => t.status === "candidate").length,
     created: tasks.filter((t) => t.status === "created").length,
     completed: tasks.filter((t) => t.status === "completed").length,
-  }
+  };
 
   const visible = tasks.filter((t) => {
-    if (t.status !== activeTab) return false
-    if (!filter.trim()) return true
-    const q = filter.toLowerCase()
+    if (t.status !== activeTab) return false;
+    if (!filter.trim()) return true;
+    const q = filter.toLowerCase();
     return (
       t.title.toLowerCase().includes(q) ||
       t.ticketCode.toLowerCase().includes(q) ||
       t.category.toLowerCase().includes(q)
-    )
-  })
+    );
+  });
 
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col overflow-hidden">
@@ -98,5 +98,5 @@ export function TaskList({ tasks, roleScope }: Props) {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts"
-import { Star } from "lucide-react"
-import { getAppTileColor } from "../../lib/app-utils"
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { Star } from "lucide-react";
+import { getAppTileColor } from "../../lib/app-utils";
 
 type Props = {
-  app: ApplicationDTO
-  isFavorite: boolean
-  onToggleFavorite: (app: ApplicationDTO, isFavorite: boolean) => void
-  lastOpenedLabel?: string
-  description?: string
-}
+  app: ApplicationDTO;
+  isFavorite: boolean;
+  onToggleFavorite: (app: ApplicationDTO, isFavorite: boolean) => void;
+  lastOpenedLabel?: string;
+  description?: string;
+};
 
 export function AppTileCard({
   app,
@@ -19,8 +19,8 @@ export function AppTileCard({
   lastOpenedLabel,
   description,
 }: Props) {
-  const color = getAppTileColor(app.code)
-  const initial = (app.name ?? app.code).charAt(0).toUpperCase()
+  const color = getAppTileColor(app.code);
+  const initial = (app.name ?? app.code).charAt(0).toUpperCase();
 
   return (
     <div className="relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:shadow-md dark:hover:shadow-gray-800 transition-shadow flex flex-col gap-3 min-w-0">
@@ -29,8 +29,8 @@ export function AppTileCard({
         aria-label={isFavorite ? "Remove from favourites" : "Add to favourites"}
         className="absolute top-3 right-3 text-gray-300 dark:text-gray-600 hover:text-amber-400 transition-colors"
         onClick={(e) => {
-          e.stopPropagation()
-          onToggleFavorite(app, isFavorite)
+          e.stopPropagation();
+          onToggleFavorite(app, isFavorite);
         }}
       >
         <Star
@@ -67,5 +67,5 @@ export function AppTileCard({
         </>
       )}
     </div>
-  )
+  );
 }

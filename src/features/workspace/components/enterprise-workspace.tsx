@@ -1,34 +1,34 @@
-"use client"
+"use client";
 
-import { CheckSquare, ChevronDown, Home, LayoutDashboard } from "lucide-react"
-import { useState } from "react"
+import { CheckSquare, ChevronDown, Home, LayoutDashboard } from "lucide-react";
+import { useState } from "react";
 import {
   defaultTasks,
   emptyTasks,
   overdueHeavyTasks,
-} from "../data/mock-tasks"
-import { computeTaskStats } from "../lib/task-utils"
-import type { DemoState, Task } from "../types"
-import { HomeAppsTab } from "./home-apps/home-apps-tab"
-import { TasksTab } from "./tasks/tasks-tab"
+} from "../data/mock-tasks";
+import { computeTaskStats } from "../lib/task-utils";
+import type { DemoState, Task } from "../types";
+import { HomeAppsTab } from "./home-apps/home-apps-tab";
+import { TasksTab } from "./tasks/tasks-tab";
 
-type Tab = "home" | "tasks"
+type Tab = "home" | "tasks";
 
 const DEMO_STATES: { value: DemoState; label: string; tasks: Task[] }[] = [
   { value: "default", label: "Default", tasks: defaultTasks },
   { value: "empty", label: "Empty state", tasks: emptyTasks },
   { value: "overdue-heavy", label: "Heavy overdue", tasks: overdueHeavyTasks },
-]
+];
 
 export function EnterpriseWorkspace() {
-  const [activeTab, setActiveTab] = useState<Tab>("home")
-  const [demoState, setDemoState] = useState<DemoState>("default")
-  const [demoMenuOpen, setDemoMenuOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState<Tab>("home");
+  const [demoState, setDemoState] = useState<DemoState>("default");
+  const [demoMenuOpen, setDemoMenuOpen] = useState(false);
 
   const tasks =
-    DEMO_STATES.find((s) => s.value === demoState)?.tasks ?? defaultTasks
-  const stats = computeTaskStats(tasks)
-  const pendingCount = stats.totalPending
+    DEMO_STATES.find((s) => s.value === demoState)?.tasks ?? defaultTasks;
+  const stats = computeTaskStats(tasks);
+  const pendingCount = stats.totalPending;
 
   return (
     <div className="relative min-h-0 flex flex-col">
@@ -86,8 +86,8 @@ export function EnterpriseWorkspace() {
                 key={s.value}
                 type="button"
                 onClick={() => {
-                  setDemoState(s.value)
-                  setDemoMenuOpen(false)
+                  setDemoState(s.value);
+                  setDemoMenuOpen(false);
                 }}
                 className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${
                   demoState === s.value
@@ -115,5 +115,5 @@ export function EnterpriseWorkspace() {
         </button>
       </div>
     </div>
-  )
+  );
 }

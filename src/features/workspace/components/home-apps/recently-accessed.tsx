@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts"
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import {
   useAddCurrentUserFavoriteApplication,
   useCurrentUserFavoriteApplications,
   useGetCurrentUserRecentApplications,
   useRemoveCurrentUserFavoriteApplication,
-} from "@/features/users/use-users"
-import { AppTileCard } from "./app-tile-card"
+} from "@/features/users/use-users";
+import { AppTileCard } from "./app-tile-card";
 
 export function RecentlyAccessed() {
-  const { data: recent = [] } = useGetCurrentUserRecentApplications()
-  const { data: favorites = [] } = useCurrentUserFavoriteApplications()
-  const addFav = useAddCurrentUserFavoriteApplication()
-  const removeFav = useRemoveCurrentUserFavoriteApplication()
+  const { data: recent = [] } = useGetCurrentUserRecentApplications();
+  const { data: favorites = [] } = useCurrentUserFavoriteApplications();
+  const addFav = useAddCurrentUserFavoriteApplication();
+  const removeFav = useRemoveCurrentUserFavoriteApplication();
 
-  const favCodes = new Set(favorites.map((f) => f.code))
+  const favCodes = new Set(favorites.map((f) => f.code));
 
   function handleToggle(app: ApplicationDTO, isFavorite: boolean) {
     if (isFavorite) {
-      removeFav.mutate(app.code)
+      removeFav.mutate(app.code);
     } else {
-      addFav.mutate({ applicationCode: app.code, app })
+      addFav.mutate({ applicationCode: app.code, app });
     }
   }
 
-  if (recent.length === 0) return null
+  if (recent.length === 0) return null;
 
   return (
     <section>
@@ -54,5 +54,5 @@ export function RecentlyAccessed() {
         ))}
       </div>
     </section>
-  )
+  );
 }

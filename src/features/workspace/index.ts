@@ -1,1 +1,1 @@
-export { EnterpriseWorkspace } from "./components/enterprise-workspace"
+export { EnterpriseWorkspace } from "./components/enterprise-workspace";

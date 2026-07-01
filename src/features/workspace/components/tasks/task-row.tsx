@@ -1,34 +1,34 @@
-import { Paperclip } from "lucide-react"
-import { getDueDateLabel } from "../../lib/task-utils"
-import type { Task } from "../../types"
+import { Paperclip } from "lucide-react";
+import { getDueDateLabel } from "../../lib/task-utils";
+import type { Task } from "../../types";
 
 const PRIORITY_STYLES: Record<Task["priority"], string> = {
   HIGH: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
   MEDIUM: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
   NORMAL: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
   OVERDUE: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-}
+};
 
 const DUE_COLOR: Record<"red" | "amber" | "normal", string> = {
   red: "text-red-500 font-semibold",
   amber: "text-amber-500 font-semibold",
   normal: "text-gray-700 dark:text-gray-300",
-}
+};
 
 function relativeTime(date: Date): string {
-  const diffMs = Date.now() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  if (diffDays === 0) return "today"
-  if (diffDays === 1) return "yesterday"
-  if (diffDays < 7) return `${diffDays} days ago`
-  const weeks = Math.floor(diffDays / 7)
-  return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`
+  const diffMs = Date.now() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return "today";
+  if (diffDays === 1) return "yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  const weeks = Math.floor(diffDays / 7);
+  return weeks === 1 ? "1 week ago" : `${weeks} weeks ago`;
 }
 
-type Props = { task: Task }
+type Props = { task: Task };
 
 export function TaskRow({ task }: Props) {
-  const due = getDueDateLabel(task.dueDate)
+  const due = getDueDateLabel(task.dueDate);
 
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:shadow-sm dark:hover:shadow-gray-800 transition-shadow">
@@ -87,5 +87,5 @@ export function TaskRow({ task }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }
