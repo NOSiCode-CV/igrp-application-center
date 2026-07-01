@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { getAppTileColor, getLastOpenedLabel } from "./app-utils";
 
 describe("getAppTileColor", () => {

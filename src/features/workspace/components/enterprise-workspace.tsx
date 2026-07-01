@@ -1,7 +1,9 @@
 "use client";
 
-import { CheckSquare, Home } from "lucide-react";
 import { useState } from "react";
+
+import { CheckSquare, Home } from "lucide-react";
+
 import { defaultTasks } from "../data/mock-tasks";
 import { computeTaskStats } from "../lib/task-utils";
 import { HomeAppsTab } from "./home-apps/home-apps-tab";
@@ -19,34 +21,34 @@ export function EnterpriseWorkspace() {
   return (
     <div className="min-h-0 flex flex-col">
       {/* Tab bar */}
-      <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 sticky top-0 z-10">
-        <div className="flex gap-0 px-4 overflow-x-auto">
+      <div className="border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
+        <div className="flex gap-1 px-4 overflow-x-auto">
           <button
             type="button"
             onClick={() => setActiveTab("home")}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
+            className={`flex items-center gap-2.5 px-4 py-3.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
               activeTab === "home"
-                ? "border-indigo-600 text-indigo-600"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
-            <Home size={15} />
+            <Home size={16} />
             Home &amp; Apps
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("tasks")}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
+            className={`flex items-center gap-2.5 px-4 py-3.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
               activeTab === "tasks"
-                ? "border-indigo-600 text-indigo-600"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
-            <CheckSquare size={15} />
+            <CheckSquare size={16} />
             My Tasks Workspace
             {pendingCount > 0 && (
-              <span className="rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold px-1.5 py-0.5 leading-none">
+              <span className="flex items-center justify-center size-5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold">
                 {pendingCount}
               </span>
             )}

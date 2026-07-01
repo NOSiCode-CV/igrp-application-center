@@ -1,3 +1,5 @@
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+
 export const APP_CATALOG_SECTION_ID = "app-catalog";
 
 type AppTileColor = { bg: string; text: string };
@@ -52,4 +54,14 @@ export function getLastOpenedLabel(
 
   const diffWeeks = Math.floor(diffDays / 7);
   return `Opened ${diffWeeks} week${diffWeeks !== 1 ? "s" : ""} ago`;
+}
+
+/** Resolves the launch URL for an app card. Mirrors the legacy home launcher's logic. */
+export function getAppHref(app: ApplicationDTO): string {
+  if (app.code === "APP_IGRP_CENTER") return "/applications";
+  return app.url ?? app.slug ?? "";
+}
+
+export function isExternalAppHref(app: ApplicationDTO, href: string): boolean {
+  return app.type === "EXTERNAL" || /^https?:\/\//i.test(href);
 }

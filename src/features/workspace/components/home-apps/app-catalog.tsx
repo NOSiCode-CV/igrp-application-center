@@ -1,19 +1,36 @@
 "use client";
 
-import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { LayoutGrid, List, Star } from "lucide-react";
 import { useMemo, useState } from "react";
+
+import {
+  IGRPDropdownMenu,
+  IGRPDropdownMenuContent,
+  IGRPDropdownMenuRadioGroup,
+  IGRPDropdownMenuRadioItem,
+  IGRPDropdownMenuTrigger,
+} from "@igrp/igrp-framework-react-design-system";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { ChevronDown, LayoutGrid, List, Star } from "lucide-react";
+
 import {
   useAddCurrentUserFavoriteApplication,
   useCurrentUserApplications,
   useCurrentUserFavoriteApplications,
   useRemoveCurrentUserFavoriteApplication,
 } from "@/features/users/use-users";
+
 import { APP_CATALOG_SECTION_ID } from "../../lib/app-utils";
 import { AppTileCard } from "./app-tile-card";
 
 type ViewMode = "grid" | "list";
-type SortBy = "name" | "default";
+type SortBy = "default" | "recent" | "name-asc" | "name-desc";
+
+const SORT_LABELS: Record<SortBy, string> = {
+  default: "Sort: Recommended",
+  recent: "Sort: Recently Visited",
+  "name-asc": "Sort: Name (A–Z)",
+  "name-desc": "Sort: Name (Z–A)",
+};
 
 export function AppCatalog() {
   const [search, setSearch] = useState("");
@@ -40,8 +57,16 @@ export function AppCatalog() {
     if (showFavoritesOnly) {
       list = list.filter((a) => favCodes.has(a.code));
     }
-    if (sortBy === "name") {
+    if (sortBy === "name-asc") {
       list = [...list].sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === "name-desc") {
+      list = [...list].sort((a, b) => b.name.localeCompare(a.name));
+    } else if (sortBy === "recent") {
+      list = [...list].sort((a, b) => {
+        const aTime = a.lastAccess ? new Date(a.lastAccess).getTime() : 0;
+        const bTime = b.lastAccess ? new Date(b.lastAccess).getTime() : 0;
+        return bTime - aTime;
+      });
     }
     return list;
   }, [apps, search, showFavoritesOnly, sortBy, favCodes]);
@@ -97,14 +122,36 @@ export function AppCatalog() {
           Favorites
         </button>
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortBy)}
-          className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-        >
-          <option value="default">Sort: Recommended</option>
-          <option value="name">Sort: Name A–Z</option>
-        </select>
+        <IGRPDropdownMenu>
+          <IGRPDropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            >
+              {SORT_LABELS[sortBy]}
+              <ChevronDown size={14} />
+            </button>
+          </IGRPDropdownMenuTrigger>
+          <IGRPDropdownMenuContent align="start">
+            <IGRPDropdownMenuRadioGroup
+              value={sortBy}
+              onValueChange={(value) => setSortBy(value as SortBy)}
+            >
+              <IGRPDropdownMenuRadioItem value="default">
+                Sort: Recommended
+              </IGRPDropdownMenuRadioItem>
+              <IGRPDropdownMenuRadioItem value="recent">
+                Sort: Recently Visited
+              </IGRPDropdownMenuRadioItem>
+              <IGRPDropdownMenuRadioItem value="name-asc">
+                Sort: Name (A–Z)
+              </IGRPDropdownMenuRadioItem>
+              <IGRPDropdownMenuRadioItem value="name-desc">
+                Sort: Name (Z–A)
+              </IGRPDropdownMenuRadioItem>
+            </IGRPDropdownMenuRadioGroup>
+          </IGRPDropdownMenuContent>
+        </IGRPDropdownMenu>
 
         <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
           <button

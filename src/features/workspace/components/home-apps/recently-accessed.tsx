@@ -1,12 +1,14 @@
 "use client";
 
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+
 import {
   useAddCurrentUserFavoriteApplication,
   useCurrentUserFavoriteApplications,
   useGetCurrentUserRecentApplications,
   useRemoveCurrentUserFavoriteApplication,
 } from "@/features/users/use-users";
+
 import {
   APP_CATALOG_SECTION_ID,
   getLastOpenedLabel,

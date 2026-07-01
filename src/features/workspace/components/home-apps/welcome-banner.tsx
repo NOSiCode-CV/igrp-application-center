@@ -1,11 +1,14 @@
 "use client";
 
-import { CalendarDays, Settings2 } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { CalendarDays } from "lucide-react";
+
 import {
   useCurrentUser,
   useCurrentUserActiveRole,
 } from "@/features/users/use-users";
+
 import { computeTaskStats, getGreeting } from "../../lib/task-utils";
 import type { Task } from "../../types";
 
@@ -37,7 +40,7 @@ export function WelcomeBanner({ tasks }: Props) {
   const roleName = activeRole?.roleCode ?? "STAFF";
 
   return (
-    <div className="rounded-xl border border-indigo-100 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+    <div className="rounded-xl border border-indigo-100 dark:border-indigo-900/50 bg-white dark:bg-gray-900 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
       <div className="relative shrink-0">
         <div className="size-12 rounded-full bg-indigo-200 dark:bg-indigo-800 flex items-center justify-center text-indigo-700 dark:text-indigo-300 font-bold text-lg select-none">
           {(user?.name ?? "U").charAt(0).toUpperCase()}
@@ -50,7 +53,7 @@ export function WelcomeBanner({ tasks }: Props) {
           <h1 className="font-bold text-xl text-gray-900 dark:text-gray-100">
             {greeting ?? "Welcome"}, {firstName(user?.name)}
           </h1>
-          <span className="rounded-full border border-indigo-200 dark:border-indigo-700 bg-white dark:bg-gray-900 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
+          <span className="rounded-full border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
             {roleName}
           </span>
         </div>
@@ -72,13 +75,6 @@ export function WelcomeBanner({ tasks }: Props) {
           <CalendarDays size={13} />
           {formatDate(new Date())}
         </span>
-        <button
-          type="button"
-          className="flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 text-xs font-medium text-white transition-colors"
-        >
-          <Settings2 size={13} />
-          Customize home
-        </button>
       </div>
     </div>
   );

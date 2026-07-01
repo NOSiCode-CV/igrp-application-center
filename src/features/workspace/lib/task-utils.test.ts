@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { computeTaskStats, getDueDateLabel, getGreeting } from "./task-utils";
+
 import type { Task } from "../types";
+import { computeTaskStats, getDueDateLabel, getGreeting } from "./task-utils";
 
 function makeDate(h: number) {
   const d = new Date();
