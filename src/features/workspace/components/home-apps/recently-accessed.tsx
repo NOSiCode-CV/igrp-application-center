@@ -30,15 +30,18 @@ export function RecentlyAccessed() {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
           Recently Accessed
         </span>
-        <button type="button" className="text-xs text-indigo-600 hover:underline">
+        <button
+          type="button"
+          className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+        >
           View all catalog →
         </button>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-200">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
         {recent.slice(0, 8).map((app) => (
           <div key={app.code} className="min-w-[180px]">
             <AppTileCard
