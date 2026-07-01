@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import { CalendarDays } from "lucide-react";
-
 import {
   useCurrentUser,
   useCurrentUserActiveRole,
@@ -13,15 +11,6 @@ import { computeTaskStats, getGreeting } from "../../lib/task-utils";
 import type { Task } from "../../types";
 
 type Props = { tasks: Task[] };
-
-function formatDate(d: Date): string {
-  return d.toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 function firstName(full?: string): string {
   return full?.trim().split(/\s+/)[0] ?? "";
@@ -68,13 +57,6 @@ export function WelcomeBanner({ tasks }: Props) {
           </strong>
           .
         </p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 shrink-0">
-        <span className="flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-1 text-xs text-gray-600 dark:text-gray-400">
-          <CalendarDays size={13} />
-          {formatDate(new Date())}
-        </span>
       </div>
     </div>
   );
