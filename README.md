@@ -156,6 +156,8 @@ src/
 
 | File | Contents |
 |---|---|
+| [docs/BUSINESS_GUIDE.en.md](docs/BUSINESS_GUIDE.en.md) | End-user/business guide — how the Application Center works, in plain language (English) |
+| [docs/BUSINESS_GUIDE.pt.md](docs/BUSINESS_GUIDE.pt.md) | Guia de negócio para utilizadores finais (Português) |
 | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Horizon component patterns, imports, and usage examples |
 | [docs/TOKENS.md](docs/TOKENS.md) | CSS design tokens, dark mode, Tailwind aliases |
 | [docs/DOCKER-RUN.md](docs/DOCKER-RUN.md) | Full Docker build and run instructions |
