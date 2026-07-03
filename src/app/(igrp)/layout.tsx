@@ -25,7 +25,7 @@ export default async function IGRPRootLayout({
   return (
     <IGRPSectionPermissions state={claims}>
       <IGRPQueryProvider>
-        <IGRPLayoutFull config={config}>{children}</IGRPLayoutFull>
+        <IGRPLayoutFull config={config} showSidebar={false}>{children}</IGRPLayoutFull>
       </IGRPQueryProvider>
     </IGRPSectionPermissions>
   );
