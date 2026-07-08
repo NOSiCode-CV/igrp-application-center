@@ -11,12 +11,12 @@ import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
 import { AppCenterLoading } from "@/components/loading";
 
-import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
+import { useRemoveUserRole, useUserRoles } from "../use-users";
 import { UserRolesDialog } from "./user-role-dialog";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();
-  const { data: userRoles, isLoading } = useGetCurrentUserRoles();
+  const { data: userRoles, isLoading } = useUserRoles(user.id);
   const {
     mutateAsync: removeUserRole,
     isPending,
