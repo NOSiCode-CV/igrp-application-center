@@ -1,8 +1,8 @@
 import type { UserFilters } from "@igrp/platform-access-management-client-ts";
 import { queryOptions } from "@tanstack/react-query";
 
-import { getCurrentUser, getUser, getUsers } from "@/actions/user";
 import { unwrap } from "@/actions/types";
+import { getCurrentUser, getUser, getUsers } from "@/actions/user";
 
 import { currentUserKeys, userKeys } from "./query-keys";
 
