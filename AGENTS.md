@@ -106,6 +106,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 
 ## Conventions
 
+- **Commit messages must not include any `Co-Authored-By:` trailer with an AI model name or Anthropic email** (e.g. `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`). Strip these before committing.
 - Formatter/linter: Biome 2.4.15 (2-space indent). `pnpm lint` is the gate.
 - Test runner: Vitest ^4.1.6 with `@testing-library/react`. Run with `pnpm test`. Tests live alongside features.
 - `optimizePackageImports` is set for the IGRP framework packages and React Query — keep imports tree-shakable (named imports, no deep default imports into those packages).
