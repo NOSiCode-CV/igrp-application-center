@@ -21,15 +21,15 @@ export function EnterpriseWorkspace() {
   return (
     <div className="min-h-0 flex flex-col">
       {/* Tab bar */}
-      <div className="border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
+      <div className="border-b border-border sticky top-0 z-10">
         <div className="flex gap-1 px-4 overflow-x-auto">
           <button
             type="button"
             onClick={() => setActiveTab("home")}
             className={`flex items-center gap-2.5 px-4 py-3.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
               activeTab === "home"
-                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <Home size={16} />
@@ -41,14 +41,14 @@ export function EnterpriseWorkspace() {
             onClick={() => setActiveTab("tasks")}
             className={`flex items-center gap-2.5 px-4 py-3.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
               activeTab === "tasks"
-                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
-                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
             <CheckSquare size={16} />
             My Tasks Workspace
             {pendingCount > 0 && (
-              <span className="flex items-center justify-center size-5 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-bold">
+              <span className="flex items-center justify-center size-5 rounded-full bg-primary/15 text-primary text-xs font-bold">
                 {pendingCount}
               </span>
             )}

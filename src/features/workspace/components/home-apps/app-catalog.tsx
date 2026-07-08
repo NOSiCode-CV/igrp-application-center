@@ -84,9 +84,9 @@ export function AppCatalog() {
   return (
     <section id={APP_CATALOG_SECTION_ID}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Application Directory{" "}
-          <span className="normal-case font-normal text-gray-400">
+          <span className="normal-case font-normal text-muted-foreground">
             — Showing {filtered.length} of {apps.length} systems
           </span>
         </span>
@@ -99,7 +99,7 @@ export function AppCatalog() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search available applications catalogue..."
           aria-label="Search applications"
-          className="flex-1 min-w-[200px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+          className="flex-1 min-w-[200px] rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
 
         <button
@@ -107,15 +107,15 @@ export function AppCatalog() {
           onClick={() => setShowFavoritesOnly((v) => !v)}
           className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out ${
             showFavoritesOnly
-              ? "border-amber-400 bg-amber-50 text-amber-700 dark:border-amber-500 dark:bg-amber-950 dark:text-amber-400"
-              : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              ? "border-warning/40 bg-warning/15 text-warning"
+              : "border-border bg-card text-muted-foreground hover:bg-accent"
           }`}
         >
           <Star
             size={14}
             className={
               showFavoritesOnly
-                ? "fill-amber-400 text-amber-400 transition-colors duration-150"
+                ? "fill-warning text-warning transition-colors duration-150"
                 : "transition-colors duration-150"
             }
           />
@@ -126,7 +126,7 @@ export function AppCatalog() {
           <IGRPDropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {SORT_LABELS[sortBy]}
               <ChevronDown size={14} />
@@ -153,14 +153,14 @@ export function AppCatalog() {
           </IGRPDropdownMenuContent>
         </IGRPDropdownMenu>
 
-        <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+        <div className="flex items-center border border-border rounded-lg overflow-hidden">
           <button
             type="button"
             onClick={() => setViewMode("grid")}
             className={`p-1.5 transition-colors ${
               viewMode === "grid"
-                ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400"
-                : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                ? "bg-primary/10 text-primary"
+                : "bg-card text-muted-foreground hover:bg-accent"
             }`}
             aria-label="Grid view"
           >
@@ -171,8 +171,8 @@ export function AppCatalog() {
             onClick={() => setViewMode("list")}
             className={`p-1.5 transition-colors ${
               viewMode === "list"
-                ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400"
-                : "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+                ? "bg-primary/10 text-primary"
+                : "bg-card text-muted-foreground hover:bg-accent"
             }`}
             aria-label="List view"
           >
@@ -182,20 +182,15 @@ export function AppCatalog() {
       </div>
 
       {showFavoritesOnly && filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 py-12 text-center">
-          <Star
-            size={24}
-            className="mx-auto text-amber-300 dark:text-amber-600 mb-3"
-          />
-          <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-            No favorites yet
-          </p>
-          <p className="text-xs text-amber-500 dark:text-amber-500 mt-1">
+        <div className="rounded-xl border border-dashed border-warning/30 bg-warning/10 py-12 text-center">
+          <Star size={24} className="mx-auto text-warning/60 mb-3" />
+          <p className="text-sm font-medium text-warning">No favorites yet</p>
+          <p className="text-xs text-warning/80 mt-1">
             Click the ★ on any app to add it here
           </p>
         </div>
       ) : !showFavoritesOnly && filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 py-12 text-center text-sm text-gray-400 dark:text-gray-500">
+        <div className="rounded-xl border border-dashed border-border bg-muted py-12 text-center text-sm text-muted-foreground">
           No applications match your search.
         </div>
       ) : (

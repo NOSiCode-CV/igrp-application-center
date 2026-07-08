@@ -5,14 +5,11 @@ export const APP_CATALOG_SECTION_ID = "app-catalog";
 type AppTileColor = { bg: string; text: string };
 
 const TILE_COLORS: AppTileColor[] = [
-  { bg: "bg-indigo-100", text: "text-indigo-700" },
-  { bg: "bg-blue-100", text: "text-blue-700" },
-  { bg: "bg-purple-100", text: "text-purple-700" },
-  { bg: "bg-emerald-100", text: "text-emerald-700" },
-  { bg: "bg-amber-100", text: "text-amber-700" },
-  { bg: "bg-rose-100", text: "text-rose-700" },
-  { bg: "bg-cyan-100", text: "text-cyan-700" },
-  { bg: "bg-orange-100", text: "text-orange-700" },
+  { bg: "bg-chart-1/15", text: "text-chart-1" },
+  { bg: "bg-chart-2/15", text: "text-chart-2" },
+  { bg: "bg-chart-3/15", text: "text-chart-3" },
+  { bg: "bg-chart-4/15", text: "text-chart-4" },
+  { bg: "bg-chart-5/15", text: "text-chart-5" },
 ];
 
 export function getAppTileColor(code: string): AppTileColor {
@@ -64,4 +61,18 @@ export function getAppHref(app: ApplicationDTO): string {
 
 export function isExternalAppHref(app: ApplicationDTO, href: string): boolean {
   return app.type === "EXTERNAL" || /^https?:\/\//i.test(href);
+}
+
+const NEW_APP_WINDOW_DAYS = 14;
+
+/** True when `createdDate` falls within the last `NEW_APP_WINDOW_DAYS` days. */
+export function isRecentlyAdded(
+  createdDate: string | null | undefined,
+  now = new Date(),
+): boolean {
+  if (!createdDate) return false;
+  const created = new Date(createdDate);
+  if (Number.isNaN(created.getTime())) return false;
+  const diffDays = (now.getTime() - created.getTime()) / 86_400_000;
+  return diffDays >= 0 && diffDays <= NEW_APP_WINDOW_DAYS;
 }

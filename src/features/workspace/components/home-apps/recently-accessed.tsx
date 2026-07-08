@@ -36,7 +36,7 @@ export function RecentlyAccessed() {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Recently Accessed
         </span>
         <button
@@ -46,13 +46,13 @@ export function RecentlyAccessed() {
               .getElementById(APP_CATALOG_SECTION_ID)
               ?.scrollIntoView({ behavior: "smooth", block: "start" })
           }
-          className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+          className="text-xs text-primary hover:underline"
         >
           View all catalog →
         </button>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-muted">
         {recent.slice(0, 8).map((app) => (
           <div key={app.code} className="min-w-[220px]">
             <AppTileCard

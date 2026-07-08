@@ -3,13 +3,17 @@
 import type { Route } from "next";
 import Link from "next/link";
 
+import { Badge, Separator } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { ExternalLink, Star } from "lucide-react";
+
+import { getStatusColor, showStatus } from "@/lib/app-utilities";
 
 import {
   getAppHref,
   getAppTileColor,
   isExternalAppHref,
+  isRecentlyAdded,
 } from "../../lib/app-utils";
 
 type Props = {
@@ -41,8 +45,8 @@ export function AppTileCard({
       aria-label={isFavorite ? "Remove from favourites" : "Add to favourites"}
       className={
         compact
-          ? "shrink-0 text-gray-300 dark:text-gray-600 hover:text-amber-400 transition-colors"
-          : "absolute top-3 right-3 z-10 text-gray-300 dark:text-gray-600 hover:text-amber-400 transition-colors"
+          ? "shrink-0 text-muted-foreground/50 hover:text-warning transition-colors"
+          : "text-muted-foreground/50 hover:text-warning transition-colors"
       }
       onClick={(e) => {
         e.preventDefault();
@@ -52,13 +56,22 @@ export function AppTileCard({
     >
       <Star
         size={16}
-        className={isFavorite ? "fill-amber-400 text-amber-400" : ""}
+        className={isFavorite ? "fill-warning text-warning" : ""}
       />
     </button>
   );
 
-  const nameClass = `font-semibold text-sm text-gray-900 dark:text-gray-100 truncate ${
-    href ? "group-hover:text-indigo-600 dark:group-hover:text-indigo-400" : ""
+  const statusBadge =
+    app.status !== "ACTIVE" ? (
+      <Badge className={getStatusColor(app.status)}>
+        {showStatus(app.status)}
+      </Badge>
+    ) : isRecentlyAdded(app.createdDate) ? (
+      <Badge className="bg-success/15 text-success">New</Badge>
+    ) : null;
+
+  const nameClass = `font-semibold text-sm text-foreground truncate ${
+    href ? "group-hover:text-primary" : ""
   }`;
 
   if (compact) {
@@ -72,7 +85,7 @@ export function AppTileCard({
         <div className="flex flex-col gap-0.5 min-w-0">
           <span className={nameClass}>{app.name}</span>
           {lastOpenedLabel && (
-            <span className="text-xs text-gray-400 dark:text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {lastOpenedLabel}
             </span>
           )}
@@ -82,10 +95,8 @@ export function AppTileCard({
 
     return (
       <div
-        className={`group relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 flex items-center gap-3 transition-all ${
-          href
-            ? "hover:border-indigo-300 dark:hover:border-indigo-500/60 hover:shadow-md dark:hover:shadow-gray-800"
-            : ""
+        className={`group relative rounded-xl border border-border bg-card p-3 flex items-center gap-3 transition-all ${
+          href ? "hover:border-primary/50 hover:shadow-md" : ""
         }`}
       >
         {href ? (
@@ -120,10 +131,12 @@ export function AppTileCard({
           {initial}
         </div>
 
-        <div className="flex flex-col gap-0.5 min-w-0 pr-5">
+        <div
+          className={`flex flex-col gap-0.5 min-w-0 ${statusBadge ? "pr-16" : "pr-5"}`}
+        >
           <span className={nameClass}>{app.name}</span>
           {lastOpenedLabel && (
-            <span className="text-xs text-gray-400 dark:text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {lastOpenedLabel}
             </span>
           )}
@@ -131,16 +144,16 @@ export function AppTileCard({
       </div>
 
       {description && (
-        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
           {description}
         </p>
       )}
 
       {href && (
         <>
-          <hr className="border-gray-100 dark:border-gray-800" />
+          <Separator />
           <div className="flex items-center justify-end">
-            <span className="flex items-center gap-1 text-xs font-medium text-indigo-600 dark:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
               Launch app
               <ExternalLink size={12} />
             </span>
@@ -152,11 +165,14 @@ export function AppTileCard({
 
   return (
     <div
-      className={`group relative rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 hover:shadow-md dark:hover:shadow-gray-800 transition-all flex flex-col gap-3 min-w-0 ${
-        href ? "hover:border-indigo-300 dark:hover:border-indigo-600" : ""
+      className={`group relative rounded-xl border border-border bg-card p-4 hover:shadow-md transition-all flex flex-col gap-3 min-w-0 ${
+        href ? "hover:border-primary/50" : ""
       }`}
     >
-      {star}
+      <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+        {statusBadge}
+        {star}
+      </div>
 
       {href ? (
         isExternal ? (
