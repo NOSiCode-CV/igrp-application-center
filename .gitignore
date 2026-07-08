@@ -51,3 +51,4 @@ next-env.d.ts
 # Brainstorming session artefacts
 .superpowers/
 .claude/launch.json
+public/_n_/*
