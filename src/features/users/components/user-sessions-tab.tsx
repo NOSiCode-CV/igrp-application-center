@@ -15,6 +15,8 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 
+import { AppCenterLoading } from "@/components/loading";
+
 import { useKillUserSession, useUserSession } from "../use-users";
 
 interface UserSessionsTabProps {
@@ -37,7 +39,11 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
     );
   }
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <AppCenterLoading description="A carregar sessões do utilizador..." />
+    );
+  }
 
   if (!session) {
     return (

@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { useLocalStorageState } from "@/lib/hooks/use-local-storage-state";
-
 import {
   Badge,
   IGRPIcon,
@@ -26,6 +24,7 @@ import {
   useGetCurrentUserRoles,
 } from "@/features/users/use-users";
 import { config } from "@/lib/constants";
+import { useLocalStorageState } from "@/lib/hooks/use-local-storage-state";
 
 import { ApplicationCardHome } from "./app-card-home";
 import { CommandPalette } from "./command-palette";
