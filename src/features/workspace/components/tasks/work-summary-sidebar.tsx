@@ -9,16 +9,16 @@ type Tone = "destructive" | "warning" | "info" | "muted";
 
 const TONE_STYLES: Record<Tone, { card: string; badge: string }> = {
   destructive: {
-    card: "border-destructive/30 bg-destructive/10",
-    badge: "bg-destructive/20 text-destructive",
+    card: "border-destructive-subtle bg-destructive-subtle",
+    badge: "bg-card text-destructive-subtle-foreground",
   },
   warning: {
-    card: "border-warning/30 bg-warning/10",
-    badge: "bg-warning/20 text-warning",
+    card: "border-warning-subtle bg-warning-subtle",
+    badge: "bg-card text-warning-subtle-foreground",
   },
   info: {
-    card: "border-info/30 bg-info/10",
-    badge: "bg-info/20 text-info",
+    card: "border-info-subtle bg-info-subtle",
+    badge: "bg-card text-info-subtle-foreground",
   },
   muted: {
     card: "border-border bg-muted",
@@ -63,41 +63,39 @@ export function WorkSummarySidebar({ tasks }: Props) {
     <aside className="rounded-xl border border-border bg-card p-4 flex flex-col gap-4">
       <h2 className="flex items-center gap-2 font-semibold text-sm text-foreground">
         <Bookmark size={15} className="text-primary" />
-        Workspace Work Summary
+        Summary
       </h2>
 
       <div className="flex flex-col gap-2">
         <StatCard
           count={stats.overdueCount}
           label={`${stats.overdueCount} Overdue actions`}
-          description="Attention required instantly"
+          description="Needs attention now"
           tone="destructive"
         />
         <StatCard
           count={stats.dueTodayCount}
           label={`${stats.dueTodayCount} Due today`}
-          description="Complete before daily deadline"
+          description="Due before end of day"
           tone="warning"
         />
         <StatCard
           count={stats.dueThisWeekCount}
           label={`${stats.dueThisWeekCount} Due this week`}
-          description="Regular backlog parameters"
+          description="Due in the next 7 days"
           tone="info"
         />
         <StatCard
           count={stats.totalPending}
           label={`${stats.totalPending} Total pending tasks`}
-          description="Central process log depth"
+          description="Open across all categories"
           tone="muted"
         />
       </div>
 
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-xs text-muted-foreground">
-            Task Dispatch Resolution Rate
-          </span>
+          <span className="text-xs text-muted-foreground">Completed</span>
           <span className="text-xs font-semibold text-foreground">
             {stats.completedCount} of {stats.total} tasks completed
           </span>
@@ -109,7 +107,7 @@ export function WorkSummarySidebar({ tasks }: Props) {
           />
         </div>
         <p className="text-xs text-muted-foreground mt-1.5">
-          {pct}% Weekly completion quota compliance
+          {pct}% of tasks resolved
         </p>
       </div>
     </aside>

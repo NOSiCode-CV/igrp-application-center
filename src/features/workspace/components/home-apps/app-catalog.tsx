@@ -10,7 +10,7 @@ import {
   IGRPDropdownMenuTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { ChevronDown, LayoutGrid, List, Star } from "lucide-react";
+import { ChevronDown, LayoutGrid, List, Search, Star } from "lucide-react";
 
 import {
   useAddCurrentUserFavoriteApplication,
@@ -79,43 +79,48 @@ export function AppCatalog() {
     }
   }
 
-  const gridKey = `${showFavoritesOnly}-${search}-${sortBy}`;
-
   return (
     <section id={APP_CATALOG_SECTION_ID}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Application Directory{" "}
-          <span className="normal-case font-normal text-muted-foreground">
-            — Showing {filtered.length} of {apps.length} systems
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Applications{" "}
+          <span className="normal-case font-normal text-ring">
+            — {filtered.length} of {apps.length}
           </span>
-        </span>
+        </h2>
       </div>
 
       <div className="flex flex-wrap gap-2 mb-4 items-center">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search available applications catalogue..."
-          aria-label="Search applications"
-          className="flex-1 min-w-[200px] rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-        />
+        <div className="relative w-full sm:w-75">
+          <Search
+            size={15}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ring"
+          />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search applications"
+            aria-label="Search applications"
+            className="h-10 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-ring focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
 
         <button
           type="button"
           onClick={() => setShowFavoritesOnly((v) => !v)}
-          className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-150 ease-in-out ${
+          aria-pressed={showFavoritesOnly}
+          className={`flex h-10 items-center gap-1.5 rounded-lg border px-3.5 text-sm font-medium transition-all duration-150 ease-in-out ${
             showFavoritesOnly
-              ? "border-warning/40 bg-warning/15 text-warning"
-              : "border-border bg-card text-muted-foreground hover:bg-accent"
+              ? "border-warning-subtle bg-warning-subtle text-warning-subtle-foreground"
+              : "border-border bg-card text-secondary-foreground hover:bg-accent"
           }`}
         >
           <Star
             size={14}
             className={
               showFavoritesOnly
-                ? "fill-warning text-warning transition-colors duration-150"
+                ? "fill-warning-subtle-foreground text-warning-subtle-foreground transition-colors duration-150"
                 : "transition-colors duration-150"
             }
           />
@@ -126,7 +131,7 @@ export function AppCatalog() {
           <IGRPDropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 text-sm text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {SORT_LABELS[sortBy]}
               <ChevronDown size={14} />
@@ -153,13 +158,14 @@ export function AppCatalog() {
           </IGRPDropdownMenuContent>
         </IGRPDropdownMenu>
 
-        <div className="flex items-center border border-border rounded-lg overflow-hidden">
+        <div className="ms-auto flex h-10 items-center overflow-hidden rounded-lg border border-border">
           <button
             type="button"
             onClick={() => setViewMode("grid")}
-            className={`p-1.5 transition-colors ${
+            aria-pressed={viewMode === "grid"}
+            className={`flex size-10 items-center justify-center transition-colors ${
               viewMode === "grid"
-                ? "bg-primary/10 text-primary"
+                ? "bg-primary-subtle text-primary-subtle-foreground"
                 : "bg-card text-muted-foreground hover:bg-accent"
             }`}
             aria-label="Grid view"
@@ -169,9 +175,10 @@ export function AppCatalog() {
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className={`p-1.5 transition-colors ${
+            aria-pressed={viewMode === "list"}
+            className={`flex size-10 items-center justify-center border-s border-border transition-colors ${
               viewMode === "list"
-                ? "bg-primary/10 text-primary"
+                ? "bg-primary-subtle text-primary-subtle-foreground"
                 : "bg-card text-muted-foreground hover:bg-accent"
             }`}
             aria-label="List view"
@@ -182,10 +189,15 @@ export function AppCatalog() {
       </div>
 
       {showFavoritesOnly && filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-warning/30 bg-warning/10 py-12 text-center">
-          <Star size={24} className="mx-auto text-warning/60 mb-3" />
-          <p className="text-sm font-medium text-warning">No favorites yet</p>
-          <p className="text-xs text-warning/80 mt-1">
+        <div className="rounded-xl border border-dashed border-warning-subtle bg-warning-subtle py-12 text-center">
+          <Star
+            size={24}
+            className="mx-auto text-warning-subtle-foreground mb-3"
+          />
+          <p className="text-sm font-medium text-warning-subtle-foreground">
+            No favourites yet
+          </p>
+          <p className="text-xs text-warning-subtle-foreground mt-1">
             Click the ★ on any app to add it here
           </p>
         </div>
@@ -195,7 +207,9 @@ export function AppCatalog() {
         </div>
       ) : (
         <div
-          key={gridKey}
+          /* Keyed on the view mode only. Including `search` here remounted and
+             re-animated every card on each keystroke. */
+          key={viewMode}
           className={
             viewMode === "grid"
               ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 animate-fadeIn"

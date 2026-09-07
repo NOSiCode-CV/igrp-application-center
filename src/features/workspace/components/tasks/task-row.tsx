@@ -4,15 +4,15 @@ import { getDueDateLabel } from "../../lib/task-utils";
 import type { Task } from "../../types";
 
 const PRIORITY_STYLES: Record<Task["priority"], string> = {
-  HIGH: "bg-warning/15 text-warning",
-  MEDIUM: "bg-info/15 text-info",
+  HIGH: "bg-warning-subtle text-warning-subtle-foreground",
+  MEDIUM: "bg-info-subtle text-info-subtle-foreground",
   NORMAL: "bg-muted text-muted-foreground",
-  OVERDUE: "bg-destructive/15 text-destructive",
+  OVERDUE: "bg-destructive-subtle text-destructive-subtle-foreground",
 };
 
 const DUE_COLOR: Record<"red" | "amber" | "normal", string> = {
-  red: "text-destructive font-semibold",
-  amber: "text-warning font-semibold",
+  red: "text-destructive-subtle-foreground font-semibold",
+  amber: "text-warning-subtle-foreground font-semibold",
   normal: "text-foreground",
 };
 
@@ -72,7 +72,7 @@ export function TaskRow({ task }: Props) {
 
         <div className="flex flex-col items-end gap-2 shrink-0 ml-2">
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">Due date threshold</p>
+            <p className="text-xs text-muted-foreground">Due</p>
             <p className={`text-sm mt-0.5 ${DUE_COLOR[due.color]}`}>
               {due.label}
             </p>

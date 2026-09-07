@@ -13,6 +13,31 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
 
+  /* Subtle status stops — the quiet variant of each status colour.
+     Use `bg-x-subtle text-x-subtle-foreground`, never `bg-x/15 text-x`. */
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-subtle-foreground: var(--primary-subtle-foreground);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-subtle-foreground: var(--success-subtle-foreground);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-subtle-foreground: var(--warning-subtle-foreground);
+  --color-info-subtle: var(--info-subtle);
+  --color-info-subtle-foreground: var(--info-subtle-foreground);
+  --color-destructive-subtle: var(--destructive-subtle);
+  --color-destructive-subtle-foreground: var(--destructive-subtle-foreground);
+
+  /* App tile identity */
+  --color-app-tile-1: var(--app-tile-1);
+  --color-app-tile-1-foreground: var(--app-tile-1-foreground);
+  --color-app-tile-2: var(--app-tile-2);
+  --color-app-tile-2-foreground: var(--app-tile-2-foreground);
+  --color-app-tile-3: var(--app-tile-3);
+  --color-app-tile-3-foreground: var(--app-tile-3-foreground);
+  --color-app-tile-4: var(--app-tile-4);
+  --color-app-tile-4-foreground: var(--app-tile-4-foreground);
+  --color-app-tile-5: var(--app-tile-5);
+  --color-app-tile-5-foreground: var(--app-tile-5-foreground);
+
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
@@ -89,50 +114,7 @@
 }
 
 :root {
-  /* Success colors */
-  --success: oklch(0.5447 0.1776 160.77);
-  --success-foreground: oklch(0.9654 0.0092 239.99);
-
-  /* Warning colors */
-  --warning: oklch(0.7552 0.2156 84.51);
-  --warning-foreground: oklch(0.9654 0.0092 239.99);
-
-  /* Info colors */
-  --info: oklch(0.5772 0.3446 264.06);
-  --info-foreground: oklch(0.9654 0.0092 239.99);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  /* Home launcher viewport-fit height.
+  /* ── Home launcher viewport-fit height ───────────────────────────────────
    * 100dvh — IGRP header (~4rem) — framework p-4 wrapper top padding (1rem).
    * Adjust the rem value here if the framework header height changes. */
   --home-scroll-h: calc(100dvh - 5rem);
@@ -141,51 +123,67 @@
    * for the p-4 wrapper's *bottom* padding (1rem) — otherwise the wrapper is
    * 1rem too tall and the whole page scrolls. */
   --home-scroll-h-lg: calc(100dvh - 6rem);
+
+  /* ── Subtle status stops ─────────────────────────────────────────────────
+   * The design system ships `--x` / `--x-foreground` for SOLID status
+   * surfaces. These are the QUIET variant: a tint surface plus the text that
+   * sits on it. They exist because `bg-x/15 text-x` — a token over a 15% wash
+   * of itself — has a contrast ratio that is a pure function of the token's
+   * lightness, so it cannot be validated and cannot survive re-theming.
+   *
+   * CONTRACT: every `--x-subtle` / `--x-subtle-foreground` pair must hold at
+   * least 4.5:1 in BOTH themes. Chroma is capped to the maximum sRGB reaches
+   * at that lightness and hue, so no value relies on browser gamut mapping. */
+  --primary-subtle: oklch(0.965 0.015 235.82);
+  --primary-subtle-foreground: oklch(0.46 0.095 235.82); /* 6.35:1 */
+  --success-subtle: oklch(0.962 0.035 150.069);
+  --success-subtle-foreground: oklch(0.44 0.12 150.069); /* 6.66:1 */
+  --warning-subtle: oklch(0.962 0.025 70.08);
+  --warning-subtle-foreground: oklch(0.44 0.095 70.08); /* 7.09:1 */
+  --info-subtle: oklch(0.962 0.015 264.376);
+  --info-subtle-foreground: oklch(0.44 0.145 264.376); /* 7.15:1 */
+  --destructive-subtle: oklch(0.962 0.015 27.325);
+  --destructive-subtle-foreground: oklch(0.44 0.145 27.325); /* 7.45:1 */
+
+  /* ── App tile identity ───────────────────────────────────────────────────
+   * Deliberately NOT `--chart-*`: those are plot-series colours, so reusing
+   * them would mean a theme cannot recolour app tiles without recolouring
+   * every chart — and the tile's letter would have no anchor of its own.
+   * Built on the design system's chart hues so tiles still read as IGRP. */
+  --app-tile-1: oklch(0.955 0.02 41.116);
+  --app-tile-1-foreground: oklch(0.44 0.135 41.116); /* 7.20:1 */
+  --app-tile-2: oklch(0.955 0.035 184.704);
+  --app-tile-2-foreground: oklch(0.44 0.075 184.704); /* 6.63:1 */
+  --app-tile-3: oklch(0.955 0.025 227.392);
+  --app-tile-3-foreground: oklch(0.44 0.085 227.392); /* 6.70:1 */
+  --app-tile-4: oklch(0.955 0.035 84.429);
+  --app-tile-4-foreground: oklch(0.44 0.09 84.429); /* 6.87:1 */
+  --app-tile-5: oklch(0.955 0.02 292.717);
+  --app-tile-5-foreground: oklch(0.44 0.145 292.717); /* 7.22:1 */
 }
 
 .dark {
-  /* Success colors */
-  --success: oklch(0.7306 0.1874 148.35);
-  --success-foreground: oklch(0.9654 0.0092 239.99);
+  --primary-subtle: oklch(0.3 0.06 235.82);
+  --primary-subtle-foreground: oklch(0.84 0.09 235.82); /* 8.40:1 */
+  --success-subtle: oklch(0.29 0.06 150.069);
+  --success-subtle-foreground: oklch(0.85 0.135 150.069); /* 9.16:1 */
+  --warning-subtle: oklch(0.29 0.06 70.08);
+  --warning-subtle-foreground: oklch(0.85 0.115 70.08); /* 8.87:1 */
+  --info-subtle: oklch(0.29 0.06 264.376);
+  --info-subtle-foreground: oklch(0.85 0.07 264.376); /* 8.96:1 */
+  --destructive-subtle: oklch(0.29 0.06 27.325);
+  --destructive-subtle-foreground: oklch(0.85 0.08 27.325); /* 8.87:1 */
 
-  /* Warning colors */
-  --warning: oklch(0.7552 0.2156 84.51);
-  --warning-foreground: oklch(0.9654 0.0092 239.99);
-
-  /* Info colors */
-  --info: oklch(0.6934 0.2196 261.14);
-  --info-foreground: oklch(0.9654 0.0092 239.99);
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --app-tile-1: oklch(0.3 0.06 41.116);
+  --app-tile-1-foreground: oklch(0.84 0.09 41.116); /* 8.29:1 */
+  --app-tile-2: oklch(0.3 0.05 184.704);
+  --app-tile-2-foreground: oklch(0.84 0.135 184.704); /* 8.62:1 */
+  --app-tile-3: oklch(0.3 0.055 227.392);
+  --app-tile-3-foreground: oklch(0.84 0.1 227.392); /* 8.43:1 */
+  --app-tile-4: oklch(0.3 0.06 84.429);
+  --app-tile-4-foreground: oklch(0.84 0.135 84.429); /* 8.32:1 */
+  --app-tile-5: oklch(0.3 0.06 292.717);
+  --app-tile-5-foreground: oklch(0.84 0.085 292.717); /* 8.32:1 */
 }
 
 @layer base {

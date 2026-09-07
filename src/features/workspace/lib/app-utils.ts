@@ -4,12 +4,24 @@ export const APP_CATALOG_SECTION_ID = "app-catalog";
 
 type AppTileColor = { bg: string; text: string };
 
+/**
+ * Two-stop pairs, not `bg-chart-N/15 text-chart-N`.
+ *
+ * The old pattern set the tile letter in the same token as its own 15% wash,
+ * which makes contrast a pure function of that token's lightness — `--chart-1`
+ * measured 1.40:1 in light mode and `--chart-3/4/5` under 2.1:1 in dark, so the
+ * initial was rendered but invisible. It also borrowed the chart series colours,
+ * which would tie app-tile theming to chart theming forever.
+ *
+ * Each `--app-tile-N` / `--app-tile-N-foreground` pair holds >= 6.6:1 in both
+ * themes; see the contract in `src/styles/app-center.css`.
+ */
 const TILE_COLORS: AppTileColor[] = [
-  { bg: "bg-chart-1/15", text: "text-chart-1" },
-  { bg: "bg-chart-2/15", text: "text-chart-2" },
-  { bg: "bg-chart-3/15", text: "text-chart-3" },
-  { bg: "bg-chart-4/15", text: "text-chart-4" },
-  { bg: "bg-chart-5/15", text: "text-chart-5" },
+  { bg: "bg-app-tile-1", text: "text-app-tile-1-foreground" },
+  { bg: "bg-app-tile-2", text: "text-app-tile-2-foreground" },
+  { bg: "bg-app-tile-3", text: "text-app-tile-3-foreground" },
+  { bg: "bg-app-tile-4", text: "text-app-tile-4-foreground" },
+  { bg: "bg-app-tile-5", text: "text-app-tile-5-foreground" },
 ];
 
 export function getAppTileColor(code: string): AppTileColor {

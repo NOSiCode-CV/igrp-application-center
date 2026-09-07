@@ -83,14 +83,9 @@ export function TaskList({ tasks, roleScope }: Props) {
   return (
     <div className="rounded-xl border border-border bg-card flex flex-col overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-4 pb-0">
-        <h2 className="font-semibold text-sm text-foreground">
-          Process Workflow Center{" "}
-          <span className="text-muted-foreground font-normal">
-            (My Work)
-          </span>
-        </h2>
+        <h2 className="font-semibold text-sm text-foreground">My work</h2>
         <span className="font-mono text-xs text-muted-foreground">
-          Role Scope: {roleScope}
+          Role: {roleScope}
         </span>
       </div>
 
@@ -110,7 +105,7 @@ export function TaskList({ tasks, roleScope }: Props) {
             <span
               className={`rounded-full px-1.5 py-0.5 text-xs font-bold ${
                 activeTab === status
-                  ? "bg-primary/15 text-primary"
+                  ? "bg-primary-subtle text-primary-subtle-foreground"
                   : "bg-muted text-muted-foreground"
               }`}
             >
@@ -125,7 +120,7 @@ export function TaskList({ tasks, roleScope }: Props) {
           type="search"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          placeholder="Filter task titles, workflow names, codes..."
+          placeholder="Filter by title, workflow or code"
           aria-label="Filter tasks"
           className="flex-1 min-w-[200px] rounded-lg border border-border bg-muted px-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
@@ -185,7 +180,7 @@ export function TaskList({ tasks, roleScope }: Props) {
         </IGRPDropdownMenu>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 scrollbar-thin scrollbar-thumb-muted max-h-[600px]">
+      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar max-h-150">
         {visible.length === 0 ? (
           <div className="py-12 text-center text-sm text-muted-foreground">
             {filter
