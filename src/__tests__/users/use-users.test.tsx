@@ -39,8 +39,8 @@ describe("useUsers", () => {
     });
     const wrapper = wrapperWith(client);
 
-    const a = renderHook(() => useUsers({ status: "ACTIVE" }), { wrapper });
-    const b = renderHook(() => useUsers({ status: "INACTIVE" }), { wrapper });
+    const a = renderHook(() => useUsers({ name: "ana" }), { wrapper });
+    const b = renderHook(() => useUsers({ name: "bob" }), { wrapper });
 
     await waitFor(() => {
       expect(a.result.current.isSuccess).toBe(true);
@@ -48,8 +48,8 @@ describe("useUsers", () => {
     });
 
     expect(actions.getUsers).toHaveBeenCalledTimes(2);
-    expect(actions.getUsers).toHaveBeenNthCalledWith(1, { status: "ACTIVE" });
-    expect(actions.getUsers).toHaveBeenNthCalledWith(2, { status: "INACTIVE" });
+    expect(actions.getUsers).toHaveBeenNthCalledWith(1, { name: "ana" });
+    expect(actions.getUsers).toHaveBeenNthCalledWith(2, { name: "bob" });
   });
 });
 

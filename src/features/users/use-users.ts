@@ -2,6 +2,7 @@ import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import type {
   AddRolesToUserRequestDTO,
   ApplicationDTO,
+  AuditLogDTO,
   AuditLogFilters,
   DepartmentDTO,
   IGRPUserDTO,
@@ -9,7 +10,6 @@ import type {
   InviteUserDTO,
   PageResponse,
   RoleDTO,
-  SecurityAuditLogDTO,
   SessionResponseDTO,
   UserFilters,
   UserInvitationResponseDTO,
@@ -545,7 +545,7 @@ export const useKillUserSession = () => {
 };
 
 export const useUserAuditLogs = (userId: string, filters?: AuditLogFilters) => {
-  return useQuery<PageResponse<SecurityAuditLogDTO>, Error>({
+  return useQuery<PageResponse<AuditLogDTO>, Error>({
     queryKey: userKeys.auditLogs(userId, filters),
     queryFn: async () => unwrap(await getUserAuditLogs(userId, filters)),
     enabled: !!userId,

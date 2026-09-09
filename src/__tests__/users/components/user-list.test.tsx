@@ -131,7 +131,7 @@ vi.mock("@/features/users/use-users", () => ({
   useResendUserInvitation: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
-import { UserListTable } from "@/features/users/components/user-list-table";
+import { UserList } from "@/features/users/components/user-list";
 
 function wrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -141,9 +141,9 @@ function wrapper({ children }: { children: React.ReactNode }) {
   );
 }
 
-describe("UserListTable invite actions", () => {
+describe("UserList invite actions", () => {
   it("hides Reenviar on canceled invites", async () => {
-    render(<UserListTable initialUsers={[]} initialInvitations={[]} />, {
+    render(<UserList initialUsers={[]} initialInvitations={[]} />, {
       wrapper,
     });
 
@@ -156,7 +156,7 @@ describe("UserListTable invite actions", () => {
   });
 
   it("still shows Reenviar on pending invites", () => {
-    render(<UserListTable initialUsers={[]} initialInvitations={[]} />, {
+    render(<UserList initialUsers={[]} initialInvitations={[]} />, {
       wrapper,
     });
 

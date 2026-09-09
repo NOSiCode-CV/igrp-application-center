@@ -25,7 +25,6 @@ import {
 } from "@/features/users/use-users";
 import { useLocalStorageState } from "@/hooks/use-local-storage-state";
 import { config } from "@/lib/constants";
-import { useLocalStorageState } from "@/lib/hooks/use-local-storage-state";
 
 import { ApplicationCardHome } from "./app-card-home";
 import { CommandPalette } from "./command-palette";

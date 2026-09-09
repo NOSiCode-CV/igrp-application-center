@@ -40,10 +40,13 @@ beforeEach(() => {
 
 describe("middleware auth gate", () => {
   it("in bypass mode redirects /login to /", async () => {
-    vi.mocked(auth.isPreviewMode).mockReturnValue(true);
+    // middleware gates on isAuthBypass() from @/lib/utilities, which reads
+    // process.env at call time — not on auth.isPreviewMode().
+    vi.stubEnv("IGRP_PREVIEW_MODE", "true");
     const res = await middleware(req("/login"));
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toContain("/");
+    vi.unstubAllEnvs();
   });
 
   it("redirects to /login when no token on a protected route", async () => {

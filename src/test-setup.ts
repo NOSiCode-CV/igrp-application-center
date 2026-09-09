@@ -1,4 +1,7 @@
-import "@testing-library/jest-dom";
+// The /vitest entry registers the matchers AND augments Vitest's Assertion
+// interface. The bare entry only augments Jest's, leaving toBeInTheDocument &
+// friends untyped under `tsc`.
+import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 
 // Next.js server-only guard — not meaningful in tests

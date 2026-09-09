@@ -1,3 +1,4 @@
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 
@@ -6,6 +7,10 @@ import { UserProfileAvatar } from "@/features/users/components/user-profile-avat
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
   IGRPIcon: () => <span />,
+  Skeleton: (props: { className?: string }) => (
+    <span data-testid="skeleton" {...props} />
+  ),
+  useIGRPToast: () => ({ igrpToast: vi.fn() }),
   IGRPUserAvatar: ({
     image,
     alt,
@@ -29,14 +34,15 @@ const baseUser = {
   username: "ana",
   email: "a@x.cv",
   picture: null,
-} as never;
+} as unknown as IGRPUserDTO;
 
 const fakeUrl = "blob:fake";
 beforeEach(() => {
-  vi.stubGlobal("URL", {
-    createObjectURL: vi.fn(() => fakeUrl),
-    revokeObjectURL: vi.fn(),
-  });
+  // Only the object-URL helpers are stubbed. Replacing the whole `URL` global
+  // would drop the constructor, and vi.stubGlobal is not auto-restored, so the
+  // damage would leak into every later test file sharing this worker.
+  vi.spyOn(URL, "createObjectURL").mockReturnValue(fakeUrl);
+  vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
 });
 
 it("shows the object-URL preview while uploading and clears it after success", async () => {
@@ -99,7 +105,7 @@ it("exposes aria-label and disables trigger while resolving URL", () => {
 });
 
 it("falls back to username then email for alt text when name is empty", () => {
-  const userNoName = { ...baseUser, name: "", username: "ana_u" } as never;
+  const userNoName = { ...baseUser, name: "", username: "ana_u" };
   render(
     <UserProfileAvatar
       user={userNoName}
