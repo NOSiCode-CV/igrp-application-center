@@ -12,3 +12,4 @@
 - Gestão de Permissoes, pattern de nome e codigo
 - Em campos textarea colocar o numero maximo de carateres
 - Em Gestão de Utilizadore, em convidar, permite clicar no butão de convidar e dá erro porque não está a validar os campos de departamento e permissos
+- Profile is different of the Users/{id}

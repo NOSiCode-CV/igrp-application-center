@@ -17,7 +17,9 @@
       "!.igrpstudio",
       "!src/app/(igrp)/(generated)",
       "!.igrp-migrations-lock.json",
-      "!.npmignore"
+      "!.npmignore",
+      "!.agents",
+      "!.claude"
     ]
   },
   "formatter": {

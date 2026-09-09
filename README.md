@@ -158,6 +158,8 @@ src/
 |---|---|
 | [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) | **Start here** — how the app fits together, feature modules, data layer, design system & tokens |
 | [docs/HOME_FLOW.md](docs/HOME_FLOW.md) | Applications Center home/dashboard flow — routes, layout guards, data sources |
+| [docs/BUSINESS_GUIDE.en.md](docs/BUSINESS_GUIDE.en.md) | End-user/business guide — how the Application Center works, in plain language (English) |
+| [docs/BUSINESS_GUIDE.pt.md](docs/BUSINESS_GUIDE.pt.md) | Guia de negócio para utilizadores finais (Português) |
 | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Horizon component patterns, imports, and usage examples |
 | [docs/TOKENS.md](docs/TOKENS.md) | CSS design tokens, dark mode, Tailwind aliases |
 | [docs/DOCKER-RUN.md](docs/DOCKER-RUN.md) | Full Docker build and run instructions |
