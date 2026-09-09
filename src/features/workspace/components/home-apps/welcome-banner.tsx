@@ -13,15 +13,12 @@ import {
 
 import { getGreeting } from "../../lib/task-utils";
 
-/** Roles/departments beyond this collapse into a "+N more" chip, so the banner
- *  keeps a fixed height however many a user accumulates. */
 const MAX_VISIBLE_BADGES = 3;
 
 function firstName(full?: string): string {
   return full?.trim().split(/\s+/)[0] ?? "";
 }
 
-/** Counts apps whose `lastAccess` falls inside the last 7 days. */
 function openedThisWeek(
   apps: { lastAccess?: string | null }[],
   now = new Date(),
@@ -38,12 +35,10 @@ function BadgeList({
   label,
   items,
   activeCode,
-  uppercase = false,
 }: {
   label: string;
   items: { code: string; name?: string }[];
   activeCode?: string;
-  uppercase?: boolean;
 }) {
   if (items.length === 0) return null;
 
@@ -51,8 +46,8 @@ function BadgeList({
   const overflow = items.length - visible.length;
 
   return (
-    <>
-      <span className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-ring">
+    <div className="flex items-center">
+      <span className="text-[10px] font-semibold uppercase">
         {label}
       </span>
       <div className="flex flex-wrap items-center gap-1.5">
@@ -61,9 +56,7 @@ function BadgeList({
           return (
             <span
               key={item.code}
-              className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                uppercase ? "uppercase tracking-wide" : ""
-              } ${
+              className={`rounded-full border px-2 py-0.5 text-xs ${
                 isActive
                   ? "border-primary-subtle bg-primary-subtle text-primary-subtle-foreground"
                   : "border-border bg-muted text-secondary-foreground"
@@ -80,7 +73,7 @@ function BadgeList({
           </span>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -92,7 +85,6 @@ export function WelcomeBanner() {
   const { data: apps = [] } = useCurrentUserApplications();
   const { data: recent = [] } = useGetCurrentUserRecentApplications();
 
-  // Resolved after mount so the server and client never disagree on the hour.
   const [greeting, setGreeting] = useState<string | null>(null);
   useEffect(() => {
     setGreeting(getGreeting());
@@ -103,29 +95,30 @@ export function WelcomeBanner() {
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 flex flex-col lg:flex-row lg:items-center gap-5">
-      <div className="flex-1 min-w-0 flex items-center gap-4">
+      <div className="flex-1 min-w-0 flex gap-4">
         <div className="relative shrink-0">
           <div className="size-13 rounded-full bg-primary-subtle flex items-center justify-center text-primary-subtle-foreground font-bold text-lg select-none">
             {(user?.name ?? "U").charAt(0).toUpperCase()}
           </div>
-          <span className="absolute bottom-px right-px size-3 rounded-full bg-success ring-2 ring-card" />
+          <span className="absolute inset-0 size-3 rounded-full bg-success ring-2 ring-card" />
         </div>
 
-        <div className="min-w-0 flex flex-col gap-2">
-          <h1 className="font-semibold text-[22px] tracking-tight text-foreground">
-            {/* No dangling comma before the name resolves. */}
+        <div className="min-w-0 flex flex-col">
+          <h1 className="font-semibold text-base tracking-tight text-foreground">
             {greeting ?? "Welcome"}
             {name ? `, ${name}` : ""}
           </h1>
 
-          <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-1.5">
+          <div className="grid items-center">
             <BadgeList
               label="Roles:"
               items={roles}
               activeCode={activeRole?.roleCode}
-              uppercase
             />
-            <BadgeList label="Departments:" items={departments} />
+            <BadgeList 
+              label="Departments:"
+              items={departments} 
+            />
           </div>
         </div>
       </div>
@@ -135,7 +128,7 @@ export function WelcomeBanner() {
           <span className="text-2xl font-semibold leading-none tracking-tight text-foreground">
             {apps.length}
           </span>
-          <span className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-ring">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-ring">
             Available to you
           </span>
         </div>
@@ -143,7 +136,7 @@ export function WelcomeBanner() {
           <span className="text-2xl font-semibold leading-none tracking-tight text-primary">
             {recentCount}
           </span>
-          <span className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-ring">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-ring">
             Opened this week
           </span>
         </div>
