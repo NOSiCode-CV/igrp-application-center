@@ -35,6 +35,8 @@ export default async function IGRPRootLayout({
         <IGRPLayoutFull
           config={config}
           headerSlots={{ search: <AppSearch commands={searchCommands} /> }}
+          showSidebar={false}
+          rootProviderClassName="p-0"
         >
           {children}
         </IGRPLayoutFull>

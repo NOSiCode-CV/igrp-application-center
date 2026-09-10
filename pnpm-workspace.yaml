@@ -1,3 +1,9 @@
 allowBuilds:
   msw: true
   sharp: true
+minimumReleaseAgeExclude:
+  - '@igrp/framework-next-ui@0.1.0-beta.167 || 0.1.0-beta.168'
+  - '@igrp/framework-next@0.1.0-beta.171 || 0.1.0-beta.172'
+  - '@igrp/igrp-framework-react-design-system@0.1.0-beta.145 || 0.1.0-beta.146'
+  - '@igrp/framework-next-auth@0.1.0-beta.146'
+  - '@igrp/framework-next-types@0.1.0-beta.149'
