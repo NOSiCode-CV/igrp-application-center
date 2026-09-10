@@ -1,11 +1,16 @@
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
 
-/** Absolute app root so Turbopack does not pick a parent `pnpm-lock.yaml` (e.g. on `D:\`). */
-const turbopackRoot = path.dirname(fileURLToPath(import.meta.url));
+const appDir = path.dirname(fileURLToPath(import.meta.url));
+const monorepoRoot = path.resolve(appDir, "../..");
+
+const turbopackRoot = existsSync(path.join(monorepoRoot, "pnpm-workspace.yaml"))
+  ? monorepoRoot
+  : appDir;
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 

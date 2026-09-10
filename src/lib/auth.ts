@@ -146,6 +146,11 @@ export async function serverSession() {
   try {
     const session = await auth.serverSession();
 
+    const sessionError =
+      session && typeof session === "object" && "error" in session
+        ? (session as { error?: unknown }).error
+        : undefined;
+
     // Dev-only diagnostics for the most common silent-failure modes:
     //  - session present but the JWT carries a `error` flag from `callbacks.jwt`
     //    (typical when the OIDC refresh token has expired or the issuer
@@ -154,21 +159,18 @@ export async function serverSession() {
     //  - session is null while a NextAuth cookie is present (cookie decode
     //    failed, NEXTAUTH_SECRET changed, or the cookie was issued by a
     //    different basePath/domain).
-    if (process.env.NODE_ENV !== "production") {
-      const sessionError =
-        session && typeof session === "object" && "error" in session
-          ? (session as { error?: unknown }).error
-          : undefined;
-      if (sessionError) {
-        console.warn(
-          "[serverSession] session present but carries error flag:",
-          sessionError,
-          "→ user will be treated as unauthenticated; check OIDC refresh token / issuer logs",
-        );
-      }
+    if (process.env.NODE_ENV !== "production" && sessionError) {
+      console.warn(
+        "[serverSession] session present but carries error flag:",
+        sessionError,
+        "→ user will be treated as unauthenticated; check OIDC refresh token / issuer logs",
+      );
     }
 
-    if (session !== null) {
+    // Skip seeding a token we already know is dead — it would only produce a
+    // guaranteed 401 on the next access-management call instead of letting the
+    // session-error redirect (onSessionExpired / IGRPSessionWatcher) run first.
+    if (session !== null && !sessionError) {
       igrpSetAccessClientConfig({
         token: session.accessToken as string,
         baseUrl: apiManagement,

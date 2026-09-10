@@ -5,42 +5,69 @@ import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 
 /**
- * Content-Security-Policy, shipped Report-Only.
+ * Content-Security-Policy-Report-Only baseline. Report-only never blocks a
+ * request — browsers only log violations to the console/report endpoint — so
+ * this ships with zero behavioral risk while surfacing what an eventual
+ * enforcing policy would need to allow.
  *
- * Report-Only means violations are reported but nothing is blocked, so this can
- * be tightened against real traffic before being enforced. `unsafe-inline` is
- * required by the inline bootstrap script and styles Next.js injects; moving to
- * nonces is the next step before switching this to the enforcing header.
+ * style-src allows 'unsafe-inline' deliberately and permanently: Radix (used
+ * throughout the design system for Popover/DropdownMenu/Tooltip/Select/
+ * HoverCard/ContextMenu) sets inline `style` attributes at runtime for
+ * floating-UI positioning, with no CSP nonce escape hatch — this is not
+ * fixable from application code.
+ *
+ * script-src intentionally does NOT allow 'unsafe-inline'. This WILL surface
+ * a real violation from next-themes' inline theme-boot script (no nonce
+ * wired today) — that's expected, not a bug in this policy. Silencing it
+ * properly means threading a nonce from here through IGRPThemeProvider into
+ * next-themes' `nonce` prop, a framework-next-ui change, not a header one.
  */
-const CSP_REPORT_ONLY = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  "connect-src 'self' https:",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-].join("; ");
+function buildCspReportOnly(): string {
+  const imageDomains = (process.env.NEXT_PUBLIC_ALLOWED_DOMAINS ?? "")
+    .split(",")
+    .map((domain) => domain.trim())
+    .filter(Boolean)
+    .flatMap((domain) => [`https://${domain}`, `http://${domain}`]);
 
-/**
- * Security headers applied to all responses in production.
- *
- * X-XSS-Protection is deliberately absent: the legacy XSS auditor it enabled
- * has been removed from every current browser, and sending it can reintroduce
- * vulnerabilities. CSP is the replacement.
- */
+  // form-action defaults to 'self' and would otherwise silently block the
+  // logout page's cross-origin POST to the IdP's end_session_endpoint.
+  let authIssuerOrigin = "";
+  try {
+    authIssuerOrigin = process.env.IGRP_AUTH_ISSUER
+      ? new URL(process.env.IGRP_AUTH_ISSUER).origin
+      : "";
+  } catch {
+    // Malformed IGRP_AUTH_ISSUER — omit rather than break header construction.
+  }
+
+  return [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    `img-src 'self' data:${imageDomains.length ? ` ${imageDomains.join(" ")}` : ""}`,
+    "font-src 'self'",
+    "connect-src 'self'",
+    `form-action 'self'${authIssuerOrigin ? ` ${authIssuerOrigin}` : ""}`,
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "object-src 'none'",
+  ].join("; ");
+}
+
+/** Security headers applied to all responses in production. */
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
+  "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy":
     "camera=(), microphone=(), geolocation=(), interest-cohort=()",
-  // Ignored by browsers over plain HTTP, so it is safe to set unconditionally.
-  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-  "Content-Security-Policy-Report-Only": CSP_REPORT_ONLY,
+  // Only meaningful when actually served over HTTPS, which every production
+  // deployment of this template is expected to be (behind a TLS-terminating
+  // proxy or directly). Safe to send unconditionally in the production gate
+  // below — browsers ignore it on plain HTTP.
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+  "Content-Security-Policy-Report-Only": buildCspReportOnly(),
 };
 
 function withSecurityHeaders(response: NextResponse): NextResponse {
@@ -62,7 +89,7 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-export function isPublicPath(pathname: string): boolean {
+function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -70,7 +97,7 @@ export function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-export function isAuthUiPath(pathname: string): boolean {
+function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );

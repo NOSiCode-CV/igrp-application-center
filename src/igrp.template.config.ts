@@ -11,6 +11,7 @@ import { IGRP_DEFAULT_MENU } from "@/temp/menus/menus";
 import { getMockMenus } from "@/temp/menus/use-mock-menus";
 import { getMockUser } from "@/temp/users/use-mock-user";
 
+import { getPermissions } from "./lib/config/get-permissions";
 import { getPackageJson } from "./lib/config/get-pkj";
 import { getRoutes } from "./lib/config/get-routes";
 import { getSessionArgs } from "./lib/config/get-session-args";
@@ -79,6 +80,9 @@ export function createConfig(
       syncOnCodeMenus: process.env.IGRP_SYNC_ON_CODE_MENUS === "true",
       syncOnCodeMenuRoles: process.env.IGRP_SYNC_ON_CODE_MENU_ROLES !== "false",
       onCodeMenus: IGRP_DEFAULT_MENU,
+      syncPermissions: process.env.IGRP_SYNC_PERMISSIONS === "true",
+
+      onCodePermissions: getPermissions(),
       appRoutes,
       paramMapBody,
     },

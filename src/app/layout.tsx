@@ -21,6 +21,8 @@ export const viewport: Viewport = {
   themeColor: IGRP_META_THEME_COLORS.light,
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
