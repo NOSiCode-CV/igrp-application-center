@@ -3,18 +3,17 @@
 import type { Route } from "next";
 import Link from "next/link";
 
-import { Badge, Separator } from "@igrp/igrp-framework-react-design-system";
+import { Badge } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { ExternalLink, Info, Star } from "lucide-react";
-
-import { getStatusColor, showStatus } from "@/lib/app-utilities";
+import { Info, Star } from "lucide-react";
 
 import {
   getAppHref,
   getAppTileColor,
   isExternalAppHref,
   isRecentlyAdded,
-} from "../../lib/app-utils";
+} from "@/features/workspace/lib/app-utils";
+import { getStatusColor, showStatus } from "@/lib/app-utilities";
 
 type Props = {
   app: ApplicationDTO;
@@ -22,7 +21,6 @@ type Props = {
   onToggleFavorite: (app: ApplicationDTO, isFavorite: boolean) => void;
   lastOpenedLabel?: string;
   description?: string;
-  /** Compact horizontal layout for the "Recently Accessed" row. */
   compact?: boolean;
 };
 
@@ -39,17 +37,12 @@ export function AppTileCard({
   const href = getAppHref(app);
   const isExternal = href ? isExternalAppHref(app, href) : false;
 
-  /**
-   * The glyph stays 16px so the control reads as light, but the target is 44px
-   * via the `after:` overlay — the old bare icon was a ~16px hit area on the
-   * most-used control in the catalogue.
-   */
   const star = (
     <button
       type="button"
       aria-label={isFavorite ? "Remove from favourites" : "Add to favourites"}
       aria-pressed={isFavorite}
-      className="relative z-10 shrink-0 text-muted-foreground/50 hover:text-warning-subtle-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm transition-colors after:absolute after:-inset-3.5 after:content-['']"
+      className="relative z-10 shrink-0 text-muted-foreground/50 hover:text-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm transition-colors after:absolute after:-inset-3.5 after:content-['']"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -58,11 +51,7 @@ export function AppTileCard({
     >
       <Star
         size={16}
-        className={
-          isFavorite
-            ? "fill-warning-subtle-foreground text-warning-subtle-foreground"
-            : ""
-        }
+        className={isFavorite ? "fill-warning text-warning" : ""}
       />
     </button>
   );
@@ -131,84 +120,76 @@ export function AppTileCard({
   }
 
   /**
-   * The name row owns its width: the star sits in the flex row and the status
-   * moved to the footer. Previously both were in an absolute overlay and the
-   * name had to be shimmed clear with `pr-16`/`pr-5`, which a longer status
-   * label overlapped anyway.
+   * The link is on the name, stretched over the whole card by an `after:`
+   * overlay — so hovering or clicking anywhere in the card opens the app, while
+   * the accessibility tree still sees ONE link named after the app rather than
+   * a card-sized anchor swallowing the favourite button. The star sits above
+   * the overlay on `z-10`, which is what keeps it clickable.
    */
-  const content = (
-    <>
-      <div className="flex items-center gap-3">
+  const linkedName = !href ? (
+    <span className={nameClass}>{app.name}</span>
+  ) : isExternal ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${nameClass} outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']`}
+    >
+      {app.name}
+    </a>
+  ) : (
+    <Link
+      href={href as Route}
+      className={`${nameClass} outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']`}
+    >
+      {app.name}
+    </Link>
+  );
+
+  return (
+    <div
+      className={`group relative rounded-xl border border-border bg-card p-4 transition-all flex flex-col gap-3 min-w-0 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-ring ${
+        href ? "hover:border-primary/50 hover:shadow-md" : ""
+      }`}
+    >
+      <div className="absolute top-4 right-4 z-10">{star}</div>
+
+      <div className="flex gap-3 pr-7">
         <div
           className={`flex items-center justify-center size-10 rounded-lg font-bold text-sm shrink-0 ${color.bg} ${color.text}`}
         >
           {initial}
         </div>
-        <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-          <span className={nameClass}>{app.name}</span>
+        <div className="flex flex-col gap-1 min-w-0 flex-1">
+          {linkedName}
           {lastOpenedLabel && (
             <span className="truncate text-xs text-muted-foreground">
               {lastOpenedLabel}
             </span>
           )}
+          {description && (
+            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed text-pretty">
+              {description}
+            </p>
+          )}
         </div>
       </div>
 
-      {description && (
-        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-          {description}
-        </p>
+      {/* Only rendered when it carries something — an always-present footer row
+          left every ordinary card with a strip of dead space under it. */}
+      {(statusBadge || !href) && (
+        <div className="flex items-center gap-2 mt-auto">
+          {statusBadge}
+          {!href && (
+            /* Without this the card looked identical to a working one but did
+               nothing when clicked. */
+            <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
+              <Info size={12} />
+              No launch URL
+            </span>
+          )}
+        </div>
       )}
-    </>
-  );
-
-  return (
-    <div
-      className={`group relative rounded-xl border border-border bg-card p-4 hover:shadow-md transition-all flex flex-col gap-3 min-w-0 ${
-        href ? "hover:border-primary/50" : ""
-      }`}
-    >
-      <div className="absolute top-4 right-4 z-10">{star}</div>
-
-      {href ? (
-        isExternal ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex flex-col gap-3 pr-7 outline-none"
-          >
-            {content}
-          </a>
-        ) : (
-          <Link
-            href={href as Route}
-            className="flex flex-col gap-3 pr-7 outline-none"
-          >
-            {content}
-          </Link>
-        )
-      ) : (
-        <div className="flex flex-col gap-3 pr-7">{content}</div>
-      )}
-
-      <Separator className="mt-auto" />
-      <div className="flex items-center justify-between gap-2">
-        {statusBadge ?? <span className="text-xs text-muted-foreground" />}
-        {href ? (
-          <span className="flex items-center gap-1 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-            Open
-            <ExternalLink size={12} />
-          </span>
-        ) : (
-          /* Previously this card rendered identically to a working one but with
-             no link, no cursor change and no explanation. */
-          <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-            <Info size={12} />
-            No launch URL
-          </span>
-        )}
-      </div>
     </div>
   );
 }

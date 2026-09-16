@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { Separator } from "@igrp/igrp-framework-react-design-system";
+
 import {
   useCurrentUser,
   useCurrentUserActiveRole,
@@ -96,11 +98,18 @@ export function WelcomeBanner() {
   return (
     <div className="rounded-xl border border-border bg-card p-5 flex flex-col lg:flex-row lg:items-center gap-5">
       <div className="flex-1 min-w-0 flex gap-4">
-        <div className="relative shrink-0">
+        {/* `self-start` is load-bearing: as a stretched flex item this wrapper
+            grew to the full height of the name+badges column, so the absolutely
+            positioned presence badge below anchored to THAT box and floated off
+            the avatar. Sized to the avatar, it anchors to the avatar. */}
+        <div className="relative shrink-0 self-start">
           <div className="size-13 rounded-full bg-primary-subtle flex items-center justify-center text-primary-subtle-foreground font-bold text-lg select-none">
             {(user?.name ?? "U").charAt(0).toUpperCase()}
           </div>
-          <span className="absolute inset-0 size-3 rounded-full bg-success ring-2 ring-card" />
+          {/* Presence badge: tucked just inside the avatar's bottom-right edge,
+              so it reads as part of the avatar rather than as a loose dot
+              beside it. The card-coloured ring separates it from the fill. */}
+          <span className="absolute bottom-0.5 end-0.5 size-3 rounded-full bg-success ring-2 ring-card" />
         </div>
 
         <div className="min-w-0 flex flex-col">
@@ -120,7 +129,9 @@ export function WelcomeBanner() {
         </div>
       </div>
 
-      <div className="flex shrink-0 flex-wrap items-center gap-x-7 gap-y-3 lg:border-l lg:border-border lg:pl-6">
+      <Separator className="shrink-0 lg:hidden" />
+
+      <div className="flex shrink-0 flex-wrap items-center gap-x-10 gap-y-4 lg:gap-x-7 lg:border-l lg:border-border lg:pl-6">
         <div className="flex flex-col gap-1">
           <span className="text-2xl font-semibold leading-none tracking-tight text-foreground">
             {apps.length}

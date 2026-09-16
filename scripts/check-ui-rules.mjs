@@ -12,6 +12,9 @@ const COLOR_NAMES =
  * @property {"strict"|"advisory"} level
  * @property {string} message
  * @property {() => RegExp} pattern
+ * @property {string[]} [exemptPathPrefixes] Path prefixes this rule does not
+ *   apply to, forward-slashed. Keep this list short and justified — it is for
+ *   vendored code we do not author, not for app code we would rather not fix.
  */
 
 /** @type {Rule[]} */
@@ -52,6 +55,13 @@ export const RULES = [
     message:
       "Remove manual dark: color overrides — semantic tokens handle dark mode.",
     pattern: () => /\bdark:(?:bg|text|border|fill|ring)-[^\s"']+/g,
+    // `src/components/ui/` holds primitives emitted verbatim by the shadcn CLI
+    // (`shadcn add`). Their few `dark:` classes are semantic tokens carrying a
+    // dark-mode ALPHA delta (`bg-destructive/10` → `dark:bg-destructive/20`),
+    // not raw palette overrides — a translucent tint needs more opacity on a
+    // dark surface, and no token flip expresses that. Rewriting them would
+    // drift from upstream and be undone by the next `shadcn add`.
+    exemptPathPrefixes: ["src/components/ui/"],
   },
   {
     id: "use-separator",
@@ -72,15 +82,30 @@ export const RULES = [
  */
 
 /**
+ * @param {Rule} rule
+ * @param {string} filePath
+ * @returns {boolean}
+ */
+function isExempt(rule, filePath) {
+  if (!rule.exemptPathPrefixes) return false;
+  const normalized = filePath.replace(/\\/g, "/");
+  return rule.exemptPathPrefixes.some((prefix) =>
+    normalized.startsWith(prefix),
+  );
+}
+
+/**
  * @param {string} content
+ * @param {string} [filePath] Repo-relative path, used for per-rule exemptions.
  * @returns {Violation[]}
  */
-export function scanContent(content) {
+export function scanContent(content, filePath = "") {
   /** @type {Violation[]} */
   const out = [];
   const lines = content.split("\n");
   lines.forEach((line, i) => {
     for (const rule of RULES) {
+      if (isExempt(rule, filePath)) continue;
       const re = rule.pattern();
       let m = re.exec(line);
       while (m !== null) {
@@ -126,7 +151,7 @@ function main() {
   let strictCount = 0;
   let advisoryCount = 0;
   for (const file of files) {
-    const violations = scanContent(readFileSync(file, "utf8"));
+    const violations = scanContent(readFileSync(file, "utf8"), file);
     if (violations.length === 0) continue;
     console.log(formatViolations(violations, file));
     strictCount += violations.filter((v) => v.level === "strict").length;

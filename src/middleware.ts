@@ -54,11 +54,17 @@ function buildCspReportOnly(): string {
   ].join("; ");
 }
 
-/** Security headers applied to all responses in production. */
+/**
+ * Security headers applied to all responses in production.
+ *
+ * X-XSS-Protection is deliberately absent: the legacy XSS auditor it enabled
+ * has been removed from every current browser, and sending it can reintroduce
+ * vulnerabilities. CSP is the replacement. (Dropped in c9973f0, re-added by
+ * accident in ebc0e15 — `middleware.test.ts` asserts its absence.)
+ */
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
-  "X-XSS-Protection": "1; mode=block",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy":
     "camera=(), microphone=(), geolocation=(), interest-cohort=()",
@@ -89,7 +95,11 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-function isPublicPath(pathname: string): boolean {
+// isPublicPath/isAuthUiPath are exported for `src/__tests__/middleware/
+// path-predicates.test.ts` — the routing table they encode is worth covering
+// directly. Keep the exports when editing this file; they have been dropped
+// twice by unrelated rewrites (4846f4d, ebc0e15), breaking typecheck each time.
+export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -97,7 +107,7 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-function isAuthUiPath(pathname: string): boolean {
+export function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );

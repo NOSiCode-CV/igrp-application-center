@@ -296,6 +296,17 @@
   display: none; /* WebKit (Chrome, Safari, Edge) */
 }
 
+/* Scroll without a visible scrollbar. Only for rails that expose their own
+ * affordances (the Recently accessed prev/next buttons) — wheel, trackpad,
+ * touch and keyboard scrolling all still work, so nothing becomes unreachable. */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 /* Hide the document-level scrollbar globally. Scrolling still works on
  * routes that need it (settings, profile) — only the visible scrollbar
  * is removed. Required so the home launcher reads as fully scroll-free. */

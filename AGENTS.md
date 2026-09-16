@@ -112,7 +112,7 @@ Before substantial UI/auth work, consult the in-repo skills (under `.claude/skil
 - `optimizePackageImports` is set for the IGRP framework packages and React Query — keep imports tree-shakable (named imports, no deep default imports into those packages).
 - `output: "standalone"` — Dockerfile builds rely on this; don't change without updating the Dockerfile.
 - CI gate: merge-request pipelines run two jobs in the `validate` stage before build (see [.gitlab-ci.yml](.gitlab-ci.yml)): `check-ui` (`pnpm check:ui`) is **blocking**, and `validate` (`pnpm lint`, `pnpm typecheck`, `pnpm test`) is **advisory** (`allow_failure: true`) until the pre-existing lint/typecheck/test debt is cleared, after which it can be made blocking too.
-- `pnpm check:ui` ([scripts/check-ui-rules.mjs](scripts/check-ui-rules.mjs)) enforces shadcn Critical Rules on `src/**/*.tsx` and **blocks merges**. **Strict** (fail): `space-x/y-*`, raw color literals, `animate-pulse`, manual `dark:` color overrides, `<hr>`/`border-t` dividers. **Advisory** (report only): equal `w-N h-N` → `size-N`.
+- `pnpm check:ui` ([scripts/check-ui-rules.mjs](scripts/check-ui-rules.mjs)) enforces shadcn Critical Rules on `src/**/*.tsx` and **blocks merges**. **Strict** (fail): `space-x/y-*`, raw color literals, `animate-pulse`, manual `dark:` color overrides, `<hr>`/`border-t` dividers. **Advisory** (report only): equal `w-N h-N` → `size-N`. One scoped carve-out: `no-dark-color` does not apply to `src/components/ui/`, which holds primitives emitted verbatim by the shadcn CLI — their `dark:` classes are semantic tokens with an alpha delta, and hand-edits there would be undone by the next `shadcn add`. Add exemptions only for vendored code, via `exemptPathPrefixes` on the rule.
 
 ## Maintenance
 

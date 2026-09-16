@@ -60,6 +60,23 @@ describe("scanContent", () => {
     expect(v.some((x) => x.ruleId === "no-dark-color")).toBe(true);
   });
 
+  it("exempts vendored shadcn primitives from no-dark-color only", () => {
+    const line = '<div className="bg-destructive/10 dark:bg-destructive/20" />';
+    expect(scanContent(line, "src/components/ui/button.tsx")).toHaveLength(0);
+    // Windows paths reach the scanner back-slashed.
+    expect(
+      scanContent(line, String.raw`src\components\ui\button.tsx`),
+    ).toHaveLength(0);
+    // The exemption is scoped to that one rule and that one directory.
+    expect(
+      scanContent(
+        '<div className="space-y-4" />',
+        "src/components/ui/card.tsx",
+      ),
+    ).toHaveLength(1);
+    expect(scanContent(line, "src/features/users/thing.tsx")).toHaveLength(1);
+  });
+
   it("flags <hr> as strict", () => {
     const v = scanContent("<hr />");
     expect(v[0]).toMatchObject({ ruleId: "use-separator", level: "strict" });
