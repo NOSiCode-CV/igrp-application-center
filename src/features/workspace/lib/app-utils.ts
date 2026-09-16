@@ -32,43 +32,47 @@ export function getAppTileColor(code: string): AppTileColor {
   return TILE_COLORS[hash % TILE_COLORS.length];
 }
 
-/** Formats an ISO `lastAccess` timestamp as "Opened <relative time>". */
+/** Formats an ISO `lastAccess` timestamp as "Aberta <tempo relativo>". */
 export function getLastOpenedLabel(
   lastAccess: string | null | undefined,
   now = new Date(),
 ): string {
-  if (!lastAccess) return "Opened recently";
+  if (!lastAccess) return "Aberta recentemente";
 
   const date = new Date(lastAccess);
-  if (Number.isNaN(date.getTime())) return "Opened recently";
+  if (Number.isNaN(date.getTime())) return "Aberta recentemente";
 
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60_000);
 
-  if (diffMins < 1) return "Opened just now";
+  if (diffMins < 1) return "Aberta agora mesmo";
   if (diffMins < 60) {
-    return `Opened ${diffMins} minute${diffMins !== 1 ? "s" : ""} ago`;
+    return `Aberta há ${diffMins} minuto${diffMins !== 1 ? "s" : ""}`;
   }
 
   const diffHours = Math.floor(diffMins / 60);
   if (diffHours < 24) {
-    return `Opened ${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+    return `Aberta há ${diffHours} hora${diffHours !== 1 ? "s" : ""}`;
   }
 
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) return "Opened yesterday";
+  if (diffDays === 1) return "Aberta ontem";
   if (diffDays < 7) {
-    return `Opened ${date.toLocaleDateString("en-US", { weekday: "long" })}`;
+    return `Aberta ${date.toLocaleDateString("pt-PT", { weekday: "long" })}`;
   }
 
   const diffWeeks = Math.floor(diffDays / 7);
-  return `Opened ${diffWeeks} week${diffWeeks !== 1 ? "s" : ""} ago`;
+  return `Aberta há ${diffWeeks} semana${diffWeeks !== 1 ? "s" : ""}`;
 }
 
 /** Resolves the launch URL for an app card. Mirrors the legacy home launcher's logic. */
 export function getAppHref(app: ApplicationDTO): string {
   if (app.code === "APP_IGRP_CENTER") return "/applications";
-  return app.url ?? app.slug ?? "";
+  if (app.url) return app.url;
+  if (!app.slug) return "";
+  // A bare slug ("payroll") resolves relative to whatever route the user is
+  // on, so it 404s somewhere unrelated. Anchor it to the root.
+  return app.slug.startsWith("/") ? app.slug : `/${app.slug}`;
 }
 
 export function isExternalAppHref(app: ApplicationDTO, href: string): boolean {

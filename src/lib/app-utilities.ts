@@ -89,7 +89,10 @@ export function formatDate(dateString: string) {
 
 export function showStatus(status: string) {
   if (status == null || status === undefined) return null;
-  return STATUS_OPTIONS.find((s) => s.value === status)?.label;
+  // STATUS_OPTIONS only maps ACTIVE/INACTIVE. Anything else (PENDING,
+  // DELETED, …) used to fall through as `undefined`, which rendered as a
+  // coloured pill with no text at all. The raw code is ugly but it is true.
+  return STATUS_OPTIONS.find((s) => s.value === status)?.label ?? status;
 }
 
 export const getMenuIcon = (type: string) => {

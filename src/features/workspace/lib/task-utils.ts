@@ -2,9 +2,9 @@ import type { Task } from "../types";
 
 export function getGreeting(now = new Date()): string {
   const h = now.getHours();
-  if (h < 12) return "Good morning";
-  if (h < 19) return "Good afternoon";
-  return "Good evening";
+  if (h < 12) return "Bom dia";
+  if (h < 19) return "Boa tarde";
+  return "Boa noite";
 }
 
 export type DueDateResult = {

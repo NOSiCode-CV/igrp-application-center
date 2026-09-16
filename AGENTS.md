@@ -1,143 +1,89 @@
-# AI Reference
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Working agreement for coding agents in `@igrp/applications-center` — a Next.js 15 / React 19 App Router portal for managing applications, users, roles, permissions, departments, and menus against the IGRP Platform Access Management API.
 
-## Commands
+Read this file first, then follow the pointers below into `docs/` for the area you are touching.
 
-Package manager: **pnpm** (Node >= 22).
+## Gates
 
-- `pnpm dev` — Next.js dev server with Turbopack.
-- `pnpm build` — runs `pnpm format` then `next build --turbopack`.
-- `pnpm start` — start production server.
-- `pnpm lint` — `biome check --write` (lint + autofix + organize imports).
-- `pnpm format` — `biome format --write`.
-- `pnpm clean-all` — remove `node_modules` and `.next`.
-- `pnpm release` — `pnpm i && pnpm build && pnpm start`.
-- `pnpm test` — run tests with Vitest (single run).
-- `pnpm test:watch` — run tests in watch mode.
+Run before claiming work is done. `pnpm` only (Node >= 22); the full script list is in `package.json`.
 
-## Architecture
+| Command | Why it matters |
+| --- | --- |
+| `pnpm check:ui` | **Blocks merges.** Enforces the design-system rules below on `src/**/*.tsx`. |
+| `pnpm typecheck` | `typedRoutes` + `typedEnv` are on, so route strings and env reads are type-checked. |
+| `pnpm test` | Vitest, single run. |
+| `pnpm lint` | `biome check --write` — **mutates files**. Run it before staging, then re-check your diff. |
 
-**Next.js 15 + React 19 App Router** application (`@igrp/applications-center`) acting as the IGRP Applications Center — a portal for managing applications, users, roles, permissions, departments, and menus against the IGRP Platform Access Management API.
+CI ([.gitlab-ci.yml](.gitlab-ci.yml)) runs `check-ui` as blocking and a `validate` job (`lint`, `typecheck`, `test`) as advisory (`allow_failure: true`) while pre-existing debt is cleared. Advisory is not permission to add debt — leave `validate` no worse than you found it.
 
-### Auth (central piece)
+## Architecture pointers
 
-All auth flows through `@igrp/framework-next-auth`, wrapping NextAuth v4.
+Each doc is the single source of truth for its area; this file does not restate them.
 
-- [src/lib/auth.ts](src/lib/auth.ts) exports a single `auth = withIGRPAuth(...)` instance. The auth provider is resolved from the `AUTH_PROVIDER` env var (`igrp-auth` / `keycloak` / `autentika` / `none`). `serverSession()` both returns the session and configures the IGRP access client (`igrpSetAccessClientConfig`) with the access token + `IGRP_ACCESS_MANAGEMENT_API` base URL — server actions and server components that call the access-management SDK depend on this side effect.
-- [src/app/api/auth/[...nextauth]/route.ts](src/app/api/auth) exports `auth.GET/POST` as the NextAuth route handler.
-- [src/middleware.ts](src/middleware.ts) calls `auth.isAuthDisabled()` and `auth.isPreviewMode()` directly to short-circuit when auth is off (the middleware uses these primitives; `getSession()` uses the combined `isAuthBypass()` predicate instead). For authenticated paths it calls `auth.getTokenFromRequest(request)` + `auth.isTokenExpiredOrFailed(token)` and redirects to login on failure. Security headers (`X-Content-Type-Options`, `X-Frame-Options`, etc.) are injected in production. The middleware `config` is delegated: `export const { config } = auth`.
-- Auth bypass (`isAuthBypass()` in `src/lib/utils.ts`) returns `true` when `IGRP_PREVIEW_MODE=true` OR `AUTH_PROVIDER=none`. `getSession()` returns null in this case — keep this path working when touching auth.
+| Read | When |
+| --- | --- |
+| [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) | Orienting in the codebase, or unsure which doc applies. Start here. |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Touching the request lifecycle: middleware, layouts, providers, server actions. |
+| [docs/AUTHENTICATION.md](docs/AUTHENTICATION.md) | Touching login, logout, sessions, tokens, middleware redirects, or preview/bypass mode. |
+| [docs/PERMISSIONS.md](docs/PERMISSIONS.md) | Gating a page, component, or menu by permission. |
+| [docs/ACCESS_MANAGEMENT.md](docs/ACCESS_MANAGEMENT.md) | Touching the `IGRP_SYNC_*` sync of applications, routes, or on-code menus. |
+| [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Building or changing any UI — component inventory and copy-pasteable patterns. |
+| [docs/TOKENS.md](docs/TOKENS.md) | Choosing colors, spacing, or theming; adding a theme. |
+| [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) | Adding or reading an env var. Values are documented inline in [.env.example](.env.example). |
+| [docs/HOME_FLOW.md](docs/HOME_FLOW.md) | Working on `(home)` — the app launcher, task workspace, or `/settings` screens. |
+| [docs/MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) | Upgrading the IGRP framework packages. |
+| [docs/BUSINESS_GUIDE.en.md](docs/BUSINESS_GUIDE.en.md) | Needing the user-facing meaning of a screen or concept. |
 
-### Route groups
+## Where code goes
 
-- `src/app/(auth)` — `/login`, `/logout`. Public.
-- `src/app/(igrp)` — authenticated app shell (layout, error, loading). Contains:
-  - `(home)` — dashboard, `/profile`, `/settings` (applications, departments, users, users/[id])
-  - `(app-center)` — application center features
-  - `(generated)` — reserved, empty (`.gitkeep`)
-  - `/invite` — invite pending and invite-error pages (authenticated)
-- `src/app/(invite)` — `/invite/accept` — public invite acceptance flow (outside the authenticated shell).
-- `src/app/(my-app)` — reserved for per-app subroutes (see the matcher's `apps` exclusion — subdomain-style apps are mounted outside the middleware-protected tree).
-- `src/app/api/{auth,health}`.
+- `src/app/` — routes only. `(auth)` public login/logout · `(igrp)` authenticated shell, containing `(home)` (dashboard, `/profile`, `/settings/*`) and `(generated)` (reserved for iGRP Studio output — hand-edits get overwritten) · `(invite)` public invite acceptance · `(my-app)` reserved for per-app subroutes mounted outside the middleware-protected tree · `api/{auth,health}`.
+- `src/features/<domain>/` — the unit of organization (`applications`, `departments`, `files`, `menus`, `permissions`, `profile`, `roles`, `settings`, `users`, `workspace`). A full domain carries `*-schemas.ts` (Zod v4, the source of truth for both form and API shapes), `use-<domain>.ts` (React Query hooks over server actions), `query-keys.ts` / `query-options.ts` / `prefetch.ts`, and `components/`. Thin domains share another's hooks (`profile` reuses `use-users.ts`) or are component-only; match the neighbours in the domain you are editing rather than forcing the full set.
+- `src/actions/` — server actions, one file per resource, plus `src/actions/igrp/` for framework integration. They call `@igrp/platform-access-management-client-ts`, which is configured as a side effect of `serverSession()` — reach auth before the SDK call or it runs unconfigured.
+- `src/lib/` — cross-cutting helpers. [dal.ts](src/lib/dal.ts) (`verifySession()`, request-scoped via React `cache`) is how pages assert auth; [auth.ts](src/lib/auth.ts) holds the single `withIGRPAuth` instance; [utilities.ts](src/lib/utilities.ts) holds `isAuthBypass()` and `sanitizeCallbackUrl()`; [utils.ts](src/lib/utils.ts) is only shadcn's `cn`.
+- `src/components/` — shared UI. `src/components/ui/` is emitted verbatim by the shadcn CLI; let `shadcn add` own it.
+- Aliases: `@/*` → `./src/*`, `@igrp/template-config` → `./src/igrp.template.config.ts`.
 
-`typedRoutes: true` is enabled in [next.config.ts](next.config.ts) — route strings are type-checked; don't hand-build hrefs that bypass this.
+Preserve the auth-bypass path when touching anything above: `isAuthBypass()` is true when `IGRP_PREVIEW_MODE=true` or `AUTH_PROVIDER=none`, and the app must still render.
 
-### Feature modules
+## UI — the IGRP design system
 
-`src/features/<domain>/` is the unit of organization (applications, departments, files, menus, permissions, profile, roles, users). Each typically contains:
+**Load-bearing.** `@igrp/igrp-framework-react-design-system` is a shadcn-based design system, not a separate kit. It ships `primitives/` (vanilla shadcn over Radix), `horizon/` (IGRP-branded wrappers), and `custom/` (composites) — so the `shadcn` skill's Critical Rules govern all UI here.
 
-- `*-schemas.ts` — Zod schemas (Zod v4). Schemas are the source of truth for form + API shapes.
-- `use-<domain>.ts` — React Query hooks wrapping server actions.
-- `components/` — feature UI.
-- Optional `*-utils.ts` / `*-mapper.ts` / `*-constants.ts`.
+- Import UI from `@igrp/igrp-framework-react-design-system` (published package; there is no local design-system folder). Take tokens from its `/tokens` entry via `src/styles/globals.css`, never from a prebuilt `*/styles.css`.
+- Reach for a **Horizon** component first (`IGRPButton`, `IGRPInputText`, `IGRPForm`, `IGRPFormField`, `IGRPDataTable`, `IGRPCard`, `IGRPModalDialog`, …), then a primitive, and only compose your own when neither exists.
+- Use `Skeleton` for loading, `Badge` and semantic tokens for color, `gap-*` for spacing, `size-N` for equal dimensions, `Field`/`FieldGroup` for form layout, `Separator` for dividers.
 
-`menus`, `permissions`, `profile`, and `settings` are intentionally component-only or share another domain's hooks (e.g. `profile` reuses `use-users.ts`); they have no `use-<domain>.ts` by design, so the convention list is not expected to be uniform across all domains.
+[scripts/check-ui-rules.mjs](scripts/check-ui-rules.mjs) enforces the strict half of that on merge: `space-x/y-*`, raw color literals, `animate-pulse`, manual `dark:` color overrides, and `<hr>`/`border-t` dividers all fail; `w-N h-N` → `size-N` is reported only. One carve-out — `no-dark-color` skips `src/components/ui/`, whose `dark:` classes are semantic tokens with an alpha delta that the next `shadcn add` would restore anyway. Widen exemptions only for vendored code, via `exemptPathPrefixes` on the rule.
 
-Server actions live in `src/actions/` (one file per resource, plus `src/actions/igrp/` for framework integration actions like layout). Actions call the `@igrp/platform-access-management-client-ts` SDK; the SDK is configured by `serverSession()` so calling `serverSession()` (or otherwise ensuring auth) before SDK calls is required.
-
-### UI — use the IGRP design system
-
-**This is load-bearing.** See [AGENTS.md](AGENTS.md) and [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) for the full rule. Summary:
-
-- `@igrp/igrp-framework-react-design-system` **is a shadcn-based design system, not a separate UI kit.** It ships three layers under `dist/components/`: `primitives/` = vanilla shadcn components (built on Radix + class-variance-authority + tailwind-merge/clsx + cmdk + sonner + vaul + lucide-react), `horizon/` = IGRP-branded wrappers, `custom/` = composites. Because it is shadcn underneath, the **shadcn skill's Critical Rules apply directly** to all UI in this repo.
-- All UI imports from `@igrp/igrp-framework-react-design-system` (published package — there is no local design-system folder).
-- Prefer **Horizon** components (`IGRPButton`, `IGRPInputText`, `IGRPForm`, `IGRPFormField`, `IGRPDataTable`, `IGRPCard`, `IGRPModalDialog`, etc.) before primitives.
-- Do not introduce other UI kits or hand-roll components when a Horizon component exists.
-- Follow shadcn conventions: `Skeleton` (never custom `animate-pulse`), `Badge`/semantic tokens (never raw `bg-emerald-600` or manual `dark:` color overrides), `gap-*` (never `space-x/y-*`), `size-N` (never `w-N h-N`), `Field`/`FieldGroup` for form layout, `Separator` (never `<hr>`).
-- Tokens come from `@igrp/igrp-framework-react-design-system/tokens` via `src/styles/globals.css`. Do not import prebuilt `*/styles.css` files.
-- Tailwind v4 via `@tailwindcss/postcss`.
-
-Before substantial UI/auth work, consult the in-repo skills (under `.claude/skills/`):
+Consult the in-repo skills under [.claude/skills/](.claude/skills) (mirrored in `.agents/skills/`, pinned in [skills-lock.json](skills-lock.json)) before substantial work:
 
 | Skill | Use when |
 | --- | --- |
-| `frontend-design` | General frontend/UX design guidance |
-| `next-best-practices` | Next.js 15 / App Router patterns, RSC vs client boundaries, caching |
-| `vercel-react-best-practices` | React 19 / Next.js performance and rendering patterns |
-| `vercel-composition-patterns` | Component-API and composition refactors |
-| `tanstack-query` | TanStack Query patterns — use when writing `use-<domain>.ts` hooks or server-state data fetching |
-| `tanstack-table` | TanStack Table patterns — use when building `IGRPDataTable` columns or custom table logic |
-| `shadcn` | **Applies directly** — the IGRP design system is shadcn-based (primitives + Horizon wrappers), so the shadcn Critical Rules govern all UI here |
-| `web-design-guidelines` | General web design guidelines and principles |
+| `shadcn` | Any UI work — its Critical Rules are this repo's UI rules. |
+| `frontend-design` | Shaping a new surface or its visual direction. |
+| `impeccable` | Auditing or polishing an existing surface. |
+| `web-design-guidelines` | Checking accessibility, responsiveness, and interaction defaults. |
+| `tanstack-query` | Writing `use-<domain>.ts` hooks, query keys, prefetch, or invalidation. |
+| `tanstack-table` | Building `IGRPDataTable` columns or custom table logic. |
+| `vercel-react-best-practices` | Tuning React 19 / Next.js rendering and performance. |
+| `vercel-composition-patterns` | Refactoring a component API or composition. |
+| `grill-me` | Stress-testing a plan before committing to it. |
 
-### Data layer
+## Data and errors
 
-- Server: server actions in `src/actions/` → `@igrp/platform-access-management-client-ts`.
-- Client: `@tanstack/react-query` via `use-<domain>.ts` hooks.
-- Forms: `react-hook-form` + `@hookform/resolvers` + Zod schemas from the feature's `*-schemas.ts`. IGRP `IGRPForm` wires these together.
-- Error handling: throw to the route `error.tsx` only for **page-critical** data (the primary query a page exists to show); use `InlineError`/`Alert` + retry for **supplementary** data (e.g. dashboard favorites/recent) so one non-essential failure doesn't blank the page.
+- Server → `src/actions/` → `@igrp/platform-access-management-client-ts`. Client → `@tanstack/react-query` via `use-<domain>.ts`.
+- Forms → `react-hook-form` + `@hookform/resolvers` over the feature's Zod schema, wired by `IGRPForm`.
+- Error routing splits on whether the page can exist without the data: throw to the route `error.tsx` for **page-critical** data (the primary query the page exists to show), and render `InlineError`/`Alert` with retry for **supplementary** data (dashboard favorites, recents) so one non-essential failure leaves the page standing.
 
-### Path aliases
+## Conventions and gotchas
 
-- `@/*` → `./src/*`
-- `@igrp/template-config` → `./src/igrp.template.config.ts`
-
-## Key environment variables
-
-(See `.env.igrp.example`.)
-
-- `AUTH_PROVIDER` — `igrp-auth` | `keycloak` | `autentika` | `none` (chooses NextAuth provider in `withIGRPAuth`).
-- `NEXTAUTH_SECRET` — required in production; `serverSession()` warns in dev and throws in prod if missing.
-- `NEXTAUTH_URL_INTERNAL` — internal URL used for redirects (middleware refresh-error redirect).
-- `IGRP_ACCESS_MANAGEMENT_API` — base URL for the platform access-management API.
-- `NEXT_PUBLIC_BASE_PATH` — Next `basePath`.
-- `NEXT_PUBLIC_ALLOWED_DOMAINS` — comma-separated hostnames added to `images.remotePatterns`.
-
-## Conventions
-
-- **Commit messages must not include any `Co-Authored-By:` trailer with an AI model name or Anthropic email** (e.g. `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`). Strip these before committing.
-- Formatter/linter: Biome 2.4.15 (2-space indent). `pnpm lint` is the gate.
-- Test runner: Vitest ^4.1.6 with `@testing-library/react`. Run with `pnpm test`. Tests live alongside features.
-- `optimizePackageImports` is set for the IGRP framework packages and React Query — keep imports tree-shakable (named imports, no deep default imports into those packages).
-- `output: "standalone"` — Dockerfile builds rely on this; don't change without updating the Dockerfile.
-- CI gate: merge-request pipelines run two jobs in the `validate` stage before build (see [.gitlab-ci.yml](.gitlab-ci.yml)): `check-ui` (`pnpm check:ui`) is **blocking**, and `validate` (`pnpm lint`, `pnpm typecheck`, `pnpm test`) is **advisory** (`allow_failure: true`) until the pre-existing lint/typecheck/test debt is cleared, after which it can be made blocking too.
-- `pnpm check:ui` ([scripts/check-ui-rules.mjs](scripts/check-ui-rules.mjs)) enforces shadcn Critical Rules on `src/**/*.tsx` and **blocks merges**. **Strict** (fail): `space-x/y-*`, raw color literals, `animate-pulse`, manual `dark:` color overrides, `<hr>`/`border-t` dividers. **Advisory** (report only): equal `w-N h-N` → `size-N`. One scoped carve-out: `no-dark-color` does not apply to `src/components/ui/`, which holds primitives emitted verbatim by the shadcn CLI — their `dark:` classes are semantic tokens with an alpha delta, and hand-edits there would be undone by the next `shadcn add`. Add exemptions only for vendored code, via `exemptPathPrefixes` on the rule.
-
-## Maintenance
-
-These rules define when each documentation file must be updated. They exist here so both humans and AI have a single place to check.
-
-**Update `README.md` when:**
-- Adding or removing environment variables
-- Changing `pnpm` scripts
-- Adding new top-level directories under `src/`
-
-**Update `AGENTS.md` when:**
-- Auth flow changes (providers, middleware logic, session helpers)
-- New feature modules added under `src/features/`
-- New route groups added under `src/app/`
-- SDK or data-fetching patterns change
-- New skills added to `.claude/skills/`
-- Biome, Vitest, or other tooling versions change
-
-**Update `docs/DESIGN_SYSTEM.md` when:**
-- New Horizon components are available or usage patterns change
-
-**Update `docs/TOKENS.md` when:**
-- Token definitions or theme override patterns change
-
-**Update `docs/DOCKER-RUN.md` when:**
-- Docker build or run instructions change
-
-**Content boundary rule:** README describes *what exists* (shallow). AGENTS.md describes *how it works* (deep). When adding an env var: README gets a table row (name + one-line description); AGENTS.md gets the behavioral explanation.
+- Tests live in `src/__tests__/<domain>/`, mirroring the feature tree; a few pure-logic tests sit beside their module (`src/features/*/lib/*.test.ts`). Follow whichever pattern the module you are testing already uses.
+- [vitest.config.ts](vitest.config.ts) inlines `@igrp/*` deps (they ship extensionless ESM imports Node's resolver rejects) and aliases `server-only` to a stub in `src/test-stubs/`. A new test importing a server module needs neither change — it is already handled.
+- `optimizePackageImports` covers the IGRP, TanStack, `radix-ui`, `lucide-react`, and `shadcn` packages: keep named imports so they stay tree-shakable.
+- `output: "standalone"` is what the [Dockerfile](Dockerfile) builds against — change one and change both.
+- `next/image` hosts come from `NEXT_PUBLIC_IGRP_MINIO_URL` plus comma-separated `NEXT_PUBLIC_ALLOWED_DOMAINS`; an image from anywhere else fails at runtime, not at build.
+- Biome (2-space indent) is the only formatter; `.editorconfig` and `biome.json` carry the settings.
+- `src/temp/` holds scratch fixtures, not shipped code. Leave it out of imports.
+- Commit messages carry no `Co-Authored-By:` trailer naming an AI model or an Anthropic email. Strip any such line before committing.
+- [CLAUDE.md](CLAUDE.md) is a one-line pointer to this file — keep the guidance here.

@@ -1,17 +1,25 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  IGRPButton,
   IGRPDropdownMenu,
   IGRPDropdownMenuContent,
   IGRPDropdownMenuRadioGroup,
   IGRPDropdownMenuRadioItem,
   IGRPDropdownMenuTrigger,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  Toggle,
+  ToggleGroup,
+  ToggleGroupItem,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { ChevronDown, LayoutGrid, List, Search, Star } from "lucide-react";
 
+import { InlineError } from "@/components/inline-error";
 import {
   useAddCurrentUserFavoriteApplication,
   useCurrentUserApplications,
@@ -26,10 +34,10 @@ type ViewMode = "grid" | "list";
 type SortBy = "default" | "recent" | "name-asc" | "name-desc";
 
 const SORT_LABELS: Record<SortBy, string> = {
-  default: "Sort: Recommended",
-  recent: "Sort: Recently Visited",
-  "name-asc": "Sort: Name (A–Z)",
-  "name-desc": "Sort: Name (Z–A)",
+  default: "Ordenar: Predefinido",
+  recent: "Ordenar: Visitadas recentemente",
+  "name-asc": "Ordenar: Nome (A–Z)",
+  "name-desc": "Ordenar: Nome (Z–A)",
 };
 
 export function AppCatalog() {
@@ -37,8 +45,46 @@ export function AppCatalog() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [sortBy, setSortBy] = useState<SortBy>("default");
+  const searchRef = useRef<HTMLInputElement>(null);
 
-  const { data: apps = [] } = useCurrentUserApplications();
+  /**
+   * `/` jumps to the search box — the catalogue is the page's subject and
+   * search is its primary path, but reaching the field otherwise means the
+   * mouse or ~10 tab stops past the banner and the recents rail.
+   *
+   * Not ⌘K: the framework's own command search already owns that shell-wide
+   * (see the capture-phase handler in `command-palette.tsx`), and stealing it
+   * here would break global search on this one route.
+   */
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+      const active = document.activeElement as HTMLElement | null;
+      if (
+        active instanceof HTMLInputElement ||
+        active instanceof HTMLTextAreaElement ||
+        active?.isContentEditable
+      ) {
+        return;
+      }
+      event.preventDefault();
+      // Focusing scrolls the catalogue into view on its own, which is what
+      // the old "Ver todas as aplicações" button was reaching for.
+      searchRef.current?.focus();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const {
+    data: apps = [],
+    isError,
+    error,
+    refetch,
+  } = useCurrentUserApplications();
   const { data: favorites = [] } = useCurrentUserFavoriteApplications();
   const addFav = useAddCurrentUserFavoriteApplication();
   const removeFav = useRemoveCurrentUserFavoriteApplication();
@@ -71,6 +117,11 @@ export function AppCatalog() {
     return list;
   }, [apps, search, showFavoritesOnly, sortBy, favCodes]);
 
+  function clearFilters() {
+    setSearch("");
+    setShowFavoritesOnly(false);
+  }
+
   function handleToggle(app: ApplicationDTO, isFavorite: boolean) {
     if (isFavorite) {
       removeFav.mutate(app.code);
@@ -82,60 +133,63 @@ export function AppCatalog() {
   return (
     <section id={APP_CATALOG_SECTION_ID}>
       <div className="flex items-center justify-between gap-3 mb-3">
-        <h2 className="min-w-0 truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Applications{" "}
-          <span className="normal-case font-normal text-ring">
-            — {filtered.length} of {apps.length}
+        <h2 className="min-w-0 truncate text-sm font-semibold text-foreground">
+          Aplicações{" "}
+          <span className="normal-case font-normal text-muted-foreground">
+            — {filtered.length} de {apps.length}
           </span>
         </h2>
       </div>
 
+      {/* Every control here is a design-system component. The previous version
+          hand-rolled all four with three different hover idioms and two focus
+          idioms, so a retune of the system's button height or focus ring would
+          have left this toolbar behind. */}
       <div className="flex flex-wrap gap-2 mb-4 items-center">
-        <div className="relative w-full sm:w-75">
-          <Search
-            size={15}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ring"
-          />
-          <input
+        <InputGroup className="h-10 w-full sm:w-75">
+          <InputGroupAddon>
+            <Search size={15} />
+          </InputGroupAddon>
+          <InputGroupInput
+            ref={searchRef}
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search applications"
-            aria-label="Search applications"
-            className="h-10 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-ring focus:outline-none focus:ring-2 focus:ring-ring"
+            placeholder="Procurar aplicações"
+            aria-label="Procurar aplicações"
           />
-        </div>
+          {!search && (
+            <InputGroupAddon align="inline-end">
+              {/* Hidden below sm: it teaches a shortcut that needs a physical
+                  keyboard. Left in the a11y tree — `<kbd>` announces as the
+                  key it names, which is the point. */}
+              <kbd className="hidden rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-block">
+                /
+              </kbd>
+            </InputGroupAddon>
+          )}
+        </InputGroup>
 
-        <button
-          type="button"
-          onClick={() => setShowFavoritesOnly((v) => !v)}
-          aria-pressed={showFavoritesOnly}
-          className={`flex h-10 items-center gap-1.5 rounded-lg border px-3.5 text-sm font-medium transition-all duration-150 ease-in-out ${
-            showFavoritesOnly
-              ? "border-warning-subtle bg-warning-subtle text-warning-subtle-foreground"
-              : "border-border bg-card text-secondary-foreground hover:bg-accent"
-          }`}
+        <Toggle
+          variant="outline"
+          size="lg"
+          pressed={showFavoritesOnly}
+          onPressedChange={setShowFavoritesOnly}
+          className="h-10 gap-1.5 px-3.5 data-[state=on]:border-warning-subtle data-[state=on]:bg-warning-subtle data-[state=on]:text-warning-subtle-foreground"
         >
           <Star
             size={14}
-            className={
-              showFavoritesOnly
-                ? "fill-warning-subtle-foreground text-warning-subtle-foreground transition-colors duration-150"
-                : "transition-colors duration-150"
-            }
+            className={showFavoritesOnly ? "fill-current" : undefined}
           />
-          Favorites
-        </button>
+          Favoritos
+        </Toggle>
 
         <IGRPDropdownMenu>
           <IGRPDropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="flex h-10 min-w-0 items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 text-sm text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            >
+            <IGRPButton variant="outline" size="lg" className="h-10 min-w-0">
               <span className="truncate">{SORT_LABELS[sortBy]}</span>
               <ChevronDown size={14} className="shrink-0" />
-            </button>
+            </IGRPButton>
           </IGRPDropdownMenuTrigger>
           <IGRPDropdownMenuContent align="start">
             <IGRPDropdownMenuRadioGroup
@@ -143,67 +197,99 @@ export function AppCatalog() {
               onValueChange={(value) => setSortBy(value as SortBy)}
             >
               <IGRPDropdownMenuRadioItem value="default">
-                Sort: Recommended
+                Ordenar: Predefinido
               </IGRPDropdownMenuRadioItem>
               <IGRPDropdownMenuRadioItem value="recent">
-                Sort: Recently Visited
+                Ordenar: Visitadas recentemente
               </IGRPDropdownMenuRadioItem>
               <IGRPDropdownMenuRadioItem value="name-asc">
-                Sort: Name (A–Z)
+                Ordenar: Nome (A–Z)
               </IGRPDropdownMenuRadioItem>
               <IGRPDropdownMenuRadioItem value="name-desc">
-                Sort: Name (Z–A)
+                Ordenar: Nome (Z–A)
               </IGRPDropdownMenuRadioItem>
             </IGRPDropdownMenuRadioGroup>
           </IGRPDropdownMenuContent>
         </IGRPDropdownMenu>
 
-        <div className="flex h-10 shrink-0 items-center overflow-hidden rounded-lg border border-border sm:ms-auto">
-          <button
-            type="button"
-            onClick={() => setViewMode("grid")}
-            aria-pressed={viewMode === "grid"}
-            className={`flex size-10 items-center justify-center transition-colors ${
-              viewMode === "grid"
-                ? "bg-primary-subtle text-primary-subtle-foreground"
-                : "bg-card text-muted-foreground hover:bg-accent"
-            }`}
-            aria-label="Grid view"
+        <ToggleGroup
+          type="single"
+          variant="outline"
+          size="lg"
+          value={viewMode}
+          // Radix clears the value when you press the active item; a view has
+          // to be one or the other, so ignore the empty string.
+          onValueChange={(value) => value && setViewMode(value as ViewMode)}
+          className="shrink-0 sm:ms-auto"
+        >
+          <ToggleGroupItem
+            value="grid"
+            aria-label="Vista em grelha"
+            className="size-10"
           >
             <LayoutGrid size={16} />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            aria-pressed={viewMode === "list"}
-            className={`flex size-10 items-center justify-center border-s border-border transition-colors ${
-              viewMode === "list"
-                ? "bg-primary-subtle text-primary-subtle-foreground"
-                : "bg-card text-muted-foreground hover:bg-accent"
-            }`}
-            aria-label="List view"
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="list"
+            aria-label="Vista em lista"
+            className="size-10"
           >
             <List size={16} />
-          </button>
-        </div>
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
-      {showFavoritesOnly && filtered.length === 0 ? (
+      {/* Four distinct answers, because they need four distinct actions. The
+          previous two-branch version told a user whose request had FAILED that
+          nothing matched a search they never typed — a broken backend read as
+          "you have no access", which sends people to the service desk instead
+          of to the retry button. */}
+      {isError ? (
+        <InlineError
+          title="Não foi possível carregar as aplicações."
+          message={
+            error?.message ??
+            "A lista está temporariamente indisponível. O seu acesso não foi alterado."
+          }
+          onRetry={() => refetch()}
+        />
+      ) : apps.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border bg-muted py-12 px-6 text-center">
+          <p className="text-sm font-medium text-secondary-foreground">
+            Ainda não tem aplicações atribuídas
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            O acesso é concedido por perfil e departamento. Contacte o
+            administrador se esperava ver alguma coisa aqui.
+          </p>
+        </div>
+      ) : showFavoritesOnly && !search.trim() && filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed border-warning-subtle bg-warning-subtle py-12 text-center">
           <Star
             size={24}
             className="mx-auto text-warning-subtle-foreground mb-3"
           />
           <p className="text-sm font-medium text-warning-subtle-foreground">
-            No favourites yet
+            Ainda sem favoritos
           </p>
           <p className="text-xs text-warning-subtle-foreground mt-1">
-            Click the ★ on any app to add it here
+            Clique na ★ de uma aplicação para a adicionar aqui
           </p>
         </div>
-      ) : !showFavoritesOnly && filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-muted py-12 text-center text-sm text-muted-foreground">
-          No applications match your search.
+      ) : filtered.length === 0 ? (
+        /* Reached when a search — alone or combined with the favourites
+           filter — hides everything. Naming BOTH filters matters: the
+           favourites-only branch above used to swallow this case and tell the
+           user to click a star while an invisible search was the real cause. */
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-muted py-12 px-6 text-center">
+          <p className="text-sm text-muted-foreground">
+            {showFavoritesOnly
+              ? `Nenhum favorito corresponde a “${search.trim()}”.`
+              : `Nenhuma aplicação corresponde a “${search.trim()}”.`}
+          </p>
+          <IGRPButton variant="outline" size="sm" onClick={clearFilters}>
+            Limpar filtros
+          </IGRPButton>
         </div>
       ) : (
         <div
@@ -223,6 +309,9 @@ export function AppCatalog() {
               isFavorite={favCodes.has(app.code)}
               onToggleFavorite={handleToggle}
               description={app.description ?? undefined}
+              // "List" used to render the same grid tile in a one-column
+              // stack, so the toggle cost a decision and changed nothing.
+              compact={viewMode === "list"}
             />
           ))}
         </div>

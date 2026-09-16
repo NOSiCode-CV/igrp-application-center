@@ -86,7 +86,7 @@ src/
 └── __tests__/, test-stubs/   # cross-cutting tests and Vitest mocks
 ```
 
-`src/app` stays intentionally thin — routes call into `src/features/<domain>` for the real implementation. This split is enforced by the [`igrp-module-architecture`](../.claude/skills) skill; use it whenever you add a page, module, or server action so the file lands in the right layer.
+`src/app` stays intentionally thin — routes call into `src/features/<domain>` for the real implementation. Keep that split whenever you add a page, module, or server action, so each file lands in the right layer.
 
 Path aliases: `@/*` → `./src/*`, `@igrp/template-config` → `./src/igrp.template.config.ts`.
 
@@ -169,7 +169,7 @@ Everything imports from the published package `@igrp/igrp-framework-react-design
 - `Field`/`FieldGroup` for form layout
 - `Separator` — never a raw `<hr>` or `border-t` divider
 
-Common patterns (form, input-with-icon, button, card, data table, icons) with copy-pasteable snippets: [docs/DESIGN_SYSTEM.md](DESIGN_SYSTEM.md). Before substantial UI work also check the relevant in-repo skill (`frontend-design`, `next-best-practices`, `tanstack-query`, `tanstack-table`, `shadcn`, `web-design-guidelines` under `.claude/skills/`).
+Common patterns (form, input-with-icon, button, card, data table, icons) with copy-pasteable snippets: [docs/DESIGN_SYSTEM.md](DESIGN_SYSTEM.md). Before substantial UI work also reach for the matching in-repo skill under `.claude/skills/` — [AGENTS.md](../AGENTS.md#ui--the-igrp-design-system) lists which one covers what.
 
 ## 10. Design tokens & theming
 

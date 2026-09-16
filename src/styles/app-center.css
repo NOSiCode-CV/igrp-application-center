@@ -199,16 +199,6 @@
 }
 
 /* Custom animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes slideInUp {
   from {
     transform: translateY(10px);
@@ -250,6 +240,7 @@
  * invisible for anyone who has motion disabled. */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in,
+  .animate-fadeIn,
   .animate-slide-in-up,
   .animate-pulse-subtle {
     animation: none !important;
@@ -307,18 +298,12 @@
   display: none;
 }
 
-/* Hide the document-level scrollbar globally. Scrolling still works on
- * routes that need it (settings, profile) — only the visible scrollbar
- * is removed. Required so the home launcher reads as fully scroll-free. */
-html,
-body {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
-}
+/* The document scrollbar used to be hidden globally so the home launcher
+ * could read as scroll-free. The launcher does not need it: its wrapper is
+ * viewport-height with `overflow-hidden`, so the document never scrolls
+ * there anyway — while every OTHER route (settings, users, profile) lost its
+ * scroll position indicator to serve one page's aesthetic. Left to the
+ * platform; rails that need it opt in with `.scrollbar-hidden` above. */
 
 /* Grid layouts */
 .auto-grid {

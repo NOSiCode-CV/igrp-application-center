@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   getStatusColor,
+  showStatus,
   statusClass,
   statusInviteClass,
 } from "@/lib/app-utilities";
@@ -68,5 +69,19 @@ describe("statusInviteClass", () => {
     for (const status of ["REJECTED", "CANCELED", "PENDING", ""]) {
       expect(String(statusInviteClass(status))).not.toMatch(RAW_COLOR);
     }
+  });
+});
+
+describe("showStatus", () => {
+  it("maps the known statuses to their labels", () => {
+    expect(showStatus("ACTIVE")).toBe("Ativo");
+    expect(showStatus("INACTIVE")).toBe("Inativo");
+  });
+
+  it("falls back to the raw code for unmapped statuses", () => {
+    // STATUS_OPTIONS only covers ACTIVE/INACTIVE, and returning undefined
+    // rendered a coloured badge with no text in it.
+    expect(showStatus("PENDING")).toBe("PENDING");
+    expect(showStatus("DELETED")).toBe("DELETED");
   });
 });

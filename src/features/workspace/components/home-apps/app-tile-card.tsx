@@ -3,7 +3,7 @@
 import type { Route } from "next";
 import Link from "next/link";
 
-import { Badge } from "@igrp/igrp-framework-react-design-system";
+import { Badge, IGRPButton } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { Info, Star } from "lucide-react";
 
@@ -13,7 +13,7 @@ import {
   isExternalAppHref,
   isRecentlyAdded,
 } from "@/features/workspace/lib/app-utils";
-import { getStatusColor, showStatus } from "@/lib/app-utilities";
+import { showStatus, statusClass } from "@/lib/app-utilities";
 
 type Props = {
   app: ApplicationDTO;
@@ -37,12 +37,17 @@ export function AppTileCard({
   const href = getAppHref(app);
   const isExternal = href ? isExternalAppHref(app, href) : false;
 
+  /* `z-10` is load-bearing: it lifts the button above the name link's
+     stretched `after:` overlay, which otherwise swallows the click. */
   const star = (
-    <button
-      type="button"
-      aria-label={isFavorite ? "Remove from favourites" : "Add to favourites"}
+    <IGRPButton
+      variant="ghost"
+      size="icon-sm"
+      aria-label={
+        isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
+      }
       aria-pressed={isFavorite}
-      className="relative z-10 shrink-0 text-muted-foreground/50 hover:text-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm transition-colors after:absolute after:-inset-3.5 after:content-['']"
+      className="relative z-10 shrink-0 text-muted-foreground hover:text-warning"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -53,17 +58,17 @@ export function AppTileCard({
         size={16}
         className={isFavorite ? "fill-warning text-warning" : ""}
       />
-    </button>
+    </IGRPButton>
   );
 
   const statusBadge =
     app.status !== "ACTIVE" ? (
-      <Badge className={getStatusColor(app.status)}>
+      <Badge className={statusClass(app.status) as string}>
         {showStatus(app.status)}
       </Badge>
     ) : isRecentlyAdded(app.createdDate) ? (
       <Badge className="bg-success-subtle text-success-subtle-foreground">
-        New
+        Nova
       </Badge>
     ) : null;
 
@@ -71,49 +76,71 @@ export function AppTileCard({
     href ? "group-hover:text-primary" : ""
   }`;
 
+  /**
+   * The link is on the name, stretched over the whole card by an `after:`
+   * overlay — so hovering or clicking anywhere in the card opens the app, while
+   * the accessibility tree still sees ONE link named after the app rather than
+   * a card-sized anchor swallowing the favourite button. The star sits above
+   * the overlay on `z-10`, which is what keeps it clickable.
+   */
+  const stretchedLink =
+    "outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']";
+
+  const linkedName = !href ? (
+    <span className={nameClass}>{app.name}</span>
+  ) : isExternal ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`${nameClass} ${stretchedLink}`}
+    >
+      {app.name}
+    </a>
+  ) : (
+    <Link href={href as Route} className={`${nameClass} ${stretchedLink}`}>
+      {app.name}
+    </Link>
+  );
+
+  /* Rendered by BOTH variants. It used to be grid-only, so a recents card for
+     an app with no launch URL looked exactly like a working one and silently
+     did nothing when clicked. */
+  const noLaunchUrl = (
+    <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground">
+      <Info size={12} />
+      Sem URL definido
+    </span>
+  );
+
   if (compact) {
-    const inner = (
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+    return (
+      <div
+        className={`group relative h-full rounded-xl border border-border bg-card p-3.5 flex items-center gap-3 transition-all has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-ring ${
+          href ? "hover:border-primary/50 hover:shadow-md" : ""
+        }`}
+      >
         <div
           className={`flex items-center justify-center size-10 rounded-lg font-bold text-sm shrink-0 ${color.bg} ${color.text}`}
         >
           {initial}
         </div>
-        <div className="flex flex-col gap-0.5 min-w-0">
-          <span className={nameClass}>{app.name}</span>
-          {lastOpenedLabel && (
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          {linkedName}
+          {lastOpenedLabel ? (
             <span className="truncate text-xs text-muted-foreground">
               {lastOpenedLabel}
             </span>
+          ) : (
+            description && (
+              <span className="truncate text-xs text-muted-foreground">
+                {description}
+              </span>
+            )
           )}
         </div>
-      </div>
-    );
-
-    return (
-      <div
-        className={`group relative h-full rounded-xl border border-border bg-card p-3.5 flex items-center gap-3 transition-all ${
-          href ? "hover:border-primary/50 hover:shadow-md" : ""
-        }`}
-      >
-        {href ? (
-          isExternal ? (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 min-w-0 outline-none"
-            >
-              {inner}
-            </a>
-          ) : (
-            <Link href={href as Route} className="flex-1 min-w-0 outline-none">
-              {inner}
-            </Link>
-          )
-        ) : (
-          inner
-        )}
+        {statusBadge}
+        {!href && noLaunchUrl}
         {star}
       </div>
     );
@@ -126,26 +153,6 @@ export function AppTileCard({
    * a card-sized anchor swallowing the favourite button. The star sits above
    * the overlay on `z-10`, which is what keeps it clickable.
    */
-  const linkedName = !href ? (
-    <span className={nameClass}>{app.name}</span>
-  ) : isExternal ? (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`${nameClass} outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']`}
-    >
-      {app.name}
-    </a>
-  ) : (
-    <Link
-      href={href as Route}
-      className={`${nameClass} outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']`}
-    >
-      {app.name}
-    </Link>
-  );
-
   return (
     <div
       className={`group relative rounded-xl border border-border bg-card p-4 transition-all flex flex-col gap-3 min-w-0 has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-ring ${
@@ -180,14 +187,7 @@ export function AppTileCard({
       {(statusBadge || !href) && (
         <div className="flex items-center gap-2 mt-auto">
           {statusBadge}
-          {!href && (
-            /* Without this the card looked identical to a working one but did
-               nothing when clicked. */
-            <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
-              <Info size={12} />
-              No launch URL
-            </span>
-          )}
+          {!href && noLaunchUrl}
         </div>
       )}
     </div>

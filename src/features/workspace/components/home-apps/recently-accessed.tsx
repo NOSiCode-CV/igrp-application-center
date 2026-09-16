@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
+import { InlineError } from "@/components/inline-error";
 import {
   useAddCurrentUserFavoriteApplication,
   useCurrentUserFavoriteApplications,
@@ -79,7 +81,12 @@ function useRailScroll(itemCount: number) {
 }
 
 export function RecentlyAccessed() {
-  const { data: recent = [] } = useGetCurrentUserRecentApplications();
+  const {
+    data: recent = [],
+    isError,
+    error,
+    refetch,
+  } = useGetCurrentUserRecentApplications();
   const { data: favorites = [] } = useCurrentUserFavoriteApplications();
   const addFav = useAddCurrentUserFavoriteApplication();
   const removeFav = useRemoveCurrentUserFavoriteApplication();
@@ -99,75 +106,69 @@ export function RecentlyAccessed() {
     }
   }
 
-  /* size-8 keeps the controls as quiet as the "View all" button next to them;
-     the `after:` overlay lifts the hit target to ~44px without drawing a
-     bigger button — the same trick the catalogue's favourite star uses. */
-  const controlClass =
-    "relative flex size-8 items-center justify-center rounded-lg border border-border bg-card text-secondary-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40 after:absolute after:-inset-1.5 after:content-['']";
-
   return (
     <section>
       <div className="flex items-center justify-between gap-3 mb-3">
-        <h2 className="min-w-0 truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Recently accessed
+        <h2 className="min-w-0 truncate text-sm font-semibold text-foreground">
+          Acedidas recentemente
         </h2>
 
         <div className="flex shrink-0 items-center gap-2">
           {/* Nothing to page through when the row already fits — dead arrows
               would just be noise. */}
-          {(canScrollPrev || canScrollNext) && (
+          {!isError && (canScrollPrev || canScrollNext) && (
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
+              <IGRPButton
+                variant="outline"
+                size="icon"
                 onClick={() => scrollByPage(-1)}
                 disabled={!canScrollPrev}
-                aria-label="Show previous applications"
-                className={controlClass}
+                aria-label="Mostrar aplicações anteriores"
               >
                 <ChevronLeft size={16} />
-              </button>
-              <button
-                type="button"
+              </IGRPButton>
+              <IGRPButton
+                variant="outline"
+                size="icon"
                 onClick={() => scrollByPage(1)}
                 disabled={!canScrollNext}
-                aria-label="Show next applications"
-                className={controlClass}
+                aria-label="Mostrar aplicações seguintes"
               >
                 <ChevronRight size={16} />
-              </button>
+              </IGRPButton>
             </div>
           )}
-
-          <button
-            type="button"
-            onClick={scrollToCatalog}
-            className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-primary-subtle px-2.5 text-xs font-semibold text-primary-subtle-foreground transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            View all applications
-            <ArrowRight size={13} />
-          </button>
         </div>
       </div>
 
-      {recent.length === 0 ? (
+      {isError ? (
+        /* A convenience rail, so this stays quiet and offers a retry rather
+           than rendering as "you have opened nothing", which is what the
+           `data = []` default used to claim on every failed request. */
+        <InlineError
+          title="Não foi possível carregar as aplicações recentes."
+          message={
+            error?.message ??
+            "Esta lista está temporariamente indisponível. Tudo o resto continua a funcionar."
+          }
+          onRetry={() => refetch()}
+        />
+      ) : recent.length === 0 ? (
         /* Previously this returned null, so a first-time user lost the whole
            section with no explanation of what would eventually fill it. */
         <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border bg-muted px-4 py-5">
           <p className="text-sm text-secondary-foreground">
-            Applications you open will appear here for quick return.
+            As aplicações que abrir aparecem aqui, para voltar a elas
+            rapidamente.
           </p>
-          <button
-            type="button"
-            onClick={scrollToCatalog}
-            className="flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            Browse applications
+          <IGRPButton size="sm" onClick={scrollToCatalog}>
+            Explorar aplicações
             <ArrowRight size={13} />
-          </button>
+          </IGRPButton>
         </div>
       ) : (
         /* `items-stretch` keeps one height across the row — a longer relative
-           label ("Opened 11 weeks ago") used to wrap and drag its card taller
+           label ("Aberta há 11 semanas") used to wrap and drag its card taller
            than its neighbours. The scrollbar is hidden in favour of the header
            controls; snapping stops a paged scroll from parking mid-card. */
         <div

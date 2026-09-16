@@ -6,12 +6,15 @@ interface InlineErrorProps {
   title?: string;
   message: string;
   onRetry?: () => void;
+  /** Overridable so surfaces that are not in Portuguese can match their copy. */
+  retryLabel?: string;
 }
 
 export function InlineError({
   title = "Não foi possível carregar os dados.",
   message,
   onRetry,
+  retryLabel = "Tentar novamente",
 }: InlineErrorProps) {
   return (
     <div
@@ -31,7 +34,7 @@ export function InlineError({
           iconName="RotateCw"
           onClick={onRetry}
         >
-          Tentar novamente
+          {retryLabel}
         </IGRPButton>
       )}
     </div>

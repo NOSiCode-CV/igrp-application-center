@@ -18,13 +18,13 @@ function daysFromNow(n: number): Date {
 
 describe("getGreeting", () => {
   it("returns morning for hour < 12", () => {
-    expect(getGreeting(makeDate(8))).toBe("Good morning");
+    expect(getGreeting(makeDate(8))).toBe("Bom dia");
   });
   it("returns afternoon for 12 <= hour < 19", () => {
-    expect(getGreeting(makeDate(14))).toBe("Good afternoon");
+    expect(getGreeting(makeDate(14))).toBe("Boa tarde");
   });
   it("returns evening for hour >= 19", () => {
-    expect(getGreeting(makeDate(20))).toBe("Good evening");
+    expect(getGreeting(makeDate(20))).toBe("Boa noite");
   });
 });
 
