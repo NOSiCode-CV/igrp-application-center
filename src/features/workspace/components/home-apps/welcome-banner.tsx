@@ -46,17 +46,17 @@ function BadgeList({
   const overflow = items.length - visible.length;
 
   return (
-    <div className="flex items-center">
-      <span className="text-[10px] font-semibold uppercase">
+    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+      <span className="shrink-0 text-[10px] font-semibold uppercase">
         {label}
       </span>
-      <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5">
         {visible.map((item) => {
           const isActive = activeCode !== undefined && item.code === activeCode;
           return (
             <span
               key={item.code}
-              className={`rounded-full border px-2 py-0.5 text-xs ${
+              className={`max-w-full truncate rounded-full border px-2 py-0.5 text-xs ${
                 isActive
                   ? "border-primary-subtle bg-primary-subtle text-primary-subtle-foreground"
                   : "border-border bg-muted text-secondary-foreground"
@@ -109,21 +109,18 @@ export function WelcomeBanner() {
             {name ? `, ${name}` : ""}
           </h1>
 
-          <div className="grid items-center">
+          <div className="mt-1 flex flex-col gap-1.5">
             <BadgeList
               label="Roles:"
               items={roles}
               activeCode={activeRole?.roleCode}
             />
-            <BadgeList 
-              label="Departments:"
-              items={departments} 
-            />
+            <BadgeList label="Departments:" items={departments} />
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-7 shrink-0 lg:border-l lg:border-border lg:pl-6">
+      <div className="flex shrink-0 flex-wrap items-center gap-x-7 gap-y-3 lg:border-l lg:border-border lg:pl-6">
         <div className="flex flex-col gap-1">
           <span className="text-2xl font-semibold leading-none tracking-tight text-foreground">
             {apps.length}

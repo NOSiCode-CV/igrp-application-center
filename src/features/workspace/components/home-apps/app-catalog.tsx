@@ -81,8 +81,8 @@ export function AppCatalog() {
 
   return (
     <section id={APP_CATALOG_SECTION_ID}>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <h2 className="min-w-0 truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Applications{" "}
           <span className="normal-case font-normal text-ring">
             — {filtered.length} of {apps.length}
@@ -131,10 +131,10 @@ export function AppCatalog() {
           <IGRPDropdownMenuTrigger asChild>
             <button
               type="button"
-              className="flex h-10 items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 text-sm text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="flex h-10 min-w-0 items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 text-sm text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              {SORT_LABELS[sortBy]}
-              <ChevronDown size={14} />
+              <span className="truncate">{SORT_LABELS[sortBy]}</span>
+              <ChevronDown size={14} className="shrink-0" />
             </button>
           </IGRPDropdownMenuTrigger>
           <IGRPDropdownMenuContent align="start">
@@ -158,7 +158,7 @@ export function AppCatalog() {
           </IGRPDropdownMenuContent>
         </IGRPDropdownMenu>
 
-        <div className="ms-auto flex h-10 items-center overflow-hidden rounded-lg border border-border">
+        <div className="flex h-10 shrink-0 items-center overflow-hidden rounded-lg border border-border sm:ms-auto">
           <button
             type="button"
             onClick={() => setViewMode("grid")}
@@ -212,7 +212,7 @@ export function AppCatalog() {
           key={viewMode}
           className={
             viewMode === "grid"
-              ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 animate-fadeIn"
+              ? "grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 animate-fadeIn"
               : "flex flex-col gap-2 animate-fadeIn"
           }
         >

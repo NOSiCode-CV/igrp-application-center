@@ -40,14 +40,14 @@ export function RecentlyAccessed() {
 
   return (
     <section>
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <div className="flex items-center justify-between gap-3 mb-3">
+        <h2 className="min-w-0 truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Recently accessed
         </h2>
         <button
           type="button"
           onClick={scrollToCatalog}
-          className="flex h-8 items-center gap-1.5 rounded-lg bg-primary-subtle px-2.5 text-xs font-semibold text-primary-subtle-foreground transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-primary-subtle px-2.5 text-xs font-semibold text-primary-subtle-foreground transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           View all applications
           <ArrowRight size={13} />
@@ -76,7 +76,7 @@ export function RecentlyAccessed() {
            than its neighbours. */
         <div className="flex items-stretch gap-3.5 overflow-x-auto pb-2 custom-scrollbar">
           {recent.slice(0, 8).map((app) => (
-            <div key={app.code} className="w-69 shrink-0">
+            <div key={app.code} className="w-69 max-w-[85%] shrink-0">
               <AppTileCard
                 app={app}
                 isFavorite={favCodes.has(app.code)}
