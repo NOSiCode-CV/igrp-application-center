@@ -16,16 +16,8 @@ import { HomeAppsTab } from "./home-apps/home-apps-tab";
 
 type Tab = "home";
 
-/**
- * The scroll chain is the whole point of this wrapper: the page gives it a
- * fixed viewport-derived height with `overflow-hidden`, so every link down to
- * the panel needs `flex-1` + `min-h-0` or the panel grows past the frame and
- * its `overflow-y-auto` never engages — content below the fold simply gets
- * clipped, which is what happened on short/mobile viewports.
- */
-const SHELL = "flex min-h-0 w-full flex-1 flex-col mx-auto max-w-7xl";
-const PANEL =
-  "min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-6 custom-scrollbar";
+const SHELL = "flex w-full flex-col mx-auto max-w-7xl";
+const PANEL = "p-4";
 
 export function EnterpriseWorkspace() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -38,7 +30,7 @@ export function EnterpriseWorkspace() {
     },
     // {
     //   value: "tasks",
-    //   label: "My Tasks",
+    //   label: "As minhas tarefas",
     //   content: <TasksTab tasks={defaultTasks} />,
     // },
   ];
@@ -65,7 +57,7 @@ export function EnterpriseWorkspace() {
         onValueChange={(value) => setActiveTab(value as Tab)}
         items={tabs}
         variant="underline"
-        className="flex min-h-0 min-w-0 flex-1 flex-col"
+        className="flex min-w-0 flex-col"
         tabListClassName="px-4 lg:px-6"
         tabContentClassName={PANEL}
       />

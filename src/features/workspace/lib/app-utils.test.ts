@@ -27,13 +27,15 @@ describe("getAppTileColor", () => {
 describe("getLastOpenedLabel", () => {
   const now = new Date("2026-06-30T12:00:00Z");
 
-  it("returns a fallback when lastAccess is missing", () => {
-    expect(getLastOpenedLabel(undefined, now)).toBe("Aberta recentemente");
-    expect(getLastOpenedLabel(null, now)).toBe("Aberta recentemente");
+  it("says nothing when lastAccess is missing", () => {
+    // It used to claim "Aberta recentemente" for a timestamp it did not have.
+    // The caller renders the label only when truthy, so empty hides the row.
+    expect(getLastOpenedLabel(undefined, now)).toBe("");
+    expect(getLastOpenedLabel(null, now)).toBe("");
   });
 
-  it("returns a fallback for an unparseable date", () => {
-    expect(getLastOpenedLabel("not-a-date", now)).toBe("Aberta recentemente");
+  it("says nothing for an unparseable date", () => {
+    expect(getLastOpenedLabel("not-a-date", now)).toBe("");
   });
 
   it("formats minutes ago", () => {
@@ -61,7 +63,7 @@ describe("getLastOpenedLabel", () => {
       weekday: "long",
     });
     expect(getLastOpenedLabel(threeDaysAgo, now)).toBe(
-      `Aberta ${expectedWeekday}`,
+      `Aberta na ${expectedWeekday}`,
     );
   });
 

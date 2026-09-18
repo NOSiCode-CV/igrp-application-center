@@ -26,6 +26,9 @@
   --color-destructive-subtle: var(--destructive-subtle);
   --color-destructive-subtle-foreground: var(--destructive-subtle-foreground);
 
+  /* The favourited star — see the token comment for why it is not --warning */
+  --color-favorite: var(--favorite);
+
   /* App tile identity */
   --color-app-tile-1: var(--app-tile-1);
   --color-app-tile-1-foreground: var(--app-tile-1-foreground);
@@ -114,15 +117,11 @@
 }
 
 :root {
-  /* ── Home launcher viewport-fit height ───────────────────────────────────
-   * 100dvh — IGRP header (~4rem) — framework p-4 wrapper top padding (1rem).
-   * Adjust the rem value here if the framework header height changes. */
-  --home-scroll-h: calc(100dvh - 5rem);
-  /* At >=lg the inner columns own the scroll, so the launcher must fit the
-   * framework content box exactly. Unlike --home-scroll-h, this also accounts
-   * for the p-4 wrapper's *bottom* padding (1rem) — otherwise the wrapper is
-   * 1rem too tall and the whole page scrolls. */
-  --home-scroll-h-lg: calc(100dvh - 6rem);
+  /* `--home-scroll-h` / `--home-scroll-h-lg` lived here: two viewport-fit
+   * heights that pinned the home launcher to `100dvh` minus the framework
+   * chrome so an inner panel could own the scroll. The launcher now scrolls
+   * with the document like every other route, so both are gone along with the
+   * second scrollbar they made necessary. Nothing referenced them elsewhere. */
 
   /* ── Subtle status stops ─────────────────────────────────────────────────
    * The design system ships `--x` / `--x-foreground` for SOLID status
@@ -160,6 +159,35 @@
   --app-tile-4-foreground: oklch(0.44 0.09 84.429); /* 6.87:1 */
   --app-tile-5: oklch(0.955 0.02 292.717);
   --app-tile-5-foreground: oklch(0.44 0.145 292.717); /* 7.22:1 */
+
+  /* ── Focus ring (LOCAL OVERRIDE of the design system) ────────────────────
+   * The system ships --ring at oklch(0.704 0.04 256.788), which is 2.63:1
+   * against a white card — below the 3:1 WCAG 2.1 §1.4.11 requires of a
+   * non-text indicator, and AA is contractual here (PRODUCT.md). This value
+   * is 4.28:1 light / 7.20:1 dark on the same surfaces.
+   *
+   * This DIVERGES from @igrp/igrp-framework-react-design-system: remove these
+   * two declarations once the system raises --ring upstream.
+   *
+   * It does NOT fix everything. The system's own components draw focus as
+   * `ring-ring/50`, and at 50% alpha NO token value can reach 3:1 against a
+   * white surface — pure black at 50% over white is 1.91:1. That needs an
+   * upstream change to the ring opacity, not a token swap. */
+  --ring: oklch(0.58 0.06 256.788); /* 4.28:1 */
+
+  /* The favourited star. --warning itself is 2.15:1 on a card, so a filled
+   * star was LESS visible than an empty one; this is the lightest amber on
+   * the same hue that clears 3:1, so the colour stays amber rather than
+   * reverting to the brown of --warning-subtle-foreground. */
+  --favorite: oklch(0.67 0.188 70.08); /* 3.09:1 */
+
+  /* ── Scrollbar ───────────────────────────────────────────────────────────
+   * A styled scrollbar is author content, so the thumb owes the same 3:1 a
+   * non-text indicator does. The previous values (`bg-muted-foreground/30`
+   * over a `bg-muted/50` track) measured 1.31:1 against the track in light
+   * mode — slimmer than the platform's, and effectively invisible. */
+  --scrollbar-thumb: oklch(0.66 0.02 257); /* 3.11:1 on --card */
+  --scrollbar-thumb-hover: oklch(0.56 0.02 257); /* 4.36:1 */
 }
 
 .dark {
@@ -184,6 +212,12 @@
   --app-tile-4-foreground: oklch(0.84 0.135 84.429); /* 8.32:1 */
   --app-tile-5: oklch(0.3 0.06 292.717);
   --app-tile-5-foreground: oklch(0.84 0.085 292.717); /* 8.32:1 */
+
+  --ring: oklch(0.72 0.06 256.788); /* 7.20:1 on --card */
+  --favorite: oklch(0.828 0.189 84.429); /* 10.39:1 — dark never failed */
+
+  --scrollbar-thumb: oklch(0.55 0.02 257); /* 3.68:1 on --card */
+  --scrollbar-thumb-hover: oklch(0.65 0.02 257); /* 5.30:1 */
 }
 
 @layer base {
@@ -263,20 +297,25 @@
   @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
 }
 
+/* Built on the `-subtle` pairs above, which carry a measured >=4.5:1 contract
+ * in both themes. The previous definitions used `bg-x/15 text-x` — the exact
+ * idiom the token comment at the top of this file argues cannot be validated —
+ * and measured 4.35:1 (active, inactive), 4.39:1 (deleted) and 1.97:1
+ * (pending) on a light card. All four failed AA. */
 .status-active {
-  @apply bg-success/15 text-success;
+  @apply bg-success-subtle text-success-subtle-foreground;
 }
 
 .status-inactive {
-  @apply bg-muted text-muted-foreground;
+  @apply bg-muted text-foreground;
 }
 
 .status-pending {
-  @apply bg-warning/15 text-warning;
+  @apply bg-warning-subtle text-warning-subtle-foreground;
 }
 
 .status-deleted {
-  @apply bg-destructive/10 text-destructive;
+  @apply bg-destructive-subtle text-destructive-subtle-foreground;
 }
 
 .home-scroll-viewport {
@@ -314,24 +353,62 @@
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-auto grid-flow-dense;
 }
 
-/* Scrollbar styling */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-muted/50 rounded-full;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50 transition-colors;
-}
-
+/* ── Scrollbars ────────────────────────────────────────────────────────────
+ * ONE treatment, shared by the document and by any panel that opts in with
+ * `.custom-scrollbar`, so the app does not draw two different scrollbars.
+ *
+ * Why style it at all rather than take the platform's: on a panel inset from
+ * the window edge, the OS scrollbar renders full-width with stepper arrows and
+ * dominates the surface. This keeps the real affordance — same behaviour, same
+ * hit area — at a slimmer weight.
+ *
+ * The track is transparent on purpose: the old one sat at 1.05:1 against the
+ * page, so it added a gutter nobody could see. The thumb carries a 2px
+ * transparent border with `background-clip: content-box`, which insets it to
+ * ~6px of paint inside a 10px hit area — slim to look at, still easy to grab. */
+html,
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: oklch(from var(--muted-foreground) l c h / 0.3)
-    oklch(from var(--muted) l c h / 0.5);
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+html::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* Chrome on Windows still draws stepper arrows at both ends of a styled
+ * scrollbar unless they are explicitly removed — they are most of what makes
+ * the platform bar read as heavy. */
+html::-webkit-scrollbar-button,
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* The corner where a vertical and horizontal bar meet defaults to a grey
+ * square that matches neither theme. */
+html::-webkit-scrollbar-corner,
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Improved focus styles */

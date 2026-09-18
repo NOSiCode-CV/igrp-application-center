@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { Badge, IGRPButton } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { Info, Star } from "lucide-react";
+import { Info } from "lucide-react";
 
 import {
   getAppHref,
@@ -42,23 +42,25 @@ export function AppTileCard({
   const star = (
     <IGRPButton
       variant="ghost"
-      size="icon-sm"
+      size="icon"
+      /* `iconName`, NOT children: IGRPButton throws children away for every
+         `icon*` size and renders `iconName`, which defaults to "ArrowLeft". */
+      iconName="Star"
+      iconClassName={isFavorite ? "fill-favorite text-favorite" : undefined}
       aria-label={
         isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
       }
       aria-pressed={isFavorite}
-      className="relative z-10 shrink-0 text-muted-foreground hover:text-warning"
+      /* `after:` lifts the 36px control to a ~44px target without drawing a
+         bigger button. `favorite` rather than `warning`: --warning is 2.15:1
+         on a card, which made a FILLED star less visible than an empty one. */
+      className="relative z-10 shrink-0 text-muted-foreground hover:text-favorite after:absolute after:-inset-1 after:content-['']"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
         onToggleFavorite(app, isFavorite);
       }}
-    >
-      <Star
-        size={16}
-        className={isFavorite ? "fill-warning text-warning" : ""}
-      />
-    </IGRPButton>
+    />
   );
 
   const statusBadge =
@@ -159,28 +161,44 @@ export function AppTileCard({
         href ? "hover:border-primary/50 hover:shadow-md" : ""
       }`}
     >
-      <div className="absolute top-4 right-4 z-10">{star}</div>
-
       <div className="flex gap-3 pr-7">
         <div
           className={`flex items-center justify-center size-10 rounded-lg font-bold text-sm shrink-0 ${color.bg} ${color.text}`}
         >
           {initial}
         </div>
-        <div className="flex flex-col gap-1 min-w-0 flex-1">
+        <div className="flex flex-col gap-0.5 min-w-0 flex-1">
           {linkedName}
+          {/* The code is how the app is referred to in Gestão de Aplicações
+              and in a support call, so it belongs next to the name rather
+              than only in the admin tables. */}
+          <span className="truncate text-xs text-muted-foreground">
+            {app.code}
+          </span>
           {lastOpenedLabel && (
             <span className="truncate text-xs text-muted-foreground">
               {lastOpenedLabel}
             </span>
           )}
-          {description && (
-            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed text-pretty">
-              {description}
-            </p>
-          )}
         </div>
       </div>
+
+      {/* Full width rather than indented into the text column: the description
+          is the card's body copy, not a third line of the header. Always
+          rendered, so cards keep one height in a row — an absent description
+          says so instead of silently collapsing the card. */}
+      <p
+        className={`text-xs text-muted-foreground line-clamp-2 leading-relaxed text-pretty ${
+          description ? "" : "italic"
+        }`}
+      >
+        {description || "Sem descrição"}
+      </p>
+
+      {/* After the content in DOM order so the app name is the first tab stop
+          on the card, matching the compact variant and the visual order.
+          Absolute positioning keeps it in the top-right corner regardless. */}
+      <div className="absolute top-4 right-4 z-10">{star}</div>
 
       {/* Only rendered when it carries something — an always-present footer row
           left every ordinary card with a strip of dead space under it. */}
