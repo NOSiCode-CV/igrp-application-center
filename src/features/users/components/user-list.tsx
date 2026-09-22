@@ -6,8 +6,6 @@ import {
   IGRPButton,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
-  IGRPDataTableFilterFaceted,
-  IGRPDataTableFilterInput,
   Tabs,
   TabsContent,
   TabsList,
@@ -20,6 +18,8 @@ import type {
 } from "@igrp/platform-access-management-client-ts";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
+import { ColumnFacetedFilter } from "@/components/data-table/faceted-filter";
+import { ColumnSearchInput } from "@/components/data-table/search-input";
 import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";
 import { getInvitationColumns } from "@/features/users/components/invitations-columns";
@@ -112,19 +112,20 @@ export function UserList({
         {
           columnId: "name",
           component: ({ column }) => (
-            <IGRPDataTableFilterInput
+            <ColumnSearchInput
               column={column}
-              placeholder="Pesquisar por nome ou email..."
+              label="Pesquisar utilizadores"
+              placeholder="Pesquisar por nome ou email…"
             />
           ),
         },
         {
           columnId: "status",
           component: ({ column }) => (
-            <IGRPDataTableFilterFaceted
+            <ColumnFacetedFilter
               column={column}
+              label="Estado"
               options={STATUS_OPTIONS}
-              placeholder="Estado"
             />
           ),
         },
@@ -138,9 +139,10 @@ export function UserList({
         {
           columnId: "identifierValue",
           component: ({ column }) => (
-            <IGRPDataTableFilterInput
+            <ColumnSearchInput
               column={column}
-              placeholder="Pesquisar por email..."
+              label="Pesquisar convites"
+              placeholder="Pesquisar por email…"
             />
           ),
         },
@@ -216,12 +218,7 @@ export function UserList({
           Convidar Utilizador
         </IGRPButton>
       </PageHeader>
-
-      {/* A failed REFRESH, not a failed page: the rows below are real, they are
-          just older than they look. Warning rather than destructive, and it now
-          carries the action that fixes it instead of only reporting the fault.
-          Token pair, not `bg-destructive/5` — a wash of a token over itself has
-          a contrast ratio nobody can validate. */}
+      
       {error && (
         <div
           role="status"
@@ -310,9 +307,7 @@ export function UserList({
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "Desativar Utilizador"
             : "Ativar Utilizador"
-        }
-        /* Names the consequence, not just the verb: "tem a certeza?" tells an
-           administrator nothing they did not already know when they clicked. */
+        }       
         description={
           dialog.kind === "status" ? (
             dialog.newStatus === "INACTIVE" ? (
@@ -334,9 +329,7 @@ export function UserList({
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "Desativar"
             : "Ativar"
-        }
-        /* "A ativar", not "Ativando": pt-PT, and it matched neither its own
-           sibling above nor any other loading string in the product. */
+        }       
         loadingText={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "A desativar..."
@@ -369,10 +362,7 @@ export function UserList({
             </>
           ) : null
         }
-        onConfirm={handleConfirmCancel}
-        /* Both buttons name what they do. "Confirmar" / "Cancelar" in a dialog
-           about cancelling an invitation left "Cancelar" meaning two opposite
-           things in the same footer. */
+        onConfirm={handleConfirmCancel}       
         confirmText="Cancelar Convite"
         cancelText="Manter Convite"
         loadingText="A cancelar..."

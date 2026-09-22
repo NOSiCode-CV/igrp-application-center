@@ -4,14 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Badge,
   Button,
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -36,10 +35,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import {
+  MultiSelectField,
+  type MultiSelectOption,
+} from "@/components/multi-select-field";
+import {
   useDepartments,
   useRoles,
 } from "@/features/departments/use-departments";
-import { cn } from "@/lib/utils";
 
 import { useInviteUser } from "../use-users";
 
@@ -61,7 +63,6 @@ export function UserInviteDialog({
   onOpenChange,
 }: UserInviteDialogProps) {
   const [openDepts, setOpenDepts] = useState(false);
-  const [openRoles, setOpenRoles] = useState(false);
   const { igrpToast } = useIGRPToast();
 
   const { mutate: userInvite, isPending: isInviting } = useInviteUser();
@@ -174,11 +175,17 @@ export function UserInviteDialog({
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>E-mail</FormLabel>
+                    <FormLabel>
+                      E-mail
+                      <span aria-hidden="true" className="text-destructive">
+                        *
+                      </span>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Ex: joao@email.com"
                         type="email"
+                        aria-required="true"
                         {...field}
                       />
                     </FormControl>
@@ -306,27 +313,11 @@ export function UserInviteDialog({
                 render={({ field }) => {
                   const isDisabled =
                     !departmentCode || (roles?.length ?? 0) === 0;
-                  const selectedCodes = new Set(field.value ?? []);
-
-                  const toggle = (code: string) => {
-                    const next = new Set(selectedCodes);
-                    if (next.has(code)) next.delete(code);
-                    else next.add(code);
-                    form.setValue("roleCodes", Array.from(next), {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  };
-
-                  const selectedroleCodes =
-                    roles?.filter((role) => selectedCodes.has(role.code)) ?? [];
-
-                  const label =
-                    selectedCodes.size === 0
-                      ? "Selecionar perfis"
-                      : selectedCodes.size === 1
-                        ? (selectedroleCodes[0]?.name ?? "1 perfil")
-                        : `${selectedCodes.size} perfis selecionados`;
+                  const roleOptions: MultiSelectOption[] =
+                    roles?.map((role) => ({
+                      value: role.code,
+                      label: role.name ?? role.code,
+                    })) ?? [];
 
                   return (
                     <FormItem>
@@ -338,90 +329,19 @@ export function UserInviteDialog({
                             : "Escolha primeiro um departamento para ver os perfis disponíveis."}
                         </p>
                       )}
-                      <Popover open={openRoles} onOpenChange={setOpenRoles}>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              disabled={isDisabled}
-                              className={cn(
-                                "w-full justify-between",
-                                selectedCodes.size === 0 &&
-                                  "text-muted-foreground",
-                              )}
-                            >
-                              <span className="truncate">{label}</span>
-                              <IGRPIcon iconName="ChevronsUpDown" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-
-                        <PopoverContent
-                          className="w-[--radix-popover-trigger-width] p-0"
-                          align="start"
-                        >
-                          <Command>
-                            <CommandInput placeholder="Procurar..." />
-                            <CommandList>
-                              <CommandEmpty>
-                                Nenhum perfil encontrado.
-                              </CommandEmpty>
-                              <CommandGroup>
-                                {roles?.map((role) => {
-                                  const checked = selectedCodes.has(role.code);
-                                  return (
-                                    <CommandItem
-                                      key={role.code}
-                                      value={role.name}
-                                      onSelect={() => toggle(role.code)}
-                                    >
-                                      <IGRPIcon
-                                        iconName="Check"
-                                        className={cn(
-                                          "mr-2",
-                                          checked ? "opacity-100" : "opacity-0",
-                                        )}
-                                      />
-                                      {role.name}
-                                    </CommandItem>
-                                  );
-                                })}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <MultiSelectField
+                        options={roleOptions}
+                        value={field.value ?? []}
+                        onChange={field.onChange}
+                        disabled={isDisabled}
+                        placeholder="Selecionar perfis"
+                        searchPlaceholder="Procurar..."
+                        emptyLabel="Nenhum perfil encontrado."
+                      />
 
                       <FormMessage>
                         {rolesError ? rolesError.message : null}
                       </FormMessage>
-
-                      {selectedroleCodes.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {selectedroleCodes.map((role) => (
-                            <Badge
-                              key={role.code}
-                              variant="secondary"
-                              className="gap-1"
-                            >
-                              {role.name}
-                              <button
-                                type="button"
-                                className="inline-flex size-5 items-center justify-center rounded-sm opacity-70 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                onClick={() => toggle(role.code)}
-                                aria-label={`Remover ${role.name}`}
-                              >
-                                <IGRPIcon
-                                  iconName="X"
-                                  aria-hidden
-                                  className="size-3"
-                                />
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
                     </FormItem>
                   );
                 }}

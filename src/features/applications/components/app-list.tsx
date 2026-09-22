@@ -109,6 +109,7 @@ export function ApplicationList() {
           onStatusFilterChange={setStatusFilter}
           disabled={appEmpty}
           statusCounts={statusCounts}
+          onClearFilters={clearFilters}
         />
 
         <ApplicationsGrid

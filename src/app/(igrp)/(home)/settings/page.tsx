@@ -37,6 +37,39 @@ const settingsConfig: { general: SettingsItem[] } = {
       href: "/settings/departments",
       accent: "success",
     },
+    /* `status: "inativo"` renders these as plain, non-focusable divs with the
+       "Em breve" badge. The `href`s are the routes they will take once built;
+       nothing links to them while the status is set. */
+    {
+      id: "customizacao",
+      title: "Customização",
+      description:
+        "Ajuste a identidade visual da plataforma — tema, cores e logotipos.",
+      icon: "Palette",
+      href: "/settings/customization",
+      accent: "warning",
+      status: "inativo",
+    },
+    {
+      id: "gestao-contas-servicos",
+      title: "Gestão de Contas e Serviços",
+      description:
+        "Faça a gestão das contas e dos serviços associados à plataforma.",
+      icon: "Handshake",
+      href: "/settings/accounts-services",
+      accent: "primary",
+      status: "inativo",
+    },
+    {
+      id: "auditoria-relatorios",
+      title: "Auditoria e Relatórios",
+      description:
+        "Consulte o registo de atividade da plataforma e extraia relatórios.",
+      icon: "FileChartColumn",
+      href: "/settings/audit",
+      accent: "info",
+      status: "inativo",
+    },
   ],
 };
 

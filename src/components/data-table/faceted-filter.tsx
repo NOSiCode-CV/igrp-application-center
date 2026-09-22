@@ -18,6 +18,7 @@ import {
   PopoverTrigger,
   Separator,
 } from "@igrp/igrp-framework-react-design-system";
+import type { Column } from "@tanstack/react-table";
 
 export interface FacetedFilterOption {
   value: string;
@@ -142,5 +143,43 @@ export function FacetedFilter({
         </Command>
       </PopoverContent>
     </Popover>
+  );
+}
+
+interface ColumnFacetedFilterProps<TData> {
+  column: Column<TData, unknown>;
+  label: string;
+  options: readonly FacetedFilterOption[];
+}
+
+/**
+ * `FacetedFilter` bound to a TanStack column, for `IGRPDataTable`'s
+ * `clientFilters`. Replaces `IGRPDataTableFilterFaceted` so the Estado filter
+ * on `/settings/users` is literally the same control as the one on
+ * `/settings/applications`, counts included — the design system's version
+ * reads its counts from the column's facets, which this does too.
+ */
+export function ColumnFacetedFilter<TData>({
+  column,
+  label,
+  options,
+}: ColumnFacetedFilterProps<TData>) {
+  const selected = (column.getFilterValue() as string[] | undefined) ?? [];
+
+  const counts: Record<string, number> = {};
+  for (const [value, count] of column.getFacetedUniqueValues()) {
+    counts[String(value)] = count;
+  }
+
+  return (
+    <FacetedFilter
+      label={label}
+      options={options}
+      value={selected}
+      /* `undefined` on an empty selection, for the same reason as the search
+         box: an empty array still reads as an active filter. */
+      onChange={(next) => column.setFilterValue(next.length ? next : undefined)}
+      counts={counts}
+    />
   );
 }

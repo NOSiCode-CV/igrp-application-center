@@ -7,37 +7,70 @@ import type {
 import { z } from "zod";
 
 import { fileWithPreviewSchema } from "@/features/files/files-schemas";
-import { emptyToNull, statusSchema } from "@/schemas/global";
+import { emptyToNull, statusWithTemporarySchema } from "@/schemas/global";
 
 import { APPLICATIONS_TYPES } from "./app-utils";
 
-export const appTypeCrud = z.enum(APPLICATIONS_TYPES);
+export const appTypeCrud = z.enum(APPLICATIONS_TYPES, {
+  error: "Selecione o tipo de aplicação",
+});
+
+// emptyToNull with the API's 255-char ceiling kept in place: the branch
+// schemas below override description/picture, so the bound has to travel
+// with the override or it is lost.
+const boundedEmptyToNull = (message: string) =>
+  z
+    .string()
+    .trim()
+    .max(255, message)
+    .transform((value) => (value.length === 0 ? null : value))
+    .nullable();
 
 const BaseApp = z
   .object({
     id: z.number().int().positive(),
+    // Checks run in order and the form shows the first failure, so the
+    // "obrigatório" case has to come before the shape/length rules.
     code: z
-      .string()
+      .string({ error: "Código é obrigatório" })
+      .trim()
+      .min(1, "Código é obrigatório")
+      .min(2, "Código deve ter pelo menos 2 caracteres")
+      .max(255, "Código deve ter no máximo 255 caracteres")
       .regex(
-        /^[A-Z0-9_]+$/,
-        "Deve conter apenas maiúsculas, números e sublinhados",
-      )
-      .min(2, "Código deve ter no mínimo 2 caracteres"),
+        /^[A-Z0-9_-]+$/,
+        "Use apenas maiúsculas, números, _ e - (ex.: APP_CENTER)",
+      ),
     name: z
-      .string()
-      // .regex(
-      //   /^[a-zA-Z0-9\sÀ-ÿ()]+$/,
-      //   "O nome não pode conter caracteres especiais",
-      // )
-      .min(2, "Nome é obrigatório")
+      .string({ error: "Nome é obrigatório" })
+      .trim()
+      .min(1, "Nome é obrigatório")
+      .min(2, "Nome deve ter pelo menos 2 caracteres")
       .max(255, "Nome deve ter no máximo 255 caracteres"),
-    status: statusSchema,
-    owner: z.string().optional(),
-    description: z.string().optional(),
-    picture: z.string().optional(),
+    status: z.enum(statusWithTemporarySchema.options, {
+      error: "Selecione um estado válido",
+    }),
+    owner: z
+      .string()
+      .max(255, "Responsável deve ter no máximo 255 caracteres")
+      .optional(),
+    description: z
+      .string()
+      .max(255, "Descrição deve ter no máximo 255 caracteres")
+      .optional(),
+    picture: z
+      .string()
+      .max(255, "Imagem deve ter no máximo 255 caracteres")
+      .optional(),
     type: appTypeCrud,
-    url: z.string().url().optional(),
-    slug: z.string().optional(),
+    url: z
+      .string()
+      .url("Indique um URL completo, com https:// (ex.: https://exemplo.com)")
+      .optional(),
+    slug: z
+      .string()
+      .max(255, "Slug deve ter no máximo 255 caracteres")
+      .optional(),
     createdBy: z.string().optional(),
     createdDate: z.string().optional(),
     lastModifiedBy: z.string().optional(),
@@ -49,22 +82,38 @@ const BaseApp = z
 const InternalSpecific = z
   .object({
     type: z.literal(appTypeCrud.enum.INTERNAL),
-    slug: z.string().min(1, "URL Relativo é obrigatório"),
+    slug: z
+      .string({ error: "Slug é obrigatório" })
+      .trim()
+      .min(1, "Slug é obrigatório (ex.: /apps/exemplo)")
+      .max(255, "Slug deve ter no máximo 255 caracteres"),
   })
   .extend({
-    description: emptyToNull.optional(),
-    picture: emptyToNull.optional(),
+    description: boundedEmptyToNull(
+      "Descrição deve ter no máximo 255 caracteres",
+    ).optional(),
+    picture: boundedEmptyToNull(
+      "Imagem deve ter no máximo 255 caracteres",
+    ).optional(),
     url: emptyToNull.optional(),
   });
 
 const ExternalSpecific = z
   .object({
     type: z.literal(appTypeCrud.enum.EXTERNAL),
-    url: z.string().url("URL inválida"),
+    url: z
+      .string({ error: "URL é obrigatório" })
+      .trim()
+      .min(1, "URL é obrigatório")
+      .url("Indique um URL completo, com https:// (ex.: https://exemplo.com)"),
   })
   .extend({
-    description: emptyToNull.optional(),
-    picture: emptyToNull.optional(),
+    description: boundedEmptyToNull(
+      "Descrição deve ter no máximo 255 caracteres",
+    ).optional(),
+    picture: boundedEmptyToNull(
+      "Imagem deve ter no máximo 255 caracteres",
+    ).optional(),
     slug: emptyToNull.optional(),
   });
 
@@ -82,10 +131,11 @@ const serverManagedOmit = {
   lastModifiedDate: true,
 } as const;
 
-export const CreateApplicationSchema = z.discriminatedUnion("type", [
-  InternalApp.omit(serverManagedOmit),
-  ExternalApp.omit(serverManagedOmit),
-]);
+export const CreateApplicationSchema = z.discriminatedUnion(
+  "type",
+  [InternalApp.omit(serverManagedOmit), ExternalApp.omit(serverManagedOmit)],
+  { error: "Selecione o tipo de aplicação" },
+);
 export type CreateApplicationArgs = z.infer<typeof CreateApplicationSchema>;
 
 const emptyToUndefined = (v: unknown) =>
@@ -96,17 +146,38 @@ const PartialBase = BaseApp.partial()
   .extend({
     url: z.preprocess(
       emptyToUndefined,
-      z.string().url("URL inválida").optional(),
+      z
+        .string()
+        .url("Indique um URL completo, com https:// (ex.: https://exemplo.com)")
+        .optional(),
     ),
-    slug: z.preprocess(emptyToUndefined, z.string().optional()),
-    description: z.preprocess(emptyToUndefined, z.string().optional()),
-    picture: z.preprocess(emptyToUndefined, z.string().optional()),
+    slug: z.preprocess(
+      emptyToUndefined,
+      z.string().max(255, "Slug deve ter no máximo 255 caracteres").optional(),
+    ),
+    description: z.preprocess(
+      emptyToUndefined,
+      z
+        .string()
+        .max(255, "Descrição deve ter no máximo 255 caracteres")
+        .optional(),
+    ),
+    picture: z.preprocess(
+      emptyToUndefined,
+      z
+        .string()
+        .max(255, "Imagem deve ter no máximo 255 caracteres")
+        .optional(),
+    ),
   });
 
 const PartialInternal = PartialBase.merge(
   z.object({
     type: z.literal(appTypeCrud.enum.INTERNAL).optional(),
-    slug: z.preprocess(emptyToUndefined, z.string().optional()),
+    slug: z.preprocess(
+      emptyToUndefined,
+      z.string().max(255, "Slug deve ter no máximo 255 caracteres").optional(),
+    ),
   }),
 );
 
@@ -115,7 +186,10 @@ const PartialExternal = PartialBase.merge(
     type: z.literal(appTypeCrud.enum.EXTERNAL).optional(),
     url: z.preprocess(
       emptyToUndefined,
-      z.string().url("URL inválida").optional(),
+      z
+        .string()
+        .url("Indique um URL completo, com https:// (ex.: https://exemplo.com)")
+        .optional(),
     ),
   }),
 );
@@ -127,7 +201,7 @@ export const UpdateApplicationSchema = z
       ctx.addIssue({
         path: ["slug"],
         code: z.ZodIssueCode.custom,
-        message: "URL Relativo é obrigatório",
+        message: "Slug é obrigatório (ex.: /apps/exemplo)",
       });
     }
     if (data.type === appTypeCrud.enum.EXTERNAL && !data.url) {
@@ -153,8 +227,7 @@ export type UpdateApplicationFormValues = z.output<
   typeof UpdateApplicationSchema
 >;
 export type ApplicationFormValues =
-  | CreateApplicationFormValues
-  | UpdateApplicationFormValues;
+  CreateApplicationFormValues | UpdateApplicationFormValues;
 
 function toNullableString(value: unknown): string | null {
   if (value == null) return null;

@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef } from "react";
-
-import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
+import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
 
 import { FacetedFilter } from "@/components/data-table/faceted-filter";
+import { SearchInput } from "@/components/data-table/search-input";
 import { STATUS_OPTIONS } from "@/lib/constants";
 
 interface ApplicationsToolbarProps {
@@ -15,6 +14,8 @@ interface ApplicationsToolbarProps {
   disabled?: boolean;
   /** How many applications carry each status, shown beside each option. */
   statusCounts?: Record<string, number>;
+  /** Drops the search term and the status selection in one press. */
+  onClearFilters: () => void;
 }
 
 export function ApplicationsToolbar({
@@ -24,63 +25,24 @@ export function ApplicationsToolbar({
   onStatusFilterChange,
   disabled = false,
   statusCounts,
+  onClearFilters,
 }: ApplicationsToolbarProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const clearSearch = () => {
-    onSearchChange("");
-    /* Keep the caret where the user was: clearing is a correction, not an
-       exit, and they almost always type again straight after. */
-    inputRef.current?.focus();
-  };
+  const isFiltered = searchTerm !== "" || statusFilter.length > 0;
 
   return (
-    <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-      <div className="relative w-full max-w-sm">
-        <IGRPIcon
-          iconName="Search"
-          aria-hidden="true"
-          className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-          strokeWidth={2}
-        />
-        <Input
-          ref={inputRef}
-          type="search"
-          aria-label="Pesquisar aplicações"
-          spellCheck={false}
-          placeholder="Pesquisar aplicações…"
-          /* `pr-8` reserves the clear button's column so long queries never
-             run under it. The `::-webkit-search-cancel-button` reset drops
-             Chrome's own clear affordance, which would otherwise sit beside
-             ours as a second, differently-styled X. */
-          className="w-full bg-background pl-8 pr-8 [&::-webkit-search-cancel-button]:appearance-none"
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape" && searchTerm) {
-              e.preventDefault();
-              clearSearch();
-            }
-          }}
-          disabled={disabled}
-        />
-        {searchTerm && !disabled && (
-          <button
-            type="button"
-            onClick={clearSearch}
-            aria-label="Limpar pesquisa"
-            className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
-          >
-            <IGRPIcon
-              iconName="X"
-              aria-hidden="true"
-              className="h-3.5 w-3.5"
-              strokeWidth={2}
-            />
-          </button>
-        )}
-      </div>
-      <div className="flex flex-wrap gap-2">
+    /* Same row as the tables' own filter bar on `/settings/users`
+       (`flex gap-2 flex-col md:flex-row md:items-center`), so the search box
+       and the Estado button sit at the same spacing and break to a column at
+       the same width on both pages. */
+    <div className="flex w-full flex-col gap-2 md:flex-row md:items-center">
+      <SearchInput
+        value={searchTerm}
+        onChange={onSearchChange}
+        label="Pesquisar aplicações"
+        placeholder="Pesquisar aplicações…"
+        disabled={disabled}
+      />
+      <div className="flex flex-wrap items-center gap-2">
         <FacetedFilter
           label="Estado"
           options={STATUS_OPTIONS}
@@ -89,6 +51,21 @@ export function ApplicationsToolbar({
           disabled={disabled}
           counts={statusCounts}
         />
+
+        {/* The tables on `/settings/users` grow this button as soon as any
+            filter is set, and it disappears again once nothing is filtered.
+            Same control, same wording ("Limpar", the design system's
+            `dataTable.clearFilters` default), same appear/disappear rule. */}
+        {isFiltered && !disabled && (
+          <IGRPButton
+            variant="ghost"
+            showIcon
+            iconName="X"
+            onClick={onClearFilters}
+          >
+            Limpar
+          </IGRPButton>
+        )}
       </div>
     </div>
   );

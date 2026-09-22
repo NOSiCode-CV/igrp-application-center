@@ -25,7 +25,11 @@ export function ApplicationFormDialog({
   const isEdit = !!application;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent
+        className="sm:max-w-xl"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>
             {isEdit ? "Editar Aplicação" : "Nova Aplicação"}

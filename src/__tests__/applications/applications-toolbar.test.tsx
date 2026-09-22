@@ -10,6 +10,8 @@ type MockProps = {
 vi.mock("@igrp/igrp-framework-react-design-system", () => {
   const React = require("react");
   return {
+    IGRPButton: ({ children, ...props }: MockProps) =>
+      React.createElement("button", { type: "button", ...props }, children),
     IGRPIcon: (props: MockProps) =>
       React.createElement("span", { "data-icon": true, ...props }),
     Input: (props: MockProps) => React.createElement("input", { ...props }),
@@ -29,6 +31,7 @@ describe("ApplicationsToolbar", () => {
     onSearchChange: () => {},
     statusFilter: [],
     onStatusFilterChange: () => {},
+    onClearFilters: () => {},
   };
 
   it("exposes an accessible name for the search field", () => {
@@ -87,5 +90,29 @@ describe("ApplicationsToolbar", () => {
     expect(
       screen.queryByRole("button", { name: /limpar pesquisa/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("hides the clear button while nothing is filtered", () => {
+    render(<ApplicationsToolbar {...baseProps} />);
+    expect(
+      screen.queryByRole("button", { name: /^limpar$/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("drops the search term and the status selection in one press", async () => {
+    const user = userEvent.setup();
+    const onClearFilters = vi.fn();
+    render(
+      <ApplicationsToolbar
+        {...baseProps}
+        searchTerm="portal"
+        statusFilter={["ACTIVE"]}
+        onClearFilters={onClearFilters}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /^limpar$/i }));
+
+    expect(onClearFilters).toHaveBeenCalledTimes(1);
   });
 });

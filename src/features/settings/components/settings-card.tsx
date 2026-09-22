@@ -4,12 +4,11 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import {
+  Badge, 
   cn,
   IGRPIcon,
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
-
-import { Badge } from "@/components/ui/badge";
 
 /**
  * The icon chip's colour. Each entry is one of the `-subtle` token pairs from
@@ -46,7 +45,13 @@ interface SettingsCardProps {
 
 export function SettingsCard({ item }: SettingsCardProps) {
   const isDisabled = item.status === "inativo";
-  const accent = ACCENTS[item.accent ?? "primary"];
+  /* A disabled card drops its accent for the neutral `muted` pair: colour on
+     this grid is identity (see ACCENTS), and an area you cannot open yet has
+     no identity to return to. Grey plus the badge says "not yet" twice, once
+     visually and once in text, instead of leaving colour as the only tell. */
+  const accent = isDisabled
+    ? "bg-muted text-muted-foreground"
+    : ACCENTS[item.accent ?? "primary"];
 
   const cardContent = (
     <>
@@ -57,18 +62,19 @@ export function SettingsCard({ item }: SettingsCardProps) {
           className={cn(
             "flex size-10 shrink-0 items-center justify-center rounded-lg",
             accent,
-            isDisabled && "opacity-60",
           )}
         >
           <IGRPIcon iconName={item.icon} className="size-5" />
         </div>
-        {/* Title stays at full contrast even when disabled: dimming it below
-            4.5:1 would trade an AA failure for a visual cue the badge already
-            carries. */}
+        {/* Disabled titles grey down to `muted-foreground`, a token held at
+            >= 4.5:1 in both themes — never an opacity wash, which would put the
+            text below AA and make the card unreadable rather than inactive. */}
         <h2
           className={cn(
-            "font-semibold text-sm text-foreground min-w-0",
-            !isDisabled && "group-hover:text-primary",
+            "font-semibold text-sm min-w-0",
+            isDisabled
+              ? "text-muted-foreground"
+              : "text-foreground group-hover:text-primary",
           )}
         >
           {item.title}
@@ -85,10 +91,13 @@ export function SettingsCard({ item }: SettingsCardProps) {
      looked like nothing else in the product was the odd one out, and would
      have drifted further at the next system update. */
   const sharedClassName = cn(
-    "group relative flex flex-col gap-3 rounded-xl border border-border bg-card p-5 h-full",
+    "group relative flex flex-col gap-3 rounded-xl border border-border p-5 h-full",
     "transition-colors motion-reduce:transition-none",
-    !isDisabled &&
-      "hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    isDisabled
+      ? // Recessed surface instead of `bg-card`, so the row of live cards reads
+        // as the foreground even at a glance across the grid.
+        "bg-muted/40 border-dashed"
+      : "bg-card hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   );
 
   if (isDisabled) {

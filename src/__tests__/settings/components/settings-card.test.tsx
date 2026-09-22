@@ -8,6 +8,9 @@ import {
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   IGRPIcon: () => null,
+  Badge: ({ children, className }: React.HTMLAttributes<HTMLSpanElement>) => (
+    <span className={className}>{children}</span>
+  ),
   cn: (...args: unknown[]) =>
     args
       .flat()
