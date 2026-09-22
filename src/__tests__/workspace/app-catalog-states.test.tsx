@@ -62,8 +62,8 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     className?: string;
   }) =>
     label ? (
-      // biome-ignore lint/a11y/noLabelWithoutControl: mirrors the real
-      // component, which points htmlFor at the combobox wrapper's id.
+      // Mirrors the real component, which points htmlFor at the combobox
+      // wrapper's id.
       <label htmlFor={name} className={className}>
         {label}
       </label>
@@ -359,7 +359,9 @@ describe("AppCatalog view modes", () => {
     expect(
       screen.getByRole("link", { name: "Alpha (abre num novo separador)" }),
     ).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /Dead/ })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Dead/ }),
+    ).not.toBeInTheDocument();
   });
 
   it("does not assert a description it does not have", async () => {

@@ -47,7 +47,7 @@ export function AppCatalog() {
   const [sortBy, setSortBy] = useState<SortBy>("default");
   const searchRef = useRef<HTMLInputElement>(null);
   const [announcement, setAnnouncement] = useState("");
-  
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) {
@@ -58,7 +58,7 @@ export function AppCatalog() {
         active instanceof HTMLInputElement ||
         active instanceof HTMLTextAreaElement ||
         active instanceof HTMLSelectElement ||
-        active?.isContentEditable ||        
+        active?.isContentEditable ||
         active?.closest('[role="menu"],[role="listbox"],[role="dialog"]')
       ) {
         return;
@@ -156,11 +156,11 @@ export function AppCatalog() {
           )}
         </h2>
       </div>
-     
+
       <p aria-live="polite" role="status" className="sr-only">
         {announcement}
       </p>
-      
+
       <div className="flex flex-wrap gap-2 mb-4 items-end">
         <InputGroup className="h-10 w-full sm:w-75">
           <InputGroupAddon>
@@ -175,7 +175,7 @@ export function AppCatalog() {
             aria-label="Procurar aplicações"
           />
           {!search && (
-            <InputGroupAddon align="inline-end">            
+            <InputGroupAddon align="inline-end">
               <kbd className="hidden rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-block">
                 /
               </kbd>
@@ -196,13 +196,13 @@ export function AppCatalog() {
           />
           Favoritos
         </Toggle>
-      
+
         <div className="flex gap-2">
           <IGRPLabel
             label="Ordenar por:"
             className="font-medium text-secondary-foreground min-w-fit"
             name="ordenar-apps"
-          />            
+          />
           <IGRPCombobox
             name="ordenar-apps"
             variant="single"
@@ -244,10 +244,10 @@ export function AppCatalog() {
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
-      
+
       {isError ? (
         <InlineError
-          title="Não foi possível carregar as aplicações."        
+          title="Não foi possível carregar as aplicações."
           message="A lista está temporariamente indisponível. O seu acesso não foi alterado."
           onRetry={() => refetch()}
         />
@@ -274,7 +274,7 @@ export function AppCatalog() {
             Clique na ★ de uma aplicação para a adicionar aqui
           </p>
         </div>
-      ) : filtered.length === 0 ? (    
+      ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-muted py-12 px-6 text-center">
           <p className="text-sm text-muted-foreground">
             {showFavoritesOnly
@@ -285,7 +285,7 @@ export function AppCatalog() {
             Limpar filtros
           </IGRPButton>
         </div>
-      ) : viewMode === "list" ? (      
+      ) : viewMode === "list" ? (
         <div key={viewMode} className="animate-fadeIn">
           <AppTable
             apps={filtered}
@@ -294,7 +294,7 @@ export function AppCatalog() {
           />
         </div>
       ) : (
-        <div       
+        <div
           key={viewMode}
           className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 animate-fadeIn"
         >

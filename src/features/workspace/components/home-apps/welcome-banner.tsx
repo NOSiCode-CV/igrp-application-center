@@ -66,14 +66,14 @@ export function WelcomeBanner() {
   ].filter((part): part is ContextPart => Boolean(part.value));
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 flex min-w-0 gap-4">     
+    <div className="rounded-xl border border-border bg-card p-4 flex min-w-0 gap-4">
       <div className="shrink-0 self-start">
         <div className="size-13 rounded-full bg-primary-subtle flex items-center justify-center text-primary-subtle-foreground font-bold text-lg select-none">
           {(user?.name ?? "U").charAt(0).toUpperCase()}
         </div>
       </div>
 
-      <div className="min-w-0 flex flex-col">        
+      <div className="min-w-0 flex flex-col">
         <p className="font-semibold text-base tracking-tight text-foreground">
           {greeting ?? "Bem-vindo"}
           {name ? `, ${name}` : ""}

@@ -40,7 +40,7 @@ function useRailScroll(itemCount: number) {
   const [canScrollNext, setCanScrollNext] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;    
+    const el = ref.current;
     if (!el || itemCount === 0) return;
 
     const update = () => {
@@ -106,9 +106,9 @@ export function RecentlyAccessed() {
           Acedidas recentemente
         </h2>
 
-        <div className="flex shrink-0 items-center gap-2">         
+        <div className="flex shrink-0 items-center gap-2">
           {!isError && (canScrollPrev || canScrollNext) && (
-            <div className="flex items-center gap-1.5">              
+            <div className="flex items-center gap-1.5">
               <IGRPButton
                 variant="outline"
                 size="icon"
@@ -130,13 +130,13 @@ export function RecentlyAccessed() {
         </div>
       </div>
 
-      {isError ? (      
+      {isError ? (
         <InlineError
-          title="Não foi possível carregar as aplicações recentes."         
+          title="Não foi possível carregar as aplicações recentes."
           message="Esta lista está temporariamente indisponível. Tudo o resto continua a funcionar."
           onRetry={() => refetch()}
         />
-      ) : recent.length === 0 ? (        
+      ) : recent.length === 0 ? (
         <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border bg-muted px-4 py-5">
           <p className="text-sm text-secondary-foreground">
             As aplicações que abrir aparecem aqui, para voltar a elas
@@ -147,14 +147,14 @@ export function RecentlyAccessed() {
             <ArrowRight size={13} />
           </IGRPButton>
         </div>
-      ) : (       
+      ) : (
         <div
           ref={ref}
           className="flex items-stretch gap-3.5 overflow-x-auto pb-1 scrollbar-hidden snap-x snap-proximity"
         >
           {visible.map((app) => (
             <div
-              key={app.code}              
+              key={app.code}
               className="basis-69 grow shrink-0 max-w-[85%] snap-start"
             >
               <AppTileCard

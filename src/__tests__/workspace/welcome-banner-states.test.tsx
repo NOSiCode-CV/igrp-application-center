@@ -112,7 +112,9 @@ describe("WelcomeBanner", () => {
     // "N disponíveis para si" and "N abertas nos últimos 7 dias" were
     // removed along with the two queries that fed them. The catalogue below
     // owns the application list, its count, its error and its retry.
-    expect(screen.queryByText(/dispon[íi]veis para si/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/dispon[íi]veis para si/i),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(/últimos 7 dias/i)).not.toBeInTheDocument();
   });
 });

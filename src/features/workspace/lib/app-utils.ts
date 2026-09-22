@@ -23,7 +23,7 @@ export function getAppTileColor(code: string): AppTileColor {
 export function getLastOpenedLabel(
   lastAccess: string | null | undefined,
   now = new Date(),
-): string {  
+): string {
   if (!lastAccess) return "";
 
   const date = new Date(lastAccess);
@@ -55,7 +55,7 @@ export function getLastOpenedLabel(
 export function getAppHref(app: ApplicationDTO): string {
   if (app.code === "APP_IGRP_CENTER") return "/applications";
   if (app.url) return app.url;
-  if (!app.slug) return "";  
+  if (!app.slug) return "";
   return app.slug.startsWith("/") ? app.slug : `/${app.slug}`;
 }
 
