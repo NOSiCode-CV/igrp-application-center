@@ -44,7 +44,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
     : null;
 
   return (
-    <div className="relative overflow-hidden rounded-lg border bg-card p-6 pb-2 transition-all duration-300 hover:shadow-lg">
+    <div className="relative overflow-hidden rounded-lg border bg-card p-6 pb-2 transition-shadow duration-200 motion-reduce:transition-none hover:shadow-lg">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="relative size-12 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">

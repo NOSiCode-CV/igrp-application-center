@@ -144,7 +144,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
             type="submit"
             disabled={updateUser.isPending}
           >
-            {updateUser.isPending ? "Gravando..." : "Gravar"}
+            {updateUser.isPending ? "A guardar..." : "Guardar"}
           </IGRPButton>
         </div>
       </form>

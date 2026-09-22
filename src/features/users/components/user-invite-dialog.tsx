@@ -323,9 +323,7 @@ export function UserInviteDialog({
 
                   const label =
                     selectedCodes.size === 0
-                      ? isDisabled
-                        ? "Selecione um departamento"
-                        : "Selecionar perfis"
+                      ? "Selecionar perfis"
                       : selectedCodes.size === 1
                         ? (selectedroleCodes[0]?.name ?? "1 perfil")
                         : `${selectedCodes.size} perfis selecionados`;
@@ -333,6 +331,13 @@ export function UserInviteDialog({
                   return (
                     <FormItem>
                       <FormLabel>Perfis</FormLabel>
+                      {isDisabled && (
+                        <p className="text-xs text-muted-foreground">
+                          {departmentCode
+                            ? "Este departamento ainda não tem perfis."
+                            : "Escolha primeiro um departamento para ver os perfis disponíveis."}
+                        </p>
+                      )}
                       <Popover open={openRoles} onOpenChange={setOpenRoles}>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -403,11 +408,15 @@ export function UserInviteDialog({
                               {role.name}
                               <button
                                 type="button"
-                                className="opacity-60 hover:opacity-100"
+                                className="inline-flex size-5 items-center justify-center rounded-sm opacity-70 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 onClick={() => toggle(role.code)}
                                 aria-label={`Remover ${role.name}`}
                               >
-                                ×
+                                <IGRPIcon
+                                  iconName="X"
+                                  aria-hidden
+                                  className="size-3"
+                                />
                               </button>
                             </Badge>
                           ))}

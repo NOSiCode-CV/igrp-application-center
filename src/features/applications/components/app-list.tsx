@@ -6,10 +6,10 @@ import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 import { InlineError } from "@/components/inline-error";
-import { AppCenterLoading } from "@/components/loading";
 import { PageHeader } from "@/components/page-header";
 import { useApplications } from "@/features/applications/use-applications";
 
+import { AppListSkeleton } from "./app-list-skeleton";
 import { ApplicationFormDialog } from "./application-form-dialog";
 import { ApplicationsGrid } from "./applications-grid";
 import { ApplicationsToolbar } from "./applications-toolbar";
@@ -32,8 +32,7 @@ export function ApplicationList() {
     setDialogOpen(true);
   };
 
-  if (isLoading)
-    return <AppCenterLoading description="Carregando aplicações…" />;
+  if (isLoading) return <AppListSkeleton />;
 
   if (error)
     return (
@@ -48,8 +47,12 @@ export function ApplicationList() {
   const appEmpty = allApps.length === 0;
 
   const emptyState = (
-    <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
-      <p className="mb-4">Nenhuma aplicação encontrada.</p>
+    <div className="flex flex-col items-center gap-3 text-center py-10 px-6 border border-dashed border-muted-foreground/30 rounded-md">
+      <p className="font-medium text-foreground">Ainda não há aplicações</p>
+      <p className="text-sm text-muted-foreground max-w-md">
+        As aplicações são o que os utilizadores abrem a partir da página
+        inicial. Crie a primeira para a poder associar a departamentos e perfis.
+      </p>
       <IGRPButton
         variant="outline"
         showIcon

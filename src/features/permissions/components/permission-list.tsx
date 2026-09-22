@@ -17,6 +17,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 
+import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
 import {
   useAddPermissionsToDepartment,
@@ -35,6 +36,9 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   const { igrpToast } = useIGRPToast();
   const [openManageResources, setOpenManageResources] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [permissionToRevoke, setPermissionToRevoke] = useState<string | null>(
+    null,
+  );
   const [processingPermission, setProcessingPermission] = useState<
     string | null
   >(null);
@@ -112,7 +116,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro",
+        title: "Não foi possível alterar a permissão",
         description:
           error instanceof Error ? error.message : "Erro desconhecido",
       });
@@ -233,12 +237,16 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                               <Switch
                                 checked={permission.isAssigned}
                                 disabled={processingPermission !== null}
-                                onCheckedChange={(checked) =>
-                                  handleTogglePermission(
-                                    permission.name,
-                                    checked,
-                                  )
-                                }
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    handleTogglePermission(
+                                      permission.name,
+                                      true,
+                                    );
+                                  } else {
+                                    setPermissionToRevoke(permission.name);
+                                  }
+                                }}
                                 aria-label={
                                   permission.isAssigned
                                     ? `Remover permissão ${permission.name}`
@@ -266,6 +274,31 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         departmentCode={departmentCode}
         open={openManageResources}
         onOpenChange={setOpenManageResources}
+      />
+
+      <ConfirmDialog
+        open={permissionToRevoke !== null}
+        onOpenChange={(open) => {
+          if (!open) setPermissionToRevoke(null);
+        }}
+        title="Remover permissão"
+        description={
+          permissionToRevoke
+            ? `Remover «${permissionToRevoke}» do departamento ${departmentCode}? Todos os perfis deste departamento perdem o acesso que esta permissão concede.`
+            : ""
+        }
+        onConfirm={() => {
+          if (permissionToRevoke) {
+            const name = permissionToRevoke;
+            setPermissionToRevoke(null);
+            void handleTogglePermission(name, false);
+          }
+        }}
+        isLoading={processingPermission === permissionToRevoke}
+        confirmText="Remover"
+        loadingText="A remover..."
+        iconName="ShieldOff"
+        variant="destructive"
       />
     </>
   );

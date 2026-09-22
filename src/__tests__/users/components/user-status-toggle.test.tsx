@@ -1,6 +1,6 @@
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -33,7 +33,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
     children?: React.ReactNode;
   }) => (open ? <div>{children}</div> : null),
   AlertDialogContent: ({ children }: { children?: React.ReactNode }) => (
-    <div>{children}</div>
+    <div role="dialog">{children}</div>
   ),
   AlertDialogHeader: ({ children }: { children?: React.ReactNode }) => (
     <div>{children}</div>
@@ -71,8 +71,11 @@ describe("UserStatusToggle", () => {
     );
 
     await userEvent.click(screen.getByRole("button", { name: /desativar/i }));
+
+    // Trigger and confirm now share the label, so take the dialog's own button.
+    const dialog = screen.getByRole("dialog");
     await userEvent.click(
-      screen.getByRole("button", { name: /confirmar desativar/i }),
+      within(dialog).getByRole("button", { name: /^desativar$/i }),
     );
 
     await waitFor(() => {

@@ -57,7 +57,7 @@ export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
       </div>
 
       {loading ? (
-        <AppCenterLoading description="Carregando aplicações…" />
+        <AppCenterLoading description="A carregar aplicações…" />
       ) : filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           {search.trim()

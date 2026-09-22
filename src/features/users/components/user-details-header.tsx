@@ -19,7 +19,6 @@ export function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
 
   return (
     <div className="relative">
-      <div className="absolute inset-0 rounded-xl -z-10" />
       <Card className="py-2 border-0 shadow-sm">
         <CardContent className="px-4 py-1">
           <div className="flex items-center mb-2 justify-end">

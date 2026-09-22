@@ -17,7 +17,7 @@ export function UserRolesList({ id }: RolesListProps) {
 
   if (isLoading)
     return (
-      <div className="p-6 text-center text-muted-foreground">Carregando...</div>
+      <div className="p-6 text-center text-muted-foreground">A carregar...</div>
     );
   if (isError)
     return (

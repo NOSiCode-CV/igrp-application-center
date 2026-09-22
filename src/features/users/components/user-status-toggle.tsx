@@ -3,18 +3,12 @@
 import { useState } from "react";
 
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   IGRPButton,
-  IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
+import { ConfirmDialog } from "@/components/confirmation-modal";
 import { useUpdateUserStatus } from "@/features/users/use-users";
 
 interface UserStatusToggleProps {
@@ -26,6 +20,7 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
   const { mutateAsync: updateStatus, isPending } = useUpdateUserStatus();
   const [open, setOpen] = useState(false);
   const isActive = user.status === "ACTIVE";
+  const userLabel = user.name || user.email;
 
   const handleConfirm = async () => {
     const value = isActive ? "INACTIVE" : "ACTIVE";
@@ -60,51 +55,22 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
         {isActive ? "Desativar" : "Ativar"}
       </IGRPButton>
 
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <IGRPIcon
-                iconName="AlertTriangle"
-                className="size-5 text-destructive"
-                strokeWidth={2}
-              />
-              {isActive ? "Desativar" : "Ativar"} Utilizador
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-              utilizador{" "}
-              <strong className="text-foreground">{user.name}</strong>?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <IGRPButton
-              disabled={isPending}
-              variant="outline"
-              onClick={() => setOpen(false)}
-              type="button"
-              showIcon
-              iconPlacement="start"
-              iconName="X"
-            >
-              Cancelar
-            </IGRPButton>
-            <IGRPButton
-              onClick={handleConfirm}
-              disabled={isPending}
-              variant={isActive ? "destructive" : "default"}
-              className="gap-2"
-            >
-              {isPending ? (
-                <IGRPIcon iconName="LoaderCircle" className="animate-spin" />
-              ) : (
-                <IGRPIcon iconName={isActive ? "Ban" : "Check"} />
-              )}
-              {isActive ? "Confirmar Desativar" : "Confirmar Ativar"}
-            </IGRPButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={isActive ? "Desativar utilizador" : "Ativar utilizador"}
+        description={
+          isActive
+            ? `${userLabel} deixa de poder entrar na plataforma. As atribuições de perfil são mantidas e a conta pode ser reativada mais tarde.`
+            : `${userLabel} volta a poder entrar na plataforma com os perfis que já tem atribuídos.`
+        }
+        onConfirm={handleConfirm}
+        isLoading={isPending}
+        confirmText={isActive ? "Desativar" : "Ativar"}
+        loadingText={isActive ? "A desativar..." : "A ativar..."}
+        iconName="Ban"
+        variant={isActive ? "destructive" : "default"}
+      />
     </>
   );
 }

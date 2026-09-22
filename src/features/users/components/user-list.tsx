@@ -130,8 +130,6 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
       [],
     );
 
-  if (error) throw error;
-
   const handleConfirmStatusChange = () => {
     if (dialog.kind !== "status") return;
     updateStatusMutation.mutate(
@@ -149,8 +147,9 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         onError: () => {
           igrpToast({
             type: "error",
-            title: "Erro",
-            description: "Não foi possível alterar o estado do utilizador",
+            title: "Não foi possível alterar o estado",
+            description:
+              "O estado do utilizador não foi alterado. Tente novamente.",
             duration: 6000,
           });
         },
@@ -173,8 +172,8 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
       onError: () => {
         igrpToast({
           type: "error",
-          title: "Erro",
-          description: "Não foi possível cancelar o convite",
+          title: "Não foi possível cancelar o convite",
+          description: "O convite mantém-se ativo. Tente novamente.",
           duration: 6000,
         });
       },
@@ -197,9 +196,21 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         </IGRPButton>
       </PageHeader>
 
+      {error && (
+        <div
+          role="status"
+          className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm"
+        >
+          Não foi possível atualizar a lista. Os dados apresentados podem estar
+          desatualizados.
+        </div>
+      )}
+
       <Tabs defaultValue="active">
         <TabsList>
-          <TabsTrigger value="active">Utilizadores Ativos</TabsTrigger>
+          <TabsTrigger value="active">
+            Utilizadores ({users.length})
+          </TabsTrigger>
           <TabsTrigger value="pending">
             Convites Pendentes ({pendingData.length})
           </TabsTrigger>
@@ -221,7 +232,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
 
         <TabsContent value="pending">
           {isLoadingInvites ? (
-            <AppCenterLoading description="Carregando convites..." />
+            <AppCenterLoading description="A carregar convites..." />
           ) : (
             <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
@@ -236,7 +247,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
 
         <TabsContent value="canceled">
           {isLoadingInvites ? (
-            <AppCenterLoading description="Carregando convites..." />
+            <AppCenterLoading description="A carregar convites..." />
           ) : (
             <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
@@ -280,7 +291,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         }
         loadingText={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
-            ? "Desativando..."
+            ? "A desativar..."
             : "Ativando..."
         }
         iconName={
@@ -311,7 +322,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         }
         onConfirm={handleConfirmCancel}
         confirmText="Confirmar"
-        loadingText="Cancelando..."
+        loadingText="A cancelar..."
         iconName="Trash"
         variant="destructive"
         isLoading={cancelUserInvitationMutation.isPending}

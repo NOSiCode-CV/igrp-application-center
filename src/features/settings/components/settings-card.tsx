@@ -10,12 +10,6 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 export interface SettingsItem {
   id: string;
@@ -35,11 +29,19 @@ export function SettingsCard({ item }: SettingsCardProps) {
 
   const cardContent = (
     <div className="flex items-start gap-4">
-      <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
+      <div
+        className={cn(
+          "p-2.5 rounded-md bg-primary/10 shrink-0",
+          isDisabled && "opacity-60",
+        )}
+      >
         <IGRPIcon iconName={item.icon} className="size-5 text-primary" />
       </div>
       <div className="flex flex-col gap-1 min-w-0">
-        <h3 className="font-medium text-primary">{item.title}</h3>
+        {/* Title stays at full contrast even when disabled: dimming it below
+            4.5:1 would trade an AA failure for a visual cue the badge already
+            carries. */}
+        <h3 className="font-medium text-foreground">{item.title}</h3>
         <p className="text-xs text-muted-foreground leading-snug">
           {item.description}
         </p>
@@ -48,41 +50,22 @@ export function SettingsCard({ item }: SettingsCardProps) {
   );
 
   const sharedClassName = cn(
-    "relative text-left p-5 rounded-lg border-0 bg-accent/20 transition-colors",
-    isDisabled
-      ? "opacity-50 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      : "cursor-pointer hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    "relative text-left p-5 rounded-lg border-0 bg-accent/20 transition-colors motion-reduce:transition-none",
+    !isDisabled &&
+      "block cursor-pointer hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   );
 
   if (isDisabled) {
+    // Not a link and not focusable: it has no destination. The badge is the
+    // state, visible and announced in reading order — a tooltip here would be
+    // mouse-only.
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {/* biome-ignore lint/a11y/useSemanticElements: disabled placeholder has no href, so a real <a> isn't valid here */}
-            <div
-              role="link"
-              tabIndex={0}
-              aria-disabled="true"
-              className={sharedClassName}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") e.preventDefault();
-              }}
-            >
-              {cardContent}
-              <Badge
-                variant="secondary"
-                className="absolute top-2 right-2 text-xs"
-              >
-                Em breve
-              </Badge>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Disponível em breve</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className={sharedClassName}>
+        {cardContent}
+        <Badge variant="secondary" className="absolute top-2 right-2 text-xs">
+          Em breve
+        </Badge>
+      </div>
     );
   }
 

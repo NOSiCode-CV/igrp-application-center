@@ -72,13 +72,16 @@ export function MenuTreeRow({
             {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
-                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                className="size-7 flex items-center justify-center hover:bg-accent rounded transition-colors motion-reduce:transition-none shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 type="button"
+                aria-expanded={isExpanded}
+                aria-label={isExpanded ? "Recolher menu" : "Expandir menu"}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
+                  aria-hidden
                   className={cn(
-                    "size-4 transition-transform",
+                    "size-4 transition-transform motion-reduce:transition-none",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}

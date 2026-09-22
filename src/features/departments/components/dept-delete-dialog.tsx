@@ -54,7 +54,9 @@ export function DepartmentDeleteDialog({
       toDelete={deptToDelete}
       confirmDelete={confirmDelete}
       isDeleting={isDeleting}
-      label="Nome Departamento"
+      description="Esta ação é irreversível. O departamento é eliminado, juntamente com os perfis, permissões e menus que lhe estão associados."
+      label="Nome do departamento"
+      textHeader="Eliminar departamento"
     />
   );
 }

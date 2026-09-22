@@ -60,11 +60,8 @@ export function ConfirmDialog({
             {cancelText}
           </IGRPButton>
           <IGRPButton
-            className={
-              variant === "destructive"
-                ? "bg-destructive hover:bg-destructive/90 gap-2 text-white"
-                : "gap-2"
-            }
+            variant={variant}
+            className="gap-2"
             onClick={onConfirm}
             disabled={isLoading}
           >
@@ -72,8 +69,9 @@ export function ConfirmDialog({
               <>
                 <IGRPIcon
                   iconName="LoaderCircle"
-                  className="size-4 animate-spin"
+                  className="size-4 animate-spin motion-reduce:animate-none"
                   strokeWidth={2}
+                  aria-hidden="true"
                 />
                 {loadingText}
               </>

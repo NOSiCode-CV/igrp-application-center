@@ -76,7 +76,7 @@ export function UserMetadataPanel({ userId }: UserMetadataPanelProps) {
           Metadados
         </Label>
         <IGRPButton size="sm" variant="outline" onClick={addRow}>
-          + Add field
+          + Adicionar campo
         </IGRPButton>
       </div>
 
@@ -109,7 +109,7 @@ export function UserMetadataPanel({ userId }: UserMetadataPanelProps) {
           onClick={handleSave}
           disabled={updateMutation.isPending}
         >
-          Save
+          Guardar
         </IGRPButton>
       </div>
     </div>

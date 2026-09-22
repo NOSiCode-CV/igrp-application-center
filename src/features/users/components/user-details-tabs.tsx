@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 import {
   IGRPButton,
@@ -66,11 +67,34 @@ interface UserDetailsTabsProps {
   user: IGRPUserDTO;
 }
 
+const TAB_VALUES: TabValue[] = [
+  "roles",
+  "departments",
+  "applications",
+  "signature",
+  "sessions",
+  "audit",
+  "metadata",
+];
+
 export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
-  const [active, setActive] = useState<TabValue>("roles");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Tab lives in the URL so the view is linkable and survives a round trip to
+  // the list, matching the departments surface.
+  const requested = searchParams.get("tab") as TabValue | null;
+  const active: TabValue =
+    requested && TAB_VALUES.includes(requested) ? requested : "roles";
+
+  const handleTabChange = (next: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", next);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
-    <Tabs value={active} onValueChange={(v) => setActive(v as TabValue)}>
+    <Tabs value={active} onValueChange={handleTabChange}>
       <TabsList>
         <TabsTrigger value="roles">Perfis</TabsTrigger>
         <TabsTrigger value="departments">Departamentos</TabsTrigger>

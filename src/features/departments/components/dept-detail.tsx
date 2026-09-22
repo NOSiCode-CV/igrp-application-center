@@ -69,7 +69,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
     "—";
 
   return (
-    <div className="container mx-auto px-0 md:px-6">
+    <div className="w-full">
       <div className="flex flex-col lg:flex-row items-start justify-between mb-6 gap-4">
         <div className="w-full lg:w-auto">
           <div className="flex items-center gap-3 flex-wrap">

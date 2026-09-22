@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { type ReactNode, useId, useState } from "react";
 
 import {
   Button,
@@ -19,11 +19,19 @@ interface IGRPDialogDeleteProps {
   toDelete: { code?: string; name: string };
   confirmDelete(): Promise<void>;
   isDeleting: boolean;
-  description?: string;
-  label?: string;
+  /**
+   * What this action actually does, in the caller's own words. Required: the
+   * dialog must not assert a consequence it cannot know. A caller that merely
+   * deactivates a record must not inherit "eliminado permanentemente".
+   */
+  description: ReactNode;
+  /** Label for the confirmation input. Must name the value being matched. */
+  label: string;
   labelBtnCancel?: string;
   labelBtnDelete?: string;
   textHeader?: string;
+  /** Icon on the confirm button. Use one that matches the real effect. */
+  confirmIconName?: string;
 }
 
 function IGRPDialogDelete({
@@ -33,23 +41,17 @@ function IGRPDialogDelete({
   confirmDelete,
   isDeleting,
   description,
-  label = "Escreva",
+  label,
   labelBtnCancel = "Cancelar",
   labelBtnDelete = "Eliminar",
   textHeader = "Confirmação Final",
+  confirmIconName = "Trash",
 }: IGRPDialogDeleteProps) {
   const id = useId();
   const [confirmation, setConfirmation] = useState("");
 
   const isConfirmed = confirmation === toDelete.name;
-
-  const RenderDes = (
-    <span>
-      Esta ação é irreversível. Todos os dados serão eliminados permanentemente.
-      Para confirmar, escreva{" "}
-      <span className="font-semibold">{toDelete.name}.</span>
-    </span>
-  );
+  const hasMismatch = confirmation.length > 0 && !isConfirmed;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -62,12 +64,17 @@ function IGRPDialogDelete({
             <IGRPIcon
               iconName="CircleAlert"
               className="text-destructive size-6 me-2"
+              aria-hidden="true"
             />
             <span>{textHeader}</span>
           </div>
           <DialogHeader>
             <DialogDescription className="text-foreground text-base">
-              {description ? description : RenderDes}
+              {description}{" "}
+              <span>
+                Para confirmar, escreva{" "}
+                <span className="font-semibold">{toDelete.name}.</span>
+              </span>
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -86,8 +93,19 @@ function IGRPDialogDelete({
               onChange={(e) => setConfirmation(e.target.value)}
               placeholder={`Digite '${toDelete.name}' para confirmação`}
               className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+              aria-invalid={hasMismatch}
+              aria-describedby={hasMismatch ? `mismatch-${id}` : undefined}
               required
             />
+            {hasMismatch && (
+              <p
+                id={`mismatch-${id}`}
+                className="text-sm text-destructive"
+                role="alert"
+              >
+                O texto não coincide com «{toDelete.name}».
+              </p>
+            )}
           </div>
         </div>
         <DialogFooter className="flex flex-col">
@@ -110,7 +128,11 @@ function IGRPDialogDelete({
             }}
             disabled={!isConfirmed || isDeleting}
           >
-            <IGRPIcon iconName="Trash" className="size-4" strokeWidth={2} />
+            <IGRPIcon
+              iconName={confirmIconName}
+              className="size-4"
+              strokeWidth={2}
+            />
             {isDeleting ? "Aguarde..." : labelBtnDelete}
           </Button>
         </DialogFooter>

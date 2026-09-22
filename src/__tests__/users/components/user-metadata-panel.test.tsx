@@ -77,9 +77,9 @@ describe("UserMetadataPanel", () => {
     expect(screen.getByDisplayValue("TI")).toBeInTheDocument();
   });
 
-  it("adds a new empty row when '+ Add field' is clicked", async () => {
+  it("adds a new empty row when '+ Adicionar campo' is clicked", async () => {
     render(<UserMetadataPanel userId="1" />, { wrapper });
-    const addButton = screen.getByRole("button", { name: /add field/i });
+    const addButton = screen.getByRole("button", { name: /adicionar campo/i });
     await userEvent.click(addButton);
     const keyInputs = screen.getAllByPlaceholderText("chave");
     expect(keyInputs).toHaveLength(2);
@@ -103,7 +103,7 @@ describe("UserMetadataPanel", () => {
     } as unknown as ReturnType<typeof useUpdateUserMetadata>);
 
     render(<UserMetadataPanel userId="1" />, { wrapper });
-    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    await userEvent.click(screen.getByRole("button", { name: /guardar/i }));
 
     await waitFor(() => {
       expect(mutateAsync).toHaveBeenCalledWith({

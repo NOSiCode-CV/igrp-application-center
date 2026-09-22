@@ -22,6 +22,7 @@ import {
   cn,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   IGRPButton,
@@ -85,7 +86,7 @@ const columns: ColumnDef<RoleDTO>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label="Selecionar todos os perfis desta página"
         className="ring ring-current/50"
       />
     ),
@@ -93,7 +94,7 @@ const columns: ColumnDef<RoleDTO>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={`Selecionar o perfil ${row.original.name ?? row.original.code}`}
         className="ring ring-current/50"
       />
     ),
@@ -183,7 +184,7 @@ export function UserRolesDialog({
   const data = useMemo(() => (open ? (roles ?? []) : []), [open, roles]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 15,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -210,7 +211,7 @@ export function UserRolesDialog({
       setDepartmentCode(undefined);
       setRowSelection({});
       setColumnFilters([]);
-      setPagination({ pageIndex: 0, pageSize: 5 });
+      setPagination({ pageIndex: 0, pageSize: 15 });
       setExpiresAt("");
     }
   }, [open]);
@@ -325,12 +326,17 @@ export function UserRolesDialog({
   const err = error || errorUserRoles;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="md:min-w-2xl max-h-[95vh]">
         <DialogHeader>
           <DialogTitle className="text-base">
             Adicionar ou Remover Perfis
           </DialogTitle>
+          <DialogDescription>
+            {departmentCode
+              ? `A mostrar apenas os perfis do departamento ${deptName(departmentCode)}. Os perfis de outros departamentos não são alterados aqui.`
+              : "Escolha um departamento para ver os perfis que pode atribuir."}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
@@ -353,9 +359,9 @@ export function UserRolesDialog({
                     onChange={(e) =>
                       table.getColumn("name")?.setFilterValue(e.target.value)
                     }
-                    placeholder="Filtar por nome..."
+                    placeholder="Filtrar por nome..."
                     type="text"
-                    aria-label="Filtar por nome"
+                    aria-label="Filtrar por nome"
                     disabled={!departmentCode}
                   />
                   <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
@@ -364,8 +370,8 @@ export function UserRolesDialog({
                   {Boolean(table.getColumn("name")?.getFilterValue()) && (
                     <button
                       type="button"
-                      className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px]"
-                      aria-label="Clear filter"
+                      className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px]"
+                      aria-label="Limpar filtro"
                       onClick={() => {
                         table.getColumn("name")?.setFilterValue("");
                         inputRef.current?.focus();
@@ -488,7 +494,9 @@ export function UserRolesDialog({
 
               <div className="flex items-center justify-between gap-3">
                 <Badge>
-                  {table.getSelectedRowModel().rows.length} selecionado(s)
+                  {table.getSelectedRowModel().rows.length === 1
+                    ? "1 perfil selecionado"
+                    : `${table.getSelectedRowModel().rows.length} perfis selecionados`}
                 </Badge>
 
                 <div className="flex gap-2">
@@ -522,7 +530,7 @@ export function UserRolesDialog({
                     showIcon
                   >
                     {loading || isAdding || isRemoving
-                      ? "Guardando..."
+                      ? "A guardar..."
                       : "Guardar"}
                   </IGRPButton>
                 </div>

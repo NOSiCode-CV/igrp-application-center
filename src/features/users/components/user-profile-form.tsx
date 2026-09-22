@@ -59,15 +59,12 @@ export function ProfileUserForm() {
   }, [user, form]);
 
   if (isLoading) {
-    return <AppCenterLoading description="Carregando profile..." />;
+    return <AppCenterLoading description="A carregar perfil..." />;
   }
 
   if (!user) {
     return (
-      <AppCenterNotFound
-        iconName="User"
-        title="Nenhum utilizador encontrada."
-      />
+      <AppCenterNotFound iconName="User" title="Utilizador não encontrado." />
     );
   }
 
@@ -95,8 +92,8 @@ export function ProfileUserForm() {
 
     igrpToast({
       type: "success",
-      title: "Usuario Atualizado",
-      description: "O Usuario foi atualizado com sucesso!",
+      title: "Utilizador atualizado",
+      description: "Os dados do utilizador foram atualizados.",
       duration: 2000,
     });
 
@@ -110,16 +107,16 @@ export function ProfileUserForm() {
         <div className="flex items-center gap-2">
           <BackButton />
           <h3 className="text-2xl font-bold tracking-tight">
-            Edit User Profile
+            Editar perfil do utilizador
           </h3>
         </div>
       </div>
 
       <Card>
         <CardHeader className="mb-3">
-          <CardTitle>Detailed information about this user.</CardTitle>
+          <CardTitle>Dados do utilizador</CardTitle>
           <CardDescription>
-            Manage your personal information and account settings.
+            Altere os dados pessoais e as definições da conta.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -131,15 +128,17 @@ export function ProfileUserForm() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Nome completo</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="johndoe"
+                          placeholder="Nome completo do utilizador"
                           {...field}
                           value={field.value ?? ""}
                         />
                       </FormControl>
-                      <FormDescription>The user full name.</FormDescription>
+                      <FormDescription>
+                        Nome que identifica o utilizador na plataforma.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -152,7 +151,7 @@ export function ProfileUserForm() {
                   name="picture"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Profile Image</FormLabel>
+                      <FormLabel>Fotografia</FormLabel>
                       <FormControl>
                         <ProfileImageUpload
                           value={field.value}
@@ -160,7 +159,7 @@ export function ProfileUserForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Upload a profile picture for this user.
+                        Carregue uma fotografia para este utilizador.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -172,7 +171,7 @@ export function ProfileUserForm() {
                   name="signature"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Signature</FormLabel>
+                      <FormLabel>Assinatura</FormLabel>
                       <FormControl>
                         <ProfileSignature
                           value={field.value}
@@ -180,7 +179,7 @@ export function ProfileUserForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        The user&apos;s digital signature.
+                        Assinatura digital do utilizador.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

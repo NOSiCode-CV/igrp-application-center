@@ -5,13 +5,17 @@ import {
   Badge,
   Button,
   IGRPIcon,
+  Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import type {
+  IGRPUserDTO,
+  RoleDTO,
+} from "@igrp/platform-access-management-client-ts";
 
-import { AppCenterLoading } from "@/components/loading";
+import { ConfirmDialog } from "@/components/confirmation-modal";
 
-import { useRemoveUserRole, useUserRoles } from "../use-users";
+import { useAddUserRole, useRemoveUserRole, useUserRoles } from "../use-users";
 import { UserRolesDialog } from "./user-role-dialog";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
@@ -22,32 +26,32 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     isPending,
     variables,
   } = useRemoveUserRole();
+  const { mutateAsync: addUserRole } = useAddUserRole();
 
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [roleToRevoke, setRoleToRevoke] = useState<RoleDTO | null>(null);
 
-  const handleRevokeRole = async (
-    departmentCode: string,
-    roleCodes: string[],
-  ) => {
-    if (!roleCodes) return;
+  const userLabel = user.name || user.email;
 
+  const restoreRole = async (role: RoleDTO) => {
     try {
-      const res = await removeUserRole({
+      const res = await addUserRole({
         id: user.id,
-        departmentCode,
-        roleCodes,
+        departmentCode: role.departmentCode,
+        request: { roles: [role.code] },
       });
       if (!res.success) {
         throw new Error(res.error);
       }
       igrpToast({
         type: "success",
-        title: "Perfil removido com sucesso.",
+        title: "Perfil reposto.",
+        description: `«${role.name ?? role.code}» foi novamente atribuído a ${userLabel}.`,
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Não foi possivel remover o perfil.",
+        title: "Não foi possível repor o perfil.",
         description:
           error instanceof Error
             ? error.message
@@ -56,11 +60,59 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     }
   };
 
+  const handleRevokeRole = async (role: RoleDTO) => {
+    try {
+      const res = await removeUserRole({
+        id: user.id,
+        departmentCode: role.departmentCode,
+        roleCodes: [role.code],
+      });
+      if (!res.success) {
+        throw new Error(res.error);
+      }
+      igrpToast({
+        type: "success",
+        title: "Perfil revogado.",
+        description: `«${role.name ?? role.code}» foi removido de ${userLabel} no departamento ${role.departmentCode}.`,
+        duration: 10000,
+        action: {
+          label: "Anular",
+          onClick: () => {
+            void restoreRole(role);
+          },
+        },
+      });
+    } catch (error) {
+      igrpToast({
+        type: "error",
+        title: "Não foi possível remover o perfil.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro desconhecido.",
+      });
+    } finally {
+      setRoleToRevoke(null);
+    }
+  };
+
   const isRemovingRole = (roleCode: string) => {
     return isPending && variables?.roleCodes.includes(roleCode);
   };
+
   if (isLoading) {
-    return <AppCenterLoading description="Carregando perfis..." />;
+    return (
+      <div className="flex flex-col gap-3" aria-busy="true">
+        <div className="flex items-center justify-between mb-1">
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="h-8 w-28" />
+        </div>
+        {Array.from({ length: 3 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
+          <Skeleton key={i} className="h-28 w-full rounded-lg" />
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -125,7 +177,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                       </div>
                       {role.parentCode && (
                         <div className="text-xs">
-                          Associados:{" "}
+                          Perfil superior:{" "}
                           <span className="font-mono">{role.parentCode}</span>
                         </div>
                       )}
@@ -155,15 +207,13 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                 </div>
 
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  onClick={() =>
-                    handleRevokeRole(role.departmentCode, [role.code])
-                  }
+                  onClick={() => setRoleToRevoke(role)}
                   disabled={isRemovingRole(role.code || "")}
-                  className="shrink-0 cursor-pointer"
+                  className="shrink-0 cursor-pointer text-destructive hover:text-destructive"
                 >
-                  {isRemovingRole(role.code || "") ? "..." : "Revogar"}
+                  {isRemovingRole(role.code || "") ? "A revogar..." : "Revogar"}
                 </Button>
               </div>
             ))}
@@ -195,6 +245,27 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
           id={user.id}
         />
       )}
+
+      <ConfirmDialog
+        open={roleToRevoke !== null}
+        onOpenChange={(open) => {
+          if (!open) setRoleToRevoke(null);
+        }}
+        title="Revogar perfil"
+        description={
+          roleToRevoke
+            ? `Revogar «${roleToRevoke.name ?? roleToRevoke.code}» de ${userLabel} no departamento ${roleToRevoke.departmentCode}? O utilizador perde os acessos que este perfil concede.`
+            : ""
+        }
+        onConfirm={() => {
+          if (roleToRevoke) void handleRevokeRole(roleToRevoke);
+        }}
+        isLoading={isRemovingRole(roleToRevoke?.code ?? "")}
+        confirmText="Revogar"
+        loadingText="A revogar..."
+        iconName="ShieldOff"
+        variant="destructive"
+      />
     </div>
   );
 }

@@ -366,7 +366,7 @@ export function ApplicationForm({
             disabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting
-              ? "Guardando..."
+              ? "A guardar..."
               : isEdit
                 ? "Atualizar Aplicação"
                 : "Criar Aplicação"}

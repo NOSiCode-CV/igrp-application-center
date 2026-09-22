@@ -19,7 +19,7 @@ export function UserProfile() {
   const { data: user, isLoading, error } = useCurrentUser();
   if (error) throw error;
   if (isLoading)
-    return <AppCenterLoading description="Carregando utilizador…" />;
+    return <AppCenterLoading description="A carregar utilizador…" />;
   if (!user)
     return (
       <AppCenterNotFound

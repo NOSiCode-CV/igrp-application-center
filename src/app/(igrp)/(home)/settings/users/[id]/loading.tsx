@@ -1,5 +1,5 @@
-import { AppCenterLoading } from "@/components/loading";
+import { UserDetailSkeleton } from "@/features/users/components/user-detail-skeleton";
 
 export default function UserDetailsLoading() {
-  return <AppCenterLoading description="Carregando utilizador..." />;
+  return <UserDetailSkeleton />;
 }

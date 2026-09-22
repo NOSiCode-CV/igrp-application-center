@@ -67,28 +67,30 @@ describe("SettingsCard", () => {
   });
 
   describe("disabled card", () => {
-    it("renders as a div with role=link and aria-disabled", () => {
+    // A card with no destination must not advertise itself as a link, and must
+    // not take a tab stop only to swallow Enter and Space.
+    it("is not exposed as a link", () => {
       render(<SettingsCard item={disabledItem} />);
-      const card = screen.getByRole("link", { name: /customização/i });
-      expect(card.tagName).toBe("DIV");
-      expect(card).toHaveAttribute("aria-disabled", "true");
+      expect(screen.queryByRole("link")).not.toBeInTheDocument();
     });
 
-    it("is keyboard-focusable via tabIndex", () => {
+    it("is not keyboard-focusable", () => {
       render(<SettingsCard item={disabledItem} />);
-      const card = screen.getByRole("link", { name: /customização/i });
-      expect(card).toHaveAttribute("tabindex", "0");
+      const card = screen.getByText("Customização").closest("div.relative");
+      expect(card).not.toHaveAttribute("tabindex");
     });
 
-    it("renders the Em breve badge", () => {
+    it("renders title and description", () => {
+      render(<SettingsCard item={disabledItem} />);
+      expect(screen.getByText("Customização")).toBeInTheDocument();
+      expect(
+        screen.getByText("Personalize cores, fontes e imagens da interface."),
+      ).toBeInTheDocument();
+    });
+
+    it("announces its unavailable state as text, not colour alone", () => {
       render(<SettingsCard item={disabledItem} />);
       expect(screen.getByText("Em breve")).toBeInTheDocument();
-    });
-
-    it("does not have an href attribute", () => {
-      render(<SettingsCard item={disabledItem} />);
-      const card = screen.getByRole("link", { name: /customização/i });
-      expect(card).not.toHaveAttribute("href");
     });
   });
 });

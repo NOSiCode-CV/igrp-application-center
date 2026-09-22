@@ -38,10 +38,21 @@ function PendingRowActionsCell({
   const { igrpToast } = useIGRPToast();
   const resendMutation = useResendUserInvitation();
 
-  const handleCopyUrl = () => {
+  const handleCopyUrl = async () => {
     const invitationUrl = row.original.invitationUrl;
     if (invitationUrl) {
-      navigator.clipboard.writeText(invitationUrl);
+      try {
+        await navigator.clipboard.writeText(invitationUrl);
+      } catch {
+        igrpToast({
+          type: "error",
+          title: "Não foi possível copiar",
+          description:
+            "O browser bloqueou o acesso à área de transferência. Copie o URL manualmente.",
+          duration: 6000,
+        });
+        return;
+      }
       igrpToast({
         type: "success",
         title: "URL copiado",
@@ -85,8 +96,11 @@ function PendingRowActionsCell({
     <>
       {!isTerminalInviteStatus(String(row.original.status)) && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="p-1 rounded-sm">
-            <IGRPIcon iconName="Ellipsis" />
+          <DropdownMenuTrigger
+            className="inline-flex size-9 items-center justify-center rounded-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`Ações para o convite de ${row.original.identifierValue}`}
+          >
+            <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="min-w-44">

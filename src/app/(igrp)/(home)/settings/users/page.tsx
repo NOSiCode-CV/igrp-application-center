@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
+
 import { getUserInvitations, getUsers } from "@/actions/user";
 import { UserList } from "@/features/users/components/user-list";
 import { HttpStatusError } from "@/lib/errors";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Utilizadores",
+  description: "Gerir utilizadores, convites e perfis.",
+};
 
 export default async function UserPage() {
   const [usersResult, invitationsResult] = await Promise.all([

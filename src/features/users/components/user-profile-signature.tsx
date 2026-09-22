@@ -113,7 +113,7 @@ export function ProfileSignature({
             {/* <img src={preview || '/placeholder.svg'} alt='Signature preview' className='h-full w-full object-contain' /> */}
             <Image
               src={preview || "/placeholder.svg"}
-              alt="Signature preview"
+              alt="Pré-visualização da assinatura"
               className="h-full w-full object-contain"
               width={100}
               height={100}
@@ -129,7 +129,7 @@ export function ProfileSignature({
             htmlFor="signature-upload"
             className="inline-flex h-9 cursor-pointer items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
           >
-            Upload signature
+            Carregar assinatura
           </label>
           {preview && (
             <button
@@ -146,7 +146,7 @@ export function ProfileSignature({
               }}
               className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
             >
-              Remove
+              Remover
             </button>
           )}
         </div>

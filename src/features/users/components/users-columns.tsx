@@ -43,8 +43,11 @@ function ActiveRowActionsCell({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="p-1 rounded-sm">
-        <IGRPIcon iconName="Ellipsis" />
+      <DropdownMenuTrigger
+        className="inline-flex size-9 items-center justify-center rounded-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`Ações para ${row.original.name || row.original.email}`}
+      >
+        <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="min-w-44">
@@ -97,13 +100,13 @@ export function getTableColumns(
       accessorKey: "name",
       filterFn: (row, _columnId, value: string) => {
         const search = value.toLowerCase();
-        const name = String(row.getValue("name") ?? "").toLowerCase();
-        const email = String(row.getValue("email") ?? "").toLowerCase();
+        const name = String(row.original.name ?? "").toLowerCase();
+        const email = String(row.original.email ?? "").toLowerCase();
         return name.includes(search) || email.includes(search);
       },
       cell: ({ row }) => {
-        const email = String(row.getValue("email") ?? "");
-        const nameValue = row.getValue("name");
+        const email = String(row.original.email ?? "");
+        const nameValue = row.original.name;
         const name =
           nameValue && String(nameValue) !== "null" ? String(nameValue) : email;
         return (
@@ -121,13 +124,6 @@ export function getTableColumns(
           </div>
         );
       },
-    },
-    {
-      header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Email" />
-      ),
-      accessorKey: "email",
-      cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
     },
     ...(showInvitationDate
       ? [
