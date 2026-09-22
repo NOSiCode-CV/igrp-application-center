@@ -1,14 +1,22 @@
 "use client";
 
+import { useId } from "react";
+
 import {
   Button,
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  Checkbox,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  IGRPBadge,
   IGRPIcon,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Separator,
 } from "@igrp/igrp-framework-react-design-system";
 
 export interface FacetedFilterOption {
@@ -22,57 +30,117 @@ interface FacetedFilterProps {
   value: string[];
   onChange: (next: string[]) => void;
   disabled?: boolean;
+  /**
+   * How many rows carry each option, keyed by option value. Omitted when the
+   * caller does not know — the count is then left out rather than rendered as
+   * a zero the filter cannot vouch for.
+   */
+  counts?: Record<string, number>;
 }
 
+/**
+ * The state filter for surfaces that filter plain React state rather than a
+ * TanStack table — `/settings/applications`, where there is no `Column` to hand
+ * to the design system's `IGRPDataTableFilterFaceted`.
+ *
+ * It is deliberately built from the SAME primitives that component uses
+ * (Popover + Command + a real `Checkbox` per row, selected count as a soft
+ * badge in the trigger, "Limpar Filtro" at the foot) so the Estado filter looks
+ * and behaves identically on `/settings/applications` and `/settings/users`.
+ * The previous version was a `DropdownMenuCheckboxItem` list with the count
+ * inlined into the trigger's text — same job, different control, two screens
+ * apart.
+ *
+ * If the design system ever exposes this popover independently of `Column`,
+ * delete this file and use it directly.
+ */
 export function FacetedFilter({
   label,
   options,
   value,
   onChange,
   disabled = false,
+  counts,
 }: FacetedFilterProps) {
+  const id = useId();
+
+  const toggle = (optionValue: string) => {
+    onChange(
+      value.includes(optionValue)
+        ? value.filter((v) => v !== optionValue)
+        : [...value, optionValue],
+    );
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2" disabled={disabled}>
-          <IGRPIcon iconName="ListFilter" aria-hidden="true" strokeWidth={2} />
-          {label} {value.length > 0 && `(${value.length})`}
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" disabled={disabled}>
+          <IGRPIcon iconName="BadgePlus" aria-hidden="true" />
+          {label}
+          {value.length > 0 && (
+            <>
+              <Separator orientation="vertical" className="h-2" />
+              <IGRPBadge
+                variant="soft"
+                color="primary"
+                badgeClassName="rounded-sm px-1 font-normal"
+              >
+                {value.length}
+              </IGRPBadge>
+            </>
+          )}
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-40">
-        {options.map((option) => (
-          <DropdownMenuCheckboxItem
-            key={option.value}
-            checked={value.includes(option.value)}
-            onCheckedChange={(checked) => {
-              onChange(
-                checked
-                  ? [...value, option.value]
-                  : value.filter((v) => v !== option.value),
-              );
-            }}
-          >
-            {option.label}
-          </DropdownMenuCheckboxItem>
-        ))}
-        {value.length > 0 && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => onChange([])}
-              className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-            >
-              <IGRPIcon
-                iconName="X"
-                aria-hidden="true"
-                className="mr-1"
-                strokeWidth={2}
-              />
-              Limpar
-            </DropdownMenuItem>
-          </>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </PopoverTrigger>
+
+      <PopoverContent className="w-auto min-w-36 p-1" align="start">
+        <Command>
+          <CommandList>
+            <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+            <CommandGroup>
+              {options.map((option, i) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.value}
+                  onSelect={() => toggle(option.value)}
+                  className="gap-2"
+                >
+                  <Checkbox
+                    id={`${id}-${i}`}
+                    checked={value.includes(option.value)}
+                    onCheckedChange={() => toggle(option.value)}
+                    aria-label={option.label}
+                    className="border-foreground"
+                  />
+                  <label
+                    htmlFor={`${id}-${i}`}
+                    className="flex-1 cursor-pointer"
+                  >
+                    {option.label}
+                  </label>
+                  {counts && (
+                    <span className="ml-auto font-mono text-xs">
+                      {counts[option.value] ?? 0}
+                    </span>
+                  )}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+
+            {value.length > 0 && (
+              <>
+                <CommandSeparator />
+                <CommandGroup>
+                  <CommandItem onSelect={() => onChange([])}>
+                    <IGRPIcon iconName="X" aria-hidden="true" />
+                    Limpar Filtro
+                  </CommandItem>
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 type MockProps = {
@@ -40,5 +41,51 @@ describe("ApplicationsToolbar", () => {
   it("disables the search field when disabled", () => {
     render(<ApplicationsToolbar {...baseProps} disabled />);
     expect(screen.getByRole("searchbox")).toBeDisabled();
+  });
+
+  it("hides the clear button while the search is empty", () => {
+    render(<ApplicationsToolbar {...baseProps} />);
+    expect(
+      screen.queryByRole("button", { name: /limpar pesquisa/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("clears the search term when the clear button is pressed", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+    render(
+      <ApplicationsToolbar
+        {...baseProps}
+        searchTerm="portal"
+        onSearchChange={onSearchChange}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: /limpar pesquisa/i }));
+
+    expect(onSearchChange).toHaveBeenCalledWith("");
+  });
+
+  it("clears the search term on Escape", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+    render(
+      <ApplicationsToolbar
+        {...baseProps}
+        searchTerm="portal"
+        onSearchChange={onSearchChange}
+      />,
+    );
+
+    await user.type(screen.getByRole("searchbox"), "{Escape}");
+
+    expect(onSearchChange).toHaveBeenCalledWith("");
+  });
+
+  it("keeps the clear button hidden while the toolbar is disabled", () => {
+    render(<ApplicationsToolbar {...baseProps} searchTerm="portal" disabled />);
+    expect(
+      screen.queryByRole("button", { name: /limpar pesquisa/i }),
+    ).not.toBeInTheDocument();
   });
 });

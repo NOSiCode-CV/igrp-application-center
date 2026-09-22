@@ -87,6 +87,20 @@ export function formatDate(dateString: string) {
   }).format(date);
 }
 
+/**
+ * Table-column date in pt-PT. `toLocaleDateString()` with no locale follows the
+ * BROWSER's locale, so the same row read 22/09/2026 on one machine and 9/22/2026
+ * on another — PRODUCT.md requires one language per surface, including dates
+ * generated in code. A missing or unparseable value says so rather than
+ * rendering the untranslated "N/A".
+ */
+export function formatDateShort(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "Sem data";
+  const date = new Date(String(value));
+  if (Number.isNaN(date.getTime())) return "Sem data";
+  return new Intl.DateTimeFormat("pt-PT", { dateStyle: "short" }).format(date);
+}
+
 export function showStatus(status: string) {
   if (status == null || status === undefined) return null;
   // STATUS_OPTIONS only maps ACTIVE/INACTIVE. Anything else (PENDING,

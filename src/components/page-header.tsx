@@ -26,9 +26,12 @@ export function PageHeader({
           {showBackButton && <BackButton href={linkBackButton} />}
 
           <div className="flex flex-col min-w-0">
-            <h2 className="text-2xl font-bold tracking-tight truncate">
+            {/* `h1`: this is the page title, and no layout above these routes
+                renders one — an `h2` here started every list page at level two.
+                Both consumers (applications, users) use it exactly once. */}
+            <h1 className="text-2xl font-bold tracking-tight truncate">
               {title}
-            </h2>
+            </h1>
 
             {description && (
               <p className="text-muted-foreground text-sm">{description}</p>

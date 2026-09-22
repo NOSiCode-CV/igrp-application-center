@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { getUserInvitations, getUsers } from "@/actions/user";
+import { getCurrentUser, getUserInvitations, getUsers } from "@/actions/user";
 import { UserList } from "@/features/users/components/user-list";
 import { HttpStatusError } from "@/lib/errors";
 
@@ -12,10 +12,9 @@ export const metadata: Metadata = {
 };
 
 export default async function UserPage() {
-  const [usersResult, invitationsResult] = await Promise.all([
-    getUsers(),
-    getUserInvitations(),
-  ]);
+  const [usersResult, invitationsResult, currentUserResult] = await Promise.all(
+    [getUsers(), getUserInvitations(), getCurrentUser()],
+  );
 
   // Users are the page's primary resource — fail the whole page.
   if (!usersResult.success) {
@@ -27,10 +26,20 @@ export default async function UserPage() {
     ? invitationsResult.data
     : [];
 
+  /* Resolved on the server, not with `useCurrentUser()`: a client fetch would
+     leave "Desativar" in your own row's menu until the query settled, which is
+     exactly the moment the action must not be offered. If the call fails we
+     cannot identify anyone, so the menu keeps its existing behaviour rather
+     than guessing. */
+  const currentUserId = currentUserResult.success
+    ? currentUserResult.data.id
+    : undefined;
+
   return (
     <UserList
       initialUsers={usersResult.data}
       initialInvitations={initialInvitations}
+      currentUserId={currentUserId}
     />
   );
 }

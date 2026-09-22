@@ -19,6 +19,7 @@ import type { InvitationDTO } from "@igrp/platform-access-management-client-ts";
 
 import { useResendUserInvitation } from "@/features/users/use-users";
 import {
+  formatDateShort,
   geInviteTitle,
   getInitials,
   statusInviteClass,
@@ -158,14 +159,9 @@ export function getInvitationColumns(
     {
       header: "Data do Convite",
       accessorKey: "invitationDate",
-      cell: ({ row }) => {
-        const date = row.getValue("invitationDate");
-        return (
-          <div>
-            {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <div>{formatDateShort(row.getValue("invitationDate"))}</div>
+      ),
     },
     {
       header: () => (

@@ -19,6 +19,7 @@ import {
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 
 import {
+  formatDateShort,
   geInviteTitle,
   getInitials,
   getStatusColor,
@@ -35,9 +36,12 @@ const isInviteStatus = (s: string) =>
 function ActiveRowActionsCell({
   row,
   onStatusClick,
+  isSelf,
 }: {
   row: Row<IGRPUserDTO>;
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void;
+  /** True on the signed-in administrator's own row. */
+  isSelf: boolean;
 }) {
   const state = String(row.getValue("status"));
 
@@ -51,7 +55,9 @@ function ActiveRowActionsCell({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="min-w-44">
-        {state === "ACTIVE" ? (
+        {/* Never offered on your own row: deactivating yourself locks you out
+            of the screen you are standing on, and there is no path back. */}
+        {isSelf ? null : state === "ACTIVE" ? (
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
             onSelect={() => onStatusClick(row.original, "INACTIVE")}
@@ -62,11 +68,17 @@ function ActiveRowActionsCell({
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
-            className="text-success focus:text-success focus:bg-success/10"
+            /* `--success` is a SOLID surface token; used as ink on a popover it
+               is the `bg-x/10 text-x` idiom the token file rules out. The
+               `-subtle` foreground is the validated stop for text. */
+            className="text-success-subtle-foreground focus:text-success-subtle-foreground focus:bg-success-subtle"
             onSelect={() => onStatusClick(row.original, "ACTIVE")}
             variant="default"
           >
-            <IGRPIcon iconName="CircleCheck" className="text-success" />
+            <IGRPIcon
+              iconName="CircleCheck"
+              className="text-success-subtle-foreground"
+            />
             Ativar
           </DropdownMenuItem>
         )}
@@ -89,9 +101,10 @@ function ActiveRowActionsCell({
 
 export function getTableColumns(
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void,
-  options?: { showInvitationDate?: boolean },
+  options?: { showInvitationDate?: boolean; currentUserId?: string },
 ): ColumnDef<IGRPUserDTO>[] {
   const showInvitationDate = options?.showInvitationDate !== false;
+  const currentUserId = options?.currentUserId;
   return [
     {
       header: ({ column }) => (
@@ -130,14 +143,9 @@ export function getTableColumns(
           {
             header: "Data do Convite",
             accessorKey: "invitationDate",
-            cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
-              const date = row.getValue("invitationDate");
-              return (
-                <div>
-                  {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-                </div>
-              );
-            },
+            cell: ({ row }: { row: Row<IGRPUserDTO> }) => (
+              <div>{formatDateShort(row.getValue("invitationDate"))}</div>
+            ),
           } as ColumnDef<IGRPUserDTO>,
         ]
       : []),
@@ -169,7 +177,13 @@ export function getTableColumns(
       id: "actions",
       header: () => <span className="sr-only">Ações</span>,
       cell: ({ row }) => (
-        <ActiveRowActionsCell row={row} onStatusClick={onStatusClick} />
+        <ActiveRowActionsCell
+          row={row}
+          onStatusClick={onStatusClick}
+          isSelf={
+            currentUserId !== undefined && row.original.id === currentUserId
+          }
+        />
       ),
       size: 60,
       enableHiding: false,

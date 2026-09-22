@@ -36,6 +36,8 @@ import { STATUS_OPTIONS } from "@/lib/constants";
 interface UserListProps {
   initialUsers: IGRPUserDTO[];
   initialInvitations: InvitationDTO[];
+  /** The signed-in administrator, so their own row cannot offer "Desativar". */
+  currentUserId?: string;
 }
 
 type DialogState =
@@ -43,7 +45,11 @@ type DialogState =
   | { kind: "status"; user: IGRPUserDTO; newStatus: "ACTIVE" | "INACTIVE" }
   | { kind: "cancel"; invitation: InvitationDTO };
 
-export function UserList({ initialUsers, initialInvitations }: UserListProps) {
+export function UserList({
+  initialUsers,
+  initialInvitations,
+  currentUserId,
+}: UserListProps) {
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [dialog, setDialog] = useState<DialogState>({ kind: "none" });
@@ -52,7 +58,12 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
   const updateStatusMutation = useUpdateUserStatus();
   const cancelUserInvitationMutation = useCancelUserInvitation();
 
-  const { data: users = initialUsers, error } = useUsers(undefined, {
+  const {
+    data: users = initialUsers,
+    error,
+    refetch,
+    isFetching,
+  } = useUsers(undefined, {
     initialData: initialUsers,
   });
   const { data: invites, isLoading: isLoadingInvites } = useGetUserInvitations(
@@ -83,8 +94,12 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
   }, []);
 
   const activeColumns = useMemo(
-    () => getTableColumns(handleStatusClick, { showInvitationDate: false }),
-    [handleStatusClick],
+    () =>
+      getTableColumns(handleStatusClick, {
+        showInvitationDate: false,
+        currentUserId,
+      }),
+    [handleStatusClick, currentUserId],
   );
   const inviteColumns = useMemo(
     () => getInvitationColumns(handleCancelClick),
@@ -123,7 +138,10 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         {
           columnId: "identifierValue",
           component: ({ column }) => (
-            <IGRPDataTableFilterInput column={column} />
+            <IGRPDataTableFilterInput
+              column={column}
+              placeholder="Pesquisar por email..."
+            />
           ),
         },
       ],
@@ -181,7 +199,10 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
   };
 
   return (
-    <div className="flex flex-col gap-5 animate-fade-in">
+    /* No `animate-fade-in`: the page fading in on every navigation is motion
+       that reports nothing — the content did not change, it arrived. */
+    /* gap-6 header -> content, matching `/settings/applications`. */
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Gestão de Utilizadores"
         description="Ver e gerir todos os utilizadores do sistema."
@@ -196,17 +217,33 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         </IGRPButton>
       </PageHeader>
 
+      {/* A failed REFRESH, not a failed page: the rows below are real, they are
+          just older than they look. Warning rather than destructive, and it now
+          carries the action that fixes it instead of only reporting the fault.
+          Token pair, not `bg-destructive/5` — a wash of a token over itself has
+          a contrast ratio nobody can validate. */}
       {error && (
         <div
           role="status"
-          className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm"
+          className="flex flex-col gap-3 rounded-lg bg-warning-subtle px-4 py-3 text-sm text-warning-subtle-foreground sm:flex-row sm:items-center sm:justify-between"
         >
-          Não foi possível atualizar a lista. Os dados apresentados podem estar
-          desatualizados.
+          <span>
+            Esta lista pode estar desatualizada: a última atualização falhou.
+          </span>
+          <IGRPButton
+            variant="outline"
+            size="sm"
+            showIcon
+            iconName="RotateCw"
+            disabled={isFetching}
+            onClick={() => refetch()}
+          >
+            {isFetching ? "A atualizar..." : "Atualizar"}
+          </IGRPButton>
         </div>
       )}
 
-      <Tabs defaultValue="active">
+      <Tabs defaultValue="active" className="flex flex-col gap-6">
         <TabsList>
           <TabsTrigger value="active">
             Utilizadores ({users.length})
@@ -274,13 +311,22 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
             ? "Desativar Utilizador"
             : "Ativar Utilizador"
         }
+        /* Names the consequence, not just the verb: "tem a certeza?" tells an
+           administrator nothing they did not already know when they clicked. */
         description={
           dialog.kind === "status" ? (
-            <>
-              Tem certeza que deseja{" "}
-              {dialog.newStatus === "INACTIVE" ? "desativar" : "ativar"}{" "}
-              <strong>{dialog.user.name || dialog.user.email}</strong>?
-            </>
+            dialog.newStatus === "INACTIVE" ? (
+              <>
+                <strong>{dialog.user.name || dialog.user.email}</strong> deixa
+                de poder entrar na plataforma. O acesso pode ser reposto a
+                qualquer momento.
+              </>
+            ) : (
+              <>
+                <strong>{dialog.user.name || dialog.user.email}</strong> volta a
+                poder entrar na plataforma com os perfis que já tinha.
+              </>
+            )
           ) : null
         }
         onConfirm={handleConfirmStatusChange}
@@ -289,10 +335,12 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
             ? "Desativar"
             : "Ativar"
         }
+        /* "A ativar", not "Ativando": pt-PT, and it matched neither its own
+           sibling above nor any other loading string in the product. */
         loadingText={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "A desativar..."
-            : "Ativando..."
+            : "A ativar..."
         }
         iconName={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
@@ -314,14 +362,19 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         description={
           dialog.kind === "cancel" ? (
             <>
-              Tem certeza que deseja cancelar o convite para{" "}
-              <strong>{dialog.invitation.identifierValue}</strong>? Esta ação
-              não pode ser desfeita.
+              A ligação enviada a{" "}
+              <strong>{dialog.invitation.identifierValue}</strong> deixa de
+              funcionar e a pessoa não poderá aceitar o convite. Esta ação não
+              pode ser desfeita.
             </>
           ) : null
         }
         onConfirm={handleConfirmCancel}
-        confirmText="Confirmar"
+        /* Both buttons name what they do. "Confirmar" / "Cancelar" in a dialog
+           about cancelling an invitation left "Cancelar" meaning two opposite
+           things in the same footer. */
+        confirmText="Cancelar Convite"
+        cancelText="Manter Convite"
         loadingText="A cancelar..."
         iconName="Trash"
         variant="destructive"
