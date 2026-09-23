@@ -6,6 +6,8 @@
 
 **Scope:** one settings area — **Accounts** (`/settings/accounts`) — with two sections, **OAuth Clients** and **Service Accounts**, plus the server actions, feature modules and settings-card wiring they depend on. Non-goals: any change to the OAuth2 authorization flow itself; a service-account "console" for the account's owner (admin view only); secret rotation (§4.6); UI permission gating (§6.2).
 
+**Design:** screen mockups live in the [Accounts design canvas](https://claude.ai/artifact/Myg6WjfKJdYPXi72RSDpHA). Where the ASCII sketches below and the canvas disagree, the canvas wins.
+
 **Vocabulary:** terms in **bold** are defined in [`CONTEXT.md`](../../CONTEXT.md). In particular, "client" alone always means an SDK class — the domain object is an **OAuth Client**; "grant" alone always means a **Grant Type**.
 
 ---
@@ -153,11 +155,10 @@ src/app/(igrp)/(home)/settings/accounts/
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Columns:** Name (`clientName`), Client Id (`clientId`, monospace), Grant Types (multi-badge), Application (`applicationCode`), Status (`active` badge), Actions.
+**Columns:** Client (`clientName` with `clientId` in monospace beneath), Type (derived badge: "Aplicação web" when `authorization_code` is present, else "Máquina"), Grant Types (monospace list), Application (`applicationCode`), Service Account (linked name → SA detail, or "—"), Status (`active` badge with dot + text), Actions.
 
 **Row actions** (`IGRPDropdownMenu`, mirrors `settings/users`):
-- View details → `/settings/accounts/clients/[id]`
-- Edit → edit dialog (§4.7)
+- View details → `/settings/accounts/clients/[id]` (where editing happens, §4.7)
 - Copy client Id → clipboard + toast
 - ─── separator ───
 - Deactivate / Reactivate → §6.1. Confirmation dialog for deactivate.
@@ -167,7 +168,7 @@ src/app/(igrp)/(home)/settings/accounts/
 
 ### 4.3 Reusable client form
 
-One `OAuthClientForm` component (`react-hook-form` + `zod`), used by the create dialog, the edit dialog, and wizard step 1 (§5.4). Props control: `clientId` editable or not, Grant Types locked to `client_credentials`, `client_credentials` locked on.
+One `OAuthClientForm` component (`react-hook-form` + `zod`), used by the create dialog, the detail page's in-place editing (§4.5), and wizard step 1 (§5.4). It renders as sectioned groups — title and explanation on the left, fields on the right — so the same sections compose the detail page. Grant Types are selectable cards, each with a one-line explanation. **Sections depend on the grant selection:** Redirect URIs only render while `authorization_code` is selected; scope defaults follow §4.3's field rules. Props control: `clientId` editable or not, Grant Types locked to `client_credentials`, `client_credentials` locked on.
 
 ```
 ┌─── Registar cliente OAuth2 ─────────────────────────────── × ───┐
@@ -209,19 +210,37 @@ Dialog (`IGRPDialogPrimitive`, full-screen on md and below) with two sequential 
 
 ### 4.5 Detail — `/settings/accounts/clients/[id]`
 
-Tabbed (`IGRPTabs`, active tab in URL search params, each tab in ErrorBoundary + Suspense — as `user-details-tabs.tsx`).
+**One settings page, edited in place — no tabs, no edit dialog.** Canvas: *Cliente OAuth — definições*.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│ ← Clientes OAuth / Invoice App                  [ Editar ] [ ⋮ ]    │
-│ [ Visão geral ] [ Grant types & scopes ] [ Redirects ] [ Conta de serviço ] │
+│ ← Clientes OAuth                                                     │
+│ [key] Invoice App   [Aplicação web]  Client ID my-invoice [⧉]  ● Ativo│
+├── card ─────────────────────────────────────────────────────────────┤
+│ Informação básica   │ Nome · Client ID (ro, copy) · Client secret     │
+│                     │ (locked) · Descrição · Aplicação                │
+│ Grant types         │ 2×2 selectable cards with explanations          │
+│ Redirect URIs       │ chip editor   (only while authorization_code)   │
+│ Scopes              │ chip editor                                     │
+│ Duração dos tokens  │ 3 numeric inputs, "segundos" suffix, "= 3 min"  │
+│ Conta de serviço    │ (only while client_credentials) linked SA / CTA │
+│ Registo             │ createdAt / updatedAt (read-only)               │
+├─────────────────────────────────────────────────────────────────────┤
+│ Zona de perigo:  Desativar cliente [Desativar] · Eliminar [Eliminar]  │
 └─────────────────────────────────────────────────────────────────────┘
+      ┌ save bar (appears when the form is dirty) ────────────────┐
+      │ Tem 1 alteração por guardar.     [Descartar] [Guardar]     │
+      └───────────────────────────────────────────────────────────┘
 ```
 
-- **Overview:** `clientId`, `clientName`, `description`, `applicationCode`, `active` (toggle → §6.1), TTLs, timestamps.
-- **Grant Types & scopes:** badges. If `client_credentials` is present and no Service Account is linked, hint linking to `/settings/accounts/services/new?oauthClientId=…`.
-- **Redirects:** read-only list with copy buttons.
-- **Service Account:** the linked Service Account (via `useServiceAccounts` filtered by `oauthClientId`) with a link to its detail page; empty state offers "Criar conta de serviço para este cliente" (deep link above). If more than one is found, show a warning banner (1:1 violated).
+- **Header:** icon tile, `clientName`, Type badge (§4.2), `clientId` chip with copy, status badge.
+- **Sections** are the `OAuthClientForm` sections (§4.3) bound to the loaded client, plus:
+  - **Client secret:** a locked, non-interactive field reading "Mostrado apenas uma vez, no registo", with help text giving the leaked-secret procedure (§4.6). It never shows a value.
+  - **Duração dos tokens:** each input shows its humanised value beneath ("= 3 minutos", "= 1 dia").
+  - **Conta de serviço** (only while `client_credentials` is selected): the linked Service Account (via `useServiceAccounts` filtered by `oauthClientId`) with a link to its detail page; empty state offers "Criar conta de serviço para este cliente" (`/settings/accounts/services/new?oauthClientId=…`). More than one found → warning banner (1:1 violated).
+  - **Registo:** `createdAt` / `updatedAt`, read-only.
+- **Danger zone** (below the card): Deactivate (outline-destructive, §6.1) and Delete (solid destructive, §4.8; disabled with reason when a Service Account is linked).
+- **Save bar:** sticky at the bottom of the viewport, shown only while the form is dirty, with "Descartar" (reset to loaded state) and "Guardar alterações" (§4.7). Navigating away while dirty asks for confirmation.
 
 ### 4.6 Secret rotation — not offered
 
@@ -231,9 +250,10 @@ There is no rotation UI until the backend ships `POST /api/clients/{id}/rotate-s
 
 ### 4.7 Edit flow
 
-- Dialog with `OAuthClientForm`, `clientId` read-only (still sent, unchanged), no secret pane.
-- Loads current state via `getOAuthClient` and submits the full DTO (replacement semantics).
-- If a Service Account is linked, `client_credentials` is checked and disabled, with a tooltip explaining why.
+- In place on the detail page (§4.5); there is no edit dialog. `clientId` is read-only (still sent, unchanged).
+- The form is initialised from `getOAuthClient`; "Guardar alterações" submits the full DTO (replacement semantics), then resets the dirty state to the response.
+- If a Service Account is linked, `client_credentials` is checked and disabled, with help text "Necessário enquanto a conta de serviço «…» existir."
+- The Status toggle is not part of the form: activation is a separate action in the danger zone (§6.1), so it never rides along with an unrelated save.
 
 ### 4.8 Delete flow
 
@@ -276,7 +296,9 @@ The list does **not** compute Effective Permissions (that would be N+1 across ev
 
 ### 5.4 Create wizard — `/settings/accounts/services/new`
 
-Full page (not a dialog): multiple steps and must be deep-linkable. **Nothing is persisted until the final submit.**
+Full page (not a dialog): multiple steps and must be deep-linkable. **Nothing is persisted until the final submit.** Canvas: *Nova conta de serviço — passo 3*.
+
+Layout: a top bar with "Cancelar" and "Nada é criado até confirmar no último passo."; a vertical step list on the left where completed steps show a check, a one-line summary of what was chosen (e.g. "Novo: nightly-etl-m2m", "Nightly Invoice ETL · INV") and link back to that step; the current step's form on the right. The last step's footer states what "Criar conta" will do (including that a new client's secret is shown once).
 
 **Step 1 — OAuth Client**
 
@@ -327,22 +349,42 @@ The application is read-only and inherited from the OAuth Client (or from the ne
 
 ### 5.5 Detail — `/settings/accounts/services/[id]`
 
+**One page, no tabs:** a main column for access and a side column for context. Canvas: *Conta de serviço — detalhe*.
+
 ```
-│ ← Contas de Serviço / Nightly Invoice ETL        [ Editar ] [ ⋮ ]   │
-│ [ Visão geral ] [ Perfis ] [ Permissões diretas ] [ Cliente OAuth ] │
+┌─────────────────────────────────────────────────────────────────────┐
+│ ← Contas de serviço                                                  │
+│ [bot] Nightly Invoice ETL  ● Ativa · Aplicação INV ·                 │
+│       Autentica como etl-runner-m2m               [Editar identidade]│
+├───────────────────────────────────────────┬─────────────────────────┤
+│ Permissões efetivas   8 │ 3 │ 11 [Ver lista]│ Cliente OAuth   [Abrir] │
+│ Perfis                      [+ Atribuir]  │  clientId ⧉ · nome ·    │
+│   FATURAÇÃO                               │  🔒 client_credentials  │
+│   INV.invoice.reader   · 5 permissões  ✕  │  estado                 │
+│   INV.invoice.exporter · 3 permissões  ✕  │ Identidade              │
+│ Permissões diretas          [+ Adicionar] │  descrição · aplicação  │
+│   ⓘ não são revogadas ao remover perfis   │  (herdada) · datas      │
+│   my.invoice.approve  [direta]         ✕  │                         │
+├───────────────────────────────────────────┴─────────────────────────┤
+│ Zona de perigo:  Desativar conta [Desativar] · Eliminar [Eliminar]    │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Overview:** name, description, active toggle (§6.1), linked OAuth Client (clientId + link), application, timestamps, Effective Permissions summary.
-- **Roles:** chips of `roleCodes` grouped by department; "+ Atribuir perfil" opens the step-3 picker; removing a chip confirms inline, then PUTs the reduced set.
-- **Direct Permissions:** chips of `permissionNames`; same add/remove UX; no extra confirmation on add.
-- **OAuth Client:** read-only summary (name, clientId, Grant Types, active) + "Abrir cliente".
+- **Header:** icon tile, `name`, status badge, application code, and "Autentica como `<clientId>`" linking to the OAuth Client.
+- **Permissões efetivas** (first in the main column): three counts (from roles / direct / total unique) and "Ver lista completa" opening the union list with `direct` markers. Computed on this page by fetching each role (§5.4, §7.5).
+- **Perfis:** rows grouped by department, each showing the role code, its description and its permission count, with a remove button (`aria-label` names the role). "+ Atribuir perfil" opens the step-3 picker. Removing confirms inline, then PUTs the reduced set.
+- **Permissões diretas:** an info strip ("não são revogadas quando se remove um perfil. Prefira perfis."), then rows of `permissionNames` with a `direta` badge and remove button. Same add/remove UX; no extra confirmation on add.
+- **Side column — Cliente OAuth:** clientId (copy), name, `client_credentials` with a lock icon and "Fixo enquanto esta conta existir.", status, and "Abrir" to the client page.
+- **Side column — Identidade:** description, application (with "Herdada do cliente OAuth."), created/updated.
+- **"Editar identidade"** switches the Identidade card to inline fields (name, description) with its own Cancelar / Guardar; there is no edit dialog and no page-level save bar here, because roles and permissions save per action.
+- **Danger zone:** Deactivate (copy names the OAuth Client that is also deactivated, §6.1) and Delete (§5.6).
 
 **Replacement caveat:** every add/remove sends the entire current `roleIds` / `permissionIds`. The hook reads fresh detail before submitting; optimistic updates roll back on failure.
 
 ### 5.6 Delete flow
 
 - `IGRPDialogDelete`, type-name-to-confirm.
-- Checkbox **"Eliminar também o cliente OAuth `<clientId>`" — checked by default.** An orphaned OAuth Client is a live, untracked credential.
+- Checkbox **"Eliminar também o cliente OAuth `<clientId>`" — checked by default.** An orphaned OAuth Client is a live, untracked credential. The confirm button's label follows the checkbox: "Eliminar conta e cliente" / "Eliminar conta". Canvas: *Eliminar conta*.
 - Executes `deleteServiceAccount(id, { alsoDeleteClient })` (§3.1). If the client step fails, toast with a link to the client's detail page to finish manually.
 
 ---
@@ -354,7 +396,7 @@ The application is read-only and inherited from the OAuth Client (or from the ne
 | Where | Behaviour |
 |---|---|
 | OAuth Client **without** Service Account | Single full-DTO PUT toggling `active`. |
-| OAuth Client **with** Service Account (toggle on client page) | Same combined action as the Service Account toggle — the two never diverge. |
+| OAuth Client **with** Service Account (danger-zone or row action on the client) | Same combined action as the Service Account's — the two never diverge. |
 | Service Account | `setServiceAccountActive` (§3.1): deactivate = client → SA; reactivate = SA → client. |
 
 Deactivation copy states the consequence plainly: the identity can no longer authenticate. On partial failure, show which step failed with a retry.
@@ -398,7 +440,7 @@ Hiding buttons would not fix the real issue — the service-account endpoints ar
 - No OAuth Clients: copy + "Registar o primeiro cliente".
 - No Service Accounts: copy explaining the wrapper + "Nova conta de serviço".
 - SA with no resolvable OAuth Client: shouldn't happen (FK NOT NULL); show an error state, never a silently broken UI.
-- Lists: `AppCenterLoading` on first load, skeleton rows on refetch. Detail: skeleton tabs. Submit buttons show loading and disable the form.
+- Lists: `AppCenterLoading` on first load, skeleton rows on refetch. Detail: skeleton header and section cards. Submit buttons show loading and disable the form.
 
 ---
 
