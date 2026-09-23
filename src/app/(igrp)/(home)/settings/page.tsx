@@ -37,6 +37,15 @@ const settingsConfig: { general: SettingsItem[] } = {
       href: "/settings/departments",
       accent: "success",
     },
+    {
+      id: "gestao-contas-servicos",
+      title: "Contas e Serviços",
+      description:
+        "Registe clientes OAuth e faça a gestão das contas de serviço que acedem às APIs.",
+      icon: "KeyRound",
+      href: "/settings/accounts",
+      accent: "primary",
+    },
     /* `status: "inativo"` renders these as plain, non-focusable divs with the
        "Em breve" badge. The `href`s are the routes they will take once built;
        nothing links to them while the status is set. */
@@ -48,16 +57,6 @@ const settingsConfig: { general: SettingsItem[] } = {
       icon: "Palette",
       href: "/settings/customization",
       accent: "warning",
-      status: "inativo",
-    },
-    {
-      id: "gestao-contas-servicos",
-      title: "Gestão de Contas e Serviços",
-      description:
-        "Faça a gestão das contas e dos serviços associados à plataforma.",
-      icon: "Handshake",
-      href: "/settings/accounts-services",
-      accent: "primary",
       status: "inativo",
     },
     {
