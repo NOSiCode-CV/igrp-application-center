@@ -1,533 +1,416 @@
-# Application Center — Client & Service Account Management
+# Application Center — OAuth Client & Service Account Management
 
-**Audience:** frontend engineers implementing the two admin pages under `/settings/` in Application Center; backend reviewers who need to see which endpoints will be consumed and which gaps this spec surfaces.
+**Audience:** frontend engineers implementing the admin area under `/settings/accounts/` in Application Center; backend reviewers who need to see which endpoints will be consumed and which gaps this spec surfaces.
 
-**Status:** proposed. TS-client alignment landed as `@igrp/platform-access-management-client-ts@0.2.0-beta.12` (see §2). Backend gaps flagged in §7 are not blocking — the pages can ship against the current backend, but the gaps should be filed as follow-ups.
+**Status:** agreed (design grilled 2026-09-23). Grounded on `@igrp/platform-access-management-client-ts@0.2.0-beta.16` (installed). Backend gaps in §7 are not blocking — the area ships against the current backend — but they should be filed as follow-ups.
 
-**Scope:** two admin pages — **Client Management** (`/settings/clients`) and **Service Account Management** (`/settings/service-accounts`) — plus the client-library and sidebar wiring they depend on. Non-goals: any change to the OAuth2 authorization flow itself, or a service-account "console" for the account's owner (this spec covers the *admin* view only).
+**Scope:** one settings area — **Accounts** (`/settings/accounts`) — with two sections, **OAuth Clients** and **Service Accounts**, plus the server actions, feature modules and settings-card wiring they depend on. Non-goals: any change to the OAuth2 authorization flow itself; a service-account "console" for the account's owner (admin view only); secret rotation (§4.6); UI permission gating (§6.2).
 
----
-
-## 1. Domain model — one paragraph
-
-An **OAuth2 client** is a registered API consumer in the iGRP authorization server; it has a `clientId`, a hashed `clientSecret`, a set of `grantTypes` (`authorization_code`, `refresh_token`, `client_credentials`, `device_code`), redirect URIs, TTLs, scopes, and an owning application. A **service account** is a 1:1 human-manageable wrapper around an OAuth2 client that carries `client_credentials`: it adds a display `name`/`description`, an owning application, a set of assigned `roleIds`, and a set of **direct** `permissionIds` (permissions granted without going through the role layer). At M2M token issuance, the effective permission set is the **union** of role-inherited and directly-granted permissions.
-
-The two objects are separately managed on purpose — you can create a `client_credentials` OAuth2 client without a service account (e.g. an internal system integration whose caller identity is opaque), but a service account **cannot exist without** its OAuth2 client, and deleting the service account does **not** delete the OAuth2 client.
+**Vocabulary:** terms in **bold** are defined in [`CONTEXT.md`](../../CONTEXT.md). In particular, "client" alone always means an SDK class — the domain object is an **OAuth Client**; "grant" alone always means a **Grant Type**.
 
 ---
 
-## 2. Client-library alignment — `@igrp/platform-access-management-client-ts@0.2.0-beta.*`
+## 1. Domain model
 
-The audit found the client was *behind* the backend by one entire feature area: OAuth-client CRUD was present, but the service-account CRUD did not exist at all. This spec is grounded on the following aligned surface, shipped in `0.2.0-beta.12`.
+An **OAuth Client** is a registered API consumer on the iGRP authorization server: a `clientId`, a hashed **Client Secret** (disclosed once, at registration), a set of **Grant Types** (`authorization_code`, `refresh_token`, `client_credentials`, `device_code`), redirect URIs, TTLs, scopes, and an owning application.
 
-### 2.1 `OAuthClient` (already present, unchanged)
+A **Service Account** wraps exactly one `client_credentials` **OAuth Client** and adds a display `name`/`description`, assigned `roleIds`, and **Direct Permissions** (`permissionIds`). Its **Effective Permissions** are the union of **Role-Inherited Permissions** and **Direct Permissions**.
 
-Consumes `/api/clients` — the OAuth2 authorization server's client registry.
+Rules:
 
-| Method | HTTP call | Consumed by page |
+- **1:1.** An OAuth Client has zero or one Service Account; a Service Account has exactly one OAuth Client. The UI assumes at most one and shows a warning banner if it ever finds more (backend constraint is a follow-up, §7).
+- **No independent owner.** A Service Account belongs to its OAuth Client's application. The UI never lets the two differ; the SA's `applicationId` is always sent as the client's.
+- **Grant lock.** An OAuth Client with a Service Account always keeps `client_credentials`.
+- **Deletion.** An OAuth Client that still has a Service Account cannot be deleted. Deleting a Service Account does not by itself delete its OAuth Client (the UI offers to, §5.6).
+- **Deactivation.** Deactivating a Service Account turns off **both** the Service Account and its OAuth Client — the identity can no longer authenticate at all (§6.1).
+- Role and permission scoping (which department a role/permission belongs to) is managed on the departments pages, not here.
+
+---
+
+## 2. Client-library surface — `@igrp/platform-access-management-client-ts@0.2.0-beta.16`
+
+Both resources are exposed on the `AccessManagementClient` facade as `client.oauthClients` and `client.serviceAccounts`. Nothing in `src/` consumes them yet.
+
+### 2.1 `OAuthClient`
+
+| Method | HTTP call |
+|---|---|
+| `listOAuthClients()` | `GET /api/clients` |
+| `getOAuthClient(id)` | `GET /api/clients/{id}` |
+| `createOAuthClient(request)` | `POST /api/clients` — response carries the raw `clientSecret` |
+| `updateOAuthClient(id, request)` | `PUT /api/clients/{id}` — full replacement, no secret in response |
+| `deleteOAuthClient(id)` | `DELETE /api/clients/{id}` — `204` |
+
+**`OAuthClientDTO`:** `id`, `clientId`, `clientSecret?` *(create response only)*, `clientName?`, `description?`, `active`, `applicationId?`, `applicationCode?`, `accessTokenTtl`, `refreshTokenTtl`, `authorizationCodeTtl`, `scopes[]`, `redirectUris[]`, `grantTypes[]`, `createdAt?`, `updatedAt?`.
+
+**`OAuthClientRequestDTO`:** `clientId`, `clientName`, `description?`, `active?`, `applicationId?`, `accessTokenTtl?`, `refreshTokenTtl?`, `authorizationCodeTtl?`, `scopes[]`, `redirectUris?`, `grantTypes[]`.
+
+### 2.2 `ServiceAccountClient`
+
+| Method | HTTP call |
+|---|---|
+| `listServiceAccounts()` | `GET /api/service-accounts` |
+| `getServiceAccount(id)` | `GET /api/service-accounts/{id}` |
+| `createServiceAccount(request)` | `POST /api/service-accounts` |
+| `updateServiceAccount(id, request)` | `PUT /api/service-accounts/{id}` |
+| `deleteServiceAccount(id)` | `DELETE /api/service-accounts/{id}` — `204` |
+
+**`ServiceAccountDTO`:** `id`, `name`, `description?`, `active`, `oauthClientId`, `clientId` *(denormalised)*, `applicationId?`, `applicationCode?`, `roleIds?[]`, `roleCodes?[]`, `permissionIds?[]`, `permissionNames?[]`, `createdAt?`, `updatedAt?`.
+
+**`ServiceAccountRequestDTO`:** `name`, `description?`, `active?`, `oauthClientId` *(required)*, `applicationId?`, `roleIds?[]`, `permissionIds?[]`.
+
+> ⚠ **Replacement semantics on PUT** for both resources. For Service Accounts, `roleIds` and `permissionIds` are the *complete* set — omitted ids are unassigned. For OAuth Clients the whole DTO is replaced. Every mutation must start from freshly loaded state and send the full object.
+
+### 2.3 Not in scope of the library
+
+- No new `M2MClient` methods. Service-account **management** is human-facing; M2M sync endpoints remain the automation surface (`AuthorizationSyncRunner`). Do not conflate them.
+- No secret-rotation method — the backend has none (§4.6, §7).
+
+---
+
+## 3. Data layer — server actions + feature modules
+
+The pages never call `/api/*` from the browser. They follow the existing architecture (see `src/actions/user.ts`, `src/features/users/`):
+
+### 3.1 Server actions
+
+- `src/actions/oauth-clients.ts` — `listOAuthClients`, `getOAuthClient`, `createOAuthClient`, `updateOAuthClient`, `deleteOAuthClient`.
+- `src/actions/service-accounts.ts` — `listServiceAccounts`, `getServiceAccount`, `createServiceAccount`, `updateServiceAccount`, `deleteServiceAccount`, plus the composite actions below.
+
+Each is `"use server"`, obtains the SDK via `getClientAccess()`, and returns `ActionResult<T>` (never throws), using `toActionError(error)` on failure.
+
+Composite actions (sequencing lives server-side so the browser makes one call; each step's outcome is reported so the UI can offer a precise retry):
+
+| Action | Steps | Partial-failure result |
 |---|---|---|
-| `listOAuthClients()` | `GET /api/clients` | Client Management → list |
-| `getOAuthClient(id)` | `GET /api/clients/{id}` | Client Management → detail; Service Account → linked-client panel |
-| `createOAuthClient(request)` | `POST /api/clients` | Client Management → create; Service Account → step 1 of the wizard |
-| `updateOAuthClient(id, request)` | `PUT /api/clients/{id}` | Client Management → edit |
-| `deleteOAuthClient(id)` | `DELETE /api/clients/{id}` | Client Management → delete; secret-rotation flow (§4.6) |
+| `setServiceAccountActive(id, active)` | Deactivate: PUT client `active=false` → PUT SA `active=false`. Reactivate: PUT SA → PUT client. | Reports which step failed. On deactivate, the client step goes first so authentication is blocked even if the SA step fails. |
+| `createServiceAccountWithNewClient(clientRequest, saRequest)` | POST client → POST SA with the new `oauthClientId` and the client's `applicationId`. | If the SA step fails, returns the created client **including its raw `clientSecret`** so the UI can still disclose it and offer "retry creating the account" against that client. |
+| `deleteServiceAccount(id, { alsoDeleteClient })` | DELETE SA → (optional) DELETE client. | Reports whether the client step failed; the SA is already gone. |
 
-**Type shape (`OAuthClientDTO`):** `id`, `clientId`, `clientSecret?` *(present ONLY on create response)*, `clientName?`, `description?`, `active`, `applicationId?`, `applicationCode?`, `accessTokenTtl`, `refreshTokenTtl`, `authorizationCodeTtl`, `scopes[]`, `redirectUris[]`, `grantTypes[]`, `createdAt?`, `updatedAt?`.
+All three are backend follow-up candidates (§7) — once the backend cascades, they collapse to single calls.
 
-**Request shape (`OAuthClientRequestDTO`):** `clientId`, `clientName`, `description?`, `active?`, `applicationId?`, `accessTokenTtl?`, `refreshTokenTtl?`, `authorizationCodeTtl?`, `scopes[]`, `redirectUris?`, `grantTypes[]`.
+### 3.2 Feature modules
 
-### 2.2 `ServiceAccountClient` (NEW in `0.2.0-beta.*`)
-
-Consumes `/api/service-accounts` — the human-facing wrapper over a `client_credentials` OAuth2 client.
-
-| Method | HTTP call | Consumed by page |
-|---|---|---|
-| `listServiceAccounts()` | `GET /api/service-accounts` | Service Account Management → list |
-| `getServiceAccount(id)` | `GET /api/service-accounts/{id}` | Service Account Management → detail |
-| `createServiceAccount(request)` | `POST /api/service-accounts` | Service Account Management → wizard step 2 |
-| `updateServiceAccount(id, request)` | `PUT /api/service-accounts/{id}` | Service Account Management → edit (name, roles, permissions) |
-| `deleteServiceAccount(id)` | `DELETE /api/service-accounts/{id}` | Service Account Management → delete |
-
-**Type shape (`ServiceAccountDTO`):** `id`, `name`, `description?`, `active`, `oauthClientId`, `clientId` *(denormalised — same as `oauthClient.clientId`)*, `applicationId?`, `applicationCode?`, `roleIds?[]`, `roleCodes?[]`, `permissionIds?[]`, `permissionNames?[]`, `createdAt?`, `updatedAt?`.
-
-**Request shape (`ServiceAccountRequestDTO`):** `name`, `description?`, `active?`, `oauthClientId` *(REQUIRED — created separately first)*, `applicationId?`, `roleIds?[]`, `permissionIds?[]`.
-
-> ⚠ **REPLACEMENT semantics on PUT.** Both `roleIds` and `permissionIds` in the update request are treated as the *complete* set — ids omitted from the request are unassigned. To assign one additional role, the client must send the current set plus the new one; the frontend must therefore always load the current state before submitting a partial change.
-
-### 2.3 What did NOT change
-
-- No new methods on `M2MClient`. Service-account **management** is human-facing (this spec); M2M sync endpoints remain the automation surface for target-project boot (`AuthorizationSyncRunner`). Do not conflate them.
-- No secret-rotation method on `OAuthClient` — the backend has no such endpoint. Rotation is `delete + recreate` (see §4.6).
-- Both classes are also exposed on the `AccessManagementClient` facade (`client.oauthClients`, `client.serviceAccounts`) so `useAccessManagement()`-style hooks can pick them up consistently with the other resources.
-
----
-
-## 3. Backend endpoints reference (for the frontend hook layer)
-
-All paths are relative to the AS base URL configured in the Application Center (`IGRP_ACCESS_BASE_URL`).
-
-### OAuth clients — `/api/clients`
-
-| Method | Path | Body | Response | Permission (see §7) |
-|---|---|---|---|---|
-| GET | `/api/clients` | — | `OAuthClientDTO[]` | `igrp.client.list` |
-| GET | `/api/clients/{id}` | — | `OAuthClientDTO` | `igrp.client.view` |
-| POST | `/api/clients` | `OAuthClientRequestDTO` | `OAuthClientDTO` **with raw `clientSecret`** | `igrp.client.create` |
-| PUT | `/api/clients/{id}` | `OAuthClientRequestDTO` | `OAuthClientDTO` (no secret) | `igrp.client.update` |
-| DELETE | `/api/clients/{id}` | — | `204 No Content` | `igrp.client.delete` |
-
-### Service accounts — `/api/service-accounts`
-
-| Method | Path | Body | Response | Permission (see §7) |
-|---|---|---|---|---|
-| GET | `/api/service-accounts` | — | `ServiceAccountDTO[]` | *(unprotected today — §7)* |
-| GET | `/api/service-accounts/{id}` | — | `ServiceAccountDTO` | *(unprotected today — §7)* |
-| POST | `/api/service-accounts` | `ServiceAccountRequestDTO` | `ServiceAccountDTO` | *(unprotected today — §7)* |
-| PUT | `/api/service-accounts/{id}` | `ServiceAccountRequestDTO` | `ServiceAccountDTO` | *(unprotected today — §7)* |
-| DELETE | `/api/service-accounts/{id}` | — | `204 No Content` | *(unprotected today — §7)* |
-
-
-Instead of using the /api route, use the app architecture as been using, the actions/
----
-
-## 4. Page — Client Management
-
-### 4.1 Route
-
-- **URL:** `/settings/clients` (list) → `/settings/clients/[id]` (detail)
-- **Route group:** `src/app/(igrp)(home)/settings/clients/` — matches the existing `settings/users` layout scope.
-- **Container:** wraps in the existing `settings` group layout (`max-w-7xl`, `PageHeader` slot).
-
-### 4.2 Data-layer scaffolding
-
-One hook file (`src/hooks/use-oauth-clients.ts`) exposing:
-
-```ts
-useOAuthClients()                              // → useQuery(['oauth-clients'], listOAuthClients)
-useOAuthClient(id: string)                     // → useQuery(['oauth-clients', id], getOAuthClient)
-useCreateOAuthClient()                         // → useMutation → invalidates ['oauth-clients']
-useUpdateOAuthClient()                         // → useMutation → invalidates ['oauth-clients', id]
-useDeleteOAuthClient()                         // → useMutation → invalidates ['oauth-clients']
+```
+src/features/oauth-clients/
+  query-keys.ts        // oauthClientKeys.all / list() / detail(id)
+  query-options.ts     // queryOptions wrapping actions with unwrap()
+  prefetch.ts
+  use-oauth-clients.ts // useOAuthClients, useOAuthClient, useCreate…, useUpdate…, useDelete…, useSetOAuthClientActive
+  components/
+src/features/service-accounts/
+  query-keys.ts
+  query-options.ts
+  prefetch.ts
+  use-service-accounts.ts // useServiceAccounts, useServiceAccount, useCreate…, useCreateWithNewClient, useUpdate…, useDelete…, useSetServiceAccountActive
+                          // useOAuthClientsAvailableForServiceAccount → client_credentials clients with no linked SA
+  components/
 ```
 
-Mutations invalidate their list on success (matching `use-users.ts` convention) and surface errors through `useIGRPToast()`.
+- Mutations invalidate the relevant keys on success (matching `useAddUserRole`). Cross-resource mutations (combined deactivate, create-with-client, delete-with-client) invalidate **both** key families.
+- Errors surface through `useIGRPToast()` (§6.4).
+- **Secrets never enter the query cache.** Create mutations must not `setQueryData` with the create response; the secret lives only in the mutation result held by the disclosure component and is dropped when it unmounts.
 
-### 4.3 List page — `/settings/clients`
+### 3.3 Pages
+
+Server components prefetch via `getQueryClient().fetchQuery(...)` and render the client view inside `<HydrationBoundary>` (as in `settings/users/[id]/page.tsx`). A failed primary fetch throws `HttpStatusError`. Each route has `page.tsx`, `loading.tsx` (`AppCenterLoading`) and `error.tsx`.
+
+---
+
+## 4. Section — OAuth Clients
+
+### 4.1 Routes & navigation
+
+```
+src/app/(igrp)/(home)/settings/accounts/
+  layout.tsx            // shared tab nav: "Clientes OAuth" | "Contas de Serviço"
+  page.tsx              // redirect → /settings/accounts/clients
+  clients/page.tsx      // list
+  clients/[id]/page.tsx // detail
+  services/page.tsx
+  services/new/page.tsx
+  services/[id]/page.tsx
+```
+
+- The existing settings card "Gestão de Contas e Serviços" in `settings/page.tsx` changes `href` from `/settings/accounts-services` to `/settings/accounts` and drops `status: "inativo"`.
+- **All UI copy is Portuguese**, matching the rest of the app. English strings in this spec express intent only.
+
+### 4.2 List — `/settings/accounts/clients`
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ ← Back                                                                       │
+│ [ Clientes OAuth ] [ Contas de Serviço ]                                     │
 │ ┌─────────────────────────────────────────────────────────────────────────┐ │
-│ │ OAuth2 Clients                                            [ + Register ]│ │
-│ │ Registered API consumers on the iGRP authorization server.              │ │
+│ │ Clientes OAuth                                          [ + Registar ]  │ │
+│ │ Consumidores de API registados no servidor de autorização iGRP.         │ │
 │ └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                              │
-│ ┌ Filter ─────────────────────────────────────────────────────────────────┐ │
-│ │ [Search by name / clientId       ] [ Grant type ▾ ]  [ Application ▾ ]  │ │
-│ │                                    [ Active ▾  All  ]                    │ │
-│ └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                              │
+│ [Pesquisar por nome / clientId ] [ Grant type ▾ ] [ Aplicação ▾ ] [ Estado ▾]│
 │ ┌ IGRPDataTable ──────────────────────────────────────────────────────────┐ │
-│ │ Client name     │ clientId          │ Grants             │ App   │ ⋮  │ │
-│ │─────────────────┼───────────────────┼────────────────────┼───────┼────│ │
-│ │ • Invoice App   │ my-invoice        │ auth_code, refresh │ INV   │ ⋮  │ │
-│ │ • Cadastro SPA  │ cadastro-spa      │ auth_code, refresh │ CAD   │ ⋮  │ │
-│ │ • Nightly ETL   │ etl-runner-m2m    │ client_credentials │ INV   │ ⋮  │ │
-│ │ • Inactive Test │ test-app          │ client_credentials │ —     │ ⋮  │ │
-│ │                                                                          │ │
-│ │ [rows per page: 25 ▾]                     1–4 of 4    ‹ prev  next ›   │ │
+│ │ Nome            │ clientId          │ Grant types        │ App │ ● │ ⋮  │ │
+│ │ Invoice App     │ my-invoice        │ auth_code, refresh │ INV │ ● │ ⋮  │ │
+│ │ Nightly ETL     │ etl-runner-m2m    │ client_credentials │ INV │ ● │ ⋮  │ │
 │ └─────────────────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Columns**: Name (`clientName`), Client Id (`clientId`, monospace), Grant types (multi-badge), Application (`applicationCode`), Status (green/gray `IGRPBadgePrimitive` on `active`), Actions column (see below).
+**Columns:** Name (`clientName`), Client Id (`clientId`, monospace), Grant Types (multi-badge), Application (`applicationCode`), Status (`active` badge), Actions.
 
-**Row actions** (via `IGRPDropdownMenu`, `⋮` cell — mirrors `settings/users` pattern):
-- **View details** → navigate to `/settings/clients/[id]`
-- **Edit** → open edit dialog (§4.5)
-- **Copy client Id** → `navigator.clipboard.writeText(row.clientId)` + toast
+**Row actions** (`IGRPDropdownMenu`, mirrors `settings/users`):
+- View details → `/settings/accounts/clients/[id]`
+- Edit → edit dialog (§4.7)
+- Copy client Id → clipboard + toast
 - ─── separator ───
-- **Rotate secret** → opens rotation flow (§4.6). Destructive-styled.
-- **Deactivate / Reactivate** → single-field PUT toggling `active`. Confirmation dialog for deactivate.
-- **Delete** → `IGRPDialogDelete` (type-to-confirm, using `clientId` as the confirmation string). Destructive-styled.
+- Deactivate / Reactivate → §6.1. Confirmation dialog for deactivate.
+- Delete → §4.8. **Disabled** when a Service Account is linked, with tooltip "Remova primeiro a conta de serviço."
 
-**Row-level gating** (see §6.4): the "Rotate secret", "Deactivate", and "Delete" items are hidden for users without `igrp.client.update` / `igrp.client.delete`.
+**Filters** are client-side (`IGRPDataTable` faceted filters) — the list is small and unpaged (§7).
 
-**Filters** are server-side query params where the backend supports them, client-side otherwise. Given the list is likely small (dozens, not thousands), client-side faceted filtering via `IGRPDataTable`'s built-in filter chips is sufficient for now.
+### 4.3 Reusable client form
 
-### 4.4 Create flow — modal wizard (recommended) or single dialog
-
-The create flow has one non-obvious step — the raw `clientSecret` is shown **once, and never again**. The dialog therefore has TWO panes shown sequentially:
-
-**Pane 1 — form (`IGRPDialogPrimitive`, full-screen on md and below):**
+One `OAuthClientForm` component (`react-hook-form` + `zod`), used by the create dialog, the edit dialog, and wizard step 1 (§5.4). Props control: `clientId` editable or not, Grant Types locked to `client_credentials`, `client_credentials` locked on.
 
 ```
-┌─── Register OAuth2 client ──────────────────────────────── × ───┐
-│                                                                   │
-│  Basic info                                                       │
-│  ─────────                                                        │
+┌─── Registar cliente OAuth2 ─────────────────────────────── × ───┐
 │  Client Id *          [ my-invoice                          ]    │
-│    Kebab-case, unique. Cannot be changed later.                   │
-│  Display name *       [ Invoice App                         ]    │
-│  Description          [                                     ]    │
-│  Owning application   [ Select application ▾ ]                   │
+│    Kebab-case, único. Não pode ser alterado depois.              │
+│  Nome *               [ Invoice App                         ]    │
+│  Descrição            [                                     ]    │
+│  Aplicação            [ Selecionar aplicação ▾ ]                 │
 │                                                                   │
 │  Grant types *                                                    │
-│  ─────────────                                                    │
 │  ☑ authorization_code      ☑ refresh_token                        │
 │  ☐ client_credentials      ☐ device_code                          │
 │                                                                   │
-│  Redirect URIs                    (required for authorization_code)│
-│  ─────────────                                                    │
-│  ┌─────────────────────────────────────────────────────────┐    │
-│  │ https://app.example.com/api/auth/callback/igrp-auth  ✕ │    │
-│  │ https://staging.example.com/…/callback/igrp-auth    ✕ │    │
-│  └─────────────────────────────────────────────────────────┘    │
-│  [ + Add URI ]                                                    │
+│  Redirect URIs              (obrigatório com authorization_code)  │
+│  [ https://app.example.com/api/auth/callback/igrp-auth  ✕ ]      │
+│  [ + Adicionar URI ]                                              │
 │                                                                   │
-│  Scopes                                                           │
-│  ──────                                                           │
-│  [ openid × ] [ email × ] [ profile × ]  [ + Add scope ]         │
+│  Scopes   [ openid × ] [ email × ] [ profile × ] [ + Adicionar ]  │
 │                                                                   │
-│  Advanced ▾                                                       │
-│  ────────                                                         │
-│  Access-token TTL (s)     [ 180              ]                    │
-│  Refresh-token TTL (s)    [ 86400            ]                    │
-│  Authorization-code TTL   [ 60               ]                    │
-│                                                                   │
-│  ☑ Active on creation                                             │
-│                                                                   │
-│                                          [ Cancel ]  [ Register ]│
+│  Avançado ▾   Access-token TTL (s) / Refresh-token TTL (s) /      │
+│               Authorization-code TTL (s)                          │
+│  ☑ Ativo na criação                                               │
+│                                          [ Cancelar ] [ Registar ]│
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Field-level rules:**
-- `clientId`: kebab-case validator (`^[a-z0-9]+(-[a-z0-9]+)*$`), required, unique server-side. Errors from the server (409 on duplicate) surface next to the field, not as a toast.
-- `redirectUris`: required if `grantTypes` contains `authorization_code`; must be `https://` (allow `http://localhost` for dev). Rendered as a chip-editor.
-- `scopes`: chip-editor. Default `openid email profile` when `authorization_code` selected; default empty when `client_credentials`-only.
-- TTLs: numeric inputs with sensible defaults, hidden behind an "Advanced" disclosure. Backend has defaults so omission is fine.
-- Client-side validation via `react-hook-form` + `zod` (matches `settings/users`).
+**Field rules:**
+- `clientId`: `^[a-z0-9]+(-[a-z0-9]+)*$`, required, unique server-side. A 409 surfaces on the field via `setError`, not as a toast.
+- `redirectUris`: required when `authorization_code` is selected; `https://` only, except `http://localhost`. Chip editor.
+- `scopes`: chip editor. Defaults to `openid email profile` when `authorization_code` is selected; empty for `client_credentials`-only.
+- TTLs: behind "Avançado"; optional (backend has defaults).
 
-**Pane 2 — secret disclosure (shown ONLY on successful POST response):**
+### 4.4 Create flow
 
-```
-┌─── Client registered — SAVE THIS SECRET NOW ───────────────× ────┐
-│                                                                   │
-│  ⚠  The client secret below will not be shown again.              │
-│      Store it in your secret manager before closing this dialog.  │
-│                                                                   │
-│  Client Id                                                        │
-│  [ my-invoice                                        ] [ Copy ]  │
-│                                                                   │
-│  Client Secret                                                    │
-│  [ Rh2v-JXQe… ●●●●●●●●●●●●●●●●   ] [ 👁 Reveal ]  [ Copy ]      │
-│                                                                   │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │ ☐ I have saved the secret in a safe place                 │  │
-│  └───────────────────────────────────────────────────────────┘  │
-│                                                                   │
-│                                    [ Done — view client details ]│
-└─────────────────────────────────────────────────────────────────┘
-```
+Dialog (`IGRPDialogPrimitive`, full-screen on md and below) with two sequential panes:
 
-**Rules:**
-- The "Done" button is **disabled until the confirmation checkbox is ticked**. This is deliberate friction — the failure mode of a lost secret is worse than the annoyance of one extra click.
-- Attempting to close the dialog via `×` or Esc shows a `IGRPAlertDialog` warning: "You will not be able to retrieve this secret again. Close anyway?".
-- The revealed secret uses `type="text"`; toggling `👁 Reveal` flips to `type="password"` (default is masked so screen-sharing users don't leak). Copy always writes the raw value regardless of visibility.
-- The response payload is discarded from React Query cache immediately after the dialog closes (via `queryClient.setQueryData(['oauth-clients', id], stripSecret)`) so the secret cannot resurface in a re-render.
+1. **Form** — §4.3.
+2. **Secret disclosure** — shown only on a successful POST, using `SensitiveValueDisclosure` (§6.3) for both `clientId` and `clientSecret`. "Concluído — ver detalhes" navigates to the detail page.
 
-### 4.5 Detail page — `/settings/clients/[id]`
+### 4.5 Detail — `/settings/accounts/clients/[id]`
 
-Tabbed layout using `IGRPTabs`, matching `/settings/users/[id]`.
+Tabbed (`IGRPTabs`, active tab in URL search params, each tab in ErrorBoundary + Suspense — as `user-details-tabs.tsx`).
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│ ← All clients / Invoice App                    [ Edit ] [ ⋮ More ]  │
-├─────────────────────────────────────────────────────────────────────┤
-│ [ Overview ] [ Grants & scopes ] [ Redirects ] [ Linked account ]   │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  (tab content — see below)                                           │
-│                                                                      │
+│ ← Clientes OAuth / Invoice App                  [ Editar ] [ ⋮ ]    │
+│ [ Visão geral ] [ Grant types & scopes ] [ Redirects ] [ Conta de serviço ] │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Overview**: read-only display of `clientId`, `clientName`, `description`, `applicationCode`, `active` (with quick toggle if permitted), TTLs, `createdAt`/`updatedAt`.
-- **Grants & scopes**: multi-badge list of `grantTypes` and `scopes`. If `client_credentials` is present, show a hint pointing at Service Accounts: *"This client uses `client_credentials`. If you also need role-based access control for M2M calls, [create a service account](/settings/service-accounts/new?oauthClientId=...) linked to it."*
-- **Redirects**: read-only list of `redirectUris` with copy buttons.
-- **Linked account**: shows the service account linked to this client (via `useServiceAccounts` filtered by `oauthClientId`) — with a link to the SA detail page. If no account is linked, an empty state offers *"Create a service account for this client"* which pre-fills the SA wizard.
+- **Overview:** `clientId`, `clientName`, `description`, `applicationCode`, `active` (toggle → §6.1), TTLs, timestamps.
+- **Grant Types & scopes:** badges. If `client_credentials` is present and no Service Account is linked, hint linking to `/settings/accounts/services/new?oauthClientId=…`.
+- **Redirects:** read-only list with copy buttons.
+- **Service Account:** the linked Service Account (via `useServiceAccounts` filtered by `oauthClientId`) with a link to its detail page; empty state offers "Criar conta de serviço para este cliente" (deep link above). If more than one is found, show a warning banner (1:1 violated).
 
-### 4.6 Secret rotation — until the backend has a dedicated endpoint
+### 4.6 Secret rotation — not offered
 
-The backend currently has no `POST /api/clients/{id}/rotate-secret` endpoint. Rotation is delete + recreate, which loses the `id` (breaking any downstream references) and requires the operator to redeploy consumers with the new `clientId` as well.
+There is no rotation UI until the backend ships `POST /api/clients/{id}/rotate-secret` (§7, top priority). Delete-and-recreate was rejected: it changes the `id`, breaks the Service Account link, and needs a hand-rolled restore path.
 
-The frontend should:
-
-1. Offer a **"Rotate secret"** action that opens a wizard-style dialog:
-   - **Step 1 — warning**: *"Rotation replaces this client entirely. The old `clientId` and secret will stop working immediately. All consumers of this client must be updated with new credentials. Continue?"* + type-`clientId`-to-confirm.
-   - **Step 2 — new-client form** pre-filled from the existing client's config (name, description, applicationId, grantTypes, scopes, redirects, TTLs), with `clientId` free-editable so the operator can either keep it (delete-then-create is atomic enough at admin cadence) or change it entirely.
-   - **Step 3 — execute** as a delete-then-create pair. If create fails, offer to restore the deleted one (the response body from delete is empty, so the frontend must have kept the DTO in memory to reconstruct it — carry it in the mutation's context).
-   - **Step 4 — secret disclosure** identical to §4.4 pane 2.
-2. When the backend adds a real rotation endpoint, this dialog becomes a single POST + secret disclosure. The wizard shell is designed to migrate cleanly (steps 1, 2, 3 collapse to a confirmation + immediate rotate call).
-
-Filed as a backend follow-up in §7.
+**Leaked-secret procedure** (shown as a one-line hint on the disclosure screen and documented for operators): deactivate immediately (§6.1), then delete and re-register.
 
 ### 4.7 Edit flow
 
-- Full-form modal, same layout as create pane 1 minus the `clientId` field (immutable), minus the secret pane.
-- `PUT` semantics on the backend: full DTO replacement. The dialog must load current state via `getOAuthClient` (already in cache from the list) and submit the full object.
+- Dialog with `OAuthClientForm`, `clientId` read-only (still sent, unchanged), no secret pane.
+- Loads current state via `getOAuthClient` and submits the full DTO (replacement semantics).
+- If a Service Account is linked, `client_credentials` is checked and disabled, with a tooltip explaining why.
 
 ### 4.8 Delete flow
 
-- `IGRPDialogDelete` (matches `settings/users` convention): destructive-styled, type-`clientId`-to-confirm.
-- Copy warns explicitly if the client has a linked service account: *"Deleting this client will also break its service account. Delete the service account first, or that account will become orphaned."* — the SA endpoint doesn't cascade in the current backend (§7).
+- `IGRPDialogDelete` (`src/components/dialog-delete.tsx`), type-`clientId`-to-confirm.
+- Unavailable while a Service Account is linked (§4.2).
 
 ---
 
-## 5. Page — Service Account Management
+## 5. Section — Service Accounts
 
-### 5.1 Route
+### 5.1 Routes
 
-- **URL:** `/settings/service-accounts` (list) → `/settings/service-accounts/[id]` (detail) → `/settings/service-accounts/new` (create wizard, deep-linkable with `?oauthClientId=…`)
-- **Route group:** `src/app/(igrp)(home)/settings/service-accounts/`
+- `/settings/accounts/services` (list), `/settings/accounts/services/[id]` (detail), `/settings/accounts/services/new` (wizard; `?oauthClientId=…` deep link).
 
-### 5.2 Data-layer scaffolding
-
-One hook file (`src/hooks/use-service-accounts.ts`):
-
-```ts
-useServiceAccounts()                    // → useQuery(['service-accounts'], listServiceAccounts)
-useServiceAccount(id: string)           // → useQuery(['service-accounts', id], getServiceAccount)
-useCreateServiceAccount()               // → useMutation → invalidates list
-useUpdateServiceAccount()               // → useMutation → invalidates list + detail
-useDeleteServiceAccount()               // → useMutation → invalidates list
-
-// Cross-resource helpers for the wizard:
-useOAuthClientsAvailableForServiceAccount()  // → useOAuthClients() filtered client-side
-                                              //   to grantTypes.includes('client_credentials')
-                                              //   AND not already linked to a SA (needs
-                                              //   listServiceAccounts to compute)
-```
-
-### 5.3 List page — `/settings/service-accounts`
+### 5.2 List — `/settings/accounts/services`
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ ← Back                                                                       │
-│ ┌─────────────────────────────────────────────────────────────────────────┐ │
-│ │ Service Accounts                                     [ + New account ]  │ │
-│ │ Machine identities that authenticate via client_credentials.            │ │
-│ └─────────────────────────────────────────────────────────────────────────┘ │
-│                                                                              │
-│ [Search by name / clientId    ] [ Application ▾ ] [ Active ▾ All ]         │
-│                                                                              │
+│ [ Clientes OAuth ] [ Contas de Serviço ]                                     │
+│ Contas de Serviço                                        [ + Nova conta ]   │
+│ Identidades de máquina que autenticam via client_credentials.               │
+│ [Pesquisar por nome / clientId ] [ Aplicação ▾ ] [ Estado ▾ ]               │
 │ ┌ IGRPDataTable ──────────────────────────────────────────────────────────┐ │
-│ │ Name              │ clientId       │ App   │ Roles │ Grants │  │  ⋮   │ │
-│ │───────────────────┼────────────────┼───────┼───────┼────────┼──┼──────│ │
-│ │ Nightly Invoice   │ etl-runner-m2m │ INV   │ 2     │ 8+3 dir│ ● │ ⋮   │ │
-│ │ Cadastro Sync     │ cad-sync-m2m   │ CAD   │ 1     │ 4      │ ● │ ⋮   │ │
-│ │ Legacy Reporter   │ legacy-report  │ —     │ 0     │ 12 dir │ ⊗ │ ⋮   │ │
-│ │                                                                          │ │
-│ │                                                          ‹ prev  next › │ │
+│ │ Nome            │ clientId       │ App │ Permissões          │ ● │ ⋮   │ │
+│ │ Nightly Invoice │ etl-runner-m2m │ INV │ 2 perfis · 3 diretas │ ● │ ⋮   │ │
+│ │ Legacy Reporter │ legacy-report  │ —   │ 0 perfis · 12 diretas│ ⊗ │ ⋮   │ │
 │ └─────────────────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Columns:**
-- **Name** (`name`)
-- **Client Id** (`clientId`, monospace) — linked out to the OAuth client's detail page.
-- **App** (`applicationCode`)
-- **Roles** — count of `roleIds`; on hover, a `Popover` shows the `roleCodes`.
-- **Grants** — displayed as `<inherited-perms>` + `<direct-perms> dir` (e.g. `8+3 dir`). "dir" is the count of `permissionIds` (direct grants); the number before `+` is `roleIds.length` mapped to their permission counts (client-side computed if the backend doesn't denormalise it — TBD).
-- **Status** — active dot / inactive circle.
+**Columns:** Name, Client Id (monospace, links to the OAuth Client detail), App (`applicationCode`), **Permissions** — `N roles · M direct` (role count from `roleIds`, popover lists `roleCodes`; direct count from `permissionIds`), Status.
 
-**Row actions:**
-- View details → `/settings/service-accounts/[id]`
-- Edit → detail page's Roles/Permissions tabs
-- Copy client Id
-- Deactivate / Reactivate
-- Delete → `IGRPDialogDelete` (type-name-to-confirm; warns "the linked OAuth2 client is NOT deleted; delete it separately if it is no longer needed").
+The list does **not** compute Effective Permissions (that would be N+1 across every row); see §5.5 and §7.
 
-### 5.4 Create wizard — `/settings/service-accounts/new`
+**Row actions:** View details; Edit → detail page; Copy client Id; Deactivate / Reactivate (§6.1); Delete (§5.6).
 
-Full-page wizard (**not** a dialog — the flow has enough steps that a modal cramps the layout, and it needs to be deep-linkable so the *Client Management* page can send users into it with a pre-filled `oauthClientId`).
+### 5.3 Available OAuth Clients
+
+`useOAuthClientsAvailableForServiceAccount()` = OAuth Clients with `client_credentials` and no linked Service Account (computed client-side from both lists).
+
+### 5.4 Create wizard — `/settings/accounts/services/new`
+
+Full page (not a dialog): multiple steps and must be deep-linkable. **Nothing is persisted until the final submit.**
+
+**Step 1 — OAuth Client**
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│ ← Cancel                              Step 1 of 3 · Link OAuth2 client │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  A service account needs a client_credentials OAuth2 client to talk  │
-│  to. Pick an existing one, or register a new one.                    │
-│                                                                      │
-│  ○ Use an existing OAuth2 client                                     │
-│    [ Select client ▾ ]                                               │
-│      (only client_credentials clients WITHOUT an existing service    │
-│       account are shown; others are filtered out)                    │
-│                                                                      │
-│  ● Register a new OAuth2 client                                      │
-│    ┌ inlined OAuthClient create form (§4.4 pane 1) ─────────────┐   │
-│    │  … with grantTypes locked to client_credentials …          │   │
-│    └───────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│                                                    [ Back ] [ Next ]│
-└─────────────────────────────────────────────────────────────────────┘
+│  ○ Usar um cliente OAuth2 existente   [ Selecionar cliente ▾ ]      │
+│      (apenas clientes client_credentials sem conta de serviço)      │
+│  ● Registar um novo cliente OAuth2                                   │
+│    ┌ OAuthClientForm, Grant Types locked to client_credentials ┐    │
+│    └───────────────────────────────────────────────────────────┘    │
 ```
 
-- Step 1 outputs an `oauthClientId`. If step 1 registered a new client, its secret is shown at the end of step 3 (deferred until the SA is created — otherwise the operator has to keep the tab open across two sensitive-value moments).
-- Deep-link: `?oauthClientId=<uuid>` skips step 1 and jumps to step 2 with the client already selected.
+- Step 1 only collects input (an existing `oauthClientId`, or a new-client request). No POST happens here.
+- `?oauthClientId=<uuid>` pre-selects the client and jumps to step 2.
 
-**Step 2 — service-account identity:**
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│ ← Cancel                                   Step 2 of 3 · Identity   │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  Name *                    [ Nightly Invoice ETL              ]     │
-│  Description               [                                  ]     │
-│  Owning application        [ Select ▾  Invoicing              ]     │
-│  ☑ Active on creation                                                │
-│                                                                      │
-│                                          [ Back ] [ Next: assign… ] │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-**Step 3 — roles + direct permissions:**
+**Step 2 — Identity**
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│ ← Cancel                             Step 3 of 3 · Roles & permissions │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  Roles                                                               │
-│  ─────                                                               │
-│  ┌ Selected ────────────────────────────────────────────────────┐   │
-│  │ INV.invoice.reader ×    INV.invoice.exporter ×                │   │
-│  └───────────────────────────────────────────────────────────────┘   │
-│  [ + Add role from department ▾ ]                                    │
-│    (opens IGRPCommandPrimitive combobox: searchable + department-    │
-│     grouped; matches settings/users pattern)                         │
-│                                                                      │
-│  Direct permissions       ⓘ Grants bypass the role layer.           │
-│  ──────────────────                                                  │
-│  ┌ Selected ────────────────────────────────────────────────────┐   │
-│  │ my.invoice.approve ×    my.invoice.delete ×    my.report.run ×│   │
-│  └───────────────────────────────────────────────────────────────┘   │
-│  [ + Add permission ▾ ]                                              │
-│                                                                      │
-│  Effective permissions preview                                       │
-│  ──────────────────────────                                          │
-│  From roles: 8    Directly granted: 3    Total unique: 11            │
-│  [ Preview list ]                                                    │
-│                                                                      │
-│                                       [ Back ] [ Create account ]   │
-└─────────────────────────────────────────────────────────────────────┘
+│  Nome *          [ Nightly Invoice ETL              ]               │
+│  Descrição       [                                  ]               │
+│  Aplicação       INV — Invoicing   (herdada do cliente OAuth)       │
+│  ☑ Ativa na criação                                                  │
 ```
 
-- **Direct permissions warning tooltip**: hovering the ⓘ shows *"Direct grants are absolute — they cannot be revoked by removing a role. Use them sparingly; role-based grants are almost always the right choice."*
-- **Preview** opens a dialog listing the union of role-inherited + directly-granted permissions with a `<Badge>direct</Badge>` marker on the direct ones. If the backend returns `roleCodes` but not their permission expansions, the preview is server-called via `RoleClient.getRole(id)` for each role — this is the argument for the backend to return an expanded permission set on the service-account response as a follow-up (§7).
-- On submit → `createServiceAccount(request)`. If step 1 registered a new OAuth2 client, the SA-create-success screen also shows the OAuth2 client's secret (via §4.4 pane 2), because that's the only moment where it's practical to hand off to the operator.
+The application is read-only and inherited from the OAuth Client (or from the new-client form).
 
-### 5.5 Detail page — `/settings/service-accounts/[id]`
-
-Tabbed layout, same shell as clients:
+**Step 3 — Roles & Direct Permissions**
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│ ← All service accounts / Nightly Invoice ETL     [ Edit ] [ ⋮ More ]│
-├─────────────────────────────────────────────────────────────────────┤
-│ [ Overview ] [ Roles ] [ Direct permissions ] [ Linked client ]     │
-├─────────────────────────────────────────────────────────────────────┤
+│  Perfis           [ INV.invoice.reader × ] [ INV.invoice.exporter × ]│
+│                   [ + Adicionar perfil ]                             │
+│  Permissões diretas  ⓘ                                               │
+│                   [ my.invoice.approve × ] [ my.report.run × ]       │
+│                   [ + Adicionar permissão ]                          │
+│  Permissões efetivas: De perfis: 8 · Diretas: 3 · Total únicas: 11   │
+│  [ Ver lista ]                                                       │
+│                                          [ Voltar ] [ Criar conta ]  │
 ```
 
-- **Overview**: name, description, active toggle, linked client (with clientId + link to `/settings/clients/[oauthClientId]`), owning application, created/updated timestamps.
-- **Roles**: chip list of `roleCodes` grouped by department. "+ Assign role" opens the same `IGRPCommandPrimitive` picker from §5.4 step 3. Removing a chip triggers an inline confirmation ("Remove `INV.invoice.reader`?") then a `PUT` with the reduced `roleIds` set.
-- **Direct permissions**: chip list of `permissionNames`. Same add/remove UX as roles. Every add prompts once: *"Direct grants bypass roles. Are you sure?"* — dismissible per-session.
-- **Linked client**: read-only summary of the `oauthClientId` (name, clientId, grantTypes, active), with an "Open client" button routing to the client's detail page.
+- Pickers reuse the `SelectableDataTable` pattern from `user-role-dialog.tsx` (roles) and `role-permissions-dialog.tsx` (permissions), with a local diff helper like `computeRoleDiff`.
+- ⓘ tooltip on Direct Permissions: "Permissões diretas não são revogadas ao remover um perfil. Prefira perfis." Direct Permissions carry a `direct` badge. **No per-add confirmation prompt.**
+- Effective Permissions preview fetches each selected role's permissions (roles are few) and lists the union with `direct` markers.
 
-**⚠ PUT-replacement caveat**: every role/permission add or remove must send the ENTIRE current `roleIds` / `permissionIds` set (§2.2). The hook must always read the fresh detail before submitting, and the UI must optimistic-update carefully (roll back on failure).
+**Submit ("Criar conta")**
+- Existing client → `createServiceAccount` with `applicationId` = the client's.
+- New client → `createServiceAccountWithNewClient` (§3.1).
+- **Success with new client:** a success screen shows the Client Secret via `SensitiveValueDisclosure`, then routes to the SA detail.
+- **Client created but SA failed:** the secret disclosure is shown **anyway** (the secret is otherwise lost), followed by an error state with "Tentar criar a conta novamente", which retries `createServiceAccount` against the now-existing client with the wizard's retained step-2/3 input.
+
+### 5.5 Detail — `/settings/accounts/services/[id]`
+
+```
+│ ← Contas de Serviço / Nightly Invoice ETL        [ Editar ] [ ⋮ ]   │
+│ [ Visão geral ] [ Perfis ] [ Permissões diretas ] [ Cliente OAuth ] │
+```
+
+- **Overview:** name, description, active toggle (§6.1), linked OAuth Client (clientId + link), application, timestamps, Effective Permissions summary.
+- **Roles:** chips of `roleCodes` grouped by department; "+ Atribuir perfil" opens the step-3 picker; removing a chip confirms inline, then PUTs the reduced set.
+- **Direct Permissions:** chips of `permissionNames`; same add/remove UX; no extra confirmation on add.
+- **OAuth Client:** read-only summary (name, clientId, Grant Types, active) + "Abrir cliente".
+
+**Replacement caveat:** every add/remove sends the entire current `roleIds` / `permissionIds`. The hook reads fresh detail before submitting; optimistic updates roll back on failure.
 
 ### 5.6 Delete flow
 
-Same shape as client delete. Extra copy: *"This does not delete the linked OAuth2 client. If you want to also disable the credentials themselves, delete the OAuth2 client separately."*
+- `IGRPDialogDelete`, type-name-to-confirm.
+- Checkbox **"Eliminar também o cliente OAuth `<clientId>`" — checked by default.** An orphaned OAuth Client is a live, untracked credential.
+- Executes `deleteServiceAccount(id, { alsoDeleteClient })` (§3.1). If the client step fails, toast with a link to the client's detail page to finish manually.
 
 ---
 
 ## 6. Cross-cutting concerns
 
-### 6.1 Sensitive-value display component
+### 6.1 Activation state
 
-Both pages need to render a client secret once and only once. Extract a shared component:
+| Where | Behaviour |
+|---|---|
+| OAuth Client **without** Service Account | Single full-DTO PUT toggling `active`. |
+| OAuth Client **with** Service Account (toggle on client page) | Same combined action as the Service Account toggle — the two never diverge. |
+| Service Account | `setServiceAccountActive` (§3.1): deactivate = client → SA; reactivate = SA → client. |
+
+Deactivation copy states the consequence plainly: the identity can no longer authenticate. On partial failure, show which step failed with a retry.
+
+### 6.2 Permission gating — not in v1
+
+No existing settings page gates UI with `usePermissions()` / `<IGRPAuthorization>`, and no `igrp.client.*` / `igrp.service_account.*` codes exist in the token claims or `.igrpstudio/permissions.json`. This area matches the rest of the app: no UI gating; a 403 surfaces as a toast (§6.4). When codes exist, gate with the framework's `usePermissions().can(...)` / `<IGRPAuthorization>` — do not introduce a custom `<Can>`.
+
+Hiding buttons would not fix the real issue — the service-account endpoints are unprotected server-side (§7.2).
+
+### 6.3 Sensitive-value disclosure
+
+`src/components/sensitive-value-disclosure.tsx` (new, shared):
 
 ```tsx
-<IGRPSensitiveValueDisclosure
+<SensitiveValueDisclosure
   label="Client Secret"
-  value={clientSecret}                     // required
-  requireConfirmation                     // shows the "I have saved it" checkbox
-  onDismiss={() => queryClient.setQueryData(...)}  // called on user-driven close
-  defaultMasked                           // hides value initially
+  value={clientSecret}
+  requireConfirmation   // "Guardei o segredo num local seguro" checkbox
+  defaultMasked
   copyable
+  onDismiss={...}
 />
 ```
 
-- Lives in `src/components/access-management/sensitive-value-disclosure.tsx` (new).
-- Used by: OAuth client create (§4.4 pane 2), rotation (§4.6 step 4), SA-create-if-new-client (§5.4 step 3 success).
-- Enforces the "cannot close without ticking confirmation" invariant so it can't be bypassed.
-
-### 6.2 Permission gating in the UI
-
-Application Center currently has no `<Can permission="…">` component; enforcement is server-side. That's acceptable for correctness (a user without `igrp.client.delete` who somehow triggers `deleteOAuthClient` gets a 403 → toast) but **poor UX** — showing buttons that will 403 is confusing.
-
-For this spec, introduce a minimal wrapper (`src/lib/auth/can.tsx`):
-
-```tsx
-<Can permission="igrp.client.delete">
-  <IGRPDropdownMenuItem …>Delete</IGRPDropdownMenuItem>
-</Can>
-```
-
-Backed by the session's `permissions[]` claim (already in the JWT). Falls back to `null` (hidden) when the check fails. No async check — the JWT is authoritative and the check is client-side only, defence-in-depth relative to the server-side check.
-
-Suggested per-endpoint permissions to check against:
-
-| Element | Permission |
-|---|---|
-| "+ Register" button on client list | `igrp.client.create` |
-| Row-level "Edit" | `igrp.client.update` |
-| Row-level "Rotate", "Deactivate", "Delete" | `igrp.client.delete` |
-| Service-account "+ New account" | `igrp.service_account.create` *(see §7 — permission does not exist yet)* |
-| SA row edit / role assign / permission grant | `igrp.service_account.update` *(same)* |
-| SA delete | `igrp.service_account.delete` *(same)* |
-
-### 6.3 Empty states
-
-- **No OAuth2 clients yet**: illustration + copy + `[ Register your first client ]` primary CTA.
-- **No service accounts yet**: illustration + copy explaining the wrapper concept + `[ New service account ]`.
-- **No linked client on SA-detail**: shouldn't happen (the FK is NOT NULL), but if it does, show an error state and a support-contact link, never a silent broken UI.
+- Used by: client create (§4.4), SA wizard success and partial-failure screens (§5.4).
+- Masked by default (`type="password"`); the reveal toggle switches to `type="text"`. Copy always writes the raw value.
+- The "done" action is disabled until the confirmation checkbox is ticked; closing via × or Esc asks "Não poderá voltar a ver este segredo. Fechar mesmo assim?".
+- Holds the secret only in component state; nothing is written to the query cache (§3.2).
+- Includes the leaked-secret hint (§4.6).
 
 ### 6.4 Errors
 
-- All mutation errors surface through `useIGRPToast()` with the `ProblemDetail.detail` field (fall back to `error.message`).
-- Field-level errors (409 on duplicate `clientId`) surface next to the offending field via `react-hook-form.setError`.
-- 401 / 403 open the standard session-expired flow (existing middleware behaviour).
+- Action failures surface via `useIGRPToast()` with the error detail (`ProblemDetail.detail`, falling back to the message).
+- Field-level errors (409 on duplicate `clientId`) go to the field via `setError`.
+- 401 follows the existing session flow (`getClientAccess()` redirects to `/login`).
+- Composite actions report per-step outcomes (§3.1) so the UI can retry precisely.
 
-### 6.5 Loading states
+### 6.5 Empty & loading states
 
-- List pages: `AppCenterLoading` while `useQuery` is fetching; skeleton rows in the table on a background refetch (matches `settings/users`).
-- Detail pages: skeleton tabs + skeleton form fields.
-- Mutation submit: button `isLoading` state disables the form.
+- No OAuth Clients: copy + "Registar o primeiro cliente".
+- No Service Accounts: copy explaining the wrapper + "Nova conta de serviço".
+- SA with no resolvable OAuth Client: shouldn't happen (FK NOT NULL); show an error state, never a silently broken UI.
+- Lists: `AppCenterLoading` on first load, skeleton rows on refetch. Detail: skeleton tabs. Submit buttons show loading and disable the form.
 
 ---
 
 ## 7. Backend gaps to file as follow-ups
 
-These are **not blocking** — the pages ship functional against the current backend — but they materially improve the UX or security posture:
+Not blocking; ordered by priority.
 
-1. **`igrp.service_account.*` permissions missing.** `/api/service-accounts` endpoints have no `@PreAuthorize`. Anyone with a valid JWT can list, create, mutate, and delete service accounts. Suggested codes: `igrp.service_account.list`, `.view`, `.create`, `.update`, `.delete`. Track as a hardening item alongside the UI gating in §6.2 — until this lands, the `<Can>` wrapper hides UI but the server does not enforce.
-2. **No secret-rotation endpoint on OAuth clients.** `POST /api/clients/{id}/rotate-secret` that atomically re-hashes the secret and returns the raw value once, preserving the `id` and `clientId`. Removes the fragile delete-then-recreate dance in §4.6.
-3. **No expanded permission set on `ServiceAccountDTO`.** The DTO returns `roleIds`+`roleCodes` and `permissionIds`+`permissionNames`, but not the union of role-inherited permissions. The UI's *Effective permissions preview* has to N+1-fetch each role's permissions. Adding an `effectivePermissionNames: Set<String>` field to the response would remove that.
-4. **No cascade on `DELETE /api/service-accounts/{id}`.** The linked OAuth2 client remains. That's a defensible default (someone might want to keep the client without the SA layer), but the API should surface a `?cascade=true` query param so the frontend can offer a "delete both" affordance in one call rather than sequencing.
-5. **List filtering / pagination.** `/api/clients` and `/api/service-accounts` return everything unpaged. Fine for now (dozens of records); add query-param filters + pagination when the count grows past ~200.
-
----
+1. **Secret-rotation endpoint.** `POST /api/clients/{id}/rotate-secret` that atomically re-hashes the secret, returns the raw value once, and preserves `id` and `clientId`. Until then there is no rotation in the UI (§4.6).
+2. **Service-account endpoints are unprotected.** `/api/service-accounts` has no `@PreAuthorize`; any valid JWT can list, create, mutate, or delete. Add `igrp.service_account.{list,view,create,update,delete}` (and confirm the real `igrp.client.*` codes) so the UI can later gate on them (§6.2).
+3. **Enforce 1:1.** Unique constraint on `service_account.oauth_client_id`.
+4. **Cascade activation.** A Service Account PUT with `active=false/true` should cascade to its OAuth Client atomically, removing the two-step `setServiceAccountActive` (§3.1).
+5. **Expanded permissions on `ServiceAccountDTO`.** Add `effectivePermissionNames` so the UI stops fetching each role (§5.4, §5.5) and the list can show Effective Permission counts.
+6. **Cascade delete.** `DELETE /api/service-accounts/{id}?cascade=true` to delete both in one call (§5.6). Also define server-side behaviour when deleting an OAuth Client that has a Service Account (reject with 409).
+7. **Atomic create.** Optionally accept a nested client request on `POST /api/service-accounts` to remove the two-step `createServiceAccountWithNewClient`.
+8. **Filtering / pagination.** Both list endpoints are unpaged. Fine at dozens of records; add query params when counts pass ~200.
