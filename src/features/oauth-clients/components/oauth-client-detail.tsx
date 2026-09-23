@@ -50,9 +50,13 @@ export function OAuthClientDetail({ id }: { id: string }) {
     mode: "onBlur",
   });
 
-  // Re-seed after a save/refetch so the form's "clean" state matches the server.
+  // Re-seed after a refetch so the form's "clean" state matches the server —
+  // but never while the user has unsaved edits (a refetch can land mid-edit:
+  // every mutation invalidates ["oauth-clients"], including ones fired from
+  // the danger zone while the name field is dirty). Read isDirty from inside
+  // the effect rather than the deps array so this doesn't re-run per keystroke.
   useEffect(() => {
-    if (client) form.reset(toFormValues(client));
+    if (client && !form.formState.isDirty) form.reset(toFormValues(client));
   }, [client, form]);
 
   // Leaving with unsaved edits asks first (spec §4.5).
@@ -80,10 +84,14 @@ export function OAuthClientDetail({ id }: { id: string }) {
       });
       return;
     }
+    // Reset from the response, not the (stale) refetch: makes the new values
+    // the clean baseline immediately, so the save bar disappears without
+    // waiting on the invalidated query to land.
+    form.reset(toFormValues(result.data));
     igrpToast({
       type: "success",
       title: "Alterações guardadas",
-      description: client.clientName || client.clientId,
+      description: result.data.clientName || result.data.clientId,
     });
   }
 

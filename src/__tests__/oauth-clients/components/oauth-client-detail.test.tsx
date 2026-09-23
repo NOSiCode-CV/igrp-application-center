@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -55,6 +55,7 @@ function renderWith(accounts: unknown[]) {
     <QueryClientProvider client={qc}>{children}</QueryClientProvider>
   );
   render(<OAuthClientDetail id="c1" />, { wrapper });
+  return qc;
 }
 
 beforeEach(() => vi.clearAllMocks());
@@ -69,6 +70,10 @@ describe("OAuthClientDetail", () => {
   });
 
   it("shows the save bar only when dirty, and saves the full request", async () => {
+    vi.mocked(updateOAuthClient).mockResolvedValueOnce({
+      success: true,
+      data: { ...client, clientName: "Renamed" },
+    });
     renderWith([]);
     expect(
       screen.queryByRole("region", { name: "Alterações por guardar" }),
@@ -88,6 +93,41 @@ describe("OAuthClientDetail", () => {
         postLogoutRedirectUris: ["https://keep.me/"],
       }),
     );
+    // The save resets the form from the response, so the bar disappears
+    // immediately — it does not wait on the invalidated query to refetch.
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("region", { name: "Alterações por guardar" }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it("keeps a dirty edit when a refetch lands mid-edit (e.g. from a danger-zone mutation)", async () => {
+    const qc = renderWith([]);
+    const name = screen.getByLabelText(/^Nome/);
+    await userEvent.clear(name);
+    await userEvent.type(name, "Renamed while editing");
+    expect(
+      await screen.findByRole("region", { name: "Alterações por guardar" }),
+    ).toBeInTheDocument();
+
+    // Simulate a background refetch triggered by an unrelated mutation
+    // (every mutation invalidates ["oauth-clients"], including this detail
+    // query) while the name field is still dirty.
+    await act(async () => {
+      qc.setQueryData(oauthClientKeys.detail("c1"), {
+        ...client,
+        active: false,
+      });
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText("Ativar cliente")).toBeInTheDocument(),
+    );
+    expect(screen.getByLabelText(/^Nome/)).toHaveValue("Renamed while editing");
+    expect(
+      screen.getByRole("region", { name: "Alterações por guardar" }),
+    ).toBeInTheDocument();
   });
 
   it("locks client_credentials and blocks delete when a service account is linked", () => {
