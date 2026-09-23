@@ -35,7 +35,15 @@ When a user holding several Roles is denied, the Access Report row shows one `ro
 
 `GET /api/auth/audit` filters by `eventType` and `category`, both plain strings. The guide mentions `LOGIN_SUCCESS`, `ACCESS_DENIED`, `TOKEN_ISSUED`, `SESSION_*`, `SYSTEM_CONFIGURATION_CHANGED` but no complete list. Please publish both as SDK enums. Until then we offer the known values plus a free-text "Outro…".
 
-## 6. Minor — guide corrections (already applied on our copy)
+## 6. How does `igrp.audit.view` appear in the access token?
+
+The portal gates the page with the framework's claims check, which matches a dotted permission name **verbatim** against the token's `permissions` array (other permissions there are department-qualified, e.g. `DEPT_IGRP.manage_access`). If the token carries `DEPT_IGRP.igrp.audit.view` rather than `igrp.audit.view`, every non-superadmin gets a 403 from our page guard. Please confirm the exact string in the token.
+
+## 7. Is there a way to list Roles across departments?
+
+`RoleClient.getRoles(departmentCode)` is per department only. For the Role filter on the Access Report we would like a picker; until a cross-department list exists we use an exact-match text field.
+
+## 8. Minor — guide corrections (already applied on our copy)
 
 - The file client method is `FileClient.getFileUrl`, not `getUrl`; `FileUrlDTO.expiration` is typed `Date`.
 - The report and file clients are reachable from `AccessManagementClient` as `auditReports` / `files` / `authAudit`.
