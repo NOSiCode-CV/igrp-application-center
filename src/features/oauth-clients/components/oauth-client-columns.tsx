@@ -1,6 +1,5 @@
 "use client";
 
-import type { Route } from "next";
 import Link from "next/link";
 
 import {
@@ -57,7 +56,7 @@ export function OAuthClientRowActions({
       <DropdownMenuContent align="end" className="min-w-64">
         <DropdownMenuItem asChild>
           <Link
-            href={`${ROUTES.OAUTH_CLIENTS}/${row.id}` as Route}
+            href={`${ROUTES.OAUTH_CLIENTS}/${row.id}`}
             className="flex gap-2"
           >
             <IGRPIcon iconName="Settings2" aria-hidden="true" />
@@ -115,7 +114,7 @@ export function getOAuthClientColumns(
       cell: ({ row }) => (
         <div className="flex flex-col gap-0.5">
           <Link
-            href={`${ROUTES.OAUTH_CLIENTS}/${row.original.id}` as Route}
+            href={`${ROUTES.OAUTH_CLIENTS}/${row.original.id}`}
             className="font-medium hover:underline"
           >
             {row.original.clientName || row.original.clientId}

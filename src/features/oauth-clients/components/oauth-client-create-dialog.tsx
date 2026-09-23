@@ -1,6 +1,5 @@
 "use client";
 
-import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -143,9 +142,7 @@ export function OAuthClientCreateDialog({
                   disabled={!confirmed}
                   onClick={() => {
                     onOpenChange(false);
-                    router.push(
-                      `${ROUTES.OAUTH_CLIENTS}/${created.id}` as Route,
-                    );
+                    router.push(`${ROUTES.OAUTH_CLIENTS}/${created.id}`);
                   }}
                 >
                   Concluir — ver detalhes
