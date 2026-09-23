@@ -77,3 +77,7 @@ export function findLinkedServiceAccount(
   );
   return { account: linked[0], duplicate: linked.length > 1 };
 }
+
+/** Shown wherever the SA list is loading or failed, so the link is unknown. */
+export const LINK_UNKNOWN_REASON =
+  "Não foi possível verificar se existe uma conta de serviço.";

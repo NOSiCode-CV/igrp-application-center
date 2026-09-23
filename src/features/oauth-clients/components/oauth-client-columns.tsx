@@ -19,7 +19,7 @@ import type {
 
 import { ROUTES } from "@/lib/constants";
 
-import { getClientKind } from "../lib/oauth-client-utils";
+import { getClientKind, LINK_UNKNOWN_REASON } from "../lib/oauth-client-utils";
 import { ActiveBadge, ClientKindBadge } from "./oauth-client-badges";
 
 export type ClientRow = OAuthClientDTO & { linkedAccount?: ServiceAccountDTO };
@@ -28,8 +28,30 @@ interface RowHandlers {
   onToggleActive: (row: ClientRow) => void;
   onDelete: (row: ClientRow) => void;
   onCopy: (clientId: string) => void;
-  /** True when the SA list failed to load: link state is unknown, so delete fails safe. */
-  deleteBlocked?: boolean;
+  /**
+   * True while the SA list is loading or failed to load: the link state is
+   * unknown, so delete and activation fail safe (a linked pair must use the
+   * combined action, which needs the link).
+   */
+  linkUnknown?: boolean;
+}
+
+/**
+ * A blocked menu item that stays in the keyboard order (Radix skips `disabled`
+ * items, which would hide the reason from keyboard and screen-reader users).
+ * Selecting it does nothing and keeps the menu open.
+ */
+function BlockedMenuItem({ label, reason }: { label: string; reason: string }) {
+  return (
+    <DropdownMenuItem
+      aria-disabled="true"
+      onSelect={(event) => event.preventDefault()}
+      className="cursor-not-allowed flex-col items-start gap-0.5 opacity-50"
+    >
+      <span>{label}</span>
+      <span className="text-xs text-muted-foreground">{reason}</span>
+    </DropdownMenuItem>
+  );
 }
 
 export function OAuthClientRowActions({
@@ -37,13 +59,13 @@ export function OAuthClientRowActions({
   onToggleActive,
   onDelete,
   onCopy,
-  deleteBlocked,
+  linkUnknown,
 }: { row: ClientRow } & RowHandlers) {
   const name = row.clientName || row.clientId;
-  const blockedReason = row.linkedAccount
+  const deleteBlockedReason = row.linkedAccount
     ? `Remova primeiro a conta de serviço «${row.linkedAccount.name}».`
-    : deleteBlocked
-      ? "Não foi possível verificar se existe uma conta de serviço."
+    : linkUnknown
+      ? LINK_UNKNOWN_REASON
       : null;
   return (
     <DropdownMenu>
@@ -68,7 +90,12 @@ export function OAuthClientRowActions({
           Copiar client ID
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {row.active ? (
+        {linkUnknown && !row.linkedAccount ? (
+          <BlockedMenuItem
+            label={row.active ? "Desativar" : "Ativar"}
+            reason={LINK_UNKNOWN_REASON}
+          />
+        ) : row.active ? (
           <DropdownMenuItem
             variant="destructive"
             onSelect={() => onToggleActive(row)}
@@ -82,13 +109,8 @@ export function OAuthClientRowActions({
             Ativar
           </DropdownMenuItem>
         )}
-        {blockedReason ? (
-          <DropdownMenuItem disabled className="flex-col items-start gap-0.5">
-            <span>Eliminar</span>
-            <span className="text-xs text-muted-foreground">
-              {blockedReason}
-            </span>
-          </DropdownMenuItem>
+        {deleteBlockedReason ? (
+          <BlockedMenuItem label="Eliminar" reason={deleteBlockedReason} />
         ) : (
           <DropdownMenuItem
             variant="destructive"

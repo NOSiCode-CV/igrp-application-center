@@ -19,9 +19,12 @@ export function UnsavedChangesBar({
   return (
     <section
       aria-label="Alterações por guardar"
-      className="sticky bottom-4 z-10 flex items-center gap-3 rounded-xl bg-foreground px-5 py-3 text-background shadow-lg"
+      className="sticky bottom-4 z-10 flex flex-wrap items-center gap-3 rounded-xl bg-foreground px-5 py-3 text-background shadow-lg"
     >
-      <span className="flex-1">Tem alterações por guardar.</span>
+      {/* Polite live region: the bar appears as the first edit lands. */}
+      <span role="status" className="min-w-48 flex-1">
+        Tem alterações por guardar.
+      </span>
       <Button
         type="button"
         variant="ghost"

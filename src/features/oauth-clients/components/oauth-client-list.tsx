@@ -10,7 +10,6 @@ import {
   IGRPButton,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
-  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 
 import { ColumnFacetedFilter } from "@/components/data-table/faceted-filter";
@@ -23,6 +22,7 @@ import {
   CLIENT_KIND_LABEL,
   findLinkedServiceAccount,
 } from "../lib/oauth-client-utils";
+import { useCopyClientId } from "../use-copy-client-id";
 import { useOAuthClients } from "../use-oauth-clients";
 import { OAuthClientActivationDialog } from "./oauth-client-activation-dialog";
 import { type ClientRow, getOAuthClientColumns } from "./oauth-client-columns";
@@ -41,9 +41,12 @@ const KIND_OPTIONS = [
 ];
 
 export function OAuthClientList() {
-  const { igrpToast } = useIGRPToast();
+  const copyClientId = useCopyClientId();
   const { data: clients = [] } = useOAuthClients();
   const accounts = useServiceAccounts();
+  // Without SA links we cannot tell a linked client from a lone one, so delete
+  // and activation fail safe until the list has loaded.
+  const linkUnknown = accounts.isLoading || accounts.isError;
   const [dialog, setDialog] = useState<DialogState>({ kind: "none" });
   const close = useCallback(() => setDialog({ kind: "none" }), []);
 
@@ -72,17 +75,10 @@ export function OAuthClientList() {
       getOAuthClientColumns({
         onToggleActive: (row) => setDialog({ kind: "activation", row }),
         onDelete: (row) => setDialog({ kind: "delete", row }),
-        onCopy: async (clientId) => {
-          await navigator.clipboard.writeText(clientId);
-          igrpToast({
-            type: "success",
-            title: "Copiado",
-            description: `Client ID ${clientId} copiado.`,
-          });
-        },
-        deleteBlocked: accounts.isError,
+        onCopy: copyClientId,
+        linkUnknown,
       }),
-    [igrpToast, accounts.isError],
+    [copyClientId, linkUnknown],
   );
 
   const filters: IGRPDataTableClientFilterListProps<ClientRow>[] = useMemo(
@@ -148,11 +144,11 @@ export function OAuthClientList() {
         </IGRPButton>
       </div>
 
-      {/* Supplementary data: without SA links, delete must fail safe. */}
+      {/* Supplementary data: without SA links, delete and activation fail safe. */}
       {accounts.isError ? (
         <InlineError
           title="Não foi possível verificar as contas de serviço."
-          message="Eliminar está indisponível até a verificação ser feita."
+          message="Eliminar, ativar e desativar estão indisponíveis até a verificação ser feita."
           onRetry={() => accounts.refetch()}
         />
       ) : null}

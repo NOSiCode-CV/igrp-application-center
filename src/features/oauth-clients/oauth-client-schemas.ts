@@ -73,6 +73,9 @@ export const oauthClientFormSchema = z
 
 export type OAuthClientFormValues = z.infer<typeof oauthClientFormSchema>;
 
+/** Scope defaults while authorization_code is selected (spec §4.3). */
+export const DEFAULT_WEB_SCOPES = ["openid", "email", "profile"] as const;
+
 export function emptyOAuthClientFormValues(): OAuthClientFormValues {
   return {
     clientId: "",
@@ -81,7 +84,7 @@ export function emptyOAuthClientFormValues(): OAuthClientFormValues {
     applicationCode: undefined,
     grantTypes: ["authorization_code", "refresh_token"],
     redirectUris: [],
-    scopes: ["openid", "email", "profile"],
+    scopes: [...DEFAULT_WEB_SCOPES],
     accessTokenTtl: undefined,
     refreshTokenTtl: undefined,
     authorizationCodeTtl: undefined,
@@ -99,7 +102,9 @@ export function toFormValues(dto: OAuthClientDTO): OAuthClientFormValues {
     clientName: dto.clientName ?? "",
     description: dto.description ?? "",
     applicationCode: dto.applicationCode,
-    grantTypes: dto.grantTypes.filter(isKnownGrantType),
+    // Spread first: filter on the SDK's `OAuthGrantType[] | string[]` union
+    // drops the type guard.
+    grantTypes: [...dto.grantTypes].filter(isKnownGrantType),
     redirectUris: [...dto.redirectUris],
     scopes: [...dto.scopes],
     accessTokenTtl: dto.accessTokenTtl,

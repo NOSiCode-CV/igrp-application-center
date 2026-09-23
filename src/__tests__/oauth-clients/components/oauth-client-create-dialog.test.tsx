@@ -154,6 +154,74 @@ describe("OAuthClientCreateDialog", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
+  it("links the grant-type error to the group", async () => {
+    renderDialog();
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /authorization_code/ }),
+    );
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /refresh_token/ }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Registar" }));
+
+    const message = await screen.findByText(
+      "Escolha pelo menos um grant type.",
+    );
+    const group = screen.getByRole("group", { name: "Grant types" });
+    expect(group).toHaveAttribute("aria-invalid", "true");
+    expect(group.getAttribute("aria-describedby")).toContain(message.id);
+  });
+
+  it("scope defaults follow the grant selection while untouched", async () => {
+    renderDialog();
+    expect(
+      screen.getByRole("button", { name: "Remover openid" }),
+    ).toBeInTheDocument();
+
+    // Machine-only client: the web defaults no longer apply.
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /client_credentials/ }),
+    );
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /authorization_code/ }),
+    );
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /refresh_token/ }),
+    );
+    expect(
+      screen.queryByRole("button", { name: "Remover openid" }),
+    ).not.toBeInTheDocument();
+
+    // authorization_code back on with no scopes: restore the defaults.
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /authorization_code/ }),
+    );
+    for (const scope of ["openid", "email", "profile"]) {
+      expect(
+        screen.getByRole("button", { name: `Remover ${scope}` }),
+      ).toBeInTheDocument();
+    }
+  });
+
+  it("leaves scopes the admin edited alone", async () => {
+    renderDialog();
+    await userEvent.click(
+      screen.getByRole("button", { name: "Remover profile" }),
+    );
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /client_credentials/ }),
+    );
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /authorization_code/ }),
+    );
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /refresh_token/ }),
+    );
+    expect(
+      screen.getByRole("button", { name: "Remover openid" }),
+    ).toBeInTheDocument();
+  });
+
   it("marks the redirect URIs field invalid when none is provided", async () => {
     renderDialog();
     await userEvent.type(screen.getByLabelText(/^Client ID/), "my-invoice");

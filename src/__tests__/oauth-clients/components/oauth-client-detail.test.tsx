@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { updateOAuthClient } from "@/actions/oauth-clients";
+import { listServiceAccounts } from "@/actions/service-accounts";
 import { oauthClientKeys } from "@/features/oauth-clients/query-keys";
 import { serviceAccountKeys } from "@/features/service-accounts/query-keys";
 
@@ -41,16 +42,22 @@ const client = {
   redirectUris: [],
   postLogoutRedirectUris: ["https://keep.me/"],
   grantTypes: ["client_credentials"],
+  createdAt: "2026-03-14T10:05:00Z",
 };
 
-function renderWith(accounts: unknown[]) {
+/** `accounts: "loading"` leaves the SA list query pending (link state unknown). */
+function renderWith(accounts: unknown[] | "loading") {
   const qc = new QueryClient({
     defaultOptions: {
       queries: { retry: false, staleTime: Number.POSITIVE_INFINITY },
     },
   });
   qc.setQueryData(oauthClientKeys.detail("c1"), client);
-  qc.setQueryData(serviceAccountKeys.list(), accounts);
+  if (accounts === "loading") {
+    vi.mocked(listServiceAccounts).mockReturnValue(new Promise(() => {}));
+  } else {
+    qc.setQueryData(serviceAccountKeys.list(), accounts);
+  }
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={qc}>{children}</QueryClientProvider>
   );
@@ -161,5 +168,42 @@ describe("OAuthClientDetail", () => {
         /Remova primeiro a conta de serviço «Nightly Invoice ETL»/,
       ),
     ).toBeInTheDocument();
+    // The SA inherits the client's application (spec §1): it cannot drift.
+    expect(screen.getByRole("combobox", { name: "Aplicação" })).toBeDisabled();
+    expect(
+      screen.getByText(
+        "Fixa enquanto a conta de serviço «Nightly Invoice ETL» existir.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("fails safe while the service-account link is still loading", () => {
+    renderWith("loading");
+    expect(screen.getByRole("button", { name: "Eliminar" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Desativar" })).toBeDisabled();
+    expect(
+      screen.getAllByText(
+        "Não foi possível verificar se existe uma conta de serviço.",
+      ).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getByRole("checkbox", { name: /client_credentials/ }),
+    ).toBeDisabled();
+    expect(screen.getByRole("combobox", { name: "Aplicação" })).toBeDisabled();
+  });
+
+  it("shows a back link, a copy button for the client ID and the record timestamps", () => {
+    renderWith([]);
+    expect(
+      screen.getByRole("link", { name: /Clientes OAuth/ }),
+    ).toHaveAttribute("href", "/settings/accounts/clients");
+    expect(
+      screen.getByRole("button", { name: "Copiar client ID" }),
+    ).toBeInTheDocument();
+    const record = screen.getByRole("region", { name: "Registo" });
+    expect(record).toHaveTextContent("Criado em");
+    expect(record).toHaveTextContent("2026");
+    // updatedAt is absent on this client.
+    expect(record).toHaveTextContent("—");
   });
 });

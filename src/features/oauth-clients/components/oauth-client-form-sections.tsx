@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
+  useFormField,
 } from "@igrp/igrp-framework-react-design-system";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -25,10 +26,17 @@ import { ChipInput } from "@/components/chip-input";
 import { useApplications } from "@/features/applications/use-applications";
 import { cn } from "@/lib/utils";
 
-import { formatSeconds, GRANT_TYPES } from "../lib/oauth-client-utils";
-import type { OAuthClientFormValues } from "../oauth-client-schemas";
+import {
+  formatSeconds,
+  GRANT_TYPES,
+  LINK_UNKNOWN_REASON,
+} from "../lib/oauth-client-utils";
+import {
+  DEFAULT_WEB_SCOPES,
+  type OAuthClientFormValues,
+} from "../oauth-client-schemas";
 
-function Section({
+export function FormSection({
   id,
   title,
   description,
@@ -61,14 +69,52 @@ const TTL_FIELDS = [
   { name: "authorizationCodeTtl", label: "Authorization code" },
 ] as const;
 
+/**
+ * `{ accountName }` — a service account is linked. `{ unknown: true }` — the
+ * link could not be checked (loading or failed), so fail safe and lock anyway.
+ */
+export type ClientCredentialsLock = { accountName: string } | { unknown: true };
+
+/** FormMessage only renders on error; point the group at it while it does. */
+function GrantTypesFieldset({ children }: { children: ReactNode }) {
+  const { error, formMessageId } = useFormField();
+  return (
+    <fieldset
+      className="grid gap-3 sm:grid-cols-2"
+      aria-invalid={error ? true : undefined}
+      aria-describedby={error ? formMessageId : undefined}
+    >
+      {children}
+    </fieldset>
+  );
+}
+
 export function OAuthClientFormSections({
   mode,
   lockClientCredentials,
+  children,
 }: {
   mode: "create" | "edit";
-  /** Set when a service account is linked: client_credentials stays on. */
-  lockClientCredentials?: { accountName: string };
+  /**
+   * Set when a service account is (or may be) linked: client_credentials
+   * stays on and the application is fixed (the SA inherits it, spec §1).
+   */
+  lockClientCredentials?: ClientCredentialsLock;
+  /** Extra sections appended after the form's own (e.g. the detail's "Registo"). */
+  children?: ReactNode;
 }) {
+  const lockHelp = (linked: (name: string) => string) =>
+    lockClientCredentials
+      ? "accountName" in lockClientCredentials
+        ? linked(lockClientCredentials.accountName)
+        : LINK_UNKNOWN_REASON
+      : null;
+  const grantLockHelp = lockHelp(
+    (name) => `Necessário enquanto a conta de serviço «${name}» existir.`,
+  );
+  const applicationLockHelp = lockHelp(
+    (name) => `Fixa enquanto a conta de serviço «${name}» existir.`,
+  );
   const form = useFormContext<OAuthClientFormValues>();
   const grantTypes = useWatch({ control: form.control, name: "grantTypes" });
   const ttls = useWatch({
@@ -78,9 +124,36 @@ export function OAuthClientFormSections({
   const { data: applications = [] } = useApplications();
   const usesRedirects = grantTypes.includes("authorization_code");
 
+  /**
+   * Scope defaults follow the grant selection on create (spec §4.3): a
+   * client_credentials-only client drops the untouched web defaults, and
+   * re-selecting authorization_code with no scopes restores them. Edits the
+   * admin made to the scopes are never overwritten.
+   */
+  function syncScopeDefaults(
+    prev: OAuthClientFormValues["grantTypes"],
+    next: OAuthClientFormValues["grantTypes"],
+  ) {
+    if (mode !== "create") return;
+    const scopes = form.getValues("scopes");
+    const isDefault =
+      scopes.length === DEFAULT_WEB_SCOPES.length &&
+      DEFAULT_WEB_SCOPES.every((s) => scopes.includes(s));
+    const machineOnly = next.length === 1 && next[0] === "client_credentials";
+    if (machineOnly && isDefault) {
+      form.setValue("scopes", [], { shouldDirty: true });
+    } else if (
+      next.includes("authorization_code") &&
+      !prev.includes("authorization_code") &&
+      scopes.length === 0
+    ) {
+      form.setValue("scopes", [...DEFAULT_WEB_SCOPES], { shouldDirty: true });
+    }
+  }
+
   return (
     <div className="flex flex-col divide-y divide-border">
-      <Section
+      <FormSection
         id="sec-basic"
         title="Informação básica"
         description="Como o cliente é identificado no servidor de autorização."
@@ -155,7 +228,11 @@ export function OAuthClientFormSections({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Aplicação</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={!!applicationLockHelp}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar aplicação" />
@@ -170,16 +247,16 @@ export function OAuthClientFormSections({
                 </SelectContent>
               </Select>
               <FormDescription>
-                A aplicação a que este cliente pertence. Uma conta de serviço
-                herda-a.
+                {applicationLockHelp ??
+                  "A aplicação a que este cliente pertence. Uma conta de serviço herda-a."}
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-      </Section>
+      </FormSection>
 
-      <Section
+      <FormSection
         id="sec-grants"
         title="Grant types"
         description="Como este cliente obtém tokens. As secções abaixo mudam conforme a escolha."
@@ -189,13 +266,12 @@ export function OAuthClientFormSections({
           name="grantTypes"
           render={({ field }) => (
             <FormItem>
-              <fieldset className="grid gap-3 sm:grid-cols-2">
+              <GrantTypesFieldset>
                 <legend className="sr-only">Grant types</legend>
                 {GRANT_TYPES.map((grant) => {
                   const checked = field.value.includes(grant.value);
                   const locked =
-                    grant.value === "client_credentials" &&
-                    !!lockClientCredentials;
+                    grant.value === "client_credentials" && !!grantLockHelp;
                   const inputId = `grant-${grant.value}`;
                   return (
                     <label
@@ -214,13 +290,14 @@ export function OAuthClientFormSections({
                         checked={checked}
                         disabled={locked}
                         aria-describedby={`${inputId}-help`}
-                        onCheckedChange={(on) =>
-                          field.onChange(
+                        onCheckedChange={(on) => {
+                          const next =
                             on === true
                               ? [...field.value, grant.value]
-                              : field.value.filter((g) => g !== grant.value),
-                          )
-                        }
+                              : field.value.filter((g) => g !== grant.value);
+                          field.onChange(next);
+                          syncScopeDefaults(field.value, next);
+                        }}
                       />
                       <span className="flex flex-col gap-1">
                         <span className="font-mono text-sm font-medium">
@@ -230,23 +307,21 @@ export function OAuthClientFormSections({
                           id={`${inputId}-help`}
                           className="text-sm text-muted-foreground"
                         >
-                          {locked
-                            ? `Necessário enquanto a conta de serviço «${lockClientCredentials.accountName}» existir.`
-                            : grant.description}
+                          {locked ? grantLockHelp : grant.description}
                         </span>
                       </span>
                     </label>
                   );
                 })}
-              </fieldset>
+              </GrantTypesFieldset>
               <FormMessage />
             </FormItem>
           )}
         />
-      </Section>
+      </FormSection>
 
       {usesRedirects ? (
-        <Section
+        <FormSection
           id="sec-redirects"
           title="Redirect URIs"
           description={
@@ -279,10 +354,10 @@ export function OAuthClientFormSections({
               </FormItem>
             )}
           />
-        </Section>
+        </FormSection>
       ) : null}
 
-      <Section
+      <FormSection
         id="sec-scopes"
         title="Scopes"
         description="Informação que o cliente pode pedir."
@@ -305,9 +380,9 @@ export function OAuthClientFormSections({
             </FormItem>
           )}
         />
-      </Section>
+      </FormSection>
 
-      <Section
+      <FormSection
         id="sec-ttl"
         title="Duração dos tokens"
         description="Deixe em branco para usar os valores do servidor."
@@ -348,7 +423,8 @@ export function OAuthClientFormSections({
             />
           ))}
         </div>
-      </Section>
+      </FormSection>
+      {children}
     </div>
   );
 }

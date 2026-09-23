@@ -1,7 +1,7 @@
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { OAuthClientRowActions } from "@/features/oauth-clients/components/oauth-client-columns";
 
@@ -22,6 +22,8 @@ const handlers = {
   onDelete: vi.fn(),
   onCopy: vi.fn(),
 };
+
+beforeEach(() => vi.clearAllMocks());
 
 describe("OAuthClientRowActions", () => {
   it("disables delete with the reason when a service account is linked", async () => {
@@ -57,19 +59,52 @@ describe("OAuthClientRowActions", () => {
   });
 
   it("fails safe when service accounts could not be checked", async () => {
-    render(<OAuthClientRowActions row={base} {...handlers} deleteBlocked />);
+    render(<OAuthClientRowActions row={base} {...handlers} linkUnknown />);
     await userEvent.click(
       screen.getByRole("button", { name: "Ações para Nightly ETL" }),
     );
-    expect(screen.getByRole("menuitem", { name: /Eliminar/ })).toHaveAttribute(
-      "aria-disabled",
-      "true",
+    const del = screen.getByRole("menuitem", { name: /Eliminar/ });
+    expect(del).toHaveAttribute("aria-disabled", "true");
+    expect(del).toHaveTextContent(
+      "Não foi possível verificar se existe uma conta de serviço.",
     );
-    expect(
-      screen.getByText(
-        "Não foi possível verificar se existe uma conta de serviço.",
-      ),
-    ).toBeInTheDocument();
+  });
+
+  it("blocks activation while the link state is unknown", async () => {
+    render(<OAuthClientRowActions row={base} {...handlers} linkUnknown />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ações para Nightly ETL" }),
+    );
+    const toggle = screen.getByRole("menuitem", { name: /Desativar/ });
+    expect(toggle).toHaveAttribute("aria-disabled", "true");
+    expect(toggle).toHaveTextContent(
+      "Não foi possível verificar se existe uma conta de serviço.",
+    );
+    await userEvent.click(toggle);
+    expect(handlers.onToggleActive).not.toHaveBeenCalled();
+  });
+
+  it("keeps blocked items reachable by keyboard so the reason is announced", async () => {
+    const linked = {
+      id: "sa1",
+      name: "Nightly Invoice ETL",
+    } as ServiceAccountDTO;
+    render(
+      <OAuthClientRowActions
+        row={{ ...base, linkedAccount: linked }}
+        {...handlers}
+      />,
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ações para Nightly ETL" }),
+    );
+    const del = screen.getByRole("menuitem", { name: /Eliminar/ });
+    // Radix skips `disabled` items in roving focus; aria-disabled keeps it in.
+    expect(del).not.toHaveAttribute("data-disabled");
+    await userEvent.keyboard("{End}");
+    expect(del).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    expect(handlers.onDelete).not.toHaveBeenCalled();
   });
 
   it("offers Ativar on an inactive client", async () => {

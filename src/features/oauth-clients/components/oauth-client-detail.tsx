@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,25 +17,39 @@ import { type Resolver, useForm } from "react-hook-form";
 
 import { UnsavedChangesBar } from "@/components/unsaved-changes-bar";
 import { useLinkedServiceAccount } from "@/features/service-accounts/use-service-accounts";
+import { formatDate } from "@/lib/app-utilities";
 import { ROUTES } from "@/lib/constants";
 
+import { LINK_UNKNOWN_REASON } from "../lib/oauth-client-utils";
 import {
   type OAuthClientFormValues,
   oauthClientFormSchema,
   toFormValues,
   toUpdateRequest,
 } from "../oauth-client-schemas";
+import { useCopyClientId } from "../use-copy-client-id";
 import { useOAuthClient, useUpdateOAuthClient } from "../use-oauth-clients";
 import { OAuthClientActivationDialog } from "./oauth-client-activation-dialog";
 import { ActiveBadge, ClientKindBadge } from "./oauth-client-badges";
 import { OAuthClientDeleteDialog } from "./oauth-client-delete-dialog";
-import { OAuthClientFormSections } from "./oauth-client-form-sections";
+import {
+  type ClientCredentialsLock,
+  FormSection,
+  OAuthClientFormSections,
+} from "./oauth-client-form-sections";
 
 const FORM_ID = "oauth-client-edit";
+
+/** Record timestamps: date and time in pt-PT, "—" when absent or unparseable. */
+function formatTimestamp(value?: string) {
+  if (!value || Number.isNaN(new Date(value).getTime())) return "—";
+  return formatDate(value);
+}
 
 export function OAuthClientDetail({ id }: { id: string }) {
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
+  const copyClientId = useCopyClientId();
   const { data: client } = useOAuthClient(id);
   const linked = useLinkedServiceAccount(id);
   const update = useUpdateOAuthClient();
@@ -63,7 +78,10 @@ export function OAuthClientDetail({ id }: { id: string }) {
   const isDirty = form.formState.isDirty;
   useEffect(() => {
     if (!isDirty) return;
-    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = ""; // older browsers only prompt when this is set
+    };
     window.addEventListener("beforeunload", warn);
     return () => window.removeEventListener("beforeunload", warn);
   }, [isDirty]);
@@ -95,15 +113,31 @@ export function OAuthClientDetail({ id }: { id: string }) {
     });
   }
 
-  // Unknown link state fails safe: treat as linked for delete.
+  // Unknown link state (SA list loading or failed) fails safe: delete and
+  // activation are blocked and client_credentials/application stay locked,
+  // as if a service account were linked.
+  const linkUnknown = !linked.account && (linked.isLoading || linked.isError);
   const deleteBlockedReason = linked.account
     ? `Remova primeiro a conta de serviço «${linked.account.name}».`
-    : linked.isError || linked.isLoading
-      ? "Não foi possível verificar se existe uma conta de serviço."
+    : linkUnknown
+      ? LINK_UNKNOWN_REASON
       : null;
+  const clientCredentialsLock: ClientCredentialsLock | undefined =
+    linked.account
+      ? { accountName: linked.account.name }
+      : linkUnknown
+        ? { unknown: true }
+        : undefined;
 
   return (
     <div className="flex flex-col gap-6">
+      <Link
+        href={ROUTES.OAUTH_CLIENTS}
+        className="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <IGRPIcon iconName="ArrowLeft" className="size-4" aria-hidden="true" />
+        Clientes OAuth
+      </Link>
       <header className="flex items-center gap-4">
         <div className="flex size-13 items-center justify-center rounded-xl bg-info-subtle text-info-subtle-foreground">
           <IGRPIcon iconName="KeyRound" className="size-6" aria-hidden="true" />
@@ -114,11 +148,25 @@ export function OAuthClientDetail({ id }: { id: string }) {
           </h2>
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <ClientKindBadge grantTypes={client.grantTypes} />
-            <span>
+            <span className="inline-flex items-center gap-1">
               Client ID{" "}
               <span className="rounded-sm bg-muted px-1.5 py-0.5 font-mono text-foreground">
                 {client.clientId}
               </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-7"
+                aria-label="Copiar client ID"
+                onClick={() => copyClientId(client.clientId)}
+              >
+                <IGRPIcon
+                  iconName="Copy"
+                  className="size-3.5"
+                  aria-hidden="true"
+                />
+              </Button>
             </span>
             <ActiveBadge active={client.active} />
           </div>
@@ -143,10 +191,29 @@ export function OAuthClientDetail({ id }: { id: string }) {
         >
           <OAuthClientFormSections
             mode="edit"
-            lockClientCredentials={
-              linked.account ? { accountName: linked.account.name } : undefined
-            }
-          />
+            lockClientCredentials={clientCredentialsLock}
+          >
+            <FormSection
+              id="sec-record"
+              title="Registo"
+              description="Quando este cliente foi registado e alterado pela última vez."
+            >
+              <dl className="grid gap-4 text-sm sm:grid-cols-2">
+                <div className="flex flex-col gap-1">
+                  <dt className="font-medium">Criado em</dt>
+                  <dd className="text-muted-foreground">
+                    {formatTimestamp(client.createdAt)}
+                  </dd>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <dt className="font-medium">Atualizado em</dt>
+                  <dd className="text-muted-foreground">
+                    {formatTimestamp(client.updatedAt)}
+                  </dd>
+                </div>
+              </dl>
+            </FormSection>
+          </OAuthClientFormSections>
         </form>
       </Form>
 
@@ -164,16 +231,19 @@ export function OAuthClientDetail({ id }: { id: string }) {
                 {client.active ? "Desativar cliente" : "Ativar cliente"}
               </span>
               <span className="text-sm text-muted-foreground">
-                {client.active
-                  ? linked.account
-                    ? `Desativa também a conta de serviço «${linked.account.name}». A identidade deixa de conseguir autenticar.`
-                    : "As aplicações que usam este cliente deixam de conseguir autenticar. Pode reativá-lo depois."
-                  : "O cliente volta a poder pedir tokens."}
+                {linkUnknown
+                  ? LINK_UNKNOWN_REASON
+                  : client.active
+                    ? linked.account
+                      ? `Desativa também a conta de serviço «${linked.account.name}». A identidade deixa de conseguir autenticar.`
+                      : "As aplicações que usam este cliente deixam de conseguir autenticar. Pode reativá-lo depois."
+                    : "O cliente volta a poder pedir tokens."}
               </span>
             </div>
             <Button
               variant={client.active ? "outline" : "default"}
               className={client.active ? "text-destructive" : undefined}
+              disabled={linkUnknown}
               onClick={() => setDialog("activation")}
             >
               {client.active ? "Desativar" : "Ativar"}
