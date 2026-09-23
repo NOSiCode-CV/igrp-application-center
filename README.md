@@ -158,6 +158,7 @@ src/
 
 | File | Contents |
 |---|---|
+| [docs/I18N.md](docs/I18N.md) | Languages, locale resolution, message catalogs, migrating a feature |
 | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Horizon component patterns, imports, and usage examples |
 | [docs/TOKENS.md](docs/TOKENS.md) | CSS design tokens, dark mode, Tailwind aliases |
 | [docs/DOCKER-RUN.md](docs/DOCKER-RUN.md) | Full Docker build and run instructions |

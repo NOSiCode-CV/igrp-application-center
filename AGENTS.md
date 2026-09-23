@@ -33,7 +33,7 @@ All auth flows through `@igrp/framework-next-auth`, wrapping NextAuth v4.
 
 ### i18n (`src/i18n/`)
 
-next-intl 4 **without i18n routing** — no `[locale]` segment and no locale in URLs (HAProxy routes `/apps/[slug]`). Spec: `access-management/_specs/i18n/`.
+next-intl 4 **without i18n routing** — no `[locale]` segment and no locale in URLs (HAProxy routes `/apps/[slug]`). Full guide: [docs/I18N.md](docs/I18N.md). Spec: `access-management/_specs/i18n/`.
 
 - `config.ts` — `LOCALES` (`pt`, `en`, `fr`), module default `pt`, platform default `pt`, `FORMAT_REGION` (pt-CV / en-GB / fr-FR), cookie `IGRP_LOCALE`, `normalizeLocale()` (`pt-CV` → `pt`, unsupported → `undefined`).
 - `resolve-locale.ts` (server-only) — session `locale` → cookie → `Accept-Language` (q-ordered) → platform default.
@@ -146,6 +146,13 @@ These rules define when each documentation file must be updated. They exist here
 - SDK or data-fetching patterns change
 - New skills added to `.claude/skills/`
 - Biome, Vitest, or other tooling versions change
+
+**Update `docs/I18N.md` when:**
+- Platform languages, the module default, or the formatting regions change
+- The locale-resolution chain or the language selector's placement/flow changes
+- A feature is migrated (add it to the list of migrated folders) or the migration recipe changes
+- The i18n consistency/guard tests change what they enforce
+- One of the listed TODOs is resolved (framework `lang` prop, client-package locale endpoints)
 
 **Update `docs/DESIGN_SYSTEM.md` when:**
 - New Horizon components are available or usage patterns change
