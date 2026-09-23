@@ -89,15 +89,17 @@ export function emptyOAuthClientFormValues(): OAuthClientFormValues {
   };
 }
 
+function isKnownGrantType(g: string): g is OAuthGrantType {
+  return grantTypeSchema.safeParse(g).success;
+}
+
 export function toFormValues(dto: OAuthClientDTO): OAuthClientFormValues {
   return {
     clientId: dto.clientId,
     clientName: dto.clientName ?? "",
     description: dto.description ?? "",
     applicationCode: dto.applicationCode,
-    grantTypes: dto.grantTypes.filter(
-      (g): g is OAuthGrantType => grantTypeSchema.safeParse(g).success,
-    ) as OAuthGrantType[],
+    grantTypes: dto.grantTypes.filter(isKnownGrantType),
     redirectUris: [...dto.redirectUris],
     scopes: [...dto.scopes],
     accessTokenTtl: dto.accessTokenTtl,
@@ -121,14 +123,17 @@ function editableFields(values: OAuthClientFormValues) {
     accessTokenTtl: values.accessTokenTtl,
     refreshTokenTtl: values.refreshTokenTtl,
     authorizationCodeTtl: values.authorizationCodeTtl,
-    active: values.active,
   };
 }
 
 export function toCreateRequest(
   values: OAuthClientFormValues,
 ): OAuthClientInput {
-  return { clientId: values.clientId.trim(), ...editableFields(values) };
+  return {
+    clientId: values.clientId.trim(),
+    ...editableFields(values),
+    active: values.active,
+  };
 }
 
 export function toUpdateRequest(
@@ -139,9 +144,17 @@ export function toUpdateRequest(
   // drop the numeric id: the application travels as a code and the server
   // action resolves it.
   const { applicationId: _applicationId, ...base } = toOAuthClientRequest(dto);
+  const fields = editableFields(values);
+  // Grant types the form doesn't know (toFormValues filters them out) must
+  // survive a save — PUT is full replacement.
+  const unknownGrants = dto.grantTypes.filter((g) => !isKnownGrantType(g));
   return {
     ...base,
-    ...editableFields(values),
+    ...fields,
+    grantTypes: [...fields.grantTypes, ...unknownGrants],
+    // `active` stays whatever the server has: activation is a separate
+    // danger-zone action and never rides along with a save (spec §4.7).
+    active: dto.active,
     clientId: dto.clientId, // immutable
   };
 }

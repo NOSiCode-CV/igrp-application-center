@@ -128,6 +128,24 @@ describe("OAuthClientDetail", () => {
     expect(
       screen.getByRole("region", { name: "Alterações por guardar" }),
     ).toBeInTheDocument();
+
+    // Saving now must not undo the deactivation that landed mid-edit.
+    vi.mocked(updateOAuthClient).mockResolvedValueOnce({
+      success: true,
+      data: { ...client, clientName: "Renamed while editing", active: false },
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: "Guardar alterações" }),
+    );
+    await waitFor(() =>
+      expect(updateOAuthClient).toHaveBeenCalledWith(
+        "c1",
+        expect.objectContaining({
+          clientName: "Renamed while editing",
+          active: false,
+        }),
+      ),
+    );
   });
 
   it("locks client_credentials and blocks delete when a service account is linked", () => {

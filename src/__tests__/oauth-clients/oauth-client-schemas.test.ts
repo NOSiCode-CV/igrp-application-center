@@ -146,6 +146,36 @@ describe("mapping", () => {
     expect(toUpdateRequest(dto, values).redirectUris).toEqual([]);
   });
 
+  it("update never carries the form's active flag: activation is a separate action (§4.7)", () => {
+    const req = toUpdateRequest(dto, {
+      ...toFormValues(dto),
+      active: !dto.active,
+    });
+    expect(req.active).toBe(dto.active);
+    expect(toCreateRequest({ ...valid, active: false }).active).toBe(false);
+  });
+
+  it("update keeps grant types the UI does not know", () => {
+    const withUnknown = {
+      ...dto,
+      grantTypes: [
+        "authorization_code",
+        "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      ],
+    };
+    const values = toFormValues(withUnknown);
+    expect(values.grantTypes).toEqual(["authorization_code"]);
+    const req = toUpdateRequest(withUnknown, {
+      ...values,
+      grantTypes: ["authorization_code", "refresh_token"],
+    });
+    expect(req.grantTypes).toEqual([
+      "authorization_code",
+      "refresh_token",
+      "urn:ietf:params:oauth:grant-type:jwt-bearer",
+    ]);
+  });
+
   it("omits blank description and empty TTLs so the server defaults apply", () => {
     const req = toCreateRequest(valid);
     expect(req.description).toBeUndefined();
