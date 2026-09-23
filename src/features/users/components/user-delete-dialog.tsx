@@ -5,6 +5,7 @@ import type {
   IGRPUserDTO,
   Status,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
 import { statusSchema } from "@/schemas/global";
@@ -23,6 +24,7 @@ export function UserDeleteDialog({
   userToDelete,
 }: UserDeleteDialogProps) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.deleteDialog");
   const { mutateAsync: removeUser, isPending: isDeleting } = useUpdateUser();
 
   async function confirmDelete() {
@@ -38,15 +40,17 @@ export function UserDeleteDialog({
       }
       igrpToast({
         type: "success",
-        title: "Utilizador Desativado",
-        description: `Utilizador '${userToDelete.name || userToDelete.email}' foi desativado com sucesso.`,
+        title: t("deactivated"),
+        description: t("deactivatedDescription", {
+          name: userToDelete.name || userToDelete.email,
+        }),
       });
 
       onOpenChange(false);
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao desativar.",
+        title: t("deactivateFailed"),
         description: (error as Error).message,
       });
     }
@@ -58,9 +62,9 @@ export function UserDeleteDialog({
       onOpenChange={onOpenChange}
       toDelete={{ name: userToDelete.name || userToDelete.email }}
       confirmDelete={confirmDelete}
-      label="Username"
+      label={t("label")}
       isDeleting={isDeleting}
-      labelBtnDelete="Desativar"
+      labelBtnDelete={t("confirm")}
     />
   );
 }

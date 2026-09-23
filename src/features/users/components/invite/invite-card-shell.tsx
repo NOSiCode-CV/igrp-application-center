@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
 import { Check } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
@@ -67,22 +68,27 @@ export function InviteCardShell({ children, step }: InviteCardShellProps) {
 
 // ── Step data ──────────────────────────────────────────────────────────────────
 
-const STEP_DATA = [
-  { label: "Email", sub: "Confirmação" },
-  { label: "Código", sub: "Verificação" },
-  { label: "Confirmar", sub: "Convite" },
-] as const;
+const STEP_KEYS = ["email", "code", "confirm"] as const;
 
-const TOTAL_STEPS = STEP_DATA.length;
+const TOTAL_STEPS = STEP_KEYS.length;
+
+function useStepData() {
+  const t = useTranslations("users.invite.accept.steps");
+  return STEP_KEYS.map((key) => ({
+    label: t(`${key}.label`),
+    sub: t(`${key}.sub`),
+  }));
+}
 
 // ── Vertical stepper (desktop, left side) ─────────────────────────────────────
 
 function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
-  const steps = STEP_DATA;
+  const t = useTranslations("users.invite.accept.steps");
+  const steps = useStepData();
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
       className="flex flex-col"
     >
       {steps.map((step, idx) => {
@@ -167,15 +173,14 @@ function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
 
 // ── Horizontal stepper (mobile fallback, below card) ──────────────────────────
 
-const STEP_LABELS = ["Email", "Código", "Confirmar"] as const;
-
 function HorizontalStepIndicator({ current }: { current: InviteStepIndex }) {
-  const labels = STEP_LABELS;
+  const t = useTranslations("users.invite.accept.steps");
+  const labels = useStepData().map((step) => step.label);
   const itemCount = TOTAL_STEPS * 2 - 1;
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
       className="flex items-start"
     >
       {Array.from({ length: itemCount }, (_, i) => {

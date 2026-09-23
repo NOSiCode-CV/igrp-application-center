@@ -2,6 +2,7 @@
 
 import { Button } from "@igrp/igrp-framework-react-design-system";
 import { ArrowLeft, Ban } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -10,18 +11,20 @@ interface InviteRejectedStepProps {
 }
 
 export function InviteRejectedStep({ onBackHome }: InviteRejectedStepProps) {
+  const t = useTranslations("users.invite.accept.rejectedStep");
+  const tc = useTranslations("common.actions");
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
         icon={Ban}
-        eyebrow="Rejeitado"
-        title="Convite rejeitado"
-        description="Optou por não aceitar o acesso a este módulo."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
         tone="neutral"
       />
       <Button variant="outline" size="lg" onClick={onBackHome}>
         <ArrowLeft data-icon="inline-start" />
-        Voltar ao início
+        {tc("backHome")}
       </Button>
     </div>
   );

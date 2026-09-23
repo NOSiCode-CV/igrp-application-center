@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { type ChangeEvent, useCallback, useEffect, useState } from "react";
 
+import { useTranslations } from "next-intl";
+
 interface ImageUploadProps {
   value?: File | string | null;
   onChange?: (file: File | null) => void;
@@ -13,6 +15,7 @@ export function ProfileImageUpload({
   value = null,
   onChange = () => {},
 }: ImageUploadProps) {
+  const t = useTranslations("users.profile.imageUpload");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Handle initial value
@@ -113,7 +116,7 @@ export function ProfileImageUpload({
             {/* <img src={previewUrl || '/placeholder.svg'} alt='Profile preview' className='h-full w-full object-cover' /> */}
             <Image
               src={previewUrl || "/placeholder.svg"}
-              alt="Profile preview"
+              alt={t("previewAlt")}
               className="h-full w-full object-cover"
               width={100}
               height={100}
@@ -121,7 +124,7 @@ export function ProfileImageUpload({
           </div>
         ) : (
           <div className="flex h-24 w-24 items-center justify-center rounded-full border bg-muted">
-            <span className="text-sm text-muted-foreground">No image</span>
+            <span className="text-sm text-muted-foreground">{t("empty")}</span>
           </div>
         )}
         <div className="flex flex-col gap-2">
@@ -129,7 +132,7 @@ export function ProfileImageUpload({
             htmlFor="profile-image-upload"
             className="inline-flex h-9 cursor-pointer items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
           >
-            Upload image
+            {t("upload")}
           </label>
           {previewUrl && (
             <button
@@ -146,7 +149,7 @@ export function ProfileImageUpload({
               }}
               className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
             >
-              Remove
+              {t("remove")}
             </button>
           )}
         </div>

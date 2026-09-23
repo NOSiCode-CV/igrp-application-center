@@ -45,6 +45,7 @@ import {
   type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { SelectableDataTable } from "@/components/data-table/selectable-data-table";
 import {
@@ -57,7 +58,9 @@ import {
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
-import { getStatusColor, showStatus } from "@/lib/utilities";
+import { getStatusColor } from "@/lib/utilities";
+
+import { type UsersTranslator, userStatusLabel } from "../lib/i18n";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -75,7 +78,7 @@ const multiColumnFilterFn: FilterFn<RoleDTO> = (
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<RoleDTO>[] = [
+const makeColumns = (t: UsersTranslator): ColumnDef<RoleDTO>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -85,7 +88,7 @@ const columns: ColumnDef<RoleDTO>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("roleDialog.selectAll")}
         className="ring ring-current/50"
       />
     ),
@@ -93,7 +96,7 @@ const columns: ColumnDef<RoleDTO>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("roleDialog.selectRow")}
         className="ring ring-current/50"
       />
     ),
@@ -101,7 +104,7 @@ const columns: ColumnDef<RoleDTO>[] = [
     enableSorting: false,
   },
   {
-    header: "Nome",
+    header: t("roleDialog.columns.name"),
     accessorKey: "name",
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("name")}</div>
@@ -111,19 +114,21 @@ const columns: ColumnDef<RoleDTO>[] = [
     enableColumnFilter: true,
   },
   {
-    header: "Descrição",
+    header: t("roleDialog.columns.description"),
     accessorKey: "description",
-    cell: ({ row }) => <div>{row.getValue("description") || "N/A"}</div>,
+    cell: ({ row }) => (
+      <div>{row.getValue("description") || t("notAvailable")}</div>
+    ),
     enableSorting: false,
   },
   {
-    header: "Estado",
+    header: t("roleDialog.columns.status"),
     accessorKey: "status",
     cell: ({ row }) => (
       <Badge
         className={cn(getStatusColor(row.getValue("status")), "capitalize")}
       >
-        {showStatus(row.getValue("status"))}
+        {userStatusLabel(t, row.getValue("status"))}
       </Badge>
     ),
     size: 40,
@@ -145,6 +150,8 @@ export function UserRolesDialog({
   const idValue = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users");
+  const columns = useMemo(() => makeColumns(t), [t]);
 
   const {
     data: depts,
@@ -266,15 +273,15 @@ export function UserRolesDialog({
     if (!departmentCode) {
       igrpToast({
         type: "warning",
-        title: "Selecione um departamento primeiro.",
+        title: t("roleDialog.toasts.selectDepartmentFirst"),
       });
       return;
     }
     if (!hasChanges) {
       igrpToast({
         type: "info",
-        title: "Sem alterações",
-        description: "Nada para adicionar ou remover.",
+        title: t("roleDialog.toasts.noChanges"),
+        description: t("roleDialog.toasts.noChangesDescription"),
       });
       return;
     }
@@ -303,8 +310,11 @@ export function UserRolesDialog({
 
       igrpToast({
         type: "success",
-        title: "Perfis atualizados",
-        description: `+${diff.toAdd.roles.length} adicionada(s), -${diff.toRemove.length} removida(s).`,
+        title: t("roleDialog.toasts.updated"),
+        description: t("roleDialog.toasts.updatedDescription", {
+          added: diff.toAdd.roles.length,
+          removed: diff.toRemove.length,
+        }),
       });
 
       await refetchUserRoles();
@@ -312,11 +322,8 @@ export function UserRolesDialog({
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Falha ao atualizar perfis",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+        title: t("roleDialog.toasts.updateFailed"),
+        description: error instanceof Error ? error.message : t("unknownError"),
       });
     }
   }
@@ -329,7 +336,7 @@ export function UserRolesDialog({
       <DialogContent className="md:min-w-2xl max-h-[95vh]">
         <DialogHeader>
           <DialogTitle className="text-base">
-            Adicionar ou Remover Perfis
+            {t("roleDialog.title")}
           </DialogTitle>
         </DialogHeader>
 
@@ -353,9 +360,9 @@ export function UserRolesDialog({
                     onChange={(e) =>
                       table.getColumn("name")?.setFilterValue(e.target.value)
                     }
-                    placeholder="Filtar por nome..."
+                    placeholder={t("roleDialog.filterPlaceholder")}
                     type="text"
-                    aria-label="Filtar por nome"
+                    aria-label={t("roleDialog.filterLabel")}
                     disabled={!departmentCode}
                   />
                   <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
@@ -365,7 +372,7 @@ export function UserRolesDialog({
                     <button
                       type="button"
                       className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px]"
-                      aria-label="Clear filter"
+                      aria-label={t("roleDialog.clearFilter")}
                       onClick={() => {
                         table.getColumn("name")?.setFilterValue("");
                         inputRef.current?.focus();
@@ -396,14 +403,14 @@ export function UserRolesDialog({
                         }
                       >
                         {deptsLoading
-                          ? "A carregar departamentos..."
+                          ? t("roleDialog.departments.loading")
                           : departmentCode
                             ? deptName(departmentCode)
                             : deptsError
-                              ? "Erro ao carregar departamentos"
+                              ? t("roleDialog.departments.loadError")
                               : (depts?.length ?? 0) === 0
-                                ? "Sem departamentos"
-                                : "Selecionar departamento"}
+                                ? t("roleDialog.departments.empty")
+                                : t("roleDialog.departments.placeholder")}
                         <IGRPIcon
                           iconName="ChevronsUpDown"
                           className="ml-2 h-4 w-4 opacity-50"
@@ -413,10 +420,12 @@ export function UserRolesDialog({
 
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                       <Command>
-                        <CommandInput placeholder="Procurar departamento..." />
+                        <CommandInput
+                          placeholder={t("roleDialog.departments.search")}
+                        />
                         <CommandList>
                           <CommandEmpty>
-                            Nenhum departamento encontrado.
+                            {t("roleDialog.departments.notFound")}
                           </CommandEmpty>
                           <CommandGroup>
                             {depts?.map((dept) => (
@@ -450,7 +459,7 @@ export function UserRolesDialog({
                   htmlFor="expires-at"
                   className="text-sm whitespace-nowrap"
                 >
-                  Expiração (opcional)
+                  {t("roleDialog.expiresAt")}
                 </Label>
                 <Input
                   id="expires-at"
@@ -464,16 +473,16 @@ export function UserRolesDialog({
 
               {!departmentCode ? (
                 <div className="rounded-md border py-10 text-center text-muted-foreground ">
-                  Selecione um departamento para listar os perfis.
+                  {t("roleDialog.selectDepartmentHint")}
                 </div>
               ) : loading ? (
                 <div className="rounded-md border py-6 text-center ">
-                  A carregar perfis...
+                  {t("roleDialog.loadingRoles")}
                 </div>
               ) : err ? (
                 <div className="rounded-md border py-6 ">
                   <p className="text-center">
-                    Ocorreu um erro a carregar perfis do utilizador.
+                    {t("roleDialog.loadRolesError")}
                   </p>
                   <p className="text-center">
                     {err instanceof Error ? err.message : String(err)}
@@ -488,7 +497,9 @@ export function UserRolesDialog({
 
               <div className="flex items-center justify-between gap-3">
                 <Badge>
-                  {table.getSelectedRowModel().rows.length} selecionado(s)
+                  {t("roleDialog.selectedCount", {
+                    count: table.getSelectedRowModel().rows.length,
+                  })}
                 </Badge>
 
                 <div className="flex gap-2">
@@ -505,7 +516,7 @@ export function UserRolesDialog({
                     showIcon
                     iconName="X"
                   >
-                    Limpar
+                    {t("roleDialog.clear")}
                   </IGRPButton>
                   <IGRPButton
                     variant="default"
@@ -522,8 +533,8 @@ export function UserRolesDialog({
                     showIcon
                   >
                     {loading || isAdding || isRemoving
-                      ? "Guardando..."
-                      : "Guardar"}
+                      ? t("roleDialog.saving")
+                      : t("roleDialog.save")}
                   </IGRPButton>
                 </div>
               </div>

@@ -128,7 +128,8 @@ src/
 ├── components/           # Shared UI components
 ├── providers/            # React context providers
 ├── schemas/              # Zod validation schemas
-├── config/               # Site config, error messages, login config
+├── config/               # Site config, login config
+├── i18n/                 # next-intl (no locale routing): config, locale resolver, messages/{pt,en,fr}.json, format helpers, language selector
 ├── styles/               # Global CSS + design tokens (globals.css)
 ├── temp/                 # On-code menu definitions + mock data
 ├── __tests__/            # Cross-cutting tests (most tests live beside features)
@@ -146,6 +147,7 @@ src/
 | UI | IGRP Horizon Design System + Tailwind CSS 4 |
 | Auth | NextAuth 4 via `@igrp/framework-next-auth` |
 | Forms | react-hook-form + Zod |
+| i18n | next-intl 4 (without i18n routing) |
 | Data | TanStack Query v5 + server actions |
 | Tables | TanStack Table v8 |
 | Linting | Biome |

@@ -13,26 +13,8 @@ import {
   type IGRPSegmentErrorProps,
 } from "@igrp/framework-next-ui";
 
-import { resolveErrorCopy } from "@/config/error-messages";
+import { useErrorCopy } from "@/components/errors/use-error-copy";
 import { reportError } from "@/lib/report-error";
-
-const AUTH_FALLBACK = {
-  title: "Não foi possível concluir a autenticação.",
-  description:
-    "Verifique a configuração do provedor de autenticação e as variáveis de ambiente. Se o problema persistir, contacte o suporte.",
-};
-
-const resolveAuthCopy: NonNullable<IGRPSegmentErrorProps["resolveCopy"]> = (
-  error,
-) => {
-  const typed = resolveErrorCopy(error);
-  // If the framework didn't tag the error with a known code, swap in the
-  // auth-scoped fallback instead of the generic one.
-  if (!error || typeof error !== "object" || !("code" in (error as object))) {
-    return AUTH_FALLBACK;
-  }
-  return typed;
-};
 
 export default function AuthSegmentError({
   error,
@@ -41,15 +23,29 @@ export default function AuthSegmentError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { resolveErrorCopy, labels, t } = useErrorCopy();
+
   useEffect(() => {
     reportError(error, { segment: "(auth)" });
   }, [error]);
+
+  const resolveAuthCopy: NonNullable<IGRPSegmentErrorProps["resolveCopy"]> = (
+    err,
+  ) => {
+    // If the framework didn't tag the error with a known code, swap in the
+    // auth-scoped fallback instead of the generic one.
+    if (!err || typeof err !== "object" || !("code" in (err as object))) {
+      return { title: t("auth.title"), description: t("auth.description") };
+    }
+    return resolveErrorCopy(err);
+  };
 
   return (
     <IGRPSegmentError
       error={error}
       reset={reset}
       resolveCopy={resolveAuthCopy}
+      {...labels}
     />
   );
 }

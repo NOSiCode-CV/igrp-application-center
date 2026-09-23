@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import { UserStatusToggle } from "@/features/users/components/user-status-toggle";
 
+import { IntlWrapper } from "../../helpers/intl";
+
 const mutateAsync = vi.fn().mockResolvedValue({ success: true });
 
 vi.mock("@/features/users/use-users", () => ({
@@ -30,7 +32,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
 function wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={new QueryClient()}>
-      {children}
+      <IntlWrapper>{children}</IntlWrapper>
     </QueryClientProvider>
   );
 }

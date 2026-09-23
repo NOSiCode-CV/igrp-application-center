@@ -28,6 +28,22 @@ All auth flows through `@igrp/framework-next-auth`, wrapping NextAuth v4.
 - [src/app/api/auth/[...nextauth]/route.ts](src/app/api/auth) exports `auth.GET/POST` as the NextAuth route handler.
 - [src/middleware.ts](src/middleware.ts) calls `auth.isAuthDisabled()` and `auth.isPreviewMode()` directly to short-circuit when auth is off (the middleware uses these primitives; `getSession()` uses the combined `isAuthBypass()` predicate instead). For authenticated paths it calls `auth.getTokenFromRequest(request)` + `auth.isTokenExpiredOrFailed(token)` and redirects to login on failure. Security headers (`X-Content-Type-Options`, `X-Frame-Options`, etc.) are injected in production. The middleware `config` is delegated: `export const { config } = auth`.
 - Auth bypass (`isAuthBypass()` in `src/lib/utils.ts`) returns `true` when `IGRP_PREVIEW_MODE=true` OR `AUTH_PROVIDER=none`. `getSession()` returns null in this case — keep this path working when touching auth.
+- `withIGRPAuth` callback extensions in `src/lib/auth.ts` carry the user's language: `jwt` seeds `token.locale` from the OIDC `locale` claim at sign-in and applies `update({ locale })`; `session` exposes `session.locale`. `getSessionLocale()` reads it (null-safe, never throws except Next's dynamic bailout).
+- The middleware rewrites the `IGRP_LOCALE` cookie to the token's locale when they differ (FR-27, `syncLocaleCookie`), reusing the token it already decoded.
+
+### i18n (`src/i18n/`)
+
+next-intl 4 **without i18n routing** — no `[locale]` segment and no locale in URLs (HAProxy routes `/apps/[slug]`). Spec: `access-management/_specs/i18n/`.
+
+- `config.ts` — `LOCALES` (`pt`, `en`, `fr`), module default `pt`, platform default `pt`, `FORMAT_REGION` (pt-CV / en-GB / fr-FR), cookie `IGRP_LOCALE`, `normalizeLocale()` (`pt-CV` → `pt`, unsupported → `undefined`).
+- `resolve-locale.ts` (server-only) — session `locale` → cookie → `Accept-Language` (q-ordered) → platform default.
+- `request.ts` — `getRequestConfig`; messages = `pt.json` deep-merged under the requested file (per-key fallback); a key missing in both renders the key and warns.
+- `messages/{pt,en,fr}.json` — one file per language, top-level namespace per feature, nested camelCase keys, ICU. `pt.json` is complete and types the keys (`global.d.ts`), so `tsc` fails on unknown keys. `en`/`fr` may be partial.
+- `format.ts` — `formatDate`/`formatDateTime`/`formatNumber`/`compare` (+ `useFormat()`); never hardcode a locale/region in feature code.
+- `actions.ts` — `setLocale` server action (validate → `PUT /api/users/me/locale` when signed in → cookie). `components/locale-switcher.tsx` then calls next-auth `update({ locale })` and `router.refresh()`. The selector is on `/login`, the `(invite)` layout and `/profile` (the framework header has no extension point yet).
+- The root layout wraps children in `I18nProvider` (NextIntlClientProvider + design-system `IGRPI18nProvider`). `global-error.tsx` has no provider: it reads the cookie and uses an inline pt/en/fr table.
+- `getClientAccess()` sends `Accept-Language` = resolved locale on every API call; error UIs show the API ProblemDetail `detail` as-is, else `errors.*` messages (`components/errors/use-error-copy.ts`).
+- Migrating a feature: move its strings to `pt.json` under the feature namespace, use `useTranslations`/`getTranslations`, make Zod schemas factories taking `t`, use `format.ts`, and add the folder to `MIGRATED_FOLDERS` in `src/__tests__/i18n/literal-strings.test.ts` (hardcoded-string guard).
 
 ### Route groups
 

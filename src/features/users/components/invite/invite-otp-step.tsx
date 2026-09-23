@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,11 +14,12 @@ import {
   InputOTPSlot,
 } from "@igrp/igrp-framework-react-design-system";
 import { Loader2, ShieldCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import {
   type InviteOtpFormArgs,
-  InviteOtpFormSchema,
+  makeInviteOtpFormSchema,
 } from "../../user-schemas";
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -60,8 +61,11 @@ export function InviteOtpStep({
   onResend,
   onChangeEmail,
 }: InviteOtpStepProps) {
+  const t = useTranslations("users.invite.accept.otpStep");
+  const tv = useTranslations("users.validation");
+  const schema = useMemo(() => makeInviteOtpFormSchema(tv), [tv]);
   const form = useForm<InviteOtpFormArgs>({
-    resolver: zodResolver(InviteOtpFormSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: { otpCode: "" },
   });
@@ -92,21 +96,21 @@ export function InviteOtpStep({
     <div className="flex flex-col gap-8">
       <InviteStepHeader
         icon={ShieldCheck}
-        eyebrow="Verificação"
-        title="Código de acesso"
-        description={
-          <>
-            Enviámos um código de 6 dígitos para{" "}
-            <span className="font-medium text-foreground">{email}</span>.
-          </>
-        }
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t.rich("description", {
+          email,
+          strong: (chunks) => (
+            <span className="font-medium text-foreground">{chunks}</span>
+          ),
+        })}
       />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
         <FieldGroup>
           <Field data-invalid={fieldInvalid || undefined}>
             <FieldLabel htmlFor="otp-code" className="sr-only">
-              Código OTP
+              {t("codeLabel")}
             </FieldLabel>
             <InputOTP
               id="otp-code"
@@ -144,7 +148,7 @@ export function InviteOtpStep({
           {isSubmitting ? (
             <Loader2 data-icon="inline-start" className="animate-spin" />
           ) : null}
-          {isSubmitting ? "A verificar…" : "Verificar código"}
+          {isSubmitting ? t("submitting") : t("submit")}
         </Button>
 
         <div className="flex flex-col items-center gap-0.5">
@@ -157,10 +161,10 @@ export function InviteOtpStep({
             className="h-auto p-0 font-medium"
           >
             {isResending
-              ? "A reenviar…"
+              ? t("resending")
               : inCooldown
-                ? `Reenviar em ${remainingSeconds}s`
-                : "Reenviar código"}
+                ? t("resendIn", { seconds: remainingSeconds })
+                : t("resend")}
           </Button>
           <Button
             type="button"
@@ -170,7 +174,7 @@ export function InviteOtpStep({
             disabled={isSubmitting}
             className="h-auto p-0 text-muted-foreground hover:text-foreground"
           >
-            Alterar email
+            {t("changeEmail")}
           </Button>
         </div>
       </form>

@@ -10,6 +10,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import { userKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
@@ -21,6 +22,7 @@ interface UserNameEditorProps {
 export function UserNameEditor({ user }: UserNameEditorProps) {
   const { mutateAsync: updateUser } = useUpdateUser();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users");
   const queryClient = useQueryClient();
 
   const [editing, setEditing] = useState(false);
@@ -50,13 +52,13 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
       setEditing(false);
       igrpToast({
         type: "success",
-        title: "Nome atualizado com sucesso",
+        title: t("nameEditor.toasts.updated"),
         duration: 6000,
       });
     } catch (err) {
       igrpToast({
         type: "error",
-        title: "Erro ao atualizar nome",
+        title: t("nameEditor.toasts.updateFailed"),
         description: (err as Error).message,
         duration: 6000,
       });
@@ -82,7 +84,7 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
           size="sm"
           variant="ghost"
           onClick={save}
-          aria-label="Guardar nome"
+          aria-label={t("nameEditor.save")}
         >
           <IGRPIcon iconName="Check" className="size-4" />
         </IGRPButton>
@@ -90,7 +92,7 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
           size="sm"
           variant="ghost"
           onClick={() => setEditing(false)}
-          aria-label="Cancelar edição"
+          aria-label={t("nameEditor.cancel")}
         >
           <IGRPIcon iconName="X" className="size-4" />
         </IGRPButton>
@@ -101,14 +103,14 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
   return (
     <div className="flex items-center gap-2 mb-1 group">
       <h1 className="text-2xl font-bold tracking-tight">
-        {user.name || "N/A"}
+        {user.name || t("notAvailable")}
       </h1>
       <IGRPButton
         size="sm"
         variant="ghost"
         className="opacity-100 transition-opacity"
         onClick={open}
-        aria-label="Editar nome"
+        aria-label={t("nameEditor.edit")}
       >
         <IGRPIcon iconName="Pencil" className="size-4" />
       </IGRPButton>

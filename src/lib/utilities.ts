@@ -110,6 +110,8 @@ interface ApiErrorLike {
   status?: number;
   message?: string;
   title?: string;
+  /** RFC-7807 body parsed by the SDK (`ApiClientError.problemDetail`). */
+  problemDetail?: { detail?: unknown };
 }
 
 export function extractApiError(error: unknown): string {
@@ -136,6 +138,13 @@ export function extractApiError(error: unknown): string {
     } catch {
       return detailsStr;
     }
+  }
+
+  // The API translates `detail` into the request's Accept-Language (FR-21):
+  // show it as-is when present.
+  const detail = e.problemDetail?.detail;
+  if (typeof detail === "string" && detail) {
+    return detail;
   }
 
   if (typeof e.title === "string" && e.title) {

@@ -11,6 +11,7 @@ import {
   TabsTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
@@ -33,13 +34,14 @@ function TabSkeleton() {
 }
 
 function TabError({ error, resetErrorBoundary }: FallbackProps) {
-  const message =
-    error instanceof Error ? error.message : "Erro ao carregar dados";
+  const t = useTranslations("users.detail");
+  const tc = useTranslations("common.actions");
+  const message = error instanceof Error ? error.message : t("loadError");
   return (
     <div className="flex flex-col items-center gap-3 p-6 text-sm text-destructive">
       <p>{message}</p>
       <IGRPButton size="sm" onClick={resetErrorBoundary}>
-        Tentar novamente
+        {tc("retry")}
       </IGRPButton>
     </div>
   );
@@ -67,18 +69,19 @@ interface UserDetailsTabsProps {
 }
 
 export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
+  const t = useTranslations("users.detail.tabs");
   const [active, setActive] = useState<TabValue>("roles");
 
   return (
     <Tabs value={active} onValueChange={(v) => setActive(v as TabValue)}>
       <TabsList>
-        <TabsTrigger value="roles">Perfis</TabsTrigger>
-        <TabsTrigger value="departments">Departamentos</TabsTrigger>
-        <TabsTrigger value="applications">Aplicações</TabsTrigger>
-        <TabsTrigger value="signature">Assinatura</TabsTrigger>
-        <TabsTrigger value="sessions">Sessões</TabsTrigger>
-        <TabsTrigger value="audit">Auditoria</TabsTrigger>
-        <TabsTrigger value="metadata">Metadados</TabsTrigger>
+        <TabsTrigger value="roles">{t("roles")}</TabsTrigger>
+        <TabsTrigger value="departments">{t("departments")}</TabsTrigger>
+        <TabsTrigger value="applications">{t("applications")}</TabsTrigger>
+        <TabsTrigger value="signature">{t("signature")}</TabsTrigger>
+        <TabsTrigger value="sessions">{t("sessions")}</TabsTrigger>
+        <TabsTrigger value="audit">{t("audit")}</TabsTrigger>
+        <TabsTrigger value="metadata">{t("metadata")}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="roles">

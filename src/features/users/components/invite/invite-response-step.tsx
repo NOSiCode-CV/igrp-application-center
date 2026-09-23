@@ -14,6 +14,7 @@ import {
   Separator,
 } from "@igrp/igrp-framework-react-design-system";
 import { Building2, Check, Loader2, Mail, Shield, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -61,6 +62,8 @@ export function InviteResponseStep({
   onAccept,
   onReject,
 }: InviteResponseStepProps) {
+  const t = useTranslations("users.invite.accept.responseStep");
+  const tc = useTranslations("common.actions");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const departments = toArray(invitation.department);
   const roles = invitation.roles ?? [];
@@ -70,13 +73,13 @@ export function InviteResponseStep({
       <div className="flex flex-col gap-8">
         <InviteStepHeader
           icon={Mail}
-          eyebrow="Convite"
-          title="Aceitar Acesso"
-          description="Revise os detalhes antes de confirmar."
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("description")}
         />
 
         <dl className="flex flex-col gap-5 rounded-2xl border border-border/60 bg-muted/30 p-5">
-          <InvitationRow icon={Mail} label="Email">
+          <InvitationRow icon={Mail} label={t("email")}>
             <span className="font-medium text-foreground">
               {invitation.email}
             </span>
@@ -85,7 +88,7 @@ export function InviteResponseStep({
           {departments.length > 0 ? (
             <>
               <Separator />
-              <InvitationRow icon={Building2} label="Departamento">
+              <InvitationRow icon={Building2} label={t("department")}>
                 <div className="flex flex-wrap gap-1.5">
                   {departments.map((dept) => (
                     <Badge
@@ -103,7 +106,7 @@ export function InviteResponseStep({
           {roles.length > 0 ? (
             <>
               <Separator />
-              <InvitationRow icon={Shield} label="Perfis">
+              <InvitationRow icon={Shield} label={t("roles")}>
                 <div className="flex flex-wrap gap-1.5">
                   {roles.map((role) => (
                     <Badge
@@ -131,7 +134,7 @@ export function InviteResponseStep({
             ) : (
               <Check data-icon="inline-start" />
             )}
-            {isSubmitting ? "A processar…" : "Aceitar Convite"}
+            {isSubmitting ? t("processing") : t("accept")}
           </Button>
           <Button
             variant="outline"
@@ -141,7 +144,7 @@ export function InviteResponseStep({
             disabled={isSubmitting}
           >
             <X data-icon="inline-start" />
-            Rejeitar
+            {t("reject")}
           </Button>
         </div>
       </div>
@@ -149,10 +152,9 @@ export function InviteResponseStep({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Rejeitar convite?</AlertDialogTitle>
+            <AlertDialogTitle>{t("rejectConfirm.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Terá de solicitar um novo convite
-              ao administrador se mudar de ideias.
+              {t("rejectConfirm.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -161,7 +163,7 @@ export function InviteResponseStep({
               onClick={() => setConfirmOpen(false)}
               disabled={isSubmitting}
             >
-              Cancelar
+              {tc("cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -171,7 +173,7 @@ export function InviteResponseStep({
               }}
               disabled={isSubmitting}
             >
-              Rejeitar convite
+              {t("rejectConfirm.confirm")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

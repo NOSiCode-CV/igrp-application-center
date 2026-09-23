@@ -6,6 +6,7 @@ import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
 
 import { carouselItems, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
+import { LocaleSwitcher } from "@/i18n/components/locale-switcher";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { cn, isAuthBypass, sanitizeCallbackUrl } from "@/lib/utils";
 
@@ -46,7 +47,10 @@ export default async function AuthPage({
   const providerId = getAuthProviderIdFromEnv(process.env);
 
   return (
-    <section className="flex min-h-screen flex-col md:flex-row">
+    <section className="relative flex min-h-screen flex-col md:flex-row">
+      <div className="absolute top-4 right-4 z-10 w-44">
+        <LocaleSwitcher />
+      </div>
       <div
         className={cn(
           "relative hidden w-full md:block md:w-1/2",

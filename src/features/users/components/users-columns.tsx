@@ -17,15 +17,20 @@ import {
   type Row,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import {
-  geInviteTitle,
   getInitials,
   getStatusColor,
-  showStatus,
   statusInviteClass,
 } from "@/lib/utilities";
 import { cn } from "@/lib/utils";
+
+import {
+  inviteStatusLabel,
+  type UsersTranslator,
+  userStatusLabel,
+} from "../lib/i18n";
 
 // ─── Module-level helpers ────────────────────────────────────────────────────
 
@@ -39,6 +44,7 @@ function ActiveRowActionsCell({
   row: Row<IGRPUserDTO>;
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void;
 }) {
+  const t = useTranslations("users.columns");
   const state = String(row.getValue("status"));
 
   return (
@@ -55,7 +61,7 @@ function ActiveRowActionsCell({
             variant="destructive"
           >
             <IGRPIcon iconName="CircleOff" />
-            Desativar
+            {t("deactivate")}
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
@@ -64,7 +70,7 @@ function ActiveRowActionsCell({
             variant="default"
           >
             <IGRPIcon iconName="CircleCheck" className="text-success" />
-            Ativar
+            {t("activate")}
           </DropdownMenuItem>
         )}
 
@@ -74,7 +80,7 @@ function ActiveRowActionsCell({
             href={`/settings/users/${row.original.id}`}
           >
             <IGRPIcon iconName="UserCog" />
-            Gerir
+            {t("manage")}
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -85,6 +91,8 @@ function ActiveRowActionsCell({
 // ─── Column factory ──────────────────────────────────────────────────────────
 
 export function getTableColumns(
+  t: UsersTranslator,
+  formatDate: (value: string) => string,
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void,
   options?: { showInvitationDate?: boolean },
 ): ColumnDef<IGRPUserDTO>[] {
@@ -92,7 +100,10 @@ export function getTableColumns(
   return [
     {
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
+        <IGRPDataTableHeaderSortToggle
+          column={column}
+          title={t("columns.name")}
+        />
       ),
       accessorKey: "name",
       filterFn: (row, _columnId, value: string) => {
@@ -124,22 +135,25 @@ export function getTableColumns(
     },
     {
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Email" />
+        <IGRPDataTableHeaderSortToggle
+          column={column}
+          title={t("columns.email")}
+        />
       ),
       accessorKey: "email",
-      cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue("email") || t("notAvailable")}</div>
+      ),
     },
     ...(showInvitationDate
       ? [
           {
-            header: "Data do Convite",
+            header: t("columns.invitationDate"),
             accessorKey: "invitationDate",
             cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
               const date = row.getValue("invitationDate");
               return (
-                <div>
-                  {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-                </div>
+                <div>{date ? formatDate(String(date)) : t("notAvailable")}</div>
               );
             },
           } as ColumnDef<IGRPUserDTO>,
@@ -147,7 +161,10 @@ export function getTableColumns(
       : []),
     {
       header: () => (
-        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
+        <IGRPDataTableHeaderDefault
+          title={t("columns.status")}
+          className="text-center"
+        />
       ),
       accessorKey: "status",
       cell: ({ row }) => {
@@ -161,7 +178,9 @@ export function getTableColumns(
                 "capitalize",
               )}
             >
-              {isInvite ? geInviteTitle(status) : showStatus(status)}
+              {isInvite
+                ? inviteStatusLabel(t, status)
+                : userStatusLabel(t, status)}
             </Badge>
           </div>
         );
@@ -171,7 +190,7 @@ export function getTableColumns(
     },
     {
       id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
+      header: () => <span className="sr-only">{t("columns.actions")}</span>,
       cell: ({ row }) => (
         <ActiveRowActionsCell row={row} onStatusClick={onStatusClick} />
       ),

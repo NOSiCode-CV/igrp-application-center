@@ -14,6 +14,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useUpdateUserStatus } from "@/features/users/use-users";
 
@@ -23,6 +24,8 @@ interface UserStatusToggleProps {
 
 export function UserStatusToggle({ user }: UserStatusToggleProps) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.profile");
+  const tc = useTranslations("common.actions");
   const { mutateAsync: updateStatus, isPending } = useUpdateUserStatus();
   const [open, setOpen] = useState(false);
   const isActive = user.status === "ACTIVE";
@@ -35,13 +38,13 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
       setOpen(false);
       igrpToast({
         type: "success",
-        title: `Utilizador ${isActive ? "desativado" : "ativado"} com sucesso`,
+        title: isActive ? t("toasts.deactivated") : t("toasts.activated"),
         duration: 4000,
       });
     } catch (err) {
       igrpToast({
         type: "error",
-        title: "Erro ao alterar estado",
+        title: t("toasts.statusChangeFailed"),
         description: (err as Error).message,
         duration: 4000,
       });
@@ -57,7 +60,7 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
         size="sm"
         onClick={() => setOpen(true)}
       >
-        {isActive ? "Desativar" : "Ativar"}
+        {isActive ? t("statusButton.deactivate") : t("statusButton.activate")}
       </IGRPButton>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
@@ -69,12 +72,22 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
                 className="size-5 text-destructive"
                 strokeWidth={2}
               />
-              {isActive ? "Desativar" : "Ativar"} Utilizador
+              {isActive
+                ? t("statusDialog.deactivateTitle")
+                : t("statusDialog.activateTitle")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-              utilizador{" "}
-              <strong className="text-foreground">{user.name}</strong>?
+              {t.rich(
+                isActive
+                  ? "statusDialog.deactivateDescription"
+                  : "statusDialog.activateDescription",
+                {
+                  name: user.name,
+                  strong: (chunks) => (
+                    <strong className="text-foreground">{chunks}</strong>
+                  ),
+                },
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -87,7 +100,7 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
               iconPlacement="start"
               iconName="X"
             >
-              Cancelar
+              {tc("cancel")}
             </IGRPButton>
             <IGRPButton
               onClick={handleConfirm}
@@ -100,7 +113,9 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
               ) : (
                 <IGRPIcon iconName={isActive ? "Ban" : "Check"} />
               )}
-              {isActive ? "Confirmar Desativar" : "Confirmar Ativar"}
+              {isActive
+                ? t("statusDialog.confirmDeactivate")
+                : t("statusDialog.confirmActivate")}
             </IGRPButton>
           </AlertDialogFooter>
         </AlertDialogContent>

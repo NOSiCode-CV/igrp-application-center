@@ -5,8 +5,23 @@ import { isIgrpError } from "@igrp/framework-next/errors";
 import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { assertAuthProviderEnv } from "@igrp/framework-next-auth/providers";
 
+import { normalizeLocale } from "@/i18n/config";
 import { reportError } from "@/lib/report-error";
 import { isAuthBypass } from "@/lib/utils";
+
+// i18n: the user's preferred language (`metadata.locale`, emitted by the
+// authorization server as the OIDC `locale` claim) travels in the JWT and is
+// exposed on the session. Validated against the platform languages.
+declare module "next-auth" {
+  interface Session {
+    locale?: string;
+  }
+}
+declare module "next-auth/jwt" {
+  interface JWT {
+    locale?: string;
+  }
+}
 
 /**
  * Minimal session shape used in bypass mode (IGRP_PREVIEW_MODE or
@@ -76,6 +91,40 @@ export const auth = withIGRPAuth({
   // or `withAuth`) land on /login instead of the framework default page.
   pages: { signIn: "/login" },
   callbacks: {
+    /**
+     * Runs after the framework jwt logic (token refresh etc.).
+     *
+     * - Sign-in (`account` present): seed `token.locale` from the OIDC
+     *   `locale` claim (the user's `metadata.locale`).
+     * - `update({ locale })` from the client (language selector): replace
+     *   `token.locale` so the change applies without a new login (FR-25).
+     *
+     * Unsupported values are ignored.
+     */
+    jwt: async (params, igrpToken) => {
+      let token = igrpToken;
+      if (params.account) {
+        const claimLocale = normalizeLocale(
+          (params.profile as { locale?: unknown } | undefined)?.locale,
+        );
+        if (claimLocale) token = { ...token, locale: claimLocale };
+      }
+      if (params.trigger === "update") {
+        const requested = normalizeLocale(
+          (params.session as { locale?: unknown } | undefined)?.locale,
+        );
+        if (requested) token = { ...token, locale: requested };
+      }
+      return token;
+    },
+    /** Exposes `session.locale` (resolver priority 1, FR-6). */
+    session: async (params, igrpSession) => {
+      const locale =
+        "token" in params
+          ? normalizeLocale((params.token as { locale?: unknown }).locale)
+          : undefined;
+      return locale ? { ...igrpSession, locale } : igrpSession;
+    },
     /**
      * Post-auth redirect.
      *
@@ -225,4 +274,26 @@ export async function serverSession() {
 export async function getSession() {
   if (isAuthBypass()) return null;
   return auth.getSession();
+}
+
+/**
+ * The current user's preferred language (`session.locale`), or `undefined`
+ * when unauthenticated, in bypass mode, or when the session cannot be read.
+ * Locale resolution must never break rendering, so failures degrade to
+ * "unknown" — except Next's dynamic-rendering bailout, which is control flow.
+ */
+export async function getSessionLocale(): Promise<string | undefined> {
+  if (isAuthBypass()) return undefined;
+  try {
+    const session = await auth.serverSession();
+    return session?.locale ?? undefined;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as { digest?: string }).digest === "DYNAMIC_SERVER_USAGE"
+    ) {
+      throw error;
+    }
+    return undefined;
+  }
 }

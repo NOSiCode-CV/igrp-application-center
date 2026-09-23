@@ -1,5 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import {
+  LOCALE_COOKIE,
+  LOCALE_COOKIE_OPTIONS,
+  normalizeLocale,
+} from "@/i18n/config";
 import { auth } from "@/lib/auth";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { sanitizeCallbackUrl } from "@/lib/utils";
@@ -71,6 +76,8 @@ export function isAuthUiPath(pathname: string): boolean {
  * 3. Extract JWT — redirect to login on failure.
  * 4. Redirect to login when token expired or refresh failed.
  * 5. Apply security headers to all passing responses.
+ * 6. Authenticated: align the IGRP_LOCALE cookie with the session locale
+ *    (FR-27, see syncLocaleCookie).
  *
  * x-current-path is injected as a request header on every passing response so
  * server components can build a callbackUrl when they need to redirect to login.
@@ -141,7 +148,26 @@ export async function middleware(request: NextRequest) {
     return loginRedirect();
   }
 
-  return nextWithPath();
+  return syncLocaleCookie(request, nextWithPath(), token.locale);
+}
+
+/**
+ * FR-27: the user's preference (`metadata.locale`, carried in the session
+ * token) wins over the `IGRP_LOCALE` cookie. The resolver already prefers the
+ * session; rewriting the cookie keeps pages rendered without a session (login
+ * after logout, invitation flow) in the same language. Reuses the token the
+ * auth gate already decoded, so it costs nothing extra.
+ */
+export function syncLocaleCookie(
+  request: NextRequest,
+  response: NextResponse,
+  tokenLocale: unknown,
+): NextResponse {
+  const locale = normalizeLocale(tokenLocale);
+  if (locale && request.cookies.get(LOCALE_COOKIE)?.value !== locale) {
+    response.cookies.set(LOCALE_COOKIE, locale, LOCALE_COOKIE_OPTIONS);
+  }
+  return response;
 }
 
 // Matcher: page routes only (legacy template)

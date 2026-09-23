@@ -4,8 +4,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
 import { Input } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 export function UserListFilters() {
+  const t = useTranslations("users.list.filters");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,16 +28,16 @@ export function UserListFilters() {
     <div className="flex items-center gap-2">
       <Input
         type="search"
-        aria-label="Pesquisar por nome"
-        placeholder="Pesquisar por nome..."
+        aria-label={t("searchByName")}
+        placeholder={t("searchByNamePlaceholder")}
         defaultValue={searchParams.get("name") ?? ""}
         onChange={(e) => updateParam("name", e.target.value)}
         className="w-64"
       />
       <Input
         type="search"
-        aria-label="Pesquisar por email"
-        placeholder="Pesquisar por email..."
+        aria-label={t("searchByEmail")}
+        placeholder={t("searchByEmailPlaceholder")}
         defaultValue={searchParams.get("email") ?? ""}
         onChange={(e) => updateParam("email", e.target.value)}
         className="w-64"

@@ -60,6 +60,51 @@ describe("middleware auth gate", () => {
   });
 });
 
+describe("locale cookie sync (FR-27)", () => {
+  const withCookie = (path: string, cookie: string) => {
+    const r = req(path);
+    r.cookies.set("IGRP_LOCALE", cookie);
+    return r;
+  };
+
+  it("rewrites IGRP_LOCALE when the session locale differs", async () => {
+    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
+      sub: "u1",
+      locale: "en",
+    });
+    const res = await middleware(withCookie("/settings/users", "fr"));
+    expect(res.headers.get("location")).toBeNull();
+    const cookie = res.cookies.get("IGRP_LOCALE");
+    expect(cookie?.value).toBe("en");
+    expect(cookie?.path).toBe("/");
+    expect(cookie?.sameSite).toBe("lax");
+  });
+
+  it("leaves the cookie alone when it already matches", async () => {
+    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
+      sub: "u1",
+      locale: "en",
+    });
+    const res = await middleware(withCookie("/settings/users", "en"));
+    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
+  });
+
+  it("does nothing when the session has no (valid) locale", async () => {
+    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
+      sub: "u1",
+      locale: "de",
+    });
+    const res = await middleware(withCookie("/settings/users", "fr"));
+    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
+  });
+
+  it("never touches the cookie on public paths", async () => {
+    const res = await middleware(withCookie("/login", "fr"));
+    expect(auth.getTokenFromRequest).not.toHaveBeenCalled();
+    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
+  });
+});
+
 describe("security headers (production)", () => {
   it("sets HSTS and omits the deprecated X-XSS-Protection in production", async () => {
     vi.stubEnv("NODE_ENV", "production");

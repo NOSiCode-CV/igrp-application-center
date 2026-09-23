@@ -1,7 +1,12 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 
-import { UserProfileAvatar } from "@/features/users/components/user-profile-avatar";
+import {
+  UserProfileAvatar,
+  type UserProfileAvatarProps,
+} from "@/features/users/components/user-profile-avatar";
+
+import { renderWithIntl } from "../../helpers/intl";
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
@@ -20,6 +25,8 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     ) : (
       <span data-testid="avatar-fallback">{fallbackContent}</span>
     ),
+  Skeleton: () => <span data-testid="avatar-skeleton" />,
+  useIGRPToast: () => ({ igrpToast: vi.fn() }),
 }));
 
 const baseUser = {
@@ -28,7 +35,7 @@ const baseUser = {
   username: "ana",
   email: "a@x.cv",
   picture: null,
-} as never;
+} as unknown as UserProfileAvatarProps["user"];
 
 const fakeUrl = "blob:fake";
 beforeEach(() => {
@@ -40,7 +47,7 @@ beforeEach(() => {
 
 it("shows the object-URL preview while uploading and clears it after success", async () => {
   const onUpload = vi.fn().mockResolvedValue(undefined);
-  render(
+  renderWithIntl(
     <UserProfileAvatar
       user={baseUser}
       resolvedUrl={null}
@@ -62,7 +69,7 @@ it("shows the object-URL preview while uploading and clears it after success", a
 
 it("clears object URL when upload errors", async () => {
   const onUpload = vi.fn().mockRejectedValue(new Error("nope"));
-  render(
+  renderWithIntl(
     <UserProfileAvatar
       user={baseUser}
       resolvedUrl={null}
@@ -83,7 +90,7 @@ it("clears object URL when upload errors", async () => {
 });
 
 it("exposes aria-label and disables trigger while resolving URL", () => {
-  render(
+  renderWithIntl(
     <UserProfileAvatar
       user={baseUser}
       resolvedUrl={null}
@@ -98,8 +105,8 @@ it("exposes aria-label and disables trigger while resolving URL", () => {
 });
 
 it("falls back to username then email for alt text when name is empty", () => {
-  const userNoName = { ...baseUser, name: "", username: "ana_u" } as never;
-  render(
+  const userNoName = { ...baseUser, name: "", username: "ana_u" };
+  renderWithIntl(
     <UserProfileAvatar
       user={userNoName}
       resolvedUrl="https://example.com/a.png"

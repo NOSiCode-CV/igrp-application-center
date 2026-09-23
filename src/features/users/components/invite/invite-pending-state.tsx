@@ -4,19 +4,21 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@igrp/igrp-framework-react-design-system";
 import { LogOut, Mail } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { InviteStepHeader } from "./invite-step-header";
 
 export function InvitePendingState() {
   const router = useRouter();
+  const t = useTranslations("users.invite.accept.pendingState");
 
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
         icon={Mail}
-        eyebrow="Pendente"
-        title="Convite pendente"
-        description="Tem um convite pendente. Verifique o seu email para encontrar o link e continuar."
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
       />
       <Button
         variant="outline"
@@ -24,7 +26,7 @@ export function InvitePendingState() {
         onClick={() => router.push("/logout")}
       >
         <LogOut data-icon="inline-start" />
-        Terminar sessão
+        {t("signOut")}
       </Button>
     </div>
   );

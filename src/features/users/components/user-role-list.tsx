@@ -8,6 +8,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 
@@ -16,6 +17,7 @@ import { UserRolesDialog } from "./user-role-dialog";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users");
   const { data: userRoles, isLoading } = useGetCurrentUserRoles();
   const {
     mutateAsync: removeUserRole,
@@ -42,16 +44,13 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
       }
       igrpToast({
         type: "success",
-        title: "Perfil removido com sucesso.",
+        title: t("roleList.toasts.removed"),
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Não foi possivel remover o perfil.",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+        title: t("roleList.toasts.removeFailed"),
+        description: error instanceof Error ? error.message : t("unknownError"),
       });
     }
   };
@@ -60,7 +59,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     return isPending && variables?.roleCodes.includes(roleCode);
   };
   if (isLoading) {
-    return <AppCenterLoading description="Carregando perfis..." />;
+    return <AppCenterLoading description={t("roleList.loading")} />;
   }
 
   return (
@@ -68,14 +67,14 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
       {userRoles && userRoles.length > 0 ? (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Perfis Atribuídos</h2>
+            <h2 className="text-lg font-semibold">{t("roleList.title")}</h2>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setAssignDialogOpen(true)}
             >
               <IGRPIcon iconName="Plus" />
-              Adicionar
+              {t("roleList.add")}
             </Button>
           </div>
 
@@ -117,16 +116,19 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                       <div className="flex items-center gap-1">
                         <IGRPIcon iconName="Shield" className="h-3 w-3" />
                         <span>
-                          {role.permissions.length}{" "}
-                          {role.permissions.length === 1
-                            ? "permissão"
-                            : "permissões"}
+                          {t("roleList.permissionCount", {
+                            count: role.permissions.length,
+                          })}
                         </span>
                       </div>
                       {role.parentCode && (
                         <div className="text-xs">
-                          Associados:{" "}
-                          <span className="font-mono">{role.parentCode}</span>
+                          {t.rich("roleList.parent", {
+                            code: role.parentCode,
+                            mono: (chunks) => (
+                              <span className="font-mono">{chunks}</span>
+                            ),
+                          })}
                         </div>
                       )}
                     </div>
@@ -146,7 +148,9 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                           ))}
                         {role.permissions.length > 3 && (
                           <Badge variant="secondary" className="text-xs">
-                            +{role.permissions.length - 3} mais
+                            {t("roleList.morePermissions", {
+                              count: role.permissions.length - 3,
+                            })}
                           </Badge>
                         )}
                       </div>
@@ -163,7 +167,9 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                   disabled={isRemovingRole(role.code || "")}
                   className="shrink-0 cursor-pointer"
                 >
-                  {isRemovingRole(role.code || "") ? "..." : "Revogar"}
+                  {isRemovingRole(role.code || "")
+                    ? "..."
+                    : t("roleList.revoke")}
                 </Button>
               </div>
             ))}
@@ -176,14 +182,14 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
             className="size-8 text-muted-foreground"
           />
           <div>
-            <p className="font-medium text-sm">Sem perfis atribuídos</p>
+            <p className="font-medium text-sm">{t("roleList.empty")}</p>
             <p className="text-xs text-muted-foreground">
-              Este utilizador não tem perfis.
+              {t("roleList.emptyDescription")}
             </p>
           </div>
           <Button size="sm" onClick={() => setAssignDialogOpen(true)}>
             <IGRPIcon iconName="Plus" />
-            Associar Perfis
+            {t("roleList.assign")}
           </Button>
         </div>
       )}

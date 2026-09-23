@@ -9,6 +9,7 @@ import {
   type LucideIcon,
   MailX,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -20,31 +21,10 @@ interface InviteErrorStateProps {
   onSignOut?: () => void;
 }
 
-const COPY: Record<
-  InviteErrorKind,
-  { icon: LucideIcon; eyebrow: string; title: string; description: string }
-> = {
-  invalid: {
-    icon: AlertTriangle,
-    eyebrow: "Erro",
-    title: "Convite inválido",
-    description:
-      "Não foi possível encontrar este convite. O link pode estar incorreto.",
-  },
-  mismatch: {
-    icon: MailX,
-    eyebrow: "Conta diferente",
-    title: "Convite não corresponde",
-    description:
-      "Este convite não foi enviado para a conta com que iniciou sessão.",
-  },
-  expired: {
-    icon: Clock,
-    eyebrow: "Expirado",
-    title: "Convite expirado",
-    description:
-      "Este convite já expirou. Solicite um novo convite ao administrador.",
-  },
+const ICONS: Record<InviteErrorKind, LucideIcon> = {
+  invalid: AlertTriangle,
+  mismatch: MailX,
+  expired: Clock,
 };
 
 export function InviteErrorState({
@@ -53,28 +33,29 @@ export function InviteErrorState({
   onBackHome,
   onSignOut,
 }: InviteErrorStateProps) {
-  const copy = COPY[kind];
+  const t = useTranslations("users.invite.accept");
+  const tc = useTranslations("common.actions");
 
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
-        icon={copy.icon}
-        eyebrow={copy.eyebrow}
-        title={copy.title}
-        description={description ?? copy.description}
+        icon={ICONS[kind]}
+        eyebrow={t(`errorStates.${kind}.eyebrow`)}
+        title={t(`errorStates.${kind}.title`)}
+        description={description ?? t(`errorStates.${kind}.description`)}
         tone="destructive"
       />
       <div className="flex flex-col gap-3">
         {kind !== "mismatch" ? (
           <Button variant="outline" size="lg" onClick={onBackHome}>
             <ArrowLeft data-icon="inline-start" />
-            Voltar ao início
+            {tc("backHome")}
           </Button>
         ) : null}
         {onSignOut ? (
           <Button size="lg" onClick={onSignOut} variant="destructive">
             <LogOut data-icon="inline-start" />
-            Usar outra conta
+            {t("useAnotherAccount")}
           </Button>
         ) : null}
       </div>

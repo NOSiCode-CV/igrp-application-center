@@ -5,6 +5,7 @@ import { useCallback, useEffect, useReducer, useRef } from "react";
 
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -47,6 +48,7 @@ export function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
+  const t = useTranslations("users.invite.accept");
 
   const { data: session, status: sessionStatus } = useSession({
     required: true,
@@ -140,30 +142,39 @@ export function AcceptInvitePage() {
     router.push("/logout");
   }, [router]);
 
-  const dispatchEmailFailure = useCallback((message: string | undefined) => {
-    const cls = classifyInviteError(message);
-    if (cls === "expired") {
-      dispatch({ type: "token-expired", message });
-    } else if (cls === "mismatch") {
-      dispatch({ type: "email-mismatch", message });
-    } else {
-      dispatch({
-        type: "email-error",
-        message: message ?? "Erro ao validar email",
-      });
-    }
-  }, []);
+  const dispatchEmailFailure = useCallback(
+    (message: string | undefined) => {
+      const cls = classifyInviteError(message);
+      if (cls === "expired") {
+        dispatch({ type: "token-expired", message });
+      } else if (cls === "mismatch") {
+        dispatch({ type: "email-mismatch", message });
+      } else {
+        dispatch({
+          type: "email-error",
+          message: message ?? t("errors.emailValidation"),
+        });
+      }
+    },
+    [t],
+  );
 
-  const dispatchOtpFailure = useCallback((message: string | undefined) => {
-    const cls = classifyInviteError(message);
-    if (cls === "expired") {
-      dispatch({ type: "token-expired", message });
-    } else if (cls === "mismatch") {
-      dispatch({ type: "email-mismatch", message });
-    } else {
-      dispatch({ type: "otp-error", message: message ?? "Código inválido" });
-    }
-  }, []);
+  const dispatchOtpFailure = useCallback(
+    (message: string | undefined) => {
+      const cls = classifyInviteError(message);
+      if (cls === "expired") {
+        dispatch({ type: "token-expired", message });
+      } else if (cls === "mismatch") {
+        dispatch({ type: "email-mismatch", message });
+      } else {
+        dispatch({
+          type: "otp-error",
+          message: message ?? t("errors.invalidCode"),
+        });
+      }
+    },
+    [t],
+  );
 
   const handleEmailSubmit = useCallback(
     (email: string) => {
@@ -219,13 +230,13 @@ export function AcceptInvitePage() {
               dispatch({ type: "token-expired", message: result.error });
               return;
             }
-            toast.error("Não foi possível reenviar o código", {
+            toast.error(t("toasts.resendFailed"), {
               description: result.error,
             });
             return;
           }
           dispatch({ type: "resend-sent" });
-          toast.success("Novo código enviado");
+          toast.success(t("toasts.resendSuccess"));
         },
         onError: (err) => {
           const message = (err as Error).message;
@@ -233,13 +244,13 @@ export function AcceptInvitePage() {
             dispatch({ type: "token-expired", message });
             return;
           }
-          toast.error("Não foi possível reenviar o código", {
+          toast.error(t("toasts.resendFailed"), {
             description: message,
           });
         },
       },
     );
-  }, [step, token, validateEmail]);
+  }, [step, token, validateEmail, t]);
 
   const handleChangeEmail = useCallback(
     () => dispatch({ type: "change-email" }),
@@ -253,13 +264,13 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            toast.error("Erro ao aceitar convite", {
+            toast.error(t("toasts.acceptFailed"), {
               description: result.error,
             });
             return;
           }
-          toast.success("Convite aceite", {
-            description: "Tem agora acesso à aplicação.",
+          toast.success(t("toasts.accepted"), {
+            description: t("toasts.acceptedDescription"),
           });
           // Full reload so the session is re-initialized with the new
           // roles/department granted by the accepted invite. A client-side
@@ -268,12 +279,12 @@ export function AcceptInvitePage() {
           window.location.assign("/");
         },
         onError: (err) =>
-          toast.error("Erro ao aceitar convite", {
+          toast.error(t("toasts.acceptFailed"), {
             description: (err as Error).message,
           }),
       },
     );
-  }, [token, invitation, respond]);
+  }, [token, invitation, respond, t]);
 
   const handleReject = useCallback(() => {
     if (!token || !invitation) return;
@@ -282,7 +293,7 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            toast.error("Erro ao rejeitar convite", {
+            toast.error(t("toasts.rejectFailed"), {
               description: result.error,
             });
             return;
@@ -290,12 +301,12 @@ export function AcceptInvitePage() {
           dispatch({ type: "rejected" });
         },
         onError: (err) =>
-          toast.error("Erro ao rejeitar convite", {
+          toast.error(t("toasts.rejectFailed"), {
             description: (err as Error).message,
           }),
       },
     );
-  }, [token, invitation, respond]);
+  }, [token, invitation, respond, t]);
 
   // Auto-submit the email the session already carries so the user doesn't have
   // to retype it. On success the flow proceeds to the OTP step exactly like the
@@ -323,10 +334,8 @@ export function AcceptInvitePage() {
               dispatch({ type: "token-expired", message: result.error });
               return;
             }
-            toast.error("Verificação automática de email falhou", {
-              description:
-                result.error ??
-                "O email da sua conta não corresponde ao convite.",
+            toast.error(t("toasts.autoVerifyFailed"), {
+              description: result.error ?? t("toasts.autoVerifyMismatch"),
             });
             dispatch({ type: "auto-submit-failed" });
             return;
@@ -340,9 +349,8 @@ export function AcceptInvitePage() {
             dispatch({ type: "token-expired", message });
             return;
           }
-          toast.error("Verificação automática de email falhou", {
-            description:
-              message ?? "Não foi possível verificar o email automaticamente.",
+          toast.error(t("toasts.autoVerifyFailed"), {
+            description: message ?? t("toasts.autoVerifyUnavailable"),
           });
           dispatch({ type: "auto-submit-failed" });
         },
@@ -356,8 +364,8 @@ export function AcceptInvitePage() {
         <LoadingState
           label={
             step.kind === "bootstrapping"
-              ? "A validar convite…"
-              : "A validar email…"
+              ? t("loading.validatingInvite")
+              : t("loading.validatingEmail")
           }
         />
       ) : null}
@@ -420,7 +428,7 @@ export function AcceptInvitePage() {
             onReject={handleReject}
           />
         ) : isLoadingInvitation ? (
-          <LoadingState label="A carregar convite…" />
+          <LoadingState label={t("loading.loadingInvite")} />
         ) : (
           <InviteErrorState
             kind="invalid"

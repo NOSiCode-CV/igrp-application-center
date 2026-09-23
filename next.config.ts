@@ -4,6 +4,13 @@ import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
 
+import createNextIntlPlugin from "next-intl/plugin";
+
+// next-intl WITHOUT i18n routing: no [locale] segment and no locale in URLs
+// (HAProxy routes /apps/[slug]). The locale is resolved per request in
+// src/i18n/request.ts.
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
 /** Absolute app root so Turbopack does not pick a parent `pnpm-lock.yaml` (e.g. on `D:\`). */
 const turbopackRoot = path.dirname(fileURLToPath(import.meta.url));
 
@@ -79,4 +86,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
