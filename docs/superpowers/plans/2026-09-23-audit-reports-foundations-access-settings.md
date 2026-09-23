@@ -6,7 +6,9 @@
 
 **Architecture:** A server page asserts the permission and renders one client screen. All screen state (tab, date range, filters, page, size) lives in the URL and is parsed by a pure `report-query` module; react-query keys are built from that parsed query (never from computed instants), and each `queryFn` resolves "now" at fetch time before calling a guarded server action over `client.auditReports`. Dates are interpreted and displayed in one fixed Platform Time Zone.
 
-**Tech Stack:** Next.js 15.5 App Router (typedRoutes), React 19, TanStack Query 5, TanStack Table 8 via `IGRPDataTable`, `@igrp/igrp-framework-react-design-system`, `@igrp/framework-next` (`igrpAuthorize` / `igrpAssertAuthorize`), `@igrp/platform-access-management-client-ts@0.2.0-beta.16`, Vitest + Testing Library.
+**Tech Stack:** Next.js 15.5 App Router (typedRoutes), React 19, TanStack Query 5, TanStack Table 8 via `IGRPDataTable`, `@igrp/igrp-framework-react-design-system`, `@igrp/framework-next` (`igrpAuthorize` / `igrpAssertAuthorize`), `@igrp/platform-access-management-client-ts@0.2.0-beta.17` (bumped in Task 0), Vitest + Testing Library.
+
+**Backend answers:** [`AUDIT_BACKEND_RESPONSES.md`](../../todos/AUDIT_BACKEND_RESPONSES.md) · our decisions: [`AUDIT_BACKEND_DECISIONS.md`](../../todos/AUDIT_BACKEND_DECISIONS.md)
 
 **Spec:** [`docs/todos/AUDIT_REPORTS_IMPLEMENTATION_PLAN.md`](../../todos/AUDIT_REPORTS_IMPLEMENTATION_PLAN.md) (decisions table, Phases 0–1) · API facts: [`docs/todos/AUDIT_REPORTS_INTEGRATION_GUIDE.md`](../../todos/AUDIT_REPORTS_INTEGRATION_GUIDE.md) · Glossary: [`CONTEXT.md`](../../../CONTEXT.md) (Audit section) · [ADR-0001](../../adr/0001-fixed-platform-time-zone-for-audit.md) · [ADR-0002](../../adr/0002-no-audit-log-purge-in-ui.md)
 
@@ -20,7 +22,7 @@
 - Server data flow: `src/actions/*` → SDK; client → react-query hooks. Actions return `ActionResult<T>` from `@/actions/types`; query functions use `unwrap()`.
 - Permission name is exactly `"igrp.audit.view"` (constant `AUDIT_VIEW_PERMISSION`). Every audit server action checks `igrpAuthorize` before calling the SDK. **No purge anywhere** (ADR-0002).
 - Platform Time Zone default `Atlantic/Cape_Verde`, overridable by `NEXT_PUBLIC_AUDIT_TIME_ZONE`. Never use the browser's or server's zone for audit dates.
-- Report filters are exact-match; enum filter values are validated against the SDK enums before being sent.
+- Report filters are exact-match, except `role` on the Access Report, which the server matches by substring over the held-Roles list. Enum filter values are validated against the SDK enums before being sent.
 - Tests live in `src/__tests__/audit/`. DS mocks must include **every** symbol the component imports; mocked hook results must be module-level constants (stable references). Never `vi.stubGlobal("URL", …)`.
 - Use `npx biome check <files>` to verify formatting; `pnpm lint` rewrites files — run it only right before staging, then re-check the diff.
 - Commit messages: conventional style, **no `Co-Authored-By:` trailer**.
@@ -28,8 +30,12 @@
 
 ## Decisions made while planning (confirm or veto before executing)
 
-1. **Role filter is an exact-match text field**, not a combobox: the SDK can only list Roles per department (`getRoles(departmentCode)`). Asked the backend (request #7).
-2. **User filter value = `user.username ?? user.email`; Module filter value = `application.code`.** The report examples (`superadmin@igrp.cv`, `auth`) suggest this; Task 11 verifies it against real rows.
+1. **The Role field is labelled "Perfis detidos" (Roles held), with a "contains" hint**, not a combobox. Confirmed by the backend:
+   - `role` currently stores every Role the user holds, comma-joined, and the filter matches by substring.
+   - Roles can only be listed per department, so a picker isn't possible yet.
+
+   Once the backend writes the Active Role and ships `GET /api/roles`, a later plan switches this back to a "Perfil" combobox.
+2. **User filter value = `user.username ?? user.email`; Module filter value = `application.code`.** The report examples (`superadmin@igrp.cv`, `auth`) suggest this; Task 12 verifies it against real rows.
 3. **Sort is fixed to `timestamp,desc`** and not user-changeable: `IGRPDataTable` sorts client-side only, which would sort just the visible page. No `sort` URL param.
 4. **Paging uses our own `ReportPager`** with `IGRPDataTable showPagination={false}`: the table keeps its page index in internal state starting at 0, so it can't be seeded from the URL.
 5. **`page` in the URL is 0-based**, the same as the API.
@@ -60,10 +66,57 @@ src/features/audit/
     settings-report-columns.tsx settings-report-tab.tsx CREATE
     audit-screen.tsx                                   CREATE  header + date range + tabs
 src/app/(igrp)/(home)/settings/audit/
-  page.tsx  loading.tsx  error.tsx                     CREATE
+  page.tsx  loading.tsx  error.tsx  forbidden.tsx     CREATE
+src/features/audit/lib/forbidden-copy.ts               CREATE  Active Role 403 copy
+package.json, pnpm-lock.yaml                           MODIFY  SDK → 0.2.0-beta.17 (Task 0)
 src/app/(igrp)/(home)/settings/page.tsx                MODIFY  enable card, hide without permission
 .env.example, docs/ENVIRONMENT.md                      MODIFY  NEXT_PUBLIC_AUDIT_TIME_ZONE
 src/__tests__/audit/…                                  CREATE  one test file per unit
+```
+
+---
+
+### Task 0: Bump the Access Management SDK to 0.2.0-beta.17
+
+The backend verified its answers against `beta.17`. Move to it before writing any audit code, so every later task compiles against the SDK the backend describes.
+
+**Files:**
+- Modify: `package.json:32`, `pnpm-lock.yaml`
+
+- [ ] **Step 1: Record the green baseline**
+
+Run: `pnpm typecheck && pnpm test`
+Expected: 0 type errors, all tests pass. If either fails before any change, stop and report; don't bump on top of a red baseline.
+
+- [ ] **Step 2: Bump the version**
+
+In `package.json`, change `"@igrp/platform-access-management-client-ts": "0.2.0-beta.16"` to `"0.2.0-beta.17"` (exact pin, like the other `@igrp` deps), then run:
+
+```bash
+pnpm install
+```
+
+- [ ] **Step 3: Confirm the audit surface is still what this plan uses**
+
+Run:
+
+```bash
+grep -n "getAccessReport\|getSettingsReport" node_modules/@igrp/platform-access-management-client-ts/dist/client/audit-reports-client.d.ts
+grep -n "enum AuditStatus\|enum SettingsArea\|enum SettingsEntityType\|enum SettingsOperation\|enum AuditEventType\|enum AuditCategory\|interface AccessReportRowDTO\|interface SettingsReportRowDTO" node_modules/@igrp/platform-access-management-client-ts/dist/types/index.d.ts
+```
+
+Expected: both report methods present; the four enums present; the two row DTOs present. Note whether `AuditEventType`/`AuditCategory` exist; this plan doesn't need them, but the Registo plan does. If `AccessReportRowDTO` has gained a Roles Held field, report it; don't use it in this plan.
+
+- [ ] **Step 4: Re-run the baseline**
+
+Run: `pnpm typecheck && pnpm test`
+Expected: the same results as Step 1. Fix any SDK-caused type errors at their call sites, without casting them away, and name each one in the commit body.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add package.json pnpm-lock.yaml
+git commit -m "chore(deps): bump platform-access-management-client-ts to 0.2.0-beta.17"
 ```
 
 ---
@@ -1463,7 +1516,7 @@ git commit -m "feat(audit): add report query layer keyed on selection, resolving
 - Produces:
   - `FilterSelect({ id, label, options: FilterOption[], value?: string, onChange: (v?: string) => void })`
   - `FilterCombobox({ id, label, options: FilterOption[], value?: string, onChange: (v?: string) => void, disabled?: boolean })`
-  - `ExactMatchInput({ id, label, value?: string, onCommit: (v?: string) => void, placeholder?: string })`
+  - `ExactMatchInput({ id, label, value?: string, onCommit: (v?: string) => void, placeholder?: string, hint?: string })` (`hint` defaults to `"Correspondência exata"`)
   - `AuditStatusBadge({ status?: string | null })`
   - `ReportPager({ page, size, totalPages, totalElements, onPageChange, onSizeChange, disabled? })`
   - `ReportEmptyState({ filtered: boolean, onClearFilters: () => void })`
@@ -1653,11 +1706,20 @@ interface ExactMatchInputProps {
   value?: string;
   onCommit: (value: string | undefined) => void;
   placeholder?: string;
+  /** How the server matches this field. Most report filters are exact. */
+  hint?: string;
 }
 
 /* Report filters are exact-match (guide §9.8), so this commits on Enter or
-   blur — not per keystroke — and says so under the field. */
-export function ExactMatchInput({ id, label, value, onCommit, placeholder }: ExactMatchInputProps) {
+   blur — not per keystroke — and says under the field how it matches. */
+export function ExactMatchInput({
+  id,
+  label,
+  value,
+  onCommit,
+  placeholder,
+  hint = "Correspondência exata",
+}: ExactMatchInputProps) {
   const [draft, setDraft] = useState(value ?? "");
   useEffect(() => setDraft(value ?? ""), [value]);
 
@@ -1682,7 +1744,7 @@ export function ExactMatchInput({ id, label, value, onCommit, placeholder }: Exa
         }}
       />
       <p id={`${id}-hint`} className="text-xs text-muted-foreground">
-        Correspondência exata
+        {hint}
       </p>
     </div>
   );
@@ -2237,9 +2299,12 @@ export const ACCESS_COLUMNS: ColumnDef<AccessReportRowDTO>[] = [
     cell: ({ row }) => text(row.original.username),
   },
   {
+    /* Today the backend stores EVERY Role the user held, comma-joined — not
+       the Active Role (AUDIT_BACKEND_RESPONSES §4). Label the data as it is;
+       rename to "Perfil" when the backend writes the Active Role. */
     accessorKey: "role",
-    header: () => <IGRPDataTableHeaderDefault title="Perfil" />,
-    cell: ({ row }) => text(row.original.role),
+    header: () => <IGRPDataTableHeaderDefault title="Perfis detidos" />,
+    cell: ({ row }) => <span className="break-words">{text(row.original.role)}</span>,
   },
   {
     accessorKey: "module",
@@ -2336,10 +2401,13 @@ function AccessReportFilterBar({ query, onQueryChange }: ReportTabProps) {
         value={query.filters.module}
         onChange={set("module")}
       />
+      {/* The server matches `role` by substring over the held-Roles list,
+          so "USER" also finds "POWER_USER"; the hint says so. */}
       <ExactMatchInput
         id="access-role"
-        label="Perfil"
+        label="Perfis detidos"
         placeholder="Código do perfil"
+        hint="Contém o código indicado"
         value={query.filters.role}
         onCommit={set("role")}
       />
@@ -3200,7 +3268,108 @@ git commit -m "feat(audit): add /settings/audit with Access and Settings tabs be
 
 ---
 
-### Task 11: Verify in the browser and against the real API
+### Task 11: 403 that explains the Active Role
+
+Token permissions come **only from the Active Role** (AUDIT_BACKEND_RESPONSES §6). An administrator can hold `igrp.audit.view` through another Role and still get a 403. When the user holds more than one Role, the 403 says why and links to `/profile`, where Roles are switched. The token keeps its old permissions until the next sign-in, so the text says to sign in again.
+
+**Files:**
+- Create: `src/features/audit/lib/forbidden-copy.ts`, `src/app/(igrp)/(home)/settings/audit/forbidden.tsx`
+- Test: `src/__tests__/audit/forbidden-copy.test.ts`
+
+**Interfaces:**
+- Consumes: `getCurrentUserRoles(): Promise<ActionResult<RoleDTO[]>>` (`src/actions/user.ts:103`); `IGRPForbidden({ title?, description?, homeLabel?, homeHref? })` from `@igrp/framework-next-ui`.
+- Produces: `auditForbiddenCopy(roleCount: number | null): { description?: string; homeLabel?: string; homeHref?: string }`
+
+- [ ] **Step 1: Write the failing test**
+
+```ts
+// src/__tests__/audit/forbidden-copy.test.ts
+import { describe, expect, it } from "vitest";
+
+import { auditForbiddenCopy } from "@/features/audit/lib/forbidden-copy";
+
+describe("auditForbiddenCopy", () => {
+  it("points a user with several Roles to their profile", () => {
+    const copy = auditForbiddenCopy(3);
+    expect(copy.homeHref).toBe("/profile");
+    expect(copy.homeLabel).toBe("Ir para o meu perfil");
+    expect(copy.description).toContain("perfil ativo");
+    expect(copy.description).toContain("inicie sessão novamente");
+  });
+
+  it("keeps the generic 403 for a single Role or unknown roles", () => {
+    expect(auditForbiddenCopy(1)).toEqual({});
+    expect(auditForbiddenCopy(0)).toEqual({});
+    expect(auditForbiddenCopy(null)).toEqual({});
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `npx vitest run src/__tests__/audit/forbidden-copy.test.ts`
+Expected: FAIL — module not found.
+
+- [ ] **Step 3: Write the implementation**
+
+```ts
+// src/features/audit/lib/forbidden-copy.ts
+
+/* Permissions in the token come from the Active Role only. A user who holds
+   igrp.audit.view through another Role is denied here — correctly, but the
+   administrator who granted it will swear they did. Say why, and where to
+   switch. Switching does not refresh the token, hence "sign in again". */
+export function auditForbiddenCopy(roleCount: number | null): {
+  description?: string;
+  homeLabel?: string;
+  homeHref?: string;
+} {
+  if (roleCount === null || roleCount <= 1) return {};
+  return {
+    description:
+      "As permissões vêm apenas do seu perfil ativo. Se a permissão de auditoria lhe foi atribuída noutro perfil, ative-o no seu perfil e inicie sessão novamente.",
+    homeLabel: "Ir para o meu perfil",
+    homeHref: "/profile",
+  };
+}
+```
+
+```tsx
+// src/app/(igrp)/(home)/settings/audit/forbidden.tsx
+import { IGRPForbidden } from "@igrp/framework-next-ui";
+
+import { getCurrentUserRoles } from "@/actions/user";
+import { auditForbiddenCopy } from "@/features/audit/lib/forbidden-copy";
+
+/* Replaces the (igrp) 403 for this segment only. If the roles lookup fails,
+   fall back to the generic screen rather than guessing. */
+export default async function AuditForbidden() {
+  const roles = await getCurrentUserRoles();
+  const copy = auditForbiddenCopy(roles.success ? roles.data.length : null);
+  return <IGRPForbidden {...copy} />;
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+Run: `npx vitest run src/__tests__/audit/forbidden-copy.test.ts`
+Expected: PASS.
+
+- [ ] **Step 5: Typecheck**
+
+Run: `pnpm typecheck`
+Expected: 0 errors. `"/profile"` is an existing route, so typedRoutes accepts it. If `forbidden.tsx` in a nested segment is rejected at build time, stop and report. The existing `src/app/(igrp)/forbidden.tsx` is itself nested, so it's expected to work.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add src/features/audit/lib/forbidden-copy.ts "src/app/(igrp)/(home)/settings/audit/forbidden.tsx" src/__tests__/audit/forbidden-copy.test.ts
+git commit -m "feat(audit): explain Active Role permissions on the audit 403"
+```
+
+---
+
+### Task 12: Verify in the browser and against the real API
 
 No new code unless a check fails. If one fails, fix it in the owning task's files, re-run that task's tests, and commit as `fix(audit): …`.
 
@@ -3222,16 +3391,22 @@ With preview off against a deployment:
 - The Settings tab: edit an application's description in another tab, then reload. A row with operation "Edição" appears (use the 24h preset), and expanding it shows `description: old → new`.
 - Paging: with more than 20 rows, "Página seguinte" advances, `page=1` appears in the URL, and reloading keeps page 2.
 
-- [ ] **Step 3: Real backend with a non-superadmin holding `igrp.audit.view`**
+- [ ] **Step 3: Real backend with a non-superadmin whose Active Role holds `igrp.audit.view`**
 
-The page must load, not 403. If it 403s, the token carries the permission under another name (backend request #6). **Stop and report it** rather than changing the constant by guesswork.
+The page must load, not 403. The backend confirmed the token carries `igrp.audit.view` verbatim. If it still 403s, check that the Role holding the permission is the user's **Active Role**. If it is, **stop and report**; don't change the constant by guesswork.
 
 - [ ] **Step 4: Real backend with a user lacking the permission**
 
 - `/settings` shows no audit card.
 - Deep-linking to `/settings/audit` renders the 403 page.
+- If that user holds several Roles and one of the inactive ones has `igrp.audit.view`: the 403 shows the Active Role explanation and an "Ir para o meu perfil" link. After activating that Role on `/profile` and signing in again, the page loads.
+- A user with a single Role sees the generic 403.
+
+- [ ] **Step 4b: Role column wording**
+
+On the Access tab, a user with several Roles shows as a comma-joined list under "Perfis detidos". Filtering by one code from that list returns the row.
 
 - [ ] **Step 5: Final gates and report**
 
 Run: `pnpm typecheck && pnpm test && pnpm check:ui && npx biome check`
-Expected: all green. Report the results of Steps 1–4, with a screenshot of the loaded Access tab. Name any step that couldn't be run (for example, no non-superadmin account) rather than implying it passed.
+Expected: all green. Report the results of Steps 1–4b, with a screenshot of the loaded Access tab. Name any step that couldn't be run (for example, no non-superadmin account) rather than implying it passed.

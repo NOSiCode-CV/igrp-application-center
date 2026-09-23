@@ -90,8 +90,16 @@ _Avoid_: Unverified, corrupt
 The single time zone (`Atlantic/Cape_Verde`) in which every audit date range is interpreted and every audit time is displayed, regardless of where the server or browser runs.
 _Avoid_: Local time (ambiguous — whose?)
 
-**Role** (on an Audit Event):
-The Role involved in the event — always a Role, never a Permission, even when a Role's name looks like a permission code.
+**Active Role**:
+The one Role a user is currently acting as (the token's `selectedRole`). A user's Permissions in the token come from the Active Role only — a Permission held through any other Role is not in effect until the user switches to it.
+_Avoid_: Current profile, main role
+
+**Role** (on an Audit Event; UI: "Perfil"):
+The Active Role the user was acting as when the event happened — always a Role, never a Permission, even when a code looks like a permission name.
+
+**Roles Held** (on an Audit Event; UI: "Perfis detidos"):
+Every Role the user held at the time of the event, whether active or not. Evidence of what the user *could* have acted as, kept separate from the Role they *did* act as.
+_Avoid_: Roles (plural, unqualified)
 
 ## Relationships
 
@@ -101,8 +109,10 @@ The Role involved in the event — always a Role, never a Permission, even when 
 - A **Service Account** belongs to the same application as its **OAuth Client**; it never has an owner of its own.
 - An **OAuth Client** with a **Service Account** always keeps the `client_credentials` **Grant Type**.
 - **Roles** and **Permissions** belong to departments; that scoping is managed on the departments pages, not here.
-- Every **Report** reads from the one **Audit Log**; the **Access Period** and **Access Reports** are two lenses on authentication/authorization **Audit Events** (a window vs. a moment), the **Settings Report** covers configuration changes, and no **Audit Event** appears in both groups.
-- An **Access Period** falls in a date range when the two overlap — it need not start or end inside the range.
+- Every **Report** reads from the one **Audit Log**; the **Access Period** and **Access Reports** are two lenses on authentication/authorization **Audit Events** (a window vs. a moment), and the **Settings Report** covers configuration changes.
+- No **Audit Event** records an **Access Period** yet; until one does, the **Access Period Report** returns every **Audit Event** in the range, configuration changes included.
+- An **Access Period** falls in a date range when the two overlap — it need not start or end inside the range. A period with no end is still open and overlaps every range after its start. An **Audit Event** with no period falls in a range by its own time. Today the backend matches only the event's own time.
+- A user's effective **Permissions** come from their **Active Role**; holding a Permission through another Role does not grant access.
 - An **Access Period** is authorised by exactly one user and is for exactly one user and one module.
 - An **Export** or **Archive** always belongs to exactly one **Report** and carries that Report's filters and date range.
 
@@ -110,7 +120,6 @@ The Role involved in the event — always a Role, never a Permission, even when 
 
 - "Client" alone is reserved for the TypeScript SDK classes (`AccessManagementClient`, `RoleClient`); in the domain always say **OAuth Client**.
 - "Audit" alone means the feature or the **Audit Log**, never one Report; the API's "Audit Report" is the **Access Period Report**.
-- Overlap matching for **Access Periods** is the intended rule; whether the backend filters by overlap or by the event's own timestamp is unconfirmed.
-- On an access Audit Event, the **Role** is assumed to be the Role the access check was evaluated against (not an arbitrary Role the user holds) — unconfirmed with the backend.
+- Audit Events written before the backend change store **Roles Held** (a comma-joined list) in the field that will hold the **Role**; until the change ships, the portal labels that field "Perfis detidos" and filters it by "contains".
 - The Audit Log is never purged from this portal; purging exists only as a backend dev/test reset.
 - "Grant" alone means a **Grant Type**; permission assignments are "Permissions" (e.g. the Service Account list column reads `8 + 3 direct`).

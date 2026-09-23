@@ -13,5 +13,10 @@ OAuth Clients, Service Accounts, M2m, Session Management, Admin Session
 Management, Admin User Session Management, Authorization, plus the audit and
 audit-report controllers.
 
+Feature guides:
+
+- [`OAUTH_CLIENTS.md`](./OAUTH_CLIENTS.md) — the OAuth Clients area under
+  Configurações → Contas e Serviços: how to use it and how it works.
+
 Keep this file in sync with the SDK version pinned in `package.json`: when the
 SDK is bumped, replace `openapi.json` with the spec that generated it.
