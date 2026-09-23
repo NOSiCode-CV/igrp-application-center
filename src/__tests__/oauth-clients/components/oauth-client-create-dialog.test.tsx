@@ -103,4 +103,20 @@ describe("OAuthClientCreateDialog", () => {
     );
     await waitFor(() => expect(done).toBeEnabled());
   });
+
+  it("marks the redirect URIs field invalid when none is provided", async () => {
+    renderDialog();
+    await userEvent.type(screen.getByLabelText(/^Client ID/), "my-invoice");
+    await userEvent.type(screen.getByLabelText(/^Nome/), "Invoice App");
+    await userEvent.click(screen.getByRole("button", { name: "Registar" }));
+
+    const message = await screen.findByText(
+      "Adicione pelo menos um URI de redirecionamento.",
+    );
+    const redirectInput = screen.getByLabelText(/URIs de redirecionamento/);
+    expect(redirectInput).toHaveAttribute("aria-invalid", "true");
+    expect(redirectInput.getAttribute("aria-describedby")).toContain(
+      message.id,
+    );
+  });
 });

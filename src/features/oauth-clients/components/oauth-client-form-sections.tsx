@@ -260,21 +260,18 @@ export function OAuthClientFormSections({
           <FormField
             control={form.control}
             name="redirectUris"
-            render={({ field, fieldState }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="redirect-uris">
-                  URIs de redirecionamento *
-                </FormLabel>
-                <ChipInput
-                  id="redirect-uris"
-                  mono
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Adicionar URI…"
-                  aria-describedby="redirect-uris-help"
-                  aria-invalid={!!fieldState.error}
-                />
-                <FormDescription id="redirect-uris-help">
+                <FormLabel>URIs de redirecionamento *</FormLabel>
+                <FormControl>
+                  <ChipInput
+                    mono
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Adicionar URI…"
+                  />
+                </FormControl>
+                <FormDescription>
                   Prima Enter depois de cada URI. Só https://, exceto
                   http://localhost.
                 </FormDescription>
@@ -295,14 +292,15 @@ export function OAuthClientFormSections({
           name="scopes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="scopes">Scopes</FormLabel>
-              <ChipInput
-                id="scopes"
-                mono
-                value={field.value}
-                onChange={field.onChange}
-                placeholder="Adicionar scope…"
-              />
+              <FormLabel>Scopes</FormLabel>
+              <FormControl>
+                <ChipInput
+                  mono
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Adicionar scope…"
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

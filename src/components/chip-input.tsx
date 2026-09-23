@@ -7,7 +7,8 @@ import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { cn } from "@/lib/utils";
 
 interface ChipInputProps {
-  id: string;
+  /** Optional because the DS `FormControl` (a Radix `Slot`) injects it at runtime. */
+  id?: string;
   value: string[];
   onChange: (next: string[]) => void;
   placeholder?: string;
