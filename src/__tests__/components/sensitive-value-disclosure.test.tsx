@@ -44,6 +44,24 @@ describe("SensitiveValueDisclosure", () => {
     expect(toast).toHaveBeenCalled();
   });
 
+  it("shows an error toast when the clipboard write fails", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(navigator.clipboard, "writeText").mockRejectedValueOnce(
+      new Error("denied"),
+    );
+    render(
+      <SensitiveValueDisclosure
+        label="Client secret"
+        value="s3cret"
+        onConfirmedChange={vi.fn()}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Copiar" }));
+    expect(toast).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: "error" }),
+    );
+  });
+
   it("reports the confirmation checkbox", async () => {
     const onConfirmedChange = vi.fn();
     render(

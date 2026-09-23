@@ -3,7 +3,6 @@
 import { Button } from "@igrp/igrp-framework-react-design-system";
 
 interface UnsavedChangesBarProps {
-  count?: number;
   onDiscard: () => void;
   isSaving: boolean;
   /** Submit the form with this id (preferred), or call onSave. */

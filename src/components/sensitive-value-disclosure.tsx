@@ -34,12 +34,20 @@ export function SensitiveValueDisclosure({
   const { igrpToast } = useIGRPToast();
 
   async function copy() {
-    await navigator.clipboard.writeText(value);
-    igrpToast({
-      type: "success",
-      title: "Copiado",
-      description: `${label} copiado.`,
-    });
+    try {
+      await navigator.clipboard.writeText(value);
+      igrpToast({
+        type: "success",
+        title: "Copiado",
+        description: `${label} copiado.`,
+      });
+    } catch {
+      igrpToast({
+        type: "error",
+        title: "Não foi possível copiar",
+        description: "Revele o valor e copie-o manualmente.",
+      });
+    }
   }
 
   return (
