@@ -16,14 +16,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   Form,
   IGRPIcon,
+  IGRPModalDialog,
+  IGRPModalDialogContent,
+  IGRPModalDialogDescription,
+  IGRPModalDialogFooter,
+  IGRPModalDialogHeader,
+  IGRPModalDialogTitle,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
@@ -51,9 +51,6 @@ export function OAuthClientCreateDialog({
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const create = useCreateOAuthClient();
-  // The raw secret lives ONLY in this component's state. The mutation also
-  // holds the response, so on unmount it is reset — with the hook's
-  // `gcTime: 0` that drops it from the MutationCache immediately.
   const [created, setCreated] = useState<OAuthClientDTO | null>(null);
   const { reset: resetCreate } = create;
   useEffect(() => () => resetCreate(), [resetCreate]);
@@ -92,8 +89,6 @@ export function OAuthClientCreateDialog({
 
   function requestClose(next: boolean) {
     if (next) return;
-    // Closing mid-submit would unmount the dialog before the response lands,
-    // and the one-time secret with it.
     if (submitting) return;
     if (created?.clientSecret && !confirmed) {
       setConfirmClose(true);
@@ -104,9 +99,10 @@ export function OAuthClientCreateDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={requestClose}>
-        <DialogContent
-          className="overflow-y-auto max-md:h-dvh max-md:max-w-none max-md:rounded-none max-md:border-0 md:max-h-[90vh] md:max-w-3xl"
+      <IGRPModalDialog open={open} onOpenChange={requestClose}>
+        <IGRPModalDialogContent
+          size="xl"
+          className="max-md:h-dvh max-md:max-h-dvh max-md:max-w-none max-md:rounded-none max-md:border-0"
           onEscapeKeyDown={(e) => {
             if (submitting) e.preventDefault();
           }}
@@ -116,9 +112,9 @@ export function OAuthClientCreateDialog({
         >
           {created ? (
             <>
-              <DialogHeader>
-                <DialogTitle>Cliente registado</DialogTitle>
-                <DialogDescription>
+              <IGRPModalDialogHeader>
+                <IGRPModalDialogTitle>Cliente registado</IGRPModalDialogTitle>
+                <IGRPModalDialogDescription>
                   O cliente{" "}
                   <span className="font-mono text-foreground">
                     {created.clientId}
@@ -126,8 +122,8 @@ export function OAuthClientCreateDialog({
                   {created.clientSecret
                     ? "já pode pedir tokens. Guarde as credenciais antes de fechar."
                     : "foi criado, mas sem credenciais utilizáveis."}
-                </DialogDescription>
-              </DialogHeader>
+                </IGRPModalDialogDescription>
+              </IGRPModalDialogHeader>
               {created.clientSecret ? (
                 <>
                   <div
@@ -154,7 +150,7 @@ export function OAuthClientCreateDialog({
                     value={created.clientSecret}
                     onConfirmedChange={setConfirmed}
                   />
-                  <DialogFooter className="items-center gap-4 sm:justify-between">
+                  <IGRPModalDialogFooter className="items-center gap-4 sm:justify-between">
                     <p className="text-sm text-muted-foreground">
                       Se o segredo for exposto, desative o cliente e registe um
                       novo.
@@ -169,7 +165,7 @@ export function OAuthClientCreateDialog({
                     >
                       Concluir — ver detalhes
                     </Button>
-                  </DialogFooter>
+                  </IGRPModalDialogFooter>
                 </>
               ) : (
                 <>
@@ -180,46 +176,54 @@ export function OAuthClientCreateDialog({
                       registe um novo.
                     </AlertDescription>
                   </Alert>
-                  <DialogFooter>
+                  <IGRPModalDialogFooter>
                     <Button type="button" onClick={() => onOpenChange(false)}>
                       Fechar
                     </Button>
-                  </DialogFooter>
+                  </IGRPModalDialogFooter>
                 </>
               )}
             </>
           ) : (
-            <Form {...form}>
-              <form
-                id="oauth-client-create"
-                onSubmit={form.handleSubmit(onSubmit)}
-                noValidate
-              >
-                <DialogHeader>
-                  <DialogTitle>Registar cliente OAuth2</DialogTitle>
-                  <DialogDescription>
-                    O segredo é mostrado uma única vez, no fim do registo.
-                  </DialogDescription>
-                </DialogHeader>
-                <OAuthClientFormSections mode="create" />
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={submitting}
-                    onClick={() => onOpenChange(false)}
-                  >
-                    Cancelar
-                  </Button>
-                  <Button type="submit" disabled={submitting}>
-                    {submitting ? "A registar…" : "Registar"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
+            [
+              <IGRPModalDialogHeader key="header" stickyHeader>
+                <IGRPModalDialogTitle>
+                  Registar cliente OAuth2
+                </IGRPModalDialogTitle>
+                <IGRPModalDialogDescription>
+                  O segredo é mostrado uma única vez, no fim do registo.
+                </IGRPModalDialogDescription>
+              </IGRPModalDialogHeader>,
+              <Form key="form" {...form}>
+                <form
+                  id="oauth-client-create"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  noValidate
+                >
+                  <OAuthClientFormSections mode="create" />
+                </form>
+              </Form>,
+              <IGRPModalDialogFooter key="footer" stickyFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={submitting}
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  form="oauth-client-create"
+                  disabled={submitting}
+                >
+                  {submitting ? "A registar…" : "Registar"}
+                </Button>
+              </IGRPModalDialogFooter>,
+            ]
           )}
-        </DialogContent>
-      </Dialog>
+        </IGRPModalDialogContent>
+      </IGRPModalDialog>
 
       <AlertDialog open={confirmClose} onOpenChange={setConfirmClose}>
         <AlertDialogContent>

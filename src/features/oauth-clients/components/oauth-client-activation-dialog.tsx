@@ -30,9 +30,6 @@ export function OAuthClientActivationDialog({
 }) {
   const { igrpToast } = useIGRPToast();
   const mutation = useSetClientActive();
-  // Fixed at open: after a partial combined failure the refetch may already
-  // show the first step's result, and a live `!client.active` would turn the
-  // retry into the opposite action. The copy below derives from this too.
   const [activate] = useState(() => !client.active);
 
   const description = activate

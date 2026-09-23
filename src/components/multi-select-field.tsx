@@ -19,6 +19,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Separator,
 } from "@igrp/igrp-framework-react-design-system";
 
 export type MultiSelectOption = IGRPOptionsProps & { disabled?: boolean };
@@ -277,36 +278,54 @@ export function MultiSelectField({
               </CommandGroup>
             </CommandList>
 
-            {hideBulkActions || options.length === 0 ? null : (
-              <div className="flex items-center justify-between gap-2 border-t p-2">
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {selected.length} de {options.length}
-                  {maxSelected !== undefined ? ` (máx. ${maxSelected})` : ""}
-                </span>
-                <span className="flex items-center gap-1">
-                  {maxSelected === undefined ? (
+            <Separator />
+            <div className="flex items-center justify-between gap-2 p-2">
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {hideBulkActions || options.length === 0 ? null : (
+                  <>
+                    {selected.length} de {options.length}
+                    {maxSelected !== undefined ? ` (máx. ${maxSelected})` : ""}
+                  </>
+                )}
+              </span>
+              <span className="flex items-center gap-1">
+                {hideBulkActions || options.length === 0 ? null : (
+                  <>
+                    {maxSelected === undefined ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        disabled={allSelected || selectableValues.length === 0}
+                        onClick={() => commit(selectableValues)}
+                      >
+                        Selecionar tudo
+                      </Button>
+                    ) : null}
                     <Button
                       type="button"
                       variant="ghost"
                       size="sm"
-                      disabled={allSelected || selectableValues.length === 0}
-                      onClick={() => commit(selectableValues)}
+                      disabled={selected.length === 0}
+                      onClick={() => commit([])}
                     >
-                      Selecionar tudo
+                      Limpar
                     </Button>
-                  ) : null}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={selected.length === 0}
-                    onClick={() => commit([])}
-                  >
-                    Limpar
-                  </Button>
-                </span>
-              </div>
-            )}
+                  </>
+                )}
+                {/* Closes exactly like clicking outside — the selection is
+                    already applied — so nobody has to hunt for empty space. */}
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  aria-label="Concluir"
+                  title="Concluir"
+                  onClick={() => setOpen(false)}
+                >
+                  <IGRPIcon iconName="Check" aria-hidden="true" />
+                </Button>
+              </span>
+            </div>
           </Command>
         </PopoverContent>
       </Popover>

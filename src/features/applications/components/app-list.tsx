@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 
-import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
+import {
+  IGRPButton,
+  IGRPPageHeader,
+} from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
 import { InlineError } from "@/components/inline-error";
-import { PageHeader } from "@/components/page-header";
 import { useApplications } from "@/features/applications/use-applications";
+import {
+  PAGE_HEADER_ACTIONS_CLASS,
+  PAGE_HEADER_PROPS,
+} from "@/lib/page-header";
 
 import { AppListSkeleton } from "./app-list-skeleton";
 import { ApplicationFormDialog } from "./application-form-dialog";
@@ -91,15 +97,19 @@ export function ApplicationList() {
     <div className="flex flex-col gap-6">
       {/* "Gestão de Aplicações", the same words as the card that opens this
           page, so the label promises exactly what the destination delivers. */}
-      <PageHeader
+      <IGRPPageHeader
+        {...PAGE_HEADER_PROPS}
         title="Gestão de Aplicações"
         description="Registe novas aplicações e faça a gestão das existentes."
-        showActions
+        showBackButton
+        urlBackButton="/settings"
       >
-        <IGRPButton showIcon iconName="Grid2x2Plus" onClick={openCreate}>
-          Nova Aplicação
-        </IGRPButton>
-      </PageHeader>
+        <div className={PAGE_HEADER_ACTIONS_CLASS}>
+          <IGRPButton showIcon iconName="Grid2x2Plus" onClick={openCreate}>
+            Nova Aplicação
+          </IGRPButton>
+        </div>
+      </IGRPPageHeader>
 
       <div className="flex flex-col gap-4">
         <ApplicationsToolbar

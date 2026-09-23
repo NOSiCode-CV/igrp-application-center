@@ -74,6 +74,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
     IGRPDataTableHeaderDefault: () => null,
     IGRPDataTableHeaderSortToggle: () => null,
     IGRPIcon: () => null,
+    IGRPPageHeader: ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    ),
     IGRPUserAvatar: () => null,
     Tabs: ({ children }: { children?: React.ReactNode }) => (
       <div>{children}</div>
@@ -97,11 +100,6 @@ vi.mock("@/components/confirmation-modal", () => ({
 }));
 vi.mock("@/components/loading", () => ({
   AppCenterLoading: () => null,
-}));
-vi.mock("@/components/page-header", () => ({
-  PageHeader: ({ children }: { children?: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
 }));
 vi.mock("@/features/users/components/user-invite-dialog", () => ({
   UserInviteDialog: () => null,

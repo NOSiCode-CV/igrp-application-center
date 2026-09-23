@@ -81,3 +81,16 @@ export function findLinkedServiceAccount(
 /** Shown wherever the SA list is loading or failed, so the link is unknown. */
 export const LINK_UNKNOWN_REASON =
   "Não foi possível verificar se existe uma conta de serviço.";
+
+/**
+ * Why this client cannot be deleted, or `null` when it can. A linked service
+ * account must go first; an unknown link state fails safe the same way.
+ */
+export function getDeleteBlockedReason(
+  linkedAccount: { name: string } | undefined,
+  linkUnknown: boolean | undefined,
+): string | null {
+  if (linkedAccount)
+    return `Remova primeiro a conta de serviço «${linkedAccount.name}».`;
+  return linkUnknown ? LINK_UNKNOWN_REASON : null;
+}

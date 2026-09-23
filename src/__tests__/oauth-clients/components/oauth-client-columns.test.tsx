@@ -26,7 +26,7 @@ const handlers = {
 beforeEach(() => vi.clearAllMocks());
 
 describe("OAuthClientRowActions", () => {
-  it("disables delete with the reason when a service account is linked", async () => {
+  it("hides delete when a service account is linked", async () => {
     const linked = {
       id: "sa1",
       name: "Nightly Invoice ETL",
@@ -40,13 +40,19 @@ describe("OAuthClientRowActions", () => {
     await userEvent.click(
       screen.getByRole("button", { name: "Ações para Nightly ETL" }),
     );
-    const del = screen.getByRole("menuitem", { name: /Eliminar/ });
-    expect(del).toHaveAttribute("aria-disabled", "true");
     expect(
-      screen.getByText(
-        "Remova primeiro a conta de serviço «Nightly Invoice ETL».",
-      ),
-    ).toBeInTheDocument();
+      screen.queryByRole("menuitem", { name: /Eliminar/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides delete while service accounts could not be checked", async () => {
+    render(<OAuthClientRowActions row={base} {...handlers} linkUnknown />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ações para Nightly ETL" }),
+    );
+    expect(
+      screen.queryByRole("menuitem", { name: /Eliminar/ }),
+    ).not.toBeInTheDocument();
   });
 
   it("offers delete when nothing is linked", async () => {
@@ -56,18 +62,6 @@ describe("OAuthClientRowActions", () => {
     );
     await userEvent.click(screen.getByRole("menuitem", { name: "Eliminar" }));
     expect(handlers.onDelete).toHaveBeenCalled();
-  });
-
-  it("fails safe when service accounts could not be checked", async () => {
-    render(<OAuthClientRowActions row={base} {...handlers} linkUnknown />);
-    await userEvent.click(
-      screen.getByRole("button", { name: "Ações para Nightly ETL" }),
-    );
-    const del = screen.getByRole("menuitem", { name: /Eliminar/ });
-    expect(del).toHaveAttribute("aria-disabled", "true");
-    expect(del).toHaveTextContent(
-      "Não foi possível verificar se existe uma conta de serviço.",
-    );
   });
 
   it("blocks activation while the link state is unknown", async () => {
@@ -85,26 +79,17 @@ describe("OAuthClientRowActions", () => {
   });
 
   it("keeps blocked items reachable by keyboard so the reason is announced", async () => {
-    const linked = {
-      id: "sa1",
-      name: "Nightly Invoice ETL",
-    } as ServiceAccountDTO;
-    render(
-      <OAuthClientRowActions
-        row={{ ...base, linkedAccount: linked }}
-        {...handlers}
-      />,
-    );
+    render(<OAuthClientRowActions row={base} {...handlers} linkUnknown />);
     await userEvent.click(
       screen.getByRole("button", { name: "Ações para Nightly ETL" }),
     );
-    const del = screen.getByRole("menuitem", { name: /Eliminar/ });
+    const toggle = screen.getByRole("menuitem", { name: /Desativar/ });
     // Radix skips `disabled` items in roving focus; aria-disabled keeps it in.
-    expect(del).not.toHaveAttribute("data-disabled");
-    await userEvent.keyboard("{End}");
-    expect(del).toHaveFocus();
+    expect(toggle).not.toHaveAttribute("data-disabled");
+    await userEvent.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}");
+    expect(toggle).toHaveFocus();
     await userEvent.keyboard("{Enter}");
-    expect(handlers.onDelete).not.toHaveBeenCalled();
+    expect(handlers.onToggleActive).not.toHaveBeenCalled();
   });
 
   it("offers Ativar on an inactive client", async () => {

@@ -6,6 +6,7 @@ import {
   IGRPButton,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
+  IGRPPageHeader,
   Tabs,
   TabsContent,
   TabsList,
@@ -21,7 +22,6 @@ import { ConfirmDialog } from "@/components/confirmation-modal";
 import { ColumnFacetedFilter } from "@/components/data-table/faceted-filter";
 import { ColumnSearchInput } from "@/components/data-table/search-input";
 import { AppCenterLoading } from "@/components/loading";
-import { PageHeader } from "@/components/page-header";
 import { getInvitationColumns } from "@/features/users/components/invitations-columns";
 import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
 import { getTableColumns } from "@/features/users/components/users-columns";
@@ -32,6 +32,10 @@ import {
   useUsers,
 } from "@/features/users/use-users";
 import { STATUS_OPTIONS } from "@/lib/constants";
+import {
+  PAGE_HEADER_ACTIONS_CLASS,
+  PAGE_HEADER_PROPS,
+} from "@/lib/page-header";
 
 interface UserListProps {
   initialUsers: IGRPUserDTO[];
@@ -205,20 +209,24 @@ export function UserList({
        that reports nothing — the content did not change, it arrived. */
     /* gap-6 header -> content, matching `/settings/applications`. */
     <div className="flex flex-col gap-6">
-      <PageHeader
+      <IGRPPageHeader
+        {...PAGE_HEADER_PROPS}
         title="Gestão de Utilizadores"
         description="Ver e gerir todos os utilizadores do sistema."
-        showActions
+        showBackButton
+        urlBackButton="/settings"
       >
-        <IGRPButton
-          showIcon
-          iconName="UserRoundPlus"
-          onClick={() => setInviteDialogOpen(true)}
-        >
-          Convidar Utilizador
-        </IGRPButton>
-      </PageHeader>
-      
+        <div className={PAGE_HEADER_ACTIONS_CLASS}>
+          <IGRPButton
+            showIcon
+            iconName="UserRoundPlus"
+            onClick={() => setInviteDialogOpen(true)}
+          >
+            Convidar Utilizador
+          </IGRPButton>
+        </div>
+      </IGRPPageHeader>
+
       {error && (
         <div
           role="status"
@@ -307,7 +315,7 @@ export function UserList({
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "Desativar Utilizador"
             : "Ativar Utilizador"
-        }       
+        }
         description={
           dialog.kind === "status" ? (
             dialog.newStatus === "INACTIVE" ? (
@@ -329,7 +337,7 @@ export function UserList({
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "Desativar"
             : "Ativar"
-        }       
+        }
         loadingText={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
             ? "A desativar..."
@@ -362,7 +370,7 @@ export function UserList({
             </>
           ) : null
         }
-        onConfirm={handleConfirmCancel}       
+        onConfirm={handleConfirmCancel}
         confirmText="Cancelar Convite"
         cancelText="Manter Convite"
         loadingText="A cancelar..."
