@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
 import {
   Checkbox,
@@ -10,19 +10,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  IGRPCombobox,
   IGRPIcon,
   Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
   useFormField,
 } from "@igrp/igrp-framework-react-design-system";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { ChipInput } from "@/components/chip-input";
+import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import { useApplications } from "@/features/applications/use-applications";
 import { cn } from "@/lib/utils";
 
@@ -125,6 +121,17 @@ export function OAuthClientFormSections({
   const usesRedirects = grantTypes.includes("authorization_code");
 
   /**
+   * IGRPCombobox's label points at a wrapper div, not at its trigger button,
+   * and it forwards no aria props — name the trigger so it stays labelled.
+   */
+  const applicationFieldRef = useRef<HTMLFieldSetElement>(null);
+  useEffect(() => {
+    applicationFieldRef.current
+      ?.querySelector('[role="combobox"]')
+      ?.setAttribute("aria-label", "Aplicação");
+  });
+
+  /**
    * Scope defaults follow the grant selection on create (spec §4.3): a
    * client_credentials-only client drops the untouched web defaults, and
    * re-selecting authorization_code with no scopes restores them. Edits the
@@ -208,52 +215,34 @@ export function OAuthClientFormSections({
             </p>
           </div>
         ) : null}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descrição</FormLabel>
-              <FormControl>
-                <Textarea {...field} rows={3} maxLength={140} />
-              </FormControl>
-              <FormDescription>Até 140 caracteres.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
+        <LimitedTextareaField
+          id="description"
+          label="Descrição"
+          maxLength={140}
         />
-        <FormField
-          control={form.control}
-          name="applicationCode"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Aplicação</FormLabel>
-              <Select
-                value={field.value}
-                onValueChange={field.onChange}
-                disabled={!!applicationLockHelp}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecionar aplicação" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {applications.map((app) => (
-                    <SelectItem key={app.code} value={app.code}>
-                      {app.code} — {app.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                {applicationLockHelp ??
-                  "A aplicação a que este cliente pertence. Uma conta de serviço herda-a."}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* IGRPCombobox's `disabled` is only visual; the fieldset really disables its trigger. */}
+        <fieldset
+          ref={applicationFieldRef}
+          disabled={!!applicationLockHelp}
+          className="m-0 min-w-0 border-0 p-0"
+        >
+          <IGRPCombobox
+            name="applicationCode"
+            label="Aplicação"
+            placeholder="Selecionar aplicação"
+            searchText="Pesquisar aplicação…"
+            selectLabel="Nenhuma aplicação encontrada."
+            disabled={!!applicationLockHelp}
+            options={applications.map((app) => ({
+              value: app.code,
+              label: `${app.code} — ${app.name}`,
+            }))}
+            helperText={
+              applicationLockHelp ??
+              "A aplicação a que este cliente pertence. Uma conta de serviço herda-a."
+            }
+          />
+        </fieldset>
       </FormSection>
 
       <FormSection
@@ -387,7 +376,7 @@ export function OAuthClientFormSections({
         title="Duração dos tokens"
         description="Deixe em branco para usar os valores do servidor."
       >
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="flex flex-col gap-4">
           {TTL_FIELDS.map((ttl, i) => (
             <FormField
               key={ttl.name}

@@ -101,14 +101,12 @@ export function OAuthClientCreateDialog({
     <>
       <IGRPModalDialog open={open} onOpenChange={requestClose}>
         <IGRPModalDialogContent
-          size="xl"
+          size="full"
           className="max-md:h-dvh max-md:max-h-dvh max-md:max-w-none max-md:rounded-none max-md:border-0"
           onEscapeKeyDown={(e) => {
             if (submitting) e.preventDefault();
           }}
-          onInteractOutside={(e) => {
-            if (submitting) e.preventDefault();
-          }}
+          onInteractOutside={(e) => e.preventDefault()}
         >
           {created ? (
             <>

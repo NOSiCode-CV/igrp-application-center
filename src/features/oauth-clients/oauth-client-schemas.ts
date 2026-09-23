@@ -40,7 +40,8 @@ export const oauthClientFormSchema = z
       .min(1, "Indique o nome.")
       .max(255, "Até 255 caracteres."),
     description: z.string().trim().max(140, "Até 140 caracteres."),
-    applicationCode: z.string().trim().min(1).optional(),
+    // IGRPCombobox emits "" when the selected option is picked again.
+    applicationCode: z.string().trim().optional(),
     grantTypes: z
       .array(grantTypeSchema)
       .min(1, "Escolha pelo menos um grant type."),
@@ -119,7 +120,7 @@ function editableFields(values: OAuthClientFormValues) {
   return {
     clientName: values.clientName.trim(),
     description: values.description.trim() || undefined,
-    applicationCode: values.applicationCode,
+    applicationCode: values.applicationCode || undefined,
     grantTypes: [...values.grantTypes],
     // Hidden section ⇒ no hidden config: a client without authorization_code
     // carries no redirect URIs.
