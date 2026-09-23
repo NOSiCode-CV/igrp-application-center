@@ -290,6 +290,8 @@ const client = new AuditReportsClient({
 });
 ```
 
+If you already hold an `AccessManagementClient`, don't construct a second client — the same instance is exposed as `client.auditReports` (reports), `client.files` (presigned links) and `client.authAudit` (raw log, §6).
+
 ### 7.2 Reading a report
 
 `startDate` / `endDate` are **ISO strings**, not `Date` objects:
@@ -333,14 +335,17 @@ Exports stream **all** matching rows — a wide date range can be a large downlo
 ### 7.4 Archive and retrieve
 
 ```ts
-const { data: file } = await client.archiveAuditReport('CSV', filters);
+// `am` is an AccessManagementClient (§7.1)
+const { data: file } = await am.auditReports.archiveAuditReport('CSV', filters);
 
 // filePath is a storage key — resolve it to a presigned URL to download.
-const { data: link } = await fileClient.getUrl(file.filePath);
+const { data: link } = await am.files.getFileUrl(file.filePath);   // FileUrlDTO { url, expiration: Date }
 window.open(link.url);   // presigned; do NOT attach the Bearer token
 ```
 
-List previous archives with `client.listArchives({ reportType: 'AUDIT', page: 0, size: 20 })`.
+List previous archives with `am.auditReports.listArchives({ reportType: 'AUDIT', page: 0, size: 20 })`.
+
+> The method is `getFileUrl` on `FileClient` (`am.files`), not `getUrl`, and in the SDK `expiration` is typed as a `Date` rather than the wire string shown in §5.2.
 
 ### 7.5 Building the screen — practical notes
 
