@@ -31,7 +31,11 @@ function renderDialog() {
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={qc}>{children}</QueryClientProvider>
   );
-  render(<OAuthClientCreateDialog open onOpenChange={vi.fn()} />, { wrapper });
+  const onOpenChange = vi.fn();
+  render(<OAuthClientCreateDialog open onOpenChange={onOpenChange} />, {
+    wrapper,
+  });
+  return { onOpenChange };
 }
 
 async function fillValidWebClient() {
@@ -102,6 +106,52 @@ describe("OAuthClientCreateDialog", () => {
       }),
     );
     await waitFor(() => expect(done).toBeEnabled());
+  });
+
+  it("cannot be closed while the registration is in flight", async () => {
+    vi.mocked(createOAuthClient).mockReturnValueOnce(new Promise(() => {}));
+    const { onOpenChange } = renderDialog();
+    await fillValidWebClient();
+    await userEvent.click(screen.getByRole("button", { name: "Registar" }));
+    expect(
+      await screen.findByRole("button", { name: "A registar…" }),
+    ).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
+
+    await userEvent.keyboard("{Escape}");
+
+    expect(onOpenChange).not.toHaveBeenCalledWith(false);
+    expect(
+      screen.getByRole("dialog", { name: "Registar cliente OAuth2" }),
+    ).toBeInTheDocument();
+  });
+
+  it("says so when the server returns no secret, and still lets the admin close", async () => {
+    vi.mocked(createOAuthClient).mockResolvedValueOnce({
+      success: true,
+      data: {
+        id: "u1",
+        clientId: "my-invoice",
+        active: true,
+        accessTokenTtl: 1,
+        refreshTokenTtl: 1,
+        authorizationCodeTtl: 1,
+        scopes: [],
+        redirectUris: [],
+        grantTypes: [],
+      },
+    });
+    const { onOpenChange } = renderDialog();
+    await fillValidWebClient();
+    await userEvent.click(screen.getByRole("button", { name: "Registar" }));
+
+    expect(
+      await screen.findByText(
+        "O servidor não devolveu o segredo. Desative este cliente e registe um novo.",
+      ),
+    ).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Fechar" }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
   it("marks the redirect URIs field invalid when none is provided", async () => {

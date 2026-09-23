@@ -1,10 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Alert,
+  AlertDescription,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -49,8 +51,13 @@ export function OAuthClientCreateDialog({
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const create = useCreateOAuthClient();
-  // The raw secret lives ONLY here; unmounting the dialog drops it.
+  // The raw secret lives ONLY in this component's state. The mutation also
+  // holds the response, so on unmount it is reset — with the hook's
+  // `gcTime: 0` that drops it from the MutationCache immediately.
   const [created, setCreated] = useState<OAuthClientDTO | null>(null);
+  const { reset: resetCreate } = create;
+  useEffect(() => () => resetCreate(), [resetCreate]);
+  const submitting = create.isPending;
   const [confirmed, setConfirmed] = useState(false);
   const [confirmClose, setConfirmClose] = useState(false);
 
@@ -85,7 +92,10 @@ export function OAuthClientCreateDialog({
 
   function requestClose(next: boolean) {
     if (next) return;
-    if (created && !confirmed) {
+    // Closing mid-submit would unmount the dialog before the response lands,
+    // and the one-time secret with it.
+    if (submitting) return;
+    if (created?.clientSecret && !confirmed) {
       setConfirmClose(true);
       return;
     }
@@ -95,8 +105,16 @@ export function OAuthClientCreateDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={requestClose}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
-          {created?.clientSecret ? (
+        <DialogContent
+          className="overflow-y-auto max-md:h-dvh max-md:max-w-none max-md:rounded-none max-md:border-0 md:max-h-[90vh] md:max-w-3xl"
+          onEscapeKeyDown={(e) => {
+            if (submitting) e.preventDefault();
+          }}
+          onInteractOutside={(e) => {
+            if (submitting) e.preventDefault();
+          }}
+        >
+          {created ? (
             <>
               <DialogHeader>
                 <DialogTitle>Cliente registado</DialogTitle>
@@ -105,49 +123,70 @@ export function OAuthClientCreateDialog({
                   <span className="font-mono text-foreground">
                     {created.clientId}
                   </span>{" "}
-                  já pode pedir tokens. Guarde as credenciais antes de fechar.
+                  {created.clientSecret
+                    ? "já pode pedir tokens. Guarde as credenciais antes de fechar."
+                    : "foi criado, mas sem credenciais utilizáveis."}
                 </DialogDescription>
               </DialogHeader>
-              <div
-                role="note"
-                className="flex gap-3 rounded-lg bg-warning-subtle p-3.5 text-warning-subtle-foreground"
-              >
-                <IGRPIcon
-                  iconName="TriangleAlert"
-                  className="mt-0.5 size-4.5 shrink-0"
-                  aria-hidden="true"
-                />
-                <div className="flex flex-col gap-0.5">
-                  <strong className="font-semibold">
-                    Este segredo não volta a ser mostrado.
-                  </strong>
-                  <span className="text-sm">
-                    Nem a si, nem a outro administrador. Guarde-o já no seu
-                    gestor de segredos.
-                  </span>
-                </div>
-              </div>
-              <SensitiveValueDisclosure
-                label="Client secret"
-                value={created.clientSecret}
-                onConfirmedChange={setConfirmed}
-              />
-              <DialogFooter className="items-center gap-4 sm:justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Se o segredo for exposto, desative o cliente e registe um
-                  novo.
-                </p>
-                <Button
-                  type="button"
-                  disabled={!confirmed}
-                  onClick={() => {
-                    onOpenChange(false);
-                    router.push(`${ROUTES.OAUTH_CLIENTS}/${created.id}`);
-                  }}
-                >
-                  Concluir — ver detalhes
-                </Button>
-              </DialogFooter>
+              {created.clientSecret ? (
+                <>
+                  <div
+                    role="note"
+                    className="flex gap-3 rounded-lg bg-warning-subtle p-3.5 text-warning-subtle-foreground"
+                  >
+                    <IGRPIcon
+                      iconName="TriangleAlert"
+                      className="mt-0.5 size-4.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    <div className="flex flex-col gap-0.5">
+                      <strong className="font-semibold">
+                        Este segredo não volta a ser mostrado.
+                      </strong>
+                      <span className="text-sm">
+                        Nem a si, nem a outro administrador. Guarde-o já no seu
+                        gestor de segredos.
+                      </span>
+                    </div>
+                  </div>
+                  <SensitiveValueDisclosure
+                    label="Client secret"
+                    value={created.clientSecret}
+                    onConfirmedChange={setConfirmed}
+                  />
+                  <DialogFooter className="items-center gap-4 sm:justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      Se o segredo for exposto, desative o cliente e registe um
+                      novo.
+                    </p>
+                    <Button
+                      type="button"
+                      disabled={!confirmed}
+                      onClick={() => {
+                        onOpenChange(false);
+                        router.push(`${ROUTES.OAUTH_CLIENTS}/${created.id}`);
+                      }}
+                    >
+                      Concluir — ver detalhes
+                    </Button>
+                  </DialogFooter>
+                </>
+              ) : (
+                <>
+                  <Alert variant="destructive">
+                    <IGRPIcon iconName="TriangleAlert" aria-hidden="true" />
+                    <AlertDescription>
+                      O servidor não devolveu o segredo. Desative este cliente e
+                      registe um novo.
+                    </AlertDescription>
+                  </Alert>
+                  <DialogFooter>
+                    <Button type="button" onClick={() => onOpenChange(false)}>
+                      Fechar
+                    </Button>
+                  </DialogFooter>
+                </>
+              )}
             </>
           ) : (
             <Form {...form}>
@@ -167,12 +206,13 @@ export function OAuthClientCreateDialog({
                   <Button
                     type="button"
                     variant="outline"
+                    disabled={submitting}
                     onClick={() => onOpenChange(false)}
                   >
                     Cancelar
                   </Button>
-                  <Button type="submit" disabled={create.isPending}>
-                    {create.isPending ? "A registar…" : "Registar"}
+                  <Button type="submit" disabled={submitting}>
+                    {submitting ? "A registar…" : "Registar"}
                   </Button>
                 </DialogFooter>
               </form>

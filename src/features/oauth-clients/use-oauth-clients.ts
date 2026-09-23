@@ -24,14 +24,22 @@ export const useOAuthClients = () => useQuery(oauthClientListOptions());
 export const useOAuthClient = (id: string) =>
   useQuery(oauthClientByIdOptions(id));
 
-/** Deliberately no setQueryData: the response carries the raw secret. */
+/**
+ * Deliberately no setQueryData: the response carries the raw secret. For the
+ * same reason `gcTime: 0` — the mutation (and its `data`) leaves the
+ * MutationCache as soon as no component observes it, instead of lingering
+ * for the default five minutes.
+ */
 export const useCreateOAuthClient = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: OAuthClientInput) => createOAuthClient(input),
-    onSuccess: async (result) => {
+    gcTime: 0,
+    // Fire and forget: awaiting the list refetch would hold the mutation in
+    // `pending` and delay the one-time secret pane.
+    onSuccess: (result) => {
       if (result.success)
-        await qc.invalidateQueries({ queryKey: oauthClientKeys.all });
+        void qc.invalidateQueries({ queryKey: oauthClientKeys.all });
     },
   });
 };
@@ -52,10 +60,12 @@ export const useDeleteOAuthClient = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => deleteOAuthClient(id),
-    onSuccess: async (result) => {
+    onSuccess: async (result, id) => {
       if (!result.success) return;
+      // Drop the deleted detail rather than invalidate it: a refetch would 404.
+      qc.removeQueries({ queryKey: oauthClientKeys.detail(id) });
       await Promise.all([
-        qc.invalidateQueries({ queryKey: oauthClientKeys.all }),
+        qc.invalidateQueries({ queryKey: oauthClientKeys.list() }),
         qc.invalidateQueries({ queryKey: serviceAccountKeys.all }),
       ]);
     },

@@ -73,6 +73,23 @@ describe("useCreateOAuthClient", () => {
     );
     expect(cached).not.toContain("s3cret");
   });
+
+  it("drops the secret from the mutation cache once the hook unmounts", async () => {
+    const { client, wrapper } = setup();
+    const { result, unmount } = renderHook(() => useCreateOAuthClient(), {
+      wrapper,
+    });
+    await result.current.mutateAsync(req);
+    unmount();
+    await new Promise((r) => setTimeout(r, 0));
+    const inMutations = JSON.stringify(
+      client
+        .getMutationCache()
+        .getAll()
+        .map((m) => m.state.data),
+    );
+    expect(inMutations).not.toContain("s3cret");
+  });
 });
 
 describe("useUpdateOAuthClient / useDeleteOAuthClient", () => {
@@ -87,12 +104,19 @@ describe("useUpdateOAuthClient / useDeleteOAuthClient", () => {
     );
   });
 
-  it("delete invalidates clients and service accounts", async () => {
-    const { invalidate, wrapper } = setup();
+  it("delete drops the deleted detail and invalidates the list and service accounts", async () => {
+    const { client, invalidate, wrapper } = setup();
+    const remove = vi.spyOn(client, "removeQueries");
     const { result } = renderHook(() => useDeleteOAuthClient(), { wrapper });
     await result.current.mutateAsync("u1");
     await waitFor(() => {
+      expect(remove).toHaveBeenCalledWith({
+        queryKey: oauthClientKeys.detail("u1"),
+      });
       expect(invalidate).toHaveBeenCalledWith({
+        queryKey: oauthClientKeys.list(),
+      });
+      expect(invalidate).not.toHaveBeenCalledWith({
         queryKey: oauthClientKeys.all,
       });
       expect(invalidate).toHaveBeenCalledWith({
