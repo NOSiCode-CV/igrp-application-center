@@ -67,6 +67,9 @@ export async function setServiceAccountActive(
       step = "serviceAccount";
       await client.serviceAccounts.updateServiceAccount(id, {
         ...toServiceAccountRequest(sa),
+        // A service account never has its own application (spec §1): send
+        // the client's, so any earlier drift is healed on the next toggle.
+        applicationId: oauth.applicationId,
         active,
       });
     };

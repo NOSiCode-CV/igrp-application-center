@@ -28,12 +28,14 @@ const sa = {
   clientId: "etl",
   roleIds: [1],
   permissionIds: [2],
+  applicationId: 3,
 };
 const client = {
   id: "c1",
   clientId: "etl",
   clientName: "ETL",
   active: true,
+  applicationId: 7,
   accessTokenTtl: 1,
   refreshTokenTtl: 1,
   authorizationCodeTtl: 1,
@@ -82,6 +84,14 @@ describe("setServiceAccountActive", () => {
         roleIds: [1],
         permissionIds: [2],
       }),
+    );
+  });
+
+  it("sends the client's application as the service account's (spec §1)", async () => {
+    await setServiceAccountActive("sa1", false);
+    expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledWith(
+      "sa1",
+      expect.objectContaining({ applicationId: 7 }),
     );
   });
 
