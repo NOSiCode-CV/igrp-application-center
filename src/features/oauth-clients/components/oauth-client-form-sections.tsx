@@ -88,6 +88,7 @@ function GrantTypesFieldset({ children }: { children: ReactNode }) {
 export function OAuthClientFormSections({
   mode,
   lockClientCredentials,
+  grantTypesFixed,
   children,
 }: {
   mode: "create" | "edit";
@@ -96,6 +97,8 @@ export function OAuthClientFormSections({
    * stays on and the application is fixed (the SA inherits it, spec §1).
    */
   lockClientCredentials?: ClientCredentialsLock;
+  /** Service-account wizard: grant types are exactly client_credentials and cannot change. */
+  grantTypesFixed?: boolean;
   /** Extra sections appended after the form's own (e.g. the detail's "Registo"). */
   children?: ReactNode;
 }) {
@@ -250,63 +253,81 @@ export function OAuthClientFormSections({
         title="Grant types"
         description="Como este cliente obtém tokens. As secções abaixo mudam conforme a escolha."
       >
-        <FormField
-          control={form.control}
-          name="grantTypes"
-          render={({ field }) => (
-            <FormItem>
-              <GrantTypesFieldset>
-                <legend className="sr-only">Grant types</legend>
-                {GRANT_TYPES.map((grant) => {
-                  const checked = field.value.includes(grant.value);
-                  const locked =
-                    grant.value === "client_credentials" && !!grantLockHelp;
-                  const inputId = `grant-${grant.value}`;
-                  return (
-                    <label
-                      key={grant.value}
-                      htmlFor={inputId}
-                      className={cn(
-                        "flex cursor-pointer items-start gap-3 rounded-lg border p-3.5",
-                        checked
-                          ? "border-foreground ring-1 ring-foreground"
-                          : "border-input",
-                        locked && "cursor-not-allowed",
-                      )}
-                    >
-                      <Checkbox
-                        id={inputId}
-                        checked={checked}
-                        disabled={locked}
-                        aria-describedby={`${inputId}-help`}
-                        onCheckedChange={(on) => {
-                          const next =
-                            on === true
-                              ? [...field.value, grant.value]
-                              : field.value.filter((g) => g !== grant.value);
-                          field.onChange(next);
-                          syncScopeDefaults(field.value, next);
-                        }}
-                      />
-                      <span className="flex flex-col gap-1">
-                        <span className="font-mono text-sm font-medium">
-                          {grant.value}
+        {grantTypesFixed ? (
+          <div className="flex items-start gap-3 rounded-lg border border-foreground p-3.5 ring-1 ring-foreground">
+            <IGRPIcon
+              iconName="Lock"
+              className="mt-0.5 size-4"
+              aria-hidden="true"
+            />
+            <span className="flex flex-col gap-1">
+              <span className="font-mono text-sm font-medium">
+                client_credentials
+              </span>
+              <span className="text-sm text-muted-foreground">
+                Fixo para contas de serviço.
+              </span>
+            </span>
+          </div>
+        ) : (
+          <FormField
+            control={form.control}
+            name="grantTypes"
+            render={({ field }) => (
+              <FormItem>
+                <GrantTypesFieldset>
+                  <legend className="sr-only">Grant types</legend>
+                  {GRANT_TYPES.map((grant) => {
+                    const checked = field.value.includes(grant.value);
+                    const locked =
+                      grant.value === "client_credentials" && !!grantLockHelp;
+                    const inputId = `grant-${grant.value}`;
+                    return (
+                      <label
+                        key={grant.value}
+                        htmlFor={inputId}
+                        className={cn(
+                          "flex cursor-pointer items-start gap-3 rounded-lg border p-3.5",
+                          checked
+                            ? "border-foreground ring-1 ring-foreground"
+                            : "border-input",
+                          locked && "cursor-not-allowed",
+                        )}
+                      >
+                        <Checkbox
+                          id={inputId}
+                          checked={checked}
+                          disabled={locked}
+                          aria-describedby={`${inputId}-help`}
+                          onCheckedChange={(on) => {
+                            const next =
+                              on === true
+                                ? [...field.value, grant.value]
+                                : field.value.filter((g) => g !== grant.value);
+                            field.onChange(next);
+                            syncScopeDefaults(field.value, next);
+                          }}
+                        />
+                        <span className="flex flex-col gap-1">
+                          <span className="font-mono text-sm font-medium">
+                            {grant.value}
+                          </span>
+                          <span
+                            id={`${inputId}-help`}
+                            className="text-sm text-muted-foreground"
+                          >
+                            {locked ? grantLockHelp : grant.description}
+                          </span>
                         </span>
-                        <span
-                          id={`${inputId}-help`}
-                          className="text-sm text-muted-foreground"
-                        >
-                          {locked ? grantLockHelp : grant.description}
-                        </span>
-                      </span>
-                    </label>
-                  );
-                })}
-              </GrantTypesFieldset>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                      </label>
+                    );
+                  })}
+                </GrantTypesFieldset>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
       </FormSection>
 
       {usesRedirects ? (

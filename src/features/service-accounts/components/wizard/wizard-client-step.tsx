@@ -5,6 +5,8 @@ import { type Dispatch, type ReactNode, useId, useState } from "react";
 import {
   Button,
   Label,
+  RadioGroup,
+  RadioGroupItem,
   Select,
   SelectContent,
   SelectItem,
@@ -19,13 +21,16 @@ export function WizardClientStep({
   state,
   dispatch,
   available,
-  newClientOption,
+  mode,
+  onModeChange,
+  newClientForm,
 }: {
   state: WizardState;
   dispatch: Dispatch<WizardAction>;
   available: readonly OAuthClientDTO[];
-  /** Task 10 plugs the "register a new client" branch in here. */
-  newClientOption?: ReactNode;
+  mode: "existing" | "new";
+  onModeChange: (mode: "existing" | "new") => void;
+  newClientForm: ReactNode;
 }) {
   const id = useId();
   const initial =
@@ -41,41 +46,67 @@ export function WizardClientStep({
           client_credentials sem conta de serviço.
         </p>
       </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${id}-client`}>Usar um cliente OAuth existente</Label>
-        <Select value={oauthClientId} onValueChange={setOAuthClientId}>
-          <SelectTrigger id={`${id}-client`} aria-label="Cliente OAuth">
-            <SelectValue placeholder="Selecionar cliente" />
-          </SelectTrigger>
-          <SelectContent>
-            {available.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.clientName ? `${c.clientName} — ${c.clientId}` : c.clientId}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {available.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Não há clientes disponíveis. Registe um novo cliente.
-          </p>
-        ) : null}
-      </div>
-      {newClientOption}
-      <div className="flex justify-end">
-        <Button
-          disabled={!oauthClientId}
-          onClick={() =>
-            oauthClientId &&
-            dispatch({
-              type: "chooseClient",
-              client: { kind: "existing", oauthClientId },
-            })
-          }
-        >
-          Continuar
-        </Button>
-      </div>
+
+      <RadioGroup
+        value={mode}
+        onValueChange={(value) => onModeChange(value as "existing" | "new")}
+        className="flex flex-col gap-3"
+      >
+        <div className="flex items-center gap-2">
+          <RadioGroupItem value="existing" id={`${id}-mode-existing`} />
+          <Label htmlFor={`${id}-mode-existing`} className="cursor-pointer">
+            Usar um cliente OAuth existente
+          </Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <RadioGroupItem value="new" id={`${id}-mode-new`} />
+          <Label htmlFor={`${id}-mode-new`} className="cursor-pointer">
+            Registar um novo cliente OAuth
+          </Label>
+        </div>
+      </RadioGroup>
+
+      {mode === "existing" ? (
+        <>
+          <div className="flex flex-col gap-1.5">
+            <Select value={oauthClientId} onValueChange={setOAuthClientId}>
+              <SelectTrigger aria-label="Cliente OAuth">
+                <SelectValue placeholder="Selecionar cliente" />
+              </SelectTrigger>
+              <SelectContent>
+                {available.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.clientName
+                      ? `${c.clientName} — ${c.clientId}`
+                      : c.clientId}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {available.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Não há clientes disponíveis. Registe um novo cliente.
+              </p>
+            ) : null}
+          </div>
+          <div className="flex justify-end">
+            <Button
+              disabled={!oauthClientId}
+              onClick={() =>
+                oauthClientId &&
+                dispatch({
+                  type: "chooseClient",
+                  client: { kind: "existing", oauthClientId },
+                })
+              }
+            >
+              Continuar
+            </Button>
+          </div>
+        </>
+      ) : (
+        newClientForm
+      )}
     </div>
   );
 }

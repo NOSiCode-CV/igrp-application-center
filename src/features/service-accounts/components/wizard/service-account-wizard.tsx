@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Alert,
   AlertDescription,
@@ -11,8 +12,14 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { type Resolver, useForm } from "react-hook-form";
 
 import { useApplications } from "@/features/applications/use-applications";
+import {
+  type OAuthClientFormValues,
+  oauthClientFormSchema,
+  toCreateRequest,
+} from "@/features/oauth-clients/oauth-client-schemas";
 import { useOAuthClients } from "@/features/oauth-clients/use-oauth-clients";
 import { ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -25,13 +32,17 @@ import {
   type WizardStep,
   wizardReducer,
 } from "../../lib/wizard-state";
+import { machineClientFormValues } from "../../service-account-schemas";
 import {
   useAvailableOAuthClients,
   useCreateServiceAccount,
+  useCreateServiceAccountWithNewClient,
 } from "../../use-service-accounts";
 import { WizardAccessStep } from "./wizard-access-step";
 import { WizardClientStep } from "./wizard-client-step";
 import { WizardIdentityStep } from "./wizard-identity-step";
+import { WizardNewClientForm } from "./wizard-new-client-form";
+import { type WizardOutcome, WizardResult } from "./wizard-result";
 
 const STEPS: { step: WizardStep; title: string }[] = [
   { step: 1, title: "Cliente OAuth" },
@@ -51,10 +62,20 @@ export function ServiceAccountWizard({
     initialOAuthClientId,
     initialWizardState,
   );
+  const [clientMode, setClientMode] = useState<"existing" | "new">("existing");
+  const [outcome, setOutcome] = useState<WizardOutcome | null>(null);
   const available = useAvailableOAuthClients();
   const { data: allClients = [] } = useOAuthClients();
   const { data: applications = [] } = useApplications();
   const create = useCreateServiceAccount();
+  const clientForm = useForm<OAuthClientFormValues>({
+    resolver: zodResolver(
+      oauthClientFormSchema,
+    ) as Resolver<OAuthClientFormValues>,
+    defaultValues: machineClientFormValues(),
+    mode: "onBlur",
+  });
+  const createWithClient = useCreateServiceAccountWithNewClient();
 
   const existingId =
     state.client?.kind === "existing" ? state.client.oauthClientId : undefined;
@@ -82,6 +103,17 @@ export function ServiceAccountWizard({
       : id;
   };
 
+  const holdingSecret = !!outcome?.client.clientSecret;
+  useEffect(() => {
+    if (!holdingSecret) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [holdingSecret]);
+
   async function submitExisting() {
     if (!existingId) return;
     const result = await create.mutateAsync({
@@ -104,6 +136,63 @@ export function ServiceAccountWizard({
     router.push(`${ROUTES.SERVICE_ACCOUNTS}/${result.data.id}`);
   }
 
+  async function submitNew() {
+    if (state.client?.kind !== "new") return;
+    const account = toAccountInput(state);
+    const result = await createWithClient.mutateAsync({
+      client: toCreateRequest(state.client.values),
+      account,
+    });
+    if (result.success) {
+      setOutcome({
+        kind: "created",
+        client: result.data.client,
+        accountId: result.data.account.id,
+      });
+      return;
+    }
+    if (result.failedStep === "serviceAccount") {
+      setOutcome({
+        kind: "accountFailed",
+        client: result.client,
+        error: result.error,
+      });
+      return;
+    }
+    if (result.status === 409) {
+      setClientMode("new");
+      dispatch({ type: "goTo", step: 1 });
+      clientForm.setError(
+        "clientId",
+        { message: "Já existe um cliente com este client ID." },
+        { shouldFocus: true },
+      );
+      return;
+    }
+    igrpToast({
+      type: "error",
+      title: "Não foi possível registar o cliente",
+      description: result.error,
+    });
+  }
+
+  async function retryAccount() {
+    if (outcome?.kind !== "accountFailed") return;
+    const result = await create.mutateAsync({
+      oauthClientId: outcome.client.id,
+      ...toAccountInput(state),
+    });
+    if (!result.success) {
+      setOutcome({ ...outcome, error: result.error });
+      return;
+    }
+    setOutcome({
+      kind: "created",
+      client: outcome.client,
+      accountId: result.data.id,
+    });
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-5 py-3">
@@ -123,7 +212,7 @@ export function ServiceAccountWizard({
           <ol className="flex flex-col gap-2">
             {STEPS.map(({ step, title }) => {
               const current = state.step === step;
-              const reachable = canGoTo(state, step);
+              const reachable = canGoTo(state, step) && !outcome;
               const summary =
                 step < state.step || (reachable && !current)
                   ? stepSummary(state, step, clientLabel)
@@ -167,34 +256,65 @@ export function ServiceAccountWizard({
         </nav>
 
         <div className="rounded-xl border border-border bg-card p-6">
-          {unavailable && state.step !== 1 ? (
-            <Alert variant="destructive" className="mb-6">
-              <AlertDescription>
-                Este cliente não pode receber uma conta de serviço: já tem uma,
-                ou não usa client_credentials. Escolha outro no passo 1.
-              </AlertDescription>
-            </Alert>
-          ) : null}
-          {state.step === 1 ? (
-            <WizardClientStep
-              state={state}
-              dispatch={dispatch}
-              available={available.data}
-            />
-          ) : state.step === 2 ? (
-            <WizardIdentityStep
-              state={state}
-              dispatch={dispatch}
-              applicationLabel={applicationLabel}
+          {outcome ? (
+            <WizardResult
+              outcome={outcome}
+              onRetry={retryAccount}
+              isRetrying={create.isPending}
+              onDone={(id) => router.push(`${ROUTES.SERVICE_ACCOUNTS}/${id}`)}
             />
           ) : (
-            <WizardAccessStep
-              state={state}
-              dispatch={dispatch}
-              onSubmit={submitExisting}
-              isSubmitting={create.isPending}
-              submitNote="Cria a conta de serviço ligada ao cliente escolhido."
-            />
+            <>
+              {unavailable && state.step !== 1 ? (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertDescription>
+                    Este cliente não pode receber uma conta de serviço: já tem
+                    uma, ou não usa client_credentials. Escolha outro no passo
+                    1.
+                  </AlertDescription>
+                </Alert>
+              ) : null}
+              {state.step === 1 ? (
+                <WizardClientStep
+                  state={state}
+                  dispatch={dispatch}
+                  available={available.data}
+                  mode={clientMode}
+                  onModeChange={setClientMode}
+                  newClientForm={
+                    <WizardNewClientForm
+                      form={clientForm}
+                      onContinue={(values) =>
+                        dispatch({
+                          type: "chooseClient",
+                          client: { kind: "new", values },
+                        })
+                      }
+                    />
+                  }
+                />
+              ) : state.step === 2 ? (
+                <WizardIdentityStep
+                  state={state}
+                  dispatch={dispatch}
+                  applicationLabel={applicationLabel}
+                />
+              ) : (
+                <WizardAccessStep
+                  state={state}
+                  dispatch={dispatch}
+                  onSubmit={
+                    state.client?.kind === "new" ? submitNew : submitExisting
+                  }
+                  isSubmitting={create.isPending || createWithClient.isPending}
+                  submitNote={
+                    state.client?.kind === "new"
+                      ? "Regista o cliente OAuth e cria a conta. O segredo do novo cliente é mostrado uma única vez, a seguir."
+                      : "Cria a conta de serviço ligada ao cliente escolhido."
+                  }
+                />
+              )}
+            </>
           )}
         </div>
       </div>
