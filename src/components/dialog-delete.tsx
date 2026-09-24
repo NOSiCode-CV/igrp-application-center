@@ -32,6 +32,8 @@ interface IGRPDialogDeleteProps {
   textHeader?: string;
   /** Icon on the confirm button. Use one that matches the real effect. */
   confirmIconName?: string;
+  /** Extra controls between the confirmation field and the buttons. */
+  children?: ReactNode;
 }
 
 function IGRPDialogDelete({
@@ -46,6 +48,7 @@ function IGRPDialogDelete({
   labelBtnDelete = "Eliminar",
   textHeader = "Confirmação Final",
   confirmIconName = "Trash",
+  children,
 }: IGRPDialogDeleteProps) {
   const id = useId();
   const [confirmation, setConfirmation] = useState("");
@@ -108,6 +111,7 @@ function IGRPDialogDelete({
             )}
           </div>
         </div>
+        {children}
         <DialogFooter className="flex flex-col">
           <Button
             variant="outline"
