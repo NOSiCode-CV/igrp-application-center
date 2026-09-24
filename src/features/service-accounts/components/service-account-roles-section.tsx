@@ -17,6 +17,10 @@ import {
 import { useSetServiceAccountAccess } from "../use-service-accounts";
 import { RolePickerDialog } from "./role-picker-dialog";
 
+// Stable across renders — a fresh `[]` literal every render would re-seed
+// `ScopedPickerDialog`'s selection effect and wipe unsaved ticks while open.
+const NO_IDS: readonly number[] = [];
+
 export function ServiceAccountRolesSection({
   account,
   roles,
@@ -34,7 +38,7 @@ export function ServiceAccountRolesSection({
   const access = useSetServiceAccountAccess();
   const [picking, setPicking] = useState(false);
   const [confirming, setConfirming] = useState<number | null>(null);
-  const roleIds = account.roleIds ?? [];
+  const roleIds = account.roleIds ?? NO_IDS;
 
   async function save(next: number[], success: string) {
     const result = await access.mutateAsync({

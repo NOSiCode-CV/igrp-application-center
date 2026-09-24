@@ -54,4 +54,34 @@ describe("ScopedPickerDialog", () => {
       selectedIds: [3],
     });
   });
+
+  it("keeps a tick after a rerender with the same items/selectedIds references", async () => {
+    const STABLE_SELECTED_IDS: number[] = [1];
+    const props = {
+      open: true,
+      onOpenChange: () => {},
+      title: "Atribuir perfis",
+      description: "d",
+      departmentCode: "INV",
+      onDepartmentChange: () => {},
+      items: ITEMS,
+      isLoading: false,
+      isError: false,
+      selectedIds: STABLE_SELECTED_IDS,
+      onConfirm: vi.fn(),
+      isSaving: false,
+      confirmLabel: "Guardar perfis",
+    };
+    const { rerender } = render(<ScopedPickerDialog {...props} />);
+    await userEvent.click(screen.getByRole("checkbox", { name: /INV.admin/ }));
+    expect(screen.getByRole("checkbox", { name: /INV.admin/ })).toBeChecked();
+
+    // Same object references for `items` and `selectedIds` (as a stable
+    // empty/unchanged array would be) — a re-render here must not re-seed
+    // the selection and wipe the tick the admin just made.
+    rerender(<ScopedPickerDialog {...props} />);
+
+    expect(screen.getByRole("checkbox", { name: /INV.reader/ })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /INV.admin/ })).toBeChecked();
+  });
 });

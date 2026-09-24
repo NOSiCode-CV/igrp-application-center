@@ -17,6 +17,10 @@ import {
 import { useSetServiceAccountAccess } from "../use-service-accounts";
 import { PermissionPickerDialog } from "./permission-picker-dialog";
 
+// Stable across renders — a fresh `[]` literal every render would re-seed
+// `ScopedPickerDialog`'s selection effect and wipe unsaved ticks while open.
+const NO_IDS: readonly number[] = [];
+
 const UNPAIRED_REASON =
   "Não é possível remover: o servidor não indicou que permissão corresponde a cada identificador.";
 
@@ -29,7 +33,7 @@ export function ServiceAccountPermissionsSection({
   const access = useSetServiceAccountAccess();
   const [picking, setPicking] = useState(false);
   const [confirming, setConfirming] = useState<string | null>(null);
-  const permissionIds = account.permissionIds ?? [];
+  const permissionIds = account.permissionIds ?? NO_IDS;
   const { items, reliable } = pairDirectPermissions(account);
 
   async function save(next: number[], success: string) {
