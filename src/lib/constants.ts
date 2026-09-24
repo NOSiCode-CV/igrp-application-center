@@ -12,6 +12,7 @@ export const ROUTES = {
   ACCOUNTS: "/settings/accounts",
   OAUTH_CLIENTS: "/settings/accounts/clients",
   SERVICE_ACCOUNTS: "/settings/accounts/services",
+  SERVICE_ACCOUNT_NEW: "/settings/accounts/services/new",
   EDIT: "/edit",
 } as const;
 

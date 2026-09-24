@@ -1,24 +1,22 @@
 import type { Metadata } from "next";
 
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@igrp/igrp-framework-react-design-system";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-export const metadata: Metadata = { title: "Contas de Serviço" };
+import { ServiceAccountList } from "@/features/service-accounts/components/service-account-list";
+import { prefetchServiceAccountList } from "@/features/service-accounts/prefetch";
+import { getQueryClient } from "@/providers/query-client.server";
 
-export default function ServiceAccountsPage() {
+export const metadata: Metadata = {
+  title: "Contas de Serviço",
+  description: "Identidades de máquina que autenticam via client_credentials.",
+};
+
+export default async function ServiceAccountsPage() {
+  const queryClient = getQueryClient();
+  await prefetchServiceAccountList(queryClient);
   return (
-    <Empty>
-      <EmptyHeader>
-        <EmptyTitle>Contas de serviço ainda não disponíveis</EmptyTitle>
-        <EmptyDescription>
-          A gestão de contas de serviço chega numa próxima versão. Os clientes
-          OAuth já podem ser geridos no separador ao lado.
-        </EmptyDescription>
-      </EmptyHeader>
-    </Empty>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ServiceAccountList />
+    </HydrationBoundary>
   );
 }
