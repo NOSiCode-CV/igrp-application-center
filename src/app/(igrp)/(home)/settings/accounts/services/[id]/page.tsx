@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
+import { ServiceAccountAccess } from "@/features/service-accounts/components/service-account-access";
 import { ServiceAccountDetail } from "@/features/service-accounts/components/service-account-detail";
 import {
   getServiceAccountCached,
@@ -31,7 +32,7 @@ export default async function ServiceAccountDetailPage({
   await prefetchServiceAccount(queryClient, id);
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ServiceAccountDetail id={id} />
+      <ServiceAccountDetail id={id} main={<ServiceAccountAccess id={id} />} />
     </HydrationBoundary>
   );
 }
