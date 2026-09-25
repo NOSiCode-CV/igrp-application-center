@@ -21,7 +21,10 @@ import type { z } from "zod";
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import { formatDate } from "@/lib/app-utilities";
 
-import { serviceAccountIdentitySchema } from "../service-account-schemas";
+import {
+  SERVICE_ACCOUNT_DESCRIPTION_MAX,
+  serviceAccountIdentitySchema,
+} from "../service-account-schemas";
 import {
   useAccountBusy,
   useUpdateServiceAccountIdentity,
@@ -119,7 +122,7 @@ export function ServiceAccountIdentityCard({
             <LimitedTextareaField
               id="description"
               label="Descrição"
-              maxLength={255}
+              maxLength={SERVICE_ACCOUNT_DESCRIPTION_MAX}
             />
             <div className="flex justify-end gap-2">
               <Button

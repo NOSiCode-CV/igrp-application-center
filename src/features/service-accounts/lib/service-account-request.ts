@@ -3,6 +3,8 @@ import type {
   ServiceAccountRequestDTO,
 } from "@igrp/platform-access-management-client-ts";
 
+import { permissionIdsOf, roleIdsOf } from "./service-account-utils";
+
 /** PUT replaces roleIds/permissionIds wholesale — always send the full current set. */
 export function toServiceAccountRequest(
   dto: ServiceAccountDTO,
@@ -13,7 +15,7 @@ export function toServiceAccountRequest(
     active: dto.active,
     oauthClientId: dto.oauthClientId,
     applicationId: dto.applicationId,
-    roleIds: [...(dto.roleIds ?? [])],
-    permissionIds: [...(dto.permissionIds ?? [])],
+    roleIds: roleIdsOf(dto),
+    permissionIds: permissionIdsOf(dto),
   };
 }

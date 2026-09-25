@@ -95,7 +95,7 @@ export function WizardResult({
       ) : null}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
-          Se o segredo for exposto, desative o cliente e registe um novo.
+          Se o segredo for exposto, gere um novo nos detalhes do cliente.
         </p>
         {outcome.kind === "accountFailed" ? (
           <Button onClick={onRetry} disabled={isRetrying}>

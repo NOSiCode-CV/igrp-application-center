@@ -11,7 +11,12 @@ import {
   withActive,
 } from "@/features/oauth-clients/lib/oauth-client-request";
 import { toServiceAccountRequest } from "@/features/service-accounts/lib/service-account-request";
-import { mergeScopedSelection } from "@/features/service-accounts/lib/service-account-utils";
+import {
+  mergeScopedSelection,
+  permissionIdsOf,
+  permissionNamesOf,
+  roleIdsOf,
+} from "@/features/service-accounts/lib/service-account-utils";
 import { toActionError } from "@/lib/app-utilities";
 
 import { getClientAccess } from "./access-client";
@@ -153,21 +158,23 @@ function applyChange(
   return mergeScopedSelection(fresh, change.scope, change.selected);
 }
 
-function countNames(names: readonly string[] | undefined) {
+function countNames(names: readonly string[]) {
   const counts = new Map<string, number>();
-  for (const name of names ?? []) counts.set(name, (counts.get(name) ?? 0) + 1);
+  for (const name of names) counts.set(name, (counts.get(name) ?? 0) + 1);
   return counts;
 }
 
 /**
- * Direct-permission removal pairs ids with names by position (see
- * `pairDirectPermissions`), which may be wrong. Confirm from the PUT
- * response: every removed name went away once, every other name stayed.
+ * On backends without `permissions` pairs, direct-permission removal pairs ids
+ * with names by position (see `pairDirectPermissions`), which the backend
+ * confirmed is unreliable (ACCOUNTS_BACKEND_RESPONSES.md §1). Confirm from the
+ * PUT response: every removed name went away once, every other name stayed.
+ * With pairs the check always passes; it costs no extra request.
  * Counted, because a name can repeat across departments.
  */
 function removalConfirmed(
-  before: readonly string[] | undefined,
-  after: readonly string[] | undefined,
+  before: readonly string[],
+  after: readonly string[],
   removed: readonly string[],
 ) {
   const expected = countNames(before);
@@ -249,12 +256,12 @@ export async function setServiceAccountAccess(
     const { fresh, request, data } = await putFromFresh(client, id, (sa) => {
       const patch: Partial<ServiceAccountRequestDTO> = {};
       if (change.roles) {
-        patch.roleIds = applyChange(sa.roleIds ?? [], change.roles);
+        patch.roleIds = applyChange(roleIdsOf(sa), change.roles);
       }
       if (change.permissions) {
         const p = change.permissions;
         patch.permissionIds = applyChange(
-          sa.permissionIds ?? [],
+          permissionIdsOf(sa),
           "remove" in p ? { remove: p.remove.map((r) => r.id) } : p,
         );
       }
@@ -265,15 +272,15 @@ export async function setServiceAccountAccess(
       permissions &&
       "remove" in permissions &&
       !removalConfirmed(
-        fresh.permissionNames,
-        data.permissionNames,
+        permissionNamesOf(fresh),
+        permissionNamesOf(data),
         permissions.remove.map((r) => r.name),
       )
     ) {
       // Positional pairing guessed wrong: put the previous set back.
       await client.serviceAccounts.updateServiceAccount(id, {
         ...request,
-        permissionIds: [...(fresh.permissionIds ?? [])],
+        permissionIds: permissionIdsOf(fresh),
       });
       return { success: false, error: REMOVAL_UNCONFIRMED };
     }

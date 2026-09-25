@@ -16,6 +16,7 @@ vi.mock("@/actions/oauth-clients", () => ({
   createOAuthClient: vi.fn(),
   updateOAuthClient: vi.fn(async () => ({ success: true, data: {} })),
   deleteOAuthClient: vi.fn(),
+  rotateOAuthClientSecret: vi.fn(),
   setOAuthClientActive: vi.fn(),
 }));
 vi.mock("@/actions/service-accounts", () => ({
@@ -72,7 +73,7 @@ describe("OAuthClientDetail", () => {
     renderWith([]);
     expect(screen.getByText("= 3 minutos")).toBeInTheDocument();
     expect(
-      screen.getByText("Mostrado apenas uma vez, no registo"),
+      screen.getByText("Mostrado apenas uma vez, quando é gerado"),
     ).toBeInTheDocument();
   });
 
@@ -174,6 +175,19 @@ describe("OAuthClientDetail", () => {
       screen.getByText(
         "Fixa enquanto a conta de serviço «Nightly Invoice ETL» existir.",
       ),
+    ).toBeInTheDocument();
+  });
+
+  it("offers secret rotation in the danger zone, naming the linked account", async () => {
+    renderWith([{ id: "sa1", name: "ETL batch", oauthClientId: "c1" }]);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Gerar novo segredo" }),
+    );
+    expect(
+      await screen.findByRole("alertdialog", { name: "Gerar novo segredo" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/também para a conta de serviço «ETL batch»/),
     ).toBeInTheDocument();
   });
 

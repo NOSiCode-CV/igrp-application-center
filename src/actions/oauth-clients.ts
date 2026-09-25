@@ -75,7 +75,7 @@ export async function getOAuthClient(
   }
 }
 
-/** The ONLY action whose data carries the raw clientSecret. Never cache it. */
+/** Carries the raw clientSecret (as does rotateOAuthClientSecret). Never cache it. */
 export async function createOAuthClient(
   input: OAuthClientInput,
 ): Promise<ActionResult<OAuthClientDTO>> {
@@ -108,6 +108,27 @@ export async function updateOAuthClient(
       error,
     );
     return failure(error);
+  }
+}
+
+/**
+ * New secret for an existing client. `id` and `clientId` stay, the old secret
+ * stops working at once, issued tokens stay valid until they expire. Like
+ * createOAuthClient, the data carries the raw clientSecret: never cache it.
+ */
+export async function rotateOAuthClientSecret(
+  id: string,
+): Promise<ActionResult<OAuthClientDTO>> {
+  const client = await getClientAccess();
+  try {
+    const result = await client.oauthClients.rotateOAuthClientSecret(id);
+    return { success: true, data: result.data };
+  } catch (error) {
+    console.error(
+      "[oauth-client-rotate] Erro ao gerar novo segredo do cliente OAuth:",
+      error,
+    );
+    return { success: false, ...toActionError(error) };
   }
 }
 

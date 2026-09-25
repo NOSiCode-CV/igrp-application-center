@@ -21,6 +21,7 @@ import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import type { WizardAction, WizardState } from "../../lib/wizard-state";
 import {
   emptyIdentityValues,
+  SERVICE_ACCOUNT_DESCRIPTION_MAX,
   type ServiceAccountIdentityValues,
   serviceAccountIdentitySchema,
 } from "../../service-account-schemas";
@@ -83,7 +84,7 @@ export function WizardIdentityStep({
         <LimitedTextareaField
           id="description"
           label="Descrição"
-          maxLength={255}
+          maxLength={SERVICE_ACCOUNT_DESCRIPTION_MAX}
         />
         <div className="flex flex-col gap-1">
           <span className="text-sm font-medium">Aplicação</span>

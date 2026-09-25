@@ -6,6 +6,7 @@ const oauthClients = {
   createOAuthClient: vi.fn(),
   updateOAuthClient: vi.fn(),
   deleteOAuthClient: vi.fn(),
+  rotateOAuthClientSecret: vi.fn(),
 };
 
 const applications = {
@@ -25,6 +26,7 @@ import {
   createOAuthClient,
   deleteOAuthClient,
   listOAuthClients,
+  rotateOAuthClientSecret,
   setOAuthClientActive,
   updateOAuthClient,
 } from "@/actions/oauth-clients";
@@ -132,6 +134,27 @@ describe("oauth-client actions", () => {
       grantTypes: ["client_credentials"],
     });
     expect(r.success && "clientSecret" in r.data).toBe(false);
+  });
+
+  it("returns the new secret from rotate", async () => {
+    oauthClients.rotateOAuthClientSecret.mockResolvedValue({
+      data: { ...dto, clientSecret: "n3w" },
+    });
+    expect(await rotateOAuthClientSecret("u1")).toEqual({
+      success: true,
+      data: { ...dto, clientSecret: "n3w" },
+    });
+    expect(oauthClients.rotateOAuthClientSecret).toHaveBeenCalledWith("u1");
+  });
+
+  it("reports a failed rotation with its status", async () => {
+    oauthClients.rotateOAuthClientSecret.mockRejectedValue({
+      status: 404,
+      message: "Not found",
+    });
+    const r = await rotateOAuthClientSecret("nope");
+    expect(r.success).toBe(false);
+    expect(!r.success && r.status).toBe(404);
   });
 
   it("deletes and returns null", async () => {

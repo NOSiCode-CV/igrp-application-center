@@ -24,11 +24,17 @@ export function OAuthClientDeleteDialog({
   async function confirmDelete() {
     const result = await mutation.mutateAsync(client.id);
     if (!result.success) {
+      // 409: a service account was linked after this page loaded. The hook
+      // refreshes the list, so the page's own delete block takes over.
+      const linked = result.status === 409;
       igrpToast({
         type: "error",
         title: "Não foi possível eliminar",
-        description: result.error,
+        description: linked
+          ? "Este cliente tem uma conta de serviço associada. Elimine primeiro a conta de serviço."
+          : result.error,
       });
+      if (linked) onOpenChange(false);
       return;
     }
     igrpToast({

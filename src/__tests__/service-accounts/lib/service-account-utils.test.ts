@@ -12,6 +12,9 @@ import {
   groupRolesByDepartment,
   mergeScopedSelection,
   pairDirectPermissions,
+  permissionIdsOf,
+  permissionNamesOf,
+  roleIdsOf,
 } from "@/features/service-accounts/lib/service-account-utils";
 
 const client = (id: string, grantTypes: string[]) =>
@@ -89,6 +92,26 @@ describe("mergeScopedSelection", () => {
 });
 
 describe("pairDirectPermissions", () => {
+  it("uses the backend's permissions pairs over the flat sets", () => {
+    expect(
+      pairDirectPermissions({
+        permissions: [
+          { id: 7, name: "b" },
+          { id: 4, name: "a" },
+        ],
+        // Flat sets in a different order must be ignored.
+        permissionIds: [4, 7],
+        permissionNames: ["b", "a"],
+      }),
+    ).toEqual({
+      reliable: true,
+      items: [
+        { id: 7, name: "b" },
+        { id: 4, name: "a" },
+      ],
+    });
+  });
+
   it("pairs by position when both lists line up", () => {
     expect(
       pairDirectPermissions({
@@ -119,6 +142,44 @@ describe("pairDirectPermissions", () => {
   });
   it("handles missing lists", () => {
     expect(pairDirectPermissions({})).toEqual({ reliable: true, items: [] });
+  });
+});
+
+describe("access accessors", () => {
+  const legacy = {
+    roleIds: [9, 4],
+    permissionIds: [7],
+    permissionNames: ["legacy.name"],
+  };
+
+  it("prefer the roles / permissions pairs over the flat sets", () => {
+    const sa = {
+      ...legacy,
+      roles: [{ id: 3, code: "ADMIN", departmentCode: "RH" }],
+      permissions: [{ id: 12, name: "igrp.client.list" }],
+    };
+    expect(roleIdsOf(sa)).toEqual([3]);
+    expect(permissionIdsOf(sa)).toEqual([12]);
+    expect(permissionNamesOf(sa)).toEqual(["igrp.client.list"]);
+  });
+
+  it("trust empty pairs over stale flat sets", () => {
+    const sa = { ...legacy, roles: [], permissions: [] };
+    expect(roleIdsOf(sa)).toEqual([]);
+    expect(permissionIdsOf(sa)).toEqual([]);
+    expect(permissionNamesOf(sa)).toEqual([]);
+  });
+
+  it("fall back to the flat sets on older backends", () => {
+    expect(roleIdsOf(legacy)).toEqual([9, 4]);
+    expect(permissionIdsOf(legacy)).toEqual([7]);
+    expect(permissionNamesOf(legacy)).toEqual(["legacy.name"]);
+  });
+
+  it("handle missing lists", () => {
+    expect(roleIdsOf({})).toEqual([]);
+    expect(permissionIdsOf({})).toEqual([]);
+    expect(permissionNamesOf({})).toEqual([]);
   });
 });
 

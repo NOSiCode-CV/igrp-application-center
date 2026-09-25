@@ -1,22 +1,28 @@
 "use client";
 
+import { useMemo } from "react";
+
+import { permissionNamesOf, roleIdsOf } from "../lib/service-account-utils";
 import { useRoleDetails } from "../use-role-details";
 import { useServiceAccount } from "../use-service-accounts";
 import { EffectivePermissionsCard } from "./effective-permissions-card";
 import { ServiceAccountPermissionsSection } from "./service-account-permissions-section";
 import { ServiceAccountRolesSection } from "./service-account-roles-section";
 
-const NO_IDS: number[] = [];
-
 export function ServiceAccountAccess({ id }: { id: string }) {
   const { data: account } = useServiceAccount(id);
-  const roleDetails = useRoleDetails(account?.roleIds ?? NO_IDS);
+  const roleIds = useMemo(() => (account ? roleIdsOf(account) : []), [account]);
+  const directNames = useMemo(
+    () => (account ? permissionNamesOf(account) : []),
+    [account],
+  );
+  const roleDetails = useRoleDetails(roleIds);
   if (!account) return null;
   return (
     <>
       <EffectivePermissionsCard
         roles={roleDetails.roles}
-        directNames={account.permissionNames ?? []}
+        directNames={directNames}
         isLoading={roleDetails.isLoading}
         isError={roleDetails.isError}
       />

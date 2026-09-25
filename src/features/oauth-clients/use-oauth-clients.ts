@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createOAuthClient,
   deleteOAuthClient,
+  rotateOAuthClientSecret,
   setOAuthClientActive,
   updateOAuthClient,
 } from "@/actions/oauth-clients";
@@ -44,6 +45,20 @@ export const useCreateOAuthClient = () => {
   });
 };
 
+/** Same secret handling as useCreateOAuthClient: no setQueryData, `gcTime: 0`. */
+export const useRotateOAuthClientSecret = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => rotateOAuthClientSecret(id),
+    gcTime: 0,
+    // Fire and forget, so the one-time secret pane isn't delayed.
+    onSuccess: (result, id) => {
+      if (result.success)
+        void qc.invalidateQueries({ queryKey: oauthClientKeys.detail(id) });
+    },
+  });
+};
+
 export const useUpdateOAuthClient = () => {
   const qc = useQueryClient();
   return useMutation({
@@ -61,7 +76,13 @@ export const useDeleteOAuthClient = () => {
   return useMutation({
     mutationFn: (id: string) => deleteOAuthClient(id),
     onSuccess: async (result, id) => {
-      if (!result.success) return;
+      if (!result.success) {
+        // 409 = a service account is bound to this client (backend FK guard).
+        // Refresh the link so the UI's delete block reflects it.
+        if (result.status === 409)
+          await qc.invalidateQueries({ queryKey: serviceAccountKeys.all });
+        return;
+      }
       // Drop the deleted detail rather than invalidate it: a refetch would 404.
       qc.removeQueries({ queryKey: oauthClientKeys.detail(id) });
       await Promise.all([

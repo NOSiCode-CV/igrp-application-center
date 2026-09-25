@@ -37,6 +37,7 @@ import {
   FormSection,
   OAuthClientFormSections,
 } from "./oauth-client-form-sections";
+import { OAuthClientRotateSecretDialog } from "./oauth-client-rotate-secret-dialog";
 import { OAuthClientServiceAccountSection } from "./oauth-client-service-account-section";
 
 const FORM_ID = "oauth-client-edit";
@@ -54,9 +55,9 @@ export function OAuthClientDetail({ id }: { id: string }) {
   const { data: client } = useOAuthClient(id);
   const linked = useLinkedServiceAccount(id);
   const update = useUpdateOAuthClient();
-  const [dialog, setDialog] = useState<"none" | "activation" | "delete">(
-    "none",
-  );
+  const [dialog, setDialog] = useState<
+    "none" | "activation" | "delete" | "rotate"
+  >("none");
 
   const form = useForm<OAuthClientFormValues>({
     resolver: zodResolver(
@@ -234,6 +235,22 @@ export function OAuthClientDetail({ id }: { id: string }) {
         <div className="flex flex-col divide-y divide-destructive/20 rounded-xl border border-destructive/30 bg-card">
           <div className="flex items-center gap-6 p-5">
             <div className="flex flex-1 flex-col gap-1">
+              <span className="font-medium">Gerar novo segredo</span>
+              <span className="text-sm text-muted-foreground">
+                O segredo atual deixa de funcionar de imediato. Use-o se o
+                segredo foi exposto ou perdido.
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              className="text-destructive"
+              onClick={() => setDialog("rotate")}
+            >
+              Gerar novo segredo
+            </Button>
+          </div>
+          <div className="flex items-center gap-6 p-5">
+            <div className="flex flex-1 flex-col gap-1">
               <span className="font-medium">
                 {client.active ? "Desativar cliente" : "Ativar cliente"}
               </span>
@@ -287,6 +304,14 @@ export function OAuthClientDetail({ id }: { id: string }) {
         <OAuthClientActivationDialog
           client={client}
           linkedAccount={linked.account}
+          open
+          onOpenChange={(o) => !o && setDialog("none")}
+        />
+      ) : null}
+      {dialog === "rotate" ? (
+        <OAuthClientRotateSecretDialog
+          client={client}
+          linkedAccountName={linked.account?.name}
           open
           onOpenChange={(o) => !o && setDialog("none")}
         />

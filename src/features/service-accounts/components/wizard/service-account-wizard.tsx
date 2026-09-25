@@ -152,7 +152,11 @@ export function ServiceAccountWizard({
       igrpToast({
         type: "error",
         title: "Não foi possível criar a conta",
-        description: result.error,
+        // 409: the backend enforces one service account per client.
+        description:
+          result.status === 409
+            ? "Este cliente OAuth já tem uma conta de serviço. Escolha outro cliente no passo 1."
+            : result.error,
       });
       return;
     }

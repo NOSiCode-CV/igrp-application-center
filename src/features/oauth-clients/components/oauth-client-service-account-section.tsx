@@ -5,7 +5,11 @@ import Link from "next/link";
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { formatAccessSummary } from "@/features/service-accounts/lib/service-account-utils";
+import {
+  formatAccessSummary,
+  permissionIdsOf,
+  roleIdsOf,
+} from "@/features/service-accounts/lib/service-account-utils";
 import { useLinkedServiceAccount } from "@/features/service-accounts/use-service-accounts";
 import { ROUTES } from "@/lib/constants";
 
@@ -49,8 +53,8 @@ export function OAuthClientServiceAccountSection({
             </Link>
             <span className="text-sm text-muted-foreground">
               {formatAccessSummary(
-                linked.account.roleIds?.length ?? 0,
-                linked.account.permissionIds?.length ?? 0,
+                roleIdsOf(linked.account).length,
+                permissionIdsOf(linked.account).length,
               )}
             </span>
           </div>

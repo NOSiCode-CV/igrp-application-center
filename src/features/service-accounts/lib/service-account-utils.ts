@@ -85,22 +85,54 @@ export function mergeScopedSelection<T>(
   return result;
 }
 
+type AccessFields = Pick<
+  ServiceAccountDTO,
+  "roles" | "permissions" | "roleIds" | "permissionIds" | "permissionNames"
+>;
+
+/**
+ * The flat `roleIds` / `permissionIds` / `permissionNames` are deprecated in
+ * SDK beta.18. Read the `roles` / `permissions` pairs when the backend sends
+ * them and fall back to the flat sets on older backends. Drop the fallbacks
+ * once every environment runs the new backend.
+ */
+export function roleIdsOf(account: AccessFields): number[] {
+  return account.roles?.map((r) => r.id) ?? account.roleIds ?? [];
+}
+
+export function permissionIdsOf(account: AccessFields): number[] {
+  return account.permissions?.map((p) => p.id) ?? account.permissionIds ?? [];
+}
+
+export function permissionNamesOf(account: AccessFields): string[] {
+  return (
+    account.permissions?.map((p) => p.name) ?? account.permissionNames ?? []
+  );
+}
+
 export type DirectPermission = { id: number | null; name: string };
 
 /**
- * ASSUMPTION — ACCOUNTS_BACKEND_REQUESTS.md §1 is unanswered: the DTO carries
- * `permissionIds` and `permissionNames` as two separate sets and nothing
- * guarantees their order matches. We pair by position only when the lengths
- * agree; otherwise names are shown without ids and removal is disabled.
- * The lengths always agree in practice, so a wrong pairing is caught on the
- * server instead: `setServiceAccountAccess` sends `{ remove: [{ id, name }] }`,
- * checks the PUT response dropped exactly that name, and restores the
- * previous set if not.
- * Replace with the backend's `{ id, name }` pairs once they exist.
+ * ACCOUNTS_BACKEND_RESPONSES.md §1: the flat `permissionIds` /
+ * `permissionNames` sets cannot be paired by position (two independent
+ * HashSets). Backends from SDK beta.18 return `permissions: { id, name }[]`,
+ * which is authoritative. Older backends only have the flat sets. There we
+ * still pair by position and let `setServiceAccountAccess` verify each removal
+ * against the PUT response (restoring the previous set on a mismatch).
+ * Drop the fallback once every environment runs the new backend.
  */
 export function pairDirectPermissions(
-  account: Pick<ServiceAccountDTO, "permissionIds" | "permissionNames">,
+  account: Pick<
+    ServiceAccountDTO,
+    "permissions" | "permissionIds" | "permissionNames"
+  >,
 ): { items: DirectPermission[]; reliable: boolean } {
+  if (account.permissions) {
+    return {
+      reliable: true,
+      items: account.permissions.map(({ id, name }) => ({ id, name })),
+    };
+  }
   const ids = account.permissionIds ?? [];
   const names = account.permissionNames ?? [];
   if (ids.length !== names.length) {

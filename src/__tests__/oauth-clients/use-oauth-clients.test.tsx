@@ -4,7 +4,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { setOAuthClientActive } from "@/actions/oauth-clients";
+import {
+  deleteOAuthClient,
+  setOAuthClientActive,
+} from "@/actions/oauth-clients";
 import { setServiceAccountActive } from "@/actions/service-accounts";
 import { oauthClientKeys } from "@/features/oauth-clients/query-keys";
 import {
@@ -123,6 +126,24 @@ describe("useUpdateOAuthClient / useDeleteOAuthClient", () => {
         queryKey: serviceAccountKeys.all,
       });
     });
+  });
+
+  it("delete refreshes the service-account link on a 409 and keeps the detail", async () => {
+    vi.mocked(deleteOAuthClient).mockResolvedValueOnce({
+      success: false,
+      status: 409,
+      error: "Conflict",
+    });
+    const { client, invalidate, wrapper } = setup();
+    const remove = vi.spyOn(client, "removeQueries");
+    const { result } = renderHook(() => useDeleteOAuthClient(), { wrapper });
+    await result.current.mutateAsync("u1");
+    await waitFor(() =>
+      expect(invalidate).toHaveBeenCalledWith({
+        queryKey: serviceAccountKeys.all,
+      }),
+    );
+    expect(remove).not.toHaveBeenCalled();
   });
 });
 

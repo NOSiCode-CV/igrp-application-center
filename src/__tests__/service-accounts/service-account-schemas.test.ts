@@ -18,18 +18,29 @@ describe("serviceAccountIdentitySchema", () => {
   it("requires a name", () => {
     expect(issues(emptyIdentityValues())).toEqual(["name: Indique o nome."]);
   });
-  it("caps name and description at 255", () => {
+  it("accepts name and description at their column limits", () => {
+    expect(
+      issues({
+        name: "x".repeat(180),
+        description: "y".repeat(500),
+        active: true,
+      }),
+    ).toEqual([]);
+  });
+
+  it("caps name at 180 and description at 500", () => {
     expect(
       issues({
         ...emptyIdentityValues(),
-        name: "x".repeat(256),
-        description: "y".repeat(256),
+        name: "x".repeat(181),
+        description: "y".repeat(501),
       }),
     ).toEqual([
-      "name: Até 255 caracteres.",
-      "description: Até 255 caracteres.",
+      "name: Até 180 caracteres.",
+      "description: Até 500 caracteres.",
     ]);
   });
+
   it("accepts a valid identity", () => {
     expect(issues({ name: "Nightly", description: "", active: true })).toEqual(
       [],

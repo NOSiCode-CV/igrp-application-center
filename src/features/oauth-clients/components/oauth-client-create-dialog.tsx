@@ -150,8 +150,8 @@ export function OAuthClientCreateDialog({
                   />
                   <IGRPModalDialogFooter className="items-center gap-4 sm:justify-between">
                     <p className="text-sm text-muted-foreground">
-                      Se o segredo for exposto, desative o cliente e registe um
-                      novo.
+                      Se o segredo for exposto, gere um novo nos detalhes do
+                      cliente.
                     </p>
                     <Button
                       type="button"
@@ -170,8 +170,8 @@ export function OAuthClientCreateDialog({
                   <Alert variant="destructive">
                     <IGRPIcon iconName="TriangleAlert" aria-hidden="true" />
                     <AlertDescription>
-                      O servidor não devolveu o segredo. Desative este cliente e
-                      registe um novo.
+                      O servidor não devolveu o segredo. Gere um novo nos
+                      detalhes do cliente.
                     </AlertDescription>
                   </Alert>
                   <IGRPModalDialogFooter>

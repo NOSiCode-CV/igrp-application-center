@@ -5,14 +5,26 @@ import {
   type OAuthClientFormValues,
 } from "@/features/oauth-clients/oauth-client-schemas";
 
-/** Limits are provisional — ACCOUNTS_BACKEND_REQUESTS.md §7. */
+/** Column limits enforced by the backend (ACCOUNTS_BACKEND_RESPONSES.md §7). */
+export const SERVICE_ACCOUNT_NAME_MAX = 180;
+export const SERVICE_ACCOUNT_DESCRIPTION_MAX = 500;
+
 export const serviceAccountIdentitySchema = z.object({
   name: z
     .string()
     .trim()
     .min(1, "Indique o nome.")
-    .max(255, "Até 255 caracteres."),
-  description: z.string().trim().max(255, "Até 255 caracteres."),
+    .max(
+      SERVICE_ACCOUNT_NAME_MAX,
+      `Até ${SERVICE_ACCOUNT_NAME_MAX} caracteres.`,
+    ),
+  description: z
+    .string()
+    .trim()
+    .max(
+      SERVICE_ACCOUNT_DESCRIPTION_MAX,
+      `Até ${SERVICE_ACCOUNT_DESCRIPTION_MAX} caracteres.`,
+    ),
   active: z.boolean(),
 });
 

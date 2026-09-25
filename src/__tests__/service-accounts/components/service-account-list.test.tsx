@@ -88,6 +88,26 @@ describe("ServiceAccountList", () => {
     ).toBeInTheDocument();
   });
 
+  it("counts and names roles from the backend's role pairs, with department", async () => {
+    renderList([
+      {
+        ...accounts[0],
+        // Two roles share a code across departments: the flat roleCodes set
+        // collapses them, the pairs keep both.
+        roles: [
+          { id: 1, code: "reader", departmentCode: "INV" },
+          { id: 2, code: "reader", departmentCode: "RH" },
+        ],
+        roleCodes: ["reader"],
+        permissions: [{ id: 9, name: "a" }],
+      },
+    ]);
+    const row = screen.getByRole("row", { name: /Nightly Invoice/ });
+    await userEvent.click(within(row).getByText("2 perfis · 1 direta"));
+    expect(screen.getByText("reader · INV")).toBeInTheDocument();
+    expect(screen.getByText("reader · RH")).toBeInTheDocument();
+  });
+
   it("filters by search", async () => {
     renderList(accounts);
     await userEvent.type(screen.getByLabelText("Pesquisar contas"), "legacy");

@@ -186,6 +186,27 @@ describe("ServiceAccountWizard — existing client", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
+  it("explains a 409 as the client already having an account", async () => {
+    vi.mocked(createServiceAccount).mockResolvedValueOnce({
+      success: false,
+      status: 409,
+      error: "Conflict",
+    });
+    renderWizard("c1");
+    await userEvent.type(screen.getByLabelText("Nome *"), "Nightly");
+    await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith({
+        type: "error",
+        title: "Não foi possível criar a conta",
+        description:
+          "Este cliente OAuth já tem uma conta de serviço. Escolha outro cliente no passo 1.",
+      }),
+    );
+    expect(push).not.toHaveBeenCalled();
+  });
+
   it("warns when a deep-linked client is not available", () => {
     renderWizard("c2");
     expect(

@@ -21,7 +21,11 @@ import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-
 import { ActiveBadge } from "@/features/oauth-clients/components/oauth-client-badges";
 import { ROUTES } from "@/lib/constants";
 
-import { formatAccessSummary } from "../lib/service-account-utils";
+import {
+  formatAccessSummary,
+  permissionIdsOf,
+  roleIdsOf,
+} from "../lib/service-account-utils";
 
 interface RowHandlers {
   onToggleActive: (row: ServiceAccountDTO) => void;
@@ -82,13 +86,28 @@ export function ServiceAccountRowActions({
 }
 
 /** Role and direct counts; the popover names the roles (spec §5.2). */
+/**
+ * Role codes are unique only within a department, so name the department
+ * when the backend sends `roles` pairs. Older backends only have the flat,
+ * independently de-duplicated `roleCodes`.
+ */
+function roleLabels(row: ServiceAccountDTO): { key: string; label: string }[] {
+  if (row.roles) {
+    return row.roles.map((r) => ({
+      key: String(r.id),
+      label: r.departmentCode ? `${r.code} · ${r.departmentCode}` : r.code,
+    }));
+  }
+  return (row.roleCodes ?? []).map((code) => ({ key: code, label: code }));
+}
+
 function AccessCell({ row }: { row: ServiceAccountDTO }) {
-  const roleCodes = row.roleCodes ?? [];
+  const roles = roleLabels(row);
   const summary = formatAccessSummary(
-    row.roleIds?.length ?? 0,
-    row.permissionIds?.length ?? 0,
+    roleIdsOf(row).length,
+    permissionIdsOf(row).length,
   );
-  if (roleCodes.length === 0) return <span>{summary}</span>;
+  if (roles.length === 0) return <span>{summary}</span>;
   return (
     <Popover>
       <PopoverTrigger className="rounded-sm underline decoration-dotted underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -97,8 +116,8 @@ function AccessCell({ row }: { row: ServiceAccountDTO }) {
       <PopoverContent className="w-max max-w-80">
         <p className="mb-2 text-sm font-medium">Perfis</p>
         <ul className="flex flex-col gap-1 font-mono text-xs">
-          {roleCodes.map((code) => (
-            <li key={code}>{code}</li>
+          {roles.map((role) => (
+            <li key={role.key}>{role.label}</li>
           ))}
         </ul>
       </PopoverContent>

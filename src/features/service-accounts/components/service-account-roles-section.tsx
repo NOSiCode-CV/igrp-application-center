@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Button, useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import type {
@@ -11,7 +11,10 @@ import type {
 import type { AccessChange } from "@/actions/service-accounts";
 import { InlineError } from "@/components/inline-error";
 
-import { groupRolesByDepartment } from "../lib/service-account-utils";
+import {
+  groupRolesByDepartment,
+  roleIdsOf,
+} from "../lib/service-account-utils";
 import {
   useAccountBusy,
   useSetServiceAccountAccess,
@@ -20,7 +23,6 @@ import { RolePickerDialog } from "./role-picker-dialog";
 
 // Stable across renders — a fresh `[]` literal every render would re-seed
 // `ScopedPickerDialog`'s selection effect and wipe unsaved ticks while open.
-const NO_IDS: readonly number[] = [];
 
 export function ServiceAccountRolesSection({
   account,
@@ -40,7 +42,7 @@ export function ServiceAccountRolesSection({
   const busy = useAccountBusy(account.id);
   const [picking, setPicking] = useState(false);
   const [confirming, setConfirming] = useState<number | null>(null);
-  const roleIds = account.roleIds ?? NO_IDS;
+  const roleIds = useMemo(() => roleIdsOf(account), [account]);
 
   async function save(
     roles: NonNullable<AccessChange["roles"]>,

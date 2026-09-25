@@ -210,11 +210,11 @@ export function OAuthClientFormSections({
             <span className="text-sm font-medium">Client secret</span>
             <div className="flex h-9 items-center gap-2.5 rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground">
               <IGRPIcon iconName="Lock" className="size-4" aria-hidden="true" />
-              Mostrado apenas uma vez, no registo
+              Mostrado apenas uma vez, quando é gerado
             </div>
             <p className="text-sm text-muted-foreground">
               O servidor guarda só uma versão cifrada — ninguém o pode voltar a
-              ler. Se foi exposto, desative este cliente e registe um novo.
+              ler. Se foi exposto, gere um novo na zona de perigo.
             </p>
           </div>
         ) : null}

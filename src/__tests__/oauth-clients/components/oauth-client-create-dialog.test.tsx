@@ -147,7 +147,7 @@ describe("OAuthClientCreateDialog", () => {
 
     expect(
       await screen.findByText(
-        "O servidor não devolveu o segredo. Desative este cliente e registe um novo.",
+        "O servidor não devolveu o segredo. Gere um novo nos detalhes do cliente.",
       ),
     ).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Fechar" }));

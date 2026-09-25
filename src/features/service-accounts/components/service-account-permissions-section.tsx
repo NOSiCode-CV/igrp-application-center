@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   Badge,
@@ -12,7 +12,10 @@ import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-
 
 import type { AccessChange } from "@/actions/service-accounts";
 
-import { pairDirectPermissions } from "../lib/service-account-utils";
+import {
+  pairDirectPermissions,
+  permissionIdsOf,
+} from "../lib/service-account-utils";
 import {
   useAccountBusy,
   useSetServiceAccountAccess,
@@ -21,7 +24,6 @@ import { PermissionPickerDialog } from "./permission-picker-dialog";
 
 // Stable across renders — a fresh `[]` literal every render would re-seed
 // `ScopedPickerDialog`'s selection effect and wipe unsaved ticks while open.
-const NO_IDS: readonly number[] = [];
 
 const UNPAIRED_REASON =
   "Não é possível remover: o servidor não indicou que permissão corresponde a cada identificador.";
@@ -36,7 +38,7 @@ export function ServiceAccountPermissionsSection({
   const busy = useAccountBusy(account.id);
   const [picking, setPicking] = useState(false);
   const [confirming, setConfirming] = useState<string | null>(null);
-  const permissionIds = account.permissionIds ?? NO_IDS;
+  const permissionIds = useMemo(() => permissionIdsOf(account), [account]);
   const { items, reliable } = pairDirectPermissions(account);
 
   async function save(
