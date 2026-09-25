@@ -18,6 +18,11 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = vi.fn();
 });
 
+const toast = vi.fn();
+vi.mock("@igrp/igrp-framework-react-design-system", async (orig) => ({
+  ...(await orig<typeof import("@igrp/igrp-framework-react-design-system")>()),
+  useIGRPToast: () => ({ igrpToast: toast }),
+}));
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/actions/oauth-clients", () => ({
@@ -86,12 +91,13 @@ function renderWizard(initialOAuthClientId?: string) {
   render(<ServiceAccountWizard initialOAuthClientId={initialOAuthClientId} />, {
     wrapper,
   });
+  return qc;
 }
 
 beforeEach(() => vi.clearAllMocks());
 
-async function fillNewClientAndIdentity() {
-  renderWizard();
+async function fillNewClientAndIdentity({ inactive = false } = {}) {
+  const qc = renderWizard();
   await userEvent.click(
     screen.getByRole("radio", { name: "Registar um novo cliente OAuth" }),
   );
@@ -99,8 +105,22 @@ async function fillNewClientAndIdentity() {
   await userEvent.type(screen.getByLabelText("Nome *"), "Nightly ETL client");
   await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
   await userEvent.type(screen.getByLabelText("Nome *"), "Nightly Invoice ETL");
+  if (inactive) {
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: "Ativa na criação" }),
+    );
+  }
   await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
+  return qc;
 }
+
+const cachedMutationData = (qc: QueryClient) =>
+  JSON.stringify(
+    qc
+      .getMutationCache()
+      .getAll()
+      .map((m) => m.state.data),
+  );
 
 describe("ServiceAccountWizard — new client", () => {
   it("locks grant types to client_credentials", async () => {
@@ -126,7 +146,7 @@ describe("ServiceAccountWizard — new client", () => {
         account: { id: "sa9", name: "Nightly Invoice ETL" } as never,
       },
     });
-    await fillNewClientAndIdentity();
+    const qc = await fillNewClientAndIdentity();
     expect(
       screen.getByText(/O segredo do novo cliente é mostrado uma única vez/),
     ).toBeInTheDocument();
@@ -135,6 +155,8 @@ describe("ServiceAccountWizard — new client", () => {
       name: "Concluir — ver conta",
     });
     expect(done).toBeDisabled();
+    // The secret lives only in component state, not the MutationCache.
+    expect(cachedMutationData(qc)).not.toContain("s3cret");
     await userEvent.click(
       screen.getByRole("checkbox", { name: /Guardei o segredo/ }),
     );
@@ -183,9 +205,10 @@ describe("ServiceAccountWizard — new client", () => {
       success: true,
       data: { id: "sa9" } as never,
     });
-    await fillNewClientAndIdentity();
+    const qc = await fillNewClientAndIdentity();
     await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
     expect(await screen.findByLabelText("Client secret")).toHaveValue("s3cret");
+    expect(cachedMutationData(qc)).not.toContain("s3cret");
     expect(
       screen.getByText(/A conta de serviço não foi criada/),
     ).toBeInTheDocument();
@@ -200,9 +223,70 @@ describe("ServiceAccountWizard — new client", () => {
         }),
       ),
     );
-    expect(
-      await screen.findByRole("button", { name: "Concluir — ver conta" }),
-    ).toBeInTheDocument();
+    const done = await screen.findByRole("button", {
+      name: "Concluir — ver conta",
+    });
+    // The secret is still on screen, and leaving still needs the tick.
+    expect(screen.getByLabelText("Client secret")).toHaveValue("s3cret");
+    expect(done).toBeDisabled();
+    await userEvent.click(
+      screen.getByRole("checkbox", { name: /Guardei o segredo/ }),
+    );
+    expect(done).toBeEnabled();
+  });
+
+  it("creates the client and the account inactive when Ativa is unticked", async () => {
+    vi.mocked(createServiceAccountWithNewClient).mockResolvedValueOnce({
+      success: true,
+      data: {
+        client: { id: "c9", clientSecret: "s3cret" } as never,
+        account: { id: "sa9" } as never,
+      },
+    });
+    await fillNewClientAndIdentity({ inactive: true });
+    await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await waitFor(() =>
+      expect(createServiceAccountWithNewClient).toHaveBeenCalledWith(
+        expect.objectContaining({ active: false }),
+        expect.objectContaining({ active: false }),
+      ),
+    );
+  });
+
+  it("retries with the created client's active state", async () => {
+    vi.mocked(createServiceAccountWithNewClient).mockResolvedValueOnce({
+      success: false,
+      failedStep: "serviceAccount",
+      error: "Boom",
+      client: { id: "c9", active: false, clientSecret: "s3cret" } as never,
+    });
+    await fillNewClientAndIdentity({ inactive: true });
+    await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await userEvent.click(
+      await screen.findByRole("button", {
+        name: "Tentar criar a conta novamente",
+      }),
+    );
+    await waitFor(() =>
+      expect(createServiceAccount).toHaveBeenCalledWith(
+        expect.objectContaining({ oauthClientId: "c9", active: false }),
+      ),
+    );
+  });
+
+  it("toasts when registering throws", async () => {
+    vi.mocked(createServiceAccountWithNewClient).mockRejectedValueOnce(
+      new Error("Rede indisponível"),
+    );
+    await fillNewClientAndIdentity();
+    await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith({
+        type: "error",
+        title: "Não foi possível criar a conta",
+        description: "Rede indisponível",
+      }),
+    );
   });
 
   it("sends a duplicate client ID back to step 1 with a field error", async () => {
@@ -217,5 +301,9 @@ describe("ServiceAccountWizard — new client", () => {
     expect(
       await screen.findByText("Já existe um cliente com este client ID."),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText(/Client ID/)).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    );
   });
 });

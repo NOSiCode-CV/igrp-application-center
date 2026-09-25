@@ -44,6 +44,12 @@ import { WizardIdentityStep } from "./wizard-identity-step";
 import { WizardNewClientForm } from "./wizard-new-client-form";
 import { type WizardOutcome, WizardResult } from "./wizard-result";
 
+/** Next.js signals redirect()/notFound() by throwing; never swallow those. */
+function isNextSignal(error: unknown) {
+  const digest = (error as { digest?: unknown } | null)?.digest;
+  return typeof digest === "string" && digest.startsWith("NEXT_REDIRECT");
+}
+
 const STEPS: { step: WizardStep; title: string }[] = [
   { step: 1, title: "Cliente OAuth" },
   { step: 2, title: "Identidade" },
@@ -80,6 +86,9 @@ export function ServiceAccountWizard({
   const existingId =
     state.client?.kind === "existing" ? state.client.oauthClientId : undefined;
   const existing = allClients.find((c) => c.id === existingId);
+  // Spec §6.1: an account on an existing client takes that client's state.
+  const existingActive =
+    typeof existing?.active === "boolean" ? existing.active : undefined;
   const unavailable =
     !!existingId &&
     !available.isLoading &&
@@ -114,11 +123,30 @@ export function ServiceAccountWizard({
     return () => window.removeEventListener("beforeunload", warn);
   }, [holdingSecret]);
 
+  function failed(error: unknown) {
+    if (isNextSignal(error)) throw error;
+    igrpToast({
+      type: "error",
+      title: "Não foi possível criar a conta",
+      description: error instanceof Error ? error.message : String(error),
+    });
+  }
+
   async function submitExisting() {
+    try {
+      await createOnExisting();
+    } catch (error) {
+      failed(error);
+    }
+  }
+
+  async function createOnExisting() {
     if (!existingId) return;
+    const input = toAccountInput(state);
     const result = await create.mutateAsync({
       oauthClientId: existingId,
-      ...toAccountInput(state),
+      ...input,
+      active: existingActive ?? input.active,
     });
     if (!result.success) {
       igrpToast({
@@ -137,10 +165,22 @@ export function ServiceAccountWizard({
   }
 
   async function submitNew() {
+    try {
+      await createWithNewClient();
+    } catch (error) {
+      failed(error);
+    }
+  }
+
+  async function createWithNewClient() {
     if (state.client?.kind !== "new") return;
     const account = toAccountInput(state);
     const result = await createWithClient.mutateAsync({
-      client: toCreateRequest(state.client.values),
+      // "Ativa na criação" drives both the client and the account (spec §6.1).
+      client: {
+        ...toCreateRequest(state.client.values),
+        active: account.active,
+      },
       account,
     });
     if (result.success) {
@@ -149,6 +189,8 @@ export function ServiceAccountWizard({
         client: result.data.client,
         accountId: result.data.account.id,
       });
+      // The secret now lives only in `outcome`; drop it from the MutationCache.
+      createWithClient.reset();
       return;
     }
     if (result.failedStep === "serviceAccount") {
@@ -157,6 +199,7 @@ export function ServiceAccountWizard({
         client: result.client,
         error: result.error,
       });
+      createWithClient.reset();
       return;
     }
     if (result.status === 409) {
@@ -177,10 +220,24 @@ export function ServiceAccountWizard({
   }
 
   async function retryAccount() {
+    try {
+      await retryOnCreatedClient();
+    } catch (error) {
+      failed(error);
+    }
+  }
+
+  async function retryOnCreatedClient() {
     if (outcome?.kind !== "accountFailed") return;
+    const input = toAccountInput(state);
     const result = await create.mutateAsync({
       oauthClientId: outcome.client.id,
-      ...toAccountInput(state),
+      ...input,
+      // Match the client that was actually created.
+      active:
+        typeof outcome.client.active === "boolean"
+          ? outcome.client.active
+          : input.active,
     });
     if (!result.success) {
       setOutcome({ ...outcome, error: result.error });
@@ -302,6 +359,11 @@ export function ServiceAccountWizard({
                   state={state}
                   dispatch={dispatch}
                   applicationLabel={applicationLabel}
+                  clientActive={
+                    state.client?.kind === "existing"
+                      ? existingActive
+                      : undefined
+                  }
                 />
               ) : (
                 <WizardAccessStep

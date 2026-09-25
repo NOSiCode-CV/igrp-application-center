@@ -15,6 +15,11 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = vi.fn();
 });
 
+const toast = vi.fn();
+vi.mock("@igrp/igrp-framework-react-design-system", async (orig) => ({
+  ...(await orig<typeof import("@igrp/igrp-framework-react-design-system")>()),
+  useIGRPToast: () => ({ igrpToast: toast }),
+}));
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/actions/oauth-clients", () => ({
@@ -62,9 +67,16 @@ const clients = [
     clientId: "etl-runner-m2m",
     clientName: "ETL",
     applicationCode: "INV",
+    active: true,
     grantTypes: ["client_credentials"],
   },
   { id: "c2", clientId: "taken", grantTypes: ["client_credentials"] },
+  {
+    id: "c3",
+    clientId: "legacy-m2m",
+    active: false,
+    grantTypes: ["client_credentials"],
+  },
 ];
 
 function renderWizard(initialOAuthClientId?: string) {
@@ -136,6 +148,42 @@ describe("ServiceAccountWizard — existing client", () => {
     expect(
       screen.getByRole("combobox", { name: "Cliente OAuth" }),
     ).toBeInTheDocument();
+  });
+
+  it("follows an inactive existing client instead of offering a choice", async () => {
+    renderWizard("c3");
+    expect(
+      screen.queryByRole("checkbox", { name: "Ativa na criação" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Estado: segue o cliente OAuth (Inativo)."),
+    ).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText("Nome *"), "Legacy");
+    await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await waitFor(() =>
+      expect(createServiceAccount).toHaveBeenCalledWith(
+        expect.objectContaining({ oauthClientId: "c3", active: false }),
+      ),
+    );
+  });
+
+  it("toasts when the create call throws", async () => {
+    vi.mocked(createServiceAccount).mockRejectedValueOnce(
+      new Error("Rede indisponível"),
+    );
+    renderWizard("c1");
+    await userEvent.type(screen.getByLabelText("Nome *"), "Nightly");
+    await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith({
+        type: "error",
+        title: "Não foi possível criar a conta",
+        description: "Rede indisponível",
+      }),
+    );
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("warns when a deep-linked client is not available", () => {

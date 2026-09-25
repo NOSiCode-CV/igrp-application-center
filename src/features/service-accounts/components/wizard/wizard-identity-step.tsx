@@ -29,11 +29,17 @@ export function WizardIdentityStep({
   state,
   dispatch,
   applicationLabel,
+  clientActive,
 }: {
   state: WizardState;
   dispatch: Dispatch<WizardAction>;
   /** "INV — Faturação", or "Sem aplicação". */
   applicationLabel: string;
+  /**
+   * An existing OAuth Client's state. When set, the account follows it
+   * (spec §6.1) and no "Ativa na criação" choice is offered.
+   */
+  clientActive?: boolean;
 }) {
   const form = useForm<ServiceAccountIdentityValues>({
     resolver: zodResolver(serviceAccountIdentitySchema),
@@ -46,7 +52,13 @@ export function WizardIdentityStep({
         noValidate
         className="flex flex-col gap-6"
         onSubmit={form.handleSubmit((identity) =>
-          dispatch({ type: "setIdentity", identity }),
+          dispatch({
+            type: "setIdentity",
+            identity:
+              clientActive === undefined
+                ? identity
+                : { ...identity, active: clientActive },
+          }),
         )}
       >
         <div className="flex flex-col gap-1.5">
@@ -80,21 +92,27 @@ export function WizardIdentityStep({
             Herdada do cliente OAuth.
           </span>
         </div>
-        <FormField
-          control={form.control}
-          name="active"
-          render={({ field }) => (
-            <FormItem className="flex items-center gap-3">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={(c) => field.onChange(c === true)}
-                />
-              </FormControl>
-              <FormLabel className="font-normal">Ativa na criação</FormLabel>
-            </FormItem>
-          )}
-        />
+        {clientActive === undefined ? (
+          <FormField
+            control={form.control}
+            name="active"
+            render={({ field }) => (
+              <FormItem className="flex items-center gap-3">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(c) => field.onChange(c === true)}
+                  />
+                </FormControl>
+                <FormLabel className="font-normal">Ativa na criação</FormLabel>
+              </FormItem>
+            )}
+          />
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {`Estado: segue o cliente OAuth (${clientActive ? "Ativo" : "Inativo"}).`}
+          </p>
+        )}
         <div className="flex justify-between">
           <Button
             type="button"
