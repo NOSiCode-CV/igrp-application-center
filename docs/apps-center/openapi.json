@@ -425,6 +425,7 @@
           "Service Accounts"
         ],
         "summary": "Get service account by id",
+        "description": "This Permission is required: igrp.client.view",
         "operationId": "findById",
         "parameters": [
           {
@@ -455,6 +456,7 @@
           "Service Accounts"
         ],
         "summary": "Update service account",
+        "description": "Replaces the whole roleIds and permissionIds sets — send the full desired state, not a delta. Roles and permissions are NOT department-scoped: any in the system may be granted. This Permission is required: igrp.client.update",
         "operationId": "update",
         "parameters": [
           {
@@ -479,7 +481,7 @@
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "Updated",
             "content": {
               "*/*": {
                 "schema": {
@@ -487,6 +489,15 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation failed, or a roleId/permissionId does not exist. The whole request is rejected and the unknown ids are listed — none are silently dropped."
+          },
+          "404": {
+            "description": "No service account with this id"
+          },
+          "409": {
+            "description": "Reassigning to an OAuth client that already has a service account"
           }
         }
       },
@@ -495,6 +506,7 @@
           "Service Accounts"
         ],
         "summary": "Delete service account",
+        "description": "This Permission is required: igrp.client.delete",
         "operationId": "delete",
         "parameters": [
           {
@@ -508,8 +520,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "Deleted"
+          },
+          "404": {
+            "description": "No service account with this id"
           }
         }
       }
@@ -768,8 +783,14 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "204": {
+            "description": "Deleted"
+          },
+          "404": {
+            "description": "No client with this id"
+          },
+          "409": {
+            "description": "A service account is still bound to this client. Delete the service account first — the client is never deleted out from under it."
           }
         }
       }
@@ -1567,6 +1588,7 @@
           "Service Accounts"
         ],
         "summary": "List service accounts",
+        "description": "This Permission is required: igrp.client.list",
         "operationId": "findAll",
         "responses": {
           "200": {
@@ -1589,6 +1611,7 @@
           "Service Accounts"
         ],
         "summary": "Create service account",
+        "description": "A service account is 1:1 with its OAuth client. Roles and direct permissions are NOT department-scoped: any role or permission in the system may be granted. This Permission is required: igrp.client.create",
         "operationId": "create",
         "requestBody": {
           "content": {
@@ -1601,8 +1624,8 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "Created",
             "content": {
               "*/*": {
                 "schema": {
@@ -1610,6 +1633,15 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Validation failed, or a roleId/permissionId does not exist. The whole request is rejected and the unknown ids are listed — none are silently dropped."
+          },
+          "404": {
+            "description": "oauthClientId or applicationId does not exist"
+          },
+          "409": {
+            "description": "This OAuth client already has a service account"
           }
         }
       }
@@ -3005,6 +3037,39 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OAuthClientDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/clients/{id}/rotate-secret": {
+      "post": {
+        "tags": [
+          "OAuth Clients"
+        ],
+        "summary": "Rotate the client secret",
+        "description": "Generates a new secret for an existing client and returns it in the response body; it will not be available again. The id and clientId are preserved, so only the secret has to be redistributed to consumers. The previous secret stops working immediately. Access tokens already issued remain valid until they expire — deactivate the client as well if a leak requires cutting those off. This Permission is required: igrp.client.update",
+        "operationId": "rotateSecret",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -6971,10 +7036,13 @@
         "properties": {
           "name": {
             "type": "string",
-            "minLength": 1
+            "maxLength": 180,
+            "minLength": 0
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
           },
           "active": {
             "type": "boolean"
@@ -7039,6 +7107,18 @@
           "applicationCode": {
             "type": "string"
           },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceAccountRoleDTO"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceAccountPermissionDTO"
+            }
+          },
           "roleIds": {
             "type": "array",
             "items": {
@@ -7049,8 +7129,10 @@
           },
           "roleCodes": {
             "type": "array",
+            "deprecated": true,
             "items": {
-              "type": "string"
+              "type": "string",
+              "deprecated": true
             },
             "uniqueItems": true
           },
@@ -7064,8 +7146,10 @@
           },
           "permissionNames": {
             "type": "array",
+            "deprecated": true,
             "items": {
-              "type": "string"
+              "type": "string",
+              "deprecated": true
             },
             "uniqueItems": true
           },
@@ -7076,6 +7160,33 @@
           "updatedAt": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "ServiceAccountPermissionDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceAccountRoleDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "code": {
+            "type": "string"
+          },
+          "departmentCode": {
+            "type": "string"
           }
         }
       },
