@@ -11,6 +11,7 @@ import {
   withActive,
 } from "@/features/oauth-clients/lib/oauth-client-request";
 import { toServiceAccountRequest } from "@/features/service-accounts/lib/service-account-request";
+import { mergeScopedSelection } from "@/features/service-accounts/lib/service-account-utils";
 import { toActionError } from "@/lib/app-utilities";
 
 import { getClientAccess } from "./access-client";
@@ -102,9 +103,16 @@ export type ServiceAccountInput = Omit<
   "applicationId"
 >;
 export type ServiceAccountIdentity = { name: string; description?: string };
-export type ServiceAccountAccess = {
-  roleIds?: number[];
-  permissionIds?: number[];
+/**
+ * What the UI sends to change access: a CHANGE, never a full set. The server
+ * applies it to a fresh GET so a stale cache (or a concurrent save from
+ * another section) can't overwrite ids it never saw.
+ */
+export type AccessChange = {
+  roles?: { scope: number[]; selected: number[] } | { remove: number[] };
+  permissions?:
+    | { scope: number[]; selected: number[] }
+    | { remove: { id: number; name: string }[] };
 };
 
 async function applicationOf(client: AccessClient, oauthClientId: string) {
@@ -112,21 +120,69 @@ async function applicationOf(client: AccessClient, oauthClientId: string) {
     .applicationId;
 }
 
-/** PUT replaces everything: start from a fresh GET, heal applicationId, apply the patch. */
+/**
+ * PUT replaces everything: start from a fresh GET, heal applicationId, apply
+ * the patch (computed from that same fresh account when it is a function).
+ */
 async function putFromFresh(
   client: AccessClient,
   id: string,
-  patch: Partial<ServiceAccountRequestDTO>,
+  patch:
+    | Partial<ServiceAccountRequestDTO>
+    | ((fresh: ServiceAccountDTO) => Partial<ServiceAccountRequestDTO>),
 ) {
   const sa = (await client.serviceAccounts.getServiceAccount(id)).data;
   const applicationId = await applicationOf(client, sa.oauthClientId);
-  const result = await client.serviceAccounts.updateServiceAccount(id, {
+  const request: ServiceAccountRequestDTO = {
     ...toServiceAccountRequest(sa),
     applicationId,
-    ...patch,
-  });
-  return result.data;
+    ...(typeof patch === "function" ? patch(sa) : patch),
+  };
+  const result = await client.serviceAccounts.updateServiceAccount(id, request);
+  return { fresh: sa, request, data: result.data };
 }
+
+function applyChange(
+  fresh: readonly number[],
+  change: { scope: number[]; selected: number[] } | { remove: number[] },
+): number[] {
+  if ("remove" in change) {
+    const removed = new Set(change.remove);
+    return fresh.filter((id) => !removed.has(id));
+  }
+  return mergeScopedSelection(fresh, change.scope, change.selected);
+}
+
+function countNames(names: readonly string[] | undefined) {
+  const counts = new Map<string, number>();
+  for (const name of names ?? []) counts.set(name, (counts.get(name) ?? 0) + 1);
+  return counts;
+}
+
+/**
+ * Direct-permission removal pairs ids with names by position (see
+ * `pairDirectPermissions`), which may be wrong. Confirm from the PUT
+ * response: every removed name went away once, every other name stayed.
+ * Counted, because a name can repeat across departments.
+ */
+function removalConfirmed(
+  before: readonly string[] | undefined,
+  after: readonly string[] | undefined,
+  removed: readonly string[],
+) {
+  const expected = countNames(before);
+  for (const name of removed) {
+    expected.set(name, Math.max(0, (expected.get(name) ?? 0) - 1));
+  }
+  const actual = countNames(after);
+  for (const [name, count] of expected) {
+    if ((actual.get(name) ?? 0) !== count) return false;
+  }
+  return true;
+}
+
+const REMOVAL_UNCONFIRMED =
+  "Não foi possível confirmar qual permissão remover. Nada foi alterado. Remova-a pelo seletor de permissões.";
 
 export async function getServiceAccount(
   id: string,
@@ -170,7 +226,7 @@ export async function updateServiceAccountIdentity(
 ): Promise<ActionResult<ServiceAccountDTO>> {
   const client = await getClientAccess();
   try {
-    const data = await putFromFresh(client, id, {
+    const { data } = await putFromFresh(client, id, {
       name: identity.name,
       description: identity.description,
     });
@@ -186,14 +242,41 @@ export async function updateServiceAccountIdentity(
 
 export async function setServiceAccountAccess(
   id: string,
-  access: ServiceAccountAccess,
+  change: AccessChange,
 ): Promise<ActionResult<ServiceAccountDTO>> {
   const client = await getClientAccess();
   try {
-    const patch: Partial<ServiceAccountRequestDTO> = {};
-    if (access.roleIds) patch.roleIds = [...access.roleIds];
-    if (access.permissionIds) patch.permissionIds = [...access.permissionIds];
-    const data = await putFromFresh(client, id, patch);
+    const { fresh, request, data } = await putFromFresh(client, id, (sa) => {
+      const patch: Partial<ServiceAccountRequestDTO> = {};
+      if (change.roles) {
+        patch.roleIds = applyChange(sa.roleIds ?? [], change.roles);
+      }
+      if (change.permissions) {
+        const p = change.permissions;
+        patch.permissionIds = applyChange(
+          sa.permissionIds ?? [],
+          "remove" in p ? { remove: p.remove.map((r) => r.id) } : p,
+        );
+      }
+      return patch;
+    });
+    const permissions = change.permissions;
+    if (
+      permissions &&
+      "remove" in permissions &&
+      !removalConfirmed(
+        fresh.permissionNames,
+        data.permissionNames,
+        permissions.remove.map((r) => r.name),
+      )
+    ) {
+      // Positional pairing guessed wrong: put the previous set back.
+      await client.serviceAccounts.updateServiceAccount(id, {
+        ...request,
+        permissionIds: [...(fresh.permissionIds ?? [])],
+      });
+      return { success: false, error: REMOVAL_UNCONFIRMED };
+    }
     return { success: true, data };
   } catch (error) {
     console.error("[service-account-access] Erro ao guardar acessos:", error);
@@ -233,6 +316,9 @@ export async function createServiceAccountWithNewClient(
       error: "Uma conta de serviço exige o grant type client_credentials.",
     };
   }
+  // Before creating the client: a session that expires after the POST would
+  // throw here and lose the one-time secret.
+  const client = await getClientAccess();
   const created = await createOAuthClient(clientInput);
   if (!created.success) {
     return {
@@ -242,7 +328,6 @@ export async function createServiceAccountWithNewClient(
       status: created.status,
     };
   }
-  const client = await getClientAccess();
   try {
     const result = await client.serviceAccounts.createServiceAccount({
       ...account,

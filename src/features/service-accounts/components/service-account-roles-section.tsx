@@ -8,13 +8,14 @@ import type {
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
 
+import type { AccessChange } from "@/actions/service-accounts";
 import { InlineError } from "@/components/inline-error";
 
+import { groupRolesByDepartment } from "../lib/service-account-utils";
 import {
-  groupRolesByDepartment,
-  mergeScopedSelection,
-} from "../lib/service-account-utils";
-import { useSetServiceAccountAccess } from "../use-service-accounts";
+  useAccountBusy,
+  useSetServiceAccountAccess,
+} from "../use-service-accounts";
 import { RolePickerDialog } from "./role-picker-dialog";
 
 // Stable across renders — a fresh `[]` literal every render would re-seed
@@ -35,15 +36,19 @@ export function ServiceAccountRolesSection({
   onRetry: () => void;
 }) {
   const { igrpToast } = useIGRPToast();
-  const access = useSetServiceAccountAccess();
+  const access = useSetServiceAccountAccess(account.id);
+  const busy = useAccountBusy(account.id);
   const [picking, setPicking] = useState(false);
   const [confirming, setConfirming] = useState<number | null>(null);
   const roleIds = account.roleIds ?? NO_IDS;
 
-  async function save(next: number[], success: string) {
+  async function save(
+    roles: NonNullable<AccessChange["roles"]>,
+    success: string,
+  ) {
     const result = await access.mutateAsync({
       id: account.id,
-      access: { roleIds: next },
+      change: { roles },
     });
     if (!result.success) {
       igrpToast({
@@ -66,7 +71,12 @@ export function ServiceAccountRolesSection({
         <h3 id="sa-roles" className="font-semibold">
           Perfis
         </h3>
-        <Button size="sm" variant="outline" onClick={() => setPicking(true)}>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={busy}
+          onClick={() => setPicking(true)}
+        >
           Atribuir perfil
         </Button>
       </div>
@@ -108,20 +118,17 @@ export function ServiceAccountRolesSection({
                         size="sm"
                         variant="outline"
                         onClick={() => setConfirming(null)}
-                        disabled={access.isPending}
+                        disabled={busy}
                       >
                         Cancelar
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
-                        disabled={access.isPending}
+                        disabled={busy}
                         onClick={async () => {
                           if (
-                            await save(
-                              roleIds.filter((r) => r !== role.id),
-                              "Perfil removido",
-                            )
+                            await save({ remove: [role.id] }, "Perfil removido")
                           )
                             setConfirming(null);
                         }}
@@ -134,7 +141,7 @@ export function ServiceAccountRolesSection({
                       size="sm"
                       variant="ghost"
                       aria-label={`Remover perfil ${role.code}`}
-                      disabled={access.isPending}
+                      disabled={busy}
                       onClick={() => setConfirming(role.id)}
                     >
                       Remover
@@ -151,14 +158,13 @@ export function ServiceAccountRolesSection({
           open
           onOpenChange={setPicking}
           selectedIds={roleIds}
-          isSaving={access.isPending}
+          isSaving={busy}
           onConfirm={async ({ scope, selected }) => {
-            const next = mergeScopedSelection(
-              roleIds,
-              scope.map((r) => r.id),
-              selected.map((r) => r.id),
-            );
-            if (await save(next, "Perfis atualizados")) setPicking(false);
+            const change = {
+              scope: scope.map((r) => r.id),
+              selected: selected.map((r) => r.id),
+            };
+            if (await save(change, "Perfis atualizados")) setPicking(false);
           }}
         />
       ) : null}

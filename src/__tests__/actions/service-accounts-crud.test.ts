@@ -114,16 +114,101 @@ describe("updateServiceAccountIdentity", () => {
 });
 
 describe("setServiceAccountAccess", () => {
-  it("replaces only the sets it is given", async () => {
-    await setServiceAccountAccess("sa1", { roleIds: [2] });
+  it("applies a removal to the fresh server state, not the UI's copy", async () => {
+    // The UI saw roleIds [1, 2]; another save has since added 3.
+    serviceAccounts.getServiceAccount.mockResolvedValue({
+      data: { ...sa, roleIds: [1, 2, 3] },
+    });
+    const r = await setServiceAccountAccess("sa1", { roles: { remove: [2] } });
+    expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledTimes(1);
     expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledWith(
       "sa1",
       expect.objectContaining({
-        roleIds: [2],
+        roleIds: [1, 3],
         permissionIds: [9],
         applicationId: 7,
       }),
     );
+    expect(r.success).toBe(true);
+  });
+
+  it("merges a picker's scope/selection into the fresh set", async () => {
+    serviceAccounts.getServiceAccount.mockResolvedValue({
+      data: { ...sa, roleIds: [1, 2, 3] },
+    });
+    await setServiceAccountAccess("sa1", {
+      roles: { scope: [2, 3, 4], selected: [3, 4] },
+    });
+    expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledWith(
+      "sa1",
+      expect.objectContaining({ roleIds: [1, 3, 4], permissionIds: [9] }),
+    );
+  });
+
+  describe("direct-permission removal", () => {
+    const held = {
+      ...sa,
+      permissionIds: [9, 10],
+      permissionNames: ["inv.approve", "inv.export"],
+    };
+    beforeEach(() => {
+      serviceAccounts.getServiceAccount.mockResolvedValue({ data: held });
+    });
+    const remove = () =>
+      setServiceAccountAccess("sa1", {
+        permissions: { remove: [{ id: 9, name: "inv.approve" }] },
+      });
+
+    it("succeeds when the response drops exactly that name", async () => {
+      serviceAccounts.updateServiceAccount.mockResolvedValueOnce({
+        data: { ...held, permissionIds: [10], permissionNames: ["inv.export"] },
+      });
+      const r = await remove();
+      expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledTimes(1);
+      expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledWith(
+        "sa1",
+        expect.objectContaining({ permissionIds: [10], roleIds: [1, 2] }),
+      );
+      expect(r.success).toBe(true);
+    });
+
+    it.each([
+      ["still holds the removed name", ["inv.approve"]],
+      ["lost another name", []],
+    ])(
+      "restores the previous set when the response %s",
+      async (_label, names) => {
+        serviceAccounts.updateServiceAccount.mockResolvedValueOnce({
+          data: { ...held, permissionIds: [10], permissionNames: names },
+        });
+        const r = await remove();
+        expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledTimes(2);
+        expect(serviceAccounts.updateServiceAccount).toHaveBeenLastCalledWith(
+          "sa1",
+          expect.objectContaining({
+            permissionIds: [9, 10],
+            roleIds: [1, 2],
+            applicationId: 7,
+          }),
+        );
+        expect(r).toEqual({
+          success: false,
+          error:
+            "Não foi possível confirmar qual permissão remover. Nada foi alterado. Remova-a pelo seletor de permissões.",
+        });
+      },
+    );
+
+    it("does not verify picker-based changes", async () => {
+      serviceAccounts.updateServiceAccount.mockResolvedValueOnce({
+        data: { ...held, permissionIds: [10], permissionNames: ["x"] },
+      });
+      const r = await setServiceAccountAccess("sa1", {
+        permissions: { scope: [9], selected: [] },
+      });
+      expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledTimes(1);
+      expect(r.success).toBe(true);
+    });
   });
 });
 
@@ -144,6 +229,19 @@ describe("createServiceAccountWithNewClient", () => {
       applicationId: 7,
     });
     expect(r.success && r.data.client.clientSecret).toBe("s3cret");
+  });
+
+  it("needs no new session once the OAuth client exists (its secret is at stake)", async () => {
+    const { getClientAccess } = await import("@/actions/access-client");
+    let callsAtCreation = -1;
+    oauthClients.createOAuthClient.mockImplementation(async () => {
+      callsAtCreation = vi.mocked(getClientAccess).mock.calls.length;
+      return { data: { ...oauth, clientSecret: "s3cret" } };
+    });
+    serviceAccounts.createServiceAccount.mockResolvedValue({ data: sa });
+    await createServiceAccountWithNewClient(clientInput, { name: "N" });
+    expect(callsAtCreation).toBeGreaterThan(0);
+    expect(vi.mocked(getClientAccess).mock.calls.length).toBe(callsAtCreation);
   });
 
   it("refuses a client without client_credentials", async () => {

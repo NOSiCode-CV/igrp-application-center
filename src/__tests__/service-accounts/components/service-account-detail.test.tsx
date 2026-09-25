@@ -111,6 +111,30 @@ describe("ServiceAccountDetail", () => {
     );
   });
 
+  it("disables the danger zone and identity save while an edit is pending", async () => {
+    let finish: (v: { success: true; data: never }) => void = () => {};
+    vi.mocked(updateServiceAccountIdentity).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    renderDetail();
+    await userEvent.click(
+      screen.getByRole("button", { name: "Editar identidade" }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Guardar" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Desativar" })).toBeDisabled(),
+    );
+    expect(screen.getByRole("button", { name: "Eliminar" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "A guardar…" })).toBeDisabled();
+    finish({ success: true, data: {} as never });
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Eliminar" })).toBeEnabled(),
+    );
+  });
+
   it("names the client in the deactivate copy", () => {
     renderDetail();
     expect(

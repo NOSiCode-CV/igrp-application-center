@@ -111,7 +111,7 @@ describe("ServiceAccountAccess", () => {
     );
     await waitFor(() =>
       expect(setServiceAccountAccess).toHaveBeenCalledWith("sa1", {
-        roleIds: [2],
+        roles: { remove: [1] },
       }),
     );
   });
@@ -126,8 +126,66 @@ describe("ServiceAccountAccess", () => {
     );
     await waitFor(() =>
       expect(setServiceAccountAccess).toHaveBeenCalledWith("sa1", {
-        permissionIds: [],
+        permissions: { remove: [{ id: 9, name: "inv.approve" }] },
       }),
+    );
+  });
+
+  it("keeps rows apart when a name repeats across departments", async () => {
+    renderAccess({
+      ...base,
+      permissionIds: [9, 10],
+      permissionNames: ["inv.read", "inv.read"],
+    });
+    const removes = screen.getAllByRole("button", {
+      name: "Remover permissão inv.read",
+    });
+    expect(removes).toHaveLength(2);
+    await userEvent.click(removes[1]);
+    expect(
+      screen.getAllByRole("button", { name: "Confirmar remoção" }),
+    ).toHaveLength(1);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Confirmar remoção" }),
+    );
+    await waitFor(() =>
+      expect(setServiceAccountAccess).toHaveBeenCalledWith("sa1", {
+        permissions: { remove: [{ id: 10, name: "inv.read" }] },
+      }),
+    );
+  });
+
+  it("disables every access edit while a save on the account is pending", async () => {
+    let finish: (v: { success: true; data: never }) => void = () => {};
+    vi.mocked(setServiceAccountAccess).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    renderAccess();
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Remover perfil INV.reader" }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Confirmar remoção" }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Remover permissão inv.approve" }),
+      ).toBeDisabled(),
+    );
+    expect(
+      screen.getByRole("button", { name: "Atribuir perfil" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Adicionar permissão" }),
+    ).toBeDisabled();
+    finish({ success: true, data: {} as never });
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Adicionar permissão" }),
+      ).toBeEnabled(),
     );
   });
 

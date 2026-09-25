@@ -1,15 +1,19 @@
 import type { ReactNode } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { getRoleById } from "@/actions/roles";
-import { deleteServiceAccount } from "@/actions/service-accounts";
+import {
+  deleteServiceAccount,
+  setServiceAccountAccess,
+} from "@/actions/service-accounts";
 import { oauthClientKeys } from "@/features/oauth-clients/query-keys";
 import { serviceAccountKeys } from "@/features/service-accounts/query-keys";
 import { useRoleDetails } from "@/features/service-accounts/use-role-details";
 import {
+  useAccountBusy,
   useAvailableOAuthClients,
   useCreateServiceAccountWithNewClient,
   useDeleteServiceAccount,
@@ -122,12 +126,54 @@ describe("useSetServiceAccountAccess", () => {
     const { result } = renderHook(() => useSetServiceAccountAccess(), {
       wrapper,
     });
-    await result.current.mutateAsync({ id: "sa1", access: { roleIds: [1] } });
+    await result.current.mutateAsync({
+      id: "sa1",
+      change: { roles: { remove: [1] } },
+    });
+    expect(setServiceAccountAccess).toHaveBeenCalledWith("sa1", {
+      roles: { remove: [1] },
+    });
     await waitFor(() =>
       expect(invalidate).toHaveBeenCalledWith({
         queryKey: serviceAccountKeys.all,
       }),
     );
+  });
+});
+
+describe("useAccountBusy", () => {
+  it("is true while any mutation on that account is pending, only for it", async () => {
+    let finish: (v: { success: true; data: never }) => void = () => {};
+    vi.mocked(setServiceAccountAccess).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
+    const { wrapper } = setup();
+    const { result } = renderHook(
+      () => ({
+        access: useSetServiceAccountAccess("sa1"),
+        busy: useAccountBusy("sa1"),
+        other: useAccountBusy("sa2"),
+      }),
+      { wrapper },
+    );
+    expect(result.current.busy).toBe(false);
+    let pending: Promise<unknown> = Promise.resolve();
+    act(() => {
+      pending = result.current.access.mutateAsync({
+        id: "sa1",
+        change: { roles: { remove: [1] } },
+      });
+    });
+    await waitFor(() => expect(result.current.busy).toBe(true));
+    expect(result.current.other).toBe(false);
+    await act(async () => {
+      finish({ success: true, data: {} as never });
+      await pending;
+    });
+    await waitFor(() => expect(result.current.busy).toBe(false));
   });
 });
 

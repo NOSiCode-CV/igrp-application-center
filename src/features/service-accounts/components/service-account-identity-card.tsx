@@ -22,7 +22,10 @@ import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import { formatDate } from "@/lib/app-utilities";
 
 import { serviceAccountIdentitySchema } from "../service-account-schemas";
-import { useUpdateServiceAccountIdentity } from "../use-service-accounts";
+import {
+  useAccountBusy,
+  useUpdateServiceAccountIdentity,
+} from "../use-service-accounts";
 
 const identitySchema = serviceAccountIdentitySchema.pick({
   name: true,
@@ -41,7 +44,8 @@ export function ServiceAccountIdentityCard({
   account: ServiceAccountDTO;
 }) {
   const { igrpToast } = useIGRPToast();
-  const update = useUpdateServiceAccountIdentity();
+  const update = useUpdateServiceAccountIdentity(account.id);
+  const busy = useAccountBusy(account.id);
   const [editing, setEditing] = useState(false);
   const form = useForm<IdentityValues>({
     resolver: zodResolver(identitySchema),
@@ -82,7 +86,12 @@ export function ServiceAccountIdentityCard({
           Identidade
         </h3>
         {editing ? null : (
-          <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={busy}
+            onClick={() => setEditing(true)}
+          >
             Editar identidade
           </Button>
         )}
@@ -124,7 +133,7 @@ export function ServiceAccountIdentityCard({
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={update.isPending}>
+              <Button type="submit" disabled={busy}>
                 {update.isPending ? "A guardar…" : "Guardar"}
               </Button>
             </div>

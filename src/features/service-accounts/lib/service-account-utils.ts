@@ -92,6 +92,10 @@ export type DirectPermission = { id: number | null; name: string };
  * `permissionIds` and `permissionNames` as two separate sets and nothing
  * guarantees their order matches. We pair by position only when the lengths
  * agree; otherwise names are shown without ids and removal is disabled.
+ * The lengths always agree in practice, so a wrong pairing is caught on the
+ * server instead: `setServiceAccountAccess` sends `{ remove: [{ id, name }] }`,
+ * checks the PUT response dropped exactly that name, and restores the
+ * previous set if not.
  * Replace with the backend's `{ id, name }` pairs once they exist.
  */
 export function pairDirectPermissions(

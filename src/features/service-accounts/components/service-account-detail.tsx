@@ -9,7 +9,7 @@ import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { ActiveBadge } from "@/features/oauth-clients/components/oauth-client-badges";
 import { ROUTES } from "@/lib/constants";
 
-import { useServiceAccount } from "../use-service-accounts";
+import { useAccountBusy, useServiceAccount } from "../use-service-accounts";
 import { ServiceAccountActivationDialog } from "./service-account-activation-dialog";
 import { ServiceAccountClientCard } from "./service-account-client-card";
 import { ServiceAccountDeleteDialog } from "./service-account-delete-dialog";
@@ -25,6 +25,7 @@ export function ServiceAccountDetail({
 }) {
   const router = useRouter();
   const { data: account } = useServiceAccount(id);
+  const busy = useAccountBusy(id);
   const [dialog, setDialog] = useState<"none" | "activation" | "delete">(
     "none",
   );
@@ -100,6 +101,7 @@ export function ServiceAccountDetail({
             <Button
               variant={account.active ? "outline" : "default"}
               className={account.active ? "text-destructive" : undefined}
+              disabled={busy}
               onClick={() => setDialog("activation")}
             >
               {account.active ? "Desativar" : "Ativar"}
@@ -113,7 +115,11 @@ export function ServiceAccountDetail({
                 recuperá-los.
               </span>
             </div>
-            <Button variant="destructive" onClick={() => setDialog("delete")}>
+            <Button
+              variant="destructive"
+              disabled={busy}
+              onClick={() => setDialog("delete")}
+            >
               Eliminar
             </Button>
           </div>

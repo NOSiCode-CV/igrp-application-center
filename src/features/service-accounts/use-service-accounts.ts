@@ -1,12 +1,17 @@
 import { useMemo } from "react";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useIsMutating,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import {
+  type AccessChange,
   createServiceAccount,
   createServiceAccountWithNewClient,
   deleteServiceAccount,
-  type ServiceAccountAccess,
   type ServiceAccountIdentity,
   type ServiceAccountInput,
   setServiceAccountAccess,
@@ -54,6 +59,19 @@ export const useAvailableOAuthClients = () => {
   };
 };
 
+/**
+ * Shared by every mutation on one Service Account, so edits run one at a
+ * time: while any is pending, `useAccountBusy` disables the others.
+ */
+export const serviceAccountMutationKey = (id: string) =>
+  ["service-accounts", "mutate", id] as const;
+
+export const useAccountBusy = (id: string) =>
+  useIsMutating({ mutationKey: serviceAccountMutationKey(id) }) > 0;
+
+const mutationKeyFor = (id: string | undefined) =>
+  id ? serviceAccountMutationKey(id) : undefined;
+
 function useInvalidateBoth() {
   const qc = useQueryClient();
   return () =>
@@ -95,9 +113,10 @@ export const useCreateServiceAccountWithNewClient = () => {
   });
 };
 
-export const useUpdateServiceAccountIdentity = () => {
+export const useUpdateServiceAccountIdentity = (accountId?: string) => {
   const qc = useQueryClient();
   return useMutation({
+    mutationKey: mutationKeyFor(accountId),
     mutationFn: ({
       id,
       identity,
@@ -112,16 +131,12 @@ export const useUpdateServiceAccountIdentity = () => {
   });
 };
 
-export const useSetServiceAccountAccess = () => {
+export const useSetServiceAccountAccess = (accountId?: string) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      access,
-    }: {
-      id: string;
-      access: ServiceAccountAccess;
-    }) => setServiceAccountAccess(id, access),
+    mutationKey: mutationKeyFor(accountId),
+    mutationFn: ({ id, change }: { id: string; change: AccessChange }) =>
+      setServiceAccountAccess(id, change),
     onSuccess: async (result) => {
       if (result.success)
         await qc.invalidateQueries({ queryKey: serviceAccountKeys.all });
@@ -129,9 +144,10 @@ export const useSetServiceAccountAccess = () => {
   });
 };
 
-export const useDeleteServiceAccount = () => {
+export const useDeleteServiceAccount = (accountId?: string) => {
   const qc = useQueryClient();
   return useMutation({
+    mutationKey: mutationKeyFor(accountId),
     mutationFn: ({
       id,
       alsoDeleteClient,
@@ -152,9 +168,10 @@ export const useDeleteServiceAccount = () => {
   });
 };
 
-export const useSetServiceAccountActive = () => {
+export const useSetServiceAccountActive = (accountId?: string) => {
   const invalidateBoth = useInvalidateBoth();
   return useMutation({
+    mutationKey: mutationKeyFor(accountId),
     mutationFn: ({ id, active }: { id: string; active: boolean }) =>
       setServiceAccountActive(id, active),
     onSettled: async () => {

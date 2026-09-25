@@ -26,7 +26,7 @@ export function ServiceAccountDeleteDialog({
 }) {
   const id = useId();
   const { igrpToast } = useIGRPToast();
-  const mutation = useDeleteServiceAccount();
+  const mutation = useDeleteServiceAccount(account.id);
   // Checked by default: an orphaned client is a live, untracked credential (spec §5.6).
   const [alsoDeleteClient, setAlsoDeleteClient] = useState(true);
 

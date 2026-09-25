@@ -24,7 +24,7 @@ export function ServiceAccountActivationDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { igrpToast } = useIGRPToast();
-  const mutation = useSetServiceAccountActive();
+  const mutation = useSetServiceAccountActive(account.id);
   // Frozen at open: a refetch mid-dialog must not flip the action.
   const [activate] = useState(() => !account.active);
 
