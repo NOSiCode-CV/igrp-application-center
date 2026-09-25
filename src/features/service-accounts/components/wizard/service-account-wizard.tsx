@@ -196,14 +196,18 @@ export function ServiceAccountWizard({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-5 py-3">
-        <Button asChild variant="ghost">
-          <Link href={ROUTES.SERVICE_ACCOUNTS}>
-            <IGRPIcon iconName="X" aria-hidden="true" />
-            Cancelar
-          </Link>
-        </Button>
+        {outcome ? null : (
+          <Button asChild variant="ghost">
+            <Link href={ROUTES.SERVICE_ACCOUNTS}>
+              <IGRPIcon iconName="X" aria-hidden="true" />
+              Cancelar
+            </Link>
+          </Button>
+        )}
         <p className="text-sm text-muted-foreground">
-          Nada é criado até confirmar no último passo.
+          {outcome
+            ? "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página."
+            : "Nada é criado até confirmar no último passo."}
         </p>
       </div>
 

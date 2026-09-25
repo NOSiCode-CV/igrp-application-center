@@ -142,6 +142,32 @@ describe("ServiceAccountWizard — new client", () => {
     expect(push).toHaveBeenCalledWith("/settings/accounts/services/sa9");
   });
 
+  it("removes the header Cancelar link and warns once a client has been registered", async () => {
+    vi.mocked(createServiceAccountWithNewClient).mockResolvedValueOnce({
+      success: true,
+      data: {
+        client: {
+          id: "c9",
+          clientId: "nightly-etl-m2m",
+          clientSecret: "s3cret",
+        } as never,
+        account: { id: "sa9", name: "Nightly Invoice ETL" } as never,
+      },
+    });
+    await fillNewClientAndIdentity();
+    expect(screen.getByRole("link", { name: /Cancelar/ })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Criar conta" }));
+    await screen.findByRole("button", { name: "Concluir — ver conta" });
+    expect(
+      screen.queryByRole("link", { name: /Cancelar/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página.",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("still shows the secret when the account step fails, and retries on that client", async () => {
     vi.mocked(createServiceAccountWithNewClient).mockResolvedValueOnce({
       success: false,
