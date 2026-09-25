@@ -133,7 +133,9 @@ export function getOAuthClientColumns(
     {
       id: "client",
       accessorFn: (r) => `${r.clientName ?? ""} ${r.clientId}`,
-      header: ({ column }) => <IGRPDataTableHeaderSortToggle title="Cliente" column={column} />,
+      header: ({ column }) => (
+        <IGRPDataTableHeaderSortToggle title="Cliente" column={column} />
+      ),
       cell: ({ row }) => (
         <div className="flex flex-col gap-0.5">
           <Link
@@ -142,31 +144,30 @@ export function getOAuthClientColumns(
           >
             {row.original.clientName || row.original.clientId}
           </Link>
-          <div className="pt-2">
-            <span>ID:{" "}</span>
-            <span className="font-mono text-xs text-muted-foreground">
-              {row.original.clientId}
-            </span>
-          </div>          
+          <span className="font-mono text-xs text-muted-foreground">
+            {row.original.clientId}
+          </span>
           {row.original.linkedAccount ? (
-            <div className="pt-2">
-              <span>IServiço:{" "}</span>
-              <span className="font-mono text-xs text-muted-foreground">              
+            <span className="text-xs text-muted-foreground">
+              Conta de serviço:{" "}
+              <Link
+                href={`${ROUTES.SERVICE_ACCOUNTS}/${row.original.linkedAccount.id}`}
+                className="underline"
+              >
                 {row.original.linkedAccount.name}
-              </span>
-            </div>
-          ) : (
-            <span className="text-muted-foreground">N/A</span>
-          )
-        }
+              </Link>
+            </span>
+          ) : null}
         </div>
       ),
-      size: 350
+      size: 350,
     },
     {
       id: "kind",
       accessorFn: (r) => getClientKind(r.grantTypes),
-      header: ({ column }) => <IGRPDataTableHeaderSortToggle title="Tipo" column={column} />,
+      header: ({ column }) => (
+        <IGRPDataTableHeaderSortToggle title="Tipo" column={column} />
+      ),
       cell: ({ row }) => (
         <ClientKindBadge grantTypes={row.original.grantTypes} />
       ),
@@ -195,11 +196,13 @@ export function getOAuthClientColumns(
       cell: ({ getValue }) => (
         <span className="font-mono text-xs">{String(getValue())}</span>
       ),
-    },   
+    },
     {
       id: "status",
       accessorFn: (r) => (r.active ? "ACTIVE" : "INACTIVE"),
-      header: ({ column }) => <IGRPDataTableHeaderSortToggle title="Estado" column={column}  />,
+      header: ({ column }) => (
+        <IGRPDataTableHeaderSortToggle title="Estado" column={column} />
+      ),
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
       size: 70,
     },

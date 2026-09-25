@@ -37,6 +37,7 @@ import {
   FormSection,
   OAuthClientFormSections,
 } from "./oauth-client-form-sections";
+import { OAuthClientServiceAccountSection } from "./oauth-client-service-account-section";
 
 const FORM_ID = "oauth-client-edit";
 
@@ -193,6 +194,12 @@ export function OAuthClientDetail({ id }: { id: string }) {
             mode="edit"
             lockClientCredentials={clientCredentialsLock}
           >
+            <OAuthClientServiceAccountSection
+              clientId={client.id}
+              savedWithClientCredentials={client.grantTypes.includes(
+                "client_credentials",
+              )}
+            />
             <FormSection
               id="sec-record"
               title="Registo"
