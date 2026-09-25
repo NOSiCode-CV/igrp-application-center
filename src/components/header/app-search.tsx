@@ -70,11 +70,6 @@ export function AppSearch({ commands }: AppSearchProps) {
             return;
           }
 
-          // Internal navigation goes through the router, which applies
-          // `basePath` — window.open() would not. `typedRoutes: true` types
-          // push() against statically known routes, but these hrefs come from
-          // the access-management menus at runtime, so this is the boundary
-          // where runtime navigation data enters the typed router.
           router.push(href as Parameters<typeof router.push>[0]);
         },
       })),

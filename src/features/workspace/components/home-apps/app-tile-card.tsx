@@ -3,9 +3,12 @@
 import type { Route } from "next";
 import Link from "next/link";
 
-import { Badge, IGRPButton } from "@igrp/igrp-framework-react-design-system";
+import {
+  Badge,
+  IGRPButton,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { Info } from "lucide-react";
 
 import {
   getAppHref,
@@ -110,7 +113,7 @@ export function AppTileCard({
      did nothing when clicked. */
   const noLaunchUrl = (
     <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground">
-      <Info size={12} />
+      <IGRPIcon iconName="Info" size={12} />
       Sem URL definido
     </span>
   );

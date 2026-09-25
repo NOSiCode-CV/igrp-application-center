@@ -3,12 +3,12 @@ import { redirect } from "next/navigation";
 
 import { getAuthProviderIdFromEnv } from "@igrp/framework-next-auth";
 import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
+import { cn } from "@igrp/igrp-framework-react-design-system/cn";
 
 import { carouselItems, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
-import { cn } from "@/lib/utils";
 
 import { LogoutCompletion } from "./logout-completion";
 
@@ -51,7 +51,7 @@ export default async function AuthPage({
       <div
         className={cn(
           "relative hidden w-full md:block md:w-1/2",
-          "lg:order-first hidden lg:block",
+          "lg:order-first",
           sliderPosition === "right" && "lg:order-last",
         )}
       >

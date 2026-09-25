@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 
-import { Loader2 } from "lucide-react";
+import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -444,8 +444,8 @@ export function LoadingState({ label }: { label: string }) {
       aria-live="polite"
       className="flex flex-col items-center justify-center gap-4 py-8 text-center text-muted-foreground"
     >
-      <Loader2
-        aria-hidden="true"
+      <IGRPIcon
+        iconName="Loader2"
         className="size-8 animate-spin text-primary"
       />
       <p className="text-sm">{label}</p>

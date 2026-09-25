@@ -1,10 +1,16 @@
 // Mock heavy module-level deps before importing @/middleware
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth-instance", () => ({
   auth: {
     isAuthDisabled: vi.fn(() => false),
     isPreviewMode: vi.fn(() => false),
     getTokenFromRequest: vi.fn(),
     isTokenExpiredOrFailed: vi.fn(() => false),
+    resolveAppUrl: vi.fn(
+      (path: string, request: Request) => new URL(path, request.url),
+    ),
+    getLoginRedirectUrl: vi.fn(
+      (request: Request) => new URL("/login", request.url),
+    ),
     config: {},
   },
 }));
@@ -16,7 +22,7 @@ import { NextRequest } from "next/server";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { auth as authMock } from "@/lib/auth";
+import { auth as authMock } from "@/lib/auth-instance";
 import { middleware } from "@/middleware";
 
 // Cast to get typed mock helpers

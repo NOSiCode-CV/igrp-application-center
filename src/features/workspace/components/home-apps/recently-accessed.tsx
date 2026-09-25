@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
+import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { ArrowRight } from "lucide-react";
 
 import { InlineError } from "@/components/inline-error";
 import {
@@ -144,7 +143,7 @@ export function RecentlyAccessed() {
           </p>
           <IGRPButton size="sm" onClick={scrollToCatalog}>
             Explorar aplicações
-            <ArrowRight size={13} />
+            <IGRPIcon iconName="ArrowRight" size={13} />
           </IGRPButton>
         </div>
       ) : (

@@ -2,8 +2,11 @@
 
 import type { ReactNode } from "react";
 
-import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
-import { Check } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
 
 import { cn } from "@/lib/utils";
 
@@ -111,8 +114,8 @@ function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
                   )}
                 >
                   {isDone ? (
-                    <Check
-                      aria-hidden="true"
+                    <IGRPIcon
+                      iconName="Check"
                       className="size-3.5"
                       strokeWidth={2.5}
                     />
@@ -217,7 +220,7 @@ function HorizontalStepIndicator({ current }: { current: InviteStepIndex }) {
               )}
             >
               {idx < current ? (
-                <Check aria-hidden="true" className="size-3" />
+                <IGRPIcon iconName="Check" className="size-3" />
               ) : (
                 String(idx + 1)
               )}

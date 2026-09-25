@@ -1,8 +1,7 @@
+import { cache } from "react";
+
 import { igrpBuildConfig } from "@igrp/framework-next";
-import type {
-  IGRPConfigArgs,
-  IGRPLayoutConfigArgs,
-} from "@igrp/framework-next-types";
+import type { IGRPConfigClient } from "@igrp/framework-next-types";
 
 import { fontVariables } from "@/lib/fonts";
 import { isAuthBypass } from "@/lib/utilities";
@@ -16,9 +15,12 @@ import { getPackageJson } from "./lib/config/get-pkj";
 import { getRoutes } from "./lib/config/get-routes";
 import { getSessionArgs } from "./lib/config/get-session-args";
 
-export function createConfig(
-  config: IGRPLayoutConfigArgs,
-): Promise<IGRPConfigArgs> {
+/**
+ * Annotated with `IGRPConfigClient` so the whole config object is type-checked
+ * here, at its definition site, rather than only where `igrpBuildConfig`
+ * consumes it — a missing or misspelled key fails in this file.
+ */
+const buildConfig: IGRPConfigClient = (config) => {
   // Mock data + framework preview behavior apply under EITHER bypass mode
   // (IGRP_PREVIEW_MODE=true or AUTH_PROVIDER=none) — they must behave the same.
   const bypass = isAuthBypass();
@@ -32,7 +34,7 @@ export function createConfig(
     previewMode: bypass,
     syncAccess: process.env.IGRP_SYNC_ACCESS === "true",
     appInformation: getPackageJson(),
-    layoutMockData: {
+    layoutData: {
       getHeaderData: async () => {
         const user = bypass ? getMockUser().mockUser : undefined;
         return {
@@ -94,4 +96,20 @@ export function createConfig(
     },
     sessionArgs: getSessionArgs(),
   });
-}
+};
+
+/**
+ * Per-request memoized config builder.
+ *
+ * `app/layout.tsx` and `app/(igrp)/layout.tsx` BOTH build the config on every
+ * request. Without this, `igrpBuildConfig` — plus `getRoutes()` (a synchronous
+ * file read), `getPermissions()` and `getSessionArgs()` — ran twice per request
+ * and produced two distinct config objects for the same render.
+ *
+ * `cache()` keys on argument identity, and the only argument comes from
+ * `getLayoutConfig` in `lib/dal.ts`, which is itself `cache()`d — so both
+ * layouts pass the *same* object and share one result. That makes it provable
+ * that the root layout and the authenticated layout see identical config,
+ * rather than merely likely.
+ */
+export const createConfig: IGRPConfigClient = cache(buildConfig);

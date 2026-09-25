@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import {
   IGRPButton,
+  IGRPIcon,
   Table,
   TableBody,
   TableCell,
@@ -13,7 +14,6 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { ArrowUpRight, ExternalLink } from "lucide-react";
 
 import {
   getAppHref,
@@ -91,14 +91,15 @@ export function AppTable({ apps, favoriteCodes, onToggleFavorite }: Props) {
             const isFavorite = favoriteCodes.has(app.code);
             const tone = statusTone(app, href);
             const opens = Boolean(href) && app.status === "ACTIVE";
-            const OpenIcon = isExternal ? ExternalLink : ArrowUpRight;
+            const openIcon = isExternal ? "ExternalLink" : "ArrowUpRight";
             const nameClass =
               "truncate rounded-sm font-semibold text-foreground hover:text-primary hover:underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
             const nameContent = (
               <>
                 <span className="truncate">{app.name}</span>
-                <OpenIcon
+                <IGRPIcon
+                  iconName={openIcon}
                   size={13}
                   aria-hidden="true"
                   className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none"

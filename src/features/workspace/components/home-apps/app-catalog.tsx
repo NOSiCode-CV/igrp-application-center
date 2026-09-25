@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   IGRPButton,
   IGRPCombobox,
+  IGRPIcon,
   IGRPLabel,
   InputGroup,
   InputGroupAddon,
@@ -14,7 +15,6 @@ import {
   ToggleGroupItem,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { LayoutGrid, List, Search, Star } from "lucide-react";
 
 import { InlineError } from "@/components/inline-error";
 import {
@@ -164,7 +164,7 @@ export function AppCatalog() {
       <div className="flex flex-wrap gap-2 mb-4 items-end">
         <InputGroup className="h-10 w-full sm:w-75">
           <InputGroupAddon>
-            <Search size={15} />
+            <IGRPIcon iconName="Search" size={15} />
           </InputGroupAddon>
           <InputGroupInput
             ref={searchRef}
@@ -190,7 +190,8 @@ export function AppCatalog() {
           onPressedChange={setShowFavoritesOnly}
           className="h-10 gap-1.5 px-3.5 data-[state=on]:border-warning-subtle data-[state=on]:bg-warning-subtle data-[state=on]:text-warning-subtle-foreground"
         >
-          <Star
+          <IGRPIcon
+            iconName="Star"
             size={14}
             className={showFavoritesOnly ? "fill-current" : undefined}
           />
@@ -233,14 +234,14 @@ export function AppCatalog() {
             aria-label="Vista em grelha"
             className="size-10 data-[state=on]:border-primary-subtle data-[state=on]:bg-primary-subtle data-[state=on]:text-primary-subtle-foreground"
           >
-            <LayoutGrid size={16} />
+            <IGRPIcon iconName="LayoutGrid" size={16} />
           </ToggleGroupItem>
           <ToggleGroupItem
             value="list"
             aria-label="Vista em lista"
             className="size-10 data-[state=on]:border-primary-subtle data-[state=on]:bg-primary-subtle data-[state=on]:text-primary-subtle-foreground"
           >
-            <List size={16} />
+            <IGRPIcon iconName="List" size={16} />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
@@ -263,7 +264,8 @@ export function AppCatalog() {
         </div>
       ) : showFavoritesOnly && !search.trim() && filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed border-warning-subtle bg-warning-subtle py-12 text-center">
-          <Star
+          <IGRPIcon
+            iconName="Star"
             size={24}
             className="mx-auto text-warning-subtle-foreground mb-3"
           />

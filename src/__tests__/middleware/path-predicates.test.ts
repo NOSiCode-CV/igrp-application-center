@@ -1,5 +1,5 @@
 // Mock heavy module-level deps before importing @/middleware
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth-instance", () => ({
   auth: {
     isAuthDisabled: vi.fn(() => false),
     isPreviewMode: vi.fn(() => false),

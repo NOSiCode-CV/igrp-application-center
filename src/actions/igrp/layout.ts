@@ -1,4 +1,8 @@
-"use server";
+// Server-only helpers, deliberately NOT a "use server" module. Nothing here is
+// called from the client, and under "use server" every export is a Server
+// Action candidate: the moment a client component imported this file,
+// `configLayout` would become a public POST endpoint returning the session.
+import "server-only";
 
 import { cookies } from "next/headers";
 

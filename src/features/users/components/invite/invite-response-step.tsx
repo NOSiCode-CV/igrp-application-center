@@ -11,9 +11,10 @@ import {
   AlertDialogTitle,
   Badge,
   Button,
+  IGRPIcon,
+  type IGRPIconProps,
   Separator,
 } from "@igrp/igrp-framework-react-design-system";
-import { Building2, Check, Loader2, Mail, Shield, X } from "lucide-react";
 
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -69,14 +70,14 @@ export function InviteResponseStep({
     <>
       <div className="flex flex-col gap-8">
         <InviteStepHeader
-          icon={Mail}
+          icon="Mail"
           eyebrow="Convite"
           title="Aceitar Acesso"
           description="Revise os detalhes antes de confirmar."
         />
 
         <dl className="flex flex-col gap-5 rounded-2xl border border-border/60 bg-muted/30 p-5">
-          <InvitationRow icon={Mail} label="Email">
+          <InvitationRow icon="Mail" label="Email">
             <span className="font-medium text-foreground">
               {invitation.email}
             </span>
@@ -85,7 +86,7 @@ export function InviteResponseStep({
           {departments.length > 0 ? (
             <>
               <Separator />
-              <InvitationRow icon={Building2} label="Departamento">
+              <InvitationRow icon="Building2" label="Departamento">
                 <div className="flex flex-wrap gap-1.5">
                   {departments.map((dept) => (
                     <Badge
@@ -103,7 +104,7 @@ export function InviteResponseStep({
           {roles.length > 0 ? (
             <>
               <Separator />
-              <InvitationRow icon={Shield} label="Perfis">
+              <InvitationRow icon="Shield" label="Perfis">
                 <div className="flex flex-wrap gap-1.5">
                   {roles.map((role) => (
                     <Badge
@@ -127,9 +128,13 @@ export function InviteResponseStep({
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <Loader2 data-icon="inline-start" className="animate-spin" />
+              <IGRPIcon
+                iconName="LoaderCircle"
+                data-icon="inline-start"
+                className="animate-spin"
+              />
             ) : (
-              <Check data-icon="inline-start" />
+              <IGRPIcon iconName="Check" data-icon="inline-start" />
             )}
             {isSubmitting ? "A processar…" : "Aceitar Convite"}
           </Button>
@@ -140,7 +145,7 @@ export function InviteResponseStep({
             onClick={() => setConfirmOpen(true)}
             disabled={isSubmitting}
           >
-            <X data-icon="inline-start" />
+            <IGRPIcon iconName="X" data-icon="inline-start" />
             Rejeitar
           </Button>
         </div>
@@ -181,17 +186,18 @@ export function InviteResponseStep({
 }
 
 function InvitationRow({
-  icon: Icon,
+  icon,
   label,
   children,
 }: {
-  icon: typeof Mail;
+  icon: IGRPIconProps["iconName"];
   label: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex items-start gap-3">
-      <Icon
+      <IGRPIcon
+        iconName={icon}
         aria-hidden="true"
         className="mt-0.5 size-4 shrink-0 text-muted-foreground"
         strokeWidth={1.75}

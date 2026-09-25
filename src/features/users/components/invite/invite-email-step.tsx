@@ -7,11 +7,11 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  IGRPIcon,
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@igrp/igrp-framework-react-design-system";
-import { ArrowRight, Loader2, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -48,7 +48,7 @@ export function InviteEmailStep({
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
-        icon={Mail}
+        icon="Mail"
         eyebrow="Confirmação"
         title="Bem-vindo"
         description="Introduza o seu email para aceder ao convite."
@@ -62,7 +62,7 @@ export function InviteEmailStep({
             </FieldLabel>
             <InputGroup>
               <InputGroupAddon>
-                <Mail aria-hidden="true" />
+                <IGRPIcon iconName="Mail" aria-hidden="true" />
               </InputGroupAddon>
               <InputGroupInput
                 id="email"
@@ -92,10 +92,16 @@ export function InviteEmailStep({
           disabled={isSubmitting || !form.formState.isValid}
         >
           {isSubmitting ? (
-            <Loader2 data-icon="inline-start" className="animate-spin" />
+            <IGRPIcon
+              iconName="LoaderCircle"
+              data-icon="inline-start"
+              className="animate-spin"
+            />
           ) : null}
           {isSubmitting ? "A enviar…" : "Enviar código"}
-          {!isSubmitting ? <ArrowRight data-icon="inline-end" /> : null}
+          {!isSubmitting ? (
+            <IGRPIcon iconName="ArrowRight" data-icon="inline-end" />
+          ) : null}
         </Button>
       </form>
     </div>

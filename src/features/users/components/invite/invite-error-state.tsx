@@ -1,14 +1,10 @@
 "use client";
 
-import { Button } from "@igrp/igrp-framework-react-design-system";
 import {
-  AlertTriangle,
-  ArrowLeft,
-  Clock,
-  LogOut,
-  type LucideIcon,
-  MailX,
-} from "lucide-react";
+  Button,
+  IGRPIcon,
+  type IGRPIconProps,
+} from "@igrp/igrp-framework-react-design-system";
 
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -22,24 +18,29 @@ interface InviteErrorStateProps {
 
 const COPY: Record<
   InviteErrorKind,
-  { icon: LucideIcon; eyebrow: string; title: string; description: string }
+  {
+    icon: IGRPIconProps["iconName"];
+    eyebrow: string;
+    title: string;
+    description: string;
+  }
 > = {
   invalid: {
-    icon: AlertTriangle,
+    icon: "TriangleAlert",
     eyebrow: "Erro",
     title: "Convite inválido",
     description:
       "Não foi possível encontrar este convite. O link pode estar incorreto.",
   },
   mismatch: {
-    icon: MailX,
+    icon: "MailX",
     eyebrow: "Conta diferente",
     title: "Convite não corresponde",
     description:
       "Este convite não foi enviado para a conta com que iniciou sessão.",
   },
   expired: {
-    icon: Clock,
+    icon: "Clock",
     eyebrow: "Expirado",
     title: "Convite expirado",
     description:
@@ -67,13 +68,13 @@ export function InviteErrorState({
       <div className="flex flex-col gap-3">
         {kind !== "mismatch" ? (
           <Button variant="outline" size="lg" onClick={onBackHome}>
-            <ArrowLeft data-icon="inline-start" />
+            <IGRPIcon iconName="ArrowLeft" data-icon="inline-start" />
             Voltar ao início
           </Button>
         ) : null}
         {onSignOut ? (
           <Button size="lg" onClick={onSignOut} variant="destructive">
-            <LogOut data-icon="inline-start" />
+            <IGRPIcon iconName="LogOut" data-icon="inline-start" />
             Usar outra conta
           </Button>
         ) : null}

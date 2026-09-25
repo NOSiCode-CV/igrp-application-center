@@ -9,11 +9,11 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  IGRPIcon,
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@igrp/igrp-framework-react-design-system";
-import { Loader2, ShieldCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -91,7 +91,7 @@ export function InviteOtpStep({
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
-        icon={ShieldCheck}
+        icon="ShieldCheck"
         eyebrow="Verificação"
         title="Código de acesso"
         description={
@@ -142,7 +142,11 @@ export function InviteOtpStep({
           disabled={isSubmitting || !form.formState.isValid}
         >
           {isSubmitting ? (
-            <Loader2 data-icon="inline-start" className="animate-spin" />
+            <IGRPIcon
+              iconName="LoaderCircle"
+              data-icon="inline-start"
+              className="animate-spin"
+            />
           ) : null}
           {isSubmitting ? "A verificar…" : "Verificar código"}
         </Button>

@@ -8,8 +8,8 @@ import {
   IGRPDropdownMenuRadioGroup,
   IGRPDropdownMenuRadioItem,
   IGRPDropdownMenuTrigger,
+  IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import { ChevronDown } from "lucide-react";
 
 import type { Priority, Task, TaskStatus } from "../../types";
 import { TaskRow } from "./task-row";
@@ -134,7 +134,7 @@ export function TaskList({ tasks, roleScope }: Props) {
               {processFilter === ALL_PROCESSES
                 ? "All Processes"
                 : processFilter}
-              <ChevronDown size={14} />
+              <IGRPIcon iconName="ChevronDown" size={14} />
             </button>
           </IGRPDropdownMenuTrigger>
           <IGRPDropdownMenuContent align="start">
@@ -161,7 +161,7 @@ export function TaskList({ tasks, roleScope }: Props) {
               className="flex items-center gap-1.5 rounded-lg border border-border bg-muted px-3 py-1.5 text-xs text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               {SORT_LABELS[sortBy]}
-              <ChevronDown size={14} />
+              <IGRPIcon iconName="ChevronDown" size={14} />
             </button>
           </IGRPDropdownMenuTrigger>
           <IGRPDropdownMenuContent align="start">

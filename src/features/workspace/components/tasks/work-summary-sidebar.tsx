@@ -1,4 +1,4 @@
-import { Bookmark } from "lucide-react";
+import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 import { computeTaskStats } from "../../lib/task-utils";
 import type { Task } from "../../types";
@@ -62,7 +62,7 @@ export function WorkSummarySidebar({ tasks }: Props) {
   return (
     <aside className="rounded-xl border border-border bg-card p-4 flex flex-col gap-4">
       <h2 className="flex items-center gap-2 font-semibold text-sm text-foreground">
-        <Bookmark size={15} className="text-primary" />
+        <IGRPIcon iconName="Bookmark" size={15} className="text-primary" />
         Summary
       </h2>
 

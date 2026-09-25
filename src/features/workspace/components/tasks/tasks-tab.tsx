@@ -1,6 +1,6 @@
 "use client";
 
-import { Info } from "lucide-react";
+import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 import { useCurrentUserActiveRole } from "@/features/users/use-users";
 
@@ -20,7 +20,7 @@ export function TasksTab({ tasks }: Props) {
           so is the difference between a preview and invented work assigned to
           the signed-in user. Remove this notice once a real source is wired. */}
       <div className="flex items-start gap-2.5 rounded-lg border border-info-subtle bg-info-subtle px-3.5 py-2.5 text-info-subtle-foreground">
-        <Info size={15} className="mt-0.5 shrink-0" />
+        <IGRPIcon iconName="Info" size={15} className="mt-0.5 shrink-0" />
         <p className="text-xs leading-relaxed">
           <strong className="font-semibold">Preview with sample data.</strong>{" "}
           This workspace is not connected to a task source yet — the tickets,

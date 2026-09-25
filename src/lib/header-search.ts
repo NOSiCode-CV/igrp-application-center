@@ -1,3 +1,4 @@
+import { igrpResolveLayoutDataSource } from "@igrp/framework-next";
 import { fetchMenusAction } from "@igrp/framework-next/actions";
 import type {
   IGRPConfigArgs,
@@ -81,7 +82,10 @@ export async function getHeaderSearchCommands(
   config: IGRPConfigArgs,
 ): Promise<AppSearchCommand[]> {
   if (isAuthBypass()) {
-    const { menuItems } = await config.layoutMockData.getSidebarData();
+    // `layoutData` (formerly `layoutMockData`) — read through the framework
+    // resolver so this keeps working across the rename's deprecation window.
+    const { menuItems } =
+      await igrpResolveLayoutDataSource(config).getSidebarData();
     return toCommands(menuItems ?? []);
   }
 

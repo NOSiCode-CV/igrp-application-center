@@ -1,4 +1,4 @@
-import { Paperclip } from "lucide-react";
+import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 import { getDueDateLabel } from "../../lib/task-utils";
 import type { Task } from "../../types";
@@ -61,7 +61,7 @@ export function TaskRow({ task }: Props) {
               <>
                 <span>•</span>
                 <span className="flex items-center gap-0.5">
-                  <Paperclip size={11} />
+                  <IGRPIcon iconName="Paperclip" size={11} />
                   {task.attachmentCount} attachment
                   {task.attachmentCount !== 1 ? "s" : ""}
                 </span>
