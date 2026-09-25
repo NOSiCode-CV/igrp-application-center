@@ -84,4 +84,67 @@ describe("ScopedPickerDialog", () => {
     expect(screen.getByRole("checkbox", { name: /INV.reader/ })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: /INV.admin/ })).toBeChecked();
   });
+
+  it("keeps ticks when an account refetch hands over a new selectedIds array", async () => {
+    const props = {
+      open: true,
+      onOpenChange: () => {},
+      title: "Atribuir perfis",
+      description: "d",
+      departmentCode: "INV",
+      onDepartmentChange: () => {},
+      items: ITEMS,
+      isLoading: false,
+      isError: false,
+      selectedIds: [1],
+      onConfirm: vi.fn(),
+      isSaving: false,
+      confirmLabel: "Guardar perfis",
+    };
+    const { rerender } = render(<ScopedPickerDialog {...props} />);
+    await userEvent.click(screen.getByRole("checkbox", { name: /INV.reader/ }));
+    await userEvent.click(screen.getByRole("checkbox", { name: /INV.admin/ }));
+
+    // Same content, new reference — what a detail refetch produces.
+    rerender(<ScopedPickerDialog {...props} selectedIds={[1]} />);
+
+    expect(
+      screen.getByRole("checkbox", { name: /INV.reader/ }),
+    ).not.toBeChecked();
+    expect(screen.getByRole("checkbox", { name: /INV.admin/ })).toBeChecked();
+  });
+
+  it("re-seeds from selectedIds when the department's items change", async () => {
+    const props = {
+      open: true,
+      onOpenChange: () => {},
+      title: "Atribuir perfis",
+      description: "d",
+      departmentCode: "INV",
+      onDepartmentChange: () => {},
+      items: ITEMS,
+      isLoading: false,
+      isError: false,
+      selectedIds: [1],
+      onConfirm: vi.fn(),
+      isSaving: false,
+      confirmLabel: "Guardar perfis",
+    };
+    const { rerender } = render(<ScopedPickerDialog {...props} />);
+    await userEvent.click(screen.getByRole("checkbox", { name: /INV.admin/ }));
+    rerender(
+      <ScopedPickerDialog
+        {...props}
+        departmentCode="HR"
+        items={[
+          { id: 1, label: "HR.reader" },
+          { id: 4, label: "HR.admin" },
+        ]}
+      />,
+    );
+    expect(screen.getByRole("checkbox", { name: /HR.reader/ })).toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: /HR.admin/ }),
+    ).not.toBeChecked();
+  });
 });

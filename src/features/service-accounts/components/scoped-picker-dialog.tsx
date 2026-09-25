@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import {
   Button,
@@ -67,13 +67,23 @@ export function ScopedPickerDialog({
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<Set<number>>(new Set());
 
-  // Re-seed whenever the visible scope changes (department switch or load).
+  // Read through a ref: an account refetch hands us a new `selectedIds`
+  // array, which must not wipe the ticks the admin is making.
+  const selectedIdsRef = useRef(selectedIds);
   useEffect(() => {
-    const current = new Set(selectedIds);
+    selectedIdsRef.current = selectedIds;
+  }, [selectedIds]);
+
+  // Seed only when the dialog opens or the visible scope changes
+  // (department switch or load).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: departmentCode and open are re-seed triggers, not values read here.
+  useEffect(() => {
+    if (!open) return;
+    const current = new Set(selectedIdsRef.current);
     setSelected(
       new Set(items.filter((i) => current.has(i.id)).map((i) => i.id)),
     );
-  }, [items, selectedIds]);
+  }, [open, departmentCode, items]);
 
   const visible = useMemo(() => {
     const term = filter.trim().toLowerCase();
