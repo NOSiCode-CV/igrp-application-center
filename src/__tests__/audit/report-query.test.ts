@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   clearFilters,
   hasFilters,
+  nextSort,
   parseReportQuery,
   type ReportQuery,
   serializeReportQuery,
@@ -12,6 +13,7 @@ import {
   withPage,
   withRange,
   withSize,
+  withSort,
   withTab,
 } from "@/features/audit/lib/report-query";
 
@@ -196,5 +198,90 @@ describe("SDK filter mappers", () => {
       area: "APPLICATIONS",
     });
     expect(Object.keys(result)).not.toContain("performedBy");
+  });
+});
+
+describe("column sort", () => {
+  const base: ReportQuery = {
+    tab: "access",
+    range: { preset: "7d" },
+    page: 3,
+    size: 20,
+    filters: {},
+  };
+
+  it("reads and writes `sort=field,direction` for a sortable column", () => {
+    const q = parseReportQuery(new URLSearchParams("sort=ipAddress,desc"));
+    expect(q.sort).toEqual({ field: "ipAddress", direction: "desc" });
+    expect(serializeReportQuery(q).get("sort")).toBe("ipAddress,desc");
+  });
+
+  it("ignores unknown fields, bad directions and another tab's sort fields", () => {
+    expect(
+      parseReportQuery(new URLSearchParams("sort=module,asc")).sort,
+    ).toBeUndefined();
+    expect(
+      parseReportQuery(new URLSearchParams("sort=username,up")).sort,
+    ).toBeUndefined();
+    expect(
+      parseReportQuery(new URLSearchParams("tab=settings&sort=username,asc"))
+        .sort,
+    ).toBeUndefined();
+  });
+
+  it("sorts the settings report by its own columns, but not by IP", () => {
+    for (const field of [
+      "timestamp",
+      "performedBy",
+      "area",
+      "operation",
+      "entityType",
+      "entityName",
+      "status",
+    ]) {
+      expect(
+        parseReportQuery(new URLSearchParams(`tab=settings&sort=${field},asc`))
+          .sort,
+      ).toEqual({ field, direction: "asc" });
+    }
+    expect(
+      parseReportQuery(new URLSearchParams("tab=settings&sort=ipAddress,asc"))
+        .sort,
+    ).toBeUndefined();
+  });
+
+  it("cycles ascending → descending → default order", () => {
+    const asc = withSort(base, nextSort(base, "username"));
+    expect(asc.sort).toEqual({ field: "username", direction: "asc" });
+    const desc = withSort(asc, nextSort(asc, "username"));
+    expect(desc.sort).toEqual({ field: "username", direction: "desc" });
+    expect(withSort(desc, nextSort(desc, "username")).sort).toBeUndefined();
+    expect(nextSort(desc, "status")).toEqual({
+      field: "status",
+      direction: "asc",
+    });
+  });
+
+  it("flips Data e hora between oldest first and the newest-first default", () => {
+    const asc = withSort(base, nextSort(base, "timestamp"));
+    expect(asc.sort).toEqual({ field: "timestamp", direction: "asc" });
+    expect(withSort(asc, nextSort(asc, "timestamp")).sort).toBeUndefined();
+  });
+
+  it("returns to the first page on a new order and resets on tab switch", () => {
+    const sorted = withSort(base, { field: "role", direction: "asc" });
+    expect(sorted.page).toBe(0);
+    expect(withTab(sorted, "settings").sort).toBeUndefined();
+  });
+
+  it("sends the chosen order to the API, newest first otherwise", () => {
+    const now = new Date("2026-09-23T10:00:00.000Z");
+    expect(toAccessReportFilters(base, now).sort).toBe("timestamp,desc");
+    expect(
+      toAccessReportFilters(
+        { ...base, sort: { field: "status", direction: "asc" } },
+        now,
+      ).sort,
+    ).toBe("status,asc");
   });
 });

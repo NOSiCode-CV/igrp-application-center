@@ -1,28 +1,33 @@
 "use client";
 
-import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
+import Link from "next/link";
+
+import {
+  Button,
+  IGRPButton,
+  IGRPCombobox,
+  IGRPIcon,
+  type IGRPOptionsProps,
+} from "@igrp/igrp-framework-react-design-system";
 
 import { FacetedFilter } from "@/components/data-table/faceted-filter";
 import { SearchInput } from "@/components/data-table/search-input";
-import {
-  MultiSelectField,
-  type MultiSelectOption,
-} from "@/components/multi-select-field";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
 
 import { CLIENT_KIND_LABEL } from "../lib/oauth-client-utils";
 
 export interface OAuthClientFilters {
   search: string;
   kind: string[];
-  application: string[];
+  /** Application code, "—" for clients without one, "" for all. */
+  application: string;
   status: string[];
 }
 
 export const EMPTY_OAUTH_CLIENT_FILTERS: OAuthClientFilters = {
   search: "",
   kind: [],
-  application: [],
+  application: "",
   status: [],
 };
 
@@ -36,11 +41,10 @@ const KIND_OPTIONS = [
 interface OAuthClientToolbarProps {
   filters: OAuthClientFilters;
   onFiltersChange: (next: OAuthClientFilters) => void;
-  applicationOptions: MultiSelectOption[];
+  applicationOptions: IGRPOptionsProps[];
   /** How many clients carry each option, per facet. */
   counts: Record<FacetKey, Record<string, number>>;
   disabled?: boolean;
-  onRegister: () => void;
 }
 
 export function OAuthClientToolbar({
@@ -49,12 +53,11 @@ export function OAuthClientToolbar({
   applicationOptions,
   counts,
   disabled = false,
-  onRegister,
 }: OAuthClientToolbarProps) {
   const isFiltered =
     filters.search !== "" ||
     filters.kind.length > 0 ||
-    filters.application.length > 0 ||
+    filters.application !== "" ||
     filters.status.length > 0;
 
   const set = <K extends keyof OAuthClientFilters>(
@@ -73,23 +76,30 @@ export function OAuthClientToolbar({
           disabled={disabled}
         />
         <div className="flex flex-wrap items-start gap-2">
+          {/* Outside a form IGRPCombobox wraps itself in a `w-full` div and
+              puts `className` on the trigger, so the width goes here or the
+              filter takes a whole row of its own. */}
+          <div className="w-60">
+            <IGRPCombobox
+              variant="single"
+              showSearch
+              options={applicationOptions}
+              value={filters.application}
+              onChange={(v) =>
+                set("application", typeof v === "string" ? v : "")
+              }
+              placeholder="Aplicação"
+              searchText="Pesquisar aplicações…"
+              selectLabel="Nenhuma aplicação encontrada."
+              disabled={disabled}
+            />
+          </div>
           <FacetedFilter
             label="Tipo"
             options={KIND_OPTIONS}
             value={filters.kind}
             onChange={(v) => set("kind", v)}
             counts={counts.kind}
-            disabled={disabled}
-          />
-          <MultiSelectField
-            className="w-60"
-            options={applicationOptions}
-            value={filters.application}
-            onChange={(v) => set("application", v)}
-            placeholder="Aplicação"
-            searchPlaceholder="Pesquisar aplicações…"
-            emptyLabel="Nenhuma aplicação encontrada."
-            showSearch
             disabled={disabled}
           />
           <FacetedFilter
@@ -112,14 +122,12 @@ export function OAuthClientToolbar({
           )}
         </div>
       </div>
-      <IGRPButton
-        iconName="Plus"
-        showIcon
-        className="shrink-0"
-        onClick={onRegister}
-      >
-        Registar cliente
-      </IGRPButton>
+      <Button asChild className="shrink-0">
+        <Link href={ROUTES.OAUTH_CLIENT_NEW}>
+          <IGRPIcon iconName="Plus" aria-hidden="true" />
+          Registar cliente
+        </Link>
+      </Button>
     </div>
   );
 }

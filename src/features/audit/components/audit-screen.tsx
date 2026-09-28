@@ -20,7 +20,7 @@ export function AuditScreen() {
   const [query, setQuery] = useReportQuery();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <IGRPPageHeader
         {...PAGE_HEADER_PROPS}
         title="Auditoria e Relatórios"
@@ -29,33 +29,38 @@ export function AuditScreen() {
         urlBackButton="/settings"
       />
 
-      {/* One range for every tab: it survives tab switches; filters don't. */}
-      <ReportDateRange
-        range={query.range}
-        onChange={(range) => setQuery(withRange(query, range))}
-      />
+      {/* Header, then the page's content: the same space separates the
+          header from the content and the tab triggers from their panel. */}
+      <div className="flex flex-col gap-6">
+        {/* One range for every tab: it survives tab switches; filters don't. */}
+        <ReportDateRange
+          range={query.range}
+          onChange={(range) => setQuery(withRange(query, range))}
+        />
 
-      <Tabs
-        value={query.tab}
-        onValueChange={(tab) => {
-          if (isAuditTab(tab)) setQuery(withTab(query, tab));
-        }}
-      >
-        <TabsList>
-          <TabsTrigger value="access">Acessos</TabsTrigger>
-          <TabsTrigger value="settings">Configurações</TabsTrigger>
-        </TabsList>
-        <TabsContent value="access">
-          {query.tab === "access" && (
-            <AccessReportTab query={query} onQueryChange={setQuery} />
-          )}
-        </TabsContent>
-        <TabsContent value="settings">
-          {query.tab === "settings" && (
-            <SettingsReportTab query={query} onQueryChange={setQuery} />
-          )}
-        </TabsContent>
-      </Tabs>
+        <Tabs
+          className="flex flex-col gap-8"
+          value={query.tab}
+          onValueChange={(tab) => {
+            if (isAuditTab(tab)) setQuery(withTab(query, tab));
+          }}
+        >
+          <TabsList aria-label="Relatórios">
+            <TabsTrigger value="access">Acessos</TabsTrigger>
+            <TabsTrigger value="settings">Configurações</TabsTrigger>
+          </TabsList>
+          <TabsContent value="access">
+            {query.tab === "access" && (
+              <AccessReportTab query={query} onQueryChange={setQuery} />
+            )}
+          </TabsContent>
+          <TabsContent value="settings">
+            {query.tab === "settings" && (
+              <SettingsReportTab query={query} onQueryChange={setQuery} />
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

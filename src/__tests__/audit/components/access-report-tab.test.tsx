@@ -54,7 +54,6 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
       <span>{title}</span>
     ),
     IGRPIcon: () => null,
-    IGRPSelect: () => null,
     Input: () => null,
     Label: Pass,
     Skeleton: () => <div data-testid="skeleton" />,
@@ -102,6 +101,11 @@ const EMPTY = {
   data: { content: [], totalElements: 0, totalPages: 0 },
 };
 const FAILED = { ...LOADED, isError: true, data: undefined, refetch: vi.fn() };
+const LOADING_NEW_SELECTION = {
+  ...LOADED,
+  isPlaceholderData: true,
+  isFetching: true,
+};
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -110,7 +114,7 @@ describe("AccessReportTab", () => {
     mockUseAccessReport.mockReturnValue(LOADED);
     render(<AccessReportTab query={query} onQueryChange={vi.fn()} />);
     expect(screen.getByText("ana@nosi.cv")).toBeInTheDocument();
-    expect(screen.getByText("1 evento")).toBeInTheDocument();
+    expect(screen.getByText("1 de 1 evento")).toBeInTheDocument();
   });
 
   it("offers to clear filters on an empty filtered page", async () => {
@@ -132,5 +136,12 @@ describe("AccessReportTab", () => {
       }),
     );
     expect(FAILED.refetch).toHaveBeenCalled();
+  });
+
+  it("shows the skeleton, not the previous rows, while a new period loads", () => {
+    mockUseAccessReport.mockReturnValue(LOADING_NEW_SELECTION);
+    render(<AccessReportTab query={query} onQueryChange={vi.fn()} />);
+    expect(screen.getAllByTestId("skeleton").length).toBeGreaterThan(0);
+    expect(screen.queryByText("ana@nosi.cv")).not.toBeInTheDocument();
   });
 });

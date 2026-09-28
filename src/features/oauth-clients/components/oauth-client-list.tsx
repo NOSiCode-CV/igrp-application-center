@@ -1,19 +1,22 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
 import {
+  Button,
   Empty,
   EmptyDescription,
   EmptyHeader,
   EmptyTitle,
-  IGRPButton,
   IGRPDataTable,
+  IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 
 import { InlineError } from "@/components/inline-error";
 import { useApplications } from "@/features/applications/use-applications";
 import { useServiceAccounts } from "@/features/service-accounts/use-service-accounts";
+import { ROUTES } from "@/lib/constants";
 
 import {
   findLinkedServiceAccount,
@@ -23,7 +26,6 @@ import { useCopyClientId } from "../use-copy-client-id";
 import { useOAuthClients } from "../use-oauth-clients";
 import { OAuthClientActivationDialog } from "./oauth-client-activation-dialog";
 import { type ClientRow, getOAuthClientColumns } from "./oauth-client-columns";
-import { OAuthClientCreateDialog } from "./oauth-client-create-dialog";
 import { OAuthClientDeleteDialog } from "./oauth-client-delete-dialog";
 import {
   EMPTY_OAUTH_CLIENT_FILTERS,
@@ -33,7 +35,6 @@ import {
 
 type DialogState =
   | { kind: "none" }
-  | { kind: "create" }
   | { kind: "activation"; row: ClientRow }
   | { kind: "delete"; row: ClientRow };
 
@@ -77,10 +78,7 @@ export function OAuthClientList() {
     return rows.filter((row) => {
       const f = facetsOf(row);
       if (filters.kind.length && !filters.kind.includes(f.kind)) return false;
-      if (
-        filters.application.length &&
-        !filters.application.includes(f.application)
-      )
+      if (filters.application && f.application !== filters.application)
         return false;
       if (filters.status.length && !filters.status.includes(f.status))
         return false;
@@ -132,7 +130,6 @@ export function OAuthClientList() {
         applicationOptions={appOptions}
         counts={counts}
         disabled={rows.length === 0}
-        onRegister={() => setDialog({ kind: "create" })}
       />
 
       {accounts.isError ? (
@@ -152,13 +149,12 @@ export function OAuthClientList() {
               tokens ao servidor de autorização iGRP.
             </EmptyDescription>
           </EmptyHeader>
-          <IGRPButton
-            iconName="Plus"
-            showIcon
-            onClick={() => setDialog({ kind: "create" })}
-          >
-            Registar o primeiro cliente
-          </IGRPButton>
+          <Button asChild>
+            <Link href={ROUTES.OAUTH_CLIENT_NEW}>
+              <IGRPIcon iconName="Plus" aria-hidden="true" />
+              Registar o primeiro cliente
+            </Link>
+          </Button>
         </Empty>
       ) : (
         <IGRPDataTable<ClientRow, ClientRow>
@@ -171,9 +167,6 @@ export function OAuthClientList() {
         />
       )}
 
-      {dialog.kind === "create" ? (
-        <OAuthClientCreateDialog open onOpenChange={(o) => !o && close()} />
-      ) : null}
       {dialog.kind === "activation" ? (
         <OAuthClientActivationDialog
           client={dialog.row}

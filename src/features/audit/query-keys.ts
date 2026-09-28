@@ -1,6 +1,6 @@
 import type { AuditTab, ReportQuery } from "./lib/report-query";
 
-/* Keys carry the SELECTION (preset / days, filters, page) — never the
+/* Keys carry the SELECTION (preset / days, filters, page, sort) — never the
    instants derived from it. "Last 7 days" keeps one cache entry while "now"
    moves; each fetch resolves its own now. */
 export const auditKeys = {
@@ -10,6 +10,12 @@ export const auditKeys = {
       "audit",
       "report",
       tab,
-      { range: q.range, page: q.page, size: q.size, filters: q.filters },
+      {
+        range: q.range,
+        page: q.page,
+        size: q.size,
+        filters: q.filters,
+        sort: q.sort,
+      },
     ] as const,
 };

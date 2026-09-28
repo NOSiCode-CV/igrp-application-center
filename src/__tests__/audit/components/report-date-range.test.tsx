@@ -10,15 +10,54 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
     Button: ({ children }: { children?: React.ReactNode }) => (
       <button type="button">{children}</button>
     ),
-    IGRPCalendarRange: () => <div data-testid="calendar" />,
-    IGRPIcon: () => null,
-    IGRPSelect: ({
+    IGRPButton: ({
+      onClick,
+      disabled,
+      "aria-label": ariaLabel,
+    }: {
+      onClick?: () => void;
+      disabled?: boolean;
+      "aria-label"?: string;
+    }) => (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={ariaLabel}
+      />
+    ),
+    /* Shows the draft it was given and lets a test pick 1–10 Sept. */
+    IGRPCalendarRange: ({
+      date,
+      onDateChange,
+    }: {
+      date?: { from?: Date; to?: Date };
+      onDateChange?: (d: { from?: Date; to?: Date } | undefined) => void;
+    }) => (
+      <div>
+        <span data-testid="draft">
+          {date?.from ? `${date.from.getDate()}-${date.to?.getDate()}` : "none"}
+        </span>
+        <button
+          type="button"
+          onClick={() =>
+            onDateChange?.({
+              from: new Date(2026, 8, 1),
+              to: new Date(2026, 8, 10),
+            })
+          }
+        >
+          pick
+        </button>
+      </div>
+    ),
+    IGRPCombobox: ({
       options,
-      onValueChange,
+      onChange,
       label,
     }: {
       options: { label: string; value: string }[];
-      onValueChange?: (v: string) => void;
+      onChange?: (v: string) => void;
       label?: string;
     }) => (
       // biome-ignore lint/a11y/useAriaPropsSupportedByRole: mock only, used to query the label in tests
@@ -27,14 +66,21 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
           <button
             key={o.value}
             type="button"
-            onClick={() => onValueChange?.(o.value)}
+            onClick={() => onChange?.(o.value)}
           >
             {o.label}
           </button>
         ))}
       </div>
     ),
-    Popover: Pass,
+    IGRPIcon: () => null,
+    Popover: ({
+      children,
+      open,
+    }: {
+      children?: React.ReactNode;
+      open?: boolean;
+    }) => <div data-open={open ? "true" : "false"}>{children}</div>,
     PopoverContent: Pass,
     PopoverTrigger: Pass,
   };
@@ -58,17 +104,45 @@ describe("ReportDateRange", () => {
     expect(onChange).toHaveBeenCalledWith({ preset: "24h" });
   });
 
-  it("starts a custom range on today in Cabo Verde time", async () => {
+  it("opens the box on 'Personalizado' without searching, starting on today in Cabo Verde", async () => {
     const onChange = vi.fn();
     render(<ReportDateRange range={{ preset: "7d" }} onChange={onChange} />);
     await userEvent.click(
       screen.getByRole("button", { name: "Personalizado" }),
     );
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByTestId("draft")).toHaveTextContent("23-23");
+    expect(screen.getByText("Escolher datas")).toBeInTheDocument();
+  });
+
+  it("does not search while picking days; OK applies the range", async () => {
+    const onChange = vi.fn();
+    render(<ReportDateRange range={{ preset: "7d" }} onChange={onChange} />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Personalizado" }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "pick" }));
+    expect(onChange).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole("button", { name: "OK" }));
     expect(onChange).toHaveBeenCalledWith({
       preset: "custom",
-      from: "2026-09-23",
-      to: "2026-09-23",
+      from: "2026-09-01",
+      to: "2026-09-10",
     });
+  });
+
+  it("'Limpar' clears the chosen days and disables OK", async () => {
+    const onChange = vi.fn();
+    render(<ReportDateRange range={{ preset: "7d" }} onChange={onChange} />);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Personalizado" }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Limpar" }));
+
+    expect(screen.getByTestId("draft")).toHaveTextContent("none");
+    expect(screen.getByRole("button", { name: "OK" })).toBeDisabled();
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("shows the chosen days and the time zone", () => {

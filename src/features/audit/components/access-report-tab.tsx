@@ -12,15 +12,17 @@ import { ACCESS_STATUS_OPTIONS } from "../lib/audit-labels";
 import {
   clearFilters,
   hasFilters,
+  nextSort,
   PAGE_SIZES,
   type ReportFilterKey,
   type ReportQuery,
   withFilter,
   withPage,
   withSize,
+  withSort,
 } from "../lib/report-query";
 import { useAccessReport, useRedirectOnUnauthorized } from "../use-audit";
-import { ACCESS_COLUMNS } from "./access-report-columns";
+import { accessColumns } from "./access-report-columns";
 import {
   ExactMatchInput,
   FilterCombobox,
@@ -73,13 +75,6 @@ function AccessReportFilterBar({ query, onQueryChange }: ReportTabProps) {
         value={query.filters.username}
         onChange={set("username")}
       />
-      <FilterCombobox
-        id="access-module"
-        label="Módulo"
-        options={applicationOptions}
-        value={query.filters.module}
-        onChange={set("module")}
-      />
       {/* The server matches `role` by substring over the held-Roles list,
           so "USER" also finds "POWER_USER"; the hint says so. */}
       <ExactMatchInput
@@ -89,6 +84,13 @@ function AccessReportFilterBar({ query, onQueryChange }: ReportTabProps) {
         hint="Contém o código indicado"
         value={query.filters.role}
         onCommit={set("role")}
+      />
+      <FilterCombobox
+        id="access-module"
+        label="Módulo"
+        options={applicationOptions}
+        value={query.filters.module}
+        onChange={set("module")}
       />
       <FilterSelect
         id="access-status"
@@ -102,9 +104,23 @@ function AccessReportFilterBar({ query, onQueryChange }: ReportTabProps) {
 }
 
 export function AccessReportTab({ query, onQueryChange }: ReportTabProps) {
-  const { data, error, isPending, isError, isFetching, refetch } =
-    useAccessReport(query);
+  const {
+    data,
+    error,
+    isPending,
+    isPlaceholderData,
+    isError,
+    isFetching,
+    refetch,
+  } = useAccessReport(query);
   const rows = useMemo(() => data?.content ?? [], [data]);
+  const columns = useMemo(
+    () =>
+      accessColumns(query.sort, (field) =>
+        onQueryChange(withSort(query, nextSort(query, field))),
+      ),
+    [query, onQueryChange],
+  );
   useRedirectOnUnauthorized(error);
 
   /* A shared link can point past the last page once rows age out of the
@@ -129,7 +145,10 @@ export function AccessReportTab({ query, onQueryChange }: ReportTabProps) {
           message="Tente novamente. Se o problema persistir, contacte o suporte."
           onRetry={() => refetch()}
         />
-      ) : isPending ? (
+      ) : isPending || isPlaceholderData ? (
+        // A new period, filter or page is loading: `keepPreviousData` would
+        // otherwise keep the old rows on screen under the new selection.
+        // Background refetches of the same selection keep showing the rows.
         <ReportTableSkeleton />
       ) : rows.length === 0 ? (
         <ReportEmptyState
@@ -139,8 +158,9 @@ export function AccessReportTab({ query, onQueryChange }: ReportTabProps) {
       ) : (
         <>
           <IGRPDataTable
-            columns={ACCESS_COLUMNS}
+            columns={columns}
             data={rows}
+            tableHeaderClassName="bg-muted"
             showPagination={false}
             pageSizePagination={TABLE_PAGE_SIZE}
           />

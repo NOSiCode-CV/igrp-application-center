@@ -147,19 +147,24 @@ export function WizardAccessStep({
         directNames={directNames}
         isLoading={roleDetails.isLoading}
         isError={roleDetails.isError}
+        onRetry={roleDetails.refetch}
       />
 
       <div className="flex flex-col gap-3 border-border sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">{submitNote}</p>
         <div className="flex gap-2">
+          {/* Roles and permissions live in the wizard state, so going back
+              keeps them. */}
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={() => dispatch({ type: "goTo", step: 2 })}
             disabled={isSubmitting}
           >
+            <IGRPIcon iconName="ArrowLeft" aria-hidden="true" />
             Voltar
           </Button>
           <Button onClick={onSubmit} disabled={isSubmitting}>
+            <IGRPIcon iconName="Save" aria-hidden="true" />
             {isSubmitting ? "A criar…" : "Criar conta"}
           </Button>
         </div>

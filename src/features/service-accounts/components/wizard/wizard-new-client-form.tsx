@@ -1,6 +1,10 @@
 "use client";
 
-import { Button, Form } from "@igrp/igrp-framework-react-design-system";
+import {
+  Button,
+  Form,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
 import type { UseFormReturn } from "react-hook-form";
 
 import { OAuthClientFormSections } from "@/features/oauth-clients/components/oauth-client-form-sections";
@@ -23,7 +27,10 @@ export function WizardNewClientForm({
       >
         <OAuthClientFormSections mode="create" grantTypesFixed />
         <div className="flex justify-end p-4">
-          <Button type="submit">Continuar</Button>
+          <Button type="submit">
+            Continuar
+            <IGRPIcon iconName="ArrowRight" aria-hidden="true" />
+          </Button>
         </div>
       </form>
     </Form>

@@ -59,7 +59,7 @@ Row menu (**⋯**): *Ver detalhes*, *Copiar client ID*, *Desativar*/*Ativar*, *E
 
 ### 2.3 Register a client
 
-1. Click **Registar cliente** (or **Registar o primeiro cliente** on an empty list).
+1. Click **Registar cliente** (or **Registar o primeiro cliente** on an empty list). This opens its own page, `/settings/accounts/clients/new`; **Cancelar** goes back to the list. Once you have changed any field from its default, **Cancelar** first asks **Sair sem registar o cliente?**, since nothing is saved until **Registar**.
 2. Fill in the form:
    - **Client ID** — lower-case letters, digits and hyphens (`my-invoice`). Unique, and **cannot be changed later**.
    - **Nome** — display name.
@@ -75,13 +75,13 @@ If the Client ID already exists, the error appears under **Client ID**. Change i
 
 ### 2.4 Save the secret (once)
 
-After a successful registration the dialog switches to **Cliente registado**:
+After a successful registration the page switches to **Cliente registado**:
 
 1. The secret is masked. Use **Mostrar** to see it, or **Copiar**, which always copies the full value, even while masked.
 2. Store it in your secret manager **now**. It will never be shown again, to you or to any other administrator.
 3. Tick **Guardei o segredo num local seguro**. Only then does **Concluir — ver detalhes** become available.
 
-Closing the dialog before ticking the box asks **Fechar sem confirmar?**. While the registration is still being sent, the dialog can't be closed at all, so the secret can't be lost mid-request.
+Reloading or closing the tab before ticking the box asks the browser's leave-page confirmation. While the registration is still being sent, **Cancelar** is disabled. **Note:** as elsewhere, in-app links (tabs, sidebar) aren't guarded yet, so leaving that way before saving the secret loses it.
 
 ### 2.5 Edit a client
 
@@ -164,7 +164,7 @@ This follows the same pattern as `src/features/applications` and `src/features/u
 |---|---|
 | `app/.../settings/accounts/layout.tsx` | Page header + `AccountsTabs` for both sections |
 | `app/.../settings/accounts/page.tsx` | Redirect to `/settings/accounts/clients` |
-| `app/.../settings/accounts/clients/page.tsx` · `[id]/page.tsx` | Prefetch + hydrate the list / detail; `loading.tsx`, `error.tsx` beside each |
+| `app/.../settings/accounts/clients/page.tsx` · `new/page.tsx` · `[id]/page.tsx` | Prefetch + hydrate the list / register page / detail; `loading.tsx` beside each, `error.tsx` beside list and detail |
 | `app/.../settings/accounts/services/page.tsx` | Placeholder until the Service Accounts pages ship |
 | `features/accounts/components/accounts-tabs.tsx` | Link-based tab nav (`aria-current="page"`) |
 | `actions/oauth-clients.ts` | list / get / create / update / delete / setActive; application code → id; strips secrets |
@@ -177,7 +177,7 @@ This follows the same pattern as `src/features/applications` and `src/features/u
 | `features/oauth-clients/use-oauth-clients.ts` | Query + mutation hooks, incl. `useSetClientActive` |
 | `features/oauth-clients/use-copy-client-id.ts` | Clipboard copy with success/error toast |
 | `features/service-accounts/use-service-accounts.ts` | `useServiceAccounts`, `useLinkedServiceAccount` |
-| `features/oauth-clients/components/*` | List, columns + row menu, badges, form sections, create dialog, detail page, activation / delete dialogs |
+| `features/oauth-clients/components/*` | List, columns + row menu, badges, form sections, register page, detail page, activation / delete dialogs |
 | `components/chip-input.tsx` | Chip editor (redirect URIs, scopes) |
 | `components/sensitive-value-disclosure.tsx` | One-time secret display (masked, copy, confirmation) |
 | `components/unsaved-changes-bar.tsx` | Sticky save/discard bar |
@@ -186,8 +186,8 @@ This follows the same pattern as `src/features/applications` and `src/features/u
 
 1. **The secret never reaches the cache.**
    - Only `createOAuthClient` returns `clientSecret`. List, get, update and setActive run `withoutSecret`.
-   - `useCreateOAuthClient` never calls `setQueryData` and uses `gcTime: 0`. The dialog calls `reset()` on unmount, so the secret doesn't linger in the MutationCache either.
-   - The secret lives only in the dialog's component state.
+   - `useCreateOAuthClient` never calls `setQueryData` and uses `gcTime: 0`. The register page calls `reset()` once the secret is in state and on unmount, so it doesn't linger in the MutationCache either.
+   - The secret lives only in the register page's component state, never in the URL.
 2. **PUT is full replacement.**
    - `toUpdateRequest(dto, values)` starts from the loaded DTO, so fields the UI doesn't edit survive a save: `requirePkce`, `postLogoutRedirectUris`, and grant types outside the four the UI knows.
    - `clientId` and `active` always come from the DTO, never from the form.
@@ -232,7 +232,7 @@ This follows the same pattern as `src/features/applications` and `src/features/u
 
 Under `src/__tests__/`:
 - `actions/oauth-clients.test.ts`, `actions/service-accounts.test.ts`
-- `oauth-clients/**`: lib, schema, hooks, columns, create dialog, detail, activation dialog, copy hook
+- `oauth-clients/**`: lib, schema, hooks, columns, register page, detail, activation dialog, copy hook
 - `components/{chip-input,sensitive-value-disclosure,unsaved-changes-bar}.test.tsx`
 - `accounts/accounts-tabs.test.tsx`
 
@@ -248,8 +248,7 @@ npx vitest run src/__tests__/oauth-clients src/__tests__/actions src/__tests__/c
 
 - **No secret rotation.** Waiting for `POST /api/clients/{id}/rotate-secret` (spec §7.1).
 - **Service-account endpoints are unprotected server-side.** No `@PreAuthorize` yet (spec §7.2). The UI has no permission gating either; a 403 shows as a toast.
-- **In-app navigation while the form is dirty isn't guarded.** Only reload/close is.
-- **At 640–767px the register dialog is 32rem wide** instead of full-screen.
+- **In-app navigation isn't guarded.** Only reload/close is: on the detail page while the form is dirty, and on the register page while the one-time secret is unconfirmed.
 - **Deleting from the detail page** flashes a blank frame before returning to the list.
 - **Lists are unpaged and filtered client-side.** Fine for dozens of clients (spec §7.8).
 

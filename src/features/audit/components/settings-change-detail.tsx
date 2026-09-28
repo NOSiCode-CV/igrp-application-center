@@ -12,6 +12,12 @@ export function SettingsChangeDetail({ row }: { row: SettingsReportRowDTO }) {
 
   return (
     <div className="flex flex-col gap-3 px-4 py-3 text-sm">
+      {row.ipAddress && (
+        <p>
+          <span className="text-muted-foreground">Endereço IP: </span>
+          <span className="tabular-nums">{row.ipAddress}</span>
+        </p>
+      )}
       {row.relatedEntity && (
         <p>
           <span className="text-muted-foreground">Entidade relacionada: </span>

@@ -105,9 +105,7 @@ describe("ServiceAccountWizard — existing client", () => {
     expect(
       screen.getByText("Nada é criado até confirmar no último passo."),
     ).toBeInTheDocument();
-    await userEvent.click(
-      screen.getByRole("combobox", { name: "Cliente OAuth" }),
-    );
+    await userEvent.click(screen.getByRole("combobox"));
     expect(
       screen.queryByRole("option", { name: /taken/ }),
     ).not.toBeInTheDocument();
@@ -116,7 +114,7 @@ describe("ServiceAccountWizard — existing client", () => {
     );
     await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
 
-    expect(screen.getByText("INV — Faturação")).toBeInTheDocument(); // inherited application
+    expect(screen.getByText("Faturação")).toBeInTheDocument(); // inherited application, by name
     await userEvent.type(
       screen.getByLabelText("Nome *"),
       "Nightly Invoice ETL",
@@ -145,9 +143,25 @@ describe("ServiceAccountWizard — existing client", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /Cliente OAuth.*ETL/ }),
     );
-    expect(
-      screen.getByRole("combobox", { name: "Cliente OAuth" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("keeps what was typed in Identidade after Voltar", async () => {
+    renderWizard("c1");
+    await userEvent.type(screen.getByLabelText("Nome *"), "Nightly");
+    await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    expect(screen.getByLabelText("Nome *")).toHaveValue("Nightly");
+  });
+
+  it("keeps roles and the identity when going back from step 3", async () => {
+    renderWizard("c1");
+    await userEvent.type(screen.getByLabelText("Nome *"), "Nightly");
+    await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+    expect(screen.getByLabelText("Nome *")).toHaveValue("Nightly");
   });
 
   it("follows an inactive existing client instead of offering a choice", async () => {
@@ -212,5 +226,47 @@ describe("ServiceAccountWizard — existing client", () => {
     expect(
       screen.getByText(/Este cliente não pode receber uma conta de serviço/),
     ).toBeInTheDocument();
+  });
+});
+
+describe("ServiceAccountWizard — Cancelar", () => {
+  const cancel = () => screen.getByRole("link", { name: "Cancelar" });
+
+  it("leaves straight away while only the defaults are set", async () => {
+    renderWizard("c1"); // a deep-linked client is a default, not input
+    cancel().addEventListener("click", (e) => e.preventDefault()); // no router in jsdom
+    await userEvent.click(cancel());
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  it("asks before leaving with a client picked but not confirmed", async () => {
+    renderWizard();
+    await userEvent.click(screen.getByRole("combobox"));
+    await userEvent.click(
+      screen.getByRole("option", { name: /etl-runner-m2m/ }),
+    );
+    await userEvent.click(cancel());
+
+    const dialog = await screen.findByRole("alertdialog", {
+      name: "Sair sem criar a conta?",
+    });
+    expect(dialog).toHaveTextContent(
+      "Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los.",
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Continuar a preencher" }),
+    );
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("asks before leaving with a name typed on step 2, and leaves on confirm", async () => {
+    renderWizard("c1");
+    await userEvent.type(screen.getByLabelText("Nome *"), "Nightly");
+    await userEvent.click(cancel());
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Sair e descartar" }),
+    );
+    expect(push).toHaveBeenCalledWith("/settings/accounts/services");
   });
 });

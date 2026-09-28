@@ -22,6 +22,12 @@ export interface WizardState {
   step: WizardStep;
   client?: ClientChoice;
   identity?: ServiceAccountIdentityValues;
+  /**
+   * What was typed in step 2 but not confirmed with Continuar — kept when the
+   * admin goes back (Voltar, or a click in the step list) so nothing is lost.
+   * It never counts as a completed step.
+   */
+  identityDraft?: ServiceAccountIdentityValues;
   roles: PickedRole[];
   permissions: PickedPermission[];
 }
@@ -29,6 +35,7 @@ export interface WizardState {
 export type WizardAction =
   | { type: "chooseClient"; client: ClientChoice }
   | { type: "setIdentity"; identity: ServiceAccountIdentityValues }
+  | { type: "saveIdentityDraft"; identity: ServiceAccountIdentityValues }
   | { type: "setRoles"; roles: PickedRole[] }
   | { type: "setPermissions"; permissions: PickedPermission[] }
   | { type: "goTo"; step: WizardStep };
@@ -58,7 +65,14 @@ export function wizardReducer(
     case "chooseClient":
       return { ...state, client: action.client, step: 2 };
     case "setIdentity":
-      return { ...state, identity: action.identity, step: 3 };
+      return {
+        ...state,
+        identity: action.identity,
+        identityDraft: undefined,
+        step: 3,
+      };
+    case "saveIdentityDraft":
+      return { ...state, identityDraft: action.identity };
     case "setRoles":
       return { ...state, roles: action.roles };
     case "setPermissions":

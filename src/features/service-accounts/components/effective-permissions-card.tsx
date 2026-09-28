@@ -12,11 +12,14 @@ export function EffectivePermissionsCard({
   directNames,
   isLoading,
   isError,
+  onRetry,
 }: {
   roles: readonly Pick<RoleDTO, "code" | "permissions">[];
   directNames: readonly string[];
   isLoading: boolean;
   isError: boolean;
+  /** Reloads the roles that failed; shown with the error when given. */
+  onRetry?: () => void;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -30,9 +33,17 @@ export function EffectivePermissionsCard({
       className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5"
     >
       <div className="flex items-center justify-between gap-3">
-        <h3 id={`${id}-title`} className="font-semibold">
-          Permissões efetivas
-        </h3>
+        <div className="flex flex-col gap-1">
+          <h3 id={`${id}-title`} className="font-semibold">
+            Permissões efetivas
+          </h3>
+          {/* A read-only summary, not something to fill in: it counts what
+              the roles and direct permissions above add up to. */}
+          <p className="text-sm text-muted-foreground">
+            O que a conta pode fazer: as permissões dos seus perfis somadas às
+            permissões diretas.
+          </p>
+        </div>
         <Button
           variant="outline"
           size="sm"
@@ -65,10 +76,17 @@ export function EffectivePermissionsCard({
         ))}
       </dl>
       {isError ? (
-        <p className="text-sm text-destructive">
-          Não foi possível carregar os perfis, por isso as contagens estão
-          incompletas.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-destructive">
+            Não foi possível carregar as permissões dos perfis, por isso as
+            contagens estão incompletas.
+          </p>
+          {onRetry ? (
+            <Button variant="outline" size="sm" onClick={onRetry}>
+              Tentar novamente
+            </Button>
+          ) : null}
+        </div>
       ) : null}
       {open && !unknown ? (
         <ul

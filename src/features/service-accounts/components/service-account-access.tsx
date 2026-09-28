@@ -25,6 +25,7 @@ export function ServiceAccountAccess({ id }: { id: string }) {
         directNames={directNames}
         isLoading={roleDetails.isLoading}
         isError={roleDetails.isError}
+        onRetry={roleDetails.refetch}
       />
       <ServiceAccountRolesSection
         account={account}

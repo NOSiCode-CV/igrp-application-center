@@ -3,9 +3,12 @@ import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createOAuthClient } from "@/actions/oauth-clients";
+
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
 vi.mock("@/actions/oauth-clients", () => ({
   createOAuthClient: vi.fn(),
@@ -24,18 +27,14 @@ vi.mock("@/features/applications/use-applications", () => ({
   useApplications: () => APPS,
 }));
 
-import { OAuthClientCreateDialog } from "@/features/oauth-clients/components/oauth-client-create-dialog";
+import { OAuthClientCreate } from "@/features/oauth-clients/components/oauth-client-create";
 
-function renderDialog() {
+function renderPage() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={qc}>{children}</QueryClientProvider>
   );
-  const onOpenChange = vi.fn();
-  render(<OAuthClientCreateDialog open onOpenChange={onOpenChange} />, {
-    wrapper,
-  });
-  return { onOpenChange };
+  render(<OAuthClientCreate />, { wrapper });
 }
 
 async function fillValidWebClient() {
@@ -47,9 +46,11 @@ async function fillValidWebClient() {
   );
 }
 
-describe("OAuthClientCreateDialog", () => {
+describe("OAuthClientCreate", () => {
+  beforeEach(() => push.mockReset());
+
   it("hides redirect URIs when authorization_code is unticked", async () => {
-    renderDialog();
+    renderPage();
     expect(
       screen.getByLabelText(/URIs de redirecionamento/),
     ).toBeInTheDocument();
@@ -67,7 +68,7 @@ describe("OAuthClientCreateDialog", () => {
       error: "Conflict",
       status: 409,
     });
-    renderDialog();
+    renderPage();
     await fillValidWebClient();
     await userEvent.click(screen.getByRole("button", { name: "Registar" }));
     expect(
@@ -91,7 +92,7 @@ describe("OAuthClientCreateDialog", () => {
         grantTypes: [],
       },
     });
-    renderDialog();
+    renderPage();
     await fillValidWebClient();
     await userEvent.click(screen.getByRole("button", { name: "Registar" }));
 
@@ -106,27 +107,94 @@ describe("OAuthClientCreateDialog", () => {
       }),
     );
     await waitFor(() => expect(done).toBeEnabled());
+    await userEvent.click(done);
+    expect(push).toHaveBeenCalledWith("/settings/accounts/clients/u1");
   });
 
-  it("cannot be closed while the registration is in flight", async () => {
+  it("warns before unloading until the secret is confirmed", async () => {
+    vi.mocked(createOAuthClient).mockResolvedValueOnce({
+      success: true,
+      data: {
+        id: "u1",
+        clientId: "my-invoice",
+        clientSecret: "s3cret",
+        active: true,
+        accessTokenTtl: 1,
+        refreshTokenTtl: 1,
+        authorizationCodeTtl: 1,
+        scopes: [],
+        redirectUris: [],
+        grantTypes: [],
+      },
+    });
+    renderPage();
+    await fillValidWebClient();
+    await userEvent.click(screen.getByRole("button", { name: "Registar" }));
+    await screen.findByText("Este segredo não volta a ser mostrado.");
+
+    const unload = () => {
+      const event = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(event);
+      return event.defaultPrevented;
+    };
+    expect(unload()).toBe(true);
+    await userEvent.click(
+      screen.getByRole("checkbox", {
+        name: "Guardei o segredo num local seguro",
+      }),
+    );
+    await waitFor(() => expect(unload()).toBe(false));
+  });
+
+  it("cancels straight to the list while only the defaults are set", async () => {
+    renderPage();
+    const cancel = screen.getByRole("link", { name: "Cancelar" });
+    expect(cancel).toHaveAttribute("href", "/settings/accounts/clients");
+    cancel.addEventListener("click", (e) => e.preventDefault()); // no router in jsdom
+    await userEvent.click(cancel);
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+  });
+
+  it("asks before cancelling once a field is filled", async () => {
+    renderPage();
+    await userEvent.type(screen.getByLabelText(/^Nome/), "Invoice App");
+    await userEvent.click(screen.getByRole("link", { name: "Cancelar" }));
+
+    const dialog = await screen.findByRole("alertdialog", {
+      name: "Sair sem registar o cliente?",
+    });
+    expect(dialog).toHaveTextContent(
+      "Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los.",
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Continuar a preencher" }),
+    );
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/^Nome/)).toHaveValue("Invoice App");
+    expect(push).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole("link", { name: "Cancelar" }));
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Sair e descartar" }),
+    );
+    expect(push).toHaveBeenCalledWith("/settings/accounts/clients");
+  });
+
+  it("cannot be cancelled while the registration is in flight", async () => {
     vi.mocked(createOAuthClient).mockReturnValueOnce(new Promise(() => {}));
-    const { onOpenChange } = renderDialog();
+    renderPage();
     await fillValidWebClient();
     await userEvent.click(screen.getByRole("button", { name: "Registar" }));
     expect(
       await screen.findByRole("button", { name: "A registar…" }),
     ).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancelar" })).toBeDisabled();
-
-    await userEvent.keyboard("{Escape}");
-
-    expect(onOpenChange).not.toHaveBeenCalledWith(false);
     expect(
-      screen.getByRole("dialog", { name: "Registar cliente OAuth2" }),
-    ).toBeInTheDocument();
+      screen.queryByRole("link", { name: "Cancelar" }),
+    ).not.toBeInTheDocument();
   });
 
-  it("says so when the server returns no secret, and still lets the admin close", async () => {
+  it("says so when the server returns no secret, and still leads to the details", async () => {
     vi.mocked(createOAuthClient).mockResolvedValueOnce({
       success: true,
       data: {
@@ -141,7 +209,7 @@ describe("OAuthClientCreateDialog", () => {
         grantTypes: [],
       },
     });
-    const { onOpenChange } = renderDialog();
+    renderPage();
     await fillValidWebClient();
     await userEvent.click(screen.getByRole("button", { name: "Registar" }));
 
@@ -150,12 +218,12 @@ describe("OAuthClientCreateDialog", () => {
         "O servidor não devolveu o segredo. Gere um novo nos detalhes do cliente.",
       ),
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Fechar" }));
-    expect(onOpenChange).toHaveBeenCalledWith(false);
+    await userEvent.click(screen.getByRole("button", { name: "Ver detalhes" }));
+    expect(push).toHaveBeenCalledWith("/settings/accounts/clients/u1");
   });
 
   it("links the grant-type error to the group", async () => {
-    renderDialog();
+    renderPage();
     await userEvent.click(
       screen.getByRole("checkbox", { name: /authorization_code/ }),
     );
@@ -173,7 +241,7 @@ describe("OAuthClientCreateDialog", () => {
   });
 
   it("scope defaults follow the grant selection while untouched", async () => {
-    renderDialog();
+    renderPage();
     expect(
       screen.getByRole("button", { name: "Remover openid" }),
     ).toBeInTheDocument();
@@ -204,7 +272,7 @@ describe("OAuthClientCreateDialog", () => {
   });
 
   it("leaves scopes the admin edited alone", async () => {
-    renderDialog();
+    renderPage();
     await userEvent.click(
       screen.getByRole("button", { name: "Remover profile" }),
     );
@@ -223,7 +291,7 @@ describe("OAuthClientCreateDialog", () => {
   });
 
   it("marks the redirect URIs field invalid when none is provided", async () => {
-    renderDialog();
+    renderPage();
     await userEvent.type(screen.getByLabelText(/^Client ID/), "my-invoice");
     await userEvent.type(screen.getByLabelText(/^Nome/), "Invoice App");
     await userEvent.click(screen.getByRole("button", { name: "Registar" }));

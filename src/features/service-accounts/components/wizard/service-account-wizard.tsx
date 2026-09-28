@@ -10,6 +10,7 @@ import {
   AlertDescription,
   Button,
   cn,
+  IGRPAlertDialog,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -82,6 +83,23 @@ export function ServiceAccountWizard({
   });
   const createWithClient = useCreateServiceAccountWithNewClient();
 
+  // Anything the admin entered beyond the defaults (a preselected client from
+  // ?oauthClientId counts as a default) makes Cancelar ask first. The steps
+  // report input they hold locally until Continuar.
+  const [stepDirty, setStepDirty] = useState(false);
+  const newClientDirty = clientForm.formState.isDirty;
+  const hasInput =
+    stepDirty ||
+    newClientDirty ||
+    !!state.identity ||
+    !!state.identityDraft ||
+    state.roles.length > 0 ||
+    state.permissions.length > 0 ||
+    state.client?.kind === "new" ||
+    (state.client?.kind === "existing" &&
+      state.client.oauthClientId !== initialOAuthClientId);
+  const [confirmLeave, setConfirmLeave] = useState(false);
+
   const existingId =
     state.client?.kind === "existing" ? state.client.oauthClientId : undefined;
   const existing = allClients.find((c) => c.id === existingId);
@@ -98,7 +116,7 @@ export function ServiceAccountWizard({
       : existing?.applicationCode;
   const appName = applications.find((a) => a.code === applicationCode)?.name;
   const applicationLabel = applicationCode
-    ? `${applicationCode}${appName ? ` — ${appName}` : ""}`
+    ? (appName ?? applicationCode)
     : "Sem aplicação";
 
   const clientLabel = (id: string) => {
@@ -256,14 +274,34 @@ export function ServiceAccountWizard({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card px-5 py-3">
         {outcome ? null : (
-          <Button asChild variant="ghost">
-            <Link href={ROUTES.SERVICE_ACCOUNTS}>
+          <Button asChild variant="secondary">
+            <Link
+              href={ROUTES.SERVICE_ACCOUNTS}
+              onClick={(e) => {
+                if (!hasInput) return;
+                e.preventDefault();
+                setConfirmLeave(true);
+              }}
+            >
               <IGRPIcon iconName="X" aria-hidden="true" />
               Cancelar
             </Link>
           </Button>
         )}
-        <p className="text-sm text-muted-foreground">
+        <p
+          role="note"
+          className={cn(
+            "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium",
+            outcome
+              ? "bg-warning-subtle text-warning-subtle-foreground"
+              : "bg-info-subtle text-info-subtle-foreground",
+          )}
+        >
+          <IGRPIcon
+            iconName={outcome ? "TriangleAlert" : "Info"}
+            className="size-4 shrink-0"
+            aria-hidden="true"
+          />
           {outcome
             ? "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página."
             : "Nada é criado até confirmar no último passo."}
@@ -271,43 +309,78 @@ export function ServiceAccountWizard({
       </div>
 
       <div className="grid gap-6 md:grid-cols-[260px_minmax(0,1fr)]">
-        <nav aria-label="Passos">
-          <ol className="flex flex-col gap-2">
-            {STEPS.map(({ step, title }) => {
+        {/* A connected rail: the marker carries each step's state (done,
+            current, still ahead) and the line between markers fills in as
+            steps are completed. Done steps stay clickable to revisit. */}
+        <nav aria-label="Passos" className="md:sticky md:top-6 md:self-start">
+          <ol className="flex flex-col">
+            {STEPS.map(({ step, title }, index) => {
               const current = state.step === step;
               const reachable = canGoTo(state, step) && !outcome;
               const summary =
                 step < state.step || (reachable && !current)
                   ? stepSummary(state, step, clientLabel)
                   : undefined;
+              const done = !!summary;
+              const last = index === STEPS.length - 1;
               return (
-                <li key={step}>
+                <li key={step} className="grid grid-cols-[1.75rem_1fr] gap-x-3">
+                  <div className="flex flex-col items-center">
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "flex size-7 shrink-0 items-center justify-center rounded-full text-sm font-semibold tabular-nums",
+                        current
+                          ? "bg-primary text-primary-foreground ring-4 ring-primary/15"
+                          : done
+                            ? "bg-success text-success-foreground"
+                            : "border border-border bg-background text-muted-foreground",
+                      )}
+                    >
+                      {done && !current ? (
+                        <IGRPIcon iconName="Check" className="size-4" />
+                      ) : (
+                        step
+                      )}
+                    </span>
+                    {last ? null : (
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "my-1 min-h-6 w-px flex-1",
+                          step < state.step ? "bg-success" : "bg-border",
+                        )}
+                      />
+                    )}
+                  </div>
                   <button
                     type="button"
                     disabled={!reachable || current}
                     aria-current={current ? "step" : undefined}
                     onClick={() => dispatch({ type: "goTo", step })}
                     className={cn(
-                      "flex w-full flex-col items-start gap-0.5 rounded-lg p-3 text-left",
-                      current
-                        ? "bg-muted"
-                        : "hover:bg-muted disabled:hover:bg-transparent",
+                      "-mt-1 mb-4 flex min-w-0 flex-col items-start gap-0.5 rounded-lg px-2 py-1 text-left",
+                      "enabled:hover:bg-muted disabled:cursor-default",
                     )}
                   >
-                    <span className="flex items-center gap-2 font-medium">
-                      {summary ? (
-                        <IGRPIcon
-                          iconName="Check"
-                          className="size-4 text-success"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <span className="text-muted-foreground">{step}.</span>
+                    <span
+                      className={cn(
+                        "font-medium",
+                        current || done
+                          ? "text-foreground"
+                          : "text-muted-foreground",
                       )}
+                    >
                       {title}
+                      <span className="sr-only">
+                        {current ? ", passo atual" : done ? ", concluído" : ""}
+                      </span>
                     </span>
                     {summary ? (
-                      <span className="text-sm text-muted-foreground">
+                      <span
+                        title={summary}
+                        className="w-full truncate text-sm text-muted-foreground"
+                      >
                         {summary}
                       </span>
                     ) : null}
@@ -344,6 +417,7 @@ export function ServiceAccountWizard({
                   available={available.data}
                   mode={clientMode}
                   onModeChange={setClientMode}
+                  onDirtyChange={setStepDirty}
                   newClientForm={
                     <WizardNewClientForm
                       form={clientForm}
@@ -361,6 +435,7 @@ export function ServiceAccountWizard({
                   state={state}
                   dispatch={dispatch}
                   applicationLabel={applicationLabel}
+                  onDirtyChange={setStepDirty}
                   clientActive={
                     state.client?.kind === "existing"
                       ? existingActive
@@ -386,6 +461,17 @@ export function ServiceAccountWizard({
           )}
         </div>
       </div>
+
+      <IGRPAlertDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        variant="destructive"
+        title="Sair sem criar a conta?"
+        description="Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los."
+        cancelLabel="Continuar a preencher"
+        actionLabel="Sair e descartar"
+        onAction={() => router.push(ROUTES.SERVICE_ACCOUNTS)}
+      />
     </div>
   );
 }

@@ -4,17 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 
 import {
   IGRPCombobox,
-  IGRPSelect,
   Input,
   Label,
 } from "@igrp/igrp-framework-react-design-system";
 
 import type { FilterOption } from "../lib/audit-labels";
 
-/* `IGRPSelect` is fully controlled whenever `value` is defined (it falls
-   back to internal state only when `value` is undefined), so passing
-   `value ?? ALL` keeps it in sync with the URL without remounting it. Radix
-   Select rejects an empty-string item, hence the sentinel for "Todos". */
+/* Every list filter is an `IGRPCombobox`. Fixed lists carry an explicit
+   "Todos" option (a sentinel value) so clearing is one visible choice; the
+   combobox also clears when the selected item is picked again (it reports
+   ""), which both handlers map to "no filter". */
 const ALL = "__all__";
 
 interface FilterFieldProps {
@@ -26,6 +25,7 @@ interface FilterFieldProps {
   disabled?: boolean;
 }
 
+/** Short, fixed lists (enums): "Todos" listed first; search from 6 options. */
 export function FilterSelect({
   id,
   label,
@@ -39,17 +39,28 @@ export function FilterSelect({
     [options],
   );
   return (
-    <IGRPSelect
+    <IGRPCombobox
       id={id}
       label={label}
+      variant="single"
+      // The combobox shows a search box unless told otherwise; short lists
+      // don't need one.
+      showSearch={withAll.length >= 6}
       options={withAll}
       value={value ?? ALL}
       disabled={disabled}
-      onValueChange={(next) => onChange(next === ALL ? undefined : next)}
+      placeholder="Todos"
+      selectLabel="Sem resultados"
+      onChange={(next) =>
+        onChange(
+          typeof next === "string" && next && next !== ALL ? next : undefined,
+        )
+      }
     />
   );
 }
 
+/** Long, searchable lists (users, applications). */
 export function FilterCombobox({
   id,
   label,
@@ -72,7 +83,7 @@ export function FilterCombobox({
       id={id}
       label={label}
       variant="single"
-      showSearch
+      showSearch={withValue.length >= 6}
       options={withValue}
       value={value ?? ""}
       disabled={disabled}

@@ -55,7 +55,34 @@ export type DateRangeSelection =
 export const DEFAULT_RANGE: DateRangeSelection = { preset: "7d" };
 export const PAGE_SIZES = [20, 50, 100] as const;
 export const DEFAULT_PAGE_SIZE = 20;
+/** Newest first, when no column sort is chosen. */
 export const REPORT_SORT = "timestamp,desc";
+export const DEFAULT_SORT: ReportSort = {
+  field: "timestamp",
+  direction: "desc",
+};
+
+/* Columns the user can sort by, per tab, named as the API's `sort` expects
+   (the row DTO field names). The server sorts the whole report, so a sort
+   is never applied to just the visible page. */
+export const SORTABLE_FIELDS = {
+  access: ["timestamp", "username", "role", "action", "ipAddress", "status"],
+  settings: [
+    "timestamp",
+    "performedBy",
+    "area",
+    "operation",
+    "entityType",
+    "entityName",
+    "status",
+  ],
+} as const satisfies Record<AuditTab, readonly string[]>;
+
+export type SortDirection = "asc" | "desc";
+export interface ReportSort {
+  field: string;
+  direction: SortDirection;
+}
 
 export interface ReportQuery {
   tab: AuditTab;
@@ -63,6 +90,8 @@ export interface ReportQuery {
   page: number;
   size: number;
   filters: ReportFilters;
+  /** A column sort; absent means `REPORT_SORT`. */
+  sort?: ReportSort;
 }
 
 export type ParamsInput =
@@ -93,6 +122,19 @@ function parseRange(
   return isRangePreset(range) ? { preset: range } : DEFAULT_RANGE;
 }
 
+/* `sort=field,asc|desc`, kept only for a field the tab can sort by: an
+   unknown field would be a 400 (or a silently ignored sort) server-side. */
+function parseSort(
+  tab: AuditTab,
+  raw: string | undefined,
+): ReportSort | undefined {
+  const [field, direction] = raw?.split(",") ?? [];
+  const fields: readonly string[] = SORTABLE_FIELDS[tab];
+  if (!field || !fields.includes(field)) return undefined;
+  if (direction !== "asc" && direction !== "desc") return undefined;
+  return { field, direction };
+}
+
 export function parseReportQuery(params: ParamsInput): ReportQuery {
   const tabRaw = read(params, "tab");
   const tab = isAuditTab(tabRaw) ? tabRaw : DEFAULT_TAB;
@@ -107,6 +149,8 @@ export function parseReportQuery(params: ParamsInput): ReportQuery {
     filters[key] = value;
   }
 
+  const sort = parseSort(tab, read(params, "sort"));
+
   return {
     tab,
     range: parseRange(
@@ -119,6 +163,7 @@ export function parseReportQuery(params: ParamsInput): ReportQuery {
       ? size
       : DEFAULT_PAGE_SIZE,
     filters,
+    ...(sort ? { sort } : {}),
   };
 }
 
@@ -137,15 +182,39 @@ export function serializeReportQuery(q: ReportQuery): URLSearchParams {
   for (const [key, value] of Object.entries(q.filters)) {
     if (value) params.set(key, value);
   }
+  if (q.sort) params.set("sort", `${q.sort.field},${q.sort.direction}`);
   return params;
 }
 
-export const withTab = (q: ReportQuery, tab: AuditTab): ReportQuery => ({
-  ...q,
-  tab,
-  page: 0,
-  filters: {},
-});
+/* Sort columns differ per tab, so the sort resets with the filters. */
+export const withTab = (q: ReportQuery, tab: AuditTab): ReportQuery => {
+  const { sort: _sort, ...rest } = q;
+  return { ...rest, tab, page: 0, filters: {} };
+};
+
+/** A new order starts again from the first page. `undefined` → newest first. */
+export function withSort(
+  q: ReportQuery,
+  sort: ReportSort | undefined,
+): ReportQuery {
+  const { sort: _sort, ...rest } = q;
+  return sort ? { ...rest, page: 0, sort } : { ...rest, page: 0 };
+}
+
+/** Header click cycle for a column: ascending → descending → default order.
+    The default column (Data e hora, newest first) just flips: its descending
+    step *is* the default. */
+export function nextSort(
+  q: ReportQuery,
+  field: string,
+): ReportSort | undefined {
+  const current = q.sort ?? DEFAULT_SORT;
+  const isDefaultField = field === DEFAULT_SORT.field;
+  if (current.field !== field) return { field, direction: "asc" };
+  if (current.direction === "asc")
+    return isDefaultField ? undefined : { field, direction: "desc" };
+  return isDefaultField ? { field, direction: "asc" } : undefined;
+}
 
 export const withRange = (
   q: ReportQuery,
@@ -204,7 +273,7 @@ function basePage(q: ReportQuery, now: Date) {
     ...rangeToInstants(q.range, now),
     page: q.page,
     size: q.size,
-    sort: REPORT_SORT,
+    sort: q.sort ? `${q.sort.field},${q.sort.direction}` : REPORT_SORT,
   };
 }
 

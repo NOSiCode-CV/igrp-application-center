@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { SettingsChangeDetail } from "@/features/audit/components/settings-change-detail";
+import { settingsRowCanExpand } from "@/features/audit/components/settings-report-columns";
 
 const row = (over: Partial<SettingsReportRowDTO>) =>
   ({
@@ -32,6 +33,17 @@ describe("SettingsChangeDetail", () => {
     );
     expect(screen.getByText("free text")).toBeInTheDocument();
     expect(screen.getByText("Anterior")).toBeInTheDocument();
+  });
+
+  it("shows the IP address, and a row with only an IP can expand", () => {
+    render(<SettingsChangeDetail row={row({ ipAddress: "10.0.0.7" })} />);
+    expect(screen.getByText("Endereço IP:")).toBeInTheDocument();
+    expect(screen.getByText("10.0.0.7")).toBeInTheDocument();
+    expect(
+      settingsRowCanExpand({
+        original: row({ ipAddress: "10.0.0.7" }),
+      } as Parameters<typeof settingsRowCanExpand>[0]),
+    ).toBe(true);
   });
 
   it("shows the related entity", () => {

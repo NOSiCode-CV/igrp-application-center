@@ -15,12 +15,14 @@ import {
 import {
   clearFilters,
   hasFilters,
+  nextSort,
   PAGE_SIZES,
   type ReportFilterKey,
   type ReportQuery,
   withFilter,
   withPage,
   withSize,
+  withSort,
 } from "../lib/report-query";
 import { useRedirectOnUnauthorized, useSettingsReport } from "../use-audit";
 import {
@@ -33,7 +35,7 @@ import { ReportPager } from "./report-pager";
 import { ReportTableSkeleton } from "./report-table-skeleton";
 import {
   renderSettingsDetail,
-  SETTINGS_COLUMNS,
+  settingsColumns,
   settingsRowCanExpand,
 } from "./settings-report-columns";
 
@@ -47,7 +49,7 @@ const TABLE_PAGE_SIZE = [Math.max(...PAGE_SIZES)];
 /* Rows are keyed by index and autoResetExpanded is false (DS default), so with
    keepPreviousData the same table instance survives a page/filter change and
    an expanded row index stays expanded, now showing a different event's diff.
-   Remounting the table per selection (same shape as auditKeys.report) resets
+   Remounting the table per selection (same shape as auditKeys.report, plus the sort) resets
    the expanded state along with the data. */
 function tableKey(query: ReportQuery): string {
   return JSON.stringify({
@@ -55,6 +57,7 @@ function tableKey(query: ReportQuery): string {
     page: query.page,
     size: query.size,
     filters: query.filters,
+    sort: query.sort,
   });
 }
 
@@ -94,18 +97,18 @@ function SettingsReportFilterBar({ query, onQueryChange }: ReportTabProps) {
         onChange={set("area")}
       />
       <FilterSelect
-        id="settings-entity-type"
-        label="Tipo"
-        options={SETTINGS_ENTITY_TYPE_OPTIONS}
-        value={query.filters.entityType}
-        onChange={set("entityType")}
-      />
-      <FilterSelect
         id="settings-operation"
         label="Operação"
         options={SETTINGS_OPERATION_OPTIONS}
         value={query.filters.operation}
         onChange={set("operation")}
+      />
+      <FilterSelect
+        id="settings-entity-type"
+        label="Tipo"
+        options={SETTINGS_ENTITY_TYPE_OPTIONS}
+        value={query.filters.entityType}
+        onChange={set("entityType")}
       />
       <ExactMatchInput
         id="settings-entity-name"
@@ -119,9 +122,23 @@ function SettingsReportFilterBar({ query, onQueryChange }: ReportTabProps) {
 }
 
 export function SettingsReportTab({ query, onQueryChange }: ReportTabProps) {
-  const { data, error, isPending, isError, isFetching, refetch } =
-    useSettingsReport(query);
+  const {
+    data,
+    error,
+    isPending,
+    isPlaceholderData,
+    isError,
+    isFetching,
+    refetch,
+  } = useSettingsReport(query);
   const rows = useMemo(() => data?.content ?? [], [data]);
+  const columns = useMemo(
+    () =>
+      settingsColumns(query.sort, (field) =>
+        onQueryChange(withSort(query, nextSort(query, field))),
+      ),
+    [query, onQueryChange],
+  );
   useRedirectOnUnauthorized(error);
 
   useEffect(() => {
@@ -144,7 +161,10 @@ export function SettingsReportTab({ query, onQueryChange }: ReportTabProps) {
           message="Tente novamente. Se o problema persistir, contacte o suporte."
           onRetry={() => refetch()}
         />
-      ) : isPending ? (
+      ) : isPending || isPlaceholderData ? (
+        // A new period, filter or page is loading: `keepPreviousData` would
+        // otherwise keep the old rows on screen under the new selection.
+        // Background refetches of the same selection keep showing the rows.
         <ReportTableSkeleton />
       ) : rows.length === 0 ? (
         <ReportEmptyState
@@ -155,8 +175,9 @@ export function SettingsReportTab({ query, onQueryChange }: ReportTabProps) {
         <>
           <IGRPDataTable
             key={tableKey(query)}
-            columns={SETTINGS_COLUMNS}
+            columns={columns}
             data={rows}
+            tableHeaderClassName="bg-muted"
             showPagination={false}
             pageSizePagination={TABLE_PAGE_SIZE}
             getRowCanExpand={settingsRowCanExpand}

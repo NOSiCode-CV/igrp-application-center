@@ -1,17 +1,20 @@
 "use client";
 
-import { type Dispatch, type ReactNode, useId, useState } from "react";
+import {
+  type Dispatch,
+  type ReactNode,
+  useEffect,
+  useId,
+  useState,
+} from "react";
 
 import {
   Button,
+  IGRPCombobox,
+  IGRPIcon,
   Label,
   RadioGroup,
   RadioGroupItem,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "@igrp/igrp-framework-react-design-system";
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
 
@@ -24,6 +27,7 @@ export function WizardClientStep({
   mode,
   onModeChange,
   newClientForm,
+  onDirtyChange,
 }: {
   state: WizardState;
   dispatch: Dispatch<WizardAction>;
@@ -31,11 +35,22 @@ export function WizardClientStep({
   mode: "existing" | "new";
   onModeChange: (mode: "existing" | "new") => void;
   newClientForm: ReactNode;
+  /** A client picked here but not yet confirmed with Continuar. */
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const id = useId();
   const initial =
     state.client?.kind === "existing" ? state.client.oauthClientId : undefined;
   const [oauthClientId, setOAuthClientId] = useState(initial);
+  const clientOptions = available.map((c) => ({
+    value: c.id,
+    label: c.clientName ? `${c.clientName} — ${c.clientId}` : c.clientId,
+  }));
+  const dirty = oauthClientId !== initial;
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+    return () => onDirtyChange?.(false);
+  }, [dirty, onDirtyChange]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -69,20 +84,19 @@ export function WizardClientStep({
       {mode === "existing" ? (
         <>
           <div className="flex flex-col gap-1.5">
-            <Select value={oauthClientId} onValueChange={setOAuthClientId}>
-              <SelectTrigger aria-label="Cliente OAuth">
-                <SelectValue placeholder="Selecionar cliente" />
-              </SelectTrigger>
-              <SelectContent>
-                {available.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.clientName
-                      ? `${c.clientName} — ${c.clientId}`
-                      : c.clientId}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <IGRPCombobox
+              id={`${id}-client`}
+              variant="single"
+              showSearch={clientOptions.length >= 6}
+              options={clientOptions}
+              value={oauthClientId ?? ""}
+              onChange={(v) =>
+                setOAuthClientId(typeof v === "string" && v ? v : undefined)
+              }
+              placeholder="Selecionar cliente"
+              searchText="Pesquisar cliente…"
+              selectLabel="Nenhum cliente encontrado."
+            />
             {available.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 Não há clientes disponíveis. Registe um novo cliente.
@@ -101,6 +115,7 @@ export function WizardClientStep({
               }
             >
               Continuar
+              <IGRPIcon iconName="ArrowRight" aria-hidden="true" />
             </Button>
           </div>
         </>

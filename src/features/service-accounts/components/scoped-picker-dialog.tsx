@@ -11,13 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Input,
+  IGRPCombobox,
+  IGRPInputText,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "@igrp/igrp-framework-react-design-system";
 
 import { useDepartments } from "@/features/departments/use-departments";
@@ -110,31 +106,39 @@ export function ScopedPickerDialog({
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor={`${id}-dept`}>Departamento</Label>
-            <Select value={departmentCode} onValueChange={onDepartmentChange}>
-              <SelectTrigger id={`${id}-dept`}>
-                <SelectValue placeholder="Selecionar departamento" />
-              </SelectTrigger>
-              <SelectContent>
-                {departments.map((d) => (
-                  <SelectItem key={d.code} value={d.code}>
-                    {d.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor={`${id}-filter`}>Filtrar</Label>
-            <Input
-              id={`${id}-filter`}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              disabled={!departmentCode}
-            />
-          </div>
+        {/* Both are Horizon fields, so labels and controls share one layout
+            and line up side by side. */}
+        <div className="grid gap-3 sm:grid-cols-2 sm:items-start">
+          <IGRPCombobox
+            id={`${id}-dept`}
+            label="Departamento"
+            variant="single"
+            showSearch={departments.length >= 6}
+            options={departments.map((d) => ({
+              value: d.code,
+              label: d.name,
+            }))}
+            value={departmentCode ?? ""}
+            onChange={(v) => {
+              if (typeof v === "string" && v) onDepartmentChange(v);
+            }}
+            placeholder="Selecionar departamento"
+            searchText="Pesquisar departamento…"
+            selectLabel="Nenhum departamento encontrado."
+          />
+          <IGRPInputText
+            id={`${id}-filter`}
+            label="Filtrar"
+            placeholder="Nome ou código"
+            showIcon
+            iconName="Search"
+            iconPlacement="start"
+            value={filter}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFilter(e.target.value)
+            }
+            disabled={!departmentCode}
+          />
         </div>
         <div className="max-h-80 overflow-y-auto rounded-md border border-border">
           {!departmentCode ? (

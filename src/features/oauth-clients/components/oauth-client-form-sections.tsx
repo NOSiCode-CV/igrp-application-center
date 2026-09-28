@@ -86,7 +86,7 @@ export function OAuthClientFormSections({
   grantTypesFixed,
   children,
 }: {
-  mode: "create" | "edit";  
+  mode: "create" | "edit";
   lockClientCredentials?: ClientCredentialsLock;
   grantTypesFixed?: boolean;
   children?: ReactNode;
@@ -111,7 +111,7 @@ export function OAuthClientFormSections({
   });
   const { data: applications = [] } = useApplications();
   const usesRedirects = grantTypes.includes("authorization_code");
-  
+
   const applicationFieldRef = useRef<HTMLFieldSetElement>(null);
   useEffect(() => {
     applicationFieldRef.current
@@ -216,7 +216,7 @@ export function OAuthClientFormSections({
             disabled={!!applicationLockHelp}
             options={applications.map((app) => ({
               value: app.code,
-              label: `${app.code} — ${app.name}`,
+              label: app.name || app.code,
             }))}
             helperText={
               applicationLockHelp ??

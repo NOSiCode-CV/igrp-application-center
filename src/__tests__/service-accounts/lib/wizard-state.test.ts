@@ -91,4 +91,18 @@ describe("wizard state", () => {
     expect(stepSummary(withIdentity, 3)).toBe("0 perfis · 0 diretas");
     expect(stepSummary(initialWizardState(), 2)).toBeUndefined();
   });
+
+  it("keeps an unconfirmed identity draft without completing step 2", () => {
+    const draft = { name: "Nightly", description: "", active: true };
+    const s1 = wizardReducer(initialWizardState("c1"), {
+      type: "saveIdentityDraft",
+      identity: draft,
+    });
+    expect(s1.identityDraft).toEqual(draft);
+    expect(canGoTo(s1, 3)).toBe(false);
+
+    const s2 = wizardReducer(s1, { type: "setIdentity", identity: draft });
+    expect(s2.identity).toEqual(draft);
+    expect(s2.identityDraft).toBeUndefined();
+  });
 });

@@ -11,6 +11,7 @@ export const ROUTES = {
   DEPARTMENTS_ROLE: "roles",
   ACCOUNTS: "/settings/accounts",
   OAUTH_CLIENTS: "/settings/accounts/clients",
+  OAUTH_CLIENT_NEW: "/settings/accounts/clients/new",
   SERVICE_ACCOUNTS: "/settings/accounts/services",
   SERVICE_ACCOUNT_NEW: "/settings/accounts/services/new",
   EDIT: "/edit",

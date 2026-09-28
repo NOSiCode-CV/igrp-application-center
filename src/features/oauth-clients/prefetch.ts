@@ -4,6 +4,7 @@ import type { QueryClient } from "@tanstack/react-query";
 
 import { getOAuthClient } from "@/actions/oauth-clients";
 import { unwrap } from "@/actions/types";
+import { applicationsListOptions } from "@/features/applications/query-options";
 import { serviceAccountListOptions } from "@/features/service-accounts/query-options";
 
 import {
@@ -30,4 +31,9 @@ export async function prefetchOAuthClient(client: QueryClient, id: string) {
     }),
     client.prefetchQuery(serviceAccountListOptions()),
   ]);
+}
+
+/** The application picker is supplementary: a failure leaves it empty. */
+export async function prefetchOAuthClientCreate(client: QueryClient) {
+  await client.prefetchQuery(applicationsListOptions());
 }
