@@ -12,6 +12,7 @@ import { ACCESS_STATUS_OPTIONS } from "../lib/audit-labels";
 import {
   clearFilters,
   hasFilters,
+  PAGE_SIZES,
   type ReportFilterKey,
   type ReportQuery,
   withFilter,
@@ -28,6 +29,13 @@ import {
 import { ReportEmptyState } from "./report-empty-state";
 import { ReportPager } from "./report-pager";
 import { ReportTableSkeleton } from "./report-table-skeleton";
+
+/* IGRPDataTable always applies getPaginationRowModel() and seeds its internal
+   pageSize from pageSizePagination[0] (default 50), regardless of
+   showPagination={false}. Our own ReportPager already sizes the page server
+   side, so the table's internal page must be at least as large as the
+   biggest page we can receive, or rows past its default 50 never render. */
+const TABLE_PAGE_SIZE = [Math.max(...PAGE_SIZES)];
 
 interface ReportTabProps {
   query: ReportQuery;
@@ -134,6 +142,7 @@ export function AccessReportTab({ query, onQueryChange }: ReportTabProps) {
             columns={ACCESS_COLUMNS}
             data={rows}
             showPagination={false}
+            pageSizePagination={TABLE_PAGE_SIZE}
           />
           <ReportPager
             page={query.page}

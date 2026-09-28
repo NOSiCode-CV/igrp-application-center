@@ -15,6 +15,7 @@ import {
 import {
   clearFilters,
   hasFilters,
+  PAGE_SIZES,
   type ReportFilterKey,
   type ReportQuery,
   withFilter,
@@ -35,6 +36,27 @@ import {
   SETTINGS_COLUMNS,
   settingsRowCanExpand,
 } from "./settings-report-columns";
+
+/* IGRPDataTable always applies getPaginationRowModel() and seeds its internal
+   pageSize from pageSizePagination[0] (default 50), regardless of
+   showPagination={false}. Our own ReportPager already sizes the page server
+   side, so the table's internal page must be at least as large as the
+   biggest page we can receive, or rows past its default 50 never render. */
+const TABLE_PAGE_SIZE = [Math.max(...PAGE_SIZES)];
+
+/* Rows are keyed by index and autoResetExpanded is false (DS default), so with
+   keepPreviousData the same table instance survives a page/filter change and
+   an expanded row index stays expanded, now showing a different event's diff.
+   Remounting the table per selection (same shape as auditKeys.report) resets
+   the expanded state along with the data. */
+function tableKey(query: ReportQuery): string {
+  return JSON.stringify({
+    range: query.range,
+    page: query.page,
+    size: query.size,
+    filters: query.filters,
+  });
+}
 
 interface ReportTabProps {
   query: ReportQuery;
@@ -132,9 +154,11 @@ export function SettingsReportTab({ query, onQueryChange }: ReportTabProps) {
       ) : (
         <>
           <IGRPDataTable
+            key={tableKey(query)}
             columns={SETTINGS_COLUMNS}
             data={rows}
             showPagination={false}
+            pageSizePagination={TABLE_PAGE_SIZE}
             getRowCanExpand={settingsRowCanExpand}
             renderSubComponent={renderSettingsDetail}
           />
