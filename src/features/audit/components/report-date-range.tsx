@@ -49,7 +49,6 @@ export function ReportDateRange({
   return (
     <div className="flex flex-col sm:flex-row sm:items-end gap-3">
       <IGRPSelect
-        key={range.preset}
         id="report-range"
         label="Período"
         options={PRESET_OPTIONS}

@@ -11,10 +11,10 @@ import {
 
 import type { FilterOption } from "../lib/audit-labels";
 
-/* `IGRPSelect` keeps its selection in internal state and never re-reads
-   `value`, so it is keyed on the value: "Limpar filtros" (or a back
-   navigation) remounts it showing the URL's truth. Radix Select rejects an
-   empty-string item, hence the sentinel for "Todos". */
+/* `IGRPSelect` is fully controlled whenever `value` is defined (it falls
+   back to internal state only when `value` is undefined), so passing
+   `value ?? ALL` keeps it in sync with the URL without remounting it. Radix
+   Select rejects an empty-string item, hence the sentinel for "Todos". */
 const ALL = "__all__";
 
 interface FilterFieldProps {
@@ -40,7 +40,6 @@ export function FilterSelect({
   );
   return (
     <IGRPSelect
-      key={value ?? ALL}
       id={id}
       label={label}
       options={withAll}
@@ -59,13 +58,22 @@ export function FilterCombobox({
   onChange,
   disabled,
 }: FilterFieldProps) {
+  /* IGRPCombobox renders `selected?.label ?? placeholder`: a URL value that
+     isn't in `options` (a deleted/renamed user or module, or the options
+     query still loading) would silently show "Todos" while the report stays
+     filtered. Appending it as its own option keeps the visible value honest. */
+  const withValue = useMemo(() => {
+    if (!value || options.some((o) => o.value === value)) return options;
+    return [...options, { label: value, value }];
+  }, [options, value]);
+
   return (
     <IGRPCombobox
       id={id}
       label={label}
       variant="single"
       showSearch
-      options={options}
+      options={withValue}
       value={value ?? ""}
       disabled={disabled}
       placeholder="Todos"
