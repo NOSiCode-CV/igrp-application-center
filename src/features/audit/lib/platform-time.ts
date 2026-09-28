@@ -1,12 +1,29 @@
+const DEFAULT_TIME_ZONE = "Atlantic/Cape_Verde";
+
+function isValidTimeZone(timeZone: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /* ADR-0001: every audit date range is interpreted, and every audit time is
    displayed, in ONE zone — never the server's (UTC in the cluster) or the
    viewer's browser. That keeps the filter and the times on screen in
    agreement, and makes a shared Report link return the same rows for
-   everyone. */
+   everyone. A bad NEXT_PUBLIC_AUDIT_TIME_ZONE must not crash the module at
+   import time (the Intl.DateTimeFormat below would throw a RangeError), so
+   an invalid override falls back to the default instead. */
+const configuredTimeZone = process.env.NEXT_PUBLIC_AUDIT_TIME_ZONE;
 export const PLATFORM_TIME_ZONE =
-  process.env.NEXT_PUBLIC_AUDIT_TIME_ZONE || "Atlantic/Cape_Verde";
+  configuredTimeZone && isValidTimeZone(configuredTimeZone)
+    ? configuredTimeZone
+    : DEFAULT_TIME_ZONE;
 
-/** Shown beside the date controls. Update together with the zone. */
+/** Shown beside the date controls. Must be changed together with
+    NEXT_PUBLIC_AUDIT_TIME_ZONE / PLATFORM_TIME_ZONE. */
 export const PLATFORM_TIME_ZONE_LABEL = "Hora de Cabo Verde";
 
 export const RANGE_PRESETS = ["24h", "7d", "30d"] as const;

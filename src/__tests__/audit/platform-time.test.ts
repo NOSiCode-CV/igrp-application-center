@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   dayRangeToInstants,
@@ -19,6 +19,27 @@ const CV = "Atlantic/Cape_Verde";
 describe("platform time zone", () => {
   it("defaults to Cabo Verde", () => {
     expect(PLATFORM_TIME_ZONE).toBe(CV);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  /* F6: NEXT_PUBLIC_AUDIT_TIME_ZONE resolves through a validity check at
+     module scope; a bad zone must fall back instead of throwing a
+     RangeError out of the module's top level. */
+  it("falls back to Cabo Verde when the env override is not a valid IANA zone", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUDIT_TIME_ZONE", "Not/A_Zone");
+    vi.resetModules();
+    const mod = await import("@/features/audit/lib/platform-time");
+    expect(mod.PLATFORM_TIME_ZONE).toBe(CV);
+  });
+
+  it("keeps a valid env override", async () => {
+    vi.stubEnv("NEXT_PUBLIC_AUDIT_TIME_ZONE", "Europe/Lisbon");
+    vi.resetModules();
+    const mod = await import("@/features/audit/lib/platform-time");
+    expect(mod.PLATFORM_TIME_ZONE).toBe("Europe/Lisbon");
   });
 
   it("reads Cabo Verde as UTC-1 and UTC as 0", () => {
