@@ -18,6 +18,12 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
 
+import {
+  ApplicationCell,
+  CopyClientIdButton,
+  IdentityName,
+  LinkedIdentity,
+} from "@/features/accounts/components/account-cells";
 import { ActiveBadge } from "@/features/oauth-clients/components/oauth-client-badges";
 import { ROUTES } from "@/lib/constants";
 
@@ -85,7 +91,6 @@ export function ServiceAccountRowActions({
   );
 }
 
-/** Role and direct counts; the popover names the roles (spec §5.2). */
 /**
  * Role codes are unique only within a department, so name the department
  * when the backend sends `roles` pairs. Older backends only have the flat,
@@ -125,51 +130,74 @@ function AccessCell({ row }: { row: ServiceAccountDTO }) {
   );
 }
 
-export function getServiceAccountColumns(
-  handlers: RowHandlers,
-): ColumnDef<ServiceAccountDTO>[] {
+export function getServiceAccountColumns({
+  applicationName,
+  ...handlers
+}: RowHandlers & {
+  /** Application name by code; the cell falls back to the code. */
+  applicationName: (code: string) => string | undefined;
+}): ColumnDef<ServiceAccountDTO>[] {
   return [
     {
       id: "name",
       accessorFn: (r) => r.name,
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle title="Nome" column={column} />
+        <IGRPDataTableHeaderSortToggle title="Conta" column={column} />
       ),
       cell: ({ row }) => (
-        <Link
-          href={`${ROUTES.SERVICE_ACCOUNTS}/${row.original.id}`}
-          className="font-medium underline"
-        >
-          {row.original.name}
-        </Link>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <IdentityName href={`${ROUTES.SERVICE_ACCOUNTS}/${row.original.id}`}>
+            {row.original.name}
+          </IdentityName>
+          {row.original.description ? (
+            <span className="truncate text-xs text-muted-foreground">
+              {row.original.description}
+            </span>
+          ) : null}
+        </div>
       ),
-      size: 260,
+      size: 280,
     },
     {
       id: "clientId",
       accessorFn: (r) => r.clientId,
-      header: () => <IGRPDataTableHeaderDefault title="Client ID" />,
+      header: () => <IGRPDataTableHeaderDefault title="Cliente OAuth" />,
       cell: ({ row }) => (
-        <Link
-          href={`${ROUTES.OAUTH_CLIENTS}/${row.original.oauthClientId}`}
-          className="font-mono text-xs underline"
-        >
-          {row.original.clientId}
-        </Link>
+        <div className="flex min-w-0 items-center gap-1">
+          <LinkedIdentity
+            href={`${ROUTES.OAUTH_CLIENTS}/${row.original.oauthClientId}`}
+            iconName="KeyRound"
+            label={row.original.clientId}
+            mono
+          />
+          <CopyClientIdButton
+            clientId={row.original.clientId}
+            onCopy={handlers.onCopy}
+          />
+        </div>
       ),
+      size: 240,
     },
     {
       id: "application",
-      accessorFn: (r) => r.applicationCode ?? "—",
+      accessorFn: (r) => r.applicationCode ?? "",
       header: () => <IGRPDataTableHeaderDefault title="Aplicação" />,
-      cell: ({ getValue }) => (
-        <span className="font-mono text-xs">{String(getValue())}</span>
-      ),
+      cell: ({ row }) => {
+        const code = row.original.applicationCode;
+        return (
+          <ApplicationCell
+            code={code}
+            name={code ? applicationName(code) : undefined}
+          />
+        );
+      },
+      size: 180,
     },
     {
       id: "access",
-      header: () => <IGRPDataTableHeaderDefault title="Permissões" />,
+      header: () => <IGRPDataTableHeaderDefault title="Acesso" />,
       cell: ({ row }) => <AccessCell row={row.original} />,
+      size: 160,
     },
     {
       id: "status",
@@ -178,7 +206,7 @@ export function getServiceAccountColumns(
         <IGRPDataTableHeaderSortToggle title="Estado" column={column} />
       ),
       cell: ({ row }) => <ActiveBadge active={row.original.active} feminine />,
-      size: 80,
+      size: 100,
     },
     {
       id: "actions",
@@ -187,7 +215,7 @@ export function getServiceAccountColumns(
         <ServiceAccountRowActions row={row.original} {...handlers} />
       ),
       enableSorting: false,
-      size: 50,
+      size: 56,
     },
   ];
 }

@@ -49,10 +49,7 @@ export function ServiceAccountList() {
   const filteredRows = useMemo(() => {
     const term = filters.search.trim().toLowerCase();
     return rows.filter((row) => {
-      if (
-        filters.application.length &&
-        !filters.application.includes(appOf(row))
-      )
+      if (filters.application && appOf(row) !== filters.application)
         return false;
       if (filters.status.length && !filters.status.includes(statusOf(row)))
         return false;
@@ -62,10 +59,14 @@ export function ServiceAccountList() {
     });
   }, [rows, filters]);
 
+  const nameByCode = useMemo(
+    () => new Map(applications.map((a) => [a.code, a.name])),
+    [applications],
+  );
+
   const { statusCounts, appOptions } = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const r of rows) counts[statusOf(r)] = (counts[statusOf(r)] ?? 0) + 1;
-    const nameByCode = new Map(applications.map((a) => [a.code, a.name]));
     return {
       statusCounts: counts,
       appOptions: [...new Set(rows.map(appOf))]
@@ -80,7 +81,7 @@ export function ServiceAccountList() {
         )
         .sort((a, b) => a.label.localeCompare(b.label)),
     };
-  }, [rows, applications]);
+  }, [rows, nameByCode]);
 
   const columns = useMemo(
     () =>
@@ -88,8 +89,9 @@ export function ServiceAccountList() {
         onToggleActive: (row) => setDialog({ kind: "activation", row }),
         onDelete: (row) => setDialog({ kind: "delete", row }),
         onCopy: copyClientId,
+        applicationName: (code) => nameByCode.get(code),
       }),
-    [copyClientId],
+    [copyClientId, nameByCode],
   );
 
   return (
@@ -115,7 +117,7 @@ export function ServiceAccountList() {
           <Button asChild>
             <Link href={ROUTES.SERVICE_ACCOUNT_NEW}>
               <IGRPIcon iconName="Plus" aria-hidden="true" />
-              Nova conta de serviço
+              Criar a primeira conta de serviço
             </Link>
           </Button>
         </Empty>

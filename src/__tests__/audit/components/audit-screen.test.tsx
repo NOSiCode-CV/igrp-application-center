@@ -29,6 +29,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
     <div>{children}</div>
   );
   return {
+    IGRPIcon: () => null,
     IGRPPageHeader: ({ title }: { title: string }) => <h1>{title}</h1>,
     Tabs: ({
       children,

@@ -89,9 +89,13 @@ export function OAuthClientList() {
     });
   }, [rows, filters]);
 
+  const nameByCode = useMemo(
+    () => new Map(applications.map((a) => [a.code, a.name])),
+    [applications],
+  );
+
   const { counts, appOptions } = useMemo(() => {
-    const all = rows.map(facetsOf);   
-    const nameByCode = new Map(applications.map((a) => [a.code, a.name]));
+    const all = rows.map(facetsOf);
     return {
       counts: {
         kind: countBy(all.map((f) => f.kind)),
@@ -109,7 +113,7 @@ export function OAuthClientList() {
         )
         .sort((a, b) => a.label.localeCompare(b.label)),
     };
-  }, [rows, applications]);
+  }, [rows, nameByCode]);
 
   const columns = useMemo(
     () =>
@@ -118,8 +122,9 @@ export function OAuthClientList() {
         onDelete: (row) => setDialog({ kind: "delete", row }),
         onCopy: copyClientId,
         linkUnknown,
+        applicationName: (code) => nameByCode.get(code),
       }),
-    [copyClientId, linkUnknown],
+    [copyClientId, linkUnknown, nameByCode],
   );
 
   return (

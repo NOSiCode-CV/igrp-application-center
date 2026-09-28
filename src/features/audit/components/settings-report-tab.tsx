@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { type ReactNode, useEffect, useMemo } from "react";
 
 import { IGRPDataTable } from "@igrp/igrp-framework-react-design-system";
 
@@ -32,6 +32,7 @@ import {
 } from "./filter-controls";
 import { ReportEmptyState } from "./report-empty-state";
 import { ReportPager } from "./report-pager";
+import { ReportQueryPanel } from "./report-query-panel";
 import { ReportTableSkeleton } from "./report-table-skeleton";
 import {
   renderSettingsDetail,
@@ -64,6 +65,11 @@ function tableKey(query: ReportQuery): string {
 interface ReportTabProps {
   query: ReportQuery;
   onQueryChange: (next: ReportQuery) => void;
+}
+
+interface ReportTabViewProps extends ReportTabProps {
+  /** The shared period control, shown at the top of the query panel. */
+  period?: ReactNode;
 }
 
 function SettingsReportFilterBar({ query, onQueryChange }: ReportTabProps) {
@@ -121,7 +127,11 @@ function SettingsReportFilterBar({ query, onQueryChange }: ReportTabProps) {
   );
 }
 
-export function SettingsReportTab({ query, onQueryChange }: ReportTabProps) {
+export function SettingsReportTab({
+  query,
+  onQueryChange,
+  period,
+}: ReportTabViewProps) {
   const {
     data,
     error,
@@ -154,7 +164,18 @@ export function SettingsReportTab({ query, onQueryChange }: ReportTabProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <SettingsReportFilterBar query={query} onQueryChange={onQueryChange} />
+      <ReportQueryPanel
+        period={period}
+        filters={
+          <SettingsReportFilterBar
+            query={query}
+            onQueryChange={onQueryChange}
+          />
+        }
+        range={query.range}
+        filterCount={Object.keys(query.filters).length}
+        onClearFilters={() => onQueryChange(clearFilters(query))}
+      />
       {isError ? (
         <InlineError
           title="Não foi possível carregar o relatório de configurações."

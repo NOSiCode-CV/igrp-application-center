@@ -9,6 +9,7 @@ import {
   Alert,
   AlertDescription,
   Button,
+  cn,
   Form,
   IGRPAlertDialog,
   IGRPIcon,
@@ -112,7 +113,22 @@ export function OAuthClientCreate() {
             </Link>
           </Button>
         )}
-        <p className="text-sm text-muted-foreground">
+        {/* Same note as the service-account wizard's top bar: info before
+            registering, warning once the one-time secret is on screen. */}
+        <p
+          role="note"
+          className={cn(
+            "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium",
+            created
+              ? "bg-warning-subtle text-warning-subtle-foreground"
+              : "bg-info-subtle text-info-subtle-foreground",
+          )}
+        >
+          <IGRPIcon
+            iconName={created ? "TriangleAlert" : "Info"}
+            className="size-4 shrink-0"
+            aria-hidden="true"
+          />
           {created
             ? "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página."
             : "O segredo é mostrado uma única vez, no fim do registo."}
@@ -141,6 +157,7 @@ export function OAuthClientCreate() {
               <Separator />
               <div className="flex justify-end p-4">
                 <Button type="submit" disabled={submitting}>
+                  <IGRPIcon iconName="Save" aria-hidden="true" />
                   {submitting ? "A registar…" : "Registar"}
                 </Button>
               </div>

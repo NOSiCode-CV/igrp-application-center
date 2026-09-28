@@ -5,26 +5,25 @@ import Link from "next/link";
 import {
   Button,
   IGRPButton,
+  IGRPCombobox,
   IGRPIcon,
+  type IGRPOptionsProps,
 } from "@igrp/igrp-framework-react-design-system";
 
 import { FacetedFilter } from "@/components/data-table/faceted-filter";
 import { SearchInput } from "@/components/data-table/search-input";
-import {
-  MultiSelectField,
-  type MultiSelectOption,
-} from "@/components/multi-select-field";
 import { ROUTES } from "@/lib/constants";
 
 export interface ServiceAccountFilters {
   search: string;
-  application: string[];
+  /** Application code, "—" for accounts without one, "" for all. */
+  application: string;
   status: string[];
 }
 
 export const EMPTY_SERVICE_ACCOUNT_FILTERS: ServiceAccountFilters = {
   search: "",
-  application: [],
+  application: "",
   status: [],
 };
 
@@ -42,13 +41,13 @@ export function ServiceAccountToolbar({
 }: {
   filters: ServiceAccountFilters;
   onFiltersChange: (next: ServiceAccountFilters) => void;
-  applicationOptions: MultiSelectOption[];
+  applicationOptions: IGRPOptionsProps[];
   statusCounts: Record<string, number>;
   disabled?: boolean;
 }) {
   const isFiltered =
     filters.search !== "" ||
-    filters.application.length > 0 ||
+    filters.application !== "" ||
     filters.status.length > 0;
   const set = <K extends keyof ServiceAccountFilters>(
     key: K,
@@ -66,17 +65,24 @@ export function ServiceAccountToolbar({
           disabled={disabled}
         />
         <div className="flex flex-wrap items-start gap-2">
-          <MultiSelectField
-            className="w-60"
-            options={applicationOptions}
-            value={filters.application}
-            onChange={(v) => set("application", v)}
-            placeholder="Aplicação"
-            searchPlaceholder="Pesquisar aplicações…"
-            emptyLabel="Nenhuma aplicação encontrada."
-            showSearch
-            disabled={disabled}
-          />
+          {/* Same control and width as the Clientes OAuth tab: outside a
+              form IGRPCombobox puts `className` on the trigger, so the width
+              goes on this wrapper. */}
+          <div className="w-60">
+            <IGRPCombobox
+              variant="single"
+              showSearch
+              options={applicationOptions}
+              value={filters.application}
+              onChange={(v) =>
+                set("application", typeof v === "string" ? v : "")
+              }
+              placeholder="Aplicação"
+              searchText="Pesquisar aplicações…"
+              selectLabel="Nenhuma aplicação encontrada."
+              disabled={disabled}
+            />
+          </div>
           <FacetedFilter
             label="Estado"
             options={STATUS}
@@ -100,7 +106,7 @@ export function ServiceAccountToolbar({
       <Button asChild className="shrink-0">
         <Link href={ROUTES.SERVICE_ACCOUNT_NEW}>
           <IGRPIcon iconName="Plus" aria-hidden="true" />
-          Nova conta
+          Nova conta de serviço
         </Link>
       </Button>
     </div>

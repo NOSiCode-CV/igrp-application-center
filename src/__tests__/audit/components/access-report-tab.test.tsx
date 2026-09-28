@@ -31,6 +31,10 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
         {children}
       </button>
     ),
+    Collapsible: Pass,
+    CollapsibleContent: Pass,
+    CollapsibleTrigger: Pass,
+    cn: (...c: unknown[]) => c.filter(Boolean).join(" "),
     Empty: Pass,
     EmptyContent: Pass,
     EmptyDescription: Pass,
@@ -56,6 +60,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => {
     IGRPIcon: () => null,
     Input: () => null,
     Label: Pass,
+    Separator: () => null,
     Skeleton: () => <div data-testid="skeleton" />,
   };
 });
@@ -121,9 +126,10 @@ describe("AccessReportTab", () => {
     mockUseAccessReport.mockReturnValue(EMPTY);
     const onQueryChange = vi.fn();
     render(<AccessReportTab query={query} onQueryChange={onQueryChange} />);
-    await userEvent.click(
-      screen.getByRole("button", { name: "Limpar filtros" }),
-    );
+    // One in the query panel, one in the empty state: both clear.
+    const clear = screen.getAllByRole("button", { name: "Limpar filtros" });
+    expect(clear).toHaveLength(2);
+    await userEvent.click(clear[1]);
     expect(onQueryChange).toHaveBeenCalledWith({ ...query, filters: {} });
   });
 

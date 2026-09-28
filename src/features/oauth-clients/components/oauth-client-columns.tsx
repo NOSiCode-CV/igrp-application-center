@@ -18,6 +18,12 @@ import type {
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
 
+import {
+  ApplicationCell,
+  ClientIdText,
+  IdentityName,
+  LinkedIdentity,
+} from "@/features/accounts/components/account-cells";
 import { ROUTES } from "@/lib/constants";
 
 import {
@@ -126,41 +132,32 @@ export function OAuthClientRowActions({
   );
 }
 
-export function getOAuthClientColumns(
-  handlers: RowHandlers,
-): ColumnDef<ClientRow>[] {
+export function getOAuthClientColumns({
+  applicationName,
+  ...handlers
+}: RowHandlers & {
+  /** Application name by code; the cell falls back to the code. */
+  applicationName: (code: string) => string | undefined;
+}): ColumnDef<ClientRow>[] {
   return [
     {
       id: "client",
-      accessorFn: (r) => `${r.clientName ?? ""} ${r.clientId}`,
+      accessorFn: (r) => r.clientName || r.clientId,
       header: ({ column }) => (
         <IGRPDataTableHeaderSortToggle title="Cliente" column={column} />
       ),
       cell: ({ row }) => (
-        <div className="flex flex-col gap-0.5">
-          <Link
-            href={`${ROUTES.OAUTH_CLIENTS}/${row.original.id}`}
-            className="font-medium underline hover:cursor-pointer"
-          >
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <IdentityName href={`${ROUTES.OAUTH_CLIENTS}/${row.original.id}`}>
             {row.original.clientName || row.original.clientId}
-          </Link>
-          <span className="font-mono text-xs text-muted-foreground">
-            {row.original.clientId}
-          </span>
-          {row.original.linkedAccount ? (
-            <span className="text-xs text-muted-foreground">
-              Conta de serviço:{" "}
-              <Link
-                href={`${ROUTES.SERVICE_ACCOUNTS}/${row.original.linkedAccount.id}`}
-                className="underline"
-              >
-                {row.original.linkedAccount.name}
-              </Link>
-            </span>
-          ) : null}
+          </IdentityName>
+          <ClientIdText
+            clientId={row.original.clientId}
+            onCopy={handlers.onCopy}
+          />
         </div>
       ),
-      size: 350,
+      size: 300,
     },
     {
       id: "kind",
@@ -171,31 +168,49 @@ export function getOAuthClientColumns(
       cell: ({ row }) => (
         <ClientKindBadge grantTypes={row.original.grantTypes} />
       ),
+      size: 140,
     },
     {
-      id: "grantTypes",
-      accessorFn: (r) => r.grantTypes.join(", "),
-      header: () => <IGRPDataTableHeaderDefault title="Grant types" />,
-      cell: ({ row }) =>
-        row.original.grantTypes.length ? (
-          <ul className="flex flex-col gap-0.5 font-mono text-xs">
-            {row.original.grantTypes.map((grant) => (
-              <li key={grant} className="truncate">
-                {grant}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <span className="text-muted-foreground">—</span>
-        ),
+      id: "serviceAccount",
+      accessorFn: (r) => r.linkedAccount?.name ?? "",
+      header: () => <IGRPDataTableHeaderDefault title="Conta de serviço" />,
+      cell: ({ row }) => {
+        const account = row.original.linkedAccount;
+        if (account) {
+          return (
+            <LinkedIdentity
+              href={`${ROUTES.SERVICE_ACCOUNTS}/${account.id}`}
+              iconName="Bot"
+              label={account.name}
+            />
+          );
+        }
+        // Only a client_credentials client can back a service account.
+        if (getClientKind(row.original.grantTypes) === "web") {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        return (
+          <span className="text-muted-foreground">
+            {handlers.linkUnknown ? "Por verificar" : "Sem conta"}
+          </span>
+        );
+      },
+      size: 220,
     },
     {
       id: "application",
-      accessorFn: (r) => r.applicationCode ?? "—",
+      accessorFn: (r) => r.applicationCode ?? "",
       header: () => <IGRPDataTableHeaderDefault title="Aplicação" />,
-      cell: ({ getValue }) => (
-        <span className="font-mono text-xs">{String(getValue())}</span>
-      ),
+      cell: ({ row }) => {
+        const code = row.original.applicationCode;
+        return (
+          <ApplicationCell
+            code={code}
+            name={code ? applicationName(code) : undefined}
+          />
+        );
+      },
+      size: 180,
     },
     {
       id: "status",
@@ -204,7 +219,7 @@ export function getOAuthClientColumns(
         <IGRPDataTableHeaderSortToggle title="Estado" column={column} />
       ),
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
-      size: 70,
+      size: 100,
     },
     {
       id: "actions",
@@ -213,7 +228,7 @@ export function getOAuthClientColumns(
         <OAuthClientRowActions row={row.original} {...handlers} />
       ),
       enableSorting: false,
-      size: 50,
+      size: 56,
     },
   ];
 }

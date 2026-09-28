@@ -29,6 +29,10 @@ const APPS = { data: [{ id: 7, code: "INV", name: "Faturação" }] };
 vi.mock("@/features/applications/use-applications", () => ({
   useApplications: () => APPS,
 }));
+const copy = vi.fn();
+vi.mock("@/features/oauth-clients/use-copy-client-id", () => ({
+  useCopyClientId: () => copy,
+}));
 
 import { ServiceAccountList } from "@/features/service-accounts/components/service-account-list";
 
@@ -108,6 +112,18 @@ describe("ServiceAccountList", () => {
     expect(screen.getByText("reader · RH")).toBeInTheDocument();
   });
 
+  it("names the application and copies the client ID from the row", async () => {
+    renderList(accounts);
+    const row = screen.getByRole("row", { name: /Nightly Invoice/ });
+    expect(within(row).getByText("Faturação")).toBeInTheDocument();
+    await userEvent.click(
+      within(row).getByRole("button", {
+        name: "Copiar client ID etl-runner-m2m",
+      }),
+    );
+    expect(copy).toHaveBeenCalledWith("etl-runner-m2m");
+  });
+
   it("filters by search", async () => {
     renderList(accounts);
     await userEvent.type(screen.getByLabelText("Pesquisar contas"), "legacy");
@@ -121,7 +137,7 @@ describe("ServiceAccountList", () => {
       screen.getByText("Ainda não há contas de serviço"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /Nova conta de serviço/ }),
+      screen.getByRole("link", { name: "Criar a primeira conta de serviço" }),
     ).toHaveAttribute("href", "/settings/accounts/services/new");
   });
 
