@@ -26,3 +26,8 @@ export const OPEN_TYPE_VIEW = "view";
 export const config = {
   minioUrl: process.env.NEXT_PUBLIC_IGRP_MINIO_URL || "",
 } as const;
+
+/* Gates the whole audit surface (/settings/audit, its actions and routes).
+   Contains dots, so the framework matches it verbatim against the token's
+   permissions — it is never qualified with the active department. */
+export const AUDIT_VIEW_PERMISSION = "igrp.audit.view";
