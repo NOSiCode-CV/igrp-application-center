@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
+import { igrpAuthorize } from "@igrp/framework-next";
+
 import {
   SettingsCard,
   type SettingsItem,
 } from "@/features/settings/components/settings-card";
+import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
 
 /* Titles match the heading of the page each card opens, so the label promises
    exactly what the destination delivers. Descriptions name the actions that
@@ -46,6 +49,15 @@ const settingsConfig: { general: SettingsItem[] } = {
       href: "/settings/accounts",
       accent: "primary",
     },
+    {
+      id: "auditoria-relatorios",
+      title: "Auditoria e Relatórios",
+      description:
+        "Consulte os acessos e as alterações de configuração registados na plataforma.",
+      icon: "FileChartColumn",
+      href: "/settings/audit",
+      accent: "info",
+    },
     /* `status: "inativo"` renders these as plain, non-focusable divs with the
        "Em breve" badge. The `href`s are the routes they will take once built;
        nothing links to them while the status is set. */
@@ -59,16 +71,6 @@ const settingsConfig: { general: SettingsItem[] } = {
       accent: "warning",
       status: "inativo",
     },
-    {
-      id: "auditoria-relatorios",
-      title: "Auditoria e Relatórios",
-      description:
-        "Consulte o registo de atividade da plataforma e extraia relatórios.",
-      icon: "FileChartColumn",
-      href: "/settings/audit",
-      accent: "info",
-      status: "inativo",
-    },
   ],
 };
 
@@ -77,7 +79,13 @@ export const metadata: Metadata = {
   description: "Gerir aplicações, utilizadores e acessos da plataforma.",
 };
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  /* Navigation only: the audit page asserts the same permission itself. */
+  const canViewAudit = await igrpAuthorize(AUDIT_VIEW_PERMISSION);
+  const items = settingsConfig.general.filter(
+    (item) => item.id !== "auditoria-relatorios" || canViewAudit,
+  );
+
   return (
     <div className="flex flex-col gap-12">
       <section>
@@ -91,7 +99,7 @@ export default function SettingsPage() {
           Escolha a área que quer administrar.
         </p>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          {settingsConfig.general.map((item) => (
+          {items.map((item) => (
             <SettingsCard key={item.id} item={item} />
           ))}
         </div>
