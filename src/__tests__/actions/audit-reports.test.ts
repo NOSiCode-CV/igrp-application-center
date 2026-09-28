@@ -63,6 +63,28 @@ describe("getAccessReport", () => {
 
     expect(result).toMatchObject({ success: false, status: 400 });
   });
+
+  it("clamps an out-of-range size to the default before calling the SDK", async () => {
+    mockGetAccessReport.mockResolvedValue({ data: page });
+
+    await getAccessReport({ ...filters, size: 9999 });
+
+    expect(mockGetAccessReport).toHaveBeenCalledWith({
+      ...filters,
+      size: 20,
+    });
+  });
+
+  it("passes an allowed size through unchanged", async () => {
+    mockGetAccessReport.mockResolvedValue({ data: page });
+
+    await getAccessReport({ ...filters, size: 100 });
+
+    expect(mockGetAccessReport).toHaveBeenCalledWith({
+      ...filters,
+      size: 100,
+    });
+  });
 });
 
 describe("getSettingsReport", () => {
@@ -82,5 +104,16 @@ describe("getSettingsReport", () => {
       status: 403,
     });
     expect(mockGetSettingsReport).not.toHaveBeenCalled();
+  });
+
+  it("clamps an out-of-range size to the default before calling the SDK", async () => {
+    mockGetSettingsReport.mockResolvedValue({ data: page });
+
+    await getSettingsReport({ ...filters, size: -1 });
+
+    expect(mockGetSettingsReport).toHaveBeenCalledWith({
+      ...filters,
+      size: 20,
+    });
   });
 });
