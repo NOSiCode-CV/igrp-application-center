@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   Badge,
   type ColumnDef,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -26,9 +27,6 @@ import {
   showStatus,
   statusInviteClass,
 } from "@/lib/app-utilities";
-import { cn } from "@/lib/utils";
-
-// ─── Module-level helpers ────────────────────────────────────────────────────
 
 const isInviteStatus = (s: string) =>
   ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
@@ -40,7 +38,6 @@ function ActiveRowActionsCell({
 }: {
   row: Row<IGRPUserDTO>;
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void;
-  /** True on the signed-in administrator's own row. */
   isSelf: boolean;
 }) {
   const state = String(row.getValue("status"));
@@ -54,9 +51,7 @@ function ActiveRowActionsCell({
         <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="min-w-44">
-        {/* Never offered on your own row: deactivating yourself locks you out
-            of the screen you are standing on, and there is no path back. */}
+      <DropdownMenuContent align="end" className="min-w-44">        
         {isSelf ? null : state === "ACTIVE" ? (
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
@@ -67,10 +62,7 @@ function ActiveRowActionsCell({
             Desativar
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem
-            /* `--success` is a SOLID surface token; used as ink on a popover it
-               is the `bg-x/10 text-x` idiom the token file rules out. The
-               `-subtle` foreground is the validated stop for text. */
+          <DropdownMenuItem            
             className="text-success-subtle-foreground focus:text-success-subtle-foreground focus:bg-success-subtle"
             onSelect={() => onStatusClick(row.original, "ACTIVE")}
             variant="default"
@@ -96,8 +88,6 @@ function ActiveRowActionsCell({
     </DropdownMenu>
   );
 }
-
-// ─── Column factory ──────────────────────────────────────────────────────────
 
 export function getTableColumns(
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void,

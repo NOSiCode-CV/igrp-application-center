@@ -4,11 +4,10 @@ import Link, { useLinkStatus } from "next/link";
 
 import {
   Button,
+  cn,
   IGRPIcon,
   type IGRPIconProps,
 } from "@igrp/igrp-framework-react-design-system";
-
-import { cn } from "@/lib/utils";
 
 type IGRPBtnProps = React.ComponentProps<typeof Button>;
 
@@ -33,9 +32,7 @@ export function ButtonLink({
   "aria-label": ariaLabel,
   ...props
 }: ButtonLinkProps) {
-  // Icon-only links have no visible text, so they need an explicit accessible
-  // name. When there is no visible label, fall back to the provided aria-label
-  // (or the label text) so the rendered link still has an accessible name.
+ 
   const linkAriaLabel = label ? ariaLabel : (ariaLabel ?? label);
 
   return (
@@ -56,13 +53,11 @@ export function ButtonLink({
 interface LinkLoadingIndicatorProps {
   iconName: IGRPIconProps["iconName"];
   iconClassName?: string;
-  //                      customIcon?: React.ReactNode;
 }
 
 function LinkLoadingIndicator({
   iconName,
   iconClassName,
-  // customIcon = undefined,
 }: LinkLoadingIndicatorProps) {
   const { pending } = useLinkStatus();
 

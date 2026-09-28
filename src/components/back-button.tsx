@@ -3,9 +3,7 @@
 import type { Route } from "next";
 import { useRouter } from "next/navigation";
 
-import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
-
-import { cn } from "@/lib/utils";
+import { Button, cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 interface BackButtonProps {
   href?: string;

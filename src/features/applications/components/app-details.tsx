@@ -9,6 +9,7 @@ import {
   Badge,
   Card,
   CardContent,
+  cn,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -38,7 +39,6 @@ import { MenuList } from "@/features/menus/components/menu-list";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
 import { getStatusColor, showStatus } from "@/lib/app-utilities";
 import { ROUTES } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 
 import { ApplicationForm } from "./app-form";
 

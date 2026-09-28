@@ -3,6 +3,7 @@
 import {
   Badge,
   type ColumnDef,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,7 +25,6 @@ import {
   getInitials,
   statusInviteClass,
 } from "@/lib/app-utilities";
-import { cn } from "@/lib/utils";
 
 const isTerminalInviteStatus = (s: string) =>
   s === "CANCELED" || s === "REJECTED";

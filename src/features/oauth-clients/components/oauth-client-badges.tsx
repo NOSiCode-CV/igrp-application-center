@@ -1,6 +1,4 @@
-import { Badge } from "@igrp/igrp-framework-react-design-system";
-
-import { cn } from "@/lib/utils";
+import { Badge, cn } from "@igrp/igrp-framework-react-design-system";
 
 import { CLIENT_KIND_LABEL, getClientKind } from "../lib/oauth-client-utils";
 
@@ -24,7 +22,6 @@ export function ClientKindBadge({
   );
 }
 
-/** Colour + dot + word: state is never carried by colour alone. */
 export function ActiveBadge({
   active,
   feminine,

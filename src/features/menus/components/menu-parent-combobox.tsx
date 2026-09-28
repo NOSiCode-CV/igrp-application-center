@@ -12,6 +12,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  cn,
   FormControl,
   FormField,
   FormItem,
@@ -28,7 +29,6 @@ import type { Control } from "react-hook-form";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { type CreateMenu, menuTypeSchema } from "@/features/menus/menu-schemas";
-import { cn } from "@/lib/utils";
 
 interface MenuParentComboboxProps {
   control: Control<CreateMenu>;
@@ -54,7 +54,6 @@ export function MenuParentCombobox({
   const { setValue } = useFormContext<CreateMenu>();
   const parentCode = useWatch({ control, name: "parentCode" });
 
-  // Sync radio to match the current parentCode when form resets (e.g. on edit open)
   useEffect(() => {
     if (parentCode && isPage) {
       setParentType(

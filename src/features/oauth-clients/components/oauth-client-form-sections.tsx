@@ -4,6 +4,7 @@ import { type ReactNode, useEffect, useRef } from "react";
 
 import {
   Checkbox,
+  cn,
   FormControl,
   FormDescription,
   FormField,
@@ -20,7 +21,6 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { ChipInput } from "@/components/chip-input";
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import { useApplications } from "@/features/applications/use-applications";
-import { cn } from "@/lib/utils";
 
 import {
   formatSeconds,
@@ -65,13 +65,8 @@ const TTL_FIELDS = [
   { name: "authorizationCodeTtl", label: "Authorization code" },
 ] as const;
 
-/**
- * `{ accountName }` — a service account is linked. `{ unknown: true }` — the
- * link could not be checked (loading or failed), so fail safe and lock anyway.
- */
 export type ClientCredentialsLock = { accountName: string } | { unknown: true };
 
-/** FormMessage only renders on error; point the group at it while it does. */
 function GrantTypesFieldset({ children }: { children: ReactNode }) {
   const { error, formMessageId } = useFormField();
   return (
@@ -91,15 +86,9 @@ export function OAuthClientFormSections({
   grantTypesFixed,
   children,
 }: {
-  mode: "create" | "edit";
-  /**
-   * Set when a service account is (or may be) linked: client_credentials
-   * stays on and the application is fixed (the SA inherits it, spec §1).
-   */
+  mode: "create" | "edit";  
   lockClientCredentials?: ClientCredentialsLock;
-  /** Service-account wizard: grant types are exactly client_credentials and cannot change. */
   grantTypesFixed?: boolean;
-  /** Extra sections appended after the form's own (e.g. the detail's "Registo"). */
   children?: ReactNode;
 }) {
   const lockHelp = (linked: (name: string) => string) =>
@@ -122,11 +111,7 @@ export function OAuthClientFormSections({
   });
   const { data: applications = [] } = useApplications();
   const usesRedirects = grantTypes.includes("authorization_code");
-
-  /**
-   * IGRPCombobox's label points at a wrapper div, not at its trigger button,
-   * and it forwards no aria props — name the trigger so it stays labelled.
-   */
+  
   const applicationFieldRef = useRef<HTMLFieldSetElement>(null);
   useEffect(() => {
     applicationFieldRef.current
@@ -134,12 +119,6 @@ export function OAuthClientFormSections({
       ?.setAttribute("aria-label", "Aplicação");
   });
 
-  /**
-   * Scope defaults follow the grant selection on create (spec §4.3): a
-   * client_credentials-only client drops the untouched web defaults, and
-   * re-selecting authorization_code with no scopes restores them. Edits the
-   * admin made to the scopes are never overwritten.
-   */
   function syncScopeDefaults(
     prev: OAuthClientFormValues["grantTypes"],
     next: OAuthClientFormValues["grantTypes"],
@@ -223,7 +202,6 @@ export function OAuthClientFormSections({
           label="Descrição"
           maxLength={140}
         />
-        {/* IGRPCombobox's `disabled` is only visual; the fieldset really disables its trigger. */}
         <fieldset
           ref={applicationFieldRef}
           disabled={!!applicationLockHelp}

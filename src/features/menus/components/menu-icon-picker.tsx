@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Button,
+  cn,
   FormControl,
   FormItem,
   FormLabel,
@@ -18,7 +19,6 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { LUCIDE_ICON_OPTIONS } from "@/features/menus/menu-constants";
-import { cn } from "@/lib/utils";
 
 interface MenuIconPickerProps {
   value: string | undefined;

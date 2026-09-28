@@ -9,6 +9,7 @@ import {
   Alert,
   AlertDescription,
   Button,
+  cn,
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
@@ -22,7 +23,6 @@ import {
 } from "@/features/oauth-clients/oauth-client-schemas";
 import { useOAuthClients } from "@/features/oauth-clients/use-oauth-clients";
 import { ROUTES } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 
 import {
   canGoTo,
@@ -44,7 +44,6 @@ import { WizardIdentityStep } from "./wizard-identity-step";
 import { WizardNewClientForm } from "./wizard-new-client-form";
 import { type WizardOutcome, WizardResult } from "./wizard-result";
 
-/** Next.js signals redirect()/notFound() by throwing; never swallow those. */
 function isNextSignal(error: unknown) {
   const digest = (error as { digest?: unknown } | null)?.digest;
   return typeof digest === "string" && digest.startsWith("NEXT_REDIRECT");
@@ -86,7 +85,6 @@ export function ServiceAccountWizard({
   const existingId =
     state.client?.kind === "existing" ? state.client.oauthClientId : undefined;
   const existing = allClients.find((c) => c.id === existingId);
-  // Spec §6.1: an account on an existing client takes that client's state.
   const existingActive =
     typeof existing?.active === "boolean" ? existing.active : undefined;
   const unavailable =

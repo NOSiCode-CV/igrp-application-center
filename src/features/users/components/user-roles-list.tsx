@@ -1,10 +1,9 @@
 "use client";
 
-import { Badge, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { Badge, cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
 import { getStatusColor, showStatus } from "@/lib/app-utilities";
-import { cn } from "@/lib/utils";
 
 import { useUserRoles } from "../use-users";
 

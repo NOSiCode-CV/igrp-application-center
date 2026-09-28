@@ -13,6 +13,7 @@ import type {
 import {
   Badge,
   Button,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -20,8 +21,6 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-
-import { cn } from "@/lib/utils";
 
 import { useMenuTree } from "./menu-tree-context";
 
@@ -93,15 +92,15 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
 
   const sortedSubMenus = subMenus
     ? [...subMenus].sort(
-        (
-          a: IGRPMenuItemArgs & { sortOrder?: number },
-          b: IGRPMenuItemArgs & { sortOrder?: number },
-        ) => {
-          const aOrder = a.position ?? a.sortOrder ?? 0;
-          const bOrder = b.position ?? b.sortOrder ?? 0;
-          return aOrder - bOrder;
-        },
-      )
+      (
+        a: IGRPMenuItemArgs & { sortOrder?: number },
+        b: IGRPMenuItemArgs & { sortOrder?: number },
+      ) => {
+        const aOrder = a.position ?? a.sortOrder ?? 0;
+        const bOrder = b.position ?? b.sortOrder ?? 0;
+        return aOrder - bOrder;
+      },
+    )
     : [];
 
   return (
@@ -130,8 +129,6 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
               strokeWidth={2}
             />
           </button>
-
-          {/* <div style={{ width: `${depth * 1.5}rem` }} className="shrink-0" /> */}
 
           {hasChildren ? (
             <Button
@@ -227,27 +224,16 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
                     )}
 
                     {menu.type === "FOLDER" && (
-                      <>
-                        <DropdownMenuItem
-                          onClick={() => onAddInternalPage?.(menu)}
-                        >
-                          <IGRPIcon
-                            iconName="FileText"
-                            className="size-4 mr-2"
-                          />
-                          Adicionar Página
-                        </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => onAddInternalPage?.(menu)}
+                      >
+                        <IGRPIcon
+                          iconName="FileText"
+                          className="size-4 mr-2"
+                        />
+                        Adicionar Página
+                      </DropdownMenuItem>
 
-                        {/* <DropdownMenuItem
-                      onClick={() => onAddExternalPage?.(menu)}
-                    >
-                      <IGRPIcon
-                        iconName="ExternalLink"
-                        className="size-4 mr-2"
-                      />
-                      Adicionar Página Externa
-                    </DropdownMenuItem> */}
-                      </>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

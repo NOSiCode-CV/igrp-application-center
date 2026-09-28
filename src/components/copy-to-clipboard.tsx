@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import {
   Button,
+  cn,
   IGRPIcon,
   Tooltip,
   TooltipContent,
@@ -11,8 +12,6 @@ import {
   TooltipTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-
-import { cn } from "@/lib/utils";
 
 interface CopyToClipboardProps {
   value: string;

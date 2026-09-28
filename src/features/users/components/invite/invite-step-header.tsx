@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
 
 import {
+  cn,
   IGRPIcon,
   type IGRPIconProps,
 } from "@igrp/igrp-framework-react-design-system";
-
-import { cn } from "@/lib/utils";
 
 interface InviteStepHeaderProps {
   icon: IGRPIconProps["iconName"];

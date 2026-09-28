@@ -32,7 +32,6 @@ export default function HomeLoading() {
             </div>
           </section>
 
-          {/* Catalogue */}
           <section className="flex flex-col gap-3">
             <Skeleton className="h-5 w-40" />
             <div className="flex flex-wrap items-end gap-2">
