@@ -47,8 +47,9 @@ export function ReportPager({
       </p>
       <div className="flex items-center gap-2">
         <IGRPSelect
-          key={size}
           id="report-page-size"
+          label="Linhas por página"
+          labelClassName="sr-only"
           options={SIZE_OPTIONS}
           value={String(size)}
           disabled={disabled}
