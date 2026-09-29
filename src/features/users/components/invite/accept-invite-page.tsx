@@ -5,6 +5,7 @@ import { useCallback, useEffect, useReducer, useRef } from "react";
 
 import { IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -47,22 +48,16 @@ export function AcceptInvitePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
+  const t = useTranslations("users.invite.accept");
 
   const { data: session, status: sessionStatus } = useSession({
     required: true,
   });
-
-  // `session.user.email` is not reliably populated by the IGRP OIDC provider —
-  // use the API user record as the authoritative email source.
-  // Only fire after the session is confirmed — calling the server action before
-  // that risks getClientAccess() hitting a null session and redirecting to /login.
+  
   const { data: currentUser, isLoading: isLoadingCurrentUser } = useCurrentUser(
     { enabled: sessionStatus === "authenticated" },
   );
-
-  // Mirror the same session guard applied to useCurrentUser: don't call the
-  // server action until the session is confirmed to avoid a 403 from the
-  // ACCESS MANAGEMENT API when the access token hasn't been validated yet.
+ 
   const {
     data: invitation,
     isLoading: isLoadingInvitation,
@@ -72,10 +67,7 @@ export function AcceptInvitePage() {
   });
 
   const [step, dispatch] = useReducer(inviteFlowReducer, initialStep);
-
-  // Guards the auto-submit effect against React StrictMode's double-invoke (and
-  // any re-render before the mutation's `isPending` flips), which could
-  // otherwise fire two OTP emails for the same address.
+  
   const autoSubmittedEmailRef = useRef<string | null>(null);
 
   const validateEmail = useValidateInvitationEmail();
@@ -124,46 +116,46 @@ export function AcceptInvitePage() {
     currentUser?.email,
     session?.user?.email,
   ]);
-
-  // Full reload so the session is re-initialized with the correct roles.
-  // A client-side router.push("/") reuses the stale access token, which can
-  // still carry TEMPORARY status and cause the home layout to redirect back to
-  // /invite/pending even when the user already has valid permissions.
+  
   const goHome = useCallback(() => window.location.assign("/"), []);
-
-  // Wrong account: route through /logout so the IdP SSO session is actually
-  // terminated (a plain next-auth signOut clears only the local session, and
-  // the IdP would silently re-authenticate the same wrong account on return,
-  // trapping the user). After the full logout + fresh login the user lands on
-  // the app home and re-opens the invite link as the correct account.
+  
   const handleSignOut = useCallback(() => {
     router.push("/logout");
   }, [router]);
 
-  const dispatchEmailFailure = useCallback((message: string | undefined) => {
-    const cls = classifyInviteError(message);
-    if (cls === "expired") {
-      dispatch({ type: "token-expired", message });
-    } else if (cls === "mismatch") {
-      dispatch({ type: "email-mismatch", message });
-    } else {
-      dispatch({
-        type: "email-error",
-        message: message ?? "Erro ao validar email",
-      });
-    }
-  }, []);
+  const dispatchEmailFailure = useCallback(
+    (message: string | undefined) => {
+      const cls = classifyInviteError(message);
+      if (cls === "expired") {
+        dispatch({ type: "token-expired", message });
+      } else if (cls === "mismatch") {
+        dispatch({ type: "email-mismatch", message });
+      } else {
+        dispatch({
+          type: "email-error",
+          message: message ?? t("errors.emailValidation"),
+        });
+      }
+    },
+    [t],
+  );
 
-  const dispatchOtpFailure = useCallback((message: string | undefined) => {
-    const cls = classifyInviteError(message);
-    if (cls === "expired") {
-      dispatch({ type: "token-expired", message });
-    } else if (cls === "mismatch") {
-      dispatch({ type: "email-mismatch", message });
-    } else {
-      dispatch({ type: "otp-error", message: message ?? "Código inválido" });
-    }
-  }, []);
+  const dispatchOtpFailure = useCallback(
+    (message: string | undefined) => {
+      const cls = classifyInviteError(message);
+      if (cls === "expired") {
+        dispatch({ type: "token-expired", message });
+      } else if (cls === "mismatch") {
+        dispatch({ type: "email-mismatch", message });
+      } else {
+        dispatch({
+          type: "otp-error",
+          message: message ?? t("errors.invalidCode"),
+        });
+      }
+    },
+    [t],
+  );
 
   const handleEmailSubmit = useCallback(
     (email: string) => {
@@ -212,20 +204,18 @@ export function AcceptInvitePage() {
       { token, email },
       {
         onSuccess: (result) => {
-          if (!result.success) {
-            // Mirror handleOtpSubmit: an expired token surfaces the dedicated
-            // expired screen rather than a generic resend toast.
+          if (!result.success) {           
             if (classifyInviteError(result.error) === "expired") {
               dispatch({ type: "token-expired", message: result.error });
               return;
             }
-            toast.error("Não foi possível reenviar o código", {
+            toast.error(t("toasts.resendFailed"), {
               description: result.error,
             });
             return;
           }
           dispatch({ type: "resend-sent" });
-          toast.success("Novo código enviado");
+          toast.success(t("toasts.resendSuccess"));
         },
         onError: (err) => {
           const message = (err as Error).message;
@@ -233,13 +223,13 @@ export function AcceptInvitePage() {
             dispatch({ type: "token-expired", message });
             return;
           }
-          toast.error("Não foi possível reenviar o código", {
+          toast.error(t("toasts.resendFailed"), {
             description: message,
           });
         },
       },
     );
-  }, [step, token, validateEmail]);
+  }, [step, token, validateEmail, t]);
 
   const handleChangeEmail = useCallback(
     () => dispatch({ type: "change-email" }),
@@ -253,27 +243,23 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            toast.error("Erro ao aceitar convite", {
+            toast.error(t("toasts.acceptFailed"), {
               description: result.error,
             });
             return;
           }
-          toast.success("Convite aceite", {
-            description: "Tem agora acesso à aplicação.",
-          });
-          // Full reload so the session is re-initialized with the new
-          // roles/department granted by the accepted invite. A client-side
-          // router.push("/") reuses the stale session, which causes the IGRP
-          // layout header to fail when it tries to fetch the updated user data.
+          toast.success(t("toasts.accepted"), {
+            description: t("toasts.acceptedDescription"),
+          });        
           window.location.assign("/");
         },
         onError: (err) =>
-          toast.error("Erro ao aceitar convite", {
+          toast.error(t("toasts.acceptFailed"), {
             description: (err as Error).message,
           }),
       },
     );
-  }, [token, invitation, respond]);
+  }, [token, invitation, respond, t]);
 
   const handleReject = useCallback(() => {
     if (!token || !invitation) return;
@@ -282,7 +268,7 @@ export function AcceptInvitePage() {
       {
         onSuccess: (result) => {
           if (!result.success) {
-            toast.error("Erro ao rejeitar convite", {
+            toast.error(t("toasts.rejectFailed"), {
               description: result.error,
             });
             return;
@@ -290,18 +276,13 @@ export function AcceptInvitePage() {
           dispatch({ type: "rejected" });
         },
         onError: (err) =>
-          toast.error("Erro ao rejeitar convite", {
+          toast.error(t("toasts.rejectFailed"), {
             description: (err as Error).message,
           }),
       },
     );
-  }, [token, invitation, respond]);
-
-  // Auto-submit the email the session already carries so the user doesn't have
-  // to retype it. On success the flow proceeds to the OTP step exactly like the
-  // manual path — the emailed code is still required. On failure, surface the
-  // reason via toast and fall back to the clean email entry step so the user can
-  // manually identify themselves.
+  }, [token, invitation, respond, t]);
+  
   // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
   useEffect(() => {
     if (
@@ -323,10 +304,8 @@ export function AcceptInvitePage() {
               dispatch({ type: "token-expired", message: result.error });
               return;
             }
-            toast.error("Verificação automática de email falhou", {
-              description:
-                result.error ??
-                "O email da sua conta não corresponde ao convite.",
+            toast.error(t("toasts.autoVerifyFailed"), {
+              description: result.error ?? t("toasts.autoVerifyMismatch"),
             });
             dispatch({ type: "auto-submit-failed" });
             return;
@@ -340,9 +319,8 @@ export function AcceptInvitePage() {
             dispatch({ type: "token-expired", message });
             return;
           }
-          toast.error("Verificação automática de email falhou", {
-            description:
-              message ?? "Não foi possível verificar o email automaticamente.",
+          toast.error(t("toasts.autoVerifyFailed"), {
+            description: message ?? t("toasts.autoVerifyUnavailable"),
           });
           dispatch({ type: "auto-submit-failed" });
         },
@@ -356,8 +334,8 @@ export function AcceptInvitePage() {
         <LoadingState
           label={
             step.kind === "bootstrapping"
-              ? "A validar convite…"
-              : "A validar email…"
+              ? t("loading.validatingInvite")
+              : t("loading.validatingEmail")
           }
         />
       ) : null}
@@ -420,7 +398,7 @@ export function AcceptInvitePage() {
             onReject={handleReject}
           />
         ) : isLoadingInvitation ? (
-          <LoadingState label="A carregar convite…" />
+          <LoadingState label={t("loading.loadingInvite")} />
         ) : (
           <InviteErrorState
             kind="invalid"

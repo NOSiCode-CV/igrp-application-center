@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -23,6 +23,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
 
@@ -33,18 +34,22 @@ import { AppCenterNotFound } from "@/components/not-found";
 import { ROUTES } from "@/lib/constants";
 
 import { useCurrentUser } from "../use-users";
-import { type UpdateUserArgs, UpdateUserSchema } from "../user-schemas";
+import { makeUpdateUserSchema, type UpdateUserArgs } from "../user-schemas";
 import { ProfileImageUpload } from "./user-profile-image-upload";
 import { ProfileSignature } from "./user-profile-signature";
 
 export function ProfileUserForm() {
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.profile.form");
+  const tv = useTranslations("users.validation");
+  const tc = useTranslations("common.actions");
+  const updateUserSchema = useMemo(() => makeUpdateUserSchema(tv), [tv]);
 
   const { data: user, isLoading } = useCurrentUser();
 
-  const form = useForm<z.infer<typeof UpdateUserSchema>>({
-    resolver: zodResolver(UpdateUserSchema),
+  const form = useForm<z.infer<typeof updateUserSchema>>({
+    resolver: zodResolver(updateUserSchema),
   });
 
   useEffect(() => {
@@ -59,16 +64,14 @@ export function ProfileUserForm() {
   }, [user, form]);
 
   if (isLoading) {
-    return <AppCenterLoading description="A carregar perfil..." />;
+    return <AppCenterLoading description={t("loading")} />;
   }
 
   if (!user) {
-    return (
-      <AppCenterNotFound iconName="User" title="Utilizador não encontrado." />
-    );
+    return <AppCenterNotFound iconName="User" title={t("notFound")} />;
   }
 
-  async function onSubmit(values: z.infer<typeof UpdateUserSchema>) {
+  async function onSubmit(values: z.infer<typeof updateUserSchema>) {
     const formData = new FormData();
     formData.append("name", values.name || "");
     formData.append("email", values.email || "");
@@ -92,8 +95,8 @@ export function ProfileUserForm() {
 
     igrpToast({
       type: "success",
-      title: "Utilizador atualizado",
-      description: "Os dados do utilizador foram atualizados.",
+      title: t("toasts.updated"),
+      description: t("toasts.updatedDescription"),
       duration: 2000,
     });
 
@@ -106,18 +109,14 @@ export function ProfileUserForm() {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <BackButton />
-          <h3 className="text-2xl font-bold tracking-tight">
-            Editar perfil do utilizador
-          </h3>
+          <h3 className="text-2xl font-bold tracking-tight">{t("title")}</h3>
         </div>
       </div>
 
       <Card>
         <CardHeader className="mb-3">
-          <CardTitle>Dados do utilizador</CardTitle>
-          <CardDescription>
-            Altere os dados pessoais e as definições da conta.
-          </CardDescription>
+          <CardTitle>{t("cardTitle")}</CardTitle>
+          <CardDescription>{t("cardDescription")}</CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -128,16 +127,16 @@ export function ProfileUserForm() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome completo</FormLabel>
+                      <FormLabel>{t("fullName")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Nome completo do utilizador"
+                          placeholder={t("fullNamePlaceholder")}
                           {...field}
                           value={field.value ?? ""}
                         />
                       </FormControl>
                       <FormDescription>
-                        Nome que identifica o utilizador na plataforma.
+                        {t("fullNameDescription")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -151,7 +150,7 @@ export function ProfileUserForm() {
                   name="picture"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Fotografia</FormLabel>
+                      <FormLabel>{t("picture")}</FormLabel>
                       <FormControl>
                         <ProfileImageUpload
                           value={field.value}
@@ -159,7 +158,7 @@ export function ProfileUserForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Carregue uma fotografia para este utilizador.
+                        {t("pictureDescription")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -171,7 +170,7 @@ export function ProfileUserForm() {
                   name="signature"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Assinatura</FormLabel>
+                      <FormLabel>{t("signature")}</FormLabel>
                       <FormControl>
                         <ProfileSignature
                           value={field.value}
@@ -179,7 +178,7 @@ export function ProfileUserForm() {
                         />
                       </FormControl>
                       <FormDescription>
-                        Assinatura digital do utilizador.
+                        {t("signatureDescription")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -194,7 +193,7 @@ export function ProfileUserForm() {
                 disabled={isLoading}
                 type="button"
               >
-                Cancelar
+                {tc("cancel")}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
@@ -203,10 +202,10 @@ export function ProfileUserForm() {
                       iconName="LoaderCircle"
                       className="size-4 animate-spin mr-2"
                     />
-                    A processar...
+                    {t("processing")}
                   </span>
                 ) : (
-                  "Guardar Alterações"
+                  t("save")
                 )}
               </Button>
             </CardHeader>

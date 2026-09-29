@@ -2,9 +2,11 @@
 
 import { Badge, cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
-import { getStatusColor, showStatus } from "@/lib/app-utilities";
+import { getStatusColor } from "@/lib/utilities";
 
+import { userStatusLabel } from "../lib/i18n";
 import { useUserRoles } from "../use-users";
 
 interface RolesListProps {
@@ -12,17 +14,18 @@ interface RolesListProps {
 }
 
 export function UserRolesList({ id }: RolesListProps) {
+  const t = useTranslations("users.rolesList");
   const { data, isLoading, isError } = useUserRoles(id);
 
   if (isLoading)
     return (
-      <div className="p-6 text-center text-muted-foreground">A carregar...</div>
+      <div className="p-6 text-center text-muted-foreground">
+        {t("loading")}
+      </div>
     );
   if (isError)
     return (
-      <div className="p-6 text-center text-destructive">
-        Erro ao carregar perfis
-      </div>
+      <div className="p-6 text-center text-destructive">{t("loadError")}</div>
     );
 
   const roles = data ?? [];
@@ -32,10 +35,8 @@ export function UserRolesList({ id }: RolesListProps) {
       <div className="flex items-center gap-3 rounded-md border border-dashed p-6 text-muted-foreground">
         <IGRPIcon iconName="AlertCircle" className="h-5 w-5 shrink-0" />
         <div>
-          <p className="text-sm font-medium">Sem perfis atribuídos</p>
-          <p className="text-xs">
-            Este utilizador ainda não tem perfis atribuídos.
-          </p>
+          <p className="text-sm font-medium">{t("empty")}</p>
+          <p className="text-xs">{t("emptyDescription")}</p>
         </div>
       </div>
     );
@@ -55,6 +56,7 @@ interface UserRoleItemProps {
 }
 
 function UserRoleItem({ role }: UserRoleItemProps) {
+  const t = useTranslations("users");
   return (
     <div className="flex items-start gap-3 rounded-md p-3 transition-colors hover:bg-accent/50">
       <div className="rounded-md p-2 shrink-0 bg-primary/10 text-primary">
@@ -68,7 +70,7 @@ function UserRoleItem({ role }: UserRoleItemProps) {
             variant="outline"
             className={cn("text-xs", getStatusColor(role.status))}
           >
-            {showStatus(role.status)}
+            {userStatusLabel(t, role.status)}
           </Badge>
         </div>
 

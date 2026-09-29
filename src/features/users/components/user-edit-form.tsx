@@ -20,10 +20,12 @@ import type {
   IGRPUserDTO,
   Status,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { useUpdateUser } from "@/features/users/use-users";
-import { STATUS_OPTIONS } from "@/lib/constants";
+
+import { useUserStatusOptions } from "../lib/i18n";
 
 type UserEditFormProps = {
   user: IGRPUserDTO;
@@ -39,6 +41,9 @@ type FormData = {
 
 export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.editForm");
+  const tc = useTranslations("common.actions");
+  const statusOptions = useUserStatusOptions();
   const updateUser = useUpdateUser();
 
   const form = useForm<FormData>({
@@ -69,16 +74,16 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
 
       igrpToast({
         type: "success",
-        title: "Perfil atualizado com sucesso",
+        title: t("toasts.updated"),
       });
 
       onSuccess();
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao atualizar perfil",
+        title: t("toasts.updateFailed"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : t("toasts.unknownError"),
       });
     }
   };
@@ -94,7 +99,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome Completo</FormLabel>
+              <FormLabel>{t("fullName")}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -108,15 +113,15 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
           name="status"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Estado</FormLabel>
+              <FormLabel>{t("status")}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger className="w-full truncate">
-                    <SelectValue placeholder="Selecionar estado" />
+                    <SelectValue placeholder={t("statusPlaceholder")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {STATUS_OPTIONS.map((status) => (
+                  {statusOptions.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
                       {status.label}
                     </SelectItem>
@@ -136,7 +141,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
             showIcon
             iconName="X"
           >
-            Cancelar
+            {tc("cancel")}
           </IGRPButton>
           <IGRPButton
             showIcon
@@ -144,7 +149,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
             type="submit"
             disabled={updateUser.isPending}
           >
-            {updateUser.isPending ? "A guardar..." : "Guardar"}
+            {updateUser.isPending ? t("saving") : t("save")}
           </IGRPButton>
         </div>
       </form>

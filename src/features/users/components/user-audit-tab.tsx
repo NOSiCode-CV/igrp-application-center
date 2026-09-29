@@ -11,6 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
+
+import { useFormat } from "@/i18n/format";
 
 import { useUserAuditLogs } from "../use-users";
 
@@ -24,11 +27,23 @@ const EVENT_BADGE_VARIANT: Record<
   ROLE_CHANGED: "outline",
 };
 
+/** Same fields `toLocaleString()` rendered: date + time with seconds. */
+const DATE_TIME_WITH_SECONDS: Intl.DateTimeFormatOptions = {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+};
+
 interface UserAuditLogTabProps {
   userId: string;
 }
 
 export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
+  const t = useTranslations("users.audit");
+  const { formatDateTime } = useFormat();
   const [page, setPage] = useState(0);
   const { data, isLoading } = useUserAuditLogs(userId, {
     page,
@@ -37,11 +52,7 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
 
   if (isLoading) return null;
   if (!data || data.empty) {
-    return (
-      <p className="p-4 text-sm text-muted-foreground">
-        Sem registos de auditoria.
-      </p>
-    );
+    return <p className="p-4 text-sm text-muted-foreground">{t("empty")}</p>;
   }
 
   return (
@@ -49,10 +60,10 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Data / hora</TableHead>
-            <TableHead>Evento</TableHead>
-            <TableHead>Categoria</TableHead>
-            <TableHead>IP</TableHead>
+            <TableHead>{t("columns.timestamp")}</TableHead>
+            <TableHead>{t("columns.event")}</TableHead>
+            <TableHead>{t("columns.category")}</TableHead>
+            <TableHead>{t("columns.ip")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -60,7 +71,7 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
             <TableRow key={log.id}>
               <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
                 {log.timestamp
-                  ? new Date(log.timestamp).toLocaleString("pt-CV")
+                  ? formatDateTime(log.timestamp, DATE_TIME_WITH_SECONDS)
                   : "—"}
               </TableCell>
               <TableCell>
@@ -84,7 +95,10 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
       {data.totalPages > 1 && (
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
-            Página {page + 1} de {data.totalPages}
+            {t("pagination.pageOf", {
+              page: page + 1,
+              total: data.totalPages,
+            })}
           </span>
           <div className="flex gap-2">
             <button
@@ -93,7 +107,7 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
               onClick={() => setPage((p) => p - 1)}
               className="disabled:opacity-40"
             >
-              ← Anterior
+              {t("pagination.previous")}
             </button>
             <button
               type="button"
@@ -101,7 +115,7 @@ export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
               onClick={() => setPage((p) => p + 1)}
               className="disabled:opacity-40"
             >
-              Seguinte →
+              {t("pagination.next")}
             </button>
           </div>
         </div>

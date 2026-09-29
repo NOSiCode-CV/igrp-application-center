@@ -5,6 +5,7 @@ import type {
   IGRPUserDTO,
   Status,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
 import { statusSchema } from "@/schemas/global";
@@ -23,6 +24,7 @@ export function UserDeleteDialog({
   userToDelete,
 }: UserDeleteDialogProps) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.deleteDialog");
   const { mutateAsync: removeUser, isPending: isDeleting } = useUpdateUser();
 
   async function confirmDelete() {
@@ -38,15 +40,17 @@ export function UserDeleteDialog({
       }
       igrpToast({
         type: "success",
-        title: "Utilizador Desativado",
-        description: `Utilizador '${userToDelete.name || userToDelete.email}' foi desativado com sucesso.`,
+        title: t("deactivated"),
+        description: t("deactivatedDescription", {
+          name: userToDelete.name || userToDelete.email,
+        }),
       });
 
       onOpenChange(false);
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao desativar.",
+        title: t("deactivateFailed"),
         description: (error as Error).message,
       });
     }
@@ -59,11 +63,11 @@ export function UserDeleteDialog({
       toDelete={{ name: userToDelete.name || userToDelete.email }}
       confirmDelete={confirmDelete}
       description="O utilizador deixa de poder entrar na plataforma. As atribuições de perfil são mantidas e a conta pode ser reativada mais tarde."
-      label="Nome do utilizador"
       isDeleting={isDeleting}
-      labelBtnDelete="Desativar"
       confirmIconName="UserX"
       textHeader="Desativar utilizador"
+      label={t("label")}
+      labelBtnDelete={t("confirm")}
     />
   );
 }

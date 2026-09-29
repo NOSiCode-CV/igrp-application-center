@@ -14,10 +14,14 @@ import {
   Label,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
+
+import { useFormat } from "@/i18n/format";
 
 import { AppCenterLoading } from "@/components/loading";
 
 import { useKillUserSession, useUserSession } from "../use-users";
+import { DATE_TIME_WITH_SECONDS } from "@/lib/utilities";
 
 interface UserSessionsTabProps {
   username: string;
@@ -26,16 +30,19 @@ interface UserSessionsTabProps {
 export function UserSessionsTab({ username }: UserSessionsTabProps) {
   const { data: session, isLoading } = useUserSession(username);
   const killMutation = useKillUserSession();
+
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.sessions");
+  const tc = useTranslations("common.actions");
+  
+  const { formatDateTime } = useFormat();
 
   const [killDialogOpen, setKillDialogOpen] = useState(false);
   const [reason, setReason] = useState("");
 
   if (!username) {
     return (
-      <p className="p-4 text-sm text-muted-foreground">
-        Identificador externo não disponível para este utilizador.
-      </p>
+      <p className="p-4 text-sm text-muted-foreground">{t("noExternalId")}</p>
     );
   }
 
@@ -46,9 +53,7 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
   }
 
   if (!session) {
-    return (
-      <p className="p-4 text-sm text-muted-foreground">Sem sessões ativas.</p>
-    );
+    return <p className="p-4 text-sm text-muted-foreground">{t("empty")}</p>;
   }
 
   const handleKill = async () => {
@@ -58,13 +63,13 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
       userExternalId: username,
     });
     if (result.success) {
-      igrpToast({ type: "success", title: "Sessão terminada", duration: 4000 });
+      igrpToast({ type: "success", title: t("toasts.killed"), duration: 4000 });
       setKillDialogOpen(false);
       setReason("");
     } else {
       igrpToast({
         type: "error",
-        title: "Erro ao terminar sessão",
+        title: t("toasts.killFailed"),
         duration: 4000,
       });
     }
@@ -73,28 +78,28 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Sessão Ativa</h3>
+        <h3 className="text-sm font-medium">{t("title")}</h3>
       </div>
 
       <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-        <span className="text-muted-foreground">ID da sessão</span>
+        <span className="text-muted-foreground">{t("fields.sessionId")}</span>
         <span className="font-mono">{session.sessionId.slice(0, 8)}…</span>
 
-        <span className="text-muted-foreground">Iniciada em</span>
+        <span className="text-muted-foreground">{t("fields.startedAt")}</span>
         <span>
           {session.startedAt
-            ? new Date(session.startedAt).toLocaleString("pt-CV")
+            ? formatDateTime(session.startedAt, DATE_TIME_WITH_SECONDS)
             : "—"}
         </span>
 
-        <span className="text-muted-foreground">Último acesso</span>
+        <span className="text-muted-foreground">{t("fields.lastSeenAt")}</span>
         <span>
           {session.lastSeenAt
-            ? new Date(session.lastSeenAt).toLocaleString("pt-CV")
+            ? formatDateTime(session.lastSeenAt, DATE_TIME_WITH_SECONDS)
             : "—"}
         </span>
 
-        <span className="text-muted-foreground">IP</span>
+        <span className="text-muted-foreground">{t("fields.ip")}</span>
         <span>{session.clientIp ?? "—"}</span>
       </div>
 
@@ -104,22 +109,22 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
           variant="destructive"
           onClick={() => setKillDialogOpen(true)}
         >
-          Terminar sessão
+          {t("kill")}
         </IGRPButton>
       </div>
 
       <AlertDialog open={killDialogOpen} onOpenChange={setKillDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Terminar sessão</AlertDialogTitle>
+            <AlertDialogTitle>{t("killDialog.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação irá encerrar a sessão ativa do utilizador imediatamente.
+              {t("killDialog.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex flex-col gap-2 py-2">
-            <Label>Motivo</Label>
+            <Label>{t("killDialog.reason")}</Label>
             <Input
-              placeholder="Indique o motivo..."
+              placeholder={t("killDialog.reasonPlaceholder")}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
@@ -129,14 +134,14 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
               variant="outline"
               onClick={() => setKillDialogOpen(false)}
             >
-              Cancelar
+              {tc("cancel")}
             </IGRPButton>
             <IGRPButton
               variant="destructive"
               disabled={!reason.trim() || killMutation.isPending}
               onClick={handleKill}
             >
-              Confirmar
+              {t("killDialog.confirm")}
             </IGRPButton>
           </AlertDialogFooter>
         </AlertDialogContent>

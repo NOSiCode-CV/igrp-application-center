@@ -1,12 +1,19 @@
 import { z } from "zod";
 
+import type { Messages } from "@/i18n/messages";
+
 import { statusSchema } from "../../schemas/global";
 
-const NameSchema = z
-  .string()
-  .trim()
-  .min(3, "Nome deve ter mínimo 3 caracteres")
-  .max(120);
+/**
+ * Translator for `users.validation.*` — satisfied by
+ * `useTranslations("users.validation")` / `getTranslations("users.validation")`.
+ */
+export type UsersValidationTranslator = (
+  key: keyof Messages["users"]["validation"],
+) => string;
+
+const makeNameSchema = (t: UsersValidationTranslator) =>
+  z.string().trim().min(3, t("nameMin")).max(120);
 
 // const UsernameSchema = z
 //   .string()
@@ -14,55 +21,65 @@ const NameSchema = z
 //   .min(3, "Username deve ter mínimo 3 caracteres")
 //   .max(50);
 
-export const EmailSchema = z.email({ message: "Email inválido" }).max(254);
+export const makeEmailSchema = (t: UsersValidationTranslator) =>
+  z.email({ message: t("emailInvalid") }).max(254);
 
-export const UserSchema = z.object({
-  id: z.number().int().positive().optional(),
-  name: NameSchema,
-  //username: UsernameSchema,
-  email: EmailSchema,
-  status: statusSchema,
-  picture: z.string().optional(),
-  signature: z.string().optional(),
-  username: z.string().optional(),
-});
+export const makeUserSchema = (t: UsersValidationTranslator) =>
+  z.object({
+    id: z.number().int().positive().optional(),
+    name: makeNameSchema(t),
+    //username: UsernameSchema,
+    email: makeEmailSchema(t),
+    status: statusSchema,
+    picture: z.string().optional(),
+    signature: z.string().optional(),
+    username: z.string().optional(),
+  });
 
-export const CreateUserSchema = UserSchema.omit({ id: true });
-export const UpdateUserSchema = UserSchema.omit({
-  id: true,
-  //username: true,
-}).partial();
+export const makeCreateUserSchema = (t: UsersValidationTranslator) =>
+  makeUserSchema(t).omit({ id: true });
+export const makeUpdateUserSchema = (t: UsersValidationTranslator) =>
+  makeUserSchema(t)
+    .omit({
+      id: true,
+      //username: true,
+    })
+    .partial();
 
-export type UserArgs = z.infer<typeof UserSchema>;
-export type CreateUserArgs = z.infer<typeof CreateUserSchema>;
-export type UpdateUserArgs = z.infer<typeof UpdateUserSchema>;
+export type UserArgs = z.infer<ReturnType<typeof makeUserSchema>>;
+export type CreateUserArgs = z.infer<ReturnType<typeof makeCreateUserSchema>>;
+export type UpdateUserArgs = z.infer<ReturnType<typeof makeUpdateUserSchema>>;
 
-export const FormUserSchema = z.object({
-  name: NameSchema,
-  //username: UsernameSchema,
-  email: EmailSchema,
-});
+export const makeFormUserSchema = (t: UsersValidationTranslator) =>
+  z.object({
+    name: makeNameSchema(t),
+    //username: UsernameSchema,
+    email: makeEmailSchema(t),
+  });
 
-export type FormUserArgs = z.infer<typeof FormUserSchema>;
+export type FormUserArgs = z.infer<ReturnType<typeof makeFormUserSchema>>;
 
-export const formSchema = z.object({
-  users: z
-    .array(FormUserSchema)
-    .min(1, { message: "Adicionar pelo menos um utilizador" }),
-  departmentCode: z.string().optional(),
-  roleNames: z.array(z.string()).optional(),
-});
+export const makeFormSchema = (t: UsersValidationTranslator) =>
+  z.object({
+    users: z.array(makeFormUserSchema(t)).min(1, { message: t("usersMin") }),
+    departmentCode: z.string().optional(),
+    roleNames: z.array(z.string()).optional(),
+  });
 
-export type FormSchema = z.infer<typeof formSchema>;
+export type FormSchema = z.infer<ReturnType<typeof makeFormSchema>>;
 
-export const InviteEmailFormSchema = z.object({
-  email: EmailSchema,
-});
-export type InviteEmailFormArgs = z.infer<typeof InviteEmailFormSchema>;
+export const makeInviteEmailFormSchema = (t: UsersValidationTranslator) =>
+  z.object({
+    email: makeEmailSchema(t),
+  });
+export type InviteEmailFormArgs = z.infer<
+  ReturnType<typeof makeInviteEmailFormSchema>
+>;
 
-export const InviteOtpFormSchema = z.object({
-  otpCode: z
-    .string()
-    .regex(/^\d{6}$/, { message: "Código deve ter 6 dígitos" }),
-});
-export type InviteOtpFormArgs = z.infer<typeof InviteOtpFormSchema>;
+export const makeInviteOtpFormSchema = (t: UsersValidationTranslator) =>
+  z.object({
+    otpCode: z.string().regex(/^\d{6}$/, { message: t("otpDigits") }),
+  });
+export type InviteOtpFormArgs = z.infer<
+  ReturnType<typeof makeInviteOtpFormSchema>
+>;

@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { type ChangeEvent, useEffect, useState } from "react";
 
+import { useTranslations } from "next-intl";
+
 interface SignaturePadProps {
   value?: File | string | null;
   onChange?: (file: File | null) => void;
@@ -12,6 +14,7 @@ export function ProfileSignature({
   value = null,
   onChange = () => {}, // Default no-op function
 }: SignaturePadProps) {
+  const t = useTranslations("users.profile.signatureUpload");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -113,7 +116,7 @@ export function ProfileSignature({
             {/* <img src={preview || '/placeholder.svg'} alt='Signature preview' className='h-full w-full object-contain' /> */}
             <Image
               src={preview || "/placeholder.svg"}
-              alt="Pré-visualização da assinatura"
+              alt={t("previewAlt")}
               className="h-full w-full object-contain"
               width={100}
               height={100}
@@ -121,7 +124,7 @@ export function ProfileSignature({
           </div>
         ) : (
           <div className="flex h-20 w-40 items-center justify-center rounded border bg-muted">
-            <span className="text-sm text-muted-foreground">No signature</span>
+            <span className="text-sm text-muted-foreground">{t("empty")}</span>
           </div>
         )}
         <div className="flex flex-col gap-2">
@@ -129,7 +132,7 @@ export function ProfileSignature({
             htmlFor="signature-upload"
             className="inline-flex h-9 cursor-pointer items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
           >
-            Carregar assinatura
+            {t("upload")}
           </label>
           {preview && (
             <button
@@ -146,7 +149,7 @@ export function ProfileSignature({
               }}
               className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
             >
-              Remover
+              {t("remove")}
             </button>
           )}
         </div>

@@ -6,6 +6,7 @@ import type {
   Status,
 } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import { validateImageUpload } from "@/features/files/file-validation";
 import { useUploadPublicFiles } from "@/features/files/use-files";
@@ -39,10 +40,9 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
   const uploadFile = useUploadPublicFiles();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users");
   const queryClient = useQueryClient();
-
-  // Merge onto the freshest cached user so concurrent edits in other tabs
-  // (e.g. the signature upload) are not clobbered by a stale snapshot.
+  
   const latestUser = () =>
     queryClient.getQueryData<IGRPUserDTO>(currentUserKeys.detail()) ?? user;
 
@@ -54,15 +54,12 @@ export function useUserProfileActions(user: IGRPUserDTO) {
     });
     handle(
       res,
-      "Nome atualizado com sucesso",
-      "Erro ao atualizar nome",
+      t("nameEditor.toasts.updated"),
+      t("nameEditor.toasts.updateFailed"),
       igrpToast,
     );
   };
-
-  // Shared upload→attach→toast flow for image fields (avatar, signature).
-  // Validates client-side, uploads, then merges the path onto the freshest
-  // cached user. Returns the stored path so callers can preview it.
+  
   const uploadImageField = async (
     file: File,
     field: "picture" | "signature",
@@ -112,18 +109,18 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   const uploadAvatar = async (file: File): Promise<void> => {
     await uploadImageField(file, "picture", {
       folder: `users/${user.id}/avatar`,
-      loadError: "Erro ao carregar avatar",
-      ok: "Avatar atualizado com sucesso",
-      saveError: "Erro ao atualizar avatar",
+      loadError: t("profile.avatar.loadFailed"),
+      ok: t("profile.avatar.updated"),
+      saveError: t("profile.avatar.updateFailed"),
     });
   };
 
   const uploadSignature = (file: File) =>
     uploadImageField(file, "signature", {
       folder: `users/${user.id}/signature`,
-      loadError: "Erro ao carregar assinatura",
-      ok: "Assinatura atualizada com sucesso",
-      saveError: "Erro ao atualizar assinatura",
+      loadError: t("signature.toasts.loadFailed"),
+      ok: t("signature.toasts.updated"),
+      saveError: t("signature.toasts.updateFailed"),
     });
 
   const setStatus = async (next: Status) => {
@@ -132,8 +129,11 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       id: current.id,
       user: { ...current, status: next },
     });
-    const okTitle = `Utilizador ${next === "ACTIVE" ? "ativado" : "desativado"} com sucesso`;
-    handle(res, okTitle, "Erro ao alterar estado", igrpToast);
+    const okTitle =
+      next === "ACTIVE"
+        ? t("profile.toasts.activated")
+        : t("profile.toasts.deactivated");
+    handle(res, okTitle, t("profile.toasts.statusChangeFailed"), igrpToast);
   };
 
   return {

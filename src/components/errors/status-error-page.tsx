@@ -3,30 +3,46 @@
 import { useRouter } from "next/navigation";
 
 import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
-import {
-  FALLBACK_STATUS_COPY,
-  STATUS_ERROR_COPY,
-} from "@/config/error-messages";
-import { isDefaultApiErrorMessage } from "@/lib/app-utilities";
+import { isDefaultApiErrorMessage } from "@/lib/utilities";
 
 export interface StatusErrorPageProps {
   /** HTTP status from the failed access-manager call, when known. */
   status?: number;
-  /** Message extracted from the API error, shown as secondary text. */
+  /** Message extracted from the API error (its ProblemDetail `detail`). */
   message?: string;
+}
+
+/** HTTP status → `errors.status.*` message key. */
+const STATUS_KEYS = {
+  401: "unauthorized",
+  403: "forbidden",
+  404: "notFound",
+  500: "internal",
+  503: "unavailable",
+} as const;
+
+type StatusKey = (typeof STATUS_KEYS)[keyof typeof STATUS_KEYS] | "fallback";
+
+function statusKeyOf(status: number | undefined): StatusKey {
+  return status !== undefined && status in STATUS_KEYS
+    ? STATUS_KEYS[status as keyof typeof STATUS_KEYS]
+    : "fallback";
 }
 
 /**
  * Full-page error for HTTP failures (401/403/404/500/503 + fallback).
- * The default copy for the status is always shown; the API message is
- * rendered smaller below it, and suppressed when it merely repeats the
- * generic per-status fallback.
+ * The title follows the status; the description is the API `detail` as-is
+ * when there is one (FR-21), otherwise the generic per-status text. Generic
+ * client-side fallbacks (not real API messages) are ignored.
  */
 export function StatusErrorPage({ status, message }: StatusErrorPageProps) {
   const router = useRouter();
-  const copy =
-    (status !== undefined && STATUS_ERROR_COPY[status]) || FALLBACK_STATUS_COPY;
+  const t = useTranslations("errors.status");
+  const tActions = useTranslations("common.actions");
+
+  const key = statusKeyOf(status);
   const apiMessage =
     message && !isDefaultApiErrorMessage(message) ? message : undefined;
 
@@ -38,20 +54,17 @@ export function StatusErrorPage({ status, message }: StatusErrorPageProps) {
       {status !== undefined && (
         <span className="text-8xl font-extrabold tracking-tight">{status}</span>
       )}
-      <h2 className="text-lg font-semibold">{copy.title}</h2>
+      <h2 className="text-lg font-semibold">{t(`${key}.title`)}</h2>
       <p className="text-muted-foreground max-w-md text-sm">
-        {copy.description}
+        {apiMessage ?? t(`${key}.description`)}
       </p>
-      {apiMessage && (
-        <p className="text-muted-foreground/80 max-w-md text-xs">
-          {apiMessage}
-        </p>
-      )}
       <div className="mt-2 flex gap-3">
         <IGRPButton variant="outline" onClick={() => router.back()}>
-          Voltar
+          {tActions("back")}
         </IGRPButton>
-        <IGRPButton onClick={() => router.push("/")}>Início</IGRPButton>
+        <IGRPButton onClick={() => router.push("/")}>
+          {tActions("home")}
+        </IGRPButton>
       </div>
     </div>
   );

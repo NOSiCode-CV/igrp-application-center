@@ -23,6 +23,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  IGRPCombobox,
   IGRPIcon,
   Input,
   Popover,
@@ -30,7 +31,8 @@ import {
   PopoverTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { InviteUserDTO } from "@igrp/platform-access-management-client-ts";
+import type { InviteUserDTO as SdkInviteUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -42,21 +44,34 @@ import {
   useDepartments,
   useRoles,
 } from "@/features/departments/use-departments";
+import { LOCALE_NATIVE_NAMES, LOCALES } from "@/i18n/config";
 
 import { useInviteUser } from "../use-users";
+import type { UsersValidationTranslator } from "../user-schemas";
+
+// TODO(i18n): drop this extension once @igrp/platform-access-management-client-ts
+// with `InviteUserDTO.locale` is released.
+type InviteUserDTO = SdkInviteUserDTO & { locale?: string };
+
+const LOCALE_OPTIONS = LOCALES.map((value) => ({
+  value,
+  label: LOCALE_NATIVE_NAMES[value],
+}));
 
 interface UserInviteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const formSchema = z.object({
-  email: z.email("Email inválido").min(1, "Email obrigatório"),
-  departmentCode: z.string().optional(),
-  roleCodes: z.array(z.string()),
-});
+const makeFormSchema = (t: UsersValidationTranslator) =>
+  z.object({
+    email: z.email(t("emailInvalid")).min(1, t("emailRequired")),
+    departmentCode: z.string().optional(),
+    roleCodes: z.array(z.string()),
+    locale: z.enum(LOCALES),
+  });
 
-type FormSchema = z.infer<typeof formSchema>;
+type FormSchema = z.infer<ReturnType<typeof makeFormSchema>>;
 
 export function UserInviteDialog({
   open,
@@ -64,6 +79,12 @@ export function UserInviteDialog({
 }: UserInviteDialogProps) {
   const [openDepts, setOpenDepts] = useState(false);
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.invite.form");
+  const tv = useTranslations("users.validation");
+  const tc = useTranslations("common.actions");
+  const formSchema = useMemo(() => makeFormSchema(tv), [tv]);
+  // FR-28: the invitee language defaults to the inviter's current locale.
+  const currentLocale = useLocale();
 
   const { mutate: userInvite, isPending: isInviting } = useInviteUser();
 
@@ -74,6 +95,7 @@ export function UserInviteDialog({
       email: "",
       departmentCode: undefined,
       roleCodes: [] as string[],
+      locale: currentLocale,
     },
   });
 
@@ -83,9 +105,10 @@ export function UserInviteDialog({
         email: "",
         departmentCode: undefined,
         roleCodes: [] as string[],
+        locale: currentLocale,
       });
     }
-  }, [open, form]);
+  }, [open, form, currentLocale]);
 
   const departmentCode = form.watch("departmentCode");
 
@@ -105,12 +128,13 @@ export function UserInviteDialog({
   );
 
   const onSubmit = (values: FormSchema) => {
-    const { email, roleCodes = [] } = values;
+    const { email, roleCodes = [], locale } = values;
 
     const userPayload: InviteUserDTO = {
       email: email.trim(),
       departmentCode: departmentCode || "",
       roles: roleCodes,
+      locale,
     };
 
     userInvite(
@@ -120,19 +144,20 @@ export function UserInviteDialog({
           if (!result.success) {
             igrpToast({
               type: "error",
-              title: "Falha ao convidar",
+              title: t("toasts.inviteFailed"),
               description: result.error,
             });
             return;
           }
           igrpToast({
             type: "success",
-            description: "Convite enviado com sucesso!",
+            description: t("toasts.inviteSent"),
           });
           form.reset({
             email: "",
             departmentCode: undefined,
             roleCodes: [] as string[],
+            locale: currentLocale,
           });
           onOpenChange(false);
         },
@@ -140,10 +165,10 @@ export function UserInviteDialog({
           const message =
             error instanceof Error
               ? error.message
-              : `Falha ao convidar: ${String(error)}`;
+              : t("toasts.inviteFailedWithReason", { reason: String(error) });
           igrpToast({
             type: "error",
-            title: "Falha ao convidar",
+            title: t("toasts.inviteFailed"),
             description: message,
           });
         },
@@ -154,10 +179,8 @@ export function UserInviteDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="md:min-w-2xl max-h-[95vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Convidar Utilizador</DialogTitle>
-          <DialogDescription>
-            Envie um convite por e-mail para um novo utilizador.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -167,23 +190,23 @@ export function UserInviteDialog({
           >
             <fieldset className="border border-accent p-4 rounded-md flex flex-col gap-4">
               <legend className="text-base font-semibold px-2 mb-1">
-                Informação do Utilizador
+                {t("userInfo")}
               </legend>
 
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem>                   
                     <FormLabel>
-                      E-mail
+                      {t("emailLabel")}  
                       <span aria-hidden="true" className="text-destructive">
                         *
                       </span>
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Ex: joao@email.com"
+                        placeholder={t("emailPlaceholder")}
                         type="email"
                         aria-required="true"
                         {...field}
@@ -193,28 +216,37 @@ export function UserInviteDialog({
                   </FormItem>
                 )}
               />
+
+              <IGRPCombobox
+                name="locale"
+                label={t("localeLabel")}
+                placeholder={t("localeLabel")}
+                options={LOCALE_OPTIONS}
+                showSearch={false}
+                required
+              />
             </fieldset>
 
             <fieldset className="border border-accent p-4 rounded-md flex flex-col gap-4">
               <legend className="text-base font-semibold px-2 mb-1">
-                Atribuir Perfis
+                {t("assignRoles")}
               </legend>
 
               <p className="text-xs text-muted-foreground -mt-2">
-                Selecione departamento e perfis para o utilizador (opcional).
+                {t("assignRolesHint")}
               </p>
 
               <FormField
                 control={form.control}
                 name="departmentCode"
                 render={({ field }) => {
-                  const placeholder = "Selecionar departamento";
+                  const placeholder = t("departmentPlaceholder");
                   const isDeptDisabled =
                     deptLoading || !!deptError || (depts?.length ?? 0) === 0;
 
                   return (
                     <FormItem>
-                      <FormLabel>Departamento</FormLabel>
+                      <FormLabel>{t("departmentLabel")}</FormLabel>
 
                       <Popover open={openDepts} onOpenChange={setOpenDepts}>
                         <PopoverTrigger asChild>
@@ -244,10 +276,10 @@ export function UserInviteDialog({
                           align="start"
                         >
                           <Command>
-                            <CommandInput placeholder="Procurar..." />
+                            <CommandInput placeholder={t("search")} />
                             <CommandList className="max-h-64">
                               <CommandEmpty>
-                                Departamento não encontrado.
+                                {t("departmentEmpty")}
                               </CommandEmpty>
 
                               <CommandItem
@@ -266,7 +298,7 @@ export function UserInviteDialog({
                                 ) : (
                                   <span className="w-4" />
                                 )}
-                                <span>Nenhum</span>
+                                <span>{t("none")}</span>
                               </CommandItem>
 
                               {depts?.map((opt) => (
@@ -336,7 +368,7 @@ export function UserInviteDialog({
                         disabled={isDisabled}
                         placeholder="Selecionar perfis"
                         searchPlaceholder="Procurar..."
-                        emptyLabel="Nenhum perfil encontrado."
+                        emptyLabel={t("rolesEmpty")}
                       />
 
                       <FormMessage>
@@ -355,10 +387,10 @@ export function UserInviteDialog({
                 disabled={isInviting}
                 type="button"
               >
-                Cancelar
+                {tc("cancel")}
               </Button>
               <Button type="submit" disabled={btnDisabled}>
-                {isInviting ? "A enviar..." : "Enviar Convite"}
+                {isInviting ? t("submitting") : t("submit")}
               </Button>
             </DialogFooter>
           </form>

@@ -2,12 +2,14 @@
 
 import type { ReactNode } from "react";
 
-import {
-  Card,
-  CardContent,
+import { 
+  Card, 
+  CardContent, 
   cn,
-  IGRPIcon,
+  IGRPIcon 
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
+
 
 export type InviteStepIndex = 0 | 1 | 2;
 
@@ -62,20 +64,25 @@ export function InviteCardShell({ children, step }: InviteCardShellProps) {
 }
 
 
-const STEP_DATA = [
-  { label: "Email", sub: "Confirmação" },
-  { label: "Código", sub: "Verificação" },
-  { label: "Confirmar", sub: "Convite" },
-] as const;
+const STEP_KEYS = ["email", "code", "confirm"] as const;
 
-const TOTAL_STEPS = STEP_DATA.length;
+const TOTAL_STEPS = STEP_KEYS.length;
+
+function useStepData() {
+  const t = useTranslations("users.invite.accept.steps");
+  return STEP_KEYS.map((key) => ({
+    label: t(`${key}.label`),
+    sub: t(`${key}.sub`),
+  }));
+}
 
 function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
-  const steps = STEP_DATA;
+  const t = useTranslations("users.invite.accept.steps");
+  const steps = useStepData();
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
       className="flex flex-col"
     >
       {steps.map((step, idx) => {
@@ -156,15 +163,16 @@ function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
   );
 }
 
-const STEP_LABELS = ["Email", "Código", "Confirmar"] as const;
+// ── Horizontal stepper (mobile fallback, below card) ──────────────────────────
 
 function HorizontalStepIndicator({ current }: { current: InviteStepIndex }) {
-  const labels = STEP_LABELS;
+  const t = useTranslations("users.invite.accept.steps");
+  const labels = useStepData().map((step) => step.label);
   const itemCount = TOTAL_STEPS * 2 - 1;
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
       className="flex items-start"
     >
       {Array.from({ length: itemCount }, (_, i) => {
