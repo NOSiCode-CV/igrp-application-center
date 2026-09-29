@@ -17,8 +17,8 @@ import { type Resolver, useForm } from "react-hook-form";
 
 import { UnsavedChangesBar } from "@/components/unsaved-changes-bar";
 import { useLinkedServiceAccount } from "@/features/service-accounts/use-service-accounts";
-import { formatDate } from "@/lib/app-utilities";
 import { ROUTES } from "@/lib/constants";
+import { formatDate } from "@/lib/utilities";
 
 import { LINK_UNKNOWN_REASON } from "../lib/oauth-client-utils";
 import {

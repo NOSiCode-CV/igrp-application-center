@@ -17,7 +17,7 @@ import {
   permissionNamesOf,
   roleIdsOf,
 } from "@/features/service-accounts/lib/service-account-utils";
-import { toActionError } from "@/lib/app-utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import { createOAuthClient } from "./oauth-clients";

@@ -5,8 +5,7 @@ import { cookies } from "next/headers";
 import { updateCurrentUserLocale } from "@/actions/access-client";
 import type { ActionResult } from "@/actions/types";
 import { serverSession } from "@/lib/auth";
-import { toActionError } from "@/lib/utilities";
-import { isAuthBypass } from "@/lib/utils";
+import { isAuthBypass, toActionError } from "@/lib/utilities";
 
 import {
   LOCALE_COOKIE,

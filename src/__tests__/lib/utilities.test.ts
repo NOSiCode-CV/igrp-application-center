@@ -5,7 +5,7 @@ import {
   showStatus,
   statusClass,
   statusInviteClass,
-} from "@/lib/app-utilities";
+} from "@/lib/utilities";
 
 const RAW_COLOR =
   /\b(?:bg|text|border)-(?:gray|emerald|yellow|red|rose|amber|green)-\d{2,3}\b/;

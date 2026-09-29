@@ -278,3 +278,49 @@ export const DATE_TIME_WITH_SECONDS: Intl.DateTimeFormatOptions = {
   minute: "2-digit",
   second: "2-digit",
 };
+
+/**
+ * Table-column date in pt-PT. `toLocaleDateString()` with no locale follows the
+ * BROWSER's locale, so the same row read 22/09/2026 on one machine and 9/22/2026
+ * on another — PRODUCT.md requires one language per surface, including dates
+ * generated in code. A missing or unparseable value says so rather than
+ * rendering the untranslated "N/A".
+ */
+export function formatDateShort(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "Sem data";
+  const date = new Date(String(value));
+  if (Number.isNaN(date.getTime())) return "Sem data";
+  return new Intl.DateTimeFormat("pt-PT", { dateStyle: "short" }).format(date);
+}
+
+interface ApiErrorLike {
+  details?: unknown;
+  status?: number;
+  message?: string;
+  title?: string;
+}
+
+/**
+ * True when `message` is one of the generic per-status fallbacks produced
+ * by `extractApiError`, i.e. NOT a real message from the API. Used by the
+ * status error page to avoid repeating the default copy twice.
+ */
+export function isDefaultApiErrorMessage(message: string): boolean {
+  return DEFAULT_API_ERROR_MESSAGES.has(message);
+}
+
+/**
+ * Builds the failure payload for `ActionResult`: the human message from
+ * `extractApiError` plus the raw HTTP status when the SDK error carries one.
+ */
+export function toActionError(error: unknown): {
+  error: string;
+  status?: number;
+} {
+  const e = (error ?? {}) as ApiErrorLike;
+  return {
+    error: extractApiError(error),
+    status: typeof e.status === "number" ? e.status : undefined,
+  };
+}
+

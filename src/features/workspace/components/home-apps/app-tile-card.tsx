@@ -16,7 +16,7 @@ import {
   isExternalAppHref,
   isRecentlyAdded,
 } from "@/features/workspace/lib/app-utils";
-import { showStatus, statusClass } from "@/lib/app-utilities";
+import { showStatus, statusClass } from "@/lib/utilities";
 
 type Props = {
   app: ApplicationDTO;

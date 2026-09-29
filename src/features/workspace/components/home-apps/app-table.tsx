@@ -19,7 +19,7 @@ import {
   getAppHref,
   isExternalAppHref,
 } from "@/features/workspace/lib/app-utils";
-import { showStatus } from "@/lib/app-utilities";
+import { showStatus } from "@/lib/utilities";
 
 type Props = {
   apps: ApplicationDTO[];

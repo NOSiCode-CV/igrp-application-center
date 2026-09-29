@@ -121,6 +121,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
             <ColumnSearchInput
               column={column}
               placeholder={t("list.filters.searchByNameOrEmail")}
+              label={""}            
             />
           ),
         },

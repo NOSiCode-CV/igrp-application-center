@@ -6,7 +6,7 @@ import type {
   PageResponse,
 } from "@igrp/platform-access-management-client-ts";
 
-import { toActionError } from "@/lib/app-utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";

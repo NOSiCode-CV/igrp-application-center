@@ -125,3 +125,26 @@ export async function getSession() {
   }
   return session;
 }
+
+/**
+ * The current user's preferred language (`session.locale`), or `undefined`
+ * when unauthenticated, in bypass mode, or when the session cannot be read.
+ * Locale resolution must never break rendering, so failures degrade to
+ * "unknown" — except Next's dynamic-rendering bailout, which is control flow.
+ */
+export async function getSessionLocale(): Promise<string | undefined> {
+  if (isAuthBypass()) return undefined;
+  try {
+    const session = await auth.serverSession();
+    return session?.locale ?? undefined;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as { digest?: string }).digest === "DYNAMIC_SERVER_USAGE"
+    ) {
+      throw error;
+    }
+    return undefined;
+  }
+}
+

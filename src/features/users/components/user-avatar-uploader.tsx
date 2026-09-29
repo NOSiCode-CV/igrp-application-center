@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { useUpdateUser } from "@/features/users/use-users";
-import { getInitials } from "@/lib/app-utilities";
+import { getInitials } from "@/lib/utilities";
 
 interface UserAvatarUploaderProps {
   user: IGRPUserDTO;

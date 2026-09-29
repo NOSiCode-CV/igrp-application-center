@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
-import { formatDate } from "@/lib/app-utilities";
+import { formatDate } from "@/lib/utilities";
 
 import {
   SERVICE_ACCOUNT_DESCRIPTION_MAX,

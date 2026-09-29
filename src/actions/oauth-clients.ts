@@ -9,7 +9,7 @@ import {
   type OAuthClientInput,
   withActive,
 } from "@/features/oauth-clients/lib/oauth-client-request";
-import { toActionError } from "@/lib/app-utilities";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { AccessClient, ActionResult } from "./types";

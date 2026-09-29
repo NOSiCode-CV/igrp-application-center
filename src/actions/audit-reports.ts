@@ -13,8 +13,8 @@ import {
   DEFAULT_PAGE_SIZE,
   PAGE_SIZES,
 } from "@/features/audit/lib/report-query";
-import { toActionError } from "@/lib/app-utilities";
 import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
+import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
 import type { ActionResult } from "./types";
