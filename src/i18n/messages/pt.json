@@ -1,0 +1,551 @@
+{
+  "common": {
+    "actions": {
+      "back": "Voltar",
+      "home": "Início",
+      "backHome": "Voltar ao início",
+      "retry": "Tentar novamente",
+      "retrying": "A tentar...",
+      "cancel": "Cancelar"
+    }
+  },
+  "i18n": {
+    "localeSwitcher": {
+      "label": "Idioma",
+      "changeError": "Não foi possível alterar o idioma. Tente novamente."
+    }
+  },
+  "errors": {
+    "errorRef": "ID de referência:",
+    "unexpected": {
+      "title": "Ocorreu um erro inesperado.",
+      "description": "Tente novamente. Se o problema persistir, contacte a equipa de suporte e indique o ID de referência apresentado abaixo."
+    },
+    "auth": {
+      "title": "Não foi possível concluir a autenticação.",
+      "description": "Verifique a configuração do provedor de autenticação e as variáveis de ambiente. Se o problema persistir, contacte o suporte."
+    },
+    "codes": {
+      "configNotInitialized": {
+        "title": "Configuração do IGRP não inicializada",
+        "description": "O ficheiro de configuração da aplicação não foi carregado. Contacte a equipa técnica para verificar o arranque do servidor."
+      },
+      "accessManagementConfigMissing": {
+        "title": "Gestão de acesso não configurada",
+        "description": "A URL da API de gestão de acesso não está definida. Defina a variável de ambiente da aplicação ou active o modo de pré-visualização para continuar."
+      },
+      "appCodeMissing": {
+        "title": "Código da aplicação em falta",
+        "description": "A aplicação não declarou o seu código identificador. Verifique o ficheiro de configuração do IGRP."
+      },
+      "appHomeSlugInvalid": {
+        "title": "URL inicial da aplicação inválida",
+        "description": "O valor de NEXT_PUBLIC_IGRP_APP_HOME_SLUG não começa por \"/\". Corrija a variável de ambiente e reinicie o servidor."
+      },
+      "authConfigInvalid": {
+        "title": "Configuração de autenticação inválida",
+        "description": "Uma ou mais variáveis de ambiente necessárias ao provedor de autenticação estão em falta ou incorrectas."
+      },
+      "layoutDataFailed": {
+        "title": "Falha ao carregar os dados de layout",
+        "description": "Não foi possível carregar os menus ou dados do utilizador. Tente novamente; se persistir, contacte o suporte."
+      }
+    },
+    "status": {
+      "unauthorized": {
+        "title": "Acesso não autorizado",
+        "description": "Inicie sessão com as credenciais adequadas para aceder a este recurso."
+      },
+      "forbidden": {
+        "title": "Acesso negado",
+        "description": "Não tem permissões para ver este recurso."
+      },
+      "notFound": {
+        "title": "Página não encontrada",
+        "description": "A página que procura não existe ou foi removida."
+      },
+      "internal": {
+        "title": "Ocorreu um erro",
+        "description": "Pedimos desculpa pelo incómodo. Tente novamente mais tarde."
+      },
+      "unavailable": {
+        "title": "Serviço em manutenção",
+        "description": "O serviço não está disponível de momento. Voltaremos em breve."
+      },
+      "fallback": {
+        "title": "Ocorreu um erro",
+        "description": "Tente novamente. Se o problema persistir, contacte o suporte."
+      }
+    }
+  },
+  "users": {
+    "invite": {
+      "form": {
+        "localeLabel": "Idioma do convidado",
+        "title": "Convidar Utilizador",
+        "description": "Envie um convite por e-mail para um novo utilizador.",
+        "userInfo": "Informação do Utilizador",
+        "emailLabel": "E-mail",
+        "emailPlaceholder": "Ex: joao@email.com",
+        "assignRoles": "Atribuir Perfis",
+        "assignRolesHint": "Selecione departamento e perfis para o utilizador (opcional).",
+        "departmentLabel": "Departamento",
+        "departmentPlaceholder": "Selecionar departamento",
+        "departmentEmpty": "Departamento não encontrado.",
+        "search": "Procurar...",
+        "none": "Nenhum",
+        "rolesLabel": "Perfis",
+        "rolesEmpty": "Nenhum perfil encontrado.",
+        "selectDepartmentFirst": "Selecione um departamento",
+        "selectRoles": "Selecionar perfis",
+        "rolesSelected": "{count, plural, one {# perfil} other {# perfis selecionados}}",
+        "removeRole": "Remover {name}",
+        "submit": "Enviar Convite",
+        "submitting": "A enviar...",
+        "toasts": {
+          "inviteFailed": "Falha ao convidar",
+          "inviteFailedWithReason": "Falha ao convidar: {reason}",
+          "inviteSent": "Convite enviado com sucesso!"
+        }
+      },
+      "accept": {
+        "errors": {
+          "emailValidation": "Erro ao validar email",
+          "invalidCode": "Código inválido"
+        },
+        "toasts": {
+          "resendFailed": "Não foi possível reenviar o código",
+          "resendSuccess": "Novo código enviado",
+          "acceptFailed": "Erro ao aceitar convite",
+          "accepted": "Convite aceite",
+          "acceptedDescription": "Tem agora acesso à aplicação.",
+          "rejectFailed": "Erro ao rejeitar convite",
+          "autoVerifyFailed": "Verificação automática de email falhou",
+          "autoVerifyMismatch": "O email da sua conta não corresponde ao convite.",
+          "autoVerifyUnavailable": "Não foi possível verificar o email automaticamente."
+        },
+        "loading": {
+          "validatingInvite": "A validar convite…",
+          "validatingEmail": "A validar email…",
+          "loadingInvite": "A carregar convite…"
+        },
+        "steps": {
+          "stepOf": "Passo {current} de {total}",
+          "email": {
+            "label": "Email",
+            "sub": "Confirmação"
+          },
+          "code": {
+            "label": "Código",
+            "sub": "Verificação"
+          },
+          "confirm": {
+            "label": "Confirmar",
+            "sub": "Convite"
+          }
+        },
+        "emailStep": {
+          "eyebrow": "Confirmação",
+          "title": "Bem-vindo",
+          "description": "Introduza o seu email para aceder ao convite.",
+          "emailLabel": "Email",
+          "emailPlaceholder": "exemplo@email.cv",
+          "submit": "Enviar código",
+          "submitting": "A enviar…"
+        },
+        "otpStep": {
+          "eyebrow": "Verificação",
+          "title": "Código de acesso",
+          "description": "Enviámos um código de 6 dígitos para <strong>{email}</strong>.",
+          "codeLabel": "Código OTP",
+          "submit": "Verificar código",
+          "submitting": "A verificar…",
+          "resend": "Reenviar código",
+          "resending": "A reenviar…",
+          "resendIn": "Reenviar em {seconds}s",
+          "changeEmail": "Alterar email"
+        },
+        "errorStates": {
+          "invalid": {
+            "eyebrow": "Erro",
+            "title": "Convite inválido",
+            "description": "Não foi possível encontrar este convite. O link pode estar incorreto."
+          },
+          "mismatch": {
+            "eyebrow": "Conta diferente",
+            "title": "Convite não corresponde",
+            "description": "Este convite não foi enviado para a conta com que iniciou sessão."
+          },
+          "expired": {
+            "eyebrow": "Expirado",
+            "title": "Convite expirado",
+            "description": "Este convite já expirou. Solicite um novo convite ao administrador."
+          }
+        },
+        "useAnotherAccount": "Usar outra conta",
+        "pendingState": {
+          "eyebrow": "Pendente",
+          "title": "Convite pendente",
+          "description": "Tem um convite pendente. Verifique o seu email para encontrar o link e continuar.",
+          "signOut": "Terminar sessão"
+        },
+        "rejectedStep": {
+          "eyebrow": "Rejeitado",
+          "title": "Convite rejeitado",
+          "description": "Optou por não aceitar o acesso a este módulo."
+        },
+        "responseStep": {
+          "eyebrow": "Convite",
+          "title": "Aceitar Acesso",
+          "description": "Revise os detalhes antes de confirmar.",
+          "email": "Email",
+          "department": "Departamento",
+          "roles": "Perfis",
+          "accept": "Aceitar Convite",
+          "processing": "A processar…",
+          "reject": "Rejeitar",
+          "rejectConfirm": {
+            "title": "Rejeitar convite?",
+            "description": "Esta ação não pode ser desfeita. Terá de solicitar um novo convite ao administrador se mudar de ideias.",
+            "confirm": "Rejeitar convite"
+          }
+        }
+      },
+      "status": {
+        "pending": "Pendente",
+        "canceled": "Cancelado",
+        "rejected": "Rejeitado"
+      }
+    },
+    "detail": {
+      "loading": "Carregando...",
+      "loadError": "Erro ao carregar dados",
+      "tabs": {
+        "roles": "Perfis",
+        "departments": "Departamentos",
+        "applications": "Aplicações",
+        "signature": "Assinatura",
+        "sessions": "Sessões",
+        "audit": "Auditoria",
+        "metadata": "Metadados"
+      }
+    },
+    "applications": {
+      "searchLabel": "Pesquisar aplicação",
+      "searchPlaceholder": "Pesquisar aplicação…",
+      "loading": "Carregando aplicações…",
+      "noResults": "Nenhuma aplicação corresponde à pesquisa.",
+      "empty": "Nenhuma aplicação atribuída."
+    },
+    "audit": {
+      "empty": "Sem registos de auditoria.",
+      "columns": {
+        "timestamp": "Data / hora",
+        "event": "Evento",
+        "category": "Categoria",
+        "ip": "IP"
+      },
+      "pagination": {
+        "pageOf": "Página {page} de {total}",
+        "previous": "← Anterior",
+        "next": "Seguinte →"
+      }
+    },
+    "avatar": {
+      "uploadNoPath": "Upload sem caminho",
+      "updated": "Foto atualizada",
+      "updateFailed": "Erro ao atualizar foto"
+    },
+    "deleteDialog": {
+      "deactivated": "Utilizador Desativado",
+      "deactivatedDescription": "Utilizador ''{name}'' foi desativado com sucesso.",
+      "deactivateFailed": "Erro ao desativar.",
+      "label": "Username",
+      "confirm": "Desativar"
+    },
+    "editForm": {
+      "fullName": "Nome Completo",
+      "status": "Estado",
+      "statusPlaceholder": "Selecionar estado",
+      "save": "Gravar",
+      "saving": "Gravando...",
+      "toasts": {
+        "updated": "Perfil atualizado com sucesso",
+        "updateFailed": "Erro ao atualizar perfil",
+        "unknownError": "Erro desconhecido"
+      }
+    },
+    "validation": {
+      "nameMin": "Nome deve ter mínimo 3 caracteres",
+      "emailInvalid": "Email inválido",
+      "emailRequired": "Email obrigatório",
+      "usersMin": "Adicionar pelo menos um utilizador",
+      "otpDigits": "Código deve ter 6 dígitos"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo"
+    },
+    "columns": {
+      "name": "Nome",
+      "email": "Email",
+      "invitationDate": "Data do Convite",
+      "status": "Estado",
+      "actions": "Ações",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "manage": "Gerir"
+    },
+    "invitations": {
+      "actions": {
+        "copyUrl": "Copiar URL",
+        "resend": "Reenviar Convite",
+        "cancel": "Cancelar Convite"
+      },
+      "toasts": {
+        "urlCopied": "URL copiado",
+        "urlCopiedDescription": "URL do convite copiado para a área de transferência.",
+        "urlUnavailable": "Convite não disponível",
+        "urlUnavailableDescription": "URL do convite não disponível.",
+        "resent": "Convite reenviado",
+        "resentDescription": "O convite foi reenviado com sucesso.",
+        "resendFailed": "Convite não reenviado",
+        "resendFailedDescription": "Não foi possível reenviar o convite."
+      }
+    },
+    "list": {
+      "title": "Gestão de Utilizadores",
+      "description": "Ver e gerir todos os utilizadores do sistema.",
+      "inviteUser": "Convidar Utilizador",
+      "loadingInvitations": "Carregando convites...",
+      "tabs": {
+        "active": "Utilizadores Ativos",
+        "pending": "Convites Pendentes ({count})",
+        "canceled": "Convites Cancelados ({count})"
+      },
+      "filters": {
+        "searchByNameOrEmail": "Pesquisar por nome ou email...",
+        "status": "Estado",
+        "searchByName": "Pesquisar por nome",
+        "searchByNamePlaceholder": "Pesquisar por nome...",
+        "searchByEmail": "Pesquisar por email",
+        "searchByEmailPlaceholder": "Pesquisar por email..."
+      },
+      "toasts": {
+        "error": "Erro",
+        "statusChanged": "Estado alterado",
+        "statusChangedDescription": "O estado do utilizador foi alterado com sucesso",
+        "statusChangeFailed": "Não foi possível alterar o estado do utilizador",
+        "invitationCanceled": "Convite cancelado",
+        "invitationCanceledDescription": "O convite foi cancelado com sucesso",
+        "invitationCancelFailed": "Não foi possível cancelar o convite"
+      },
+      "statusDialog": {
+        "activateTitle": "Ativar Utilizador",
+        "deactivateTitle": "Desativar Utilizador",
+        "activateDescription": "Tem certeza que deseja ativar <strong>{name}</strong>?",
+        "deactivateDescription": "Tem certeza que deseja desativar <strong>{name}</strong>?",
+        "activate": "Ativar",
+        "deactivate": "Desativar",
+        "activating": "Ativando...",
+        "deactivating": "Desativando..."
+      },
+      "cancelDialog": {
+        "title": "Cancelar Convite",
+        "description": "Tem certeza que deseja cancelar o convite para <strong>{identifier}</strong>? Esta ação não pode ser desfeita.",
+        "confirm": "Confirmar",
+        "canceling": "Cancelando..."
+      }
+    },
+    "notAvailable": "N/A",
+    "favorites": {
+      "updateFailed": "Não foi possível atualizar os favoritos."
+    },
+    "sessions": {
+      "noExternalId": "Identificador externo não disponível para este utilizador.",
+      "empty": "Sem sessões ativas.",
+      "title": "Sessão Ativa",
+      "fields": {
+        "sessionId": "ID da sessão",
+        "startedAt": "Iniciada em",
+        "lastSeenAt": "Último acesso",
+        "ip": "IP"
+      },
+      "kill": "Terminar sessão",
+      "killDialog": {
+        "title": "Terminar sessão",
+        "description": "Esta ação irá encerrar a sessão ativa do utilizador imediatamente.",
+        "reason": "Motivo",
+        "reasonPlaceholder": "Indique o motivo...",
+        "confirm": "Confirmar"
+      },
+      "toasts": {
+        "killed": "Sessão terminada",
+        "killFailed": "Erro ao terminar sessão"
+      }
+    },
+    "signature": {
+      "title": "Assinatura Digital",
+      "description": "Carregue sua assinatura para documentos oficiais",
+      "alt": "Assinatura",
+      "clickToUpload": "Clique para carregar",
+      "hint": "PNG, JPG até 5MB",
+      "toasts": {
+        "loadFailed": "Erro ao carregar assinatura",
+        "updated": "Assinatura atualizada com sucesso",
+        "updateFailed": "Erro ao atualizar assinatura"
+      }
+    },
+    "profile": {
+      "avatar": {
+        "loadFailed": "Erro ao carregar avatar",
+        "updated": "Avatar atualizado com sucesso",
+        "updateFailed": "Erro ao atualizar avatar",
+        "invalid": "Avatar inválido",
+        "change": "Alterar avatar",
+        "fallbackAlt": "Utilizador"
+      },
+      "toasts": {
+        "activated": "Utilizador ativado com sucesso",
+        "deactivated": "Utilizador desativado com sucesso",
+        "statusChangeFailed": "Erro ao alterar estado"
+      },
+      "form": {
+        "loading": "Carregando profile...",
+        "notFound": "Nenhum utilizador encontrada.",
+        "title": "Edit User Profile",
+        "cardTitle": "Detailed information about this user.",
+        "cardDescription": "Manage your personal information and account settings.",
+        "fullName": "Full Name",
+        "fullNamePlaceholder": "johndoe",
+        "fullNameDescription": "The user full name.",
+        "picture": "Profile Image",
+        "pictureDescription": "Upload a profile picture for this user.",
+        "signature": "Signature",
+        "signatureDescription": "The user's digital signature.",
+        "processing": "A processar...",
+        "save": "Guardar Alterações",
+        "toasts": {
+          "updated": "Usuario Atualizado",
+          "updatedDescription": "O Usuario foi atualizado com sucesso!"
+        }
+      },
+      "loading": "Carregando utilizador…",
+      "notFound": "Nenhum utilizador encontrado.",
+      "imageUpload": {
+        "previewAlt": "Profile preview",
+        "empty": "No image",
+        "upload": "Upload image",
+        "remove": "Remove"
+      },
+      "signatureUpload": {
+        "previewAlt": "Signature preview",
+        "empty": "No signature",
+        "upload": "Upload signature",
+        "remove": "Remove"
+      },
+      "statusButton": {
+        "activate": "Ativar",
+        "deactivate": "Desativar",
+        "activateLabel": "Ativar utilizador",
+        "deactivateLabel": "Desativar utilizador"
+      },
+      "statusDialog": {
+        "activateTitle": "Ativar Utilizador",
+        "deactivateTitle": "Desativar Utilizador",
+        "activateDescription": "Tem certeza que deseja ativar o utilizador <strong>{name}</strong>?",
+        "deactivateDescription": "Tem certeza que deseja desativar o utilizador <strong>{name}</strong>?",
+        "confirmActivate": "Confirmar Ativar",
+        "confirmDeactivate": "Confirmar Desativar"
+      },
+      "tabs": {
+        "departments": "Departamentos",
+        "applications": "Aplicações",
+        "roles": "Roles",
+        "signature": "Assinatura"
+      }
+    },
+    "metadata": {
+      "title": "Metadados",
+      "addField": "+ Add field",
+      "keyPlaceholder": "chave",
+      "valuePlaceholder": "valor",
+      "remove": "remover",
+      "save": "Save",
+      "toasts": {
+        "updated": "Metadados atualizados",
+        "updateFailed": "Erro ao atualizar metadados"
+      }
+    },
+    "nameEditor": {
+      "save": "Guardar nome",
+      "cancel": "Cancelar edição",
+      "edit": "Editar nome",
+      "saveFailed": "Erro ao guardar",
+      "toasts": {
+        "updated": "Nome atualizado com sucesso",
+        "updateFailed": "Erro ao atualizar nome"
+      }
+    },
+    "unknownError": "Ocorreu um erro desconhecido.",
+    "roleDialog": {
+      "title": "Adicionar ou Remover Perfis",
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "columns": {
+        "name": "Nome",
+        "description": "Descrição",
+        "status": "Estado"
+      },
+      "filterPlaceholder": "Filtar por nome...",
+      "filterLabel": "Filtar por nome",
+      "clearFilter": "Clear filter",
+      "departments": {
+        "loading": "A carregar departamentos...",
+        "loadError": "Erro ao carregar departamentos",
+        "empty": "Sem departamentos",
+        "placeholder": "Selecionar departamento",
+        "search": "Procurar departamento...",
+        "notFound": "Nenhum departamento encontrado."
+      },
+      "expiresAt": "Expiração (opcional)",
+      "selectDepartmentHint": "Selecione um departamento para listar os perfis.",
+      "loadingRoles": "A carregar perfis...",
+      "loadRolesError": "Ocorreu um erro a carregar perfis do utilizador.",
+      "selectedCount": "{count} selecionado(s)",
+      "clear": "Limpar",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "toasts": {
+        "selectDepartmentFirst": "Selecione um departamento primeiro.",
+        "noChanges": "Sem alterações",
+        "noChangesDescription": "Nada para adicionar ou remover.",
+        "updated": "Perfis atualizados",
+        "updatedDescription": "+{added} adicionada(s), -{removed} removida(s).",
+        "updateFailed": "Falha ao atualizar perfis"
+      }
+    },
+    "roleList": {
+      "loading": "Carregando perfis...",
+      "title": "Perfis Atribuídos",
+      "add": "Adicionar",
+      "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
+      "parent": "Associados: <mono>{code}</mono>",
+      "morePermissions": "+{count} mais",
+      "revoke": "Revogar",
+      "empty": "Sem perfis atribuídos",
+      "emptyDescription": "Este utilizador não tem perfis.",
+      "assign": "Associar Perfis",
+      "toasts": {
+        "removed": "Perfil removido com sucesso.",
+        "removeFailed": "Não foi possivel remover o perfil."
+      }
+    },
+    "rolesList": {
+      "loading": "Carregando...",
+      "loadError": "Erro ao carregar perfis",
+      "empty": "Sem perfis atribuídos",
+      "emptyDescription": "Este utilizador ainda não tem perfis atribuídos."
+    }
+  }
+}

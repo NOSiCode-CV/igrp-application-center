@@ -5,6 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import { UserMetadataPanel } from "@/features/users/components/user-metadata-panel";
 
+import { IntlWrapper } from "../../helpers/intl";
+
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   IGRPButton: ({
     children,
@@ -45,18 +47,13 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   useIGRPToast: () => ({ igrpToast: vi.fn() }),
 }));
 
-// The query result MUST be a stable reference across renders. UserMetadataPanel
-// runs `useEffect(..., [data])` -> setRows(); a fresh object literal per call
-// gives `data` a new identity every render, which loops the effect forever and
-// exhausts the heap. Real react-query hands back the same object between
-// renders, so this mirrors production behaviour.
-const metadataResult = {
+const mockMetadata = {
   data: { userId: "1", metadata: { dept: "TI" } },
   isLoading: false,
 };
 
 vi.mock("@/features/users/use-users", () => ({
-  useUserMetadata: vi.fn(() => metadataResult),
+  useUserMetadata: vi.fn(() => mockMetadata),
   useUpdateUserMetadata: vi.fn(() => ({
     mutateAsync: vi.fn().mockResolvedValue({ success: true }),
     isPending: false,
@@ -66,7 +63,9 @@ vi.mock("@/features/users/use-users", () => ({
 function wrapper({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient();
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <IntlWrapper>{children}</IntlWrapper>
+    </QueryClientProvider>
   );
 }
 
@@ -77,9 +76,9 @@ describe("UserMetadataPanel", () => {
     expect(screen.getByDisplayValue("TI")).toBeInTheDocument();
   });
 
-  it("adds a new empty row when '+ Adicionar campo' is clicked", async () => {
+  it("adds a new empty row when '+ Add field' is clicked", async () => {
     render(<UserMetadataPanel userId="1" />, { wrapper });
-    const addButton = screen.getByRole("button", { name: /adicionar campo/i });
+    const addButton = screen.getByRole("button", { name: /add field/i });
     await userEvent.click(addButton);
     const keyInputs = screen.getAllByPlaceholderText("chave");
     expect(keyInputs).toHaveLength(2);
@@ -103,7 +102,7 @@ describe("UserMetadataPanel", () => {
     } as unknown as ReturnType<typeof useUpdateUserMetadata>);
 
     render(<UserMetadataPanel userId="1" />, { wrapper });
-    await userEvent.click(screen.getByRole("button", { name: /guardar/i }));
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
     await waitFor(() => {
       expect(mutateAsync).toHaveBeenCalledWith({

@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import { vi } from "vitest";
 
+import { IntlWrapper } from "../../helpers/intl";
+
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   AlertDialog: ({ children }: { children?: React.ReactNode }) => (
     <div>{children}</div>
@@ -79,7 +81,9 @@ it("throws when the current-user query errors", () => {
   expect(() =>
     render(
       <QueryClientProvider client={client}>
-        <UserProfile />
+        <IntlWrapper>
+          <UserProfile />
+        </IntlWrapper>
       </QueryClientProvider>,
     ),
   ).toThrow("boom");

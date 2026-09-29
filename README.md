@@ -128,7 +128,8 @@ src/
 ├── components/           # Shared UI components
 ├── providers/            # React context providers
 ├── schemas/              # Zod validation schemas
-├── config/               # Site config, error messages, login config
+├── config/               # Site config, login config
+├── i18n/                 # next-intl (no locale routing): config, locale resolver, messages/{pt,en,fr}.json, format helpers, language selector
 ├── styles/               # Global CSS + design tokens (globals.css)
 ├── temp/                 # On-code menu definitions + mock data
 ├── __tests__/            # Cross-cutting tests (most tests live beside features)
@@ -146,6 +147,7 @@ src/
 | UI | IGRP Horizon Design System + Tailwind CSS 4 |
 | Auth | NextAuth 4 via `@igrp/framework-next-auth` |
 | Forms | react-hook-form + Zod |
+| i18n | next-intl 4 (without i18n routing) |
 | Data | TanStack Query v5 + server actions |
 | Tables | TanStack Table v8 |
 | Linting | Biome |
@@ -160,6 +162,7 @@ src/
 | [docs/HOME_FLOW.md](docs/HOME_FLOW.md) | Applications Center home/dashboard flow — routes, layout guards, data sources |
 | [docs/BUSINESS_GUIDE.en.md](docs/BUSINESS_GUIDE.en.md) | End-user/business guide — how the Application Center works, in plain language (English) |
 | [docs/BUSINESS_GUIDE.pt.md](docs/BUSINESS_GUIDE.pt.md) | Guia de negócio para utilizadores finais (Português) |
+| [docs/I18N.md](docs/I18N.md) | Languages, locale resolution, message catalogs, migrating a feature |
 | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Horizon component patterns, imports, and usage examples |
 | [docs/TOKENS.md](docs/TOKENS.md) | CSS design tokens, dark mode, Tailwind aliases |
 | [docs/DOCKER-RUN.md](docs/DOCKER-RUN.md) | Full Docker build and run instructions |

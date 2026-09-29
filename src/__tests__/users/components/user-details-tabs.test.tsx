@@ -33,6 +33,8 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+import { IntlWrapper } from "../../helpers/intl";
+
 vi.mock("@igrp/igrp-framework-react-design-system", async () => {
   const React = await import("react");
   const TabsContext = React.createContext<{
@@ -121,7 +123,7 @@ vi.mock("@/features/users/components/user-sessions-tab", () => ({
 function wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={new QueryClient()}>
-      {children}
+      <IntlWrapper>{children}</IntlWrapper>
     </QueryClientProvider>
   );
 }

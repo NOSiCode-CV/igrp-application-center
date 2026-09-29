@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
-
 import { withIGRPAuth } from "@igrp/framework-next-auth/config";
+import { redirect } from "next/navigation";
 
 /*
  * EDGE-SAFE MODULE — `src/middleware.ts` imports this, and middleware runs on
@@ -43,6 +42,70 @@ function getSessionMaxAge(): number | undefined {
 
 const sessionMaxAge = getSessionMaxAge();
 
+const AUTH_UI_PATH = /^\/(login|logout)(\/|$)/;
+
+/**
+ * Post-login/post-logout redirect, rebuilt from `NEXT_PUBLIC_BASE_PATH`
+ * instead of trusting next-auth's own `baseUrl`.
+ *
+ * Why this override exists: next-auth v4 core (`createCallbackUrl`, in
+ * `next-auth/core/lib/callback-url.ts`) ALWAYS calls
+ * `callbacks.redirect({ url, baseUrl: options.url.origin })` — i.e. `baseUrl`
+ * is the bare origin (protocol+host), with any path component of
+ * `NEXTAUTH_URL` already stripped. `withIGRPAuth`'s own default redirect
+ * callback (`resolveAppBaseUrl`) does `baseUrl || env.NEXTAUTH_URL`, meant to
+ * fall back to the full, path-preserving `NEXTAUTH_URL` — but `baseUrl` is
+ * never falsy (it's always a valid origin string), so that fallback never
+ * fires. Net effect: under a basePath deployment (e.g. `NEXT_PUBLIC_BASE_PATH
+ * =/apps/core`), the framework's default post-login redirect lands on
+ * `https://host/dashboard` instead of `https://host/apps/core/dashboard` —
+ * outside the ingress path prefix, so it 404s. Confirmed via a live network
+ * trace against apps-test.inss.gw: `signIn()` itself already correctly posts
+ * to `/apps/core/api/auth/signin/...` (that basePath wiring, via
+ * `sessionArgs.basePath` in `get-session-args.ts`, is unaffected by this bug),
+ * but the callback's own internal home-redirect drops the prefix.
+ */
+function redirectWithBasePath({
+  url,
+  baseUrl,
+}: {
+  url: string;
+  baseUrl: string;
+}): string {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  let origin: string;
+  try {
+    origin = new URL(baseUrl).origin;
+  } catch {
+    origin = baseUrl;
+  }
+  const appBaseUrl = `${origin}${basePath}`;
+  const homeSlug = process.env.NEXT_PUBLIC_IGRP_APP_HOME_SLUG || "/";
+  const homeUrl = `${appBaseUrl}${homeSlug.startsWith("/") ? homeSlug : `/${homeSlug}`}`;
+
+  // Relative path — join to app origin + basePath. Guard against
+  // double-prefixing if `url` already carries the basePath itself.
+  if (url.startsWith("/") && !url.startsWith("//")) {
+    const pathOnly = url.split("?")[0] ?? "";
+    if (AUTH_UI_PATH.test(pathOnly)) return homeUrl;
+    if (basePath && url.startsWith(basePath)) return `${origin}${url}`;
+    return `${appBaseUrl}${url}`;
+  }
+
+  // Absolute URL — allow only same origin.
+  try {
+    const parsed = new URL(url);
+    if (parsed.origin === origin) {
+      if (AUTH_UI_PATH.test(parsed.pathname)) return homeUrl;
+      return url;
+    }
+  } catch {
+    // fall through
+  }
+
+  return homeUrl;
+}
+
 /**
  * Central IGRP auth instance.
  *
@@ -65,4 +128,7 @@ export const auth = withIGRPAuth({
   // redirects (e.g. when a future caller uses `useSession({ required: true })`
   // or `withAuth`) land on /login instead of the framework default page.
   pages: { signIn: "/login" },
+  callbacks: {
+    redirect: redirectWithBasePath,
+  },
 });

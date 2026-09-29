@@ -21,19 +21,26 @@ CI ([.gitlab-ci.yml](.gitlab-ci.yml)) runs `check-ui` as blocking and a `validat
 
 Each doc is the single source of truth for its area; this file does not restate them.
 
-| Read | When |
-| --- | --- |
-| [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) | Orienting in the codebase, or unsure which doc applies. Start here. |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Touching the request lifecycle: middleware, layouts, providers, server actions. |
-| [docs/AUTHENTICATION.md](docs/AUTHENTICATION.md) | Touching login, logout, sessions, tokens, middleware redirects, or preview/bypass mode. |
-| [docs/PERMISSIONS.md](docs/PERMISSIONS.md) | Gating a page, component, or menu by permission. |
-| [docs/ACCESS_MANAGEMENT.md](docs/ACCESS_MANAGEMENT.md) | Touching the `IGRP_SYNC_*` sync of applications, routes, or on-code menus. |
-| [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Building or changing any UI — component inventory and copy-pasteable patterns. |
-| [docs/TOKENS.md](docs/TOKENS.md) | Choosing colors, spacing, or theming; adding a theme. |
-| [docs/ENVIRONMENT.md](docs/ENVIRONMENT.md) | Adding or reading an env var. Values are documented inline in [.env.example](.env.example). |
-| [docs/HOME_FLOW.md](docs/HOME_FLOW.md) | Working on `(home)` — the app launcher, task workspace, or `/settings` screens. |
-| [docs/MIGRATION_GUIDE.md](docs/MIGRATION_GUIDE.md) | Upgrading the IGRP framework packages. |
-| [docs/BUSINESS_GUIDE.en.md](docs/BUSINESS_GUIDE.en.md) | Needing the user-facing meaning of a screen or concept. |
+- [src/lib/auth.ts](src/lib/auth.ts) exports a single `auth = withIGRPAuth(...)` instance. The auth provider is resolved from the `AUTH_PROVIDER` env var (`igrp-auth` / `keycloak` / `autentika` / `none`). `serverSession()` both returns the session and configures the IGRP access client (`igrpSetAccessClientConfig`) with the access token + `IGRP_ACCESS_MANAGEMENT_API` base URL — server actions and server components that call the access-management SDK depend on this side effect.
+- [src/app/api/auth/[...nextauth]/route.ts](src/app/api/auth) exports `auth.GET/POST` as the NextAuth route handler.
+- [src/middleware.ts](src/middleware.ts) calls `auth.isAuthDisabled()` and `auth.isPreviewMode()` directly to short-circuit when auth is off (the middleware uses these primitives; `getSession()` uses the combined `isAuthBypass()` predicate instead). For authenticated paths it calls `auth.getTokenFromRequest(request)` + `auth.isTokenExpiredOrFailed(token)` and redirects to login on failure. Security headers (`X-Content-Type-Options`, `X-Frame-Options`, etc.) are injected in production. The middleware `config` is delegated: `export const { config } = auth`.
+- Auth bypass (`isAuthBypass()` in `src/lib/utils.ts`) returns `true` when `IGRP_PREVIEW_MODE=true` OR `AUTH_PROVIDER=none`. `getSession()` returns null in this case — keep this path working when touching auth.
+- `withIGRPAuth` callback extensions in `src/lib/auth.ts` carry the user's language: `jwt` seeds `token.locale` from the OIDC `locale` claim at sign-in and applies `update({ locale })`; `session` exposes `session.locale`. `getSessionLocale()` reads it (null-safe, never throws except Next's dynamic bailout).
+- The middleware rewrites the `IGRP_LOCALE` cookie to the token's locale when they differ (FR-27, `syncLocaleCookie`), reusing the token it already decoded.
+
+### i18n (`src/i18n/`)
+
+next-intl 4 **without i18n routing** — no `[locale]` segment and no locale in URLs (HAProxy routes `/apps/[slug]`). Full guide: [docs/I18N.md](docs/I18N.md). Spec: `access-management/_specs/i18n/`.
+
+- `config.ts` — `LOCALES` (`pt`, `en`, `fr`), module default `pt`, platform default `pt`, `FORMAT_REGION` (pt-CV / en-GB / fr-FR), cookie `IGRP_LOCALE`, `normalizeLocale()` (`pt-CV` → `pt`, unsupported → `undefined`).
+- `resolve-locale.ts` (server-only) — session `locale` → cookie → `Accept-Language` (q-ordered) → platform default.
+- `request.ts` — `getRequestConfig`; messages = `pt.json` deep-merged under the requested file (per-key fallback); a key missing in both renders the key and warns.
+- `messages/{pt,en,fr}.json` — one file per language, top-level namespace per feature, nested camelCase keys, ICU. `pt.json` is complete and types the keys (`global.d.ts`), so `tsc` fails on unknown keys. `en`/`fr` may be partial.
+- `format.ts` — `formatDate`/`formatDateTime`/`formatNumber`/`compare` (+ `useFormat()`); never hardcode a locale/region in feature code.
+- `actions.ts` — `setLocale` server action (validate → `PUT /api/users/me/locale` when signed in → cookie). `components/locale-switcher.tsx` then calls next-auth `update({ locale })` and `router.refresh()`. The selector is on `/login`, the `(invite)` layout and `/profile` (the framework header has no extension point yet).
+- The root layout wraps children in `I18nProvider` (NextIntlClientProvider + design-system `IGRPI18nProvider`). `global-error.tsx` has no provider: it reads the cookie and uses an inline pt/en/fr table.
+- `getClientAccess()` sends `Accept-Language` = resolved locale on every API call; error UIs show the API ProblemDetail `detail` as-is, else `errors.*` messages (`components/errors/use-error-copy.ts`).
+- Migrating a feature: move its strings to `pt.json` under the feature namespace, use `useTranslations`/`getTranslations`, make Zod schemas factories taking `t`, use `format.ts`, and add the folder to `MIGRATED_FOLDERS` in `src/__tests__/i18n/literal-strings.test.ts` (hardcoded-string guard).
 
 ## Where code goes
 

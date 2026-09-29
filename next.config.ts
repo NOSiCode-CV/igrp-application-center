@@ -4,6 +4,12 @@ import { fileURLToPath } from "node:url";
 
 import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// next-intl WITHOUT i18n routing: no [locale] segment and no locale in URLs
+// (HAProxy routes /apps/[slug]). The locale is resolved per request in
+// src/i18n/request.ts.
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.resolve(appDir, "../..");
@@ -11,6 +17,7 @@ const monorepoRoot = path.resolve(appDir, "../..");
 const turbopackRoot = existsSync(path.join(monorepoRoot, "pnpm-workspace.yaml"))
   ? monorepoRoot
   : appDir;
+
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -87,4 +94,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
