@@ -221,7 +221,7 @@ export function UserRolesDialog({
       setExpiresAt("");
     }
   }, [open]);
- 
+
   useEffect(() => {
     const next: RowSelectionState = {};
     for (const row of roles ?? []) {

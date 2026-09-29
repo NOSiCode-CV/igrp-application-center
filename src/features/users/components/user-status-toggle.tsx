@@ -62,7 +62,11 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
       <ConfirmDialog
         open={open}
         onOpenChange={setOpen}
-        title={isActive ? t("statusDialog.deactivateTitle") : t("statusDialog.activateTitle")}
+        title={
+          isActive
+            ? t("statusDialog.deactivateTitle")
+            : t("statusDialog.activateTitle")
+        }
         description={t.rich(
           isActive
             ? "statusDialog.deactivateDescription"

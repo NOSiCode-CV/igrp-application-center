@@ -26,15 +26,15 @@ const COPY: Record<
 > = {
   invalid: {
     icon: "TriangleAlert",
-    eyebrow: "Erro",   
+    eyebrow: "Erro",
   },
   mismatch: {
     icon: "MailX",
-    eyebrow: "Conta diferente",   
+    eyebrow: "Conta diferente",
   },
   expired: {
     icon: "Clock",
-    eyebrow: "Expirado",   
+    eyebrow: "Expirado",
   },
 };
 

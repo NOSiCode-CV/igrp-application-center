@@ -9,9 +9,7 @@ interface InviteRejectedStepProps {
   onBackHome: () => void;
 }
 
-export function InviteRejectedStep({ 
-  onBackHome 
-}: InviteRejectedStepProps) {
+export function InviteRejectedStep({ onBackHome }: InviteRejectedStepProps) {
   const t = useTranslations("users.invite.accept.rejectedStep");
   const tc = useTranslations("common.actions");
   return (

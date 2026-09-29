@@ -278,4 +278,3 @@ export const DATE_TIME_WITH_SECONDS: Intl.DateTimeFormatOptions = {
   minute: "2-digit",
   second: "2-digit",
 };
-

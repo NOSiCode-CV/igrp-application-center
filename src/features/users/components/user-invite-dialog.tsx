@@ -197,9 +197,9 @@ export function UserInviteDialog({
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <FormItem>                   
+                  <FormItem>
                     <FormLabel>
-                      {t("emailLabel")}  
+                      {t("emailLabel")}
                       <span aria-hidden="true" className="text-destructive">
                         *
                       </span>

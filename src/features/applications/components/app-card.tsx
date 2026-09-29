@@ -70,7 +70,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <h2 className="truncate text-sm font-semibold text-foreground">
             {name}
-          </h2>          
+          </h2>
           <span className="truncate text-xs text-muted-foreground">{code}</span>
         </div>
       </div>
@@ -83,12 +83,12 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
       >
         {description || APP_DESCRIPTION_FALLBACK}
       </p>
-     
+
       <div className="mt-auto flex items-center justify-between gap-2 pt-1">
         <Badge className={cn(getStatusColor(status), "shrink-0")}>
           {showStatus(status)}
         </Badge>
-       
+
         <div className="flex items-center gap-1">
           <ButtonLinkTooltip
             href={`${ROUTES.APPLICATIONS}/${code}` as Route}

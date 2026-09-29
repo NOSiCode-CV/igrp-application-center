@@ -56,7 +56,7 @@ function ActiveRowActionsCell({
         <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="min-w-44">        
+      <DropdownMenuContent align="end" className="min-w-44">
         {isSelf ? null : state === "ACTIVE" ? (
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
@@ -67,7 +67,7 @@ function ActiveRowActionsCell({
             {t("deactivate")}
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem            
+          <DropdownMenuItem
             className="text-success-subtle-foreground focus:text-success-subtle-foreground focus:bg-success-subtle"
             onSelect={() => onStatusClick(row.original, "ACTIVE")}
             variant="default"

@@ -18,7 +18,6 @@ const turbopackRoot = existsSync(path.join(monorepoRoot, "pnpm-workspace.yaml"))
   ? monorepoRoot
   : appDir;
 
-
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 // The design system (ESM) imports `lucide-react/dynamicIconImports` without an

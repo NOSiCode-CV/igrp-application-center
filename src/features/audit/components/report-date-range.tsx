@@ -115,7 +115,7 @@ export function ReportDateRange({
       <div className="w-full md:w-72 md:shrink-0">
         <IGRPCombobox
           id="report-range"
-        showSearch={false}
+          showSearch={false}
           label="Período"
           variant="single"
           options={PRESET_OPTIONS}

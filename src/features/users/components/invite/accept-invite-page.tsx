@@ -53,11 +53,11 @@ export function AcceptInvitePage() {
   const { data: session, status: sessionStatus } = useSession({
     required: true,
   });
-  
+
   const { data: currentUser, isLoading: isLoadingCurrentUser } = useCurrentUser(
     { enabled: sessionStatus === "authenticated" },
   );
- 
+
   const {
     data: invitation,
     isLoading: isLoadingInvitation,
@@ -67,7 +67,7 @@ export function AcceptInvitePage() {
   });
 
   const [step, dispatch] = useReducer(inviteFlowReducer, initialStep);
-  
+
   const autoSubmittedEmailRef = useRef<string | null>(null);
 
   const validateEmail = useValidateInvitationEmail();
@@ -116,9 +116,9 @@ export function AcceptInvitePage() {
     currentUser?.email,
     session?.user?.email,
   ]);
-  
+
   const goHome = useCallback(() => window.location.assign("/"), []);
-  
+
   const handleSignOut = useCallback(() => {
     router.push("/logout");
   }, [router]);
@@ -204,7 +204,7 @@ export function AcceptInvitePage() {
       { token, email },
       {
         onSuccess: (result) => {
-          if (!result.success) {           
+          if (!result.success) {
             if (classifyInviteError(result.error) === "expired") {
               dispatch({ type: "token-expired", message: result.error });
               return;
@@ -250,7 +250,7 @@ export function AcceptInvitePage() {
           }
           toast.success(t("toasts.accepted"), {
             description: t("toasts.acceptedDescription"),
-          });        
+          });
           window.location.assign("/");
         },
         onError: (err) =>
@@ -282,7 +282,7 @@ export function AcceptInvitePage() {
       },
     );
   }, [token, invitation, respond, t]);
-  
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
   useEffect(() => {
     if (

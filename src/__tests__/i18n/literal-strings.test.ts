@@ -128,16 +128,17 @@ describe("literal-string guard", () => {
     expect(hits).toHaveLength(6);
   });
 
-  it.each(
-    MIGRATED_FOLDERS,
-  )("%s has no hardcoded user-facing strings", (folder) => {
-    const files = listTsxFiles(path.join(APP_ROOT, folder));
-    expect(files.length).toBeGreaterThan(0);
-    const offenders = files.flatMap((file) =>
-      findLiteralStrings(readFileSync(file, "utf8"), file).map(
-        (hit) => `${path.relative(APP_ROOT, file)}:${hit}`,
-      ),
-    );
-    expect(offenders).toEqual([]);
-  });
+  it.each(MIGRATED_FOLDERS)(
+    "%s has no hardcoded user-facing strings",
+    (folder) => {
+      const files = listTsxFiles(path.join(APP_ROOT, folder));
+      expect(files.length).toBeGreaterThan(0);
+      const offenders = files.flatMap((file) =>
+        findLiteralStrings(readFileSync(file, "utf8"), file).map(
+          (hit) => `${path.relative(APP_ROOT, file)}:${hit}`,
+        ),
+      );
+      expect(offenders).toEqual([]);
+    },
+  );
 });

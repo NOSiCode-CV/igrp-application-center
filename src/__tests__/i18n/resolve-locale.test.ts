@@ -39,16 +39,12 @@ describe("normalizeLocale", () => {
     expect(normalizeLocale(tag)).toBe(expected);
   });
 
-  it.each([
-    ["de"],
-    ["de-DE"],
-    [""],
-    [undefined],
-    [null],
-    [42],
-  ])("rejects %s", (tag) => {
-    expect(normalizeLocale(tag)).toBeUndefined();
-  });
+  it.each([["de"], ["de-DE"], [""], [undefined], [null], [42]])(
+    "rejects %s",
+    (tag) => {
+      expect(normalizeLocale(tag)).toBeUndefined();
+    },
+  );
 });
 
 describe("parseAcceptLanguage", () => {

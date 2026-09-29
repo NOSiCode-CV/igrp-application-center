@@ -105,7 +105,9 @@ export function InviteEmailStep({
             />
           ) : null}
           {isSubmitting ? t("submitting") : t("submit")}
-          {!isSubmitting ? <IGRPIcon iconName="ArrowRight" data-icon="inline-end" /> : null}
+          {!isSubmitting ? (
+            <IGRPIcon iconName="ArrowRight" data-icon="inline-end" />
+          ) : null}
         </Button>
       </form>
     </div>

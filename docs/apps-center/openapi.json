@@ -71,9 +71,7 @@
   "paths": {
     "/api/users/{id}": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user",
         "description": "This Permission is required: igrp.users.view",
         "operationId": "getUser",
@@ -101,9 +99,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Update user",
         "description": "This Permission is required: igrp.users.update",
         "operationId": "updateUser",
@@ -144,9 +140,7 @@
     },
     "/api/users/{id}/status": {
       "put": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Update user status",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "updateUserStatus",
@@ -185,9 +179,7 @@
     },
     "/api/users/{id}/metadata": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user metadata",
         "description": "Return the free-form metadata JSON associated with the user. Used by the OAuth2 authorization server for token enrichment.",
         "operationId": "getUserMetadata",
@@ -216,9 +208,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Update user metadata",
         "description": "Replace the user's metadata JSON. Used by operators and by OAuth federation flows to enrich the user profile.",
         "operationId": "updateUserMetadata",
@@ -259,9 +249,7 @@
     },
     "/api/users/me": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get current user",
         "description": "Get current user",
         "operationId": "getCurrentUser",
@@ -280,9 +268,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Update current user",
         "description": "Update current user data (only own data)",
         "operationId": "updateCurrentUser",
@@ -323,9 +309,7 @@
     },
     "/api/users/invite/{id}": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user invitation",
         "description": "Get user invitation",
         "operationId": "getUserInvitation",
@@ -355,9 +339,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Resend user invitation",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "resendUserInvitation",
@@ -387,9 +369,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Cancel user invitation",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "cancelUserInvitation",
@@ -421,9 +401,7 @@
     },
     "/api/service-accounts/{id}": {
       "get": {
-        "tags": [
-          "Service Accounts"
-        ],
+        "tags": ["Service Accounts"],
         "summary": "Get service account by id",
         "description": "This Permission is required: igrp.client.view",
         "operationId": "findById",
@@ -452,9 +430,7 @@
         }
       },
       "put": {
-        "tags": [
-          "Service Accounts"
-        ],
+        "tags": ["Service Accounts"],
         "summary": "Update service account",
         "description": "Replaces the whole roleIds and permissionIds sets — send the full desired state, not a delta. Roles and permissions are NOT department-scoped: any in the system may be granted. This Permission is required: igrp.client.update",
         "operationId": "update",
@@ -502,9 +478,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Service Accounts"
-        ],
+        "tags": ["Service Accounts"],
         "summary": "Delete service account",
         "description": "This Permission is required: igrp.client.delete",
         "operationId": "delete",
@@ -531,9 +505,7 @@
     },
     "/api/departments/{departmentCode}/roles/{roleCode}": {
       "put": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Update role",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "updateRole",
@@ -580,9 +552,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Delete role",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "deleteRole",
@@ -620,9 +590,7 @@
     },
     "/api/departments/{code}": {
       "put": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Update department",
         "description": "This Permission is required: igrp.departments.update",
         "operationId": "updateDepartment",
@@ -661,9 +629,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Delete department",
         "description": "This Permission is required: igrp.departments.delete",
         "operationId": "deleteDepartment",
@@ -693,9 +659,7 @@
     },
     "/api/clients/{id}": {
       "get": {
-        "tags": [
-          "OAuth Clients"
-        ],
+        "tags": ["OAuth Clients"],
         "summary": "Get OAuth client by id",
         "description": "This Permission is required: igrp.client.view",
         "operationId": "findById_1",
@@ -724,9 +688,7 @@
         }
       },
       "put": {
-        "tags": [
-          "OAuth Clients"
-        ],
+        "tags": ["OAuth Clients"],
         "summary": "Update OAuth client",
         "description": "This Permission is required: igrp.client.update",
         "operationId": "update_1",
@@ -765,9 +727,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "OAuth Clients"
-        ],
+        "tags": ["OAuth Clients"],
         "summary": "Delete OAuth client",
         "description": "This Permission is required: igrp.client.delete",
         "operationId": "delete_1",
@@ -797,9 +757,7 @@
     },
     "/api/applications/{code}": {
       "put": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Update application",
         "description": "This Permission is required: igrp.applications.update",
         "operationId": "updateApplication",
@@ -837,9 +795,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Delete application",
         "description": "This Permission is required: igrp.applications.delete",
         "operationId": "deleteApplication",
@@ -869,9 +825,7 @@
     },
     "/api/applications/{applicationCode}/menus/{menuCode}": {
       "put": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Update menu",
         "description": "This Permission is required: igrp.applications.manage",
         "operationId": "updateMenu",
@@ -917,9 +871,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Delete menu",
         "description": "This Permission is required: igrp.applications.delete",
         "operationId": "deleteMenu",
@@ -957,9 +909,7 @@
     },
     "/api/users/{id}/roles/active": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get active user role",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "getActiveUserRole",
@@ -988,9 +938,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Set active user role",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "setActiveUserRole",
@@ -1031,9 +979,7 @@
     },
     "/api/users/{id}/departments/{departmentCode}/roles": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user department roles",
         "description": "This Permission is required: igrp.users.view",
         "operationId": "getUserDepartmentRoles",
@@ -1078,9 +1024,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Add roles to user",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "addRolesToUser",
@@ -1136,9 +1080,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Remove roles from user",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "removeRolesFromUser",
@@ -1190,9 +1132,7 @@
     },
     "/api/users/me/roles/active": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get active current user role",
         "description": "Get active current user role",
         "operationId": "getActiveCurrentUserRole",
@@ -1211,9 +1151,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Set active current user role",
         "description": "Set active current user role",
         "operationId": "setActiveCurrentUserRole",
@@ -1244,9 +1182,7 @@
     },
     "/api/users/me/applications/recent/{applicationCode}": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Register access history",
         "description": "Register access history",
         "operationId": "registerAccessHistory",
@@ -1276,9 +1212,7 @@
     },
     "/api/users/me/applications/favorites/{applicationCode}": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Add favorite application",
         "description": "Add favorite application",
         "operationId": "addFavoriteApplication",
@@ -1306,9 +1240,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Remove favorite application",
         "description": "Remove favorite application",
         "operationId": "removeFavoriteApplication",
@@ -1338,9 +1270,7 @@
     },
     "/api/users/invite": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user invitations",
         "description": "This Permission is required: igrp.users.manage",
         "operationId": "getUserInvitations",
@@ -1369,9 +1299,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Invite user",
         "description": "This Permission is required: igrp.users.create",
         "operationId": "inviteUser",
@@ -1402,9 +1330,7 @@
     },
     "/api/users/invite/validate-otp": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Validate Invitation OTP",
         "description": "Validate OTP code",
         "operationId": "validateInvitationOtp",
@@ -1435,9 +1361,7 @@
     },
     "/api/users/invite/validate-email": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Validate Invitation Email",
         "description": "Validate email and send OTP",
         "operationId": "validateInvitationEmail",
@@ -1468,9 +1392,7 @@
     },
     "/api/users/invite/response": {
       "post": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Respond user invitation",
         "description": "Respond user invitation",
         "operationId": "respondUserInvitation",
@@ -1511,9 +1433,7 @@
     },
     "/api/session/rotate": {
       "post": {
-        "tags": [
-          "Session Management"
-        ],
+        "tags": ["Session Management"],
         "summary": "Rotate session",
         "description": "Closes the current session and creates a new one (session fixation protection)",
         "operationId": "rotateSession",
@@ -1543,9 +1463,7 @@
     },
     "/api/session/refresh": {
       "post": {
-        "tags": [
-          "Session Management"
-        ],
+        "tags": ["Session Management"],
         "summary": "Refresh session",
         "description": "Extends the expiration time of the current active session",
         "operationId": "refreshSession",
@@ -1584,9 +1502,7 @@
     },
     "/api/service-accounts": {
       "get": {
-        "tags": [
-          "Service Accounts"
-        ],
+        "tags": ["Service Accounts"],
         "summary": "List service accounts",
         "description": "This Permission is required: igrp.client.list",
         "operationId": "findAll",
@@ -1607,9 +1523,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Service Accounts"
-        ],
+        "tags": ["Service Accounts"],
         "summary": "Create service account",
         "description": "A service account is 1:1 with its OAuth client. Roles and direct permissions are NOT department-scoped: any role or permission in the system may be granted. This Permission is required: igrp.client.create",
         "operationId": "create",
@@ -1648,9 +1562,7 @@
     },
     "/api/m2m/users": {
       "post": {
-        "tags": [
-          "M2m"
-        ],
+        "tags": ["M2m"],
         "summary": "Get users for business",
         "description": "Get users for business",
         "operationId": "getUsersForBusiness",
@@ -1742,9 +1654,7 @@
     },
     "/api/m2m/sync/resources": {
       "post": {
-        "tags": [
-          "M2m"
-        ],
+        "tags": ["M2m"],
         "summary": "Sync resources",
         "description": "Sync resources",
         "operationId": "syncResources",
@@ -1774,9 +1684,7 @@
     },
     "/api/m2m/sync/permissions": {
       "post": {
-        "tags": [
-          "M2m"
-        ],
+        "tags": ["M2m"],
         "summary": "Sync permissions",
         "description": "Sync permissions",
         "operationId": "syncPermissions",
@@ -1809,9 +1717,7 @@
     },
     "/api/m2m/sync/applications": {
       "post": {
-        "tags": [
-          "M2m"
-        ],
+        "tags": ["M2m"],
         "summary": "Sync applications",
         "description": "Sync applications",
         "operationId": "syncApplications",
@@ -1841,9 +1747,7 @@
     },
     "/api/m2m/sync/applications/{code}/menus": {
       "post": {
-        "tags": [
-          "M2m"
-        ],
+        "tags": ["M2m"],
         "summary": "Sync application menus",
         "description": "Sync application menus",
         "operationId": "syncApplicationMenus",
@@ -1895,9 +1799,7 @@
     },
     "/api/m2m/roles": {
       "post": {
-        "tags": [
-          "M2m"
-        ],
+        "tags": ["M2m"],
         "summary": "Get roles for business",
         "description": "Get roles for business",
         "operationId": "getRolesForBusiness",
@@ -1957,9 +1859,7 @@
     },
     "/api/m2m/departments": {
       "post": {
-        "tags": [
-          "M2m"
-        ],
+        "tags": ["M2m"],
         "summary": "Get department for business",
         "description": "Get department for business",
         "operationId": "getDepartmentForBusiness",
@@ -2019,9 +1919,7 @@
     },
     "/api/global-configuration": {
       "get": {
-        "tags": [
-          "GlobalConfiguration"
-        ],
+        "tags": ["GlobalConfiguration"],
         "summary": "Get global configuration",
         "description": "Get global configuration",
         "operationId": "getGlobalConfiguration",
@@ -2050,9 +1948,7 @@
         }
       },
       "post": {
-        "tags": [
-          "GlobalConfiguration"
-        ],
+        "tags": ["GlobalConfiguration"],
         "summary": "Set global configuration",
         "description": "This Permission is required: igrp.applications.customize",
         "operationId": "setGlobalConfiguration",
@@ -2083,9 +1979,7 @@
     },
     "/api/files/public": {
       "post": {
-        "tags": [
-          "Files"
-        ],
+        "tags": ["Files"],
         "summary": "Upload public file",
         "description": "Any of these Permissions is required: [igrp.users.update,igrp.applications.update]",
         "operationId": "uploadPublicFile",
@@ -2110,9 +2004,7 @@
                     "format": "binary"
                   }
                 },
-                "required": [
-                  "file"
-                ]
+                "required": ["file"]
               }
             }
           }
@@ -2133,9 +2025,7 @@
     },
     "/api/files/private": {
       "post": {
-        "tags": [
-          "Files"
-        ],
+        "tags": ["Files"],
         "summary": "Upload private file",
         "description": "Any of these Permissions is required: [igrp.users.update,igrp.applications.update]",
         "operationId": "uploadPrivateFile",
@@ -2160,9 +2050,7 @@
                     "format": "binary"
                   }
                 },
-                "required": [
-                  "file"
-                ]
+                "required": ["file"]
               }
             }
           }
@@ -2183,9 +2071,7 @@
     },
     "/api/departments": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get departments",
         "description": "This Permission is required: igrp.departments.list",
         "operationId": "getDepartments",
@@ -2237,9 +2123,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Post department",
         "description": "This Permission is required: igrp.departments.create",
         "operationId": "postDepartment",
@@ -2270,9 +2154,7 @@
     },
     "/api/departments/{departmentCode}/roles/{roleCode}/permissions": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get permissions by role id",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getPermissionsByRoleId",
@@ -2309,9 +2191,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Add permissions",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "addPermissions",
@@ -2361,9 +2241,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Remove permissions",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "removePermissions",
@@ -2415,9 +2293,7 @@
     },
     "/api/departments/{departmentCode}/resources": {
       "post": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Add resources to department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "addResourcesToDepartment",
@@ -2458,9 +2334,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Remove resources from department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "removeResourcesFromDepartment",
@@ -2503,9 +2377,7 @@
     },
     "/api/departments/{departmentCode}/applications/{applicationCode}/menus": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get department menus",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getDepartmentMenus",
@@ -2550,9 +2422,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Add menus to department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "addMenusToDepartment",
@@ -2601,9 +2471,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Remove menus from department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "removeMenusFromDepartment",
@@ -2654,9 +2522,7 @@
     },
     "/api/departments/{code}/roles": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get roles",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getRoles",
@@ -2693,9 +2559,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Create role",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "createRole",
@@ -2736,9 +2600,7 @@
     },
     "/api/departments/{code}/permissions": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get department permissions",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getDepartmentPermissions",
@@ -2783,9 +2645,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Add permissions to department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "addPermissionsToDepartment",
@@ -2826,9 +2686,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Remove permissions from department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "removePermissionsFromDepartment",
@@ -2871,9 +2729,7 @@
     },
     "/api/departments/{code}/applications": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get department applications",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getDepartmentApplications",
@@ -2910,9 +2766,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Add applications to department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "addApplicationsToDepartment",
@@ -2953,9 +2807,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Remove applications from department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "removeApplicationsFromDepartment",
@@ -2998,9 +2850,7 @@
     },
     "/api/clients": {
       "get": {
-        "tags": [
-          "OAuth Clients"
-        ],
+        "tags": ["OAuth Clients"],
         "summary": "List OAuth clients",
         "description": "This Permission is required: igrp.client.list",
         "operationId": "findAll_1",
@@ -3021,9 +2871,7 @@
         }
       },
       "post": {
-        "tags": [
-          "OAuth Clients"
-        ],
+        "tags": ["OAuth Clients"],
         "summary": "Create OAuth client",
         "description": "Returns the generated raw client secret in the response body; it will not be available again. This Permission is required: igrp.client.create",
         "operationId": "create_1",
@@ -3053,9 +2901,7 @@
     },
     "/api/clients/{id}/rotate-secret": {
       "post": {
-        "tags": [
-          "OAuth Clients"
-        ],
+        "tags": ["OAuth Clients"],
         "summary": "Rotate the client secret",
         "description": "Generates a new secret for an existing client and returns it in the response body; it will not be available again. The id and clientId are preserved, so only the secret has to be redistributed to consumers. The previous secret stops working immediately. Access tokens already issued remain valid until they expire — deactivate the client as well if a leak requires cutting those off. This Permission is required: igrp.client.update",
         "operationId": "rotateSecret",
@@ -3086,9 +2932,7 @@
     },
     "/api/authorize/check": {
       "post": {
-        "tags": [
-          "Authorization"
-        ],
+        "tags": ["Authorization"],
         "summary": "Check authorization",
         "description": "Check authorization",
         "operationId": "checkAuthorization",
@@ -3119,9 +2963,7 @@
     },
     "/api/authorize/batch-check": {
       "post": {
-        "tags": [
-          "Authorization"
-        ],
+        "tags": ["Authorization"],
         "summary": "Batch check authorization",
         "description": "Batch check authorization",
         "operationId": "batchCheckAuthorization",
@@ -3155,9 +2997,7 @@
     },
     "/api/auth/reports/settings/archive": {
       "post": {
-        "tags": [
-          "audit-report-archive-controller"
-        ],
+        "tags": ["audit-report-archive-controller"],
         "operationId": "archiveSettingsReport",
         "parameters": [
           {
@@ -3166,11 +3006,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "PDF",
-                "XLSX",
-                "CSV"
-              ]
+              "enum": ["PDF", "XLSX", "CSV"]
             }
           },
           {
@@ -3248,9 +3084,7 @@
     },
     "/api/auth/reports/audit/archive": {
       "post": {
-        "tags": [
-          "audit-report-archive-controller"
-        ],
+        "tags": ["audit-report-archive-controller"],
         "operationId": "archiveAuditReport",
         "parameters": [
           {
@@ -3259,11 +3093,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "PDF",
-                "XLSX",
-                "CSV"
-              ]
+              "enum": ["PDF", "XLSX", "CSV"]
             }
           },
           {
@@ -3349,9 +3179,7 @@
     },
     "/api/auth/reports/access/archive": {
       "post": {
-        "tags": [
-          "audit-report-archive-controller"
-        ],
+        "tags": ["audit-report-archive-controller"],
         "operationId": "archiveAccessReport",
         "parameters": [
           {
@@ -3360,11 +3188,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "enum": [
-                "PDF",
-                "XLSX",
-                "CSV"
-              ]
+              "enum": ["PDF", "XLSX", "CSV"]
             }
           },
           {
@@ -3442,9 +3266,7 @@
     },
     "/api/auth/audit/validate": {
       "post": {
-        "tags": [
-          "auth-audit-controller"
-        ],
+        "tags": ["auth-audit-controller"],
         "operationId": "validate",
         "responses": {
           "200": {
@@ -3463,9 +3285,7 @@
     },
     "/api/applications": {
       "get": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Get applications",
         "description": "This Permission is required: igrp.applications.list",
         "operationId": "getApplications",
@@ -3525,9 +3345,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Create application",
         "description": "This Permission is required: igrp.applications.create",
         "operationId": "createApplication",
@@ -3557,9 +3375,7 @@
     },
     "/api/applications/{code}/resources": {
       "post": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Link resource to application",
         "description": "This Permission is required: igrp.applications.manage",
         "operationId": "linkResourceToApplication",
@@ -3600,9 +3416,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Unlink resource from application",
         "description": "This Permission is required: igrp.applications.manage",
         "operationId": "unlinkResourceFromApplication",
@@ -3645,9 +3459,7 @@
     },
     "/api/applications/{code}/custom-fields": {
       "get": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Get application custom fields",
         "description": "This Permission is required: igrp.applications.view",
         "operationId": "getApplicationCustomFields",
@@ -3675,9 +3487,7 @@
         }
       },
       "post": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Add application custom fields",
         "description": "This Permission is required: igrp.applications.update",
         "operationId": "addApplicationCustomFields",
@@ -3716,9 +3526,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Remove application custom fields",
         "description": "This Permission is required: igrp.applications.update",
         "operationId": "removeApplicationCustomFields",
@@ -3761,9 +3569,7 @@
     },
     "/api/applications/{applicationCode}/menus": {
       "post": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Create menu",
         "description": "This Permission is required: igrp.applications.manage",
         "operationId": "createMenu",
@@ -3803,9 +3609,7 @@
     },
     "/api/applications/{applicationCode}/menus/{menuCode}/roles": {
       "post": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Add roles to menu",
         "description": "This Permission is required: igrp.applications.manage",
         "operationId": "addRolesToMenu",
@@ -3863,9 +3667,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Remove roles from menu",
         "description": "This Permission is required: igrp.applications.manage",
         "operationId": "removeRolesFromMenu",
@@ -3925,9 +3727,7 @@
     },
     "/api/admin/users/{userExternalId}/sessions/{sessionId}/kill": {
       "post": {
-        "tags": [
-          "Admin User Session Management"
-        ],
+        "tags": ["Admin User Session Management"],
         "summary": "Kill a specific session belonging to a user",
         "description": "Terminates the given session id only when it belongs to the user identified by externalId. Returns 404 if the user does not exist, the session does not exist, or the session belongs to a different user.",
         "operationId": "killUserSession",
@@ -3974,9 +3774,7 @@
     },
     "/api/admin/users/{userExternalId}/logout-all": {
       "post": {
-        "tags": [
-          "Admin User Session Management"
-        ],
+        "tags": ["Admin User Session Management"],
         "summary": "Kill every active session for a user",
         "description": "Bulk-revokes every ACTIVE session bound to the given user external id.",
         "operationId": "logoutAll",
@@ -4013,9 +3811,7 @@
     },
     "/api/admin/users/{userExternalId}/force-reauth": {
       "post": {
-        "tags": [
-          "Admin User Session Management"
-        ],
+        "tags": ["Admin User Session Management"],
         "summary": "Force re-authentication for a user",
         "description": "Phase F1 — bumps the user-wide token validity floor (tokens_not_valid_before) and revokes every active session. Every JWT issued before this instant — including tokens already in flight — is rejected by the SessionEnforcementFilter. Use after a password reset or any administrative \"log this user out everywhere\" action.",
         "operationId": "forceReauth",
@@ -4052,9 +3848,7 @@
     },
     "/api/admin/sessions/{sessionId}/kill": {
       "post": {
-        "tags": [
-          "Admin Session Management"
-        ],
+        "tags": ["Admin Session Management"],
         "summary": "Kill session",
         "description": "Terminates a specific session by ID",
         "operationId": "killSession",
@@ -4092,9 +3886,7 @@
     },
     "/api/admin/sessions/roles/{roleCode}/kill": {
       "post": {
-        "tags": [
-          "Admin Session Management"
-        ],
+        "tags": ["Admin Session Management"],
         "summary": "Kill sessions by role",
         "description": "Terminates all active sessions for users with a specific role",
         "operationId": "killSessionsByRole",
@@ -4140,9 +3932,7 @@
     },
     "/api/admin/sessions/departments/{departmentCode}/kill": {
       "post": {
-        "tags": [
-          "Admin Session Management"
-        ],
+        "tags": ["Admin Session Management"],
         "summary": "Kill sessions by department",
         "description": "Terminates all active sessions for users in a specific department",
         "operationId": "killSessionsByDepartment",
@@ -4176,9 +3966,7 @@
     },
     "/api/users": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get users",
         "description": "This Permission is required: igrp.users.list",
         "operationId": "getUsers",
@@ -4241,9 +4029,7 @@
     },
     "/api/users/{id}/roles": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user roles",
         "description": "This Permission is required: igrp.users.view",
         "operationId": "getUserRoles",
@@ -4274,9 +4060,7 @@
     },
     "/api/users/{id}/permissions": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user permissions",
         "description": "This Permission is required: igrp.users.view",
         "operationId": "getUserPermissions",
@@ -4315,9 +4099,7 @@
     },
     "/api/users/{id}/departments": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user departments",
         "description": "This Permission is required: igrp.users.view",
         "operationId": "getUserDepartments",
@@ -4356,9 +4138,7 @@
     },
     "/api/users/{id}/applications": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user applications",
         "description": "This Permission is required: igrp.users.view",
         "operationId": "getUserApplications",
@@ -4405,9 +4185,7 @@
     },
     "/api/users/{id}/applications/{applicationCode}/menus": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user application menus",
         "description": "This Permission is required: igrp.users.view",
         "operationId": "getUserApplicationMenus",
@@ -4454,9 +4232,7 @@
     },
     "/api/users/me/roles": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get current user roles",
         "description": "Get current user roles",
         "operationId": "getCurrentUserRoles",
@@ -4487,9 +4263,7 @@
     },
     "/api/users/me/permissions": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get current user permissions",
         "description": "Get current user permissions",
         "operationId": "getCurrentUserPermissions",
@@ -4520,9 +4294,7 @@
     },
     "/api/users/me/departments": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get current user departments",
         "description": "Get current user departments",
         "operationId": "getCurrentUserDepartments",
@@ -4553,9 +4325,7 @@
     },
     "/api/users/me/departments/{departmentCode}/roles": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get current user department roles",
         "description": "Get current user department roles",
         "operationId": "getCurrentUserDepartmentRoles",
@@ -4594,9 +4364,7 @@
     },
     "/api/users/me/applications": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get current user applications",
         "description": "Get current user applications",
         "operationId": "getCurrentUserApplications",
@@ -4635,9 +4403,7 @@
     },
     "/api/users/me/applications/{applicationCode}/menus": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get current user application menus",
         "description": "Get current user application menus",
         "operationId": "getCurrentUserApplicationMenus",
@@ -4676,9 +4442,7 @@
     },
     "/api/users/me/applications/recent": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get recent applications",
         "description": "Get recent applications",
         "operationId": "getRecentApplications",
@@ -4726,9 +4490,7 @@
     },
     "/api/users/me/applications/favorites": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get favorite applications",
         "description": "Get favorite applications",
         "operationId": "getFavoriteApplications",
@@ -4767,9 +4529,7 @@
     },
     "/api/users/invite/by-token/{token}": {
       "get": {
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "summary": "Get user invitation by token",
         "description": "Get user invitation by token",
         "operationId": "getUserInvitationByToken",
@@ -4800,9 +4560,7 @@
     },
     "/api/session": {
       "get": {
-        "tags": [
-          "Session Management"
-        ],
+        "tags": ["Session Management"],
         "summary": "Get current session",
         "description": "Retrieves the current active session for the authenticated user",
         "operationId": "getCurrentSession",
@@ -4832,9 +4590,7 @@
     },
     "/api/session/check": {
       "get": {
-        "tags": [
-          "Session Management"
-        ],
+        "tags": ["Session Management"],
         "summary": "Check session validity",
         "description": "Returns the combined JWT + server-side session state for the authenticated caller. This endpoint is exempt from the SessionEnforcementFilter so a revoked-session JWT can still receive valid=false with a reason instead of an opaque 401.",
         "operationId": "checkSession",
@@ -4854,9 +4610,7 @@
     },
     "/api/roles/{id}": {
       "get": {
-        "tags": [
-          "Roles"
-        ],
+        "tags": ["Roles"],
         "summary": "Get role by id",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getRoleById",
@@ -4896,9 +4650,7 @@
     },
     "/api/roles/by-code/{code}": {
       "get": {
-        "tags": [
-          "Roles"
-        ],
+        "tags": ["Roles"],
         "summary": "Get roles by name",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getRolesByName",
@@ -4937,9 +4689,7 @@
     },
     "/api/files/url": {
       "get": {
-        "tags": [
-          "Files"
-        ],
+        "tags": ["Files"],
         "summary": "Get private file url",
         "description": "Any of these Permissions is required: [igrp.users.view,igrp.applications.view]",
         "operationId": "getPrivateFileUrl",
@@ -4970,9 +4720,7 @@
     },
     "/api/departments/{id}": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get department by id",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getDepartmentById",
@@ -5004,9 +4752,7 @@
     },
     "/api/departments/{departmentCode}/roles/{roleCode}/permissions/available": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get available permissions for roles",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "getAvailablePermissionsForRoles",
@@ -5045,9 +4791,7 @@
     },
     "/api/departments/{departmentCode}/roles/{roleCode}/parents": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get role parents",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getRoleParents",
@@ -5095,9 +4839,7 @@
     },
     "/api/departments/{departmentCode}/roles/{roleCode}/children": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get role children",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getRoleChildren",
@@ -5145,9 +4887,7 @@
     },
     "/api/departments/{departmentCode}/permissions/available": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get available permissions for department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "getAvailablePermissionsForDepartment",
@@ -5186,9 +4926,7 @@
     },
     "/api/departments/{departmentCode}/applications/{applicationCode}/menus/available": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get menus available for department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "getMenusAvailableForDepartment",
@@ -5227,9 +4965,7 @@
     },
     "/api/departments/{code}/resources": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get department resources",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getDepartmentResources",
@@ -5268,9 +5004,7 @@
     },
     "/api/departments/{code}/resources/available": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get available resources for department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "getAvailableResourcesForDepartment",
@@ -5301,9 +5035,7 @@
     },
     "/api/departments/{code}/applications/available": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get available applications for department",
         "description": "This Permission is required: igrp.departments.manage",
         "operationId": "getAvailableApplicationsForDepartment",
@@ -5334,9 +5066,7 @@
     },
     "/api/departments/by-code/{code}": {
       "get": {
-        "tags": [
-          "Department"
-        ],
+        "tags": ["Department"],
         "summary": "Get department by code",
         "description": "This Permission is required: igrp.departments.view",
         "operationId": "getDepartmentByCode",
@@ -5367,9 +5097,7 @@
     },
     "/api/auth/reports/settings": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "settingsReport",
         "parameters": [
           {
@@ -5455,9 +5183,7 @@
     },
     "/api/auth/reports/settings.xlsx": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "settingsReportXlsx",
         "parameters": [
           {
@@ -5535,9 +5261,7 @@
     },
     "/api/auth/reports/settings.pdf": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "settingsReportPdf",
         "parameters": [
           {
@@ -5615,9 +5339,7 @@
     },
     "/api/auth/reports/settings.csv": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "settingsReportCsv",
         "parameters": [
           {
@@ -5695,9 +5417,7 @@
     },
     "/api/auth/reports/audit": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "auditReport",
         "parameters": [
           {
@@ -5791,9 +5511,7 @@
     },
     "/api/auth/reports/audit.xlsx": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "auditReportXlsx",
         "parameters": [
           {
@@ -5879,9 +5597,7 @@
     },
     "/api/auth/reports/audit.pdf": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "auditReportPdf",
         "parameters": [
           {
@@ -5967,9 +5683,7 @@
     },
     "/api/auth/reports/audit.csv": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "auditReportCsv",
         "parameters": [
           {
@@ -6055,9 +5769,7 @@
     },
     "/api/auth/reports/archives": {
       "get": {
-        "tags": [
-          "audit-report-archive-controller"
-        ],
+        "tags": ["audit-report-archive-controller"],
         "operationId": "listArchives",
         "parameters": [
           {
@@ -6109,9 +5821,7 @@
     },
     "/api/auth/reports/access": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "accessReport",
         "parameters": [
           {
@@ -6197,9 +5907,7 @@
     },
     "/api/auth/reports/access.xlsx": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "accessReportXlsx",
         "parameters": [
           {
@@ -6277,9 +5985,7 @@
     },
     "/api/auth/reports/access.pdf": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "accessReportPdf",
         "parameters": [
           {
@@ -6357,9 +6063,7 @@
     },
     "/api/auth/reports/access.csv": {
       "get": {
-        "tags": [
-          "audit-reports-controller"
-        ],
+        "tags": ["audit-reports-controller"],
         "operationId": "accessReportCsv",
         "parameters": [
           {
@@ -6437,9 +6141,7 @@
     },
     "/api/auth/audit": {
       "get": {
-        "tags": [
-          "auth-audit-controller"
-        ],
+        "tags": ["auth-audit-controller"],
         "operationId": "list",
         "parameters": [
           {
@@ -6525,9 +6227,7 @@
     },
     "/api/applications/{id}": {
       "get": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Get application by id",
         "description": "This Permission is required: igrp.applications.view",
         "operationId": "getApplicationById",
@@ -6558,9 +6258,7 @@
     },
     "/api/applications/{code}/menus": {
       "get": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Get application menus",
         "description": "This Permission is required: igrp.applications.view",
         "operationId": "getApplicationMenus",
@@ -6591,9 +6289,7 @@
     },
     "/api/applications/by-user/{uid}": {
       "get": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Get applications by user",
         "description": "Get applications by user",
         "operationId": "getApplicationsByUser",
@@ -6623,9 +6319,7 @@
     },
     "/api/applications/by-code/{code}": {
       "get": {
-        "tags": [
-          "Application"
-        ],
+        "tags": ["Application"],
         "summary": "Get application by code",
         "description": "This Permission is required: igrp.applications.view",
         "operationId": "getApplicationByCode",
@@ -6656,9 +6350,7 @@
     },
     "/api/admin/sessions": {
       "get": {
-        "tags": [
-          "Admin Session Management"
-        ],
+        "tags": ["Admin Session Management"],
         "summary": "List sessions",
         "description": "Lists sessions with optional status filtering and pagination",
         "operationId": "listSessions",
@@ -6670,12 +6362,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "ACTIVE",
-                "CLOSED",
-                "EXPIRED",
-                "REVOKED"
-              ]
+              "enum": ["ACTIVE", "CLOSED", "EXPIRED", "REVOKED"]
             }
           },
           {
@@ -6717,9 +6404,7 @@
     },
     "/api/admin/sessions/users/{userId}": {
       "get": {
-        "tags": [
-          "Admin Session Management"
-        ],
+        "tags": ["Admin Session Management"],
         "summary": "Get user session",
         "description": "Retrieves the current active session for a specific user",
         "operationId": "getUserSession",
@@ -6760,9 +6445,7 @@
     },
     "/api/admin/sessions/statistics": {
       "get": {
-        "tags": [
-          "Admin Session Management"
-        ],
+        "tags": ["Admin Session Management"],
         "summary": "Get session statistics",
         "description": "Retrieves statistics about current sessions and invalidation operations",
         "operationId": "getSessionStatistics",
@@ -6782,9 +6465,7 @@
     },
     "/api/admin/sessions/roles/{roleCode}": {
       "get": {
-        "tags": [
-          "Admin Session Management"
-        ],
+        "tags": ["Admin Session Management"],
         "summary": "List sessions by role",
         "description": "Retrieves sessions for users belonging to a specific role/department",
         "operationId": "listSessionsByRole",
@@ -6814,12 +6495,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "ACTIVE",
-                "CLOSED",
-                "EXPIRED",
-                "REVOKED"
-              ]
+              "enum": ["ACTIVE", "CLOSED", "EXPIRED", "REVOKED"]
             }
           },
           {
@@ -6871,9 +6547,7 @@
     },
     "/api/auth/audit/purge": {
       "delete": {
-        "tags": [
-          "auth-audit-controller"
-        ],
+        "tags": ["auth-audit-controller"],
         "operationId": "purge",
         "responses": {
           "200": {
@@ -6912,12 +6586,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "TEMPORARY",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "TEMPORARY", "INACTIVE", "DELETED"]
           },
           "picture": {
             "type": "string"
@@ -6942,9 +6611,7 @@
             "additionalProperties": {}
           }
         },
-        "required": [
-          "email"
-        ]
+        "required": ["email"]
       },
       "UserMetadataDTO": {
         "type": "object",
@@ -6966,9 +6633,7 @@
             "additionalProperties": {}
           }
         },
-        "required": [
-          "metadata"
-        ]
+        "required": ["metadata"]
       },
       "CodeDescriptionDTO": {
         "type": "object",
@@ -6996,12 +6661,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "PENDING",
-              "ACCEPTED",
-              "REJECTED",
-              "CANCELED"
-            ]
+            "enum": ["PENDING", "ACCEPTED", "REJECTED", "CANCELED"]
           },
           "expiry": {
             "type": "string",
@@ -7072,10 +6732,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "name",
-          "oauthClientId"
-        ]
+        "required": ["name", "oauthClientId"]
       },
       "ServiceAccountDTO": {
         "type": "object",
@@ -7220,12 +6877,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "TEMPORARY",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "TEMPORARY", "INACTIVE", "DELETED"]
           },
           "icon": {
             "type": "string"
@@ -7241,10 +6893,7 @@
             }
           }
         },
-        "required": [
-          "code",
-          "name"
-        ]
+        "required": ["code", "name"]
       },
       "DepartmentDTO": {
         "type": "object",
@@ -7267,11 +6916,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "INACTIVE", "DELETED"]
           },
           "icon": {
             "type": "string"
@@ -7280,10 +6925,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "name"
-        ]
+        "required": ["code", "name"]
       },
       "OAuthClientRequestDTO": {
         "type": "object",
@@ -7355,12 +6997,7 @@
             "uniqueItems": true
           }
         },
-        "required": [
-          "clientId",
-          "clientName",
-          "grantTypes",
-          "scopes"
-        ]
+        "required": ["clientId", "clientName", "grantTypes", "scopes"]
       },
       "OAuthClientDTO": {
         "type": "object",
@@ -7468,20 +7105,11 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "TEMPORARY",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "TEMPORARY", "INACTIVE", "DELETED"]
           },
           "type": {
             "type": "string",
-            "enum": [
-              "EXTERNAL",
-              "INTERNAL",
-              "SYSTEM"
-            ]
+            "enum": ["EXTERNAL", "INTERNAL", "SYSTEM"]
           },
           "owner": {
             "type": "string",
@@ -7525,11 +7153,7 @@
             }
           }
         },
-        "required": [
-          "code",
-          "name",
-          "type"
-        ]
+        "required": ["code", "name", "type"]
       },
       "MenuEntryDTO": {
         "type": "object",
@@ -7567,12 +7191,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "TEMPORARY",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "TEMPORARY", "INACTIVE", "DELETED"]
           },
           "target": {
             "type": "string",
@@ -7612,9 +7231,7 @@
             }
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "RoleDepartmentDTO": {
         "type": "object",
@@ -7642,9 +7259,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "roles"
-        ]
+        "required": ["roles"]
       },
       "InviteUserDTO": {
         "type": "object",
@@ -7664,9 +7279,7 @@
             }
           }
         },
-        "required": [
-          "email"
-        ]
+        "required": ["email"]
       },
       "OtpResponseDTO": {
         "type": "object",
@@ -7691,10 +7304,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "otpCode",
-          "token"
-        ]
+        "required": ["otpCode", "token"]
       },
       "ValidateInvitationEmailCommand": {
         "type": "object",
@@ -7708,10 +7318,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "email",
-          "token"
-        ]
+        "required": ["email", "token"]
       },
       "UserInvitationResponseDTO": {
         "type": "object",
@@ -7723,9 +7330,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "accept"
-        ]
+        "required": ["accept"]
       },
       "SessionInitRequestDTO": {
         "type": "object",
@@ -7756,12 +7361,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "CLOSED",
-              "EXPIRED",
-              "REVOKED"
-            ]
+            "enum": ["ACTIVE", "CLOSED", "EXPIRED", "REVOKED"]
           },
           "startedAt": {
             "type": "string",
@@ -7851,12 +7451,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "TEMPORARY",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "TEMPORARY", "INACTIVE", "DELETED"]
           },
           "picture": {
             "type": "string"
@@ -7884,9 +7479,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "email"
-        ]
+        "required": ["email"]
       },
       "ResourceDTO": {
         "type": "object",
@@ -7905,20 +7498,11 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "API",
-              "UI",
-              "PROCESS"
-            ]
+            "enum": ["API", "UI", "PROCESS"]
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "TEMPORARY",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "TEMPORARY", "INACTIVE", "DELETED"]
           },
           "applications": {
             "type": "array",
@@ -7956,10 +7540,7 @@
             }
           }
         },
-        "required": [
-          "name",
-          "type"
-        ]
+        "required": ["name", "type"]
       },
       "ResourceItemDTO": {
         "type": "object",
@@ -8004,10 +7585,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "name",
-          "resourceName"
-        ]
+        "required": ["name", "resourceName"]
       },
       "PermissionDTO": {
         "type": "object",
@@ -8029,12 +7607,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "ACTIVE",
-              "TEMPORARY",
-              "INACTIVE",
-              "DELETED"
-            ]
+            "enum": ["ACTIVE", "TEMPORARY", "INACTIVE", "DELETED"]
           },
           "departments": {
             "type": "array",
@@ -8043,9 +7616,7 @@
             }
           }
         },
-        "required": [
-          "name"
-        ]
+        "required": ["name"]
       },
       "GlobalConfigurationDTO": {
         "type": "object",
@@ -8056,16 +7627,10 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "CLUSTER",
-              "ORGANIZATION"
-            ]
+            "enum": ["CLUSTER", "ORGANIZATION"]
           }
         },
-        "required": [
-          "config",
-          "type"
-        ]
+        "required": ["config", "type"]
       },
       "PermissionCheckResponseDTO": {
         "type": "object",
@@ -8110,19 +7675,11 @@
           },
           "reportType": {
             "type": "string",
-            "enum": [
-              "AUDIT",
-              "ACCESS",
-              "SETTINGS"
-            ]
+            "enum": ["AUDIT", "ACCESS", "SETTINGS"]
           },
           "format": {
             "type": "string",
-            "enum": [
-              "PDF",
-              "XLSX",
-              "CSV"
-            ]
+            "enum": ["PDF", "XLSX", "CSV"]
           },
           "filePath": {
             "type": "string"
@@ -8175,9 +7732,7 @@
             "minLength": 0
           }
         },
-        "required": [
-          "reason"
-        ]
+        "required": ["reason"]
       },
       "SessionCheckResponseDTO": {
         "type": "object",
@@ -8363,11 +7918,7 @@
           },
           "area": {
             "type": "string",
-            "enum": [
-              "APPLICATIONS",
-              "USERS",
-              "ACCESS"
-            ]
+            "enum": ["APPLICATIONS", "USERS", "ACCESS"]
           },
           "entityType": {
             "type": "string",

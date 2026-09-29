@@ -92,15 +92,15 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
 
   const sortedSubMenus = subMenus
     ? [...subMenus].sort(
-      (
-        a: IGRPMenuItemArgs & { sortOrder?: number },
-        b: IGRPMenuItemArgs & { sortOrder?: number },
-      ) => {
-        const aOrder = a.position ?? a.sortOrder ?? 0;
-        const bOrder = b.position ?? b.sortOrder ?? 0;
-        return aOrder - bOrder;
-      },
-    )
+        (
+          a: IGRPMenuItemArgs & { sortOrder?: number },
+          b: IGRPMenuItemArgs & { sortOrder?: number },
+        ) => {
+          const aOrder = a.position ?? a.sortOrder ?? 0;
+          const bOrder = b.position ?? b.sortOrder ?? 0;
+          return aOrder - bOrder;
+        },
+      )
     : [];
 
   return (
@@ -227,13 +227,9 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
                       <DropdownMenuItem
                         onClick={() => onAddInternalPage?.(menu)}
                       >
-                        <IGRPIcon
-                          iconName="FileText"
-                          className="size-4 mr-2"
-                        />
+                        <IGRPIcon iconName="FileText" className="size-4 mr-2" />
                         Adicionar Página
                       </DropdownMenuItem>
-
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

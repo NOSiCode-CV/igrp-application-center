@@ -2,7 +2,7 @@
 
 import { type KeyboardEvent, useState } from "react";
 
-import {cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 interface ChipInputProps {
   /** Optional because the DS `FormControl` (a Radix `Slot`) injects it at runtime. */

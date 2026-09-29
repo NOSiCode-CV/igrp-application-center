@@ -2,14 +2,13 @@
 
 import type { ReactNode } from "react";
 
-import { 
-  Card, 
-  CardContent, 
+import {
+  Card,
+  CardContent,
   cn,
-  IGRPIcon 
+  IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
-
 
 export type InviteStepIndex = 0 | 1 | 2;
 
@@ -20,7 +19,7 @@ interface InviteCardShellProps {
 
 export function InviteCardShell({ children, step }: InviteCardShellProps) {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">      
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 -z-10 text-foreground/5.5"
@@ -62,7 +61,6 @@ export function InviteCardShell({ children, step }: InviteCardShellProps) {
     </main>
   );
 }
-
 
 const STEP_KEYS = ["email", "code", "confirm"] as const;
 

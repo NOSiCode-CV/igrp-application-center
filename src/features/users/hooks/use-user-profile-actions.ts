@@ -42,7 +42,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users");
   const queryClient = useQueryClient();
-  
+
   const latestUser = () =>
     queryClient.getQueryData<IGRPUserDTO>(currentUserKeys.detail()) ?? user;
 
@@ -59,7 +59,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       igrpToast,
     );
   };
-  
+
   const uploadImageField = async (
     file: File,
     field: "picture" | "signature",

@@ -32,7 +32,6 @@ export function ButtonLink({
   "aria-label": ariaLabel,
   ...props
 }: ButtonLinkProps) {
- 
   const linkAriaLabel = label ? ariaLabel : (ariaLabel ?? label);
 
   return (

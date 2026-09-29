@@ -227,7 +227,8 @@ export type UpdateApplicationFormValues = z.output<
   typeof UpdateApplicationSchema
 >;
 export type ApplicationFormValues =
-  CreateApplicationFormValues | UpdateApplicationFormValues;
+  | CreateApplicationFormValues
+  | UpdateApplicationFormValues;
 
 function toNullableString(value: unknown): string | null {
   if (value == null) return null;

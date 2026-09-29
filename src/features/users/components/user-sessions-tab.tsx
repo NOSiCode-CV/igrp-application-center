@@ -34,7 +34,7 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.sessions");
   const tc = useTranslations("common.actions");
-  
+
   const { formatDateTime } = useFormat();
 
   const [killDialogOpen, setKillDialogOpen] = useState(false);

@@ -80,41 +80,43 @@ describe("messages consistency", () => {
     expect(orphans).toEqual([]);
   });
 
-  it.each(
-    LOCALES,
-  )("%s: every value is a string that parses as ICU", (locale) => {
-    const invalid: string[] = [];
-    for (const [key, value] of FLAT[locale]) {
-      if (typeof value !== "string") {
-        invalid.push(`${key}: not a string`);
-        continue;
+  it.each(LOCALES)(
+    "%s: every value is a string that parses as ICU",
+    (locale) => {
+      const invalid: string[] = [];
+      for (const [key, value] of FLAT[locale]) {
+        if (typeof value !== "string") {
+          invalid.push(`${key}: not a string`);
+          continue;
+        }
+        try {
+          parse(value);
+        } catch (error) {
+          invalid.push(`${key}: ${(error as Error).message}`);
+        }
       }
-      try {
-        parse(value);
-      } catch (error) {
-        invalid.push(`${key}: ${(error as Error).message}`);
-      }
-    }
-    expect(invalid).toEqual([]);
-  });
+      expect(invalid).toEqual([]);
+    },
+  );
 
-  it.each(
-    OTHER_LOCALES,
-  )("%s uses the same ICU arguments as pt for every shared key", (locale) => {
-    const mismatches: string[] = [];
-    for (const [key, value] of FLAT[locale]) {
-      const base = FLAT[MODULE_DEFAULT_LOCALE].get(key);
-      if (typeof value !== "string" || typeof base !== "string") continue;
-      const got = icuArguments(value);
-      const expected = icuArguments(base);
-      if (got.join() !== expected.join()) {
-        mismatches.push(
-          `${key}: [${got.join(", ")}] ≠ pt [${expected.join(", ")}]`,
-        );
+  it.each(OTHER_LOCALES)(
+    "%s uses the same ICU arguments as pt for every shared key",
+    (locale) => {
+      const mismatches: string[] = [];
+      for (const [key, value] of FLAT[locale]) {
+        const base = FLAT[MODULE_DEFAULT_LOCALE].get(key);
+        if (typeof value !== "string" || typeof base !== "string") continue;
+        const got = icuArguments(value);
+        const expected = icuArguments(base);
+        if (got.join() !== expected.join()) {
+          mismatches.push(
+            `${key}: [${got.join(", ")}] ≠ pt [${expected.join(", ")}]`,
+          );
+        }
       }
-    }
-    expect(mismatches).toEqual([]);
-  });
+      expect(mismatches).toEqual([]);
+    },
+  );
 
   it.each(LOCALES)("%s uses nested camelCase keys", (locale) => {
     const bad = [...FLAT[locale].keys()].filter((key) =>

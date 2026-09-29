@@ -19,7 +19,12 @@ const readBasePath = () => {
   if (process.env.NEXT_PUBLIC_BASE_PATH !== undefined) {
     return process.env.NEXT_PUBLIC_BASE_PATH;
   }
-  for (const file of [".env.development.local", ".env.local", ".env.development", ".env"]) {
+  for (const file of [
+    ".env.development.local",
+    ".env.local",
+    ".env.development",
+    ".env",
+  ]) {
     const envPath = path.join(appDir, file);
     if (!existsSync(envPath)) continue;
     const value = parseEnv(readFileSync(envPath, "utf8")).NEXT_PUBLIC_BASE_PATH;
@@ -30,14 +35,20 @@ const readBasePath = () => {
 
 const basePath = readBasePath().trim().replace(/\/+$/, "");
 
-const nextBin = createRequire(path.join(appDir, "package.json")).resolve("next/dist/bin/next");
+const nextBin = createRequire(path.join(appDir, "package.json")).resolve(
+  "next/dist/bin/next",
+);
 
-const child = spawn(process.execPath, [nextBin, "dev", "--turbopack", ...process.argv.slice(2)], {
-  cwd: appDir,
-  // stdout is piped, so keep Next's colours on explicitly.
-  env: { ...process.env, FORCE_COLOR: process.env.FORCE_COLOR ?? "1" },
-  stdio: ["inherit", "pipe", "inherit"],
-});
+const child = spawn(
+  process.execPath,
+  [nextBin, "dev", "--turbopack", ...process.argv.slice(2)],
+  {
+    cwd: appDir,
+    // stdout is piped, so keep Next's colours on explicitly.
+    env: { ...process.env, FORCE_COLOR: process.env.FORCE_COLOR ?? "1" },
+    stdio: ["inherit", "pipe", "inherit"],
+  },
+);
 
 // biome-ignore lint/suspicious/noControlCharactersInRegex: strips ANSI colour codes
 const ansi = /\x1b\[[0-9;]*m/g;
@@ -62,7 +73,9 @@ child.stdout.on("data", (chunk) => {
     const match = line.replace(ansi, "").match(/-\s+Local:\s+(https?:\/\/\S+)/);
     if (match) {
       const appUrl = `${match[1].replace(/\/+$/, "")}${basePath}`;
-      process.stdout.write(`   - App:          \x1b[1m\x1b[36m${appUrl}\x1b[0m\n`);
+      process.stdout.write(
+        `   - App:          \x1b[1m\x1b[36m${appUrl}\x1b[0m\n`,
+      );
       printed = true;
     }
     newline = pending.indexOf("\n");

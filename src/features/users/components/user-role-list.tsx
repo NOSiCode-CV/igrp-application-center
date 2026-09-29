@@ -8,12 +8,20 @@ import {
   Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { IGRPUserDTO, RoleDTO } from "@igrp/platform-access-management-client-ts";
+import type {
+  IGRPUserDTO,
+  RoleDTO,
+} from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
 
-import { useAddUserRole, useGetCurrentUserRoles, useRemoveUserRole, useUserRoles } from "../use-users";
+import {
+  useAddUserRole,
+  useGetCurrentUserRoles,
+  useRemoveUserRole,
+  useUserRoles,
+} from "../use-users";
 import { UserRolesDialog } from "./user-role-dialog";
 import { AppCenterLoading } from "@/components/loading";
 
