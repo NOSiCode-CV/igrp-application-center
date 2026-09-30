@@ -42,7 +42,7 @@ const settingsConfig: { general: SettingsItem[] } = {
     },
     {
       id: "gestao-contas-servicos",
-      title: "Contas e Serviços",
+      title: "Gestão de Clientes OAuth",
       description:
         "Registe clientes OAuth e faça a gestão das contas de serviço que acedem às APIs.",
       icon: "KeyRound",
