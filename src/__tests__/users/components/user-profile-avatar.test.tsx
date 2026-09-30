@@ -11,10 +11,6 @@ import { renderWithIntl } from "../../helpers/intl";
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
   IGRPIcon: () => <span />,
-  Skeleton: (props: { className?: string }) => (
-    <span data-testid="skeleton" {...props} />
-  ),
-  useIGRPToast: () => ({ igrpToast: vi.fn() }),
   IGRPUserAvatar: ({
     image,
     alt,

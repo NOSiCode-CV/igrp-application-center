@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
+
 import createNextIntlPlugin from "next-intl/plugin";
 
 // next-intl WITHOUT i18n routing: no [locale] segment and no locale in URLs

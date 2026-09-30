@@ -16,12 +16,11 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
 
-import { useFormat } from "@/i18n/format";
-
 import { AppCenterLoading } from "@/components/loading";
+import { useFormat } from "@/i18n/format";
+import { DATE_TIME_WITH_SECONDS } from "@/lib/utilities";
 
 import { useKillUserSession, useUserSession } from "../use-users";
-import { DATE_TIME_WITH_SECONDS } from "@/lib/utilities";
 
 interface UserSessionsTabProps {
   username: string;

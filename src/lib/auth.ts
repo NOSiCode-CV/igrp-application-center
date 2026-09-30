@@ -147,4 +147,3 @@ export async function getSessionLocale(): Promise<string | undefined> {
     return undefined;
   }
 }
-

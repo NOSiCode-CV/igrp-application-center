@@ -4,11 +4,10 @@ import type { Metadata, Viewport } from "next";
 
 import { IGRPRootLayout } from "@igrp/framework-next";
 import { IGRP_META_THEME_COLORS } from "@igrp/igrp-framework-react-design-system";
-
-import { createConfig } from "@/igrp.template.config";
 import { getLocale, getMessages } from "next-intl/server";
 
 import { I18nProvider } from "@/i18n/components/i18n-provider";
+import { createConfig } from "@/igrp.template.config";
 import { getLayoutConfig } from "@/lib/dal";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";

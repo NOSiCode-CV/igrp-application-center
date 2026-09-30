@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl";
 
 import { useResendUserInvitation } from "@/features/users/use-users";
 import { getInitials, statusInviteClass } from "@/lib/utilities";
+
 import { inviteStatusLabel, type UsersTranslator } from "../lib/i18n";
 
 const isTerminalInviteStatus = (s: string) =>

@@ -1,14 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-// Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
-// (which also carries Node-only session helpers — see lib/auth-instance.ts).
-import { auth } from "@/lib/auth-instance";
 import {
   LOCALE_COOKIE,
   LOCALE_COOKIE_OPTIONS,
   normalizeLocale,
 } from "@/i18n/config";
-import { auth } from "@/lib/auth";
+// Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
+// (which also carries Node-only session helpers — see lib/auth-instance.ts).
+import { auth } from "@/lib/auth-instance";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 

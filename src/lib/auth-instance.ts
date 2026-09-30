@@ -1,5 +1,6 @@
-import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { redirect } from "next/navigation";
+
+import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 
 /*
  * EDGE-SAFE MODULE — `src/middleware.ts` imports this, and middleware runs on

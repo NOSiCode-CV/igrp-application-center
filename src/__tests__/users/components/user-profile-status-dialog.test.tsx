@@ -44,7 +44,6 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
       {children}
     </button>
   ),
-  cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
   IGRPIcon: () => <span />,
   cn: (...classes: unknown[]) => classes.filter(Boolean).join(" "),
 }));

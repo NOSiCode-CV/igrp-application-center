@@ -32,12 +32,12 @@ import {
   useUpdateUserStatus,
   useUsers,
 } from "@/features/users/use-users";
+import { useFormat } from "@/i18n/format";
 import { STATUS_OPTIONS } from "@/lib/constants";
 import {
   PAGE_HEADER_ACTIONS_CLASS,
   PAGE_HEADER_PROPS,
 } from "@/lib/page-header";
-import { useFormat } from "@/i18n/format";
 
 import { useUserStatusOptions } from "../lib/i18n";
 
@@ -121,7 +121,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
             <ColumnSearchInput
               column={column}
               placeholder={t("list.filters.searchByNameOrEmail")}
-              label={""}            
+              label={t("list.filters.searchByNameOrEmail")}
             />
           ),
         },
@@ -131,7 +131,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
             <ColumnFacetedFilter
               column={column}
               options={statusOptions}
-              placeholder={t("list.filters.status")}
+              label={t("list.filters.status")}
             />
           ),
         },

@@ -15,6 +15,7 @@ import type {
 import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
+import { AppCenterLoading } from "@/components/loading";
 
 import {
   useAddUserRole,
@@ -23,7 +24,6 @@ import {
   useUserRoles,
 } from "../use-users";
 import { UserRolesDialog } from "./user-role-dialog";
-import { AppCenterLoading } from "@/components/loading";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();

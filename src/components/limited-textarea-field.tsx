@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useId } from "react";
+
+import { cn, IGRPTextarea } from "@igrp/igrp-framework-react-design-system";
 import { useFormContext } from "react-hook-form";
-import { IGRPTextarea, cn } from "@igrp/igrp-framework-react-design-system";
 
 function fieldValueLength(value: unknown): number {
   if (value == null) return 0;
