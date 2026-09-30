@@ -33,11 +33,11 @@ const HEADING_ID = "app-catalog-heading";
 type ViewMode = "grid" | "list";
 type SortBy = "default" | "recent" | "name-asc" | "name-desc";
 
-const SORT_OPTIONS: { value: SortBy; label: string }[] = [
-  { value: "default", label: "Predefinido" },
-  { value: "recent", label: "Visitadas recentemente" },
-  { value: "name-asc", label: "Nome (A–Z)" },
-  { value: "name-desc", label: "Nome (Z–A)" },
+const SORT_OPTIONS: { value: SortBy; label: string; icon: string }[] = [
+  { value: "default", label: "Predefinido", icon: "ArrowUpDown" },
+  { value: "recent", label: "Visitadas recentemente", icon: "Clock" },
+  { value: "name-asc", label: "Nome (A–Z)", icon: "ArrowDownAZ" },
+  { value: "name-desc", label: "Nome (Z–A)", icon: "ArrowUpAZ" },
 ];
 
 export function AppCatalog() {
@@ -143,26 +143,26 @@ export function AppCatalog() {
 
   return (
     <section id={APP_CATALOG_SECTION_ID} aria-labelledby={HEADING_ID}>
-      <div className="flex items-center justify-between gap-3 mb-3">
+      <div className="mb-3 flex items-baseline gap-2">
         <h2
           id={HEADING_ID}
-          className="min-w-0 truncate text-sm font-semibold text-foreground"
+          className="min-w-0 truncate text-base font-semibold text-foreground"
         >
-          Aplicações{" "}
-          {isFiltering && (
-            <span className="normal-case font-normal text-muted-foreground">
-              — {filtered.length} de {apps.length}
-            </span>
-          )}
+          Aplicações
         </h2>
+        {apps.length > 0 && (
+          <span className="text-sm tabular-nums text-muted-foreground">
+            {isFiltering ? `${filtered.length} de ${apps.length}` : apps.length}
+          </span>
+        )}
       </div>
 
       <p aria-live="polite" role="status" className="sr-only">
         {announcement}
       </p>
 
-      <div className="flex flex-wrap gap-2 mb-4 items-end">
-        <InputGroup className="h-10 w-full sm:w-75">
+      <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <InputGroup className="h-10 w-full sm:w-80 sm:max-w-full">
           <InputGroupAddon>
             <IGRPIcon iconName="Search" size={15} />
           </InputGroupAddon>
@@ -198,10 +198,10 @@ export function AppCatalog() {
           Favoritos
         </Toggle>
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <IGRPLabel
             label="Ordenar por:"
-            className="font-medium text-secondary-foreground min-w-fit"
+            className="sr-only"
             name="ordenar-apps"
           />
           <IGRPCombobox
@@ -209,6 +209,7 @@ export function AppCatalog() {
             variant="single"
             label=""
             showSearch={false}
+            showIcon
             options={SORT_OPTIONS}
             value={sortBy}
             placeholder="Escolher ordem"
@@ -223,23 +224,21 @@ export function AppCatalog() {
 
         <ToggleGroup
           type="single"
-          variant="outline"
-          size="lg"
           value={viewMode}
           onValueChange={(value) => value && setViewMode(value as ViewMode)}
-          className="shrink-0 sm:ms-auto"
+          className="h-10 shrink-0 gap-0.5 rounded-lg border border-border bg-muted p-0.5 sm:ms-auto"
         >
           <ToggleGroupItem
             value="grid"
             aria-label="Vista em grelha"
-            className="size-10 data-[state=on]:border-primary-subtle data-[state=on]:bg-primary-subtle data-[state=on]:text-primary-subtle-foreground"
+            className="size-8 rounded-md border-0 text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-primary data-[state=on]:shadow-sm"
           >
             <IGRPIcon iconName="LayoutGrid" size={16} />
           </ToggleGroupItem>
           <ToggleGroupItem
             value="list"
             aria-label="Vista em lista"
-            className="size-10 data-[state=on]:border-primary-subtle data-[state=on]:bg-primary-subtle data-[state=on]:text-primary-subtle-foreground"
+            className="size-8 rounded-md border-0 text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-primary data-[state=on]:shadow-sm"
           >
             <IGRPIcon iconName="List" size={16} />
           </ToggleGroupItem>
