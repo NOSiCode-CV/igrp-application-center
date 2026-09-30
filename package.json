@@ -24,11 +24,11 @@
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
     "@hookform/resolvers": "5.9.1",
-    "@igrp/framework-next": "0.2.0-beta.2",
-    "@igrp/framework-next-auth": "0.2.0-beta.1",
-    "@igrp/framework-next-types": "0.2.0-beta.1",
-    "@igrp/framework-next-ui": "0.2.0-beta.2",
-    "@igrp/igrp-framework-react-design-system": "0.2.0-beta.2",
+    "@igrp/framework-next": "0.2.0-beta.3",
+    "@igrp/framework-next-auth": "0.2.0-beta.2",
+    "@igrp/framework-next-types": "0.2.0-beta.2",
+    "@igrp/framework-next-ui": "0.2.0-beta.3",
+    "@igrp/igrp-framework-react-design-system": "0.2.0-beta.3",
     "@igrp/platform-access-management-client-ts": "0.2.0-beta.18",
     "@tanstack/react-query": "5.104.0",
     "@tanstack/react-table": "8.21.3",
@@ -67,5 +67,6 @@
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "packageManager": "pnpm@12.8.1+sha512.f64ba907507f5ceafe06c8d38e6052d0179444580ec1279ddd5bfc11cb48aa8a2644b66598e07e761da84872a9fc57d5f902b87fa49d024198d558612aabbe45"
 }

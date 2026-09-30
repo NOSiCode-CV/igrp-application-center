@@ -3,24 +3,32 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import { IGRPSelect } from "@igrp/igrp-framework-react-design-system";
+import {
+  Button,
+  cn,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { setLocale } from "../actions";
 import { LOCALE_NATIVE_NAMES, LOCALES } from "../config";
 
-const OPTIONS = LOCALES.map((locale) => ({
-  value: locale,
-  label: LOCALE_NATIVE_NAMES[locale],
-}));
-
 interface LocaleSwitcherProps {
   className?: string;
 }
 
 /**
- * Language selector (FR-24). Options use the native language names.
+ * Language selector (FR-24). An icon button — same footprint as the theme
+ * toggle — opens a menu of the languages in their native names, the current
+ * one marked.
  *
  * Flow (FR-25/26): server action `setLocale` (persists `metadata.locale` when
  * signed in + writes the cookie) → next-auth `update({ locale })` when signed
@@ -52,15 +60,42 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
   };
 
   return (
-    <IGRPSelect
-      name="locale"
-      label={t("label")}
-      options={OPTIONS}
-      value={locale}
-      onValueChange={handleChange}
-      disabled={isPending}
-      error={failed ? t("changeError") : undefined}
-      className={className}
-    />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("relative size-6", className)}
+          disabled={isPending}
+          aria-label={failed ? t("changeError") : t("label")}
+          title={failed ? t("changeError") : t("label")}
+        >
+          <IGRPIcon
+            iconName="Languages"
+            strokeWidth={2}
+            className={cn("size-4", isPending && "animate-pulse")}
+          />
+          {failed && (
+            <span
+              aria-hidden="true"
+              className="bg-destructive absolute top-0 right-0 size-1.5 rounded-full"
+            />
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-40">
+        <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
+          {failed ? t("changeError") : t("label")}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuRadioGroup value={locale} onValueChange={handleChange}>
+          {LOCALES.map((code) => (
+            <DropdownMenuRadioItem key={code} value={code} lang={code}>
+              {LOCALE_NATIVE_NAMES[code]}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -49,7 +49,7 @@ export default async function AuthPage({
 
   return (
     <section className="relative flex min-h-screen flex-col md:flex-row">
-      <div className="absolute top-4 right-4 z-10 w-44">
+      <div className="absolute top-8 right-16 z-10">
         <LocaleSwitcher />
       </div>
       <div

@@ -33,7 +33,6 @@ import {
   useUsers,
 } from "@/features/users/use-users";
 import { useFormat } from "@/i18n/format";
-import { STATUS_OPTIONS } from "@/lib/constants";
 import {
   PAGE_HEADER_ACTIONS_CLASS,
   PAGE_HEADER_PROPS,
@@ -44,7 +43,6 @@ import { useUserStatusOptions } from "../lib/i18n";
 interface UserListProps {
   initialUsers: IGRPUserDTO[];
   initialInvitations: InvitationDTO[];
-  /** The signed-in administrator, so their own row cannot offer "Desativar". */
   currentUserId?: string;
 }
 
@@ -53,7 +51,11 @@ type DialogState =
   | { kind: "status"; user: IGRPUserDTO; newStatus: "ACTIVE" | "INACTIVE" }
   | { kind: "cancel"; invitation: InvitationDTO };
 
-export function UserList({ initialUsers, initialInvitations }: UserListProps) {
+export function UserList({
+  initialUsers,
+  initialInvitations,
+  currentUserId,
+}: UserListProps) {
   const t = useTranslations("users");
   const { formatDate } = useFormat();
   const statusOptions = useUserStatusOptions();
@@ -101,11 +103,8 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
   }, []);
 
   const activeColumns = useMemo(
-    () =>
-      getTableColumns(t, formatDate, handleStatusClick, {
-        showInvitationDate: false,
-      }),
-    [t, formatDate, handleStatusClick],
+    () => getTableColumns(t, handleStatusClick, { currentUserId }),
+    [t, handleStatusClick, currentUserId],
   );
   const inviteColumns = useMemo(
     () => getInvitationColumns(t, formatDate, handleCancelClick),
@@ -205,10 +204,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
     });
   };
 
-  return (
-    /* No `animate-fade-in`: the page fading in on every navigation is motion
-       that reports nothing — the content did not change, it arrived. */
-    /* gap-6 header -> content, matching `/settings/applications`. */
+  return (   
     <div className="flex flex-col gap-6">
       <IGRPPageHeader
         {...PAGE_HEADER_PROPS}
@@ -264,10 +260,10 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
           <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
             showFilter
             showPagination
-            tableClassName="table-fixed"
             columns={activeColumns}
             data={users}
             clientFilters={activeFilters}
+            tableHeaderClassName="bg-muted"
           />
         </TabsContent>
 
@@ -278,10 +274,10 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
             <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
-              tableClassName="table-fixed"
               columns={inviteColumns}
               data={pendingData}
               clientFilters={inviteFilters}
+              tableHeaderClassName="bg-muted"
             />
           )}
         </TabsContent>
@@ -293,10 +289,10 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
             <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
-              tableClassName="table-fixed"
               columns={inviteColumns}
               data={canceledData}
               clientFilters={inviteFilters}
+              tableHeaderClassName="bg-muted"
             />
           )}
         </TabsContent>

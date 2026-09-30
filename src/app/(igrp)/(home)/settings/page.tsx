@@ -80,7 +80,6 @@ export const metadata: Metadata = {
 };
 
 export default async function SettingsPage() {
-  /* Navigation only: the audit page asserts the same permission itself. */
   const canViewAudit = await igrpAuthorize(AUDIT_VIEW_PERMISSION);
   const items = settingsConfig.general.filter(
     (item) => item.id !== "auditoria-relatorios" || canViewAudit,
@@ -88,10 +87,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-12">
-      <section>
-        {/* `h1`, not `h2`: no layout above this route renders a page heading, so
-            an `h2` here started the document at level two. The card titles are
-            the `h2`s under it. */}
+      <section>       
         <h1 className="text-xl font-semibold tracking-tight">
           Configurações Gerais
         </h1>
