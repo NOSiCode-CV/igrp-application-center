@@ -10,8 +10,6 @@ import {
 
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
-import { AppCenterLoading } from "@/components/loading";
-
 import { closedDialog, dialogReducer } from "../dept-dialog-state";
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { useDepartments } from "../use-departments";
@@ -24,6 +22,7 @@ import {
   DeptTreeContext,
   type DeptTreeContextValue,
 } from "./dept-tree-context";
+import { DeptTreeSkeleton } from "./dept-tree-skeleton";
 
 export function DepartmentListTree() {
   const { data: departments, isLoading, error } = useDepartments();
@@ -112,8 +111,7 @@ export function DepartmentListTree() {
     ],
   );
 
-  if (isLoading)
-    return <AppCenterLoading description="A carregar departamentos…" />;
+  if (isLoading) return <DeptTreeSkeleton />;
   if (error) throw error;
 
   const showMainEmpty = !selectedDepartment && (departments?.length ?? 0) === 0;

@@ -4,18 +4,30 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import {
+  Badge,
   cn,
   IGRPIcon,
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+/**
+ * The icon chip's colour. Each entry is one of the `-subtle` token pairs from
+ * `src/styles/app-center.css`, which carry a measured >= 4.5:1 contract in BOTH
+ * themes — so a card can be recoloured without re-auditing it, and a theme can
+ * restyle all of them at once. Never `bg-x/10 text-x`: that is a token over a
+ * wash of itself, and its ratio is a pure function of the token's lightness.
+ *
+ * Colour here is identity, not state: it helps someone return to the same card
+ * twice, and it carries nothing the title does not already say.
+ */
+const ACCENTS = {
+  primary: "bg-primary-subtle text-primary-subtle-foreground",
+  info: "bg-info-subtle text-info-subtle-foreground",
+  success: "bg-success-subtle text-success-subtle-foreground",
+  warning: "bg-warning-subtle text-warning-subtle-foreground",
+} as const;
+
+export type SettingsAccent = keyof typeof ACCENTS;
 
 export interface SettingsItem {
   id: string;
@@ -23,6 +35,7 @@ export interface SettingsItem {
   description: string;
   icon: IGRPIconName;
   href: Route | string;
+  accent?: SettingsAccent;
   status?: "inativo";
 }
 
@@ -32,56 +45,72 @@ interface SettingsCardProps {
 
 export function SettingsCard({ item }: SettingsCardProps) {
   const isDisabled = item.status === "inativo";
+  /* A disabled card drops its accent for the neutral `muted` pair: colour on
+     this grid is identity (see ACCENTS), and an area you cannot open yet has
+     no identity to return to. Grey plus the badge says "not yet" twice, once
+     visually and once in text, instead of leaving colour as the only tell. */
+  const accent = isDisabled
+    ? "bg-muted text-muted-foreground"
+    : ACCENTS[item.accent ?? "primary"];
 
   const cardContent = (
-    <div className="flex items-start gap-4">
-      <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
-        <IGRPIcon iconName={item.icon} className="size-5 text-primary" />
+    <>
+      {/* `pr-20` clears the absolutely-positioned "Em breve" badge so a long
+          title wraps beside it instead of running underneath it. */}
+      <div className={cn("flex items-center gap-3", isDisabled && "pr-20")}>
+        <div
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-lg",
+            accent,
+          )}
+        >
+          <IGRPIcon iconName={item.icon} className="size-5" />
+        </div>
+        {/* Disabled titles grey down to `muted-foreground`, a token held at
+            >= 4.5:1 in both themes — never an opacity wash, which would put the
+            text below AA and make the card unreadable rather than inactive. */}
+        <h2
+          className={cn(
+            "font-semibold text-sm min-w-0",
+            isDisabled
+              ? "text-muted-foreground"
+              : "text-foreground group-hover:text-primary",
+          )}
+        >
+          {item.title}
+        </h2>
       </div>
-      <div className="flex flex-col gap-1 min-w-0">
-        <h3 className="font-medium text-primary">{item.title}</h3>
-        <p className="text-xs text-muted-foreground leading-snug">
-          {item.description}
-        </p>
-      </div>
-    </div>
+      <p className="text-xs text-muted-foreground leading-relaxed text-pretty">
+        {item.description}
+      </p>
+    </>
   );
 
+  /* Same card vocabulary as the app tiles on the launcher — `rounded-xl border
+     border-border bg-card`, primary border on hover. A settings card that
+     looked like nothing else in the product was the odd one out, and would
+     have drifted further at the next system update. */
   const sharedClassName = cn(
-    "relative text-left p-5 rounded-lg border-0 bg-accent/20 transition-colors",
+    "group relative flex flex-col gap-3 rounded-xl border border-border p-5 h-full",
+    "transition-colors motion-reduce:transition-none",
     isDisabled
-      ? "opacity-50 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      : "cursor-pointer hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      ? // Recessed surface instead of `bg-card`, so the row of live cards reads
+        // as the foreground even at a glance across the grid.
+        "bg-muted/40 border-dashed"
+      : "bg-card hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   );
 
   if (isDisabled) {
+    // Not a link and not focusable: it has no destination. The badge is the
+    // state, visible and announced in reading order — a tooltip here would be
+    // mouse-only.
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              role="link"
-              tabIndex={0}
-              aria-disabled="true"
-              className={sharedClassName}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") e.preventDefault();
-              }}
-            >
-              {cardContent}
-              <Badge
-                variant="secondary"
-                className="absolute top-2 right-2 text-xs"
-              >
-                Em breve
-              </Badge>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Disponível em breve</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className={sharedClassName}>
+        {cardContent}
+        <Badge variant="secondary" className="absolute top-3 right-3 text-xs">
+          Em breve
+        </Badge>
+      </div>
     );
   }
 

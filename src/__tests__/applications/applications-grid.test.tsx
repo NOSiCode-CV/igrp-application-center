@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   Badge: () => null,
   Button: () => null,
+  IGRPButton: () => null,
   IGRPIcon: () => null,
   Tooltip: () => null,
   TooltipContent: () => null,

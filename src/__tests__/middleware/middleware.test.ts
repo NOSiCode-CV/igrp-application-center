@@ -1,10 +1,16 @@
 // Mock heavy module-level deps before importing @/middleware
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth-instance", () => ({
   auth: {
     isAuthDisabled: vi.fn(() => false),
     isPreviewMode: vi.fn(() => false),
     getTokenFromRequest: vi.fn(),
     isTokenExpiredOrFailed: vi.fn(() => false),
+    resolveAppUrl: vi.fn(
+      (path: string, request: Request) => new URL(path, request.url),
+    ),
+    getLoginRedirectUrl: vi.fn(
+      (request: Request) => new URL("/login", request.url),
+    ),
     config: {},
   },
 }));
@@ -16,7 +22,7 @@ import { NextRequest } from "next/server";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { auth as authMock } from "@/lib/auth";
+import { auth as authMock } from "@/lib/auth-instance";
 import { middleware } from "@/middleware";
 
 // Cast to get typed mock helpers
@@ -40,10 +46,13 @@ beforeEach(() => {
 
 describe("middleware auth gate", () => {
   it("in bypass mode redirects /login to /", async () => {
-    vi.mocked(auth.isPreviewMode).mockReturnValue(true);
+    // middleware gates on isAuthBypass() from @/lib/utilities, which reads
+    // process.env at call time — not on auth.isPreviewMode().
+    vi.stubEnv("IGRP_PREVIEW_MODE", "true");
     const res = await middleware(req("/login"));
     expect(res.status).toBe(307);
     expect(res.headers.get("location")).toContain("/");
+    vi.unstubAllEnvs();
   });
 
   it("redirects to /login when no token on a protected route", async () => {
@@ -57,6 +66,51 @@ describe("middleware auth gate", () => {
     const res = await middleware(req("/settings/users"));
     // NextResponse.next() → no redirect
     expect(res.headers.get("location")).toBeNull();
+  });
+});
+
+describe("locale cookie sync (FR-27)", () => {
+  const withCookie = (path: string, cookie: string) => {
+    const r = req(path);
+    r.cookies.set("IGRP_LOCALE", cookie);
+    return r;
+  };
+
+  it("rewrites IGRP_LOCALE when the session locale differs", async () => {
+    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
+      sub: "u1",
+      locale: "en",
+    });
+    const res = await middleware(withCookie("/settings/users", "fr"));
+    expect(res.headers.get("location")).toBeNull();
+    const cookie = res.cookies.get("IGRP_LOCALE");
+    expect(cookie?.value).toBe("en");
+    expect(cookie?.path).toBe("/");
+    expect(cookie?.sameSite).toBe("lax");
+  });
+
+  it("leaves the cookie alone when it already matches", async () => {
+    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
+      sub: "u1",
+      locale: "en",
+    });
+    const res = await middleware(withCookie("/settings/users", "en"));
+    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
+  });
+
+  it("does nothing when the session has no (valid) locale", async () => {
+    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
+      sub: "u1",
+      locale: "de",
+    });
+    const res = await middleware(withCookie("/settings/users", "fr"));
+    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
+  });
+
+  it("never touches the cookie on public paths", async () => {
+    const res = await middleware(withCookie("/login", "fr"));
+    expect(auth.getTokenFromRequest).not.toHaveBeenCalled();
+    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
   });
 });
 

@@ -7,8 +7,19 @@ const redirect = vi.fn((url: string) => {
 });
 const headersGet = vi.fn(() => null);
 
-vi.mock("@/lib/auth", () => ({ getSession: () => getSession() }));
-vi.mock("@/lib/utils", () => ({ isAuthBypass: () => isAuthBypass() }));
+vi.mock("@/lib/auth", () => ({
+  getSession: () => getSession(),
+  // dal.ts returns this object verbatim in bypass mode.
+  PREVIEW_SESSION_STUB: {
+    user: { name: "Preview User", email: "preview@example.com" },
+    accessToken: "preview-token",
+    expires: "9999-12-31T23:59:59.999Z",
+  },
+}));
+vi.mock("@/lib/utilities", () => ({
+  isAuthBypass: () => isAuthBypass(),
+  sanitizeCallbackUrl: (u: unknown) => (typeof u === "string" ? u : undefined),
+}));
 vi.mock("next/navigation", () => ({ redirect: (u: string) => redirect(u) }));
 vi.mock("next/headers", () => ({
   headers: async () => ({ get: headersGet }),

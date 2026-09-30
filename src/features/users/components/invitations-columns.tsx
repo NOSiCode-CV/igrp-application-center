@@ -3,6 +3,7 @@
 import {
   Badge,
   type ColumnDef,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -16,10 +17,12 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { InvitationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useResendUserInvitation } from "@/features/users/use-users";
-import { geInviteTitle, getInitials, statusInviteClass } from "@/lib/utilities";
-import { cn } from "@/lib/utils";
+import { getInitials, statusInviteClass } from "@/lib/utilities";
+
+import { inviteStatusLabel, type UsersTranslator } from "../lib/i18n";
 
 const isTerminalInviteStatus = (s: string) =>
   s === "CANCELED" || s === "REJECTED";
@@ -31,24 +34,36 @@ function PendingRowActionsCell({
   row: Row<InvitationDTO>;
   onCancelClick: (invitation: InvitationDTO) => void;
 }) {
+  const t = useTranslations("users.invitations");
   const { igrpToast } = useIGRPToast();
   const resendMutation = useResendUserInvitation();
 
-  const handleCopyUrl = () => {
+  const handleCopyUrl = async () => {
     const invitationUrl = row.original.invitationUrl;
     if (invitationUrl) {
-      navigator.clipboard.writeText(invitationUrl);
+      try {
+        await navigator.clipboard.writeText(invitationUrl);
+      } catch {
+        igrpToast({
+          type: "error",
+          title: "Não foi possível copiar",
+          description:
+            "O browser bloqueou o acesso à área de transferência. Copie o URL manualmente.",
+          duration: 6000,
+        });
+        return;
+      }
       igrpToast({
         type: "success",
-        title: "URL copiado",
-        description: "URL do convite copiado para a área de transferência.",
+        title: t("toasts.urlCopied"),
+        description: t("toasts.urlCopiedDescription"),
         duration: 6000,
       });
     } else {
       igrpToast({
         type: "error",
-        title: "Convite não disponível",
-        description: "URL do convite não disponível.",
+        title: t("toasts.urlUnavailable"),
+        description: t("toasts.urlUnavailableDescription"),
         duration: 6000,
       });
     }
@@ -60,16 +75,16 @@ function PendingRowActionsCell({
         onSuccess: () => {
           igrpToast({
             type: "success",
-            title: "Convite reenviado",
-            description: "O convite foi reenviado com sucesso.",
+            title: t("toasts.resent"),
+            description: t("toasts.resentDescription"),
             duration: 6000,
           });
         },
         onError: () => {
           igrpToast({
             type: "error",
-            title: "Convite não reenviado",
-            description: "Não foi possível reenviar o convite.",
+            title: t("toasts.resendFailed"),
+            description: t("toasts.resendFailedDescription"),
             duration: 6000,
           });
         },
@@ -81,19 +96,22 @@ function PendingRowActionsCell({
     <>
       {!isTerminalInviteStatus(String(row.original.status)) && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="p-1 rounded-sm">
-            <IGRPIcon iconName="Ellipsis" />
+          <DropdownMenuTrigger
+            className="inline-flex size-9 items-center justify-center rounded-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`Ações para o convite de ${row.original.identifierValue}`}
+          >
+            <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="min-w-44">
             <DropdownMenuItem onSelect={handleCopyUrl}>
               <IGRPIcon iconName="Copy" />
-              Copiar URL
+              {t("actions.copyUrl")}
             </DropdownMenuItem>
 
             <DropdownMenuItem onSelect={handleResend}>
               <IGRPIcon iconName="Mail" />
-              Reenviar Convite
+              {t("actions.resend")}
             </DropdownMenuItem>
 
             <DropdownMenuItem
@@ -102,7 +120,7 @@ function PendingRowActionsCell({
               onSelect={() => onCancelClick(row.original)}
             >
               <IGRPIcon iconName="Trash2" />
-              Cancelar Convite
+              {t("actions.cancel")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -112,12 +130,17 @@ function PendingRowActionsCell({
 }
 
 export function getInvitationColumns(
+  t: UsersTranslator,
+  formatDate: (value: string) => string,
   onCancelClick: (invitation: InvitationDTO) => void,
 ): ColumnDef<InvitationDTO>[] {
   return [
     {
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
+        <IGRPDataTableHeaderSortToggle
+          column={column}
+          title={t("columns.name")}
+        />
       ),
       accessorKey: "identifierValue",
       cell: ({ row }) => {
@@ -138,20 +161,19 @@ export function getInvitationColumns(
       },
     },
     {
-      header: "Data do Convite",
+      header: t("columns.invitationDate"),
       accessorKey: "invitationDate",
       cell: ({ row }) => {
         const date = row.getValue("invitationDate");
-        return (
-          <div>
-            {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-          </div>
-        );
+        return <div>{date ? formatDate(String(date)) : t("notAvailable")}</div>;
       },
     },
     {
       header: () => (
-        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
+        <IGRPDataTableHeaderDefault
+          title={t("columns.status")}
+          className="text-center"
+        />
       ),
       accessorKey: "status",
       cell: ({ row }) => {
@@ -159,7 +181,7 @@ export function getInvitationColumns(
         return (
           <div className="text-center">
             <Badge className={cn(statusInviteClass(status), "capitalize")}>
-              {geInviteTitle(status)}
+              {inviteStatusLabel(t, status)}
             </Badge>
           </div>
         );
@@ -169,7 +191,7 @@ export function getInvitationColumns(
     },
     {
       id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
+      header: () => <span className="sr-only">{t("columns.actions")}</span>,
       cell: ({ row }) => (
         <PendingRowActionsCell row={row} onCancelClick={onCancelClick} />
       ),

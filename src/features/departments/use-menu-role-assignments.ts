@@ -29,6 +29,7 @@ export function useMenuRoleAssignments(args: {
   // Re-seed whenever the selected app or the menus data changes.
   // This replaces the fragile `size === 0` guard: switching apps clears
   // stale assignments and re-seeds from the newly loaded menus.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selectedApp forces re-seed on app switch even when the menus array reference is unchanged
   useEffect(() => {
     if (!menus || menus.length === 0) return;
     const initialAssignments = new Map<string, Set<string>>();

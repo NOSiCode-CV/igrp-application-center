@@ -2,10 +2,13 @@
 
 import type { ReactNode } from "react";
 
-import { Card, CardContent } from "@igrp/igrp-framework-react-design-system";
-import { Check } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  cn,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 export type InviteStepIndex = 0 | 1 | 2;
 
@@ -17,24 +20,20 @@ interface InviteCardShellProps {
 export function InviteCardShell({ children, step }: InviteCardShellProps) {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">
-      {/* Subtle dot grid — currentColor inherits the low-opacity foreground so
-          the dots adapt to light/dark themes. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 text-foreground/[0.055]"
+        className="pointer-events-none fixed inset-0 -z-10 text-foreground/5.5"
         style={{
           backgroundImage:
             "radial-gradient(circle, currentColor 1px, transparent 1px)",
           backgroundSize: "28px 28px",
         }}
       />
-      {/* Primary colour wash from top */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 -z-10 bg-linear-to-b from-primary/5 via-transparent to-transparent"
       />
 
-      {/* Card + left stepper row */}
       <div className="flex w-full flex-col items-center md:w-auto md:flex-row md:items-start md:gap-10">
         {/* Vertical stepper — desktop only */}
         {step !== undefined ? (
@@ -43,7 +42,6 @@ export function InviteCardShell({ children, step }: InviteCardShellProps) {
           </div>
         ) : null}
 
-        {/* Card */}
         <Card className="w-full max-w-md overflow-hidden rounded-3xl border-border/60 shadow-2xl">
           <div
             aria-hidden="true"
@@ -55,7 +53,6 @@ export function InviteCardShell({ children, step }: InviteCardShellProps) {
         </Card>
       </div>
 
-      {/* Horizontal stepper — mobile only, below card */}
       {step !== undefined ? (
         <div className="mt-6 md:hidden">
           <HorizontalStepIndicator current={step} />
@@ -65,24 +62,25 @@ export function InviteCardShell({ children, step }: InviteCardShellProps) {
   );
 }
 
-// ── Step data ──────────────────────────────────────────────────────────────────
+const STEP_KEYS = ["email", "code", "confirm"] as const;
 
-const STEP_DATA = [
-  { label: "Email", sub: "Confirmação" },
-  { label: "Código", sub: "Verificação" },
-  { label: "Confirmar", sub: "Convite" },
-] as const;
+const TOTAL_STEPS = STEP_KEYS.length;
 
-const TOTAL_STEPS = STEP_DATA.length;
-
-// ── Vertical stepper (desktop, left side) ─────────────────────────────────────
+function useStepData() {
+  const t = useTranslations("users.invite.accept.steps");
+  return STEP_KEYS.map((key) => ({
+    label: t(`${key}.label`),
+    sub: t(`${key}.sub`),
+  }));
+}
 
 function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
-  const steps = STEP_DATA;
+  const t = useTranslations("users.invite.accept.steps");
+  const steps = useStepData();
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
       className="flex flex-col"
     >
       {steps.map((step, idx) => {
@@ -97,7 +95,6 @@ function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
             className="flex flex-col"
           >
             <div className="flex items-start gap-3">
-              {/* Circle + connector column */}
               <div className="flex flex-col items-center">
                 <div
                   aria-hidden="true"
@@ -111,8 +108,8 @@ function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
                   )}
                 >
                   {isDone ? (
-                    <Check
-                      aria-hidden="true"
+                    <IGRPIcon
+                      iconName="Check"
                       className="size-3.5"
                       strokeWidth={2.5}
                     />
@@ -132,7 +129,6 @@ function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
                 ) : null}
               </div>
 
-              {/* Label + sub */}
               <div className="flex flex-col gap-0.5 pt-0.5">
                 <span
                   className={cn(
@@ -167,15 +163,14 @@ function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
 
 // ── Horizontal stepper (mobile fallback, below card) ──────────────────────────
 
-const STEP_LABELS = ["Email", "Código", "Confirmar"] as const;
-
 function HorizontalStepIndicator({ current }: { current: InviteStepIndex }) {
-  const labels = STEP_LABELS;
+  const t = useTranslations("users.invite.accept.steps");
+  const labels = useStepData().map((step) => step.label);
   const itemCount = TOTAL_STEPS * 2 - 1;
 
   return (
     <ol
-      aria-label={`Passo ${current + 1} de ${TOTAL_STEPS}`}
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
       className="flex items-start"
     >
       {Array.from({ length: itemCount }, (_, i) => {
@@ -217,7 +212,7 @@ function HorizontalStepIndicator({ current }: { current: InviteStepIndex }) {
               )}
             >
               {idx < current ? (
-                <Check aria-hidden="true" className="size-3" />
+                <IGRPIcon iconName="Check" className="size-3" />
               ) : (
                 String(idx + 1)
               )}

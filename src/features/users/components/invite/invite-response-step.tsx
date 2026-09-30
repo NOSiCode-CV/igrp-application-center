@@ -11,9 +11,11 @@ import {
   AlertDialogTitle,
   Badge,
   Button,
+  IGRPIcon,
+  type IGRPIconProps,
   Separator,
 } from "@igrp/igrp-framework-react-design-system";
-import { Building2, Check, Loader2, Mail, Shield, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -42,10 +44,6 @@ function toArray(
   return Array.isArray(value) ? value : [value];
 }
 
-// The SDK's `getUserInvitationByToken` returns `InvitationDTO`, but its runtime
-// shape (department-as-array, embedded roles) doesn't match the declared types.
-// Normalize defensively into the known shape so a null/drifted payload renders
-// as empty rather than throwing on field access.
 export function toInvitationLike(dto: unknown): InvitationLike {
   const record = (dto ?? {}) as Record<string, unknown>;
   return {
@@ -61,6 +59,8 @@ export function InviteResponseStep({
   onAccept,
   onReject,
 }: InviteResponseStepProps) {
+  const t = useTranslations("users.invite.accept.responseStep");
+  const tc = useTranslations("common.actions");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const departments = toArray(invitation.department);
   const roles = invitation.roles ?? [];
@@ -69,14 +69,14 @@ export function InviteResponseStep({
     <>
       <div className="flex flex-col gap-8">
         <InviteStepHeader
-          icon={Mail}
-          eyebrow="Convite"
-          title="Aceitar Acesso"
-          description="Revise os detalhes antes de confirmar."
+          icon="Mail"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("description")}
         />
 
         <dl className="flex flex-col gap-5 rounded-2xl border border-border/60 bg-muted/30 p-5">
-          <InvitationRow icon={Mail} label="Email">
+          <InvitationRow icon="Mail" label={t("email")}>
             <span className="font-medium text-foreground">
               {invitation.email}
             </span>
@@ -85,7 +85,7 @@ export function InviteResponseStep({
           {departments.length > 0 ? (
             <>
               <Separator />
-              <InvitationRow icon={Building2} label="Departamento">
+              <InvitationRow icon="Building2" label={t("department")}>
                 <div className="flex flex-wrap gap-1.5">
                   {departments.map((dept) => (
                     <Badge
@@ -103,7 +103,7 @@ export function InviteResponseStep({
           {roles.length > 0 ? (
             <>
               <Separator />
-              <InvitationRow icon={Shield} label="Perfis">
+              <InvitationRow icon="Shield" label={t("roles")}>
                 <div className="flex flex-wrap gap-1.5">
                   {roles.map((role) => (
                     <Badge
@@ -127,11 +127,15 @@ export function InviteResponseStep({
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <Loader2 data-icon="inline-start" className="animate-spin" />
+              <IGRPIcon
+                iconName="LoaderCircle"
+                data-icon="inline-start"
+                className="animate-spin"
+              />
             ) : (
-              <Check data-icon="inline-start" />
+              <IGRPIcon iconName="Check" data-icon="inline-start" />
             )}
-            {isSubmitting ? "A processar…" : "Aceitar Convite"}
+            {isSubmitting ? t("processing") : t("accept")}
           </Button>
           <Button
             variant="outline"
@@ -140,8 +144,8 @@ export function InviteResponseStep({
             onClick={() => setConfirmOpen(true)}
             disabled={isSubmitting}
           >
-            <X data-icon="inline-start" />
-            Rejeitar
+            <IGRPIcon iconName="X" data-icon="inline-start" />
+            {t("reject")}
           </Button>
         </div>
       </div>
@@ -149,10 +153,9 @@ export function InviteResponseStep({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Rejeitar convite?</AlertDialogTitle>
+            <AlertDialogTitle>{t("rejectConfirm.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Terá de solicitar um novo convite
-              ao administrador se mudar de ideias.
+              {t("rejectConfirm.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -161,7 +164,7 @@ export function InviteResponseStep({
               onClick={() => setConfirmOpen(false)}
               disabled={isSubmitting}
             >
-              Cancelar
+              {tc("cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -171,7 +174,7 @@ export function InviteResponseStep({
               }}
               disabled={isSubmitting}
             >
-              Rejeitar convite
+              {t("rejectConfirm.confirm")}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -181,17 +184,18 @@ export function InviteResponseStep({
 }
 
 function InvitationRow({
-  icon: Icon,
+  icon,
   label,
   children,
 }: {
-  icon: typeof Mail;
+  icon: IGRPIconProps["iconName"];
   label: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex items-start gap-3">
-      <Icon
+      <IGRPIcon
+        iconName={icon}
         aria-hidden="true"
         className="mt-0.5 size-4 shrink-0 text-muted-foreground"
         strokeWidth={1.75}

@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import { vi } from "vitest";
 
+import { IntlWrapper } from "../../helpers/intl";
+
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   AlertDialog: ({ children }: { children?: React.ReactNode }) => (
     <div>{children}</div>
@@ -27,7 +29,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   ),
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
   IGRPButton: ({ children }: { children?: React.ReactNode }) => (
-    <button>{children}</button>
+    <button type="button">{children}</button>
   ),
   IGRPIcon: () => <span />,
   IGRPInputText: () => <input />,
@@ -79,7 +81,9 @@ it("throws when the current-user query errors", () => {
   expect(() =>
     render(
       <QueryClientProvider client={client}>
-        <UserProfile />
+        <IntlWrapper>
+          <UserProfile />
+        </IntlWrapper>
       </QueryClientProvider>,
     ),
   ).toThrow("boom");

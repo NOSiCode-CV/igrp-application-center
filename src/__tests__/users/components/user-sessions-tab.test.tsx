@@ -6,6 +6,8 @@ import { describe, expect, it, vi } from "vitest";
 import { UserSessionsTab } from "@/features/users/components/user-sessions-tab";
 import { useKillUserSession, useUserSession } from "@/features/users/use-users";
 
+import { IntlWrapper } from "../../helpers/intl";
+
 const mockSession = {
   sessionId: "abc123def456",
   status: "ACTIVE",
@@ -24,7 +26,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     onClick?: () => void;
     disabled?: boolean;
   }) => (
-    <button onClick={onClick} disabled={disabled}>
+    <button type="button" onClick={onClick} disabled={disabled}>
       {children}
     </button>
   ),
@@ -38,7 +40,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
   }) => <input placeholder={placeholder} value={value} onChange={onChange} />,
   Label: ({ children }: { children?: React.ReactNode }) => (
-    <label>{children}</label>
+    <span>{children}</span>
   ),
   AlertDialog: ({
     children,
@@ -80,7 +82,7 @@ vi.mock("@/features/users/use-users", () => ({
 function wrapper({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={new QueryClient()}>
-      {children}
+      <IntlWrapper>{children}</IntlWrapper>
     </QueryClientProvider>
   );
 }

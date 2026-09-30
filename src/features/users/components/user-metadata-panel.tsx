@@ -9,6 +9,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import { nanoid } from "nanoid";
+import { useTranslations } from "next-intl";
 
 import { useUpdateUserMetadata, useUserMetadata } from "../use-users";
 
@@ -35,6 +36,7 @@ export function UserMetadataPanel({ userId }: UserMetadataPanelProps) {
   const { data } = useUserMetadata(userId);
   const updateMutation = useUpdateUserMetadata();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.metadata");
 
   const [rows, setRows] = useState<MetadataRow[]>(() =>
     metadataToRows(data?.metadata),
@@ -63,9 +65,9 @@ export function UserMetadataPanel({ userId }: UserMetadataPanelProps) {
     );
     const result = await updateMutation.mutateAsync({ id: userId, metadata });
     if (result.success) {
-      igrpToast({ type: "success", title: "Metadados atualizados" });
+      igrpToast({ type: "success", title: t("toasts.updated") });
     } else {
-      igrpToast({ type: "error", title: "Erro ao atualizar metadados" });
+      igrpToast({ type: "error", title: t("toasts.updateFailed") });
     }
   };
 
@@ -73,29 +75,29 @@ export function UserMetadataPanel({ userId }: UserMetadataPanelProps) {
     <div className="flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between">
         <Label className="text-sm font-medium text-muted-foreground">
-          Metadados
+          {t("title")}
         </Label>
         <IGRPButton size="sm" variant="outline" onClick={addRow}>
-          + Add field
+          {t("addField")}
         </IGRPButton>
       </div>
 
       {rows.map((row) => (
         <div key={row.id} className="flex items-center gap-2">
           <Input
-            placeholder="chave"
+            placeholder={t("keyPlaceholder")}
             value={row.key}
             onChange={(e) => updateRow(row.id, "key", e.target.value)}
           />
           <Input
-            placeholder="valor"
+            placeholder={t("valuePlaceholder")}
             value={row.value}
             onChange={(e) => updateRow(row.id, "value", e.target.value)}
           />
           <IGRPButton
             size="sm"
             variant="ghost"
-            aria-label="remover"
+            aria-label={t("remove")}
             onClick={() => removeRow(row.id)}
           >
             ✕
@@ -109,7 +111,7 @@ export function UserMetadataPanel({ userId }: UserMetadataPanelProps) {
           onClick={handleSave}
           disabled={updateMutation.isPending}
         >
-          Save
+          {t("save")}
         </IGRPButton>
       </div>
     </div>

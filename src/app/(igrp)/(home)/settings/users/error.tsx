@@ -2,9 +2,8 @@
 
 import { useEffect } from "react";
 
-import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
-
 import { StatusAwareError } from "@/components/errors/status-aware-error";
+import { InlineError } from "@/components/inline-error";
 
 export default function UsersError({
   error,
@@ -17,23 +16,19 @@ export default function UsersError({
     console.error("[users-segment] error:", error);
   }, [error]);
 
+  /* `InlineError`, like every other settings segment: this route had its own
+     hand-rolled fallback with its own icon, its own heading level and the raw
+     `error.message` shown to an administrator. One vocabulary — and the message
+     an API returns is not copy anyone wrote for this screen. */
   return (
     <StatusAwareError
       error={error}
       fallback={
-        <div className="flex flex-col items-center gap-4 p-10 text-center">
-          <IGRPIcon
-            iconName="AlertTriangle"
-            className="size-10 text-destructive"
-          />
-          <h2 className="text-lg font-semibold">
-            Não foi possível carregar os utilizadores
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-md">
-            {error.message}
-          </p>
-          <IGRPButton onClick={reset}>Tentar novamente</IGRPButton>
-        </div>
+        <InlineError
+          title="Não foi possível carregar os utilizadores."
+          message="Tente novamente. Se o problema persistir, contacte o suporte."
+          onRetry={reset}
+        />
       }
     />
   );

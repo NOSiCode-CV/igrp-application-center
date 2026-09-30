@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { IGRPSegmentError } from "@igrp/framework-next-ui";
 
 import { StatusAwareError } from "@/components/errors/status-aware-error";
-import { resolveErrorCopy } from "@/config/error-messages";
+import { useErrorCopy } from "@/components/errors/use-error-copy";
 import { reportError } from "@/lib/report-error";
 
 export default function IgrpSegmentError({
@@ -23,6 +23,8 @@ export default function IgrpSegmentError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { resolveErrorCopy, labels } = useErrorCopy();
+
   useEffect(() => {
     reportError(error, { segment: "(igrp)" });
   }, [error]);
@@ -35,6 +37,7 @@ export default function IgrpSegmentError({
           error={error}
           reset={reset}
           resolveCopy={resolveErrorCopy}
+          {...labels}
         />
       }
     />

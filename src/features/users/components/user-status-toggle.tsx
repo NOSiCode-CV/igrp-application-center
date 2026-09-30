@@ -3,18 +3,13 @@
 import { useState } from "react";
 
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   IGRPButton,
-  IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
+import { ConfirmDialog } from "@/components/confirmation-modal";
 import { useUpdateUserStatus } from "@/features/users/use-users";
 
 interface UserStatusToggleProps {
@@ -23,9 +18,13 @@ interface UserStatusToggleProps {
 
 export function UserStatusToggle({ user }: UserStatusToggleProps) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.profile");
+  const tc = useTranslations("common.actions");
+
   const { mutateAsync: updateStatus, isPending } = useUpdateUserStatus();
   const [open, setOpen] = useState(false);
   const isActive = user.status === "ACTIVE";
+  const userLabel = user.name || user.email;
 
   const handleConfirm = async () => {
     const value = isActive ? "INACTIVE" : "ACTIVE";
@@ -35,13 +34,13 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
       setOpen(false);
       igrpToast({
         type: "success",
-        title: `Utilizador ${isActive ? "desativado" : "ativado"} com sucesso`,
+        title: isActive ? t("toasts.deactivated") : t("toasts.activated"),
         duration: 4000,
       });
     } catch (err) {
       igrpToast({
         type: "error",
-        title: "Erro ao alterar estado",
+        title: t("toasts.statusChangeFailed"),
         description: (err as Error).message,
         duration: 4000,
       });
@@ -57,54 +56,39 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
         size="sm"
         onClick={() => setOpen(true)}
       >
-        {isActive ? "Desativar" : "Ativar"}
+        {isActive ? t("statusButton.deactivate") : t("statusButton.activate")}
       </IGRPButton>
 
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
-              <IGRPIcon
-                iconName="AlertTriangle"
-                className="size-5 text-destructive"
-                strokeWidth={2}
-              />
-              {isActive ? "Desativar" : "Ativar"} Utilizador
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-              utilizador{" "}
-              <strong className="text-foreground">{user.name}</strong>?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <IGRPButton
-              disabled={isPending}
-              variant="outline"
-              onClick={() => setOpen(false)}
-              type="button"
-              showIcon
-              iconPlacement="start"
-              iconName="X"
-            >
-              Cancelar
-            </IGRPButton>
-            <IGRPButton
-              onClick={handleConfirm}
-              disabled={isPending}
-              variant={isActive ? "destructive" : "default"}
-              className="gap-2"
-            >
-              {isPending ? (
-                <IGRPIcon iconName="LoaderCircle" className="animate-spin" />
-              ) : (
-                <IGRPIcon iconName={isActive ? "Ban" : "Check"} />
-              )}
-              {isActive ? "Confirmar Desativar" : "Confirmar Ativar"}
-            </IGRPButton>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={
+          isActive
+            ? t("statusDialog.deactivateTitle")
+            : t("statusDialog.activateTitle")
+        }
+        description={t.rich(
+          isActive
+            ? "statusDialog.deactivateDescription"
+            : "statusDialog.activateDescription",
+          {
+            name: userLabel,
+            strong: (chunks) => (
+              <strong className="text-foreground">{chunks}</strong>
+            ),
+          },
+        )}
+        onConfirm={handleConfirm}
+        isLoading={isPending}
+        confirmText={
+          isActive
+            ? t("statusDialog.confirmDeactivate")
+            : t("statusDialog.confirmActivate")
+        }
+        loadingText={isActive ? "A desativar..." : "A ativar..."}
+        iconName="Ban"
+        variant={isActive ? "destructive" : "default"}
+      />
     </>
   );
 }

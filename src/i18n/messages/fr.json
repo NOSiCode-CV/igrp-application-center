@@ -1,0 +1,8 @@
+{
+  "i18n": {
+    "localeSwitcher": {
+      "label": "Langue",
+      "changeError": "Impossible de changer la langue. Veuillez réessayer."
+    }
+  }
+}

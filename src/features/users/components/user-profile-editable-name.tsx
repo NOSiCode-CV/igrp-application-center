@@ -7,6 +7,7 @@ import {
   IGRPIcon,
   IGRPInputText,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 export interface UserProfileEditableNameProps {
   name: string;
@@ -21,6 +22,7 @@ export function UserProfileEditableName({
   maxLength = 120,
   onSave,
 }: UserProfileEditableNameProps) {
+  const t = useTranslations("users");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
   const [saving, setSaving] = useState(false);
@@ -53,7 +55,7 @@ export function UserProfileEditableName({
       await onSave(next);
       setEditing(false);
     } catch (err) {
-      setError((err as Error).message || "Erro ao guardar");
+      setError((err as Error).message || t("nameEditor.saveFailed"));
       throw err;
     } finally {
       setSaving(false);
@@ -85,7 +87,7 @@ export function UserProfileEditableName({
             variant="ghost"
             onClick={() => void commit().catch(() => {})}
             disabled={saving}
-            aria-label="Guardar nome"
+            aria-label={t("nameEditor.save")}
           >
             <IGRPIcon
               iconName={saving ? "LoaderCircle" : "Check"}
@@ -97,7 +99,7 @@ export function UserProfileEditableName({
             variant="ghost"
             onClick={cancel}
             disabled={saving}
-            aria-label="Cancelar edição"
+            aria-label={t("nameEditor.cancel")}
           >
             <IGRPIcon iconName="X" className="size-4" />
           </IGRPButton>
@@ -119,13 +121,13 @@ export function UserProfileEditableName({
   return (
     <div className="flex items-center gap-2 mb-1 group">
       <h1 className="text-2xl font-bold tracking-tight">
-        {name || fallback || "N/A"}
+        {name || fallback || t("notAvailable")}
       </h1>
       <IGRPButton
         size="sm"
         variant="ghost"
         onClick={startEditing}
-        aria-label="Editar nome"
+        aria-label={t("nameEditor.edit")}
       >
         <IGRPIcon iconName="Pencil" className="size-4" />
       </IGRPButton>

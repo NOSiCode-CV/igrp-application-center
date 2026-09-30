@@ -54,7 +54,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
       >
         <button
           type="button"
-          className="size-4 flex items-center justify-center shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
+          className="size-7 -my-1 flex items-center justify-center shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
           onClick={() => hasChildren && toggle(dept.code)}
           disabled={!hasChildren || searchActive}
           aria-expanded={hasChildren ? isExpanded : undefined}
@@ -84,24 +84,27 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
         <button
           type="button"
           onClick={() => select(dept.code)}
-          aria-current={isSelected ? "true" : undefined}
+          aria-current={isSelected ? "page" : undefined}
           className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {!isActive && (
-            <span
-              aria-hidden
-              className="size-1.5 rounded-full bg-muted-foreground shrink-0"
-            />
+            <>
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full bg-muted-foreground shrink-0"
+              />
+              <span className="sr-only">Inativo:</span>
+            </>
           )}
           <span className="flex-1 text-left truncate">{dept.name}</span>
         </button>
 
-        <div className="opacity-40 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity motion-reduce:transition-none">
+        <div className="opacity-70 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity motion-reduce:transition-none">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-6 w-6 p-0"
+                className="size-8 p-0"
                 onClick={(e: MouseEvent) => e.stopPropagation()}
                 aria-label="Abrir menu"
               >

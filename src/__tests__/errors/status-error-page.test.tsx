@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -24,10 +24,14 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
 }));
 
 import { StatusErrorPage } from "@/components/errors/status-error-page";
+import { deepMerge } from "@/i18n/messages";
+import pt from "@/i18n/messages/pt.json";
+
+import { renderWithIntl } from "../helpers/intl";
 
 describe("StatusErrorPage", () => {
   it("renders the status number, default title and description for 403", () => {
-    render(<StatusErrorPage status={403} />);
+    renderWithIntl(<StatusErrorPage status={403} />);
     expect(screen.getByText("403")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: /acesso negado/i }),
@@ -37,30 +41,32 @@ describe("StatusErrorPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows the API message as secondary text below the default copy", () => {
-    render(
+  // FE-9 (FR-21): the API detail is shown as-is in place of the generic text.
+  it("shows the API detail instead of the generic description", () => {
+    renderWithIntl(
       <StatusErrorPage
         status={403}
         message="O utilizador não tem o perfil X"
       />,
     );
-    // Default copy is ALWAYS shown…
-    expect(
-      screen.getByText(/não tem permissões para ver este recurso/i),
-    ).toBeInTheDocument();
-    // …and the API message appears in addition.
     expect(
       screen.getByText(/o utilizador não tem o perfil x/i),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/não tem permissões para ver este recurso/i),
+    ).not.toBeInTheDocument();
   });
 
-  it("hides the API message when it is just the per-status default", () => {
-    render(<StatusErrorPage status={403} message="Acesso negado" />);
+  it("ignores client-side generic fallbacks that are not API messages", () => {
+    renderWithIntl(<StatusErrorPage status={403} message="Acesso negado" />);
     expect(screen.getAllByText(/acesso negado/i)).toHaveLength(1); // title only
+    expect(
+      screen.getByText(/não tem permissões para ver este recurso/i),
+    ).toBeInTheDocument();
   });
 
   it("renders fallback copy when the status is unknown", () => {
-    render(<StatusErrorPage status={418} />);
+    renderWithIntl(<StatusErrorPage status={418} />);
     expect(screen.getByText("418")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: /ocorreu um erro/i }),
@@ -68,14 +74,30 @@ describe("StatusErrorPage", () => {
   });
 
   it("renders fallback copy without a number when status is missing", () => {
-    render(<StatusErrorPage />);
+    renderWithIntl(<StatusErrorPage />);
     expect(
       screen.getByRole("heading", { name: /ocorreu um erro/i }),
     ).toBeInTheDocument();
   });
 
+  it("uses the requested language when translated, pt otherwise", () => {
+    renderWithIntl(<StatusErrorPage status={404} />, {
+      locale: "en",
+      // Only the title is translated here; the rest falls back per key to pt.
+      messages: deepMerge(pt, {
+        errors: { status: { notFound: { title: "Page not found" } } },
+      }),
+    });
+    expect(
+      screen.getByRole("heading", { name: "Page not found" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/a página que procura não existe/i),
+    ).toBeInTheDocument();
+  });
+
   it("navigates back and home", async () => {
-    render(<StatusErrorPage status={500} />);
+    renderWithIntl(<StatusErrorPage status={500} />);
     await userEvent.click(screen.getByRole("button", { name: /voltar/i }));
     expect(back).toHaveBeenCalledTimes(1);
     await userEvent.click(screen.getByRole("button", { name: /início/i }));

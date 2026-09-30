@@ -11,6 +11,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { useUpdateUser } from "@/features/users/use-users";
@@ -28,6 +29,7 @@ export function UserAvatarUploader({ user }: UserAvatarUploaderProps) {
   const uploadFile = useUploadPublicFiles();
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.avatar");
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setUploading] = useState(false);
@@ -46,18 +48,18 @@ export function UserAvatarUploader({ user }: UserAvatarUploaderProps) {
         file,
         options: { folder: `users/${user.id}/avatar` },
       });
-      if (!uploadedPath) throw new Error("Upload sem caminho");
+      if (!uploadedPath) throw new Error(t("uploadNoPath"));
       const res = await updateUser({
         id: user.id,
         user: { ...user, picture: uploadedPath },
       });
       if (!res.success) throw new Error(res.error);
       await queryClient.invalidateQueries({ queryKey: ["user", user.id] });
-      igrpToast({ type: "success", title: "Foto atualizada", duration: 4000 });
+      igrpToast({ type: "success", title: t("updated"), duration: 4000 });
     } catch (err) {
       igrpToast({
         type: "error",
-        title: "Erro ao atualizar foto",
+        title: t("updateFailed"),
         description: (err as Error).message,
         duration: 4000,
       });

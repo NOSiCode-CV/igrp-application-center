@@ -7,6 +7,7 @@ import {
   cn,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { getStatusColor } from "@/lib/utilities";
 
@@ -33,6 +34,7 @@ export function UserProfileHeader(props: UserProfileHeaderProps) {
     onSaveName,
     actions,
   } = props;
+  const t = useTranslations("users");
 
   return (
     <Card className="py-2 border-0 shadow-sm">
@@ -49,11 +51,13 @@ export function UserProfileHeader(props: UserProfileHeaderProps) {
             <div className="flex items-center gap-2">
               <UserProfileEditableName
                 name={user.name || user.username || ""}
-                fallback="N/A"
+                fallback={t("notAvailable")}
                 onSave={onSaveName}
               />
               <Badge className={cn(getStatusColor(user.status ?? ""))}>
-                {user.status === "ACTIVE" ? "Ativo" : "Inativo"}
+                {user.status === "ACTIVE"
+                  ? t("status.active")
+                  : t("status.inactive")}
               </Badge>
               {actions ? <div className="ml-auto">{actions}</div> : null}
             </div>

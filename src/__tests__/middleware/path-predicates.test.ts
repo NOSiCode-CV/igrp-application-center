@@ -1,5 +1,5 @@
 // Mock heavy module-level deps before importing @/middleware
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/lib/auth-instance", () => ({
   auth: {
     isAuthDisabled: vi.fn(() => false),
     isPreviewMode: vi.fn(() => false),
@@ -28,7 +28,8 @@ describe("isPublicPath", () => {
   ])("treats %s as public/static", (p) => expect(isPublicPath(p)).toBe(true));
 
   it.each(["/", "/settings/users", "/profile"])("treats %s as protected", (p) =>
-    expect(isPublicPath(p)).toBe(false));
+    expect(isPublicPath(p)).toBe(false),
+  );
 });
 
 describe("isAuthUiPath", () => {

@@ -17,7 +17,7 @@ export function buildTree(
     const node = map.get(d.code);
     if (!node) continue;
     const parent = d.parentCode ? map.get(d.parentCode) : undefined;
-    if (parent) parent.children!.push(node);
+    if (parent) parent.children?.push(node);
     else roots.push(node);
   }
   return roots;

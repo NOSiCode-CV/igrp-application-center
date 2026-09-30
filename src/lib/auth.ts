@@ -1,122 +1,16 @@
-import { redirect } from "next/navigation";
-
 import { igrpSetAccessClientConfig } from "@igrp/framework-next";
 import { isIgrpError } from "@igrp/framework-next/errors";
-import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 import { assertAuthProviderEnv } from "@igrp/framework-next-auth/providers";
 
+import { auth } from "@/lib/auth-instance";
 import { reportError } from "@/lib/report-error";
-import { isAuthBypass } from "@/lib/utils";
+import { isAuthBypass } from "@/lib/utilities";
 
-/**
- * Minimal session shape used in bypass mode (IGRP_PREVIEW_MODE or
- * AUTH_PROVIDER=none). Covers only the fields layouts/actions read; callers
- * cast to their concrete session type. Single source of truth — do not inline.
- */
-export const PREVIEW_SESSION_STUB = {
-  user: { name: "Preview User", email: "preview@example.com" },
-  accessToken: "preview-token",
-  expires: "9999-12-31T23:59:59.999Z",
-} as const;
-
-/**
- * Central IGRP auth instance.
- *
- * - Provider is resolved automatically from AUTH_PROVIDER env var (igrp-auth / none).
- *   To use a custom provider, pass a Provider object: `provider: GitHubProvider({ ... })`.
- * - All auth boilerplate (authOptions, route handler, middleware, session helpers) is provided.
- *
- * Usage:
- *   Route handler  → export const { GET, POST } = auth;
- *   Middleware     → export const { middleware, config } = auth;
- *   Server action  → const session = await auth.serverSession();
- *   Layout         → const session = await auth.getSession();
- */
-/**
- * Strips the trailing `/api/auth` segment NextAuth v4 requires in
- * NEXTAUTH_URL when the app uses a `basePath`, leaving the bare app origin
- * (e.g. `http://localhost:3000/apps/template`). We need that base when
- * building post-login redirects — concatenating NextAuth's `baseUrl` (which
- * is the NEXTAUTH_URL string verbatim) onto a path would otherwise yield
- * `…/api/auth/<path>`, i.e. a NextAuth API URL instead of an app page.
- */
-function deriveAppBaseUrl(baseUrlFromNextAuth: string): string {
-  const envInternal = (process.env.NEXTAUTH_URL_INTERNAL ?? "").replace(
-    /\/api\/auth\/?$/,
-    "",
-  );
-  if (envInternal) return envInternal;
-  return baseUrlFromNextAuth.replace(/\/api\/auth\/?$/, "");
-}
-
-const AUTH_UI_PATH = /^\/(login|logout)(\/|$)/;
-
-/**
- * Optional explicit NextAuth session-cookie lifetime, in seconds. Align this to
- * your IdP's refresh-token lifetime so the session cookie expires with the
- * refresh token instead of lingering for NextAuth's ~30-day default. Unset (or
- * non-numeric / <= 0) leaves the NextAuth default in place — no behavior change.
- */
-function getSessionMaxAge(): number | undefined {
-  const raw = process.env.IGRP_SESSION_MAX_AGE?.trim();
-  if (!raw) return undefined;
-  const parsed = Number.parseInt(raw, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
-}
-
-const sessionMaxAge = getSessionMaxAge();
-
-export const auth = withIGRPAuth({
-  onSessionExpired: () => redirect("/logout"),
-  // Explicit session lifetime when IGRP_SESSION_MAX_AGE is set; otherwise omit
-  // so withIGRPAuth keeps NextAuth's default (no `session` override).
-  ...(sessionMaxAge ? { session: { maxAge: sessionMaxAge } } : {}),
-  // Point NextAuth at our custom sign-in page so its internal "needs sign-in"
-  // redirects (e.g. when a future caller uses `useSession({ required: true })`
-  // or `withAuth`) land on /login instead of the framework default page.
-  pages: { signIn: "/login" },
-  callbacks: {
-    /**
-     * Post-auth redirect.
-     *
-     * Replaces the framework default, which ignores `url` and returns
-     * `NEXTAUTH_URL_INTERNAL + APP_HOME_SLUG` — broken when NEXTAUTH_URL
-     * includes `/api/auth` (which v4 requires under a basePath).
-     *
-     * Contract here:
-     *   - Always resolve to the **app origin** (NEXTAUTH_URL minus `/api/auth`).
-     *   - Honor a same-origin `url` (relative `/…` or absolute) unless it
-     *     points to the auth chrome itself (`/login*`, `/logout*`) — in which
-     *     case fall back to APP_HOME_SLUG or `/`.
-     *   - Anything else (off-origin, malformed) → app home, never echo back.
-     */
-    redirect: ({ url, baseUrl }) => {
-      const appBaseUrl = deriveAppBaseUrl(baseUrl);
-      const homeSlug = process.env.NEXT_PUBLIC_IGRP_APP_HOME_SLUG || "/";
-      const homeUrl = `${appBaseUrl}${homeSlug.startsWith("/") ? homeSlug : `/${homeSlug}`}`;
-
-      // Relative path — join to app origin
-      if (url.startsWith("/") && !url.startsWith("//")) {
-        if (AUTH_UI_PATH.test(url.split("?")[0] ?? "")) return homeUrl;
-        return `${appBaseUrl}${url}`;
-      }
-
-      // Absolute URL — allow only same origin
-      try {
-        const parsed = new URL(url);
-        const base = new URL(appBaseUrl);
-        if (parsed.origin === base.origin) {
-          if (AUTH_UI_PATH.test(parsed.pathname)) return homeUrl;
-          return url;
-        }
-      } catch {
-        // fall through
-      }
-
-      return homeUrl;
-    },
-  },
-});
+// The auth instance itself lives in `lib/auth-instance.ts` so middleware (Edge
+// runtime) can import it without pulling in the Node-only session helpers
+// below. Everything else keeps importing from here — the public surface of
+// this module is unchanged.
+export { auth, PREVIEW_SESSION_STUB } from "@/lib/auth-instance";
 
 /**
  * Gets the server-side session from NextAuth.
@@ -146,6 +40,11 @@ export async function serverSession() {
   try {
     const session = await auth.serverSession();
 
+    const sessionError =
+      session && typeof session === "object" && "error" in session
+        ? (session as { error?: unknown }).error
+        : undefined;
+
     // Dev-only diagnostics for the most common silent-failure modes:
     //  - session present but the JWT carries a `error` flag from `callbacks.jwt`
     //    (typical when the OIDC refresh token has expired or the issuer
@@ -154,29 +53,18 @@ export async function serverSession() {
     //  - session is null while a NextAuth cookie is present (cookie decode
     //    failed, NEXTAUTH_SECRET changed, or the cookie was issued by a
     //    different basePath/domain).
-    const sessionError =
-      session && typeof session === "object" && "error" in session
-        ? (session as { error?: unknown }).error
-        : undefined;
-
-    if (sessionError) {
-      // Refresh failed (RefreshAccessTokenError) — the session cookie still
-      // carries the old, expired access token. Do NOT pass it to
-      // igrpSetAccessClientConfig: any downstream API call with that token
-      // will get a 401 which surfaces as an error page rather than a proper
-      // logout redirect. Return null so callers (getClientAccess, etc.) treat
-      // the request as unauthenticated. verifySession() / auth.getSession()
-      // will catch the forceLogout flag and redirect to /logout on the next
-      // render that goes through the (igrp) layout.
+    if (process.env.NODE_ENV !== "production" && sessionError) {
       console.warn(
-        "[serverSession] refresh failed — treating session as unauthenticated:",
+        "[serverSession] session present but carries error flag:",
         sessionError,
-        "→ check IdP refresh-token endpoint / client credentials / token rotation config",
+        "→ user will be treated as unauthenticated; check OIDC refresh token / issuer logs",
       );
-      return null;
     }
 
-    if (session !== null) {
+    // Skip seeding a token we already know is dead — it would only produce a
+    // guaranteed 401 on the next access-management call instead of letting the
+    // session-error redirect (onSessionExpired / IGRPSessionWatcher) run first.
+    if (session !== null && !sessionError) {
       igrpSetAccessClientConfig({
         token: session.accessToken as string,
         baseUrl: apiManagement,
@@ -224,5 +112,38 @@ export async function serverSession() {
  */
 export async function getSession() {
   if (isAuthBypass()) return null;
-  return auth.getSession();
+  const session = await auth.getSession();
+  // Seed the per-request access-client config so downstream consumers in the
+  // same request (e.g. igrpGetClaims, server actions) can read the token.
+  // Mirrors serverSession(); IGRPLayoutFull also seeds later but renders after
+  // the (igrp) layout body where igrpGetClaims() runs.
+  if (session) {
+    igrpSetAccessClientConfig({
+      token: (session.accessToken as string) ?? "",
+      baseUrl: process.env.IGRP_ACCESS_MANAGEMENT_API || "",
+    });
+  }
+  return session;
+}
+
+/**
+ * The current user's preferred language (`session.locale`), or `undefined`
+ * when unauthenticated, in bypass mode, or when the session cannot be read.
+ * Locale resolution must never break rendering, so failures degrade to
+ * "unknown" — except Next's dynamic-rendering bailout, which is control flow.
+ */
+export async function getSessionLocale(): Promise<string | undefined> {
+  if (isAuthBypass()) return undefined;
+  try {
+    const session = await auth.serverSession();
+    return session?.locale ?? undefined;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (error as { digest?: string }).digest === "DYNAMIC_SERVER_USAGE"
+    ) {
+      throw error;
+    }
+    return undefined;
+  }
 }

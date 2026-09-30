@@ -1,7 +1,12 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 
-import { UserProfileAvatar } from "@/features/users/components/user-profile-avatar";
+import {
+  UserProfileAvatar,
+  type UserProfileAvatarProps,
+} from "@/features/users/components/user-profile-avatar";
+
+import { renderWithIntl } from "../../helpers/intl";
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
@@ -16,10 +21,13 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     fallbackContent?: React.ReactNode;
   }) =>
     image ? (
+      // biome-ignore lint/performance/noImgElement: lightweight test mock, not a real page image
       <img src={image} alt={alt} />
     ) : (
       <span data-testid="avatar-fallback">{fallbackContent}</span>
     ),
+  Skeleton: () => <span data-testid="avatar-skeleton" />,
+  useIGRPToast: () => ({ igrpToast: vi.fn() }),
 }));
 
 const baseUser = {
@@ -28,19 +36,20 @@ const baseUser = {
   username: "ana",
   email: "a@x.cv",
   picture: null,
-} as never;
+} as unknown as UserProfileAvatarProps["user"];
 
 const fakeUrl = "blob:fake";
 beforeEach(() => {
-  vi.stubGlobal("URL", {
-    createObjectURL: vi.fn(() => fakeUrl),
-    revokeObjectURL: vi.fn(),
-  });
+  // Only the object-URL helpers are stubbed. Replacing the whole `URL` global
+  // would drop the constructor, and vi.stubGlobal is not auto-restored, so the
+  // damage would leak into every later test file sharing this worker.
+  vi.spyOn(URL, "createObjectURL").mockReturnValue(fakeUrl);
+  vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
 });
 
 it("shows the object-URL preview while uploading and clears it after success", async () => {
   const onUpload = vi.fn().mockResolvedValue(undefined);
-  render(
+  renderWithIntl(
     <UserProfileAvatar
       user={baseUser}
       resolvedUrl={null}
@@ -62,7 +71,7 @@ it("shows the object-URL preview while uploading and clears it after success", a
 
 it("clears object URL when upload errors", async () => {
   const onUpload = vi.fn().mockRejectedValue(new Error("nope"));
-  render(
+  renderWithIntl(
     <UserProfileAvatar
       user={baseUser}
       resolvedUrl={null}
@@ -83,7 +92,7 @@ it("clears object URL when upload errors", async () => {
 });
 
 it("exposes aria-label and disables trigger while resolving URL", () => {
-  render(
+  renderWithIntl(
     <UserProfileAvatar
       user={baseUser}
       resolvedUrl={null}
@@ -98,8 +107,8 @@ it("exposes aria-label and disables trigger while resolving URL", () => {
 });
 
 it("falls back to username then email for alt text when name is empty", () => {
-  const userNoName = { ...baseUser, name: "", username: "ana_u" } as never;
-  render(
+  const userNoName = { ...baseUser, name: "", username: "ana_u" };
+  renderWithIntl(
     <UserProfileAvatar
       user={userNoName}
       resolvedUrl="https://example.com/a.png"

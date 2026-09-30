@@ -14,6 +14,7 @@ import {
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import { Status } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 export interface UserProfileStatusDialogProps {
   open: boolean;
@@ -30,6 +31,8 @@ export function UserProfileStatusDialog({
   onOpenChange,
   onConfirm,
 }: UserProfileStatusDialogProps) {
+  const t = useTranslations("users.profile.statusDialog");
+  const tc = useTranslations("common.actions");
   const [pending, setPending] = useState(false);
   const next: Status = isActive ? Status.INACTIVE : Status.ACTIVE;
 
@@ -52,11 +55,18 @@ export function UserProfileStatusDialog({
               className="size-5 text-destructive"
               strokeWidth={2}
             />
-            {isActive ? "Desativar" : "Ativar"} Utilizador
+            {isActive ? t("deactivateTitle") : t("activateTitle")}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja {isActive ? "desativar" : "ativar"} o
-            utilizador <strong className="text-foreground">{userName}</strong>?
+            {t.rich(
+              isActive ? "deactivateDescription" : "activateDescription",
+              {
+                name: userName,
+                strong: (chunks) => (
+                  <strong className="text-foreground">{chunks}</strong>
+                ),
+              },
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -69,7 +79,7 @@ export function UserProfileStatusDialog({
             iconPlacement="start"
             iconName="X"
           >
-            Cancelar
+            {tc("cancel")}
           </IGRPButton>
           <IGRPButton
             onClick={handleConfirm}
@@ -86,7 +96,7 @@ export function UserProfileStatusDialog({
             ) : (
               <IGRPIcon iconName={isActive ? "Ban" : "Check"} />
             )}
-            {isActive ? "Confirmar Desativar" : "Confirmar Ativar"}
+            {isActive ? t("confirmDeactivate") : t("confirmActivate")}
           </IGRPButton>
         </AlertDialogFooter>
       </AlertDialogContent>

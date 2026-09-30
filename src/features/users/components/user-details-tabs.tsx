@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 import {
   IGRPButton,
@@ -11,6 +12,7 @@ import {
   TabsTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
@@ -33,13 +35,14 @@ function TabSkeleton() {
 }
 
 function TabError({ error, resetErrorBoundary }: FallbackProps) {
-  const message =
-    error instanceof Error ? error.message : "Erro ao carregar dados";
+  const t = useTranslations("users.detail");
+  const tc = useTranslations("common.actions");
+  const message = error instanceof Error ? error.message : t("loadError");
   return (
     <div className="flex flex-col items-center gap-3 p-6 text-sm text-destructive">
       <p>{message}</p>
       <IGRPButton size="sm" onClick={resetErrorBoundary}>
-        Tentar novamente
+        {tc("retry")}
       </IGRPButton>
     </div>
   );
@@ -66,19 +69,43 @@ interface UserDetailsTabsProps {
   user: IGRPUserDTO;
 }
 
+const TAB_VALUES: TabValue[] = [
+  "roles",
+  "departments",
+  "applications",
+  "signature",
+  "sessions",
+  "audit",
+  "metadata",
+];
+
 export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
-  const [active, setActive] = useState<TabValue>("roles");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Tab lives in the URL so the view is linkable and survives a round trip to
+  // the list, matching the departments surface.
+  const requested = searchParams.get("tab") as TabValue | null;
+  const active: TabValue =
+    requested && TAB_VALUES.includes(requested) ? requested : "roles";
+
+  const handleTabChange = (next: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", next);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+  const t = useTranslations("users.detail.tabs");
 
   return (
-    <Tabs value={active} onValueChange={(v) => setActive(v as TabValue)}>
+    <Tabs value={active} onValueChange={handleTabChange}>
       <TabsList>
-        <TabsTrigger value="roles">Perfis</TabsTrigger>
-        <TabsTrigger value="departments">Departamentos</TabsTrigger>
-        <TabsTrigger value="applications">Aplicações</TabsTrigger>
-        <TabsTrigger value="signature">Assinatura</TabsTrigger>
-        <TabsTrigger value="sessions">Sessões</TabsTrigger>
-        <TabsTrigger value="audit">Auditoria</TabsTrigger>
-        <TabsTrigger value="metadata">Metadados</TabsTrigger>
+        <TabsTrigger value="roles">{t("roles")}</TabsTrigger>
+        <TabsTrigger value="departments">{t("departments")}</TabsTrigger>
+        <TabsTrigger value="applications">{t("applications")}</TabsTrigger>
+        <TabsTrigger value="signature">{t("signature")}</TabsTrigger>
+        <TabsTrigger value="sessions">{t("sessions")}</TabsTrigger>
+        <TabsTrigger value="audit">{t("audit")}</TabsTrigger>
+        <TabsTrigger value="metadata">{t("metadata")}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="roles">

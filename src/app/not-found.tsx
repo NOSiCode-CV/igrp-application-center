@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 
-const IGRPTemplateNotFound = dynamic(
-  () =>
-    import("@igrp/framework-next-ui").then((mod) => mod.IGRPTemplateNotFound),
-  { ssr: true },
-);
+import { IGRPTemplateNotFound } from "@igrp/framework-next-ui";
 
 export const metadata: Metadata = {
   title: "404 - Página não encontrada",

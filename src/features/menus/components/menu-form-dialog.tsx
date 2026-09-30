@@ -517,7 +517,7 @@ function MenuFormBody({
                   disabled={isLoading}
                 >
                   {isLoading
-                    ? "Guardando..."
+                    ? "A guardar..."
                     : isEditMode
                       ? "Atualizar"
                       : "Criar Menu"}

@@ -1,0 +1,19 @@
+{
+  "$comment": "Permission catalog for this application, maintained by iGRP Studio. Pushed to Access Management at startup when IGRP_SYNC_PERMISSIONS=true (see docs/PERMISSIONS.md). Names are BARE suffixes: Access Management qualifies them with the department when granting to a role, and the resulting token claim is `${department}.${name}`. A name containing a dot is treated as already department-qualified by the permission gates, so keep suffixes dot-free.",
+  "permissions": [
+    {
+      "id": "perm_demo_manage_access",
+      "name": "manage_access",
+      "label": "Manage access",
+      "description": "Permite gerir acessos e permissões da aplicação",
+      "enabled": true
+    },
+    {
+      "id": "perm_demo_delete_invoice",
+      "name": "delete_invoice",
+      "label": "Delete invoice",
+      "description": "Permite eliminar faturas",
+      "enabled": true
+    }
+  ]
+}

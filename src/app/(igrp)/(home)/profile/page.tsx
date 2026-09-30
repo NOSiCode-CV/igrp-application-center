@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/actions/user";
 import { filesKeys } from "@/features/files/query-keys";
 import { UserProfile } from "@/features/users/components/user-profile";
 import { currentUserKeys } from "@/features/users/query-keys";
+import { LocaleSwitcher } from "@/i18n/components/locale-switcher";
 import { HttpStatusError } from "@/lib/errors";
 import { getQueryClient } from "@/providers/query-client.server";
 
@@ -45,7 +46,12 @@ export default async function UserProfilePage() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl">
+    <div className="container mx-auto flex max-w-7xl flex-col gap-4">
+      {/* OQ-2: the framework header has no extension point yet, so the
+          authenticated language selector lives on the profile page. */}
+      <div className="flex justify-end">
+        <LocaleSwitcher className="w-48" />
+      </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <UserProfile />
       </HydrationBoundary>

@@ -9,6 +9,7 @@ import {
   Badge,
   Card,
   CardContent,
+  cn,
   Dialog,
   DialogContent,
   DialogHeader,
@@ -37,8 +38,7 @@ import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
 import { ROUTES } from "@/lib/constants";
-import { getStatusColor } from "@/lib/utilities";
-import { cn } from "@/lib/utils";
+import { getStatusColor, showStatus } from "@/lib/utilities";
 
 import { ApplicationForm } from "./app-form";
 
@@ -224,7 +224,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                     {app.name}
                   </h1>
                   <Badge className={getStatusColor(app.status || "ACTIVE")}>
-                    {app.status}
+                    {showStatus(app.status || "ACTIVE")}
                   </Badge>
                 </div>
 

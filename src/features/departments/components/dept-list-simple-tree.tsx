@@ -98,9 +98,13 @@ const DepartmentTreeItemSimple = ({
               strokeWidth={2}
             />
             {!isActive && (
-              <div className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full bg-destructive/50 border border-background" />
+              <div
+                aria-hidden
+                className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full bg-destructive/50 border border-background"
+              />
             )}
           </div>
+          {!isActive && <span className="sr-only">Inativo:</span>}
           <span className="flex-1 text-left truncate font-medium">
             {dept.name}
           </span>

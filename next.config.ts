@@ -1,35 +1,51 @@
+import { existsSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
 
-/** Absolute app root so Turbopack does not pick a parent `pnpm-lock.yaml` (e.g. on `D:\`). */
-const turbopackRoot = path.dirname(fileURLToPath(import.meta.url));
+import createNextIntlPlugin from "next-intl/plugin";
+
+// next-intl WITHOUT i18n routing: no [locale] segment and no locale in URLs
+// (HAProxy routes /apps/[slug]). The locale is resolved per request in
+// src/i18n/request.ts.
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+const appDir = path.dirname(fileURLToPath(import.meta.url));
+const monorepoRoot = path.resolve(appDir, "../..");
+
+const turbopackRoot = existsSync(path.join(monorepoRoot, "pnpm-workspace.yaml"))
+  ? monorepoRoot
+  : appDir;
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+// The design system (ESM) imports `lucide-react/dynamicIconImports` without an
+// extension, and lucide-react has no `exports` map, so strict ESM resolution
+// can't find the `.mjs` file. Alias it to the design system's own lucide copy
+// (its peer; lucide-react isn't a direct dependency here). Drop once the design
+// system imports the full path.
+const lucideDynamicIconImports = `./${path
+  .relative(
+    appDir,
+    path.join(
+      realpathSync(
+        path.join(
+          appDir,
+          "node_modules/@igrp/igrp-framework-react-design-system",
+        ),
+      ),
+      "../../lucide-react/dynamicIconImports.mjs",
+    ),
+  )
+  .replaceAll("\\", "/")}`;
 
 const getRemotePatterns = () => {
   const patterns: Array<{
     protocol: RemotePattern["protocol"];
     hostname: RemotePattern["hostname"];
-    pathname?: RemotePattern["pathname"];
   }> = [];
-
-  // Whitelist the configured MinIO endpoint so next/image can load app pictures.
-  const minioUrl = process.env.NEXT_PUBLIC_IGRP_MINIO_URL;
-  if (minioUrl) {
-    try {
-      const parsed = new URL(minioUrl);
-      patterns.push({
-        protocol: parsed.protocol.replace(":", "") as RemotePattern["protocol"],
-        hostname: parsed.hostname,
-        pathname: "/**",
-      });
-    } catch {
-      // Ignore malformed URLs — they will simply not be whitelisted.
-    }
-  }
 
   // Add extra domains via env (comma-separated)
   // Ex: NEXT_PUBLIC_ALLOWED_DOMAINS=example.com,cdn.example.com
@@ -58,8 +74,12 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   turbopack: {
     root: turbopackRoot,
+    resolveAlias: {
+      "lucide-react/dynamicIconImports": lucideDynamicIconImports,
+    },
   },
   experimental: {
+    authInterrupts: true,
     typedEnv: true,
     browserDebugInfoInTerminal: {
       depthLimit: 5,
@@ -70,13 +90,8 @@ const nextConfig: NextConfig = {
       "@igrp/framework-next-ui",
       "@igrp/framework-next",
       "@tanstack/react-query",
-      "@tanstack/react-table",
-      "@tanstack/react-virtual",
-      "lucide-react",
-      "radix-ui",
-      "shadcn",
     ],
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

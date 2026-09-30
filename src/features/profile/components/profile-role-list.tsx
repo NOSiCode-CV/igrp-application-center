@@ -62,7 +62,7 @@ export default function ProfileRoleList() {
   };
 
   if (isLoading) {
-    return <AppCenterLoading description="Carregando perfis…" />;
+    return <AppCenterLoading description="A carregar perfis…" />;
   }
 
   return (

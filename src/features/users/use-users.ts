@@ -2,6 +2,7 @@ import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import type {
   AddRolesToUserRequestDTO,
   ApplicationDTO,
+  AuditLogDTO,
   AuditLogFilters,
   DepartmentDTO,
   IGRPUserDTO,
@@ -9,7 +10,6 @@ import type {
   InviteUserDTO,
   PageResponse,
   RoleDTO,
-  SecurityAuditLogDTO,
   SessionResponseDTO,
   UserFilters,
   UserInvitationResponseDTO,
@@ -22,6 +22,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import { unwrap } from "@/actions/types";
 import {
@@ -234,6 +235,7 @@ export function useCurrentUserFavoriteApplications(applicationName?: string) {
 export function useAddCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.favorites");
 
   return useMutation({
     mutationFn: async (variables: {
@@ -268,7 +270,7 @@ export function useAddCurrentUserFavoriteApplication() {
       }
       igrpToast({
         type: "error",
-        title: "Não foi possível atualizar os favoritos.",
+        title: t("updateFailed"),
         description: (err as Error).message,
         duration: 4000,
       });
@@ -284,6 +286,7 @@ export function useAddCurrentUserFavoriteApplication() {
 export function useRemoveCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.favorites");
 
   return useMutation({
     mutationFn: async (applicationCode: string) =>
@@ -309,7 +312,7 @@ export function useRemoveCurrentUserFavoriteApplication() {
       }
       igrpToast({
         type: "error",
-        title: "Não foi possível atualizar os favoritos.",
+        title: t("updateFailed"),
         description: (err as Error).message,
         duration: 4000,
       });
@@ -545,7 +548,7 @@ export const useKillUserSession = () => {
 };
 
 export const useUserAuditLogs = (userId: string, filters?: AuditLogFilters) => {
-  return useQuery<PageResponse<SecurityAuditLogDTO>, Error>({
+  return useQuery<PageResponse<AuditLogDTO>, Error>({
     queryKey: userKeys.auditLogs(userId, filters),
     queryFn: async () => unwrap(await getUserAuditLogs(userId, filters)),
     enabled: !!userId,

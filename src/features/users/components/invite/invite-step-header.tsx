@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
-import type { LucideIcon } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  IGRPIcon,
+  type IGRPIconProps,
+} from "@igrp/igrp-framework-react-design-system";
 
 interface InviteStepHeaderProps {
-  icon: LucideIcon;
+  icon: IGRPIconProps["iconName"];
   eyebrow?: string;
   title: string;
   description?: ReactNode;
@@ -20,7 +22,7 @@ const TONE: Record<NonNullable<InviteStepHeaderProps["tone"]>, string> = {
 };
 
 export function InviteStepHeader({
-  icon: Icon,
+  icon,
   eyebrow,
   title,
   description,
@@ -35,7 +37,12 @@ export function InviteStepHeader({
           TONE[tone],
         )}
       >
-        <Icon aria-hidden="true" className="size-7" strokeWidth={1.75} />
+        <IGRPIcon
+          iconName={icon}
+          aria-hidden="true"
+          className="size-7"
+          strokeWidth={1.75}
+        />
       </div>
       <div className="flex flex-col gap-2">
         {eyebrow ? (

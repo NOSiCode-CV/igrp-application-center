@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
@@ -16,17 +17,11 @@ import { UserProfileStatusDialog } from "./user-profile-status-dialog";
 import { UserProfileTabs } from "./user-profile-tabs";
 
 export function UserProfile() {
+  const t = useTranslations("users.profile");
   const { data: user, isLoading, error } = useCurrentUser();
   if (error) throw error;
-  if (isLoading)
-    return <AppCenterLoading description="Carregando utilizador…" />;
-  if (!user)
-    return (
-      <AppCenterNotFound
-        iconName="User"
-        title="Nenhum utilizador encontrado."
-      />
-    );
+  if (isLoading) return <AppCenterLoading description={t("loading")} />;
+  if (!user) return <AppCenterNotFound iconName="User" title={t("notFound")} />;
   return <UserProfileView user={user} />;
 }
 

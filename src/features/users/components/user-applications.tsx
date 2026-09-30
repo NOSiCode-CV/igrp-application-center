@@ -7,6 +7,7 @@ import type {
   ApplicationDTO,
   IGRPUserDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 import { ApplicationCard } from "@/features/applications/components/app-card";
@@ -14,6 +15,7 @@ import { ApplicationCard } from "@/features/applications/components/app-card";
 import { useCurrentUserApplications, useUserApplications } from "../use-users";
 
 export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
+  const t = useTranslations("users.applications");
   const [search, setSearch] = useState("");
 
   const { data: currentUserApps, isLoading: isLoadingMyApps } =
@@ -46,9 +48,9 @@ export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
         />
         <Input
           type="search"
-          aria-label="Pesquisar aplicação"
+          aria-label={t("searchLabel")}
           spellCheck={false}
-          placeholder="Pesquisar aplicação…"
+          placeholder={t("searchPlaceholder")}
           className="w-full bg-background pl-8"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -57,12 +59,10 @@ export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
       </div>
 
       {loading ? (
-        <AppCenterLoading description="Carregando aplicações…" />
+        <AppCenterLoading description={t("loading")} />
       ) : filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          {search.trim()
-            ? "Nenhuma aplicação corresponde à pesquisa."
-            : "Nenhuma aplicação atribuída."}
+          {search.trim() ? t("noResults") : t("empty")}
         </p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

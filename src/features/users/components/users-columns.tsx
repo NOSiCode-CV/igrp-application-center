@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   Badge,
   type ColumnDef,
+  cn,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -17,17 +18,19 @@ import {
   type Row,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import {
-  geInviteTitle,
   getInitials,
   getStatusColor,
-  showStatus,
   statusInviteClass,
 } from "@/lib/utilities";
-import { cn } from "@/lib/utils";
 
-// ─── Module-level helpers ────────────────────────────────────────────────────
+import {
+  inviteStatusLabel,
+  type UsersTranslator,
+  userStatusLabel,
+} from "../lib/i18n";
 
 const isInviteStatus = (s: string) =>
   ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
@@ -35,36 +38,42 @@ const isInviteStatus = (s: string) =>
 function ActiveRowActionsCell({
   row,
   onStatusClick,
+  isSelf,
 }: {
   row: Row<IGRPUserDTO>;
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void;
+  isSelf: boolean;
 }) {
+  const t = useTranslations("users.columns");
   const state = String(row.getValue("status"));
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="p-1 rounded-sm">
-        <IGRPIcon iconName="Ellipsis" />
+      <DropdownMenuTrigger
+        className="inline-flex size-9 items-center justify-center rounded-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`Ações para ${row.original.name || row.original.email}`}
+      >
+        <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="min-w-44">
-        {state === "ACTIVE" ? (
+        {isSelf ? null : state === "ACTIVE" ? (
           <DropdownMenuItem
             className="text-destructive focus:text-destructive"
             onSelect={() => onStatusClick(row.original, "INACTIVE")}
             variant="destructive"
           >
             <IGRPIcon iconName="CircleOff" />
-            Desativar
+            {t("deactivate")}
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
-            className="text-success focus:text-success focus:bg-success/10"
+            className="text-success-subtle-foreground focus:text-success-subtle-foreground focus:bg-success-subtle"
             onSelect={() => onStatusClick(row.original, "ACTIVE")}
             variant="default"
           >
             <IGRPIcon iconName="CircleCheck" className="text-success" />
-            Ativar
+            {t("activate")}
           </DropdownMenuItem>
         )}
 
@@ -74,7 +83,7 @@ function ActiveRowActionsCell({
             href={`/settings/users/${row.original.id}`}
           >
             <IGRPIcon iconName="UserCog" />
-            Gerir
+            {t("manage")}
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -82,28 +91,32 @@ function ActiveRowActionsCell({
   );
 }
 
-// ─── Column factory ──────────────────────────────────────────────────────────
-
 export function getTableColumns(
+  t: UsersTranslator,
+  formatDate: (value: string) => string,
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void,
-  options?: { showInvitationDate?: boolean },
+  options?: { showInvitationDate?: boolean; currentUserId?: string },
 ): ColumnDef<IGRPUserDTO>[] {
   const showInvitationDate = options?.showInvitationDate !== false;
+  const currentUserId = options?.currentUserId;
   return [
     {
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
+        <IGRPDataTableHeaderSortToggle
+          column={column}
+          title={t("columns.name")}
+        />
       ),
       accessorKey: "name",
       filterFn: (row, _columnId, value: string) => {
         const search = value.toLowerCase();
-        const name = String(row.getValue("name") ?? "").toLowerCase();
-        const email = String(row.getValue("email") ?? "").toLowerCase();
+        const name = String(row.original.name ?? "").toLowerCase();
+        const email = String(row.original.email ?? "").toLowerCase();
         return name.includes(search) || email.includes(search);
       },
       cell: ({ row }) => {
-        const email = String(row.getValue("email") ?? "");
-        const nameValue = row.getValue("name");
+        const email = String(row.original.email ?? "");
+        const nameValue = row.original.name;
         const name =
           nameValue && String(nameValue) !== "null" ? String(nameValue) : email;
         return (
@@ -124,22 +137,25 @@ export function getTableColumns(
     },
     {
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Email" />
+        <IGRPDataTableHeaderSortToggle
+          column={column}
+          title={t("columns.email")}
+        />
       ),
       accessorKey: "email",
-      cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue("email") || t("notAvailable")}</div>
+      ),
     },
     ...(showInvitationDate
       ? [
           {
-            header: "Data do Convite",
+            header: t("columns.invitationDate"),
             accessorKey: "invitationDate",
             cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
               const date = row.getValue("invitationDate");
               return (
-                <div>
-                  {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-                </div>
+                <div>{date ? formatDate(String(date)) : t("notAvailable")}</div>
               );
             },
           } as ColumnDef<IGRPUserDTO>,
@@ -147,7 +163,10 @@ export function getTableColumns(
       : []),
     {
       header: () => (
-        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
+        <IGRPDataTableHeaderDefault
+          title={t("columns.status")}
+          className="text-center"
+        />
       ),
       accessorKey: "status",
       cell: ({ row }) => {
@@ -161,7 +180,9 @@ export function getTableColumns(
                 "capitalize",
               )}
             >
-              {isInvite ? geInviteTitle(status) : showStatus(status)}
+              {isInvite
+                ? inviteStatusLabel(t, status)
+                : userStatusLabel(t, status)}
             </Badge>
           </div>
         );
@@ -171,9 +192,15 @@ export function getTableColumns(
     },
     {
       id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
+      header: () => <span className="sr-only">{t("columns.actions")}</span>,
       cell: ({ row }) => (
-        <ActiveRowActionsCell row={row} onStatusClick={onStatusClick} />
+        <ActiveRowActionsCell
+          row={row}
+          onStatusClick={onStatusClick}
+          isSelf={
+            currentUserId !== undefined && row.original.id === currentUserId
+          }
+        />
       ),
       size: 60,
       enableHiding: false,

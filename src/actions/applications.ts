@@ -3,7 +3,7 @@
 import type {
   IGRPMenuCRUDArgs,
   IGRPMenuItemArgs,
-} from "@igrp/framework-next-types/dist/types/access-management";
+} from "@igrp/framework-next-types";
 import type {
   ApplicationDTO,
   ApplicationFilters,

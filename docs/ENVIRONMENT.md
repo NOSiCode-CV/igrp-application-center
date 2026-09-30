@@ -51,6 +51,7 @@ All variables are documented inline in [`.env.example`](../.env.example). Requir
 | `NEXT_PUBLIC_IGRP_APP_HOME_SLUG` | Route to land on after login | `/` |
 | `NEXT_IGRP_APP_CENTER_URL` | Application Center URL (app switcher) | — |
 | `NEXT_PUBLIC_ALLOWED_DOMAINS` | Comma-separated image domains for `next/image` | — |
+| `NEXT_PUBLIC_AUDIT_TIME_ZONE` | IANA time zone for audit date ranges and displayed times (see ADR-0001) | `Atlantic/Cape_Verde` |
 | `NEXT_PUBLIC_IGRP_PROFILE_URL` | External profile base URL | — |
 | `NEXT_PUBLIC_IGRP_NOTIFICATION_URL` | External notification base URL | — |
 | `NEXT_PUBLIC_IGRP_SETTINGS_URL` | External settings base URL | — |

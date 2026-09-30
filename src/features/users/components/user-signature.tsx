@@ -10,11 +10,13 @@ import {
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useFiles } from "@/features/files/use-files";
 import { useUserProfileActions } from "@/features/users/hooks/use-user-profile-actions";
 
 export default function UserSignature({ user }: { user: IGRPUserDTO }) {
+  const t = useTranslations("users.signature");
   const { uploadSignature, isUploadingSignature } = useUserProfileActions(user);
 
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
@@ -58,10 +60,10 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold flex items-center gap-2">
-                Assinatura Digital
+                {t("title")}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Carregue sua assinatura para documentos oficiais
+                {t("description")}
               </p>
             </div>
           </div>
@@ -75,7 +77,7 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
               <div className="relative p-6 min-h-24 flex items-center justify-center">
                 <Image
                   src={currentSignatureUrl}
-                  alt="Assinatura"
+                  alt={t("alt")}
                   width={160}
                   height={80}
                   unoptimized
@@ -104,10 +106,8 @@ export default function UserSignature({ user }: { user: IGRPUserDTO }) {
                   <IGRPIcon iconName="Upload" className="size-6 text-primary" />
                 </div>
                 <div className="text-center">
-                  <p className="font-medium text-sm">Clique para carregar</p>
-                  <p className="text-xs text-muted-foreground">
-                    PNG, JPG até 5MB
-                  </p>
+                  <p className="font-medium text-sm">{t("clickToUpload")}</p>
+                  <p className="text-xs text-muted-foreground">{t("hint")}</p>
                 </div>
               </div>
             )}

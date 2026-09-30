@@ -2,7 +2,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { useLocalStorageState } from "@/lib/hooks/use-local-storage-state";
+import { useLocalStorageState } from "@/hooks/use-local-storage-state";
 
 beforeEach(() => localStorage.clear());
 

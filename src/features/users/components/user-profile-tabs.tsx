@@ -9,6 +9,7 @@ import {
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { TabLoading } from "./tab-loading";
 
@@ -42,32 +43,33 @@ export interface UserProfileTabsProps {
 export function UserProfileTabs({ user }: UserProfileTabsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("users.profile.tabs");
 
   const tabs = useMemo<IGRPTabItem[]>(
     () => [
       {
-        label: "Departamentos",
+        label: t("departments"),
         value: "departments",
         content: <DepartmentListSimple />,
       },
       {
-        label: "Aplicações",
+        label: t("applications"),
         value: "applications",
         content: <UserApplications />,
       },
-      { label: "Roles", value: "roles", content: <ProfileRoleList /> },
+      { label: t("roles"), value: "roles", content: <ProfileRoleList /> },
       {
-        label: "Assinatura",
+        label: t("signature"),
         value: "signature",
         content: <UserSignature user={user} />,
       },
     ],
-    [user],
+    [user, t],
   );
 
   const requested = searchParams.get("tab");
   const value =
-    requested && tabs.some((t) => t.value === requested)
+    requested && tabs.some((tab) => tab.value === requested)
       ? requested
       : tabs[0].value;
 

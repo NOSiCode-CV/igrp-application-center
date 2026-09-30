@@ -1,24 +1,29 @@
+import { cache } from "react";
+
 import { igrpBuildConfig } from "@igrp/framework-next";
-import type {
-  IGRPConfigArgs,
-  IGRPLayoutConfigArgs,
-} from "@igrp/framework-next-types";
+import type { IGRPConfigClient } from "@igrp/framework-next-types";
 
 import { fontVariables } from "@/lib/fonts";
-import { isPreviewMode } from "@/lib/utils";
+import { isAuthBypass } from "@/lib/utilities";
 import { getMockApps } from "@/temp/applications/use-mock-apps";
 import { IGRP_DEFAULT_MENU } from "@/temp/menus/menus";
 import { getMockMenus } from "@/temp/menus/use-mock-menus";
 import { getMockUser } from "@/temp/users/use-mock-user";
 
+import { getPermissions } from "./lib/config/get-permissions";
 import { getPackageJson } from "./lib/config/get-pkj";
 import { getRoutes } from "./lib/config/get-routes";
 import { getSessionArgs } from "./lib/config/get-session-args";
 
-export function createConfig(
-  config: IGRPLayoutConfigArgs,
-): Promise<IGRPConfigArgs> {
-  const preview = isPreviewMode();
+/**
+ * Annotated with `IGRPConfigClient` so the whole config object is type-checked
+ * here, at its definition site, rather than only where `igrpBuildConfig`
+ * consumes it — a missing or misspelled key fails in this file.
+ */
+const buildConfig: IGRPConfigClient = (config) => {
+  // Mock data + framework preview behavior apply under EITHER bypass mode
+  // (IGRP_PREVIEW_MODE=true or AUTH_PROVIDER=none) — they must behave the same.
+  const bypass = isAuthBypass();
 
   const routes = getRoutes();
   const appRoutes = routes?.appRoutes ?? [];
@@ -26,32 +31,32 @@ export function createConfig(
 
   return igrpBuildConfig({
     appCode: process.env.IGRP_APP_CODE || "",
-    previewMode: preview,
+    previewMode: bypass,
     syncAccess: process.env.IGRP_SYNC_ACCESS === "true",
     appInformation: getPackageJson(),
-    layoutMockData: {
+    layoutData: {
       getHeaderData: async () => {
-        const user = preview ? getMockUser().mockUser : undefined;
+        const user = bypass ? getMockUser().mockUser : undefined;
         return {
           user: user,
           userProfileUrl: process.env.NEXT_PUBLIC_IGRP_PROFILE_URL || "",
           notificationsUrl: process.env.NEXT_PUBLIC_IGRP_NOTIFICATION_URL || "",
           showBreadcrumb: true,
-          showSearch: false,
-          showNotifications: false,
+          showSearch: true,
+          showNotifications: true,
           showUser: true,
           showThemeSwitcher: true,
-          showIGRPSidebarTrigger: false,
-          showIGRPHeaderTitle: false,
+          showIGRPSidebarTrigger: true,
+          showIGRPHeaderTitle: true,
           showIGRPHeaderLogo: true,
           showSettings: true,
           settingsUrl: process.env.NEXT_PUBLIC_IGRP_SETTINGS_URL || "",
         };
       },
       getSidebarData: async () => {
-        const user = preview ? getMockUser().mockUser : undefined;
-        const menu = preview ? getMockMenus().mockMenus : undefined;
-        const apps = preview ? getMockApps().mockApps : undefined;
+        const user = bypass ? getMockUser().mockUser : undefined;
+        const menu = bypass ? getMockMenus().mockMenus : undefined;
+        const apps = bypass ? getMockApps().mockApps : undefined;
         return {
           menuItems: menu ?? [],
           user: user,
@@ -60,6 +65,7 @@ export function createConfig(
           apps: apps ?? [],
           appCenterUrl: process.env.NEXT_IGRP_APP_CENTER_URL || "",
           showMenuSearch: true,
+          showNotifications: true,
         };
       },
     },
@@ -76,6 +82,9 @@ export function createConfig(
       syncOnCodeMenus: process.env.IGRP_SYNC_ON_CODE_MENUS === "true",
       syncOnCodeMenuRoles: process.env.IGRP_SYNC_ON_CODE_MENU_ROLES !== "false",
       onCodeMenus: IGRP_DEFAULT_MENU,
+      syncPermissions: process.env.IGRP_SYNC_PERMISSIONS === "true",
+
+      onCodePermissions: getPermissions(),
       appRoutes,
       paramMapBody,
     },
@@ -87,4 +96,20 @@ export function createConfig(
     },
     sessionArgs: getSessionArgs(),
   });
-}
+};
+
+/**
+ * Per-request memoized config builder.
+ *
+ * `app/layout.tsx` and `app/(igrp)/layout.tsx` BOTH build the config on every
+ * request. Without this, `igrpBuildConfig` — plus `getRoutes()` (a synchronous
+ * file read), `getPermissions()` and `getSessionArgs()` — ran twice per request
+ * and produced two distinct config objects for the same render.
+ *
+ * `cache()` keys on argument identity, and the only argument comes from
+ * `getLayoutConfig` in `lib/dal.ts`, which is itself `cache()`d — so both
+ * layouts pass the *same* object and share one result. That makes it provable
+ * that the root layout and the authenticated layout see identical config,
+ * rather than merely likely.
+ */
+export const createConfig: IGRPConfigClient = cache(buildConfig);
