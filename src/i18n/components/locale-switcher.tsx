@@ -71,9 +71,12 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
           title={failed ? t("changeError") : t("label")}
         >
           <IGRPIcon
-            iconName="Languages"
+            iconName={isPending ? "LoaderCircle" : "Languages"}
             strokeWidth={2}
-            className={cn("size-4", isPending && "animate-pulse")}
+            className={cn(
+              "size-4",
+              isPending && "animate-spin motion-reduce:animate-none",
+            )}
           />
           {failed && (
             <span
