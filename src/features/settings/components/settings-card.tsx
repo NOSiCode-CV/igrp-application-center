@@ -10,16 +10,6 @@ import {
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
 
-/**
- * The icon chip's colour. Each entry is one of the `-subtle` token pairs from
- * `src/styles/app-center.css`, which carry a measured >= 4.5:1 contract in BOTH
- * themes — so a card can be recoloured without re-auditing it, and a theme can
- * restyle all of them at once. Never `bg-x/10 text-x`: that is a token over a
- * wash of itself, and its ratio is a pure function of the token's lightness.
- *
- * Colour here is identity, not state: it helps someone return to the same card
- * twice, and it carries nothing the title does not already say.
- */
 const ACCENTS = {
   primary: "bg-primary-subtle text-primary-subtle-foreground",
   info: "bg-info-subtle text-info-subtle-foreground",
@@ -44,19 +34,13 @@ interface SettingsCardProps {
 }
 
 export function SettingsCard({ item }: SettingsCardProps) {
-  const isDisabled = item.status === "inativo";
-  /* A disabled card drops its accent for the neutral `muted` pair: colour on
-     this grid is identity (see ACCENTS), and an area you cannot open yet has
-     no identity to return to. Grey plus the badge says "not yet" twice, once
-     visually and once in text, instead of leaving colour as the only tell. */
+  const isDisabled = item.status === "inativo"; 
   const accent = isDisabled
     ? "bg-muted text-muted-foreground"
     : ACCENTS[item.accent ?? "primary"];
 
   const cardContent = (
-    <>
-      {/* `pr-20` clears the absolutely-positioned "Em breve" badge so a long
-          title wraps beside it instead of running underneath it. */}
+    <>      
       <div className={cn("flex items-center gap-3", isDisabled && "pr-20")}>
         <div
           className={cn(
@@ -65,10 +49,7 @@ export function SettingsCard({ item }: SettingsCardProps) {
           )}
         >
           <IGRPIcon iconName={item.icon} className="size-5" />
-        </div>
-        {/* Disabled titles grey down to `muted-foreground`, a token held at
-            >= 4.5:1 in both themes — never an opacity wash, which would put the
-            text below AA and make the card unreadable rather than inactive. */}
+        </div>        
         <h2
           className={cn(
             "font-semibold text-sm min-w-0",
@@ -85,25 +66,16 @@ export function SettingsCard({ item }: SettingsCardProps) {
       </p>
     </>
   );
-
-  /* Same card vocabulary as the app tiles on the launcher — `rounded-xl border
-     border-border bg-card`, primary border on hover. A settings card that
-     looked like nothing else in the product was the odd one out, and would
-     have drifted further at the next system update. */
+ 
   const sharedClassName = cn(
     "group relative flex flex-col gap-3 rounded-xl border border-border p-5 h-full",
     "transition-colors motion-reduce:transition-none",
     isDisabled
-      ? // Recessed surface instead of `bg-card`, so the row of live cards reads
-        // as the foreground even at a glance across the grid.
-        "bg-muted/40 border-dashed"
+      ? "bg-muted/40 border-dashed"
       : "bg-card hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   );
 
-  if (isDisabled) {
-    // Not a link and not focusable: it has no destination. The badge is the
-    // state, visible and announced in reading order — a tooltip here would be
-    // mouse-only.
+  if (isDisabled) {    
     return (
       <div className={sharedClassName}>
         {cardContent}

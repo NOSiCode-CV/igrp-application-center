@@ -11,6 +11,7 @@ import { LocaleSwitcher } from "@/i18n/components/locale-switcher";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 
+import { AutoSignIn } from "./auto-sign-in";
 import { LogoutCompletion } from "./logout-completion";
 
 const { sliderPosition, texts } = loginConfig;
@@ -39,7 +40,7 @@ export default async function AuthPage({
     return <LogoutCompletion />;
   }
 
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl, error, loggedOut } = await searchParams;
   // Drop callbackUrl values that would bounce the user back to /login (or
   // /logout) after the OIDC round-trip — those produce the nested
   // `?callbackUrl=…?callbackUrl=…` chain. Fall back to `/` so a successful
@@ -47,7 +48,7 @@ export default async function AuthPage({
   const safeCallbackUrl = sanitizeCallbackUrl(callbackUrl) ?? "/";
   const providerId = getAuthProviderIdFromEnv(process.env);
 
-  return (
+  const loginForm = (
     <section className="relative flex min-h-screen flex-col md:flex-row">
       <div className="absolute top-8 right-16 z-10">
         <LocaleSwitcher />
@@ -70,4 +71,22 @@ export default async function AuthPage({
       />
     </section>
   );
+
+  // Auto sign-in: start the IdP flow straight away so a live SSO session (e.g.
+  // coming from another app on the same host) needs no click. The form shows on
+  // a NextAuth error (retrying would loop), right after logout, when disabled
+  // via IGRP_LOGIN_AUTO_SIGNIN=false, or when AutoSignIn detects a loop.
+  const autoSignInEnabled =
+    process.env.IGRP_LOGIN_AUTO_SIGNIN?.trim().toLowerCase() !== "false";
+  if (autoSignInEnabled && !error && !loggedOut) {
+    return (
+      <AutoSignIn
+        providerId={providerId}
+        callbackUrl={safeCallbackUrl}
+        fallback={loginForm}
+      />
+    );
+  }
+
+  return loginForm;
 }

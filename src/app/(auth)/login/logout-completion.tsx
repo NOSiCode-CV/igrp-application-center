@@ -43,7 +43,11 @@ export function LogoutCompletion() {
         // cleared session.
         clearLogoutPending();
         const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-        window.location.replace(`${window.location.origin}${basePath}/login`);
+        // `?loggedOut=1` keeps the login page from auto-signing the user
+        // straight back in (see auto-sign-in.tsx).
+        window.location.replace(
+          `${window.location.origin}${basePath}/login?loggedOut=1`,
+        );
       }
     })();
   }, []);

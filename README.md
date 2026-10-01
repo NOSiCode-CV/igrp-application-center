@@ -66,6 +66,7 @@ Copy `.env.example` to `.env` and fill in the required variables:
 | `NEXTAUTH_SECRET` | JWT/cookie encryption secret (**required in production**) |
 | `NEXTAUTH_URL_INTERNAL` | Internal server URL (for SSR / server-to-server) |
 | `IGRP_SESSION_MAX_AGE` | Optional session-cookie lifetime in seconds (align to IdP refresh-token lifetime) |
+| `IGRP_LOGIN_AUTO_SIGNIN` | `/login` starts the IdP sign-in automatically (silent when the SSO session is live). Default `true`; `false` always shows the manual form. Read at runtime, server-side |
 
 ### IGRP Framework
 
