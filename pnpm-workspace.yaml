@@ -4,9 +4,9 @@ allowBuilds:
   msw: true
   sharp: true
 minimumReleaseAgeExclude:
-  - '@igrp/framework-next-ui@0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4'
-  - '@igrp/framework-next@0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4'
+  - '@igrp/framework-next-ui@0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4 || 0.2.0-beta.5'
+  - '@igrp/framework-next@0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4 || 0.2.0-beta.5'
   - '@igrp/igrp-framework-react-design-system@0.2.0-beta.2 || 0.2.0-beta.3'
-  - '@igrp/framework-next-auth@0.2.0-beta.1 || 0.2.0-beta.2 || 0.2.0-beta.3'
-  - '@igrp/framework-next-types@0.2.0-beta.1 || 0.2.0-beta.2 || 0.2.0-beta.3'
+  - '@igrp/framework-next-auth@0.2.0-beta.1 || 0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4'
+  - '@igrp/framework-next-types@0.2.0-beta.1 || 0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4'
   - '@igrp/platform-access-management-client-ts@0.2.0-beta.18'
