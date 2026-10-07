@@ -182,8 +182,8 @@ importers:
         specifier: 0.2.0-beta.5
         version: 0.2.0-beta.5(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.31.3(@tiptap/core@3.31.3(@tiptap/pm@3.31.3))(@tiptap/pm@3.31.3))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.89.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.5)
       '@igrp/framework-next-auth':
-        specifier: 0.2.0-beta.3
-        version: 0.2.0-beta.3(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+        specifier: 0.2.0-beta.4
+        version: 0.2.0-beta.4(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@igrp/framework-next-types':
         specifier: 0.2.0-beta.4
         version: 0.2.0-beta.4(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
@@ -710,14 +710,6 @@ packages:
         optional: true
       zod:
         optional: true
-
-  '@igrp/framework-next-auth@0.2.0-beta.3':
-    resolution: {integrity: sha512-nLz9Rc+2QrP3yKqLQ/jebEqlGNx58tdRlWPhdvTApqDbUYtaJlMl3Vs4i88FYfNcNOCe5Yj7Gnk+WtTwpfAejg==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-auth/-/framework-next-auth-0.2.0-beta.3.tgz}
-    engines: {node: '>=22'}
-    peerDependencies:
-      next: ^15.5.0
-      next-auth: ^4.24.0
-      react: ^19.0.0
 
   '@igrp/framework-next-auth@0.2.0-beta.4':
     resolution: {integrity: sha512-1xEaJ7MdTZaG2KpdOtkyKMg1vTZBdSL/JRZfnxm1AwmWtr27UIx8V7DxXXzQMO7oCfq3t5VaeoZg5h+kzRCS1Q==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-auth/-/framework-next-auth-0.2.0-beta.4.tgz}
@@ -4939,12 +4931,6 @@ snapshots:
       ajv: 8.20.0
       ajv-formats: 2.1.1(ajv@8.20.0)
       zod: 4.6.5
-
-  '@igrp/framework-next-auth@0.2.0-beta.3(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
-    dependencies:
-      next: 15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      next-auth: 4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      react: 19.2.8
 
   '@igrp/framework-next-auth@0.2.0-beta.4(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
     dependencies:
