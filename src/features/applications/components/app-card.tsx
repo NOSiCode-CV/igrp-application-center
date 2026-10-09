@@ -84,7 +84,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
         {description || APP_DESCRIPTION_FALLBACK}
       </p>
 
-      <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3">
         <Badge className={cn(getStatusColor(status), "shrink-0")}>
           {showStatus(status)}
         </Badge>
