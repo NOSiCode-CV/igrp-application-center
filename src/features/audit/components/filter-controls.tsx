@@ -83,7 +83,9 @@ export function FilterCombobox({
       id={id}
       label={label}
       variant="single"
-      showSearch={withValue.length >= 6}
+      // Entity lists grow with the tenant — always searchable, whatever the
+      // current count.
+      showSearch
       options={withValue}
       value={value ?? ""}
       disabled={disabled}

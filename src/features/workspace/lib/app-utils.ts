@@ -2,6 +2,13 @@ import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts"
 
 export const APP_CATALOG_SECTION_ID = "app-catalog";
 
+/** This portal's own application code — never listed as a launchable app on home. */
+export const CURRENT_APP_CODE = "APP_IGRP_CENTER";
+
+export function excludeCurrentApp<T extends { code: string }>(apps: T[]): T[] {
+  return apps.filter((app) => app.code !== CURRENT_APP_CODE);
+}
+
 type AppTileColor = { bg: string; text: string };
 
 const TILE_COLORS: AppTileColor[] = [
@@ -53,7 +60,7 @@ export function getLastOpenedLabel(
 }
 
 export function getAppHref(app: ApplicationDTO): string {
-  if (app.code === "APP_IGRP_CENTER") return "/applications";
+  if (app.code === CURRENT_APP_CODE) return "/applications";
   if (app.url) return app.url;
   if (!app.slug) return "";
   return app.slug.startsWith("/") ? app.slug : `/${app.slug}`;

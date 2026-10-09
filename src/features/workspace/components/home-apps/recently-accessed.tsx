@@ -14,6 +14,7 @@ import {
 } from "@/features/users/use-users";
 import {
   APP_CATALOG_SECTION_ID,
+  excludeCurrentApp,
   getLastOpenedLabel,
 } from "@/features/workspace/lib/app-utils";
 
@@ -72,7 +73,7 @@ function useRailScroll(itemCount: number) {
 
 export function RecentlyAccessed() {
   const {
-    data: recent = [],
+    data: allRecent = [],
     isError,
     error,
     refetch,
@@ -83,6 +84,7 @@ export function RecentlyAccessed() {
   const addFav = useAddCurrentUserFavoriteApplication();
   const removeFav = useRemoveCurrentUserFavoriteApplication();
 
+  const recent = excludeCurrentApp(allRecent);
   const visible = recent.slice(0, MAX_RECENT);
   const { ref, canScrollPrev, canScrollNext, scrollByPage } = useRailScroll(
     visible.length,

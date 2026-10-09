@@ -24,7 +24,7 @@ import {
   useRemoveCurrentUserFavoriteApplication,
 } from "@/features/users/use-users";
 
-import { APP_CATALOG_SECTION_ID } from "../../lib/app-utils";
+import { APP_CATALOG_SECTION_ID, excludeCurrentApp } from "../../lib/app-utils";
 import { AppTable } from "./app-table";
 import { AppTileCard } from "./app-tile-card";
 
@@ -72,11 +72,12 @@ export function AppCatalog() {
   }, []);
 
   const {
-    data: apps = [],
+    data: allApps,
     isError,
     error,
     refetch,
   } = useCurrentUserApplications();
+  const apps = useMemo(() => excludeCurrentApp(allApps ?? []), [allApps]);
 
   if (isError) console.error("[AppCatalog] query failed", error);
   const { data: favorites = [] } = useCurrentUserFavoriteApplications();
