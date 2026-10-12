@@ -12,7 +12,10 @@ vi.mock("next/headers", () => ({
   cookies: async () => ({ set: cookieSet }),
 }));
 vi.mock("@/lib/auth", () => ({ serverSession: () => serverSession() }));
-vi.mock("@/lib/utils", () => ({ isAuthBypass: () => isAuthBypass() }));
+vi.mock("@/lib/utilities", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/utilities")>()),
+  isAuthBypass: () => isAuthBypass(),
+}));
 vi.mock("@/actions/access-client", () => ({
   updateCurrentUserLocale: (locale: string) => updateCurrentUserLocale(locale),
 }));

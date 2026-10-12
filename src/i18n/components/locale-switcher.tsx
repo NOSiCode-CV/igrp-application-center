@@ -26,9 +26,9 @@ interface LocaleSwitcherProps {
 }
 
 /**
- * Language selector (FR-24). An icon button — same footprint as the theme
- * toggle — opens a menu of the languages in their native names, the current
- * one marked.
+ * Language selector (FR-24). A button showing the current language code
+ * (PT, EN, FR) — same footprint as the theme toggle — opens a menu of the
+ * languages in their native names, the current one marked.
  *
  * Flow (FR-25/26): server action `setLocale` (persists `metadata.locale` when
  * signed in + writes the cookie) → next-auth `update({ locale })` when signed
@@ -70,14 +70,17 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
           aria-label={failed ? t("changeError") : t("label")}
           title={failed ? t("changeError") : t("label")}
         >
-          <IGRPIcon
-            iconName={isPending ? "LoaderCircle" : "Languages"}
-            strokeWidth={2}
-            className={cn(
-              "size-4",
-              isPending && "animate-spin motion-reduce:animate-none",
-            )}
-          />
+          {isPending ? (
+            <IGRPIcon
+              iconName="LoaderCircle"
+              strokeWidth={2}
+              className="size-4 animate-spin motion-reduce:animate-none"
+            />
+          ) : (
+            <span aria-hidden="true" className="text-xs font-semibold">
+              {locale.toUpperCase()}
+            </span>
+          )}
           {failed && (
             <span
               aria-hidden="true"

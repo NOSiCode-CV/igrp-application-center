@@ -1,8 +1,551 @@
 {
+  "common": {
+    "actions": {
+      "back": "Back",
+      "home": "Home",
+      "backHome": "Back to home",
+      "retry": "Try again",
+      "retrying": "Retrying...",
+      "cancel": "Cancel"
+    }
+  },
   "i18n": {
     "localeSwitcher": {
       "label": "Language",
       "changeError": "The language could not be changed. Please try again."
+    }
+  },
+  "errors": {
+    "errorRef": "Reference ID:",
+    "unexpected": {
+      "title": "An unexpected error occurred.",
+      "description": "Please try again. If the problem persists, contact the support team and provide the reference ID shown below."
+    },
+    "auth": {
+      "title": "Authentication could not be completed.",
+      "description": "Check the authentication provider configuration and the environment variables. If the problem persists, contact support."
+    },
+    "codes": {
+      "configNotInitialized": {
+        "title": "IGRP configuration not initialized",
+        "description": "The application configuration file was not loaded. Contact the technical team to check the server startup."
+      },
+      "accessManagementConfigMissing": {
+        "title": "Access management not configured",
+        "description": "The access management API URL is not set. Set the application environment variable or enable preview mode to continue."
+      },
+      "appCodeMissing": {
+        "title": "Application code missing",
+        "description": "The application has not declared its identifier code. Check the IGRP configuration file."
+      },
+      "appHomeSlugInvalid": {
+        "title": "Invalid application home URL",
+        "description": "The value of NEXT_PUBLIC_IGRP_APP_HOME_SLUG does not start with \"/\". Fix the environment variable and restart the server."
+      },
+      "authConfigInvalid": {
+        "title": "Invalid authentication configuration",
+        "description": "One or more environment variables required by the authentication provider are missing or incorrect."
+      },
+      "layoutDataFailed": {
+        "title": "Failed to load layout data",
+        "description": "The menus or user data could not be loaded. Please try again; if it persists, contact support."
+      }
+    },
+    "status": {
+      "unauthorized": {
+        "title": "Unauthorized access",
+        "description": "Sign in with the appropriate credentials to access this resource."
+      },
+      "forbidden": {
+        "title": "Access denied",
+        "description": "You do not have permission to view this resource."
+      },
+      "notFound": {
+        "title": "Page not found",
+        "description": "The page you are looking for does not exist or has been removed."
+      },
+      "internal": {
+        "title": "An error occurred",
+        "description": "We apologize for the inconvenience. Please try again later."
+      },
+      "unavailable": {
+        "title": "Service under maintenance",
+        "description": "The service is currently unavailable. We will be back soon."
+      },
+      "fallback": {
+        "title": "An error occurred",
+        "description": "Please try again. If the problem persists, contact support."
+      }
+    }
+  },
+  "users": {
+    "invite": {
+      "form": {
+        "localeLabel": "Invitee language",
+        "title": "Invite User",
+        "description": "Send an email invitation to a new user.",
+        "userInfo": "User Information",
+        "emailLabel": "Email",
+        "emailPlaceholder": "e.g. john@email.com",
+        "assignRoles": "Assign Roles",
+        "assignRolesHint": "Select a department and roles for the user (optional).",
+        "departmentLabel": "Department",
+        "departmentPlaceholder": "Select department",
+        "departmentEmpty": "Department not found.",
+        "search": "Search...",
+        "none": "None",
+        "rolesLabel": "Roles",
+        "rolesEmpty": "No roles found.",
+        "selectDepartmentFirst": "Select a department",
+        "selectRoles": "Select roles",
+        "rolesSelected": "{count, plural, one {# role selected} other {# roles selected}}",
+        "removeRole": "Remove {name}",
+        "submit": "Send Invitation",
+        "submitting": "Sending...",
+        "toasts": {
+          "inviteFailed": "Invitation failed",
+          "inviteFailedWithReason": "Invitation failed: {reason}",
+          "inviteSent": "Invitation sent successfully!"
+        }
+      },
+      "accept": {
+        "errors": {
+          "emailValidation": "Error validating email",
+          "invalidCode": "Invalid code"
+        },
+        "toasts": {
+          "resendFailed": "The code could not be resent",
+          "resendSuccess": "New code sent",
+          "acceptFailed": "Error accepting invitation",
+          "accepted": "Invitation accepted",
+          "acceptedDescription": "You now have access to the application.",
+          "rejectFailed": "Error rejecting invitation",
+          "autoVerifyFailed": "Automatic email verification failed",
+          "autoVerifyMismatch": "Your account email does not match the invitation.",
+          "autoVerifyUnavailable": "The email could not be verified automatically."
+        },
+        "loading": {
+          "validatingInvite": "Validating invitation…",
+          "validatingEmail": "Validating email…",
+          "loadingInvite": "Loading invitation…"
+        },
+        "steps": {
+          "stepOf": "Step {current} of {total}",
+          "email": {
+            "label": "Email",
+            "sub": "Confirmation"
+          },
+          "code": {
+            "label": "Code",
+            "sub": "Verification"
+          },
+          "confirm": {
+            "label": "Confirm",
+            "sub": "Invitation"
+          }
+        },
+        "emailStep": {
+          "eyebrow": "Confirmation",
+          "title": "Welcome",
+          "description": "Enter your email to access the invitation.",
+          "emailLabel": "Email",
+          "emailPlaceholder": "example@email.cv",
+          "submit": "Send code",
+          "submitting": "Sending…"
+        },
+        "otpStep": {
+          "eyebrow": "Verification",
+          "title": "Access code",
+          "description": "We sent a 6-digit code to <strong>{email}</strong>.",
+          "codeLabel": "OTP code",
+          "submit": "Verify code",
+          "submitting": "Verifying…",
+          "resend": "Resend code",
+          "resending": "Resending…",
+          "resendIn": "Resend in {seconds}s",
+          "changeEmail": "Change email"
+        },
+        "errorStates": {
+          "invalid": {
+            "eyebrow": "Error",
+            "title": "Invalid invitation",
+            "description": "This invitation could not be found. The link may be incorrect."
+          },
+          "mismatch": {
+            "eyebrow": "Different account",
+            "title": "Invitation does not match",
+            "description": "This invitation was not sent to the account you are signed in with."
+          },
+          "expired": {
+            "eyebrow": "Expired",
+            "title": "Invitation expired",
+            "description": "This invitation has expired. Ask the administrator for a new invitation."
+          }
+        },
+        "useAnotherAccount": "Use another account",
+        "pendingState": {
+          "eyebrow": "Pending",
+          "title": "Pending invitation",
+          "description": "You have a pending invitation. Check your email for the link to continue.",
+          "signOut": "Sign out"
+        },
+        "rejectedStep": {
+          "eyebrow": "Rejected",
+          "title": "Invitation rejected",
+          "description": "You chose not to accept access to this module."
+        },
+        "responseStep": {
+          "eyebrow": "Invitation",
+          "title": "Accept Access",
+          "description": "Review the details before confirming.",
+          "email": "Email",
+          "department": "Department",
+          "roles": "Roles",
+          "accept": "Accept Invitation",
+          "processing": "Processing…",
+          "reject": "Reject",
+          "rejectConfirm": {
+            "title": "Reject invitation?",
+            "description": "This action cannot be undone. You will need to ask the administrator for a new invitation if you change your mind.",
+            "confirm": "Reject invitation"
+          }
+        }
+      },
+      "status": {
+        "pending": "Pending",
+        "canceled": "Canceled",
+        "rejected": "Rejected"
+      }
+    },
+    "detail": {
+      "loading": "Loading...",
+      "loadError": "Error loading data",
+      "tabs": {
+        "roles": "Roles",
+        "departments": "Departments",
+        "applications": "Applications",
+        "signature": "Signature",
+        "sessions": "Sessions",
+        "audit": "Audit",
+        "metadata": "Metadata"
+      }
+    },
+    "applications": {
+      "searchLabel": "Search application",
+      "searchPlaceholder": "Search application…",
+      "loading": "Loading applications…",
+      "noResults": "No application matches the search.",
+      "empty": "No applications assigned."
+    },
+    "audit": {
+      "empty": "No audit records.",
+      "columns": {
+        "timestamp": "Date / time",
+        "event": "Event",
+        "category": "Category",
+        "ip": "IP"
+      },
+      "pagination": {
+        "pageOf": "Page {page} of {total}",
+        "previous": "← Previous",
+        "next": "Next →"
+      }
+    },
+    "avatar": {
+      "uploadNoPath": "Upload returned no path",
+      "updated": "Photo updated",
+      "updateFailed": "Error updating photo"
+    },
+    "deleteDialog": {
+      "deactivated": "User Deactivated",
+      "deactivatedDescription": "User ''{name}'' was deactivated successfully.",
+      "deactivateFailed": "Error deactivating.",
+      "label": "Username",
+      "confirm": "Deactivate"
+    },
+    "editForm": {
+      "fullName": "Full Name",
+      "status": "Status",
+      "statusPlaceholder": "Select status",
+      "save": "Save",
+      "saving": "Saving...",
+      "toasts": {
+        "updated": "Profile updated successfully",
+        "updateFailed": "Error updating profile",
+        "unknownError": "Unknown error"
+      }
+    },
+    "validation": {
+      "nameMin": "Name must be at least 3 characters",
+      "emailInvalid": "Invalid email",
+      "emailRequired": "Email is required",
+      "usersMin": "Add at least one user",
+      "otpDigits": "Code must have 6 digits"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "invitationDate": "Invitation Date",
+      "status": "Status",
+      "actions": "Actions",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "manage": "Manage"
+    },
+    "invitations": {
+      "actions": {
+        "copyUrl": "Copy URL",
+        "resend": "Resend Invitation",
+        "cancel": "Cancel Invitation"
+      },
+      "toasts": {
+        "urlCopied": "URL copied",
+        "urlCopiedDescription": "Invitation URL copied to the clipboard.",
+        "urlUnavailable": "Invitation unavailable",
+        "urlUnavailableDescription": "Invitation URL is not available.",
+        "resent": "Invitation resent",
+        "resentDescription": "The invitation was resent successfully.",
+        "resendFailed": "Invitation not resent",
+        "resendFailedDescription": "The invitation could not be resent."
+      }
+    },
+    "list": {
+      "title": "User Management",
+      "description": "View and manage all system users.",
+      "inviteUser": "Invite User",
+      "loadingInvitations": "Loading invitations...",
+      "tabs": {
+        "active": "Active Users",
+        "pending": "Pending Invitations ({count})",
+        "canceled": "Canceled Invitations ({count})"
+      },
+      "filters": {
+        "searchByNameOrEmail": "Search by name or email...",
+        "status": "Status",
+        "searchByName": "Search by name",
+        "searchByNamePlaceholder": "Search by name...",
+        "searchByEmail": "Search by email",
+        "searchByEmailPlaceholder": "Search by email..."
+      },
+      "toasts": {
+        "error": "Error",
+        "statusChanged": "Status changed",
+        "statusChangedDescription": "The user status was changed successfully",
+        "statusChangeFailed": "The user status could not be changed",
+        "invitationCanceled": "Invitation canceled",
+        "invitationCanceledDescription": "The invitation was canceled successfully",
+        "invitationCancelFailed": "The invitation could not be canceled"
+      },
+      "statusDialog": {
+        "activateTitle": "Activate User",
+        "deactivateTitle": "Deactivate User",
+        "activateDescription": "Are you sure you want to activate <strong>{name}</strong>?",
+        "deactivateDescription": "Are you sure you want to deactivate <strong>{name}</strong>?",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "activating": "Activating...",
+        "deactivating": "Deactivating..."
+      },
+      "cancelDialog": {
+        "title": "Cancel Invitation",
+        "description": "Are you sure you want to cancel the invitation for <strong>{identifier}</strong>? This action cannot be undone.",
+        "confirm": "Confirm",
+        "canceling": "Canceling..."
+      }
+    },
+    "notAvailable": "N/A",
+    "favorites": {
+      "updateFailed": "Favorites could not be updated."
+    },
+    "sessions": {
+      "noExternalId": "External identifier not available for this user.",
+      "empty": "No active sessions.",
+      "title": "Active Session",
+      "fields": {
+        "sessionId": "Session ID",
+        "startedAt": "Started at",
+        "lastSeenAt": "Last seen",
+        "ip": "IP"
+      },
+      "kill": "End session",
+      "killDialog": {
+        "title": "End session",
+        "description": "This action will immediately end the user's active session.",
+        "reason": "Reason",
+        "reasonPlaceholder": "Enter the reason...",
+        "confirm": "Confirm"
+      },
+      "toasts": {
+        "killed": "Session ended",
+        "killFailed": "Error ending session"
+      }
+    },
+    "signature": {
+      "title": "Digital Signature",
+      "description": "Upload your signature for official documents",
+      "alt": "Signature",
+      "clickToUpload": "Click to upload",
+      "hint": "PNG, JPG up to 5MB",
+      "toasts": {
+        "loadFailed": "Error loading signature",
+        "updated": "Signature updated successfully",
+        "updateFailed": "Error updating signature"
+      }
+    },
+    "profile": {
+      "avatar": {
+        "loadFailed": "Error loading avatar",
+        "updated": "Avatar updated successfully",
+        "updateFailed": "Error updating avatar",
+        "invalid": "Invalid avatar",
+        "change": "Change avatar",
+        "fallbackAlt": "User"
+      },
+      "toasts": {
+        "activated": "User activated successfully",
+        "deactivated": "User deactivated successfully",
+        "statusChangeFailed": "Error changing status"
+      },
+      "form": {
+        "loading": "Loading profile...",
+        "notFound": "No user found.",
+        "title": "Edit User Profile",
+        "cardTitle": "Detailed information about this user.",
+        "cardDescription": "Manage your personal information and account settings.",
+        "fullName": "Full Name",
+        "fullNamePlaceholder": "johndoe",
+        "fullNameDescription": "The user's full name.",
+        "picture": "Profile Image",
+        "pictureDescription": "Upload a profile picture for this user.",
+        "signature": "Signature",
+        "signatureDescription": "The user's digital signature.",
+        "processing": "Processing...",
+        "save": "Save Changes",
+        "toasts": {
+          "updated": "User Updated",
+          "updatedDescription": "The user was updated successfully!"
+        }
+      },
+      "loading": "Loading user…",
+      "notFound": "No user found.",
+      "imageUpload": {
+        "previewAlt": "Profile preview",
+        "empty": "No image",
+        "upload": "Upload image",
+        "remove": "Remove"
+      },
+      "signatureUpload": {
+        "previewAlt": "Signature preview",
+        "empty": "No signature",
+        "upload": "Upload signature",
+        "remove": "Remove"
+      },
+      "statusButton": {
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "activateLabel": "Activate user",
+        "deactivateLabel": "Deactivate user"
+      },
+      "statusDialog": {
+        "activateTitle": "Activate User",
+        "deactivateTitle": "Deactivate User",
+        "activateDescription": "Are you sure you want to activate the user <strong>{name}</strong>?",
+        "deactivateDescription": "Are you sure you want to deactivate the user <strong>{name}</strong>?",
+        "confirmActivate": "Confirm Activation",
+        "confirmDeactivate": "Confirm Deactivation"
+      },
+      "tabs": {
+        "departments": "Departments",
+        "applications": "Applications",
+        "roles": "Roles",
+        "signature": "Signature"
+      }
+    },
+    "metadata": {
+      "title": "Metadata",
+      "addField": "+ Add field",
+      "keyPlaceholder": "key",
+      "valuePlaceholder": "value",
+      "remove": "remove",
+      "save": "Save",
+      "toasts": {
+        "updated": "Metadata updated",
+        "updateFailed": "Error updating metadata"
+      }
+    },
+    "nameEditor": {
+      "save": "Save name",
+      "cancel": "Cancel editing",
+      "edit": "Edit name",
+      "saveFailed": "Error saving",
+      "toasts": {
+        "updated": "Name updated successfully",
+        "updateFailed": "Error updating name"
+      }
+    },
+    "unknownError": "An unknown error occurred.",
+    "roleDialog": {
+      "title": "Add or Remove Roles",
+      "selectAll": "Select all",
+      "selectRow": "Select row",
+      "columns": {
+        "name": "Name",
+        "description": "Description",
+        "status": "Status"
+      },
+      "filterPlaceholder": "Filter by name...",
+      "filterLabel": "Filter by name",
+      "clearFilter": "Clear filter",
+      "departments": {
+        "loading": "Loading departments...",
+        "loadError": "Error loading departments",
+        "empty": "No departments",
+        "placeholder": "Select department",
+        "search": "Search department...",
+        "notFound": "No department found."
+      },
+      "expiresAt": "Expiration (optional)",
+      "selectDepartmentHint": "Select a department to list the roles.",
+      "loadingRoles": "Loading roles...",
+      "loadRolesError": "An error occurred while loading the user's roles.",
+      "selectedCount": "{count} selected",
+      "clear": "Clear",
+      "save": "Save",
+      "saving": "Saving...",
+      "toasts": {
+        "selectDepartmentFirst": "Select a department first.",
+        "noChanges": "No changes",
+        "noChangesDescription": "Nothing to add or remove.",
+        "updated": "Roles updated",
+        "updatedDescription": "+{added} added, -{removed} removed.",
+        "updateFailed": "Failed to update roles"
+      }
+    },
+    "roleList": {
+      "loading": "Loading roles...",
+      "title": "Assigned Roles",
+      "add": "Add",
+      "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
+      "parent": "Associated: <mono>{code}</mono>",
+      "morePermissions": "+{count} more",
+      "revoke": "Revoke",
+      "empty": "No roles assigned",
+      "emptyDescription": "This user has no roles.",
+      "assign": "Assign Roles",
+      "toasts": {
+        "removed": "Role removed successfully.",
+        "removeFailed": "The role could not be removed."
+      }
+    },
+    "rolesList": {
+      "loading": "Loading...",
+      "loadError": "Error loading roles",
+      "empty": "No roles assigned",
+      "emptyDescription": "This user has no roles assigned yet."
     }
   }
 }

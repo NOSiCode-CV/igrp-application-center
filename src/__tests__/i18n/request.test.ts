@@ -76,10 +76,12 @@ describe("getMessagesFor", () => {
     expect(getMessagesFor("pt")).toEqual(pt);
   });
 
-  it("merges fr over pt, keeping pt keys missing in fr", () => {
+  it("merges fr over pt", () => {
     const fr = getMessagesFor("fr");
     expect(fr.i18n.localeSwitcher.label).toBe("Langue");
-    expect(fr.errors.unexpected.title).toBe(pt.errors.unexpected.title);
+    expect(fr.errors.unexpected.title).toBe(
+      "Une erreur inattendue s’est produite.",
+    );
   });
 });
 
@@ -96,7 +98,7 @@ describe("request config", () => {
     expect(config.locale).toBe("en");
     expect(config.messages.i18n.localeSwitcher.label).toBe("Language");
     expect(config.messages.errors.unexpected.title).toBe(
-      pt.errors.unexpected.title,
+      "An unexpected error occurred.",
     );
     expect(config.onError).toBe(onIntlError);
     expect(config.getMessageFallback).toBe(getMessageFallback);
