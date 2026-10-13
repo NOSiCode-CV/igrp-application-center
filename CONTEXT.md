@@ -101,6 +101,31 @@ The Active Role the user was acting as when the event happened — always a Role
 Every Role the user held at the time of the event, whether active or not. Evidence of what the user *could* have acted as, kept separate from the Role they *did* act as.
 _Avoid_: Roles (plural, unqualified)
 
+### Brand
+
+**Brand**:
+The organization's saved visual identity: its color Tokens for each Mode and its Logos. There is at most one Brand per platform installation, and every app that opts in displays the same one.
+_Avoid_: Theme (means light/dark), customization (the activity of editing the Brand, and the admin page title), preset, skin
+
+**Token**:
+One named CSS custom property of the design system (for example `--primary`) whose value the Brand may override. Tokens come in two tiers: the core tier shared by every framework app, and the app tier that only the Application Center defines.
+_Avoid_: Variable (unqualified), color (a Token's value is a color, the Token is the slot)
+
+**Mode**:
+Light or dark. Every Token has a value per Mode; the user chooses the Mode, the Brand does not.
+_Avoid_: Theme, scheme
+
+**Logo Slot**:
+One of the three places the Brand can put an image: the header mark (square), the wide logo (login and invite pages) and the favicon. Each slot has a light image and an optional dark image.
+_Avoid_: Logo (unqualified when the slot matters), icon
+
+**Default** (of a Token or Logo Slot):
+What the app shows when the Brand does not set that Token or slot: the design-system value or the app's static logo. Clearing a field in the editor returns it to its Default.
+_Avoid_: Reset (implies a whole-Brand action, which does not exist), fallback
+
+**Preset** (retired):
+The former per-user color palettes (blue, green, amber) chosen in the header. Removed with the Brand; the word should not appear in new work.
+
 ## Relationships
 
 - An **OAuth Client** has zero or one **Service Account**; a **Service Account** has exactly one **OAuth Client**.
@@ -115,6 +140,9 @@ _Avoid_: Roles (plural, unqualified)
 - A user's effective **Permissions** come from their **Active Role**; holding a Permission through another Role does not grant access.
 - An **Access Period** is authorised by exactly one user and is for exactly one user and one module.
 - An **Export** or **Archive** always belongs to exactly one **Report** and carries that Report's filters and date range.
+- A **Brand** sets zero or more **Tokens** per **Mode** and zero or more **Logo Slots**; anything it does not set shows its **Default**.
+- Saving a **Brand** never edits the previous one; each save is a new version and the newest is the one in effect. No version other than the newest is visible today.
+- An app shows the **Brand** only when it opts in; an app that does not opt in shows every **Default** and never reads the Brand.
 
 ## Flagged ambiguities
 
