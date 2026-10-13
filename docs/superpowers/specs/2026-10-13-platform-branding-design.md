@@ -29,6 +29,7 @@ the design-system defaults, and any failure degrades to those defaults.
 | Per-user preset themes (default, blue, green, amber) | Removed. Only light / dark / system remains. |
 | Editor features (v1) | Live preview only. Reset, import/export and contrast warnings are out of scope. |
 | Propagation | Per-process cache with a 5-minute TTL in every app. The Application Center invalidates its own cache on save. |
+| Opt-in per app | Env flag `IGRP_BRANDING_ENABLED` (default `false`). `true` loads and applies the organization brand; `false` or unset skips the fetch, the stylesheet, the logo overrides and, in the Application Center, the editor card and route. The app then renders exactly as it does today. |
 
 ## 3. Current state (facts the design relies on)
 
@@ -66,7 +67,10 @@ the design-system defaults, and any failure degrades to those defaults.
 
 Goals
 
-1. One brand per organization, edited in one place, applied in every framework app.
+1. One brand per organization, edited in one place, applied in every framework
+   app that opts in with `IGRP_BRANDING_ENABLED=true`. An app that leaves the
+   flag off keeps the design-system defaults and pays no cost: no fetch, no
+   stylesheet, no provider work.
 2. No flash of default colors: overrides are in `<head>` before first paint.
 3. Safe by default: invalid or missing config never breaks a page.
 4. Siblings need no code beyond a package bump and one metadata helper call.
@@ -156,8 +160,11 @@ they are inert.
 - Types from section 5.
 - `IGRP_BRANDING_CORE_TOKENS: IGRPBrandingTokenCatalogEntry[]`.
 - `IGRPBrandingTokenCatalogEntry = { name, group, defaults: { light: string; dark?: string } }`.
-- `IGRPConfigArgs` gains an optional `branding?: { enabled?: boolean }` (default
-  enabled) so an app can opt out.
+- `IGRPConfigArgs` gains an optional `branding?: { enabled: boolean }`. Omitted
+  means disabled. Templates source it from the env:
+  `branding: { enabled: process.env.IGRP_BRANDING_ENABLED === "true" }`, the
+  same shape as `syncAccess`. The `igrpBuildConfig` schema accepts the field
+  as an optional object with a boolean `enabled`.
 
 ### 7.2 `@igrp/framework-next-ui` (new `branding/` folder, dependency-free, isomorphic)
 
@@ -192,10 +199,16 @@ they are inert.
 - `igrpBrandingMetadata(branding: IGRPBranding | null, fallbackIcon: string): Metadata["icons"]`
   — returns the `icons` object for the app's root `generateMetadata`, using the
   favicon slot when present (light as `icon`, dark as a `media: (prefers-color-scheme: dark)` entry).
-- `IGRPRootLayout` resolves the branding once per request (React `cache`) and
-  renders `IGRPBrandingStyle` as the first child of `<body>` (hoisted by React)
-  and passes `branding` to `IGRPNestedProviders`. The preset `theme-*` body
-  classes and the `igrp_active_theme` cookie read are removed.
+- `IGRPRootLayout` first checks `config.branding?.enabled`. When it is not
+  `true`, the layout renders exactly as before this feature: no loader call,
+  no `IGRPBrandingStyle`, and `IGRPNestedProviders` receives `branding: null`
+  so the header and login form use their existing props. When it is `true`,
+  the layout resolves the branding once per request (React `cache`), renders
+  `IGRPBrandingStyle` as the first child of `<body>` (hoisted by React) and
+  passes `branding` to `IGRPNestedProviders`. The preset `theme-*` body
+  classes and the `igrp_active_theme` cookie read are removed in both cases.
+- `igrpBrandingMetadata` returns the fallback icon unchanged when branding is
+  `null`, so an app can call it unconditionally.
 - Token source: one internal function `resolveBrandingToken(config)` that today
   returns `layout.session?.accessToken` and is the single place to switch to the
   M2M provider later.
@@ -206,13 +219,36 @@ they are inert.
 - `src/features/customization/` — editor feature (section 10).
 - `src/app/(igrp)/(home)/settings/customization/{page,loading,error,forbidden}.tsx`.
 - Root layout `generateMetadata` spreads `igrpBrandingMetadata(...)`.
-- Settings hub: remove `status: "inativo"` from the customization card.
-- Add `CUSTOMIZE_PERMISSION = "igrp.applications.customize"` to `src/lib/constants.ts`.
+- `igrp.template.config.ts` adds `branding: { enabled: process.env.IGRP_BRANDING_ENABLED === "true" }`;
+  `.env.example` documents the flag next to `IGRP_SYNC_ACCESS`; `docs/ENVIRONMENT.md`
+  gains a row.
+- Settings hub: the customization card is enabled only when
+  `IGRP_BRANDING_ENABLED=true`; otherwise it keeps `status: "inativo"` as today.
+  The route `/settings/customization` calls `notFound()` when the flag is off,
+  so the editor cannot save a brand the app itself would not display.
+- Add `CUSTOMIZE_PERMISSION = "igrp.applications.customize"` and
+  `isBrandingEnabled()` (reads the env once) to `src/lib/constants.ts` and
+  `src/lib/utilities.ts` respectively.
+
+### 7.5 Template (`templates/demo-v1` in the framework repo)
+
+- `igrp.template.config.ts`: `branding: { enabled: process.env.IGRP_BRANDING_ENABLED === "true" }`.
+- `.env.example`: a commented block in the `IGRP_*` section, default empty
+  (treated as `false`), explaining that `true` loads the organization brand from
+  Access Management and `false` keeps the design-system defaults with no fetch.
+- `.env`: `IGRP_BRANDING_ENABLED=false`.
+- `docs/ENVIRONMENT.md`: row `IGRP_BRANDING_ENABLED` | Load the organization
+  brand (colors and logos) from Access Management at render time | `false`.
+- Root layout `generateMetadata` spreads `igrpBrandingMetadata(...)`, which is
+  a no-op while the flag is off.
 
 ## 8. Loading, caching and applying
 
+0. `IGRPRootLayout` reads `config.branding?.enabled`. Anything but `true`
+   short-circuits every step below: the request renders with defaults and
+   the branding module is never touched.
 1. `IGRPRootLayout` reads `config.layout.session`. With a session token and
-   branding enabled and `previewMode === false`, it calls `igrpGetBranding`.
+   `previewMode === false`, it calls `igrpGetBranding`.
    Without a token (public pages, logged-out) it calls the same function with
    no token, which returns the cached value only and never fetches.
 2. Cache: a module-level `Map<baseUrl, { value, fetchedAt, inflight }>`.
@@ -379,6 +415,7 @@ on a bordered `size-8 rounded-md` button. The `no-raw-color` rule in
 
 | Situation | Behaviour |
 | --- | --- |
+| `IGRP_BRANDING_ENABLED` unset or not `true` | Defaults; no fetch, no stylesheet, no logo override; editor card inactive and route 404 in the Application Center. |
 | API unreachable at render | Previous cached value or defaults; one log line; retry after 60 s. |
 | 404 from GET | Defaults; cached as "none" for the TTL. |
 | Stored JSON invalid or wrong version | Defaults; logged once per cache fill. |
@@ -397,6 +434,9 @@ Framework (`vitest` in each package)
 - `igrpParseBranding`: valid document, wrong version, oversized, invalid name,
   invalid value dropped while siblings survive, unknown keys ignored, URL rules.
 - `igrpBrandingToCss`: output order stable, light-only `--radius`, empty maps emit nothing.
+- `IGRPRootLayout` with `branding` omitted or `enabled: false`: no loader call,
+  no style element, providers receive `null`; with `enabled: true` the loader
+  is called once per request. `igrpBuildConfig` accepts and preserves the field.
 - Loader cache: fresh hit, stale-while-revalidate returns old value, in-flight
   dedupe, 404 cached as null, error keeps old value and sets cooldown, no token
   never fetches, invalidate forces refetch.
@@ -410,6 +450,8 @@ Application Center (`src/__tests__/customization/`)
 - Mapper: form → document drops empty fields and keeps only edited tokens;
   document → form round-trips.
 - Live preview helper sets and clears exactly the properties it was given.
+- Flag off: settings hub renders the customization card inactive and the
+  route returns 404; flag on: card active and page renders for an authorized user.
 - Screen: renders all groups from both catalogs, mode switch swaps values,
   invalid color blocks save, successful save calls upload then save in order.
 - i18n: every catalog token has a label in `pt.json`; literal-strings guard passes.
@@ -423,8 +465,11 @@ Implementation is two plans, one per repository, executed in this order.
    `@igrp/framework-next-types`, `-next-ui`, `-next` together (next betas).
 2. Application Center: bump the three packages, implement sections 7.4 and 10,
    run the gates, merge to `dev`.
-3. Siblings: bump the packages and add the `igrpBrandingMetadata` spread to
-   their root metadata. No other change.
+3. Siblings: bump the packages, add `branding: { enabled: process.env.IGRP_BRANDING_ENABLED === "true" }`
+   to their template config, add the `igrpBrandingMetadata` spread to their
+   root metadata, and set `IGRP_BRANDING_ENABLED=true` in the environments that
+   should carry the brand. A sibling that only bumps the packages keeps the
+   defaults.
 4. Backend request (separate ticket, not blocking): add
    `GET /api/m2m/global-configuration?type=` accepting client-credentials
    tokens, or add the existing GET path to `M2MTokenRejectionFilter`'s skip
