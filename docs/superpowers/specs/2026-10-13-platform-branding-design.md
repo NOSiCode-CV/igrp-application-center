@@ -36,7 +36,7 @@ Default.
 | Favicon | PNG or ICO, at most 256 KB, no dimension check. |
 | Freshness | Per-process cache with a 5-minute TTL. Saving sets a short-lived cookie `igrp_brand_v` holding the save time; a loader that sees a newer cookie than its cache entry refetches. Other browsers pick up changes within the TTL. |
 | Live preview | Scoped to the preview panel. The panel carries the draft Tokens as inline custom properties and its own `dark` class. The rest of the editor and the real page keep the saved Brand. |
-| Mode switch | Changes only the preview panel's class. It never changes the user's theme preference. |
+| Mode switch | A pill switch with a sun knob in Claro and a moon knob in Escuro, labelled beside it. It chooses the Mode being edited: the form values and the preview both follow it. It never changes the user's theme preference. |
 | Editor features (v1) | Live preview, per-field clear to Default, Save. No reset-all, no JSON import/export, no contrast warnings, no version history, no revert. |
 | Browser chrome color | Not driven by the Brand in v1 (`viewport.themeColor` unchanged). |
 | Orphaned uploads | Accepted. Replaced logo files stay in storage until a backend delete endpoint exists. |
@@ -346,7 +346,11 @@ editor applies the same rules plus the stricter rules marked **(editor)**.
 
 ### 10.1 Route and guard
 
-`/settings/customization`, under `(igrp)/(home)/settings`. `page.tsx` calls
+`/settings/customization`, under `(igrp)/(home)/settings`. The page renders inside
+the settings layout's `max-w-7xl` container, with the page header and section
+spacing of `settings/page.tsx`; it does not take over the viewport. Breadcrumbs
+come from the framework header. The editor has two tabs, Cores and Logótipos.
+Typography is out of scope for this version. `page.tsx` calls
 `notFound()` when `isBrandingEnabled()` is false, then awaits
 `igrpAssertAuthorize(CUSTOMIZE_PERMISSION)`. `forbidden.tsx` renders
 `IGRPForbidden` with editor-specific copy. The server actions check the
@@ -374,8 +378,9 @@ The API remains the real enforcement.
 - `components/`
   - `branding-screen.tsx` — page composition: `IGRPForm` with `react-hook-form`,
     the unsaved-changes bar, the save button, the result toast.
-  - `mode-switch.tsx` — Light / Dark segmented control. It sets the class and
-    inline properties on the preview panel only.
+  - `mode-switch.tsx` — switch control (`role="switch"`, labelled Claro / Escuro).
+    The knob moves right and shows the moon in Escuro, and sits left with the sun
+    in Claro. It sets the Mode for the editor form and the preview.
   - `token-group.tsx` — collapsible group of `color-field`s. Brand is open by default.
   - `color-field.tsx` — `IGRPFormField` with a swatch button (native
     `<input type="color">` writes hex) and a text input that accepts any editor-valid
