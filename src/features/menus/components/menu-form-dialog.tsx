@@ -399,7 +399,12 @@ function MenuFormBody({
         className="flex min-h-0 flex-col"
       >
         <ScrollArea className="max-h-[65vh] px-6">
-          <div className="flex flex-col gap-6 pt-1 pb-6">            
+          <div className="flex flex-col gap-6 pt-1 pb-6">     
+           <MenuRowPreview
+              control={form.control}
+              allMenus={allMenus}
+              lockedParentCode={lockedParentCode}
+            />    
             <FieldSet>
               <FieldLegend variant="label">{t("sections.details")}</FieldLegend>
               <div className="grid grid-cols-1 items-start gap-4">
@@ -577,6 +582,7 @@ function MenuFormBody({
               variant="outline"
               onClick={() => onOpenChange(false)}
               iconName="X"
+              showIcon
             >
               {t("close")}
             </IGRPButton>
@@ -591,6 +597,7 @@ function MenuFormBody({
                 }}
                 disabled={isLoading}
                 iconName="Undo2"
+                showIcon
               >
                 {tc("cancel")}
               </IGRPButton>

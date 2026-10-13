@@ -7,7 +7,6 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 
 interface MenuChoiceGroupProps<T extends string> {
-  /** Prefix for the radio ids, unique within the form. */
   name: string;
   value: T;
   options: ReadonlyArray<{ value: T; label: string }>;
@@ -16,7 +15,6 @@ interface MenuChoiceGroupProps<T extends string> {
   "aria-label"?: string;
 }
 
-/** Side-by-side radio options for a short either/or choice in the menu form. */
 export function MenuChoiceGroup<T extends string>({
   name,
   value,
