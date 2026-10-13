@@ -62,10 +62,10 @@ export function UserDeleteDialog({
       onOpenChange={onOpenChange}
       toDelete={{ name: userToDelete.name || userToDelete.email }}
       confirmDelete={confirmDelete}
-      description="O utilizador deixa de poder entrar na plataforma. As atribuições de perfil são mantidas e a conta pode ser reativada mais tarde."
+      description={t("description")}
       isDeleting={isDeleting}
       confirmIconName="UserX"
-      textHeader="Desativar utilizador"
+      textHeader={t("title")}
       label={t("label")}
       labelBtnDelete={t("confirm")}
     />

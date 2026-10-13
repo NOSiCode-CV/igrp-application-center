@@ -9,6 +9,7 @@ import {
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import {
   getAppHref,
@@ -16,7 +17,8 @@ import {
   isExternalAppHref,
   isRecentlyAdded,
 } from "@/features/workspace/lib/app-utils";
-import { showStatus, statusClass } from "@/lib/utilities";
+import { useStatusLabel } from "@/i18n/status";
+import { statusClass } from "@/lib/utilities";
 
 type Props = {
   app: ApplicationDTO;
@@ -35,6 +37,8 @@ export function AppTileCard({
   description,
   compact = false,
 }: Props) {
+  const t = useTranslations("workspace.card");
+  const statusLabel = useStatusLabel();
   const color = getAppTileColor(app.code);
   const initial = (app.name ?? app.code).charAt(0).toUpperCase();
   const href = getAppHref(app);
@@ -50,9 +54,7 @@ export function AppTileCard({
          `icon*` size and renders `iconName`, which defaults to "ArrowLeft". */
       iconName="Star"
       iconClassName={isFavorite ? "fill-favorite text-favorite" : undefined}
-      aria-label={
-        isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"
-      }
+      aria-label={isFavorite ? t("removeFavorite") : t("addFavorite")}
       aria-pressed={isFavorite}
       /* `after:` lifts the 36px control to a ~44px target without drawing a
          bigger button. `favorite` rather than `warning`: --warning is 2.15:1
@@ -69,11 +71,11 @@ export function AppTileCard({
   const statusBadge =
     app.status !== "ACTIVE" ? (
       <Badge className={statusClass(app.status) as string}>
-        {showStatus(app.status)}
+        {statusLabel(app.status)}
       </Badge>
     ) : isRecentlyAdded(app.createdDate) ? (
       <Badge className="bg-success-subtle text-success-subtle-foreground">
-        Nova
+        {t("new")}
       </Badge>
     ) : null;
 
@@ -114,7 +116,7 @@ export function AppTileCard({
   const noLaunchUrl = (
     <span className="flex shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground">
       <IGRPIcon iconName="Info" size={12} />
-      Sem URL definido
+      {t("noUrl")}
     </span>
   );
 
@@ -195,7 +197,7 @@ export function AppTileCard({
           description ? "" : "italic"
         }`}
       >
-        {description || "Sem descrição"}
+        {description || t("noDescription")}
       </p>
 
       {/* After the content in DOM order so the app name is the first tab stop

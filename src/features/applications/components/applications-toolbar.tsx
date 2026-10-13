@@ -1,10 +1,11 @@
 "use client";
 
 import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { FacetedFilter } from "@/components/data-table/faceted-filter";
 import { SearchInput } from "@/components/data-table/search-input";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { useStatusOptions } from "@/i18n/status";
 
 interface ApplicationsToolbarProps {
   searchTerm: string;
@@ -27,6 +28,9 @@ export function ApplicationsToolbar({
   statusCounts,
   onClearFilters,
 }: ApplicationsToolbarProps) {
+  const t = useTranslations("applications.toolbar");
+  const tc = useTranslations("common.actions");
+  const statusOptions = useStatusOptions();
   const isFiltered = searchTerm !== "" || statusFilter.length > 0;
 
   return (
@@ -38,14 +42,14 @@ export function ApplicationsToolbar({
       <SearchInput
         value={searchTerm}
         onChange={onSearchChange}
-        label="Pesquisar aplicações"
-        placeholder="Pesquisar aplicações…"
+        label={t("searchLabel")}
+        placeholder={t("searchPlaceholder")}
         disabled={disabled}
       />
       <div className="flex flex-wrap items-center gap-2">
         <FacetedFilter
-          label="Estado"
-          options={STATUS_OPTIONS}
+          label={t("status")}
+          options={statusOptions}
           value={statusFilter}
           onChange={onStatusFilterChange}
           disabled={disabled}
@@ -63,7 +67,7 @@ export function ApplicationsToolbar({
             iconName="X"
             onClick={onClearFilters}
           >
-            Limpar
+            {tc("clear")}
           </IGRPButton>
         )}
       </div>

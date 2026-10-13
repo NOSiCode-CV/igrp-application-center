@@ -6,7 +6,37 @@
       "backHome": "Retour à l’accueil",
       "retry": "Réessayer",
       "retrying": "Nouvelle tentative...",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "clear": "Effacer",
+      "clearFilters": "Effacer les filtres",
+      "edit": "Modifier"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "temporary": "Temporaire",
+      "deleted": "Supprimé"
+    },
+    "unknownError": "Une erreur inconnue s’est produite.",
+    "inlineError": {
+      "title": "Impossible de charger les données."
+    },
+    "facetedFilter": {
+      "noResults": "Aucun résultat trouvé.",
+      "clear": "Effacer le filtre"
+    },
+    "searchInput": {
+      "clear": "Effacer la recherche"
+    },
+    "copy": {
+      "copied": "Copié dans le presse-papiers",
+      "failed": "Impossible de copier dans le presse-papiers",
+      "copiedShort": "Copié",
+      "copy": "Copier dans le presse-papiers",
+      "clickToCopy": "Cliquez pour copier"
+    },
+    "textarea": {
+      "charsUsed": "Caractères utilisés : {length} sur {max}"
     }
   },
   "i18n": {
@@ -106,7 +136,9 @@
           "inviteFailed": "Échec de l’invitation",
           "inviteFailedWithReason": "Échec de l’invitation : {reason}",
           "inviteSent": "Invitation envoyée avec succès !"
-        }
+        },
+        "rolesNoneInDepartment": "Ce département n’a encore aucun profil.",
+        "rolesPickDepartment": "Choisissez d’abord un département pour voir les profils disponibles."
       },
       "accept": {
         "errors": {
@@ -261,7 +293,9 @@
       "deactivatedDescription": "L’utilisateur « {name} » a été désactivé avec succès.",
       "deactivateFailed": "Erreur lors de la désactivation.",
       "label": "Nom d’utilisateur",
-      "confirm": "Désactiver"
+      "confirm": "Désactiver",
+      "title": "Désactiver l’utilisateur",
+      "description": "L’utilisateur ne pourra plus se connecter à la plateforme. Les attributions de profils sont conservées et le compte pourra être réactivé ultérieurement."
     },
     "editForm": {
       "fullName": "Nom complet",
@@ -294,7 +328,8 @@
       "actions": "Actions",
       "activate": "Activer",
       "deactivate": "Désactiver",
-      "manage": "Gérer"
+      "manage": "Gérer",
+      "actionsFor": "Actions pour {name}"
     },
     "invitations": {
       "actions": {
@@ -310,8 +345,11 @@
         "resent": "Invitation renvoyée",
         "resentDescription": "L’invitation a été renvoyée avec succès.",
         "resendFailed": "Invitation non renvoyée",
-        "resendFailedDescription": "Impossible de renvoyer l’invitation."
-      }
+        "resendFailedDescription": "Impossible de renvoyer l’invitation.",
+        "copyFailed": "Impossible de copier",
+        "copyFailedDescription": "Le navigateur a bloqué l’accès au presse-papiers. Copiez l’URL manuellement."
+      },
+      "actionsFor": "Actions pour l’invitation de {identifier}"
     },
     "list": {
       "title": "Gestion des utilisateurs",
@@ -329,7 +367,8 @@
         "searchByName": "Rechercher par nom",
         "searchByNamePlaceholder": "Rechercher par nom...",
         "searchByEmail": "Rechercher par e-mail",
-        "searchByEmailPlaceholder": "Rechercher par e-mail..."
+        "searchByEmailPlaceholder": "Rechercher par e-mail...",
+        "searchInvitations": "Rechercher des invitations"
       },
       "toasts": {
         "error": "Erreur",
@@ -355,7 +394,10 @@
         "description": "Voulez-vous vraiment annuler l’invitation pour <strong>{identifier}</strong> ? Cette action est irréversible.",
         "confirm": "Confirmer",
         "canceling": "Annulation..."
-      }
+      },
+      "staleWarning": "Cette liste n’est peut-être pas à jour : la dernière actualisation a échoué.",
+      "refresh": "Actualiser",
+      "refreshing": "Actualisation..."
     },
     "notAvailable": "N/D",
     "favorites": {
@@ -382,7 +424,8 @@
       "toasts": {
         "killed": "Session terminée",
         "killFailed": "Erreur lors de la fermeture de la session"
-      }
+      },
+      "loading": "Chargement des sessions de l’utilisateur..."
     },
     "signature": {
       "title": "Signature numérique",
@@ -523,7 +566,9 @@
         "updated": "Profils mis à jour",
         "updatedDescription": "+{added} ajouté(s), -{removed} retiré(s).",
         "updateFailed": "Échec de la mise à jour des profils"
-      }
+      },
+      "departmentScope": "Seuls les profils du département {department} sont affichés. Les profils des autres départements ne sont pas modifiés ici.",
+      "pickDepartment": "Choisissez un département pour voir les profils que vous pouvez attribuer."
     },
     "roleList": {
       "loading": "Chargement des profils...",
@@ -538,7 +583,17 @@
       "assign": "Associer des profils",
       "toasts": {
         "removed": "Profil retiré avec succès.",
-        "removeFailed": "Impossible de retirer le profil."
+        "removeFailed": "Impossible de retirer le profil.",
+        "revoked": "Profil révoqué.",
+        "revokedDescription": "« {role} » a été retiré de {user} dans le département {department}.",
+        "undo": "Annuler",
+        "restored": "Profil rétabli.",
+        "restoreFailed": "Impossible de rétablir le profil."
+      },
+      "revokeDialog": {
+        "title": "Révoquer le profil",
+        "description": "Révoquer « {role} » de {user} dans le département {department} ? L’utilisateur perd les accès accordés par ce profil.",
+        "revoking": "Révocation..."
       }
     },
     "rolesList": {
@@ -546,6 +601,227 @@
       "loadError": "Erreur lors du chargement des profils",
       "empty": "Aucun profil attribué",
       "emptyDescription": "Aucun profil n’a encore été attribué à cet utilisateur."
+    }
+  },
+  "header": {
+    "search": {
+      "trigger": "Rechercher...",
+      "placeholder": "Saisissez une commande ou une recherche...",
+      "empty": "Aucun résultat.",
+      "dialogTitle": "Palette de commandes",
+      "dialogDescription": "Recherchez et exécutez une commande."
+    }
+  },
+  "workspace": {
+    "title": "Centre d’applications",
+    "tabs": {
+      "home": "Accueil et applications"
+    },
+    "banner": {
+      "greeting": {
+        "morning": "Bonjour",
+        "afternoon": "Bon après-midi",
+        "evening": "Bonsoir"
+      },
+      "welcome": "Bienvenue",
+      "department": "Département",
+      "activeRole": "Profil actif"
+    },
+    "recent": {
+      "title": "Consultées récemment",
+      "previous": "Afficher les applications précédentes",
+      "next": "Afficher les applications suivantes",
+      "errorTitle": "Impossible de charger les applications récentes.",
+      "errorMessage": "Cette liste est temporairement indisponible. Tout le reste continue de fonctionner.",
+      "empty": "Les applications que vous ouvrez apparaissent ici, pour y revenir rapidement.",
+      "explore": "Explorer les applications"
+    },
+    "lastOpened": {
+      "justNow": "Ouverte à l’instant",
+      "minutes": "{count, plural, one {Ouverte il y a # minute} other {Ouverte il y a # minutes}}",
+      "hours": "{count, plural, one {Ouverte il y a # heure} other {Ouverte il y a # heures}}",
+      "yesterday": "Ouverte hier",
+      "weekday": "{day, select, other {Ouverte {weekday}}}",
+      "weeks": "{count, plural, one {Ouverte il y a # semaine} other {Ouverte il y a # semaines}}"
+    },
+    "catalog": {
+      "title": "Applications",
+      "filteredCount": "{shown} sur {total}",
+      "search": "Rechercher des applications",
+      "favorites": "Favoris",
+      "sortBy": "Trier par :",
+      "sortPlaceholder": "Choisir l’ordre",
+      "sort": {
+        "default": "Par défaut",
+        "recent": "Visitées récemment",
+        "nameAsc": "Nom (A–Z)",
+        "nameDesc": "Nom (Z–A)"
+      },
+      "gridView": "Vue en grille",
+      "listView": "Vue en liste",
+      "announceNone": "Aucune application ne correspond aux filtres.",
+      "announceSome": "{shown} applications sur {total} correspondent aux filtres.",
+      "errorTitle": "Impossible de charger les applications.",
+      "errorMessage": "La liste est temporairement indisponible. Votre accès n’a pas été modifié.",
+      "emptyTitle": "Aucune application ne vous est encore attribuée",
+      "emptyDescription": "L’accès est accordé par profil et département. Contactez l’administrateur si vous vous attendiez à voir quelque chose ici.",
+      "noFavoritesTitle": "Pas encore de favoris",
+      "noFavoritesDescription": "Cliquez sur l’★ d’une application pour l’ajouter ici",
+      "noFavoriteMatch": "Aucun favori ne correspond à « {query} ».",
+      "noMatch": "Aucune application ne correspond à « {query} ».",
+      "clearFilters": "Effacer les filtres"
+    },
+    "card": {
+      "addFavorite": "Ajouter aux favoris",
+      "removeFavorite": "Retirer des favoris",
+      "new": "Nouvelle",
+      "noUrl": "Aucune URL définie",
+      "noDescription": "Aucune description"
+    },
+    "table": {
+      "columns": {
+        "name": "Application",
+        "code": "Code",
+        "description": "Description",
+        "status": "Statut",
+        "favorite": "Favori"
+      },
+      "opensNewTab": "{name} (s’ouvre dans un nouvel onglet)",
+      "addFavorite": "Ajouter {name} aux favoris",
+      "removeFavorite": "Retirer {name} des favoris"
+    }
+  },
+  "settings": {
+    "meta": {
+      "title": "Paramètres",
+      "description": "Gérez les applications, les utilisateurs et les accès de la plateforme."
+    },
+    "title": "Paramètres généraux",
+    "subtitle": "Choisissez le domaine que vous souhaitez administrer.",
+    "comingSoon": "Bientôt",
+    "items": {
+      "applications": {
+        "title": "Gestion des applications",
+        "description": "Enregistrez des applications, modifiez leurs données et contrôlez le statut de chacune."
+      },
+      "users": {
+        "title": "Gestion des utilisateurs",
+        "description": "Invitez des utilisateurs et gérez leurs comptes, profils et permissions."
+      },
+      "departments": {
+        "title": "Gestion des départements",
+        "description": "Organisez la structure des départements ainsi que les profils, permissions et menus associés."
+      },
+      "oauthClients": {
+        "title": "Gestion des clients OAuth",
+        "description": "Enregistrez des clients OAuth et gérez les comptes de service qui accèdent aux API."
+      },
+      "audit": {
+        "title": "Audit et rapports",
+        "description": "Consultez les accès et les modifications de configuration enregistrés sur la plateforme."
+      },
+      "customization": {
+        "title": "Personnalisation",
+        "description": "Ajustez l’identité visuelle de la plateforme — thème, couleurs et logos."
+      }
+    }
+  },
+  "applications": {
+    "meta": {
+      "listTitle": "Applications",
+      "listDescription": "Gérez les applications et les menus.",
+      "detailTitle": "{name} · Applications"
+    },
+    "list": {
+      "title": "Gestion des applications",
+      "description": "Enregistrez de nouvelles applications et gérez les existantes.",
+      "new": "Nouvelle application",
+      "loadErrorTitle": "Impossible de charger les applications.",
+      "loadErrorMessage": "Veuillez réessayer. Si le problème persiste, contactez l’assistance.",
+      "emptyTitle": "Il n’y a pas encore d’applications",
+      "emptyDescription": "Les applications sont ce que les utilisateurs ouvrent depuis la page d’accueil. Créez la première pour pouvoir l’associer à des départements et des profils."
+    },
+    "toolbar": {
+      "searchLabel": "Rechercher des applications",
+      "searchPlaceholder": "Rechercher des applications…",
+      "status": "Statut"
+    },
+    "grid": {
+      "count": "{total, plural, one {# application} other {# applications}}",
+      "countFiltered": "{shown} affichée(s) sur {total, plural, one {# application} other {# applications}}",
+      "noMatchTitle": "Aucune application ne correspond aux filtres",
+      "noMatchDescription": "Ajustez la recherche ou le statut pour voir les applications enregistrées."
+    },
+    "card": {
+      "view": "Voir {name}",
+      "edit": "Modifier {name}",
+      "open": "Ouvrir {name}",
+      "noDescription": "Aucune description."
+    },
+    "dialog": {
+      "newTitle": "Nouvelle application",
+      "editTitle": "Modifier l’application",
+      "newDescription": "Renseignez les détails pour enregistrer une nouvelle application.",
+      "editDescription": "Mettez à jour les détails de l’application."
+    },
+    "details": {
+      "loading": "Chargement de l’application...",
+      "loadErrorTitle": "Impossible de charger cette application.",
+      "notFound": "Aucune application trouvée.",
+      "changeImage": "Modifier l’image de l’application",
+      "uploadingImage": "Téléversement de l’image...",
+      "loadingImage": "Récupération de l’image...",
+      "uploadSuccessTitle": "Image téléversée",
+      "uploadSuccess": "L’image a été téléversée avec succès",
+      "uploadErrorTitle": "Erreur de téléversement."
+    },
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "Nom de l’application…",
+      "code": "Code",
+      "codePlaceholder": "Ex. : APP_CENTER",
+      "type": "Type",
+      "types": {
+        "internal": "Interne",
+        "external": "Externe"
+      },
+      "slug": "Slug",
+      "slugPlaceholder": "/apps/exemple",
+      "url": "URL",
+      "urlPlaceholder": "https://exemple.com",
+      "description": "Description",
+      "descriptionPlaceholder": "Brève description de l’application…",
+      "status": "Statut",
+      "statusPlaceholder": "Sélectionner un statut",
+      "saving": "Enregistrement...",
+      "create": "Créer l’application",
+      "update": "Mettre à jour l’application",
+      "toasts": {
+        "createdTitle": "Application créée",
+        "created": "L’application a été créée avec succès !",
+        "updatedTitle": "Application mise à jour",
+        "updated": "L’application a été mise à jour avec succès !",
+        "createError": "Erreur lors de la création",
+        "updateError": "Erreur lors de la mise à jour"
+      }
+    },
+    "validation": {
+      "typeRequired": "Sélectionnez le type d’application",
+      "codeRequired": "Le code est obligatoire",
+      "codeMin": "Le code doit contenir au moins 2 caractères",
+      "codeMax": "Le code doit contenir au maximum 255 caractères",
+      "codePattern": "Utilisez uniquement des majuscules, des chiffres, _ et - (ex. : APP_CENTER)",
+      "nameRequired": "Le nom est obligatoire",
+      "nameMin": "Le nom doit contenir au moins 2 caractères",
+      "nameMax": "Le nom doit contenir au maximum 255 caractères",
+      "statusInvalid": "Sélectionnez un statut valide",
+      "ownerMax": "Le responsable doit contenir au maximum 255 caractères",
+      "descriptionMax": "La description doit contenir au maximum 255 caractères",
+      "pictureMax": "L’image doit contenir au maximum 255 caractères",
+      "urlInvalid": "Indiquez une URL complète, avec https:// (ex. : https://exemple.com)",
+      "urlRequired": "L’URL est obligatoire",
+      "slugRequired": "Le slug est obligatoire (ex. : /apps/exemple)",
+      "slugMax": "Le slug doit contenir au maximum 255 caractères"
     }
   }
 }

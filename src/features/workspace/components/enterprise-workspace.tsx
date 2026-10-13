@@ -6,6 +6,7 @@ import {
   type IGRPTabItem,
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 // import { defaultTasks } from "../data/mock-tasks";
 import { HomeAppsTab } from "./home-apps/home-apps-tab";
@@ -20,12 +21,13 @@ const SHELL = "flex w-full flex-col mx-auto max-w-7xl";
 const PANEL = "p-4";
 
 export function EnterpriseWorkspace() {
+  const t = useTranslations("workspace");
   const [activeTab, setActiveTab] = useState<Tab>("home");
 
   const tabs: IGRPTabItem[] = [
     {
       value: "home",
-      label: "Início e aplicações",
+      label: t("tabs.home"),
       content: <HomeAppsTab />,
     },
     // {

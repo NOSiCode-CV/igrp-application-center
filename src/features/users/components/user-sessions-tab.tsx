@@ -46,9 +46,7 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
   }
 
   if (isLoading) {
-    return (
-      <AppCenterLoading description="A carregar sessões do utilizador..." />
-    );
+    return <AppCenterLoading description={t("loading")} />;
   }
 
   if (!session) {

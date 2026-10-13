@@ -1,21 +1,23 @@
 "use client";
 
 import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 interface InlineErrorProps {
   title?: string;
   message: string;
   onRetry?: () => void;
-  /** Overridable so surfaces that are not in Portuguese can match their copy. */
+  /** Defaults to `common.actions.retry`. */
   retryLabel?: string;
 }
 
 export function InlineError({
-  title = "Não foi possível carregar os dados.",
+  title,
   message,
   onRetry,
-  retryLabel = "Tentar novamente",
+  retryLabel,
 }: InlineErrorProps) {
+  const t = useTranslations("common");
   return (
     <div
       role="alert"
@@ -23,7 +25,7 @@ export function InlineError({
     >
       <IGRPIcon iconName="TriangleAlert" className="size-6 text-destructive" />
       <div>
-        <p className="font-medium">{title}</p>
+        <p className="font-medium">{title ?? t("inlineError.title")}</p>
         <p className="text-sm text-muted-foreground">{message}</p>
       </div>
       {onRetry && (
@@ -34,7 +36,7 @@ export function InlineError({
           iconName="RotateCw"
           onClick={onRetry}
         >
-          {retryLabel}
+          {retryLabel ?? t("actions.retry")}
         </IGRPButton>
       )}
     </div>

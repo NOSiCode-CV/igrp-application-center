@@ -36,7 +36,9 @@ function ActiveRowActionsCell({
 
   return (
     <RowActionsMenu
-      ariaLabel={`Ações para ${row.original.name || row.original.email}`}
+      ariaLabel={t("actionsFor", {
+        name: row.original.name || row.original.email,
+      })}
     >
       <DropdownMenuItem variant="default" asChild>
         <Link

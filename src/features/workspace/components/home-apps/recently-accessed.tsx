@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useFormatter, useTranslations } from "next-intl";
 
 import { InlineError } from "@/components/inline-error";
 import {
@@ -15,7 +16,7 @@ import {
 import {
   APP_CATALOG_SECTION_ID,
   excludeCurrentApp,
-  getLastOpenedLabel,
+  getLastOpened,
 } from "@/features/workspace/lib/app-utils";
 
 import { AppTileCard } from "./app-tile-card";
@@ -72,6 +73,8 @@ function useRailScroll(itemCount: number) {
 }
 
 export function RecentlyAccessed() {
+  const t = useTranslations("workspace");
+  const format = useFormatter();
   const {
     data: allRecent = [],
     isError,
@@ -92,6 +95,24 @@ export function RecentlyAccessed() {
 
   const favCodes = new Set(favorites.map((f) => f.code));
 
+  function lastOpenedLabel(lastAccess: string | null | undefined): string {
+    const opened = getLastOpened(lastAccess);
+    if (!opened) return "";
+    switch (opened.key) {
+      case "weekday":
+        return t("lastOpened.weekday", {
+          day: String(opened.day),
+          weekday: format.dateTime(opened.date, { weekday: "long" }),
+        });
+      case "minutes":
+      case "hours":
+      case "weeks":
+        return t(`lastOpened.${opened.key}`, { count: opened.count });
+      default:
+        return t(`lastOpened.${opened.key}`);
+    }
+  }
+
   function handleToggle(app: ApplicationDTO, isFavorite: boolean) {
     if (isFavorite) {
       removeFav.mutate(app.code);
@@ -104,7 +125,7 @@ export function RecentlyAccessed() {
     <section>
       <div className="flex items-center justify-between gap-3 mb-3">
         <h2 className="min-w-0 truncate text-sm font-semibold text-foreground">
-          Acedidas recentemente
+          {t("recent.title")}
         </h2>
 
         <div className="flex shrink-0 items-center gap-2">
@@ -116,7 +137,7 @@ export function RecentlyAccessed() {
                 iconName="ChevronLeft"
                 onClick={() => scrollByPage(-1)}
                 disabled={!canScrollPrev}
-                aria-label="Mostrar aplicações anteriores"
+                aria-label={t("recent.previous")}
               />
               <IGRPButton
                 variant="outline"
@@ -124,7 +145,7 @@ export function RecentlyAccessed() {
                 iconName="ChevronRight"
                 onClick={() => scrollByPage(1)}
                 disabled={!canScrollNext}
-                aria-label="Mostrar aplicações seguintes"
+                aria-label={t("recent.next")}
               />
             </div>
           )}
@@ -133,18 +154,17 @@ export function RecentlyAccessed() {
 
       {isError ? (
         <InlineError
-          title="Não foi possível carregar as aplicações recentes."
-          message="Esta lista está temporariamente indisponível. Tudo o resto continua a funcionar."
+          title={t("recent.errorTitle")}
+          message={t("recent.errorMessage")}
           onRetry={() => refetch()}
         />
       ) : recent.length === 0 ? (
         <div className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border bg-muted px-4 py-5">
           <p className="text-sm text-secondary-foreground">
-            As aplicações que abrir aparecem aqui, para voltar a elas
-            rapidamente.
+            {t("recent.empty")}
           </p>
           <IGRPButton size="sm" onClick={scrollToCatalog}>
-            Explorar aplicações
+            {t("recent.explore")}
             <IGRPIcon iconName="ArrowRight" size={13} />
           </IGRPButton>
         </div>
@@ -162,7 +182,7 @@ export function RecentlyAccessed() {
                 app={app}
                 isFavorite={favCodes.has(app.code)}
                 onToggleFavorite={handleToggle}
-                lastOpenedLabel={getLastOpenedLabel(app.lastAccess)}
+                lastOpenedLabel={lastOpenedLabel(app.lastAccess)}
                 compact
               />
             </div>

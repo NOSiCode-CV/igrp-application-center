@@ -1,5 +1,8 @@
+import { getTranslations } from "next-intl/server";
+
 import { AppCenterLoading } from "@/components/loading";
 
-export default function ApplicationDetailsLoading() {
-  return <AppCenterLoading description="A carregar aplicação..." />;
+export default async function ApplicationDetailsLoading() {
+  const t = await getTranslations("applications.details");
+  return <AppCenterLoading description={t("loading")} />;
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getTranslations } from "next-intl/server";
 
 import { ApplicationDetails } from "@/features/applications/components/app-details";
 import {
@@ -15,10 +16,13 @@ export async function generateMetadata({
   params: Promise<{ code: string }>;
 }): Promise<Metadata> {
   const { code } = await params;
-  const result = await getApplicationByCodeCached(code);
-  const title = result.success ? result.data.name : code;
+  const [result, t] = await Promise.all([
+    getApplicationByCodeCached(code),
+    getTranslations("applications.meta"),
+  ]);
+  const name = result.success ? result.data.name : code;
   return {
-    title: `${title} · Aplicações`,
+    title: t("detailTitle", { name }),
   };
 }
 

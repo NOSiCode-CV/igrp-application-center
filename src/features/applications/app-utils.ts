@@ -15,5 +15,3 @@ export const APPLICATIONS_TYPES_FILTERED = [
 export function isSystemApp(app: Pick<ApplicationDTO, "type">): boolean {
   return (app.type as string) === "SYSTEM";
 }
-
-export const APP_DESCRIPTION_FALLBACK = "Sem descrição.";

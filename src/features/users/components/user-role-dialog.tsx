@@ -338,8 +338,10 @@ export function UserRolesDialog({
           </DialogTitle>
           <DialogDescription>
             {departmentCode
-              ? `A mostrar apenas os perfis do departamento ${deptName(departmentCode)}. Os perfis de outros departamentos não são alterados aqui.`
-              : "Escolha um departamento para ver os perfis que pode atribuir."}
+              ? t("roleDialog.departmentScope", {
+                  department: deptName(departmentCode),
+                })
+              : t("roleDialog.pickDepartment")}
           </DialogDescription>
         </DialogHeader>
 

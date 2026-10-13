@@ -15,6 +15,7 @@ import {
   ToggleGroupItem,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { InlineError } from "@/components/inline-error";
 import {
@@ -33,14 +34,25 @@ const HEADING_ID = "app-catalog-heading";
 type ViewMode = "grid" | "list";
 type SortBy = "default" | "recent" | "name-asc" | "name-desc";
 
-const SORT_OPTIONS: { value: SortBy; label: string; icon: string }[] = [
-  { value: "default", label: "Predefinido", icon: "ArrowUpDown" },
-  { value: "recent", label: "Visitadas recentemente", icon: "Clock" },
-  { value: "name-asc", label: "Nome (A–Z)", icon: "ArrowDownAZ" },
-  { value: "name-desc", label: "Nome (Z–A)", icon: "ArrowUpAZ" },
-];
+/** Sort value → `workspace.catalog.sort.*` key + icon. */
+const SORT_OPTIONS = [
+  { value: "default", key: "default", icon: "ArrowUpDown" },
+  { value: "recent", key: "recent", icon: "Clock" },
+  { value: "name-asc", key: "nameAsc", icon: "ArrowDownAZ" },
+  { value: "name-desc", key: "nameDesc", icon: "ArrowUpAZ" },
+] as const satisfies readonly { value: SortBy; key: string; icon: string }[];
 
 export function AppCatalog() {
+  const t = useTranslations("workspace.catalog");
+  const sortOptions = useMemo(
+    () =>
+      SORT_OPTIONS.map(({ value, key, icon }) => ({
+        value,
+        icon,
+        label: t(`sort.${key}`),
+      })),
+    [t],
+  );
   const [search, setSearch] = useState("");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -122,12 +134,12 @@ export function AppCatalog() {
     const id = setTimeout(() => {
       setAnnouncement(
         filtered.length === 0
-          ? "Nenhuma aplicação corresponde aos filtros."
-          : `${filtered.length} de ${apps.length} aplicações correspondem aos filtros.`,
+          ? t("announceNone")
+          : t("announceSome", { shown: filtered.length, total: apps.length }),
       );
     }, 300);
     return () => clearTimeout(id);
-  }, [isFiltering, filtered.length, apps.length]);
+  }, [isFiltering, filtered.length, apps.length, t]);
 
   function clearFilters() {
     setSearch("");
@@ -149,11 +161,16 @@ export function AppCatalog() {
           id={HEADING_ID}
           className="min-w-0 truncate text-base font-semibold text-foreground"
         >
-          Aplicações
+          {t("title")}
         </h2>
         {apps.length > 0 && (
           <span className="text-sm tabular-nums text-muted-foreground">
-            {isFiltering ? `${filtered.length} de ${apps.length}` : apps.length}
+            {isFiltering
+              ? t("filteredCount", {
+                  shown: filtered.length,
+                  total: apps.length,
+                })
+              : apps.length}
           </span>
         )}
       </div>
@@ -172,8 +189,8 @@ export function AppCatalog() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Procurar aplicações"
-            aria-label="Procurar aplicações"
+            placeholder={t("search")}
+            aria-label={t("search")}
           />
           {!search && (
             <InputGroupAddon align="inline-end">
@@ -196,12 +213,12 @@ export function AppCatalog() {
             size={14}
             className={showFavoritesOnly ? "fill-current" : undefined}
           />
-          Favoritos
+          {t("favorites")}
         </Toggle>
 
         <div className="flex items-center gap-2">
           <IGRPLabel
-            label="Ordenar por:"
+            label={t("sortBy")}
             className="sr-only"
             name="ordenar-apps"
           />
@@ -211,9 +228,9 @@ export function AppCatalog() {
             label=""
             showSearch={false}
             showIcon
-            options={SORT_OPTIONS}
+            options={sortOptions}
             value={sortBy}
-            placeholder="Escolher ordem"
+            placeholder={t("sortPlaceholder")}
             className="h-10"
             onChange={(value) => {
               if (typeof value === "string" && value !== "") {
@@ -231,14 +248,14 @@ export function AppCatalog() {
         >
           <ToggleGroupItem
             value="grid"
-            aria-label="Vista em grelha"
+            aria-label={t("gridView")}
             className="size-8 rounded-md border-0 text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-primary data-[state=on]:shadow-sm"
           >
             <IGRPIcon iconName="LayoutGrid" size={16} />
           </ToggleGroupItem>
           <ToggleGroupItem
             value="list"
-            aria-label="Vista em lista"
+            aria-label={t("listView")}
             className="size-8 rounded-md border-0 text-muted-foreground data-[state=on]:bg-background data-[state=on]:text-primary data-[state=on]:shadow-sm"
           >
             <IGRPIcon iconName="List" size={16} />
@@ -248,18 +265,17 @@ export function AppCatalog() {
 
       {isError ? (
         <InlineError
-          title="Não foi possível carregar as aplicações."
-          message="A lista está temporariamente indisponível. O seu acesso não foi alterado."
+          title={t("errorTitle")}
+          message={t("errorMessage")}
           onRetry={() => refetch()}
         />
       ) : apps.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border bg-muted py-12 px-6 text-center">
           <p className="text-sm font-medium text-secondary-foreground">
-            Ainda não tem aplicações atribuídas
+            {t("emptyTitle")}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            O acesso é concedido por perfil e departamento. Contacte o
-            administrador se esperava ver alguma coisa aqui.
+            {t("emptyDescription")}
           </p>
         </div>
       ) : showFavoritesOnly && !search.trim() && filtered.length === 0 ? (
@@ -270,21 +286,21 @@ export function AppCatalog() {
             className="mx-auto text-warning-subtle-foreground mb-3"
           />
           <p className="text-sm font-medium text-warning-subtle-foreground">
-            Ainda sem favoritos
+            {t("noFavoritesTitle")}
           </p>
           <p className="text-xs text-warning-subtle-foreground mt-1">
-            Clique na ★ de uma aplicação para a adicionar aqui
+            {t("noFavoritesDescription")}
           </p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-muted py-12 px-6 text-center">
           <p className="text-sm text-muted-foreground">
             {showFavoritesOnly
-              ? `Nenhum favorito corresponde a “${search.trim()}”.`
-              : `Nenhuma aplicação corresponde a “${search.trim()}”.`}
+              ? t("noFavoriteMatch", { query: search.trim() })
+              : t("noMatch", { query: search.trim() })}
           </p>
           <IGRPButton variant="outline" size="sm" onClick={clearFilters}>
-            Limpar filtros
+            {t("clearFilters")}
           </IGRPButton>
         </div>
       ) : viewMode === "list" ? (

@@ -4,6 +4,7 @@ import { useDeferredValue, useMemo } from "react";
 
 import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ApplicationCard } from "./app-card";
 
@@ -25,14 +26,6 @@ export function filterApplications(
   });
 }
 
-/** "1 aplicação" / "4 aplicações" — the count is generated in code, so it owes
- *  the same pt-PT agreement as any hand-written string. */
-function countLabel(shown: number, total: number): string {
-  const noun = shown === 1 ? "aplicação" : "aplicações";
-  if (shown === total) return `${total} ${noun}`;
-  return `A mostrar ${shown} de ${total} ${total === 1 ? "aplicação" : "aplicações"}`;
-}
-
 interface ApplicationsGridProps {
   applications: ApplicationDTO[];
   searchTerm: string;
@@ -50,6 +43,8 @@ export function ApplicationsGrid({
   emptyState,
   onClearFilters,
 }: ApplicationsGridProps) {
+  const t = useTranslations("applications.grid");
+  const tc = useTranslations("common.actions");
   const deferredSearch = useDeferredValue(searchTerm);
   const filtered = useMemo(
     () => filterApplications(applications, deferredSearch, statusFilter),
@@ -68,16 +63,20 @@ export function ApplicationsGrid({
   return (
     <div className="flex flex-col gap-3">
       <p aria-live="polite" className="text-sm text-muted-foreground">
-        {countLabel(filtered.length, applications.length)}
+        {/* "1 aplicação" / "4 aplicações": ICU plurals keep the agreement. */}
+        {filtered.length === applications.length
+          ? t("count", { total: applications.length })
+          : t("countFiltered", {
+              shown: filtered.length,
+              total: applications.length,
+            })}
       </p>
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-10 text-center">
-          <p className="font-medium text-foreground">
-            Nenhuma aplicação corresponde aos filtros
-          </p>
+          <p className="font-medium text-foreground">{t("noMatchTitle")}</p>
           <p className="text-sm text-muted-foreground max-w-md">
-            Ajuste a pesquisa ou o estado para ver as aplicações registadas.
+            {t("noMatchDescription")}
           </p>
           {hasFilters && onClearFilters && (
             <IGRPButton
@@ -86,7 +85,7 @@ export function ApplicationsGrid({
               iconName="X"
               onClick={onClearFilters}
             >
-              Limpar filtros
+              {tc("clearFilters")}
             </IGRPButton>
           )}
         </div>

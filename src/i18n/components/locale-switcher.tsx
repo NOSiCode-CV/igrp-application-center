@@ -90,10 +90,6 @@ export function LocaleSwitcher({ className }: LocaleSwitcherProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
-        <DropdownMenuLabel className="text-muted-foreground text-xs font-normal">
-          {failed ? t("changeError") : t("label")}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={locale} onValueChange={handleChange}>
           {LOCALES.map((code) => (
             <DropdownMenuRadioItem key={code} value={code} lang={code}>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { igrpAuthorize } from "@igrp/framework-next";
+import { getTranslations } from "next-intl/server";
 
 import {
   SettingsCard,
@@ -8,52 +9,56 @@ import {
 } from "@/features/settings/components/settings-card";
 import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
 
+/** `settings.items.*` key of each card. */
+type SettingsItemKey =
+  | "applications"
+  | "users"
+  | "departments"
+  | "oauthClients"
+  | "audit"
+  | "customization";
+
 /* Titles match the heading of the page each card opens, so the label promises
    exactly what the destination delivers. Descriptions name the actions that
-   are actually available there — nothing the screen cannot do. */
-const settingsConfig: { general: SettingsItem[] } = {
+   are actually available there — nothing the screen cannot do. Both live in
+   the messages under `settings.items.<key>`. */
+const settingsConfig: {
+  general: (Omit<SettingsItem, "title" | "description"> & {
+    key: SettingsItemKey;
+  })[];
+} = {
   general: [
     {
       id: "gestao-de-aplicacoes",
-      title: "Gestão de Aplicações",
-      description:
-        "Registe aplicações, edite os seus dados e controle o estado de cada uma.",
+      key: "applications",
       icon: "AppWindow",
       href: "/settings/applications",
       accent: "primary",
     },
     {
       id: "gestao-de-utilizadores",
-      title: "Gestão de Utilizadores",
-      description:
-        "Convide utilizadores e faça a gestão das contas, perfis e permissões.",
+      key: "users",
       icon: "Users",
       href: "/settings/users",
       accent: "info",
     },
     {
       id: "gestao-de-departamentos",
-      title: "Gestão de Departamentos",
-      description:
-        "Organize a estrutura de departamentos e os perfis, permissões e menus associados.",
+      key: "departments",
       icon: "ShieldCheck",
       href: "/settings/departments",
       accent: "success",
     },
     {
       id: "gestao-contas-servicos",
-      title: "Gestão de Clientes OAuth",
-      description:
-        "Registe clientes OAuth e faça a gestão das contas de serviço que acedem às APIs.",
+      key: "oauthClients",
       icon: "KeyRound",
       href: "/settings/accounts",
       accent: "primary",
     },
     {
       id: "auditoria-relatorios",
-      title: "Auditoria e Relatórios",
-      description:
-        "Consulte os acessos e as alterações de configuração registados na plataforma.",
+      key: "audit",
       icon: "FileChartColumn",
       href: "/settings/audit",
       accent: "info",
@@ -63,9 +68,7 @@ const settingsConfig: { general: SettingsItem[] } = {
        nothing links to them while the status is set. */
     {
       id: "customizacao",
-      title: "Customização",
-      description:
-        "Ajuste a identidade visual da plataforma — tema, cores e logotipos.",
+      key: "customization",
       icon: "Palette",
       href: "/settings/customization",
       accent: "warning",
@@ -74,25 +77,30 @@ const settingsConfig: { general: SettingsItem[] } = {
   ],
 };
 
-export const metadata: Metadata = {
-  title: "Configurações",
-  description: "Gerir aplicações, utilizadores e acessos da plataforma.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("settings.meta");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function SettingsPage() {
-  const canViewAudit = await igrpAuthorize(AUDIT_VIEW_PERMISSION);
-  const items = settingsConfig.general.filter(
-    (item) => item.id !== "auditoria-relatorios" || canViewAudit,
-  );
+  const [canViewAudit, t] = await Promise.all([
+    igrpAuthorize(AUDIT_VIEW_PERMISSION),
+    getTranslations("settings"),
+  ]);
+  const items: SettingsItem[] = settingsConfig.general
+    .filter((item) => item.id !== "auditoria-relatorios" || canViewAudit)
+    .map(({ key, ...item }) => ({
+      ...item,
+      title: t(`items.${key}.title`),
+      description: t(`items.${key}.description`),
+    }));
 
   return (
     <div className="flex flex-col gap-12">
-      <section>       
-        <h1 className="text-xl font-semibold tracking-tight">
-          Configurações Gerais
-        </h1>
+      <section>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-sm text-muted-foreground mt-1 mb-6">
-          Escolha a área que quer administrar.
+          {t("subtitle")}
         </p>
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((item) => (

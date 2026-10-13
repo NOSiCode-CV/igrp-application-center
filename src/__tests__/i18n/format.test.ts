@@ -10,8 +10,9 @@ import {
   formatNumber,
 } from "@/i18n/format";
 
-// Midday, so no time zone can shift the calendar day.
-const DATE = new Date(2026, 8, 22, 12, 0, 0);
+// 13:00 UTC = 12:00 in the platform zone (Atlantic/Cape_Verde, UTC-1), the
+// zone every date is formatted in, whatever the machine's own zone.
+const DATE = new Date(Date.UTC(2026, 8, 22, 13, 0, 0));
 
 describe("formatDate", () => {
   it.each(["pt", "en", "fr"] as const)("formats %s as dd/mm/yyyy", (locale) => {
@@ -33,7 +34,10 @@ describe("formatDate", () => {
     expect(FORMAT_REGION).toEqual({ pt: "pt-CV", en: "en-GB", fr: "fr-FR" });
     const long = { day: "numeric", month: "long" } as const;
     expect(formatDate(DATE, "pt", long)).toBe(
-      new Intl.DateTimeFormat("pt-CV", long).format(DATE),
+      new Intl.DateTimeFormat("pt-CV", {
+        timeZone: "Atlantic/Cape_Verde",
+        ...long,
+      }).format(DATE),
     );
     expect(formatDate(DATE, "fr", long)).toBe("22 septembre");
     expect(formatDate(DATE, "en", long)).toBe("22 September");
@@ -44,6 +48,7 @@ describe("formatDateTime", () => {
   it("adds hours and minutes", () => {
     expect(formatDateTime(DATE, "en")).toBe(
       new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Atlantic/Cape_Verde",
         day: "2-digit",
         month: "2-digit",
         year: "numeric",

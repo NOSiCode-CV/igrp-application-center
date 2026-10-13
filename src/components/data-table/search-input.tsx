@@ -4,6 +4,7 @@ import { useRef } from "react";
 
 import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
 import type { Column } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 interface SearchInputProps {
   value: string;
@@ -31,6 +32,7 @@ export function SearchInput({
   label,
   disabled = false,
 }: SearchInputProps) {
+  const t = useTranslations("common.searchInput");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const clear = () => {
@@ -73,7 +75,7 @@ export function SearchInput({
         <button
           type="button"
           onClick={clear}
-          aria-label="Limpar pesquisa"
+          aria-label={t("clear")}
           className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
         >
           <IGRPIcon

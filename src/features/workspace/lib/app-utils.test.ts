@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getAppHref, getAppTileColor, getLastOpenedLabel } from "./app-utils";
+import { getAppHref, getAppTileColor, getLastOpened } from "./app-utils";
 
 describe("getAppTileColor", () => {
   it("returns an object with bg and text keys", () => {
@@ -24,52 +24,61 @@ describe("getAppTileColor", () => {
   });
 });
 
-describe("getLastOpenedLabel", () => {
-  const now = new Date("2026-06-30T12:00:00Z");
+describe("getLastOpened", () => {
+  // A Tuesday, midday in the platform zone (UTC-1).
+  const now = new Date("2026-06-30T13:00:00Z");
 
   it("says nothing when lastAccess is missing", () => {
     // It used to claim "Aberta recentemente" for a timestamp it did not have.
-    // The caller renders the label only when truthy, so empty hides the row.
-    expect(getLastOpenedLabel(undefined, now)).toBe("");
-    expect(getLastOpenedLabel(null, now)).toBe("");
+    // The caller renders the label only when present, so null hides the row.
+    expect(getLastOpened(undefined, now)).toBeNull();
+    expect(getLastOpened(null, now)).toBeNull();
   });
 
   it("says nothing for an unparseable date", () => {
-    expect(getLastOpenedLabel("not-a-date", now)).toBe("");
+    expect(getLastOpened("not-a-date", now)).toBeNull();
   });
 
-  it("formats minutes ago", () => {
+  it("says just now under a minute", () => {
+    const tenSecondsAgo = new Date(now.getTime() - 10_000).toISOString();
+    expect(getLastOpened(tenSecondsAgo, now)).toEqual({ key: "justNow" });
+  });
+
+  it("counts minutes ago", () => {
     const eighteenMinutesAgo = new Date(
       now.getTime() - 18 * 60_000,
     ).toISOString();
-    expect(getLastOpenedLabel(eighteenMinutesAgo, now)).toBe(
-      "Aberta há 18 minutos",
-    );
-  });
-
-  it("formats hours ago", () => {
-    const threeHoursAgo = new Date(now.getTime() - 3 * 3_600_000).toISOString();
-    expect(getLastOpenedLabel(threeHoursAgo, now)).toBe("Aberta há 3 horas");
-  });
-
-  it("formats yesterday", () => {
-    const yesterday = new Date(now.getTime() - 25 * 3_600_000).toISOString();
-    expect(getLastOpenedLabel(yesterday, now)).toBe("Aberta ontem");
-  });
-
-  it("formats a weekday name for 2-6 days ago", () => {
-    const threeDaysAgo = new Date(now.getTime() - 3 * 86_400_000).toISOString();
-    const expectedWeekday = new Date(threeDaysAgo).toLocaleDateString("pt-PT", {
-      weekday: "long",
+    expect(getLastOpened(eighteenMinutesAgo, now)).toEqual({
+      key: "minutes",
+      count: 18,
     });
-    expect(getLastOpenedLabel(threeDaysAgo, now)).toBe(
-      `Aberta na ${expectedWeekday}`,
-    );
   });
 
-  it("formats weeks ago for 7+ days", () => {
+  it("counts hours ago", () => {
+    const threeHoursAgo = new Date(now.getTime() - 3 * 3_600_000).toISOString();
+    expect(getLastOpened(threeHoursAgo, now)).toEqual({
+      key: "hours",
+      count: 3,
+    });
+  });
+
+  it("says yesterday", () => {
+    const yesterday = new Date(now.getTime() - 25 * 3_600_000).toISOString();
+    expect(getLastOpened(yesterday, now)).toEqual({ key: "yesterday" });
+  });
+
+  it("names the weekday, in the platform zone, for 2-6 days ago", () => {
+    const threeDaysAgo = new Date(now.getTime() - 3 * 86_400_000);
+    expect(getLastOpened(threeDaysAgo.toISOString(), now)).toEqual({
+      key: "weekday",
+      date: threeDaysAgo,
+      day: 6, // Saturday
+    });
+  });
+
+  it("counts weeks ago for 7+ days", () => {
     const twoWeeksAgo = new Date(now.getTime() - 14 * 86_400_000).toISOString();
-    expect(getLastOpenedLabel(twoWeeksAgo, now)).toBe("Aberta há 2 semanas");
+    expect(getLastOpened(twoWeeksAgo, now)).toEqual({ key: "weeks", count: 2 });
   });
 });
 

@@ -1,7 +1,9 @@
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { renderWithIntl as render } from "../helpers/intl";
 
 /**
  * These cover the four branches the catalogue can render, because the bug they
@@ -520,5 +522,21 @@ describe("AppTileCard content", () => {
     // Rendering nothing let cards collapse to different heights and left the
     // reader unsure whether the description was missing or just empty.
     expect(screen.getByText("Sem descrição")).toBeInTheDocument();
+  });
+});
+
+describe("AppCatalog language", () => {
+  it("renders in the requested locale", () => {
+    appsQuery.data = NO_DESCRIPTION;
+    render(<AppCatalog />, { locale: "fr" });
+
+    expect(
+      screen.getByRole("heading", { name: "Applications" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("searchbox", { name: "Rechercher des applications" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Aucune description")).toBeInTheDocument();
+    expect(screen.queryByText("Sem descrição")).not.toBeInTheDocument();
   });
 });

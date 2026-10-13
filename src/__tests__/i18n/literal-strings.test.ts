@@ -20,6 +20,11 @@ import { describe, expect, it } from "vitest";
 const MIGRATED_FOLDERS = [
   "src/i18n/components",
   "src/features/users",
+  "src/features/workspace/components/home-apps",
+  "src/components/header",
+  "src/features/settings",
+  "src/features/applications",
+  "src/app/(igrp)/(home)/settings/applications",
   "src/app/(invite)",
 ];
 

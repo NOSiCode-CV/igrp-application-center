@@ -20,16 +20,14 @@ import {
   Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { BackButton } from "@/components/back-button";
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { InlineError } from "@/components/inline-error";
 import { AppCenterLoading } from "@/components/loading";
 import { AppCenterNotFound } from "@/components/not-found";
-import {
-  APP_DESCRIPTION_FALLBACK,
-  isSystemApp,
-} from "@/features/applications/app-utils";
+import { isSystemApp } from "@/features/applications/app-utils";
 import {
   useApplicationByCode,
   useUpdateApplication,
@@ -37,12 +35,16 @@ import {
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
+import { useStatusLabel } from "@/i18n/status";
 import { ROUTES } from "@/lib/constants";
-import { getStatusColor, showStatus } from "@/lib/utilities";
+import { getStatusColor } from "@/lib/utilities";
 
 import { ApplicationForm } from "./app-form";
 
 export function ApplicationDetails({ code }: { code: string }) {
+  const t = useTranslations("applications");
+  const tc = useTranslations("common.actions");
+  const statusLabel = useStatusLabel();
   const { igrpToast } = useIGRPToast();
   const { data: app, isLoading, error, refetch } = useApplicationByCode(code);
   const [open, setOpen] = useState(false);
@@ -69,7 +71,7 @@ export function ApplicationDetails({ code }: { code: string }) {
   }, [code, registerAccess]);
 
   if (isLoading) {
-    return <AppCenterLoading description="A carregar aplicação..." />;
+    return <AppCenterLoading description={t("details.loading")} />;
   }
 
   if (error)
@@ -77,10 +79,7 @@ export function ApplicationDetails({ code }: { code: string }) {
 
   if (!app) {
     return (
-      <AppCenterNotFound
-        iconName="AppWindow"
-        title="Nenhuma aplicação encontrada."
-      />
+      <AppCenterNotFound iconName="AppWindow" title={t("details.notFound")} />
     );
   }
 
@@ -103,14 +102,14 @@ export function ApplicationDetails({ code }: { code: string }) {
 
       igrpToast({
         type: "success",
-        title: "Upload Sucesso",
-        description: "A imagem foi carregada com sucesso",
+        title: t("details.uploadSuccessTitle"),
+        description: t("details.uploadSuccess"),
         duration: 4000,
       });
     } catch (err) {
       igrpToast({
         type: "error",
-        title: "Erro no upload.",
+        title: t("details.uploadErrorTitle"),
         description: (err as Error).message,
         duration: 4000,
       });
@@ -123,7 +122,7 @@ export function ApplicationDetails({ code }: { code: string }) {
       <Card className="py-2 border-0 shadow-sm rounded-lg">
         <CardContent className="px-4 py-1">
           <div className="flex items-center pb-2 justify-between">
-            <BackButton label="Voltar" href={ROUTES.APPLICATIONS} />
+            <BackButton label={tc("back")} href={ROUTES.APPLICATIONS} />
             {app && !isSystemApp(app) && (
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
@@ -133,12 +132,12 @@ export function ApplicationDetails({ code }: { code: string }) {
                     iconName="Pencil"
                     size="sm"
                   >
-                    Editar
+                    {tc("edit")}
                   </IGRPButton>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
-                    <DialogTitle>Editar Aplicação</DialogTitle>
+                    <DialogTitle>{t("dialog.editTitle")}</DialogTitle>
                   </DialogHeader>
 
                   <ApplicationForm
@@ -162,7 +161,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                   disabled={
                     (app ? isSystemApp(app) : false) || uploadPicture.isPending
                   }
-                  aria-label="Alterar imagem da aplicação"
+                  aria-label={t("details.changeImage")}
                 >
                   <Avatar className="size-28 border-4 border-background shadow-lg transition-transform duration-300 group-hover:scale-105">
                     {isLoadingFile && (uploadedFilePath || app?.picture) ? (
@@ -211,9 +210,9 @@ export function ApplicationDetails({ code }: { code: string }) {
                 />
                 <span className="sr-only" aria-live="polite">
                   {uploadPicture.isPending
-                    ? "A carregar imagem..."
+                    ? t("details.uploadingImage")
                     : isLoadingFile
-                      ? "A obter imagem..."
+                      ? t("details.loadingImage")
                       : ""}
                 </span>
               </div>
@@ -224,7 +223,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                     {app.name}
                   </h1>
                   <Badge className={getStatusColor(app.status || "ACTIVE")}>
-                    {showStatus(app.status || "ACTIVE")}
+                    {statusLabel(app.status || "ACTIVE")}
                   </Badge>
                 </div>
 
@@ -236,7 +235,7 @@ export function ApplicationDetails({ code }: { code: string }) {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  {app.description || APP_DESCRIPTION_FALLBACK}
+                  {app.description || t("card.noDescription")}
                 </p>
               </div>
             </div>

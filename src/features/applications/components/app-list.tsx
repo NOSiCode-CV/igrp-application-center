@@ -7,6 +7,7 @@ import {
   IGRPPageHeader,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { InlineError } from "@/components/inline-error";
 import { useApplications } from "@/features/applications/use-applications";
@@ -21,6 +22,7 @@ import { ApplicationsGrid } from "./applications-grid";
 import { ApplicationsToolbar } from "./applications-toolbar";
 
 export function ApplicationList() {
+  const t = useTranslations("applications.list");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -43,8 +45,8 @@ export function ApplicationList() {
   if (error)
     return (
       <InlineError
-        title="Não foi possível carregar as aplicações."
-        message="Tente novamente. Se o problema persistir, contacte o suporte."
+        title={t("loadErrorTitle")}
+        message={t("loadErrorMessage")}
         onRetry={() => refetch()}
       />
     );
@@ -68,10 +70,9 @@ export function ApplicationList() {
 
   const emptyState = (
     <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-10 text-center">
-      <p className="font-medium text-foreground">Ainda não há aplicações</p>
+      <p className="font-medium text-foreground">{t("emptyTitle")}</p>
       <p className="text-sm text-muted-foreground max-w-md">
-        As aplicações são o que os utilizadores abrem a partir da página
-        inicial. Crie a primeira para a poder associar a departamentos e perfis.
+        {t("emptyDescription")}
       </p>
       <IGRPButton
         variant="outline"
@@ -79,7 +80,7 @@ export function ApplicationList() {
         iconName="Grid2x2Plus"
         onClick={openCreate}
       >
-        Nova Aplicação
+        {t("new")}
       </IGRPButton>
     </div>
   );
@@ -99,14 +100,14 @@ export function ApplicationList() {
           page, so the label promises exactly what the destination delivers. */}
       <IGRPPageHeader
         {...PAGE_HEADER_PROPS}
-        title="Gestão de Aplicações"
-        description="Registe novas aplicações e faça a gestão das existentes."
+        title={t("title")}
+        description={t("description")}
         showBackButton
         urlBackButton="/settings"
       >
         <div className={PAGE_HEADER_ACTIONS_CLASS}>
           <IGRPButton showIcon iconName="Grid2x2Plus" onClick={openCreate}>
-            Nova Aplicação
+            {t("new")}
           </IGRPButton>
         </div>
       </IGRPPageHeader>

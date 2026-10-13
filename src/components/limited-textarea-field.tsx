@@ -3,6 +3,7 @@
 import { useEffect, useId } from "react";
 
 import { cn, IGRPTextarea } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 function fieldValueLength(value: unknown): number {
@@ -29,6 +30,7 @@ export function LimitedTextareaField({
   placeholder?: string;
   required?: boolean;
 }) {
+  const t = useTranslations("common.textarea");
   const counterId = useId();
   const form = useFormContext();
   const value = form?.watch?.(id);
@@ -87,11 +89,12 @@ export function LimitedTextareaField({
             !nearLimit && "text-muted-foreground",
           )}
         >
-          <span className="sr-only">Caracteres utilizados: </span>
-          {length}
-          <span aria-hidden="true"> / </span>
-          <span className="sr-only"> de </span>
-          {maxLength}
+          <span className="sr-only">
+            {t("charsUsed", { length, max: maxLength })}
+          </span>
+          <span aria-hidden="true">
+            {length} / {maxLength}
+          </span>
         </p>
       </div>
     </div>

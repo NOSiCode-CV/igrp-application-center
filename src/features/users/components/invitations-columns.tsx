@@ -46,9 +46,8 @@ function PendingRowActionsCell({
       } catch {
         igrpToast({
           type: "error",
-          title: "Não foi possível copiar",
-          description:
-            "O browser bloqueou o acesso à área de transferência. Copie o URL manualmente.",
+          title: t("toasts.copyFailed"),
+          description: t("toasts.copyFailedDescription"),
           duration: 6000,
         });
         return;
@@ -96,7 +95,9 @@ function PendingRowActionsCell({
     <>
       {!isTerminalInviteStatus(String(row.original.status)) && (
         <RowActionsMenu
-          ariaLabel={`Ações para o convite de ${row.original.identifierValue}`}
+          ariaLabel={t("actionsFor", {
+            identifier: row.original.identifierValue,
+          })}
         >
           <DropdownMenuItem onSelect={handleCopyUrl}>
             <IGRPIcon iconName="Copy" />

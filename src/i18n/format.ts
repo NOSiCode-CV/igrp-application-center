@@ -11,6 +11,8 @@
 
 import { useLocale } from "next-intl";
 
+import { PLATFORM_TIME_ZONE } from "@/features/audit/lib/platform-time";
+
 import { FORMAT_REGION, type Locale } from "./config";
 
 export type DateInput = Date | string | number | null | undefined;
@@ -41,7 +43,13 @@ export function formatDate(
 ): string {
   const date = toDate(value);
   if (!date) return "";
-  return new Intl.DateTimeFormat(FORMAT_REGION[locale], options).format(date);
+  // Always the platform zone (ADR-0001): without it SSR formats in the
+  // server's zone (UTC in the cluster) and the browser in the viewer's, and
+  // the two disagree — a hydration mismatch.
+  return new Intl.DateTimeFormat(FORMAT_REGION[locale], {
+    timeZone: PLATFORM_TIME_ZONE,
+    ...options,
+  }).format(date);
 }
 
 /** Date plus `HH:mm`. Empty string for missing/invalid input. */

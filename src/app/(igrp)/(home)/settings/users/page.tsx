@@ -24,7 +24,6 @@ export default async function UserPage() {
     ? invitationsResult.data
     : [];
 
-  
   const currentUserId = currentUserResult.success
     ? currentUserResult.data.id
     : undefined;
