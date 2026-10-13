@@ -37,7 +37,7 @@ Default.
 | Freshness | Per-process cache with a 5-minute TTL. Saving sets a short-lived cookie `igrp_brand_v` holding the save time; a loader that sees a newer cookie than its cache entry refetches. Other browsers pick up changes within the TTL. |
 | Live preview | Scoped to the preview panel. The panel carries the draft Tokens as inline custom properties and its own `dark` class. The rest of the editor and the real page keep the saved Brand. |
 | Mode switch | A pill switch with a sun knob in Claro and a moon knob in Escuro, labelled beside it. It chooses the Mode being edited: the form values and the preview both follow it. It never changes the user's theme preference. |
-| Editor features (v1) | Live preview, per-field clear to Default, Save. No reset-all, no JSON import/export, no contrast warnings, no version history, no revert. |
+| Editor features (v1) | Live preview, per-field clear to Default, "Repor predefinições" (sets every unsaved edit back to its Default; nothing is saved until Guardar), Descartar (drops unsaved edits back to the saved Brand), Guardar. No JSON import/export, no contrast warnings, no version history, no revert. |
 | Browser chrome color | Not driven by the Brand in v1 (`viewport.themeColor` unchanged). |
 | Orphaned uploads | Accepted. Replaced logo files stay in storage until a backend delete endpoint exists. |
 | Uploader identity | Upload paths embed the uploader's username; the public URL reveals it. Accepted. |
@@ -126,7 +126,7 @@ Goals
 Non-goals (v1)
 
 - Per-user or per-department palettes, named presets.
-- Reset-all, JSON import and export, version history, revert.
+- JSON import and export, version history, revert to an earlier saved Brand.
 - Contrast warnings in the editor (see section 15).
 - Editing typography, radius, spacing, shadows or component styles.
 - Driving browser chrome color from the Brand.
