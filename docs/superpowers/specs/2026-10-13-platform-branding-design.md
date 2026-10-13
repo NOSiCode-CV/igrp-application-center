@@ -172,7 +172,7 @@ Type names (`@igrp/framework-next-types`): `IGRPBranding`, `IGRPBrandingTokens`,
 Both tiers share one storage map. Each catalog entry carries `name`, `group`, a
 label key and the Default per Mode (the editor shows it as placeholder).
 
-### 6.1 Core tier (`IGRP_BRANDING_CORE_TOKENS` in framework-next-types, 50 entries)
+### 6.1 Core tier (`IGRP_BRANDING_CORE_TOKENS` in framework-next-ui, 50 entries)
 
 | Group | Tokens |
 | --- | --- |
@@ -201,17 +201,23 @@ Labels: 73 entries in `branding.tokens.*`, translated in `pt`, `en` and `fr`.
 
 ### 7.1 `@igrp/framework-next-types`
 
-- Types from section 5 and `IGRP_BRANDING_CORE_TOKENS` with entries
-  `{ name, group, defaults: { light: string; dark: string } }`.
+- Types only, from section 5, plus `IGRPBrandingTokenCatalogEntry = { name: string; group: IGRPBrandingTokenGroup }`
+  and `IGRPBrandingTokenGroup`. The package has no runtime exports, so the core
+  catalog constant lives in `@igrp/framework-next-ui` (section 7.2). Defaults are
+  not part of the framework catalog: the editor holds the Default values it shows.
 - `IGRPConfigArgs` gains `branding?: { enabled: boolean }`. Omitted means disabled.
   Templates set it from the env: `branding: { enabled: process.env.IGRP_BRANDING_ENABLED === "true" }`,
   the same shape as `syncAccess`. The `igrpBuildConfig` schema accepts the field.
 
 ### 7.2 `@igrp/framework-next-ui` (new `branding/` folder, dependency-free, isomorphic)
 
-- `igrpParseBranding(raw: string): IGRPBranding | null` — size check, JSON parse,
-  field-by-field validation (section 9). Returns `null` for an unusable document;
-  otherwise the cleaned object with invalid fields dropped.
+- `igrpParseBranding(raw: string): IGRPBrandingParseResult` where
+  `IGRPBrandingParseResult = { branding: IGRPBranding | null; dropped: number }`.
+  Size check, JSON parse, field-by-field validation (section 9). `branding` is
+  `null` for an unusable document; otherwise the cleaned object. `dropped` counts
+  the fields removed, for the single log line in section 8.
+- `IGRP_BRANDING_CORE_TOKENS: IGRPBrandingTokenCatalogEntry[]` — the 50 core
+  Token names and groups from section 6.1. Runtime constant in this package.
 - `igrpBrandingToCss(branding: IGRPBranding): string` — emits
   `html:root { … }` and `html.dark { … }` blocks (section 8 explains the selectors).
   Pure, fixed key order, so the hoisted style is byte-stable.
