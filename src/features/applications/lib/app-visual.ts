@@ -1,9 +1,3 @@
-/**
- * Visual helpers for application cards: deterministic monograms, hues, and
- * relative timestamps (pt-PT). Centralised so card / pill / tile share the
- * same identity for a given application.
- */
-
 /** Return up to 2 uppercase letters representing the application. */
 export function monogram(name?: string | null, fallbackCode?: string): string {
   const source = (name ?? fallbackCode ?? "").trim();

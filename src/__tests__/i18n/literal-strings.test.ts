@@ -25,6 +25,7 @@ const MIGRATED_FOLDERS = [
   "src/features/settings",
   "src/features/applications",
   "src/app/(igrp)/(home)/settings/applications",
+  "src/features/menus",
   "src/app/(invite)",
 ];
 

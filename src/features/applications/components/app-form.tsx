@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  cn,
   Form,
   FormControl,
   FormField,
@@ -12,12 +13,8 @@ import {
   FormLabel,
   FormMessage,
   IGRPButton,
+  IGRPCombobox,
   Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
@@ -41,7 +38,6 @@ import {
 import { useStatusOptions } from "@/i18n/status";
 import { ROUTES } from "@/lib/constants";
 
-/** Type value → `applications.form.types.*` key. */
 const APPLICATION_TYPE_OPTIONS = [
   { value: appTypeCrud.enum.INTERNAL, key: "internal" },
   { value: appTypeCrud.enum.EXTERNAL, key: "external" },
@@ -110,8 +106,15 @@ export function ApplicationForm({
   const type = form.watch("type");
   const status = form.watch("status");
 
-  // The shared Ativo/Inativo pair. An application already in TEMPORARY would
-  // otherwise render an empty trigger with no way back.
+  const applicationTypeOptions = useMemo(
+    () =>
+      APPLICATION_TYPE_OPTIONS.map((option) => ({
+        value: option.value,
+        label: t(`types.${option.key}`),
+      })),
+    [t],
+  );
+
   const statusOptions = useMemo(
     () =>
       status === "TEMPORARY"
@@ -196,7 +199,7 @@ export function ApplicationForm({
                     autoComplete="off"
                     maxLength={255}
                     aria-required="true"
-                    className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                    className="placeholder:truncate"
                   />
                 </FormControl>
                 <FormMessage />
@@ -224,9 +227,7 @@ export function ApplicationForm({
                       spellCheck={false}
                       maxLength={255}
                       aria-required="true"
-                      className={`uppercase placeholder:truncate placeholder:normal-case border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30 ${
-                        isEdit ? "bg-muted" : ""
-                      }`}
+                      className={cn("uppercase placeholder:truncate placeholder:normal-case", isEdit && "bg-muted")}
                       disabled={isEdit}
                       onChange={(e) => {
                         if (!isEdit) {
@@ -243,39 +244,18 @@ export function ApplicationForm({
               )}
             />
 
-            <FormField
-              control={form.control}
+            <IGRPCombobox
               name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("type")}</FormLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      if (value === "INTERNAL") {
-                        form.setValue("url", "");
-                      } else {
-                        form.setValue("slug", "");
-                      }
-                    }}
-                    value={field.value}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger className="border-primary/30 focus:ring-2 focus:ring-primary/30">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {APPLICATION_TYPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {t(`types.${option.key}`)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label={t("type")}
+              options={applicationTypeOptions}
+              showSearch={false}
+              onChange={(value) => {
+                if (value === "INTERNAL") {
+                  form.setValue("url", "");
+                } else {
+                  form.setValue("slug", "");
+                }
+              }}
             />
           </div>
 
@@ -298,7 +278,7 @@ export function ApplicationForm({
                       maxLength={255}
                       aria-required="true"
                       placeholder={t("slugPlaceholder")}
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                      className="placeholder:truncate"
                     />
                   </FormControl>
                   <FormMessage />
@@ -328,7 +308,7 @@ export function ApplicationForm({
                       aria-required="true"
                       value={field.value || ""}
                       placeholder={t("urlPlaceholder")}
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                      className="placeholder:truncate"
                     />
                   </FormControl>
                   <FormMessage />
@@ -347,29 +327,12 @@ export function ApplicationForm({
           />
 
           {isEdit && (
-            <FormField
-              control={form.control}
+            <IGRPCombobox
               name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("status")}</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full border-primary/30 focus:ring-2 focus:ring-primary/30">
-                        <SelectValue placeholder={t("statusPlaceholder")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {statusOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label={t("status")}
+              placeholder={t("statusPlaceholder")}
+              options={statusOptions}
+              showSearch={false}
             />
           )}
         </div>
@@ -378,7 +341,7 @@ export function ApplicationForm({
           <IGRPButton
             type="button"
             showIcon
-            iconName="X"
+            iconName="Undo2"
             variant="outline"
             onClick={onSuccess}
           >
@@ -389,6 +352,7 @@ export function ApplicationForm({
             showIcon
             iconName="Save"
             disabled={form.formState.isSubmitting}
+            iconPlacement="end"
           >
             {form.formState.isSubmitting
               ? t("saving")

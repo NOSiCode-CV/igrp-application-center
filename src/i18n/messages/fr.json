@@ -773,7 +773,23 @@
       "loadingImage": "Récupération de l’image...",
       "uploadSuccessTitle": "Image téléversée",
       "uploadSuccess": "L’image a été téléversée avec succès",
-      "uploadErrorTitle": "Erreur de téléversement."
+      "uploadErrorTitle": "Erreur de téléversement.",
+      "backToList": "Toutes les applications",
+      "openApp": "Ouvrir l’application",
+      "noDescription": "Pas encore de description. Ajoutez-en une avec Modifier.",
+      "uploadInvalidType": "Choisissez un fichier image (PNG, JPG, SVG ou WebP).",
+      "uploadSaveError": "L’image a été téléversée mais n’a pas pu être enregistrée sur l’application.",
+      "facts": {
+        "type": "Type",
+        "address": "Adresse",
+        "owner": "Responsable",
+        "updated": "Dernière modification"
+      },
+      "types": {
+        "internal": "Interne",
+        "external": "Externe",
+        "system": "Système"
+      }
     },
     "form": {
       "name": "Nom",
@@ -822,6 +838,153 @@
       "urlRequired": "L’URL est obligatoire",
       "slugRequired": "Le slug est obligatoire (ex. : /apps/exemple)",
       "slugMax": "Le slug doit contenir au maximum 255 caractères"
+    }
+  },
+  "menus": {
+    "list": {
+      "title": "Menus de l’application",
+      "description": "Gérer et réorganiser les menus de cette application.",
+      "new": "Nouveau menu",
+      "loading": "Chargement des menus...",
+      "loadError": "Une erreur est survenue lors du chargement des menus.",
+      "emptyTitle": "Aucun menu trouvé",
+      "emptyDescription": "Commencez par créer le premier menu de cette application.",
+      "createFirst": "Créer le premier menu",
+      "systemEmptyDescription": "Les menus des applications système sont gérés par la plateforme."
+    },
+    "reorder": {
+      "notAllowedTitle": "Déplacement non autorisé",
+      "notAllowed": "Un groupe reste au niveau principal, un dossier va au niveau principal ou dans un groupe, et une page va au niveau principal, dans un groupe ou dans un dossier.",
+      "updatedTitle": "Ordre mis à jour",
+      "updated": "L’ordre des menus a été réorganisé.",
+      "errorTitle": "Erreur lors de l’enregistrement",
+      "error": "L’ordre des menus n’a pas pu être enregistré."
+    },
+    "item": {
+      "drag": "Glisser pour réordonner",
+      "collapse": "Réduire",
+      "expand": "Développer",
+      "noUrl": "Sans URL",
+      "childCount": "{count, plural, =0 {Vide} one {# élément} other {# éléments}}",
+      "openActions": "Ouvrir les actions du menu",
+      "view": "Voir",
+      "edit": "Modifier",
+      "addFolder": "Ajouter un dossier",
+      "addPage": "Ajouter une page",
+      "delete": "Supprimer"
+    },
+    "types": {
+      "group": "Groupe",
+      "folder": "Dossier",
+      "page": "Page",
+      "groupDescription": "Regroupe des dossiers et des menus au plus haut niveau",
+      "folderDescription": "Dossier pouvant appartenir à un groupe",
+      "pageDescription": "Menu qui ouvre une page de l’application"
+    },
+    "dialog": {
+      "viewTitle": "Voir le menu",
+      "editTitle": "Modifier le menu",
+      "addFolderTitle": "Ajouter un dossier",
+      "addMenuTitle": "Ajouter un menu",
+      "newTitle": "Nouveau menu",
+      "viewDescription": "Voir les informations du menu",
+      "editDescription": "Mettre à jour les détails de ce menu",
+      "createDescription": "Renseignez les détails du nouveau menu",
+      "selectTypeDescription": "Sélectionnez le type de menu à créer",
+      "newGroupTitle": "Nouveau groupe",
+      "newFolderTitle": "Nouveau dossier",
+      "newPageTitle": "Nouvelle page",
+      "addPageTitle": "Ajouter une page",
+      "addToParent": "Il sera ajouté à {parent}.",
+      "discard": {
+        "title": "Abandonner vos modifications ?",
+        "description": "Revenir aux types de menu efface ce que vous avez saisi.",
+        "keep": "Continuer la saisie",
+        "confirm": "Abandonner"
+      }
+    },
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "Nom du menu",
+      "code": "Code",
+      "codePlaceholder": "CODE_MENU",
+      "icon": "Icône",
+      "selectIcon": "Sélectionner une icône",
+      "selectIconPlaceholder": "Sélectionner une icône...",
+      "searchIcon": "Rechercher une icône...",
+      "noIconFound": "Aucune icône trouvée.",
+      "status": "État",
+      "pageType": "Type de page",
+      "internalPage": "Page interne",
+      "externalPage": "Page externe",
+      "relativeUrl": "URL relative",
+      "relativeUrlPlaceholder": "page-slug",
+      "externalUrl": "URL externe",
+      "externalUrlPlaceholder": "https://exemple.com",
+      "openInNewTab": "Ouvrir dans un nouvel onglet",
+      "groupOptional": "Groupe (facultatif)",
+      "folderOptional": "Dossier (facultatif)",
+      "selectGroup": "Sélectionner un groupe...",
+      "selectFolder": "Sélectionner un dossier...",
+      "noGroupFound": "Aucun groupe trouvé.",
+      "noFolderFound": "Aucun dossier trouvé.",
+      "noneRoot": "Aucun (racine)",
+      "saving": "Enregistrement...",
+      "update": "Mettre à jour",
+      "toasts": {
+        "updatedTitle": "Menu mis à jour",
+        "updated": "Le menu a été mis à jour avec succès.",
+        "createdTitle": "Menu créé",
+        "created": "Le menu a été créé avec succès.",
+        "errorTitle": "Erreur",
+        "error": "Une erreur est survenue. Veuillez réessayer."
+      },
+      "sections": {
+        "details": "Détails",
+        "destination": "Destination",
+        "location": "Emplacement",
+        "appearance": "Apparence"
+      },
+      "codeHint": "Généré à partir du nom. Majuscules, chiffres et tirets bas uniquement.",
+      "codeLocked": "Le code ne peut pas être modifié après la création du menu.",
+      "statusActive": "Visible dans la navigation",
+      "statusInactive": "Masqué de la navigation",
+      "relativeUrlHint": "Chemin de la page dans cette application, p. ex. rapports/mensuel.",
+      "externalUrlHint": "Les pages externes s’ouvrent toujours dans un nouvel onglet.",
+      "openInNewTabHint": "Garde cette application ouverte dans l’onglet actuel.",
+      "createGroup": "Créer le groupe",
+      "createFolder": "Créer le dossier",
+      "createPage": "Créer la page",
+      "close": "Fermer",
+      "parentType": "Placer dans",
+      "preview": {
+        "label": "Aperçu dans le menu",
+        "untitled": "Sans titre",
+        "topLevel": "Niveau principal"
+      }
+    },
+    "delete": {
+      "description": "Il disparaît de la navigation de l’application. Cette action est irréversible.",
+      "nameLabel": "Pour confirmer, saisissez <highlight>{name}</highlight>",
+      "successTitle": "Menu supprimé",
+      "success": "Le menu « {name} » a été supprimé avec succès.",
+      "errorTitle": "Erreur lors de la suppression.",
+      "deleting": "Suppression...",
+      "titleGroup": "Supprimer ce groupe ?",
+      "titleFolder": "Supprimer ce dossier ?",
+      "titlePage": "Supprimer cette page ?",
+      "contents": "{count, plural, one {Contient # menu} other {Contient # menus}}",
+      "more": "{count, plural, other {et # de plus}}",
+      "confirmGroup": "Supprimer le groupe",
+      "confirmFolder": "Supprimer le dossier",
+      "confirmPage": "Supprimer la page"
+    },
+    "validation": {
+      "nameRequired": "Le nom est obligatoire",
+      "codePattern": "Utilisez uniquement des majuscules, des chiffres et des tirets bas (ex. : CODE_MENU)",
+      "pageUrlRequired": "Indiquez l’URL relative ou l’URL externe",
+      "urlRequired": "L’URL est obligatoire",
+      "urlInvalid": "Indiquez une URL complète, avec https:// (ex. : https://exemple.com)"
     }
   }
 }

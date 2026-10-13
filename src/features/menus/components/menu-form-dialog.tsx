@@ -1,30 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  cn,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   IGRPButton,
+  IGRPIcon,
   Input,
   ScrollArea,
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { CreateMenuRequest } from "@igrp/platform-access-management-client-ts";
-import { type Resolver, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import {
+  type Control,
+  type Resolver,
+  useForm,
+  useWatch,
+} from "react-hook-form";
 
 import {
   useCreateMenu,
@@ -33,13 +53,14 @@ import {
 import { getNextMenuPosition } from "@/features/menus/menu-constants";
 import {
   type CreateMenu,
-  createMenuSchema,
   type MenuTypeArgs,
+  makeMenuSchemas,
+  menuCodeFromName,
   menuTargetSchema,
   menuTypeSchema,
   normalizeMenu,
+  sanitizeMenuCode,
   type UpdateMenu,
-  updateMenuSchema,
 } from "@/features/menus/menu-schemas";
 import { statusSchema } from "@/schemas/global";
 
@@ -60,6 +81,13 @@ interface MenuFormDialogProps {
   openType?: "edit" | "view";
 }
 
+const TYPE_SUFFIX = {
+  GROUP: "Group",
+  FOLDER: "Folder",
+  MENU_PAGE: "Page",
+  EXTERNAL_PAGE: "Page",
+} as const;
+
 export function MenuFormDialog({
   appCode,
   open,
@@ -71,8 +99,9 @@ export function MenuFormDialog({
   openType,
   setMenus,
 }: MenuFormDialogProps) {
+  const t = useTranslations("menus.dialog");
   const isEditMode = openType === "edit" && Boolean(menu?.code);
-  const isPrefilledCreate = Boolean(menu) && !isEditMode;
+  const isPrefilledCreate = Boolean(menu) && !isEditMode && openType !== "view";
   const [step, setStep] = useState<"type" | "form">(menu ? "form" : "type");
   const [createType, setCreateType] = useState<MenuTypeArgs>(
     menuTypeSchema.enum.GROUP,
@@ -85,16 +114,33 @@ export function MenuFormDialog({
     }
   }, [open, menu]);
 
+  const parentName = isPrefilledCreate
+    ? allMenus.find((m) => m.code === menu?.parentCode)?.name
+    : undefined;
+
   const dialogTitle =
     openType === "view"
-      ? "Visualizar Menu"
+      ? t("viewTitle")
       : isEditMode
-        ? "Editar Menu"
+        ? t("editTitle")
         : isPrefilledCreate
           ? menu?.type === "FOLDER"
-            ? "Adicionar Pasta"
-            : "Adicionar Menu"
-          : "Novo Menu";
+            ? t("addFolderTitle")
+            : t("addPageTitle")
+          : step === "type"
+            ? t("newTitle")
+            : t(`new${TYPE_SUFFIX[createType]}Title`);
+
+  const dialogDescription =
+    openType === "view"
+      ? t("viewDescription")
+      : isEditMode
+        ? t("editDescription")
+        : parentName
+          ? t("addToParent", { parent: parentName })
+          : step === "type"
+            ? t("selectTypeDescription")
+            : t("createDescription");
 
   const formKey = isEditMode
     ? `edit-${menu?.code}`
@@ -102,20 +148,10 @@ export function MenuFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="py-4 px-0 sm:min-w-2xl ">
-        <DialogHeader className="px-6">
+      <DialogContent className="gap-0 p-0 sm:max-w-2xl">
+        <DialogHeader className="px-6 pt-6 pb-4">
           <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogDescription>
-            {isEditMode || isPrefilledCreate
-              ? openType === "view"
-                ? "Visualizar informações do menu"
-                : isEditMode
-                  ? "Atualizar os detalhes deste menu"
-                  : "Preencha os detalhes do novo menu"
-              : step === "type"
-                ? "Selecione o tipo de menu que deseja criar"
-                : "Preencha os detalhes do novo menu"}
-          </DialogDescription>
+          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
 
         {step === "type" && !menu ? (
@@ -157,22 +193,16 @@ function MenuTypeStep({
   onCancel: () => void;
   onSelect: (type: MenuTypeArgs) => void;
 }) {
+  const tc = useTranslations("common.actions");
   return (
-    <div className="px-6 py-4">
+    <div className="flex flex-col gap-6 px-6 pb-6">
       <MenuTypeSelector
         value={value}
         onChange={(nextValue) => onSelect(nextValue as MenuTypeArgs)}
-        disabled={false}
       />
-      <div className="flex justify-end gap-2 mt-6">
-        <IGRPButton
-          type="button"
-          variant="secondary"
-          onClick={onCancel}
-          showIcon
-          iconName="X"
-        >
-          Cancelar
+      <div className="flex justify-end">
+        <IGRPButton type="button" variant="outline" onClick={onCancel}>
+          {tc("cancel")}
         </IGRPButton>
       </div>
     </div>
@@ -206,16 +236,26 @@ function MenuFormBody({
   onOpenChange,
   onBack,
 }: MenuFormBodyProps) {
+  const t = useTranslations("menus.form");
+  const tv = useTranslations("menus.validation");
+  const tc = useTranslations("common.actions");
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: createMenuAsync } = useCreateMenu();
   const { mutateAsync: updateMenu } = useUpdateMenu();
   const isViewMode = openType === "view";
+  const isCreate = !isEditMode && !isViewMode;
+  const td = useTranslations("menus.dialog.discard");
+  const codeEdited = useRef(false);
+  const [confirmBack, setConfirmBack] = useState(false);
+
+  const schemas = useMemo(() => makeMenuSchemas(tv), [tv]);
 
   const defaultParentCode = menu?.parentCode ?? undefined;
+  const lockedParentCode = isCreate ? defaultParentCode : undefined;
 
   const form = useForm<CreateMenu>({
     resolver: zodResolver(
-      isEditMode ? updateMenuSchema : createMenuSchema,
+      isEditMode ? schemas.updateMenuSchema : schemas.createMenuSchema,
     ) as Resolver<CreateMenu>,
     defaultValues: {
       name: "",
@@ -232,28 +272,24 @@ function MenuFormBody({
   const { reset } = form;
   const menuType = form.watch("type");
   const isLoading = form.formState.isSubmitting;
+  const isDirty = form.formState.isDirty;
 
   const isPageType =
     menuType === menuTypeSchema.enum.MENU_PAGE ||
     menuType === menuTypeSchema.enum.EXTERNAL_PAGE;
-
+  
   useEffect(() => {
-    const parentCode = menu?.parentCode ?? undefined;
-    const nextPosition = isEditMode
-      ? (menu?.position ?? 0)
-      : getNextMenuPosition(allMenus, parentCode);
-
     if (menu) {
       reset({
         name: menu.name ?? "",
         code: menu.code ?? "",
         type: (menu.type ?? menuTypeSchema.enum.GROUP) as MenuTypeArgs,
-        position: nextPosition,
+        position: menu.position ?? 0,
         icon: menu.icon ?? "AppWindow",
         status: menu.status ?? statusSchema.enum.ACTIVE,
         target: menu.target ?? menuTargetSchema.enum._self,
         url: menu.url ?? undefined,
-        parentCode,
+        parentCode: menu.parentCode ?? undefined,
         applicationCode: menu.applicationCode ?? appCode,
         pageSlug: menu.pageSlug ?? undefined,
       } as CreateMenu);
@@ -264,12 +300,12 @@ function MenuFormBody({
       name: "",
       code: "",
       type: initialType,
-      position: nextPosition,
+      position: 0,
       icon: "AppWindow",
       status: statusSchema.enum.ACTIVE,
       applicationCode: appCode,
     } as CreateMenu);
-  }, [menu, appCode, allMenus, isEditMode, initialType, reset]);
+  }, [menu, appCode, initialType, reset]);
 
   async function onSubmit(values: CreateMenu) {
     try {
@@ -295,14 +331,15 @@ function MenuFormBody({
 
         igrpToast({
           type: "success",
-          title: "Menu Atualizado",
-          description: "O menu foi atualizado com sucesso.",
+          title: t("toasts.updatedTitle"),
+          description: t("toasts.updated"),
           duration: 6000,
         });
       } else {
-        const parentCode = values.parentCode ?? menu?.parentCode ?? undefined;
+        const parentCode = lockedParentCode ?? values.parentCode ?? undefined;
         const createValues = {
           ...values,
+          parentCode,
           position: getNextMenuPosition(allMenus, parentCode),
         };
         const create = normalizeMenu(createValues);
@@ -319,8 +356,8 @@ function MenuFormBody({
 
         igrpToast({
           type: "success",
-          title: "Criação de Menu",
-          description: "Menu criado com sucesso.",
+          title: t("toasts.createdTitle"),
+          description: t("toasts.created"),
           duration: 6000,
         });
       }
@@ -330,120 +367,171 @@ function MenuFormBody({
     } catch (err) {
       igrpToast({
         type: "error",
-        title: "Erro",
-        description:
-          err instanceof Error
-            ? err.message
-            : "Algo correu mal. Por favor, tente novamente",
+        title: t("toasts.errorTitle"),
+        description: err instanceof Error ? err.message : t("toasts.error"),
         duration: 6000,
       });
     }
   }
 
-  const setDefaultFromName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isEditMode) return;
-
-    const code = e.target.value
-      .toUpperCase()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "_");
-    form.setValue("code", code);
-  };
-
   const showParentSelect =
     menuType === menuTypeSchema.enum.FOLDER
       ? groupMenus.length > 0
       : isPageType && (groupMenus.length > 0 || folderMenus.length > 0);
+  
+  function handleBack() {
+    if (!onBack) return;
+    if (isDirty) {
+      setConfirmBack(true);
+      return;
+    }
+    onBack();
+  }
+
+  const submitLabel = isEditMode
+    ? t("update")
+    : t(`create${TYPE_SUFFIX[menuType as keyof typeof TYPE_SUFFIX] ?? "Page"}`);
 
   return (
-    <ScrollArea className="max-h-[70vh] px-6">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4 py-2"
-        >
-          <div className="grid grid-cols-1 gap-4">
-            <fieldset className="border border-accent p-4 rounded-md">
-              <legend className="text-base font-semibold px-2">
-                Informações Gerais
-              </legend>
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-between gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className='after:content-["*"] after:text-destructive'>
-                          Nome
-                        </FormLabel>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex min-h-0 flex-col"
+      >
+        <ScrollArea className="max-h-[65vh] px-6">
+          <div className="flex flex-col gap-6 pt-1 pb-6">            
+            <FieldSet>
+              <FieldLegend variant="label">{t("sections.details")}</FieldLegend>
+              <div className="grid grid-cols-1 items-start gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='after:content-["*"] after:text-destructive'>
+                        {t("name")}
+                      </FormLabel>
+                      <FormControl>
                         <Input
-                          className="w-full"
-                          placeholder="Nome do Menu"
+                          placeholder={t("namePlaceholder")}
+                          autoComplete="off"
                           {...field}
                           onChange={(e) => {
                             field.onChange(e);
-                            setDefaultFromName(e);
+                            if (isCreate && !codeEdited.current) {
+                              form.setValue(
+                                "code",
+                                menuCodeFromName(e.target.value),
+                                { shouldValidate: form.formState.isSubmitted },
+                              );
+                            }
                           }}
                           disabled={isViewMode}
                         />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                  <FormField
-                    control={form.control}
-                    name="code"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel className='after:content-["*"] after:text-destructive'>
-                          Código
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="CODIGO_MENU"
-                            {...field}
-                            disabled={isViewMode || isEditMode}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='after:content-["*"] after:text-destructive'>
+                        {t("code")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t("codePlaceholder")}
+                          autoComplete="off"
+                          spellCheck={false}
+                          {...field}
+                          onChange={(e) => {
+                            const code = sanitizeMenuCode(e.target.value);
+                            // Clearing the field hands it back to the name.
+                            codeEdited.current = code !== "";
+                            field.onChange(code);
+                          }}
+                          disabled={isViewMode || isEditMode}
+                        />
+                      </FormControl>
+                      {!isViewMode && (
+                        <FormDescription>
+                          {isEditMode ? t("codeLocked") : t("codeHint")}
+                        </FormDescription>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </FieldSet>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="icon"
-                    render={({ field }) => (
-                      <MenuIconPicker
-                        value={field.value}
-                        onChange={field.onChange}
-                        disabled={isViewMode}
-                      />
-                    )}
-                  />
+            {isPageType && (
+              <>
+                <FieldSeparator />
+                <MenuPageConfigFields
+                  form={form}
+                  menuType={menuType}
+                  disabled={isViewMode}
+                />
+              </>
+            )}
 
-                  <FormField
+            {showParentSelect && (
+              <>
+                <FieldSeparator />
+                <FieldSet>
+                  <FieldLegend variant="label">
+                    {t("sections.location")}
+                  </FieldLegend>
+                  <MenuParentCombobox
                     control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
+                    menuType={menuType}
+                    groupOptions={groupMenus}
+                    folderOptions={folderMenus}
+                    disabled={isViewMode}
+                    locked={Boolean(lockedParentCode)}
+                  />
+                </FieldSet>
+              </>
+            )}
+
+            <FieldSeparator />
+            <FieldSet>
+              <FieldLegend variant="label">
+                {t("sections.appearance")}
+              </FieldLegend>
+              <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="icon"
+                  render={({ field }) => (
+                    <MenuIconPicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={isViewMode}
+                    />
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => {
+                    const isActive = field.value === statusSchema.enum.ACTIVE;
+                    return (
+                      <FormItem>
                         <FormLabel htmlFor="menu-status-switch">
-                          Estado
+                          {t("status")}
                         </FormLabel>
-                        <div className="flex items-center justify-between h-10 px-3 border border-input rounded-md bg-background">
-                          <span className="text-sm">
-                            {field.value === statusSchema.enum.ACTIVE
-                              ? "Ativo"
-                              : "Inativo"}
-                          </span>
+                        <div className="flex h-9 items-center gap-3">
                           <FormControl>
                             <Switch
                               id="menu-status-switch"
-                              checked={field.value === statusSchema.enum.ACTIVE}
+                              checked={isActive}
                               onCheckedChange={(checked) =>
                                 field.onChange(
                                   checked
@@ -454,48 +542,46 @@ function MenuFormBody({
                               disabled={isViewMode}
                             />
                           </FormControl>
+                          <span className="text-sm text-muted-foreground">
+                            {isActive ? t("statusActive") : t("statusInactive")}
+                          </span>
                         </div>
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
-                </div>
+                    );
+                  }}
+                />
               </div>
-            </fieldset>
+            </FieldSet>
+          </div>
+        </ScrollArea>
 
-            <MenuPageConfigFields
-              form={form}
-              menuType={menuType}
-              disabled={isViewMode}
-            />
-
-            {showParentSelect && (
-              <MenuParentCombobox
-                control={form.control}
-                menuType={menuType}
-                groupOptions={groupMenus}
-                folderOptions={folderMenus}
-                disabled={isViewMode}
-              />
+        <DialogFooter className="gap-2 px-6 pt-2 pb-6">
+          <div className="flex-1">
+            {onBack && (
+              <IGRPButton
+                type="button"
+                variant="secondary"
+                onClick={handleBack}
+                disabled={isLoading}
+                iconName="ArrowLeft"
+                showIcon
+              >
+                {tc("back")}
+              </IGRPButton>
             )}
           </div>
-
-          <DialogFooter className="mt-4 gap-2">
-            <div className="flex-1">
-              {onBack && (
-                <IGRPButton
-                  type="button"
-                  variant="link"
-                  onClick={onBack}
-                  disabled={isLoading}
-                  iconName="ChevronLeft"
-                  showIcon
-                >
-                  Voltar
-                </IGRPButton>
-              )}
-            </div>
-            <div className="flex gap-1.5">
+          {isViewMode ? (
+            <IGRPButton
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              iconName="X"
+            >
+              {t("close")}
+            </IGRPButton>
+          ) : (
+            <>
               <IGRPButton
                 type="button"
                 variant="secondary"
@@ -503,30 +589,116 @@ function MenuFormBody({
                   reset();
                   onOpenChange(false);
                 }}
-                iconName="X"
-                showIcon
                 disabled={isLoading}
+                iconName="Undo2"
               >
-                Cancelar
+                {tc("cancel")}
               </IGRPButton>
-              {!isViewMode && (
-                <IGRPButton
-                  iconName="Save"
-                  showIcon
-                  type="submit"
-                  disabled={isLoading}
-                >
-                  {isLoading
-                    ? "A guardar..."
-                    : isEditMode
-                      ? "Atualizar"
-                      : "Criar Menu"}
-                </IGRPButton>
-              )}
-            </div>
-          </DialogFooter>
-        </form>
-      </Form>
-    </ScrollArea>
+              <IGRPButton
+                iconName={isLoading ? "LoaderCircle" : "Save"}
+                showIcon
+                type="submit"
+                disabled={isLoading}
+                iconPlacement="end"
+              >
+                {isLoading ? t("saving") : submitLabel}
+              </IGRPButton>
+            </>
+          )}
+        </DialogFooter>
+      </form>
+
+      <AlertDialog open={confirmBack} onOpenChange={setConfirmBack}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>{td("title")}</AlertDialogTitle>
+            <AlertDialogDescription>{td("description")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{td("keep")}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                setConfirmBack(false);
+                onBack?.();
+              }}
+            >
+              {td("confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </Form>
+  );
+}
+
+const PREVIEW_TYPE_ICON: Record<string, string> = {
+  GROUP: "FolderTree",
+  FOLDER: "Folder",
+  MENU_PAGE: "FileText",
+  EXTERNAL_PAGE: "ExternalLink",
+};
+
+/**
+ * The menu as it will sit in the tree, updated while the form is filled:
+ * chosen icon, name, page address and the path of parents above it.
+ */
+function MenuRowPreview({
+  control,
+  allMenus,
+  lockedParentCode,
+}: {
+  control: Control<CreateMenu>;
+  allMenus: IGRPMenuItemArgs[];
+  lockedParentCode?: string;
+}) {
+  const t = useTranslations("menus.form.preview");
+  const [name, icon, type, parentCode, pageSlug, url] = useWatch({
+    control,
+    name: ["name", "icon", "type", "parentCode", "pageSlug", "url"],
+  });
+
+  const path: string[] = [];
+  let current = lockedParentCode ?? parentCode ?? null;
+  while (current && path.length < 4) {
+    const parent = allMenus.find((m) => m.code === current);
+    if (!parent) break;
+    path.unshift(parent.name);
+    current = parent.parentCode ?? null;
+  }
+  const address = type === "EXTERNAL_PAGE" ? url : pageSlug;
+
+  return (
+    <section
+      aria-label={t("label")}
+      className="flex items-center gap-3 rounded-md border bg-muted/30 px-3 py-2.5"
+    >
+      <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-background text-muted-foreground shadow-xs">
+        <IGRPIcon
+          iconName={icon || PREVIEW_TYPE_ICON[type] || "FileText"}
+          className="size-4"
+        />
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="flex min-w-0 items-baseline gap-3">
+          <span
+            className={cn(
+              "truncate text-sm",
+              name ? "font-medium" : "italic text-muted-foreground",
+            )}
+          >
+            {name || t("untitled")}
+          </span>
+          {address && (
+            <span className="truncate text-xs text-muted-foreground">
+              {address}
+            </span>
+          )}
+        </span>
+        <span className="truncate text-xs text-muted-foreground">
+          {path.length > 0 ? path.join(" / ") : t("topLevel")}
+        </span>
+      </span>
+    </section>
   );
 }

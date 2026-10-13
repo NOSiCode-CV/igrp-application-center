@@ -773,7 +773,23 @@
       "loadingImage": "Fetching image...",
       "uploadSuccessTitle": "Image uploaded",
       "uploadSuccess": "The image was uploaded successfully",
-      "uploadErrorTitle": "Upload error."
+      "uploadErrorTitle": "Upload error.",
+      "backToList": "All applications",
+      "openApp": "Open application",
+      "noDescription": "No description yet. Add one with Edit.",
+      "uploadInvalidType": "Choose an image file (PNG, JPG, SVG or WebP).",
+      "uploadSaveError": "The image was uploaded but could not be saved on the application.",
+      "facts": {
+        "type": "Type",
+        "address": "Address",
+        "owner": "Owner",
+        "updated": "Last updated"
+      },
+      "types": {
+        "internal": "Internal",
+        "external": "External",
+        "system": "System"
+      }
     },
     "form": {
       "name": "Name",
@@ -822,6 +838,153 @@
       "urlRequired": "URL is required",
       "slugRequired": "Slug is required (e.g. /apps/example)",
       "slugMax": "Slug must be at most 255 characters"
+    }
+  },
+  "menus": {
+    "list": {
+      "title": "Application Menus",
+      "description": "Manage and reorder this application's menus.",
+      "new": "New Menu",
+      "loading": "Loading menus...",
+      "loadError": "An error occurred while loading the menus.",
+      "emptyTitle": "No menus found",
+      "emptyDescription": "Start by creating the first menu for this application.",
+      "createFirst": "Create First Menu",
+      "systemEmptyDescription": "Menus of system applications are managed by the platform."
+    },
+    "reorder": {
+      "notAllowedTitle": "Move not allowed",
+      "notAllowed": "A group stays at the top level, a folder goes at the top level or inside a group, and a page goes at the top level, inside a group or inside a folder.",
+      "updatedTitle": "Order updated",
+      "updated": "The menus were reordered.",
+      "errorTitle": "Error saving",
+      "error": "The menu order could not be saved."
+    },
+    "item": {
+      "drag": "Drag to reorder",
+      "collapse": "Collapse",
+      "expand": "Expand",
+      "noUrl": "No URL",
+      "childCount": "{count, plural, =0 {Empty} one {# item} other {# items}}",
+      "openActions": "Open menu actions",
+      "view": "View",
+      "edit": "Edit",
+      "addFolder": "Add Folder",
+      "addPage": "Add Page",
+      "delete": "Delete"
+    },
+    "types": {
+      "group": "Group",
+      "folder": "Folder",
+      "page": "Page",
+      "groupDescription": "Groups folders and menus at the top level",
+      "folderDescription": "Folder that can belong to a group",
+      "pageDescription": "Menu that opens a page of the application"
+    },
+    "dialog": {
+      "viewTitle": "View Menu",
+      "editTitle": "Edit Menu",
+      "addFolderTitle": "Add Folder",
+      "addMenuTitle": "Add Menu",
+      "newTitle": "New Menu",
+      "viewDescription": "View the menu details",
+      "editDescription": "Update the details of this menu",
+      "createDescription": "Fill in the details of the new menu",
+      "selectTypeDescription": "Select the type of menu you want to create",
+      "newGroupTitle": "New group",
+      "newFolderTitle": "New folder",
+      "newPageTitle": "New page",
+      "addPageTitle": "Add page",
+      "addToParent": "It will be added to {parent}.",
+      "discard": {
+        "title": "Discard your changes?",
+        "description": "Going back to the menu types clears what you've entered.",
+        "keep": "Keep editing",
+        "confirm": "Discard"
+      }
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Menu name",
+      "code": "Code",
+      "codePlaceholder": "MENU_CODE",
+      "icon": "Icon",
+      "selectIcon": "Select icon",
+      "selectIconPlaceholder": "Select icon...",
+      "searchIcon": "Search icon...",
+      "noIconFound": "No icon found.",
+      "status": "Status",
+      "pageType": "Page Type",
+      "internalPage": "Internal Page",
+      "externalPage": "External Page",
+      "relativeUrl": "Relative URL",
+      "relativeUrlPlaceholder": "page-slug",
+      "externalUrl": "External URL",
+      "externalUrlPlaceholder": "https://example.com",
+      "openInNewTab": "Open in new tab",
+      "groupOptional": "Group (Optional)",
+      "folderOptional": "Folder (Optional)",
+      "selectGroup": "Select group...",
+      "selectFolder": "Select folder...",
+      "noGroupFound": "No group found.",
+      "noFolderFound": "No folder found.",
+      "noneRoot": "None (Root)",
+      "saving": "Saving...",
+      "update": "Update",
+      "toasts": {
+        "updatedTitle": "Menu Updated",
+        "updated": "The menu was updated successfully.",
+        "createdTitle": "Menu Created",
+        "created": "The menu was created successfully.",
+        "errorTitle": "Error",
+        "error": "Something went wrong. Please try again."
+      },
+      "sections": {
+        "details": "Details",
+        "destination": "Destination",
+        "location": "Location",
+        "appearance": "Appearance"
+      },
+      "codeHint": "Generated from the name. Uppercase letters, numbers and underscores only.",
+      "codeLocked": "The code can't be changed after the menu is created.",
+      "statusActive": "Shown in the navigation",
+      "statusInactive": "Hidden from the navigation",
+      "relativeUrlHint": "Path of the page inside this application, e.g. reports/monthly.",
+      "externalUrlHint": "External pages always open in a new tab.",
+      "openInNewTabHint": "Keeps this application open in the current tab.",
+      "createGroup": "Create group",
+      "createFolder": "Create folder",
+      "createPage": "Create page",
+      "close": "Close",
+      "parentType": "Place inside",
+      "preview": {
+        "label": "Preview in the menu",
+        "untitled": "Untitled",
+        "topLevel": "Top level"
+      }
+    },
+    "delete": {
+      "description": "It's removed from the application's navigation. This can't be undone.",
+      "nameLabel": "To confirm, type <highlight>{name}</highlight>",
+      "successTitle": "Menu Deleted",
+      "success": "The menu \"{name}\" was deleted successfully.",
+      "errorTitle": "Error deleting.",
+      "deleting": "Deleting...",
+      "titleGroup": "Delete this group?",
+      "titleFolder": "Delete this folder?",
+      "titlePage": "Delete this page?",
+      "contents": "{count, plural, one {Contains # menu} other {Contains # menus}}",
+      "more": "{count, plural, other {and # more}}",
+      "confirmGroup": "Delete group",
+      "confirmFolder": "Delete folder",
+      "confirmPage": "Delete page"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "codePattern": "Use only uppercase letters, numbers and underscores (e.g. MENU_CODE)",
+      "pageUrlRequired": "Enter the relative URL or the external URL",
+      "urlRequired": "URL is required",
+      "urlInvalid": "Enter a full URL, with https:// (e.g. https://example.com)"
     }
   }
 }

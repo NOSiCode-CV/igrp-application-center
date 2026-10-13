@@ -773,7 +773,23 @@
       "loadingImage": "A obter imagem...",
       "uploadSuccessTitle": "Imagem carregada",
       "uploadSuccess": "A imagem foi carregada com sucesso",
-      "uploadErrorTitle": "Erro no upload."
+      "uploadErrorTitle": "Erro no upload.",
+      "backToList": "Todas as aplicações",
+      "openApp": "Abrir aplicação",
+      "noDescription": "Ainda sem descrição. Adicione uma em Editar.",
+      "uploadInvalidType": "Escolha um ficheiro de imagem (PNG, JPG, SVG ou WebP).",
+      "uploadSaveError": "A imagem foi carregada mas não foi possível guardá-la na aplicação.",
+      "facts": {
+        "type": "Tipo",
+        "address": "Endereço",
+        "owner": "Responsável",
+        "updated": "Última alteração"
+      },
+      "types": {
+        "internal": "Interna",
+        "external": "Externa",
+        "system": "Sistema"
+      }
     },
     "form": {
       "name": "Nome",
@@ -822,6 +838,153 @@
       "urlRequired": "URL é obrigatório",
       "slugRequired": "Slug é obrigatório (ex.: /apps/exemplo)",
       "slugMax": "Slug deve ter no máximo 255 caracteres"
+    }
+  },
+  "menus": {
+    "list": {
+      "title": "Menus da Aplicação",
+      "description": "Gerir e reorganizar os menus desta aplicação.",
+      "new": "Novo Menu",
+      "loading": "A carregar menus...",
+      "loadError": "Ocorreu um erro ao carregar os menus.",
+      "emptyTitle": "Nenhum menu encontrado",
+      "emptyDescription": "Comece por criar o primeiro menu para esta aplicação.",
+      "createFirst": "Criar Primeiro Menu",
+      "systemEmptyDescription": "Os menus das aplicações de sistema são geridos pela plataforma."
+    },
+    "reorder": {
+      "notAllowedTitle": "Movimento não permitido",
+      "notAllowed": "Um grupo fica no nível principal, uma pasta fica no nível principal ou dentro de um grupo, e uma página fica no nível principal, dentro de um grupo ou dentro de uma pasta.",
+      "updatedTitle": "Ordem atualizada",
+      "updated": "A ordem dos menus foi reorganizada.",
+      "errorTitle": "Erro ao guardar",
+      "error": "Não foi possível guardar a ordem dos menus."
+    },
+    "item": {
+      "drag": "Arrastar para reordenar",
+      "collapse": "Recolher",
+      "expand": "Expandir",
+      "noUrl": "Sem URL",
+      "childCount": "{count, plural, =0 {Vazio} one {# item} other {# itens}}",
+      "openActions": "Abrir ações do menu",
+      "view": "Ver",
+      "edit": "Editar",
+      "addFolder": "Adicionar Pasta",
+      "addPage": "Adicionar Página",
+      "delete": "Eliminar"
+    },
+    "types": {
+      "group": "Grupo",
+      "folder": "Pasta",
+      "page": "Página",
+      "groupDescription": "Agrupa pastas e menus no nível mais alto",
+      "folderDescription": "Pasta que pode pertencer a um grupo",
+      "pageDescription": "Menu que abre uma página da aplicação"
+    },
+    "dialog": {
+      "viewTitle": "Visualizar Menu",
+      "editTitle": "Editar Menu",
+      "addFolderTitle": "Adicionar Pasta",
+      "addMenuTitle": "Adicionar Menu",
+      "newTitle": "Novo Menu",
+      "viewDescription": "Visualizar informações do menu",
+      "editDescription": "Atualizar os detalhes deste menu",
+      "createDescription": "Preencha os detalhes do novo menu",
+      "selectTypeDescription": "Selecione o tipo de menu que deseja criar",
+      "newGroupTitle": "Novo grupo",
+      "newFolderTitle": "Nova pasta",
+      "newPageTitle": "Nova página",
+      "addPageTitle": "Adicionar página",
+      "addToParent": "Será adicionado em {parent}.",
+      "discard": {
+        "title": "Descartar as alterações?",
+        "description": "Voltar aos tipos de menu apaga o que já preencheu.",
+        "keep": "Continuar a editar",
+        "confirm": "Descartar"
+      }
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Nome do Menu",
+      "code": "Código",
+      "codePlaceholder": "CODIGO_MENU",
+      "icon": "Ícone",
+      "selectIcon": "Selecionar ícone",
+      "selectIconPlaceholder": "Selecionar ícone...",
+      "searchIcon": "Procurar ícone...",
+      "noIconFound": "Nenhum ícone encontrado.",
+      "status": "Estado",
+      "pageType": "Tipo de Página",
+      "internalPage": "Página Interna",
+      "externalPage": "Página Externa",
+      "relativeUrl": "URL Relativo",
+      "relativeUrlPlaceholder": "page-slug",
+      "externalUrl": "URL Externa",
+      "externalUrlPlaceholder": "https://exemplo.com",
+      "openInNewTab": "Abrir em nova aba",
+      "groupOptional": "Grupo (Opcional)",
+      "folderOptional": "Pasta (Opcional)",
+      "selectGroup": "Selecionar grupo...",
+      "selectFolder": "Selecionar pasta...",
+      "noGroupFound": "Nenhum grupo encontrado.",
+      "noFolderFound": "Nenhuma pasta encontrada.",
+      "noneRoot": "Nenhum (Raiz)",
+      "saving": "A guardar...",
+      "update": "Atualizar",
+      "toasts": {
+        "updatedTitle": "Menu Atualizado",
+        "updated": "O menu foi atualizado com sucesso.",
+        "createdTitle": "Menu Criado",
+        "created": "O menu foi criado com sucesso.",
+        "errorTitle": "Erro",
+        "error": "Algo correu mal. Por favor, tente novamente."
+      },
+      "sections": {
+        "details": "Detalhes",
+        "destination": "Destino",
+        "location": "Localização",
+        "appearance": "Aparência"
+      },
+      "codeHint": "Gerado a partir do nome. Apenas maiúsculas, números e sublinhados.",
+      "codeLocked": "O código não pode ser alterado depois de o menu ser criado.",
+      "statusActive": "Visível na navegação",
+      "statusInactive": "Oculto da navegação",
+      "relativeUrlHint": "Caminho da página dentro desta aplicação, p. ex. relatorios/mensal.",
+      "externalUrlHint": "As páginas externas abrem sempre num novo separador.",
+      "openInNewTabHint": "Mantém esta aplicação aberta no separador atual.",
+      "createGroup": "Criar grupo",
+      "createFolder": "Criar pasta",
+      "createPage": "Criar página",
+      "close": "Fechar",
+      "parentType": "Colocar dentro de",
+      "preview": {
+        "label": "Pré-visualização no menu",
+        "untitled": "Sem nome",
+        "topLevel": "Nível principal"
+      }
+    },
+    "delete": {
+      "description": "Deixa de aparecer na navegação da aplicação. Não é possível anular.",
+      "nameLabel": "Para confirmar, escreva <highlight>{name}</highlight>",
+      "successTitle": "Menu Eliminado",
+      "success": "O menu \"{name}\" foi eliminado com sucesso.",
+      "errorTitle": "Erro ao eliminar.",
+      "deleting": "A eliminar...",
+      "titleGroup": "Eliminar este grupo?",
+      "titleFolder": "Eliminar esta pasta?",
+      "titlePage": "Eliminar esta página?",
+      "contents": "{count, plural, one {Contém # menu} other {Contém # menus}}",
+      "more": "{count, plural, other {e mais #}}",
+      "confirmGroup": "Eliminar grupo",
+      "confirmFolder": "Eliminar pasta",
+      "confirmPage": "Eliminar página"
+    },
+    "validation": {
+      "nameRequired": "Nome é obrigatório",
+      "codePattern": "Use apenas maiúsculas, números e sublinhados (ex.: CODIGO_MENU)",
+      "pageUrlRequired": "Indique o URL relativo ou o URL externo",
+      "urlRequired": "URL é obrigatório",
+      "urlInvalid": "Indique um URL completo, com https:// (ex.: https://exemplo.com)"
     }
   }
 }
