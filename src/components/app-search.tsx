@@ -11,7 +11,6 @@ import {
   igrpIsExternalUrl,
   igrpNormalizeUrl,
 } from "@igrp/igrp-framework-react-design-system";
-import { useTranslations } from "next-intl";
 
 import type { AppSearchCommand } from "@/lib/header-search";
 
@@ -54,17 +53,6 @@ function isExternalTarget(command: AppSearchCommand): boolean {
  */
 export function AppSearch({ commands }: AppSearchProps) {
   const router = useRouter();
-  const t = useTranslations("header.search");
-  const labels = useMemo(
-    () => ({
-      trigger: t("trigger"),
-      placeholder: t("placeholder"),
-      empty: t("empty"),
-      dialogTitle: t("dialogTitle"),
-      dialogDescription: t("dialogDescription"),
-    }),
-    [t],
-  );
 
   const items = useMemo<IGRPCommandItem[]>(
     () =>
@@ -88,5 +76,5 @@ export function AppSearch({ commands }: AppSearchProps) {
     [commands, router],
   );
 
-  return <IGRPTemplateCommandSearch commands={items} labels={labels} />;
+  return <IGRPTemplateCommandSearch commands={items} />;
 }

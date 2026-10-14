@@ -8,11 +8,17 @@ import { cn } from "@igrp/igrp-framework-react-design-system/cn";
 import { carouselItems, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
 import { LocaleSwitcher } from "@/i18n/components/locale-switcher";
+
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
+import {
+  SILENT_SSO_COOKIE,
+  shouldAttemptSilentSso,
+  silentSsoCallbackUrl,
+} from "@/lib/silent-sso";
 import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 
-import { AutoSignIn } from "./auto-sign-in";
 import { LogoutCompletion } from "./logout-completion";
+import { SilentSignIn } from "./silent-sign-in";
 
 const { sliderPosition, texts } = loginConfig;
 const { logo, name } = siteConfig;
@@ -40,19 +46,39 @@ export default async function AuthPage({
     return <LogoutCompletion />;
   }
 
-  const { callbackUrl, error, loggedOut } = await searchParams;
+  const { callbackUrl, error } = await searchParams;
+  const silentSso = cookieStore.get(SILENT_SSO_COOKIE);
   // Drop callbackUrl values that would bounce the user back to /login (or
   // /logout) after the OIDC round-trip — those produce the nested
-  // `?callbackUrl=…?callbackUrl=…` chain. Fall back to `/` so a successful
-  // login lands on the app home.
-  const safeCallbackUrl = sanitizeCallbackUrl(callbackUrl) ?? "/";
+  // `?callbackUrl=…?callbackUrl=…` chain. After a failed silent attempt the
+  // query value is NextAuth's absolute URL, which this rejects, so the value
+  // the attempt set out with is recovered from its cookie. Fall back to `/`
+  // so a successful login lands on the app home.
+  const safeCallbackUrl =
+    sanitizeCallbackUrl(callbackUrl) ??
+    silentSsoCallbackUrl(silentSso?.value) ??
+    "/";
   const providerId = getAuthProviderIdFromEnv(process.env);
 
-  const loginForm = (
-    <section className="relative flex min-h-screen flex-col md:flex-row">
+  // Silent SSO: still signed in at the IdP (e.g. coming from another app) →
+  // straight into the app with no click. See lib/silent-sso.ts.
+  if (
+    shouldAttemptSilentSso({
+      alreadyTried: silentSso !== undefined,
+      error,
+      providerId,
+    })
+  ) {
+    return (
+      <SilentSignIn providerId={providerId} callbackUrl={safeCallbackUrl} />
+    );
+  }
+
+  return (
+ <section className="relative flex min-h-screen flex-col md:flex-row">
       <div className="absolute top-8 right-16 z-10">
         <LocaleSwitcher />
-      </div>
+      </div>      
       <div
         className={cn(
           "relative hidden w-full md:block md:w-1/2",
@@ -71,22 +97,4 @@ export default async function AuthPage({
       />
     </section>
   );
-
-  // Auto sign-in: start the IdP flow straight away so a live SSO session (e.g.
-  // coming from another app on the same host) needs no click. The form shows on
-  // a NextAuth error (retrying would loop), right after logout, when disabled
-  // via IGRP_LOGIN_AUTO_SIGNIN=false, or when AutoSignIn detects a loop.
-  const autoSignInEnabled =
-    process.env.IGRP_LOGIN_AUTO_SIGNIN?.trim().toLowerCase() !== "false";
-  if (autoSignInEnabled && !error && !loggedOut) {
-    return (
-      <AutoSignIn
-        providerId={providerId}
-        callbackUrl={safeCallbackUrl}
-        fallback={loginForm}
-      />
-    );
-  }
-
-  return loginForm;
 }

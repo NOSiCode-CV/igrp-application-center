@@ -7,6 +7,7 @@ import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
 
 import { clearLogoutPending } from "@/lib/logout-pending";
 import { reportError } from "@/lib/report-error";
+import { markSilentSsoTried } from "@/lib/silent-sso";
 
 /**
  * Deferred logout teardown (Option A).
@@ -42,12 +43,13 @@ export function LogoutCompletion() {
         // full reload also forces every server component to re-read the now-
         // cleared session.
         clearLogoutPending();
+        // Suppress the silent SSO attempt on the /login we are about to load:
+        // a user who just signed out must see the form, not be signed straight
+        // back in — which is what would happen if the IdP logout failed to end
+        // the IdP session.
+        markSilentSsoTried();
         const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-        // `?loggedOut=1` keeps the login page from auto-signing the user
-        // straight back in (see auto-sign-in.tsx).
-        window.location.replace(
-          `${window.location.origin}${basePath}/login?loggedOut=1`,
-        );
+        window.location.replace(`${window.location.origin}${basePath}/login`);
       }
     })();
   }, []);

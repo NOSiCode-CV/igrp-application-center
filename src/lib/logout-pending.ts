@@ -10,8 +10,19 @@
 // Module scope must stay edge-safe: middleware imports LOGOUT_PENDING_COOKIE,
 // so no `document` access outside the client-only functions below.
 
-/** Cookie name shared by the logout page, /login completion, and middleware. */
-export const LOGOUT_PENDING_COOKIE = "logout_pending";
+import { basePathCookieSuffix } from "@igrp/framework-next-auth/cookies";
+
+/**
+ * Cookie name shared by the logout page, /login completion, and middleware.
+ *
+ * Scoped by basePath like the auth cookies themselves: a root-path app writes
+ * this marker at `path=/`, which the browser sends to every app on the host.
+ * Under a shared name, another app's middleware would read it, force /login,
+ * and run LogoutCompletion — signing the user out of an app they never left.
+ */
+export const LOGOUT_PENDING_COOKIE = `logout_pending${basePathCookieSuffix(
+  process.env.NEXT_PUBLIC_BASE_PATH,
+)}`;
 
 // 5 min: long enough for the IdP round-trip, short enough to self-heal if the
 // user abandons the flow at the IdP.

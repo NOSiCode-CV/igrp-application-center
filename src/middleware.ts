@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { staleAuthCookies } from "@igrp/framework-next-auth/cookies";
+
 import {
   LOCALE_COOKIE,
   LOCALE_COOKIE_OPTIONS,
   normalizeLocale,
-} from "@/i18n/config";
-// Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
+} from "@/i18n/config";// Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
 // (which also carries Node-only session helpers — see lib/auth-instance.ts).
 import { auth } from "@/lib/auth-instance";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
@@ -61,17 +62,17 @@ function buildCspReportOnly(): string {
   ].join("; ");
 }
 
-/**
- * Security headers applied to all responses in production.
- *
- * X-XSS-Protection is deliberately absent: the legacy XSS auditor it enabled
- * has been removed from every current browser, and sending it can reintroduce
- * vulnerabilities. CSP is the replacement. (Dropped in c9973f0, re-added by
- * accident in ebc0e15 — `middleware.test.ts` asserts its absence.)
- */
+/** Security headers applied to all responses in production. */
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
+  // Deliberately "0", not "1; mode=block". The legacy XSS Auditor this header
+  // controls was removed from every current browser, and where it still exists
+  // its filtering has itself been an XSS vector (it can be abused to suppress
+  // legitimate script and to probe cross-origin content). "0" disables it
+  // explicitly, which is the current OWASP / Chrome guidance. Real XSS defence
+  // here is the CSP above.
+  "X-XSS-Protection": "0",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy":
     "camera=(), microphone=(), geolocation=(), interest-cohort=()",
@@ -106,11 +107,7 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-// isPublicPath/isAuthUiPath are exported for `src/__tests__/middleware/
-// path-predicates.test.ts` — the routing table they encode is worth covering
-// directly. Keep the exports when editing this file; they have been dropped
-// twice by unrelated rewrites (4846f4d, ebc0e15), breaking typecheck each time.
-export function isPublicPath(pathname: string): boolean {
+function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -129,7 +126,7 @@ export function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-export function isAuthUiPath(pathname: string): boolean {
+function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
@@ -146,13 +143,37 @@ export function isAuthUiPath(pathname: string): boolean {
  * 3. Extract JWT — redirect to login on failure.
  * 4. Redirect to login when token expired or refresh failed.
  * 5. Apply security headers to all passing responses.
- * 6. Authenticated: align the IGRP_LOCALE cookie with the session locale
- *    (FR-27, see syncLocaleCookie).
  *
  * x-current-path is injected as a request header on every passing response so
  * server components can build a callbackUrl when they need to redirect to login.
  */
 export async function middleware(request: NextRequest) {
+  return expireStaleAuthCookies(request, await handleRequest(request));
+}
+
+/**
+ * Expires this app's previous-generation auth cookies on whatever response the
+ * middleware produced (pass-through or redirect alike).
+ *
+ * Auth cookies are now confined to the app's basePath, under a new name. The
+ * names this app used to write at `Path=/` are no longer read, but the browser
+ * keeps sending them to every path on the host — including the IdP — until
+ * they expire. `staleAuthCookies` derives those names from this app's basePath
+ * only, so another co-hosted app's cookies are never touched. A no-op once the
+ * old cookies are gone, and always for a root-path app.
+ */
+function expireStaleAuthCookies(
+  request: NextRequest,
+  response: NextResponse,
+): NextResponse {
+  const names = request.cookies.getAll().map((cookie) => cookie.name);
+  for (const { name, options } of staleAuthCookies(BASE_PATH, names)) {
+    response.cookies.set(name, "", options);
+  }
+  return response;
+}
+
+async function handleRequest(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
   const currentPath = pathname + search;
 
@@ -247,5 +268,25 @@ export function syncLocaleCookie(
   return response;
 }
 
-// Matcher: page routes only (legacy template)
-export const { config } = auth;
+
+/**
+ * Which requests wake the middleware.
+ *
+ * MUST be an object literal of string literals: Next reads `config` at BUILD
+ * time by parsing this file, without running it. The previous
+ * `export const { config } = auth;` could not be parsed, so Next silently fell
+ * back to matching every path, static assets included (the build's
+ * middleware-manifest showed `/:path*`).
+ *
+ * Same values as the framework default (`auth.config.matcher`). Matchers are
+ * basePath-relative. Skips `/apps`, `/_next` and `favicon.ico` as whole
+ * segments, and static assets by extension — not every path with a dot, so a
+ * page route like `/users/john.doe` still goes through the middleware.
+ */
+export const config = {
+  matcher: [
+    "/",
+    "/((?!apps(?:/|$)|_next(?:/|$)|favicon.ico$|.*\\.(?:ico|png|jpe?g|gif|svg|webp|avif|bmp|css|js|mjs|map|json|txt|xml|webmanifest|woff2?|ttf|otf|eot|pdf|mp4|webm|mp3)$).*)",
+    "/api/:path*",
+  ],
+};

@@ -13,7 +13,7 @@ import { isAuthBypass } from "@/lib/utilities";
  *
  * `IGRPCommandItem.onSelect` is a function and cannot cross the Server→Client
  * boundary, so the server resolves plain data here and the client component
- * (`@/components/header/app-search`) builds the handlers.
+ * (`@/components/app-search`) builds the handlers.
  *
  * The navigation target stays split into `pageSlug` / `url` / `target` rather
  * than being flattened into an href here: deciding whether a URL is external
