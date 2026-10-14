@@ -1,9 +1,19 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
-import {
-  CreateApplicationSchema,
-  UpdateApplicationSchema,
-} from "@/features/applications/app-schemas";
+import { makeApplicationSchemas } from "@/features/applications/app-schemas";
+import { getMessagesFor } from "@/i18n/messages";
+
+// The schemas take their messages from the catalog; built here in pt, so the
+// expectations below read as the user sees them in the module default.
+const { CreateApplicationSchema, UpdateApplicationSchema } =
+  makeApplicationSchemas(
+    createTranslator({
+      locale: "pt",
+      messages: getMessagesFor("pt"),
+      namespace: "applications.validation",
+    }),
+  );
 
 const base = {
   name: "App de Teste",

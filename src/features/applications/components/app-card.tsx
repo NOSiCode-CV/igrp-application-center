@@ -12,16 +12,14 @@ import {
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
-import {
-  APP_DESCRIPTION_FALLBACK,
-  formatSlug,
-  isSystemApp,
-} from "@/features/applications/app-utils";
+import { formatSlug, isSystemApp } from "@/features/applications/app-utils";
 import { getAppTileColor } from "@/features/workspace/lib/app-utils";
+import { useStatusLabel } from "@/i18n/status";
 import { config, ROUTES } from "@/lib/constants";
-import { getStatusColor, showStatus } from "@/lib/utilities";
+import { getStatusColor } from "@/lib/utilities";
 
 interface ApplicationCardProps {
   app: ApplicationDTO;
@@ -32,6 +30,9 @@ const ACTION_BUTTON_HOVER =
   "hover:bg-primary-subtle hover:text-primary-subtle-foreground";
 
 export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
+  const t = useTranslations("applications.card");
+  const tc = useTranslations("common.actions");
+  const statusLabel = useStatusLabel();
   const { name, code, status, description, slug, url } = app;
   const href = slug ? formatSlug(slug) : url;
   const isSystem = isSystemApp(app);
@@ -81,19 +82,19 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
           !description && "italic",
         )}
       >
-        {description || APP_DESCRIPTION_FALLBACK}
+        {description || t("noDescription")}
       </p>
 
       <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3">
         <Badge className={cn(getStatusColor(status), "shrink-0")}>
-          {showStatus(status)}
+          {statusLabel(status)}
         </Badge>
 
         <div className="flex items-center gap-1">
           <ButtonLinkTooltip
             href={`${ROUTES.APPLICATIONS}/${code}` as Route}
             icon="Eye"
-            label={`Ver ${name}`}
+            label={t("view", { name })}
             size="icon"
             variant="ghost"
             btnClassName={ACTION_BUTTON_HOVER}
@@ -109,10 +110,10 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
                   iconName="SquarePen"
                   onClick={() => onEdit(app)}
                   className={ACTION_BUTTON_HOVER}
-                  aria-label={`Editar ${name}`}
+                  aria-label={t("edit", { name })}
                 />
               </TooltipTrigger>
-              <TooltipContent>Editar</TooltipContent>
+              <TooltipContent>{tc("edit")}</TooltipContent>
             </Tooltip>
           )}
 
@@ -120,7 +121,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
             <ButtonLinkTooltip
               href={href as Route}
               icon="ExternalLink"
-              label={`Abrir ${name}`}
+              label={t("open", { name })}
               size="icon"
               variant="ghost"
               btnClassName={ACTION_BUTTON_HOVER}

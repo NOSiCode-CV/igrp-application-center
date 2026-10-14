@@ -1,5 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { renderWithIntl as render } from "../helpers/intl";
 
 // Renders as a <span>, like the real Badge, and keeps `className` so the
 // colour assertions below have something to read.

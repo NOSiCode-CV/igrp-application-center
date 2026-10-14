@@ -146,13 +146,13 @@ export function UserList({
           component: ({ column }) => (
             <ColumnSearchInput
               column={column}
-              label="Pesquisar convites"
-              placeholder="Pesquisar por email…"
+              label={t("list.filters.searchInvitations")}
+              placeholder={t("list.filters.searchByEmailPlaceholder")}
             />
           ),
         },
       ],
-      [],
+      [t],
     );
 
   const handleConfirmStatusChange = () => {
@@ -208,8 +208,8 @@ export function UserList({
     <div className="flex flex-col gap-6">
       <IGRPPageHeader
         {...PAGE_HEADER_PROPS}
-        title="Gestão de Utilizadores"
-        description="Ver e gerir todos os utilizadores do sistema."
+        title={t("list.title")}
+        description={t("list.description")}
         showBackButton
         urlBackButton="/settings"
       >
@@ -219,7 +219,7 @@ export function UserList({
             iconName="UserRoundPlus"
             onClick={() => setInviteDialogOpen(true)}
           >
-            Convidar Utilizador
+            {t("list.inviteUser")}
           </IGRPButton>
         </div>
       </IGRPPageHeader>
@@ -229,9 +229,7 @@ export function UserList({
           role="status"
           className="flex flex-col gap-3 rounded-lg bg-warning-subtle px-4 py-3 text-sm text-warning-subtle-foreground sm:flex-row sm:items-center sm:justify-between"
         >
-          <span>
-            Esta lista pode estar desatualizada: a última atualização falhou.
-          </span>
+          <span>{t("list.staleWarning")}</span>
           <IGRPButton
             variant="outline"
             size="sm"
@@ -240,7 +238,7 @@ export function UserList({
             disabled={isFetching}
             onClick={() => refetch()}
           >
-            {isFetching ? "A atualizar..." : "Atualizar"}
+            {isFetching ? t("list.refreshing") : t("list.refresh")}
           </IGRPButton>
         </div>
       )}

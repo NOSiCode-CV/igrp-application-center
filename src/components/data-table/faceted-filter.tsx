@@ -19,6 +19,7 @@ import {
   Separator,
 } from "@igrp/igrp-framework-react-design-system";
 import type { Column } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 export interface FacetedFilterOption {
   value: string;
@@ -63,6 +64,7 @@ export function FacetedFilter({
   disabled = false,
   counts,
 }: FacetedFilterProps) {
+  const t = useTranslations("common.facetedFilter");
   const id = useId();
 
   const toggle = (optionValue: string) => {
@@ -97,7 +99,7 @@ export function FacetedFilter({
       <PopoverContent className="w-auto min-w-36 p-1" align="start">
         <Command>
           <CommandList>
-            <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
+            <CommandEmpty>{t("noResults")}</CommandEmpty>
             <CommandGroup>
               {options.map((option, i) => (
                 <CommandItem
@@ -134,7 +136,7 @@ export function FacetedFilter({
                 <CommandGroup>
                   <CommandItem onSelect={() => onChange([])}>
                     <IGRPIcon iconName="X" aria-hidden="true" />
-                    Limpar Filtro
+                    {t("clear")}
                   </CommandItem>
                 </CommandGroup>
               </>

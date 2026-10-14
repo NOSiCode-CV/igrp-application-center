@@ -17,6 +17,7 @@ import {
   Skeleton,
 } from "@igrp/igrp-framework-react-design-system";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { useTranslations } from "next-intl";
 
 import { LUCIDE_ICON_OPTIONS } from "@/features/menus/menu-constants";
 
@@ -31,6 +32,7 @@ export function MenuIconPicker({
   onChange,
   disabled,
 }: MenuIconPickerProps) {
+  const t = useTranslations("menus.form");
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
   const [query, setQuery] = useState("");
@@ -74,7 +76,7 @@ export function MenuIconPicker({
 
   return (
     <FormItem>
-      <FormLabel>Ícone</FormLabel>
+      <FormLabel>{t("icon")}</FormLabel>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild disabled={disabled}>
           <FormControl>
@@ -82,7 +84,7 @@ export function MenuIconPicker({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              aria-label="Selecionar ícone"
+              aria-label={t("selectIcon")}
               className="w-full justify-between"
             >
               {currentIcon ? (
@@ -94,7 +96,7 @@ export function MenuIconPicker({
                   <span>{currentIcon.label}</span>
                 </div>
               ) : (
-                "Selecionar ícone..."
+                t("selectIconPlaceholder")
               )}
               <IGRPIcon iconName="ChevronsUpDown" />
             </Button>
@@ -112,7 +114,7 @@ export function MenuIconPicker({
                 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none"
               />
               <Input
-                placeholder="Procurar ícone..."
+                placeholder={t("searchIcon")}
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 className="border-0 rounded-none focus-visible:ring-0 pl-9 h-9"
@@ -139,7 +141,7 @@ export function MenuIconPicker({
               </div>
             ) : filtered.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">
-                Nenhum ícone encontrado.
+                {t("noIconFound")}
               </p>
             ) : (
               <IconVirtualList

@@ -53,12 +53,12 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
       }
       igrpToast({
         type: "success",
-        title: t("roleList.toasts.removed"),
+        title: t("roleList.toasts.restored"),
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: t("roleList.toasts.removeFailed"),
+        title: t("roleList.toasts.restoreFailed"),
         description: error instanceof Error ? error.message : t("unknownError"),
       });
     }
@@ -76,11 +76,15 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
       }
       igrpToast({
         type: "success",
-        title: "Perfil revogado.",
-        description: `«${role.name ?? role.code}» foi removido de ${userLabel} no departamento ${role.departmentCode}.`,
+        title: t("roleList.toasts.revoked"),
+        description: t("roleList.toasts.revokedDescription", {
+          role: role.name ?? role.code,
+          user: userLabel,
+          department: role.departmentCode,
+        }),
         duration: 10000,
         action: {
-          label: "Anular",
+          label: t("roleList.toasts.undo"),
           onClick: () => {
             void restoreRole(role);
           },
@@ -89,11 +93,8 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Não foi possível remover o perfil.",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+        title: t("roleList.toasts.removeFailed"),
+        description: error instanceof Error ? error.message : t("unknownError"),
       });
     } finally {
       setRoleToRevoke(null);
@@ -251,18 +252,22 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
         onOpenChange={(open) => {
           if (!open) setRoleToRevoke(null);
         }}
-        title="Revogar perfil"
+        title={t("roleList.revokeDialog.title")}
         description={
           roleToRevoke
-            ? `Revogar «${roleToRevoke.name ?? roleToRevoke.code}» de ${userLabel} no departamento ${roleToRevoke.departmentCode}? O utilizador perde os acessos que este perfil concede.`
+            ? t("roleList.revokeDialog.description", {
+                role: roleToRevoke.name ?? roleToRevoke.code,
+                user: userLabel,
+                department: roleToRevoke.departmentCode,
+              })
             : ""
         }
         onConfirm={() => {
           if (roleToRevoke) void handleRevokeRole(roleToRevoke);
         }}
         isLoading={isRemovingRole(roleToRevoke?.code ?? "")}
-        confirmText="Revogar"
-        loadingText="A revogar..."
+        confirmText={t("roleList.revoke")}
+        loadingText={t("roleList.revokeDialog.revoking")}
         iconName="ShieldOff"
         variant="destructive"
       />

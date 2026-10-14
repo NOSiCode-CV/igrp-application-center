@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { Badge } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import {
   useCurrentUser,
@@ -11,7 +12,7 @@ import {
   useGetCurrentUserRoles,
 } from "@/features/users/use-users";
 
-import { getGreeting } from "../../lib/task-utils";
+import { type GreetingKey, getGreeting } from "../../lib/task-utils";
 
 function firstName(full?: string): string {
   return full?.trim().split(/\s+/)[0] ?? "";
@@ -35,12 +36,13 @@ function ContextLine({ parts }: { parts: ContextPart[] }) {
 }
 
 export function WelcomeBanner() {
+  const t = useTranslations("workspace.banner");
   const { data: user } = useCurrentUser();
   const { data: activeRole } = useCurrentUserActiveRole();
   const { data: roles = [] } = useGetCurrentUserRoles();
   const { data: departments = [] } = useCurrentUserDepartments();
 
-  const [greeting, setGreeting] = useState<string | null>(null);
+  const [greeting, setGreeting] = useState<GreetingKey | null>(null);
   useEffect(() => {
     setGreeting(getGreeting());
   }, []);
@@ -49,14 +51,14 @@ export function WelcomeBanner() {
 
   const contextParts = [
     {
-      label: "Departamento",
+      label: t("department"),
       value:
         departments.find((d) => d.code === activeRole?.departmentCode)?.name ??
         activeRole?.departmentCode,
       className: "border-border bg-muted text-secondary-foreground",
     },
     {
-      label: "Perfil ativo",
+      label: t("activeRole"),
       value:
         roles.find((r) => r.code === activeRole?.roleCode)?.name ??
         activeRole?.roleCode,
@@ -75,7 +77,7 @@ export function WelcomeBanner() {
 
       <div className="min-w-0 flex flex-col">
         <p className="font-semibold text-base tracking-tight text-foreground">
-          {greeting ?? "Bem-vindo"}
+          {greeting ? t(`greeting.${greeting}`) : t("welcome")}
           {name ? `, ${name}` : ""}
         </p>
 

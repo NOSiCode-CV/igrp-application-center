@@ -14,12 +14,13 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import {
   getAppHref,
   isExternalAppHref,
 } from "@/features/workspace/lib/app-utils";
-import { showStatus } from "@/lib/utilities";
+import { useStatusLabel } from "@/i18n/status";
 
 type Props = {
   apps: ApplicationDTO[];
@@ -29,32 +30,36 @@ type Props = {
 
 type StatusTone = { dot: string; text: string; label: string };
 
-function statusTone(app: ApplicationDTO, href: string): StatusTone {
+function statusTone(
+  app: ApplicationDTO,
+  href: string,
+  labels: { noUrl: string; status: string },
+): StatusTone {
   if (!href) {
     return {
       dot: "border border-warning-subtle-foreground",
       text: "text-warning-subtle-foreground",
-      label: "Sem URL definido",
+      label: labels.noUrl,
     };
   }
   if (app.status === "ACTIVE") {
     return {
       dot: "bg-success",
       text: "text-secondary-foreground",
-      label: showStatus(app.status) ?? "",
+      label: labels.status,
     };
   }
   if (app.status === "DELETED") {
     return {
       dot: "border border-destructive-subtle-foreground",
       text: "text-destructive-subtle-foreground",
-      label: showStatus(app.status) ?? "",
+      label: labels.status,
     };
   }
   return {
     dot: "border border-warning-subtle-foreground",
     text: "text-warning-subtle-foreground",
-    label: showStatus(app.status) ?? "",
+    label: labels.status,
   };
 }
 
@@ -71,16 +76,23 @@ const COL = {
 const EMPTY = "—";
 
 export function AppTable({ apps, favoriteCodes, onToggleFavorite }: Props) {
+  const t = useTranslations("workspace.table");
+  const tCard = useTranslations("workspace.card");
+  const statusLabel = useStatusLabel();
   return (
     <div className="overflow-hidden rounded-xl border border-border">
       <Table className="table-fixed">
         <TableHeader className="sr-only">
           <TableRow>
-            <TableHead className={COL.name}>Aplicação</TableHead>
-            <TableHead className={COL.code}>Código</TableHead>
-            <TableHead className={COL.description}>Descrição</TableHead>
-            <TableHead className={COL.status}>Estado</TableHead>
-            <TableHead className={COL.favorite}>Favorito</TableHead>
+            <TableHead className={COL.name}>{t("columns.name")}</TableHead>
+            <TableHead className={COL.code}>{t("columns.code")}</TableHead>
+            <TableHead className={COL.description}>
+              {t("columns.description")}
+            </TableHead>
+            <TableHead className={COL.status}>{t("columns.status")}</TableHead>
+            <TableHead className={COL.favorite}>
+              {t("columns.favorite")}
+            </TableHead>
           </TableRow>
         </TableHeader>
 
@@ -89,7 +101,10 @@ export function AppTable({ apps, favoriteCodes, onToggleFavorite }: Props) {
             const href = getAppHref(app);
             const isExternal = href ? isExternalAppHref(app, href) : false;
             const isFavorite = favoriteCodes.has(app.code);
-            const tone = statusTone(app, href);
+            const tone = statusTone(app, href, {
+              noUrl: tCard("noUrl"),
+              status: statusLabel(app.status),
+            });
             const opens = Boolean(href) && app.status === "ACTIVE";
             const openIcon = isExternal ? "ExternalLink" : "ArrowUpRight";
             const nameClass =
@@ -107,7 +122,7 @@ export function AppTable({ apps, favoriteCodes, onToggleFavorite }: Props) {
               </>
             );
 
-            const externalLabel = `${app.name} (abre num novo separador)`;
+            const externalLabel = t("opensNewTab", { name: app.name });
 
             return (
               <TableRow key={app.code} className="group">
@@ -185,8 +200,8 @@ export function AppTable({ apps, favoriteCodes, onToggleFavorite }: Props) {
                     }
                     aria-label={
                       isFavorite
-                        ? `Remover ${app.name} dos favoritos`
-                        : `Adicionar ${app.name} aos favoritos`
+                        ? t("removeFavorite", { name: app.name })
+                        : t("addFavorite", { name: app.name })
                     }
                     aria-pressed={isFavorite}
                     className="relative text-muted-foreground hover:text-favorite after:absolute after:-inset-1 after:content-['']"

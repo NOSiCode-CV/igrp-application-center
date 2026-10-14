@@ -21,20 +21,16 @@ const COPY: Record<
   InviteErrorKind,
   {
     icon: IGRPIconProps["iconName"];
-    eyebrow: string;
   }
 > = {
   invalid: {
     icon: "TriangleAlert",
-    eyebrow: "Erro",
   },
   mismatch: {
     icon: "MailX",
-    eyebrow: "Conta diferente",
   },
   expired: {
     icon: "Clock",
-    eyebrow: "Expirado",
   },
 };
 

@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ApplicationForm } from "./app-form";
 
@@ -22,6 +23,7 @@ export function ApplicationFormDialog({
   onOpenChange,
   application,
 }: ApplicationFormDialogProps) {
+  const t = useTranslations("applications.dialog");
   const isEdit = !!application;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -31,13 +33,9 @@ export function ApplicationFormDialog({
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader>
-          <DialogTitle>
-            {isEdit ? "Editar Aplicação" : "Nova Aplicação"}
-          </DialogTitle>
+          <DialogTitle>{isEdit ? t("editTitle") : t("newTitle")}</DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Atualize os detalhes da aplicação."
-              : "Preencha os detalhes para registar uma nova aplicação."}
+            {isEdit ? t("editDescription") : t("newDescription")}
           </DialogDescription>
         </DialogHeader>
         <ApplicationForm

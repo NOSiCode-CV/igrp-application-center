@@ -1,5 +1,7 @@
 import { getRequestConfig } from "next-intl/server";
 
+import { PLATFORM_TIME_ZONE } from "@/features/audit/lib/platform-time";
+
 import { getMessageFallback, onIntlError } from "./fallback";
 import { getMessagesFor } from "./messages";
 import { resolveLocale } from "./resolve-locale";
@@ -15,6 +17,8 @@ export default getRequestConfig(async () => {
   return {
     locale,
     messages: getMessagesFor(locale),
+    // One fixed zone (ADR-0001), so server and browser render the same times.
+    timeZone: PLATFORM_TIME_ZONE,
     onError: onIntlError,
     getMessageFallback,
   };

@@ -1,10 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import {
   SettingsCard,
   type SettingsItem,
 } from "@/features/settings/components/settings-card";
+
+import { renderWithIntl as render } from "../../helpers/intl";
 
 vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   IGRPIcon: () => null,

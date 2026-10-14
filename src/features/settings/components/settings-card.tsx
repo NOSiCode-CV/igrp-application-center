@@ -9,6 +9,7 @@ import {
   IGRPIcon,
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 const ACCENTS = {
   primary: "bg-primary-subtle text-primary-subtle-foreground",
@@ -34,13 +35,14 @@ interface SettingsCardProps {
 }
 
 export function SettingsCard({ item }: SettingsCardProps) {
-  const isDisabled = item.status === "inativo"; 
+  const t = useTranslations("settings");
+  const isDisabled = item.status === "inativo";
   const accent = isDisabled
     ? "bg-muted text-muted-foreground"
     : ACCENTS[item.accent ?? "primary"];
 
   const cardContent = (
-    <>      
+    <>
       <div className={cn("flex items-center gap-3", isDisabled && "pr-20")}>
         <div
           className={cn(
@@ -49,7 +51,7 @@ export function SettingsCard({ item }: SettingsCardProps) {
           )}
         >
           <IGRPIcon iconName={item.icon} className="size-5" />
-        </div>        
+        </div>
         <h2
           className={cn(
             "font-semibold text-sm min-w-0",
@@ -66,7 +68,7 @@ export function SettingsCard({ item }: SettingsCardProps) {
       </p>
     </>
   );
- 
+
   const sharedClassName = cn(
     "group relative flex flex-col gap-3 rounded-xl border border-border p-5 h-full",
     "transition-colors motion-reduce:transition-none",
@@ -75,12 +77,12 @@ export function SettingsCard({ item }: SettingsCardProps) {
       : "bg-card hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   );
 
-  if (isDisabled) {    
+  if (isDisabled) {
     return (
       <div className={sharedClassName}>
         {cardContent}
         <Badge variant="secondary" className="absolute top-3 right-3 text-xs">
-          Em breve
+          {t("comingSoon")}
         </Badge>
       </div>
     );

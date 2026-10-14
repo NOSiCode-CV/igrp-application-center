@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { IGRPI18nProvider } from "@igrp/igrp-framework-react-design-system";
 import { type AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 
+import { PLATFORM_TIME_ZONE } from "@/features/audit/lib/platform-time";
+
 import type { Locale } from "../config";
 import { getMessageFallback, onIntlError } from "../fallback";
 
@@ -32,6 +34,7 @@ export function I18nProvider({
     <NextIntlClientProvider
       locale={locale}
       messages={messages}
+      timeZone={PLATFORM_TIME_ZONE}
       onError={onIntlError}
       getMessageFallback={getMessageFallback}
     >

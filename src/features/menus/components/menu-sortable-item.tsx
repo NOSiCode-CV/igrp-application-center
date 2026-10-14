@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 
 import {
@@ -21,38 +23,47 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
+
+import { useStatusLabel } from "@/i18n/status";
 
 import { useMenuTree } from "./menu-tree-context";
 
 interface SortableMenuItemProps {
   menu: IGRPMenuItemArgs;
   depth?: number;
+  /** Whether this is the last child of its parent (draws └ instead of ├). */
+  isLast?: boolean;
+  /** Per ancestor level above the parent: whether its rail keeps running. */
+  rails?: boolean[];
 }
 
-const MENU_TYPE_FALLBACK = { icon: "FileText", label: "Página" } as const;
-
-const MENU_TYPE_CONFIG: Partial<
-  Record<IGRPMenuType, { icon: string; label: string }>
-> = {
-  GROUP: {
-    icon: "FolderTree",
-    label: "Grupo",
-  },
-  FOLDER: {
-    icon: "Folder",
-    label: "Pasta",
-  },
-  MENU_PAGE: {
-    icon: "FileText",
-    label: "Página",
-  },
-  EXTERNAL_PAGE: {
-    icon: "ExternalLink",
-    label: "Externo",
-  },
+const MENU_TYPE_ICON: Partial<Record<IGRPMenuType, string>> = {
+  GROUP: "FolderTree",
+  FOLDER: "Folder",
+  MENU_PAGE: "FileText",
+  EXTERNAL_PAGE: "ExternalLink",
 };
 
-export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
+/** Tree geometry in px: the drag-handle gutter and one indent level. */
+const GUTTER = 40;
+const INDENT = 24;
+const railX = (level: number) => GUTTER + level * INDENT + INDENT / 2;
+
+/** Page destination for the row meta; "#" is a placeholder, not a route. */
+function pageRoute(menu: IGRPMenuItemArgs) {
+  if (menu.pageSlug) return menu.pageSlug;
+  return menu.url && menu.url !== "#" ? menu.url : "";
+}
+
+export function SortableMenuItem({
+  menu,
+  depth = 0,
+  isLast = false,
+  rails = [],
+}: SortableMenuItemProps) {
+  const t = useTranslations("menus.item");
+  const statusLabel = useStatusLabel();
   const {
     app,
     allMenus,
@@ -73,6 +84,7 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
     transform,
     transition,
     isDragging,
+    isOver,
   } = useSortable({
     id: menu.code,
     data: {
@@ -87,21 +99,23 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
     transition,
   };
 
-  const typeConfig = MENU_TYPE_CONFIG[menu.type] ?? MENU_TYPE_FALLBACK;
-  const hasChildren = subMenus && subMenus.length > 0;
+  const isContainer = menu.type === "GROUP" || menu.type === "FOLDER";
+  const isInactive = menu.status === "INACTIVE";
+  const hasChildren = subMenus.length > 0;
+  const showChildren = isExpanded && hasChildren;
 
-  const sortedSubMenus = subMenus
-    ? [...subMenus].sort(
-        (
-          a: IGRPMenuItemArgs & { sortOrder?: number },
-          b: IGRPMenuItemArgs & { sortOrder?: number },
-        ) => {
-          const aOrder = a.position ?? a.sortOrder ?? 0;
-          const bOrder = b.position ?? b.sortOrder ?? 0;
-          return aOrder - bOrder;
-        },
-      )
-    : [];
+  const sortedSubMenus = [...subMenus].sort(
+    (
+      a: IGRPMenuItemArgs & { sortOrder?: number },
+      b: IGRPMenuItemArgs & { sortOrder?: number },
+    ) => {
+      const aOrder = a.position ?? a.sortOrder ?? 0;
+      const bOrder = b.position ?? b.sortOrder ?? 0;
+      return aOrder - bOrder;
+    },
+  );
+  const childRails = depth === 0 ? [] : [...rails, !isLast];
+  const route = isContainer ? "" : pageRoute(menu);
 
   return (
     <>
@@ -109,159 +123,218 @@ export function SortableMenuItem({ menu, depth = 0 }: SortableMenuItemProps) {
         ref={setNodeRef}
         style={style}
         className={cn(
-          "group relative flex items-center justify-between bg-muted/50 transition-all",
-          isDragging && "opacity-50 z-50",
-          menu.type === "FOLDER" && "bg-muted/30",
-          menu.type === "GROUP" && "bg-muted/10",
+          "group relative flex min-h-12 items-center bg-background transition-colors hover:bg-muted/40",
+          isDragging && "z-10 opacity-80 shadow-sm",
+          isContainer &&
+            isOver &&
+            !isDragging &&
+            "ring-2 ring-inset ring-primary",
         )}
       >
-        <div className="flex items-center gap-3 flex-1 py-3 pl-3">
-          <button
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 hover:bg-muted rounded-md shrink-0"
-            type="button"
-            aria-label="Arrastar para reordenar"
-          >
-            <IGRPIcon
-              iconName="GripVertical"
-              className="size-4 text-muted-foreground"
-              strokeWidth={2}
+        {/* Tree rails: ancestors that continue, then the elbow into this row. */}
+        {rails.map(
+          (continues, level) =>
+            continues && (
+              <span
+                // biome-ignore lint/suspicious/noArrayIndexKey: one rail per fixed level
+                key={level}
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 w-px bg-border"
+                style={{ left: railX(level) }}
+              />
+            ),
+        )}
+        {depth > 0 && (
+          <>
+            <span
+              aria-hidden
+              className={cn(
+                "pointer-events-none absolute top-0 w-px bg-border",
+                isLast ? "h-1/2" : "h-full",
+              )}
+              style={{ left: railX(depth - 1) }}
             />
-          </button>
+            <span
+              aria-hidden
+              className="pointer-events-none absolute top-1/2 h-px bg-border"
+              style={{ left: railX(depth - 1), width: INDENT / 2 }}
+            />
+          </>
+        )}
+        {showChildren && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute bottom-0 top-[calc(50%+0.75rem)] w-px bg-border"
+            style={{ left: railX(depth) }}
+          />
+        )}
 
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex shrink-0 cursor-grab items-center justify-center self-stretch text-muted-foreground/50 transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring group-hover:text-muted-foreground active:cursor-grabbing"
+          style={{ width: GUTTER }}
+          type="button"
+          aria-label={t("drag")}
+        >
+          <IGRPIcon
+            iconName="GripVertical"
+            className="size-4"
+            strokeWidth={2}
+          />
+        </button>
+
+        <div
+          className="flex min-w-0 flex-1 items-center gap-2 py-2"
+          style={{ paddingLeft: depth * INDENT }}
+        >
           {hasChildren ? (
             <Button
               variant="ghost"
               size="icon"
-              className="h-7 w-7 p-0 shrink-0"
+              className="size-6 shrink-0 p-0"
               onClick={() => setIsExpanded(!isExpanded)}
-              aria-label={isExpanded ? "Recolher" : "Expandir"}
+              aria-label={isExpanded ? t("collapse") : t("expand")}
               aria-expanded={isExpanded}
             >
               <IGRPIcon
-                iconName={isExpanded ? "ChevronDown" : "ChevronRight"}
+                iconName="ChevronDown"
                 strokeWidth={2}
-                className="size-4"
+                className={cn(
+                  "size-4 transition-transform motion-reduce:transition-none",
+                  !isExpanded && "-rotate-90",
+                )}
               />
             </Button>
           ) : (
-            <div className="w-7 shrink-0" />
+            <span aria-hidden className="size-6 shrink-0" />
           )}
 
-          <div className="flex items-center justify-center size-8 rounded-md bg-muted shrink-0">
+          <span
+            className={cn(
+              "flex size-7 shrink-0 items-center justify-center rounded-md",
+              menu.type === "GROUP"
+                ? "bg-primary/10 text-primary"
+                : "bg-muted text-muted-foreground",
+            )}
+          >
             <IGRPIcon
-              iconName={typeConfig.icon}
-              className="size-4 text-muted-foreground"
+              iconName={MENU_TYPE_ICON[menu.type] ?? "FileText"}
+              className="size-4"
               strokeWidth={2}
             />
-          </div>
+          </span>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h4
+          <div className="flex min-w-0 flex-1 items-baseline gap-3">
+            <span
+              className={cn(
+                "truncate text-sm",
+                menu.type === "GROUP" && "font-semibold",
+                menu.type === "FOLDER" && "font-medium",
+                isInactive && "text-muted-foreground",
+              )}
+            >
+              {menu.name}
+            </span>
+            {isContainer ? (
+              <span className="shrink-0 text-xs text-muted-foreground">
+                {t("childCount", { count: subMenus.length })}
+              </span>
+            ) : (
+              <span
                 className={cn(
-                  "text-xs font-medium truncate",
-                  menu.type === "GROUP" && "text-base uppercase font-bold",
-                  menu.type === "FOLDER" && "text-sm font-semibold",
+                  "truncate text-xs text-muted-foreground",
+                  !route && "italic",
                 )}
               >
-                {menu.name}
-              </h4>
-              {menu.status === "INACTIVE" && (
-                <Badge variant="secondary" className="text-xs">
-                  Inativo
-                </Badge>
-              )}
-            </div>
-            {typeConfig?.label === "Página" && (
-              <p className="text-xs text-muted-foreground truncate">
-                {menu.pageSlug || menu.url || "Sem URL"}
-              </p>
+                {route || t("noUrl")}
+              </span>
+            )}
+            {isInactive && (
+              <Badge variant="outline" className="shrink-0 text-xs">
+                {statusLabel(menu.status)}
+              </Badge>
             )}
           </div>
+        </div>
 
-          <div className="flex items-center gap-3 mr-3 shrink-0">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <span className="sr-only">Abrir menu</span>
-                  <IGRPIcon
-                    iconName="Ellipsis"
-                    strokeWidth={2}
-                    className="size-4"
-                  />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onView(menu)}>
-                  <IGRPIcon
-                    iconName="Eye"
-                    className="size-4 mr-2"
-                    strokeWidth={2}
-                  />
-                  Ver
-                </DropdownMenuItem>
-                {String(app?.type) !== "SYSTEM" && (
-                  <>
-                    <DropdownMenuItem onClick={() => onEdit(menu)}>
-                      <IGRPIcon
-                        iconName="Pencil"
-                        className="size-4 mr-2"
-                        strokeWidth={2}
-                      />
-                      Editar
+        <div className="mr-2 flex shrink-0 items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="size-8 p-0">
+                <span className="sr-only">{t("openActions")}</span>
+                <IGRPIcon
+                  iconName="Ellipsis"
+                  strokeWidth={2}
+                  className="size-4"
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onView(menu)}>
+                <IGRPIcon
+                  iconName="Eye"
+                  className="size-4 mr-2"
+                  strokeWidth={2}
+                />
+                {t("view")}
+              </DropdownMenuItem>
+              {String(app?.type) !== "SYSTEM" && (
+                <>
+                  <DropdownMenuItem onClick={() => onEdit(menu)}>
+                    <IGRPIcon
+                      iconName="Pencil"
+                      className="size-4 mr-2"
+                      strokeWidth={2}
+                    />
+                    {t("edit")}
+                  </DropdownMenuItem>
+
+                  {menu.type === "GROUP" && (
+                    <DropdownMenuItem onClick={() => onAddChild?.(menu)}>
+                      <IGRPIcon iconName="FolderPlus" className="size-4 mr-2" />
+                      {t("addFolder")}
                     </DropdownMenuItem>
+                  )}
 
-                    {menu.type === "GROUP" && (
-                      <DropdownMenuItem onClick={() => onAddChild?.(menu)}>
-                        <IGRPIcon
-                          iconName="FolderPlus"
-                          className="size-4 mr-2"
-                        />
-                        Adicionar Pasta
-                      </DropdownMenuItem>
-                    )}
-
-                    {menu.type === "FOLDER" && (
-                      <DropdownMenuItem
-                        onClick={() => onAddInternalPage?.(menu)}
-                      >
-                        <IGRPIcon iconName="FileText" className="size-4 mr-2" />
-                        Adicionar Página
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => onDelete?.(menu.code, menu.name)}
-                    >
-                      <IGRPIcon
-                        iconName="Trash"
-                        className="size-4 mr-2"
-                        strokeWidth={2}
-                      />
-                      Eliminar
+                  {(menu.type === "GROUP" || menu.type === "FOLDER") && (
+                    <DropdownMenuItem onClick={() => onAddInternalPage?.(menu)}>
+                      <IGRPIcon iconName="FileText" className="size-4 mr-2" />
+                      {t("addPage")}
                     </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => onDelete?.(menu.code, menu.name)}
+                  >
+                    <IGRPIcon
+                      iconName="Trash"
+                      className="size-4 mr-2"
+                      strokeWidth={2}
+                    />
+                    {t("delete")}
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-      {isExpanded && hasChildren && (
+      {showChildren && (
         <SortableContext
           items={sortedSubMenus.map((m) => m.code)}
           strategy={verticalListSortingStrategy}
         >
           <div>
-            {sortedSubMenus.map((child) => (
+            {sortedSubMenus.map((child, index) => (
               <SortableMenuItem
                 key={child.code}
                 menu={child}
                 depth={depth + 1}
+                isLast={index === sortedSubMenus.length - 1}
+                rails={childRails}
               />
             ))}
           </div>

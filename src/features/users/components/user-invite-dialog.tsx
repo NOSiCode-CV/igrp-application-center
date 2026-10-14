@@ -353,12 +353,12 @@ export function UserInviteDialog({
 
                   return (
                     <FormItem>
-                      <FormLabel>Perfis</FormLabel>
+                      <FormLabel>{t("rolesLabel")}</FormLabel>
                       {isDisabled && (
                         <p className="text-xs text-muted-foreground">
                           {departmentCode
-                            ? "Este departamento ainda não tem perfis."
-                            : "Escolha primeiro um departamento para ver os perfis disponíveis."}
+                            ? t("rolesNoneInDepartment")
+                            : t("rolesPickDepartment")}
                         </p>
                       )}
                       <MultiSelectField
@@ -366,8 +366,8 @@ export function UserInviteDialog({
                         value={field.value ?? []}
                         onChange={field.onChange}
                         disabled={isDisabled}
-                        placeholder="Selecionar perfis"
-                        searchPlaceholder="Procurar..."
+                        placeholder={t("selectRoles")}
+                        searchPlaceholder={t("search")}
                         emptyLabel={t("rolesEmpty")}
                       />
 

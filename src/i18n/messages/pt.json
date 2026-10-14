@@ -6,7 +6,37 @@
       "backHome": "Voltar ao início",
       "retry": "Tentar novamente",
       "retrying": "A tentar...",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "clear": "Limpar",
+      "clearFilters": "Limpar filtros",
+      "edit": "Editar"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "temporary": "Temporário",
+      "deleted": "Eliminado"
+    },
+    "unknownError": "Ocorreu um erro desconhecido.",
+    "inlineError": {
+      "title": "Não foi possível carregar os dados."
+    },
+    "facetedFilter": {
+      "noResults": "Nenhum resultado encontrado.",
+      "clear": "Limpar Filtro"
+    },
+    "searchInput": {
+      "clear": "Limpar pesquisa"
+    },
+    "copy": {
+      "copied": "Copiado para a área de transferência",
+      "failed": "Não foi possível copiar para a área de transferência",
+      "copiedShort": "Copiado",
+      "copy": "Copiar para a área de transferência",
+      "clickToCopy": "Clique para copiar"
+    },
+    "textarea": {
+      "charsUsed": "Caracteres utilizados: {length} de {max}"
     }
   },
   "i18n": {
@@ -106,7 +136,9 @@
           "inviteFailed": "Falha ao convidar",
           "inviteFailedWithReason": "Falha ao convidar: {reason}",
           "inviteSent": "Convite enviado com sucesso!"
-        }
+        },
+        "rolesNoneInDepartment": "Este departamento ainda não tem perfis.",
+        "rolesPickDepartment": "Escolha primeiro um departamento para ver os perfis disponíveis."
       },
       "accept": {
         "errors": {
@@ -261,7 +293,9 @@
       "deactivatedDescription": "Utilizador ''{name}'' foi desativado com sucesso.",
       "deactivateFailed": "Erro ao desativar.",
       "label": "Username",
-      "confirm": "Desativar"
+      "confirm": "Desativar",
+      "title": "Desativar utilizador",
+      "description": "O utilizador deixa de poder entrar na plataforma. As atribuições de perfil são mantidas e a conta pode ser reativada mais tarde."
     },
     "editForm": {
       "fullName": "Nome Completo",
@@ -294,7 +328,8 @@
       "actions": "Ações",
       "activate": "Ativar",
       "deactivate": "Desativar",
-      "manage": "Gerir"
+      "manage": "Gerir",
+      "actionsFor": "Ações para {name}"
     },
     "invitations": {
       "actions": {
@@ -310,8 +345,11 @@
         "resent": "Convite reenviado",
         "resentDescription": "O convite foi reenviado com sucesso.",
         "resendFailed": "Convite não reenviado",
-        "resendFailedDescription": "Não foi possível reenviar o convite."
-      }
+        "resendFailedDescription": "Não foi possível reenviar o convite.",
+        "copyFailed": "Não foi possível copiar",
+        "copyFailedDescription": "O browser bloqueou o acesso à área de transferência. Copie o URL manualmente."
+      },
+      "actionsFor": "Ações para o convite de {identifier}"
     },
     "list": {
       "title": "Gestão de Utilizadores",
@@ -329,7 +367,8 @@
         "searchByName": "Pesquisar por nome",
         "searchByNamePlaceholder": "Pesquisar por nome...",
         "searchByEmail": "Pesquisar por email",
-        "searchByEmailPlaceholder": "Pesquisar por email..."
+        "searchByEmailPlaceholder": "Pesquisar por email...",
+        "searchInvitations": "Pesquisar convites"
       },
       "toasts": {
         "error": "Erro",
@@ -355,7 +394,10 @@
         "description": "Tem certeza que deseja cancelar o convite para <strong>{identifier}</strong>? Esta ação não pode ser desfeita.",
         "confirm": "Confirmar",
         "canceling": "Cancelando..."
-      }
+      },
+      "staleWarning": "Esta lista pode estar desatualizada: a última atualização falhou.",
+      "refresh": "Atualizar",
+      "refreshing": "A atualizar..."
     },
     "notAvailable": "N/A",
     "favorites": {
@@ -382,7 +424,8 @@
       "toasts": {
         "killed": "Sessão terminada",
         "killFailed": "Erro ao terminar sessão"
-      }
+      },
+      "loading": "A carregar sessões do utilizador..."
     },
     "signature": {
       "title": "Assinatura Digital",
@@ -523,7 +566,9 @@
         "updated": "Perfis atualizados",
         "updatedDescription": "+{added} adicionada(s), -{removed} removida(s).",
         "updateFailed": "Falha ao atualizar perfis"
-      }
+      },
+      "departmentScope": "A mostrar apenas os perfis do departamento {department}. Os perfis de outros departamentos não são alterados aqui.",
+      "pickDepartment": "Escolha um departamento para ver os perfis que pode atribuir."
     },
     "roleList": {
       "loading": "Carregando perfis...",
@@ -538,7 +583,17 @@
       "assign": "Associar Perfis",
       "toasts": {
         "removed": "Perfil removido com sucesso.",
-        "removeFailed": "Não foi possivel remover o perfil."
+        "removeFailed": "Não foi possivel remover o perfil.",
+        "revoked": "Perfil revogado.",
+        "revokedDescription": "«{role}» foi removido de {user} no departamento {department}.",
+        "undo": "Anular",
+        "restored": "Perfil reposto.",
+        "restoreFailed": "Não foi possível repor o perfil."
+      },
+      "revokeDialog": {
+        "title": "Revogar perfil",
+        "description": "Revogar «{role}» de {user} no departamento {department}? O utilizador perde os acessos que este perfil concede.",
+        "revoking": "A revogar..."
       }
     },
     "rolesList": {
@@ -546,6 +601,390 @@
       "loadError": "Erro ao carregar perfis",
       "empty": "Sem perfis atribuídos",
       "emptyDescription": "Este utilizador ainda não tem perfis atribuídos."
+    }
+  },
+  "header": {
+    "search": {
+      "trigger": "Pesquisar...",
+      "placeholder": "Digite um comando ou pesquisa...",
+      "empty": "Sem resultados.",
+      "dialogTitle": "Paleta de comandos",
+      "dialogDescription": "Pesquise e execute um comando."
+    }
+  },
+  "workspace": {
+    "title": "Centro de Aplicações",
+    "tabs": {
+      "home": "Início e aplicações"
+    },
+    "banner": {
+      "greeting": {
+        "morning": "Bom dia",
+        "afternoon": "Boa tarde",
+        "evening": "Boa noite"
+      },
+      "welcome": "Bem-vindo",
+      "department": "Departamento",
+      "activeRole": "Perfil ativo"
+    },
+    "recent": {
+      "title": "Acedidas recentemente",
+      "previous": "Mostrar aplicações anteriores",
+      "next": "Mostrar aplicações seguintes",
+      "errorTitle": "Não foi possível carregar as aplicações recentes.",
+      "errorMessage": "Esta lista está temporariamente indisponível. Tudo o resto continua a funcionar.",
+      "empty": "As aplicações que abrir aparecem aqui, para voltar a elas rapidamente.",
+      "explore": "Explorar aplicações"
+    },
+    "lastOpened": {
+      "justNow": "Aberta agora mesmo",
+      "minutes": "{count, plural, one {Aberta há # minuto} other {Aberta há # minutos}}",
+      "hours": "{count, plural, one {Aberta há # hora} other {Aberta há # horas}}",
+      "yesterday": "Aberta ontem",
+      "weekday": "{day, select, 0 {Aberta no {weekday}} 6 {Aberta no {weekday}} other {Aberta na {weekday}}}",
+      "weeks": "{count, plural, one {Aberta há # semana} other {Aberta há # semanas}}"
+    },
+    "catalog": {
+      "title": "Aplicações",
+      "filteredCount": "{shown} de {total}",
+      "search": "Procurar aplicações",
+      "favorites": "Favoritos",
+      "sortBy": "Ordenar por:",
+      "sortPlaceholder": "Escolher ordem",
+      "sort": {
+        "default": "Predefinido",
+        "recent": "Visitadas recentemente",
+        "nameAsc": "Nome (A–Z)",
+        "nameDesc": "Nome (Z–A)"
+      },
+      "gridView": "Vista em grelha",
+      "listView": "Vista em lista",
+      "announceNone": "Nenhuma aplicação corresponde aos filtros.",
+      "announceSome": "{shown} de {total} aplicações correspondem aos filtros.",
+      "errorTitle": "Não foi possível carregar as aplicações.",
+      "errorMessage": "A lista está temporariamente indisponível. O seu acesso não foi alterado.",
+      "emptyTitle": "Ainda não tem aplicações atribuídas",
+      "emptyDescription": "O acesso é concedido por perfil e departamento. Contacte o administrador se esperava ver alguma coisa aqui.",
+      "noFavoritesTitle": "Ainda sem favoritos",
+      "noFavoritesDescription": "Clique na ★ de uma aplicação para a adicionar aqui",
+      "noFavoriteMatch": "Nenhum favorito corresponde a “{query}”.",
+      "noMatch": "Nenhuma aplicação corresponde a “{query}”.",
+      "clearFilters": "Limpar filtros"
+    },
+    "card": {
+      "addFavorite": "Adicionar aos favoritos",
+      "removeFavorite": "Remover dos favoritos",
+      "new": "Nova",
+      "noUrl": "Sem URL definido",
+      "noDescription": "Sem descrição"
+    },
+    "table": {
+      "columns": {
+        "name": "Aplicação",
+        "code": "Código",
+        "description": "Descrição",
+        "status": "Estado",
+        "favorite": "Favorito"
+      },
+      "opensNewTab": "{name} (abre num novo separador)",
+      "addFavorite": "Adicionar {name} aos favoritos",
+      "removeFavorite": "Remover {name} dos favoritos"
+    }
+  },
+  "settings": {
+    "meta": {
+      "title": "Configurações",
+      "description": "Gerir aplicações, utilizadores e acessos da plataforma."
+    },
+    "title": "Configurações Gerais",
+    "subtitle": "Escolha a área que quer administrar.",
+    "comingSoon": "Em breve",
+    "items": {
+      "applications": {
+        "title": "Gestão de Aplicações",
+        "description": "Registe aplicações, edite os seus dados e controle o estado de cada uma."
+      },
+      "users": {
+        "title": "Gestão de Utilizadores",
+        "description": "Convide utilizadores e faça a gestão das contas, perfis e permissões."
+      },
+      "departments": {
+        "title": "Gestão de Departamentos",
+        "description": "Organize a estrutura de departamentos e os perfis, permissões e menus associados."
+      },
+      "oauthClients": {
+        "title": "Gestão de Clientes OAuth",
+        "description": "Registe clientes OAuth e faça a gestão das contas de serviço que acedem às APIs."
+      },
+      "audit": {
+        "title": "Auditoria e Relatórios",
+        "description": "Consulte os acessos e as alterações de configuração registados na plataforma."
+      },
+      "customization": {
+        "title": "Customização",
+        "description": "Ajuste a identidade visual da plataforma — tema, cores e logotipos."
+      }
+    }
+  },
+  "applications": {
+    "meta": {
+      "listTitle": "Aplicações",
+      "listDescription": "Gerir aplicações e menus.",
+      "detailTitle": "{name} · Aplicações"
+    },
+    "list": {
+      "title": "Gestão de Aplicações",
+      "description": "Registe novas aplicações e faça a gestão das existentes.",
+      "new": "Nova Aplicação",
+      "loadErrorTitle": "Não foi possível carregar as aplicações.",
+      "loadErrorMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "emptyTitle": "Ainda não há aplicações",
+      "emptyDescription": "As aplicações são o que os utilizadores abrem a partir da página inicial. Crie a primeira para a poder associar a departamentos e perfis."
+    },
+    "toolbar": {
+      "searchLabel": "Pesquisar aplicações",
+      "searchPlaceholder": "Pesquisar aplicações…",
+      "status": "Estado"
+    },
+    "grid": {
+      "count": "{total, plural, one {# aplicação} other {# aplicações}}",
+      "countFiltered": "A mostrar {shown} de {total, plural, one {# aplicação} other {# aplicações}}",
+      "noMatchTitle": "Nenhuma aplicação corresponde aos filtros",
+      "noMatchDescription": "Ajuste a pesquisa ou o estado para ver as aplicações registadas."
+    },
+    "card": {
+      "view": "Ver {name}",
+      "edit": "Editar {name}",
+      "open": "Abrir {name}",
+      "noDescription": "Sem descrição."
+    },
+    "dialog": {
+      "newTitle": "Nova Aplicação",
+      "editTitle": "Editar Aplicação",
+      "newDescription": "Preencha os detalhes para registar uma nova aplicação.",
+      "editDescription": "Atualize os detalhes da aplicação."
+    },
+    "details": {
+      "loading": "A carregar aplicação...",
+      "loadErrorTitle": "Não foi possível carregar esta aplicação.",
+      "notFound": "Nenhuma aplicação encontrada.",
+      "changeImage": "Alterar imagem da aplicação",
+      "uploadingImage": "A carregar imagem...",
+      "loadingImage": "A obter imagem...",
+      "uploadSuccessTitle": "Imagem carregada",
+      "uploadSuccess": "A imagem foi carregada com sucesso",
+      "uploadErrorTitle": "Erro no upload.",
+      "backToList": "Todas as aplicações",
+      "openApp": "Abrir aplicação",
+      "noDescription": "Ainda sem descrição. Adicione uma em Editar.",
+      "uploadInvalidType": "Escolha um ficheiro de imagem (PNG, JPG, SVG ou WebP).",
+      "uploadSaveError": "A imagem foi carregada mas não foi possível guardá-la na aplicação.",
+      "facts": {
+        "type": "Tipo",
+        "address": "Endereço",
+        "owner": "Responsável",
+        "updated": "Última alteração"
+      },
+      "types": {
+        "internal": "Interna",
+        "external": "Externa",
+        "system": "Sistema"
+      }
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Nome da aplicação…",
+      "code": "Código",
+      "codePlaceholder": "EX: APP_CENTER",
+      "type": "Tipo",
+      "types": {
+        "internal": "Interno",
+        "external": "Externo"
+      },
+      "slug": "Slug",
+      "slugPlaceholder": "/apps/exemplo",
+      "url": "URL",
+      "urlPlaceholder": "https://exemplo.com",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Breve descrição da aplicação…",
+      "status": "Estado",
+      "statusPlaceholder": "Selecionar estado",
+      "saving": "A guardar...",
+      "create": "Criar Aplicação",
+      "update": "Atualizar Aplicação",
+      "toasts": {
+        "createdTitle": "Aplicação criada",
+        "created": "A aplicação foi criada com sucesso!",
+        "updatedTitle": "Aplicação atualizada",
+        "updated": "A aplicação foi atualizada com sucesso!",
+        "createError": "Erro ao criar",
+        "updateError": "Erro ao atualizar"
+      }
+    },
+    "validation": {
+      "typeRequired": "Selecione o tipo de aplicação",
+      "codeRequired": "Código é obrigatório",
+      "codeMin": "Código deve ter pelo menos 2 caracteres",
+      "codeMax": "Código deve ter no máximo 255 caracteres",
+      "codePattern": "Use apenas maiúsculas, números, _ e - (ex.: APP_CENTER)",
+      "nameRequired": "Nome é obrigatório",
+      "nameMin": "Nome deve ter pelo menos 2 caracteres",
+      "nameMax": "Nome deve ter no máximo 255 caracteres",
+      "statusInvalid": "Selecione um estado válido",
+      "ownerMax": "Responsável deve ter no máximo 255 caracteres",
+      "descriptionMax": "Descrição deve ter no máximo 255 caracteres",
+      "pictureMax": "Imagem deve ter no máximo 255 caracteres",
+      "urlInvalid": "Indique um URL completo, com https:// (ex.: https://exemplo.com)",
+      "urlRequired": "URL é obrigatório",
+      "slugRequired": "Slug é obrigatório (ex.: /apps/exemplo)",
+      "slugMax": "Slug deve ter no máximo 255 caracteres"
+    }
+  },
+  "menus": {
+    "list": {
+      "title": "Menus da Aplicação",
+      "description": "Gerir e reorganizar os menus desta aplicação.",
+      "new": "Novo Menu",
+      "loading": "A carregar menus...",
+      "loadError": "Ocorreu um erro ao carregar os menus.",
+      "emptyTitle": "Nenhum menu encontrado",
+      "emptyDescription": "Comece por criar o primeiro menu para esta aplicação.",
+      "createFirst": "Criar Primeiro Menu",
+      "systemEmptyDescription": "Os menus das aplicações de sistema são geridos pela plataforma."
+    },
+    "reorder": {
+      "notAllowedTitle": "Movimento não permitido",
+      "notAllowed": "Um grupo fica no nível principal, uma pasta fica no nível principal ou dentro de um grupo, e uma página fica no nível principal, dentro de um grupo ou dentro de uma pasta.",
+      "updatedTitle": "Ordem atualizada",
+      "updated": "A ordem dos menus foi reorganizada.",
+      "errorTitle": "Erro ao guardar",
+      "error": "Não foi possível guardar a ordem dos menus."
+    },
+    "item": {
+      "drag": "Arrastar para reordenar",
+      "collapse": "Recolher",
+      "expand": "Expandir",
+      "noUrl": "Sem URL",
+      "childCount": "{count, plural, =0 {Vazio} one {# item} other {# itens}}",
+      "openActions": "Abrir ações do menu",
+      "view": "Ver",
+      "edit": "Editar",
+      "addFolder": "Adicionar Pasta",
+      "addPage": "Adicionar Página",
+      "delete": "Eliminar"
+    },
+    "types": {
+      "group": "Grupo",
+      "folder": "Pasta",
+      "page": "Página",
+      "groupDescription": "Agrupa pastas e menus no nível mais alto",
+      "folderDescription": "Pasta que pode pertencer a um grupo",
+      "pageDescription": "Menu que abre uma página da aplicação"
+    },
+    "dialog": {
+      "viewTitle": "Visualizar Menu",
+      "editTitle": "Editar Menu",
+      "addFolderTitle": "Adicionar Pasta",
+      "addMenuTitle": "Adicionar Menu",
+      "newTitle": "Novo Menu",
+      "viewDescription": "Visualizar informações do menu",
+      "editDescription": "Atualizar os detalhes deste menu",
+      "createDescription": "Preencha os detalhes do novo menu",
+      "selectTypeDescription": "Selecione o tipo de menu que deseja criar",
+      "newGroupTitle": "Novo grupo",
+      "newFolderTitle": "Nova pasta",
+      "newPageTitle": "Nova página",
+      "addPageTitle": "Adicionar página",
+      "addToParent": "Será adicionado em {parent}.",
+      "discard": {
+        "title": "Descartar as alterações?",
+        "description": "Voltar aos tipos de menu apaga o que já preencheu.",
+        "keep": "Continuar a editar",
+        "confirm": "Descartar"
+      }
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Nome do Menu",
+      "code": "Código",
+      "codePlaceholder": "CODIGO_MENU",
+      "icon": "Ícone",
+      "selectIcon": "Selecionar ícone",
+      "selectIconPlaceholder": "Selecionar ícone...",
+      "searchIcon": "Procurar ícone...",
+      "noIconFound": "Nenhum ícone encontrado.",
+      "status": "Estado",
+      "pageType": "Tipo de Página",
+      "internalPage": "Página Interna",
+      "externalPage": "Página Externa",
+      "relativeUrl": "URL Relativo",
+      "relativeUrlPlaceholder": "page-slug",
+      "externalUrl": "URL Externa",
+      "externalUrlPlaceholder": "https://exemplo.com",
+      "openInNewTab": "Abrir em nova aba",
+      "groupOptional": "Grupo (Opcional)",
+      "folderOptional": "Pasta (Opcional)",
+      "selectGroup": "Selecionar grupo...",
+      "selectFolder": "Selecionar pasta...",
+      "noGroupFound": "Nenhum grupo encontrado.",
+      "noFolderFound": "Nenhuma pasta encontrada.",
+      "noneRoot": "Nenhum (Raiz)",
+      "saving": "A guardar...",
+      "update": "Atualizar",
+      "toasts": {
+        "updatedTitle": "Menu Atualizado",
+        "updated": "O menu foi atualizado com sucesso.",
+        "createdTitle": "Menu Criado",
+        "created": "O menu foi criado com sucesso.",
+        "errorTitle": "Erro",
+        "error": "Algo correu mal. Por favor, tente novamente."
+      },
+      "sections": {
+        "details": "Detalhes",
+        "destination": "Destino",
+        "location": "Localização",
+        "appearance": "Aparência"
+      },
+      "codeHint": "Gerado a partir do nome. Apenas maiúsculas, números e sublinhados.",
+      "codeLocked": "O código não pode ser alterado depois de o menu ser criado.",
+      "statusActive": "Visível na navegação",
+      "statusInactive": "Oculto da navegação",
+      "relativeUrlHint": "Caminho da página dentro desta aplicação, p. ex. relatorios/mensal.",
+      "externalUrlHint": "As páginas externas abrem sempre num novo separador.",
+      "openInNewTabHint": "Mantém esta aplicação aberta no separador atual.",
+      "createGroup": "Criar grupo",
+      "createFolder": "Criar pasta",
+      "createPage": "Criar página",
+      "close": "Fechar",
+      "parentType": "Colocar dentro de",
+      "preview": {
+        "label": "Pré-visualização no menu",
+        "untitled": "Sem nome",
+        "topLevel": "Nível principal"
+      }
+    },
+    "delete": {
+      "description": "Deixa de aparecer na navegação da aplicação. Não é possível anular.",
+      "nameLabel": "Para confirmar, escreva <highlight>{name}</highlight>",
+      "successTitle": "Menu Eliminado",
+      "success": "O menu \"{name}\" foi eliminado com sucesso.",
+      "errorTitle": "Erro ao eliminar.",
+      "deleting": "A eliminar...",
+      "titleGroup": "Eliminar este grupo?",
+      "titleFolder": "Eliminar esta pasta?",
+      "titlePage": "Eliminar esta página?",
+      "contents": "{count, plural, one {Contém # menu} other {Contém # menus}}",
+      "more": "{count, plural, other {e mais #}}",
+      "confirmGroup": "Eliminar grupo",
+      "confirmFolder": "Eliminar pasta",
+      "confirmPage": "Eliminar página"
+    },
+    "validation": {
+      "nameRequired": "Nome é obrigatório",
+      "codePattern": "Use apenas maiúsculas, números e sublinhados (ex.: CODIGO_MENU)",
+      "pageUrlRequired": "Indique o URL relativo ou o URL externo",
+      "urlRequired": "URL é obrigatório",
+      "urlInvalid": "Indique um URL completo, com https:// (ex.: https://exemplo.com)"
     }
   }
 }

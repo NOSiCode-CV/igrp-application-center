@@ -1,3 +1,5 @@
+import "server-only";
+
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -44,8 +46,9 @@ export const verifySession = cache(async (): Promise<Session> => {
 export const getLayoutConfig = cache(configLayout);
 
 /**
- * Returns only the user fields UI components need — never the raw JWT,
- * refresh token, or internal error flags.
+ * Returns only the user fields UI components need — never the access token,
+ * refresh token, or internal error flags. Safe to pass to a client component.
+ * Server code that needs the bearer token reads it from `verifySession()`.
  */
 export async function getAuthenticatedUser() {
   const session = await verifySession();
@@ -53,6 +56,5 @@ export async function getAuthenticatedUser() {
     id: (session.user as { id?: string } | undefined)?.id ?? "",
     name: session.user?.name ?? "",
     email: session.user?.email ?? "",
-    accessToken: (session as { accessToken?: string }).accessToken ?? "",
   };
 }

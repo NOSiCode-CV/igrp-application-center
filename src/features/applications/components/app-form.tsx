@@ -5,6 +5,7 @@ import { useMemo } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  cn,
   Form,
   FormControl,
   FormField,
@@ -12,15 +13,12 @@ import {
   FormLabel,
   FormMessage,
   IGRPButton,
+  IGRPCombobox,
   Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { type Resolver, useForm } from "react-hook-form";
 
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
@@ -28,21 +26,21 @@ import {
   type ApplicationFormValues,
   appTypeCrud,
   type CreateApplicationFormValues,
-  CreateApplicationSchema,
+  makeApplicationSchemas,
   normalizeCreateApplication,
   normalizeUpdateApplication,
   type UpdateApplicationFormValues,
-  UpdateApplicationSchema,
 } from "@/features/applications/app-schemas";
 import {
   useCreateApplication,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
-import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
+import { useStatusOptions } from "@/i18n/status";
+import { ROUTES } from "@/lib/constants";
 
 const APPLICATION_TYPE_OPTIONS = [
-  { value: appTypeCrud.enum.INTERNAL, label: "Interno" },
-  { value: appTypeCrud.enum.EXTERNAL, label: "Externo" },
+  { value: appTypeCrud.enum.INTERNAL, key: "internal" },
+  { value: appTypeCrud.enum.EXTERNAL, key: "external" },
 ] as const;
 
 interface ApplicationFormProps {
@@ -55,6 +53,11 @@ export function ApplicationForm({
   onSuccess,
 }: ApplicationFormProps) {
   const router = useRouter();
+  const t = useTranslations("applications.form");
+  const tv = useTranslations("applications.validation");
+  const tc = useTranslations("common");
+  const baseStatusOptions = useStatusOptions();
+  const schemas = useMemo(() => makeApplicationSchemas(tv), [tv]);
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: createApplication } = useCreateApplication();
   const { mutateAsync: updateApplication } = useUpdateApplication();
@@ -91,7 +94,9 @@ export function ApplicationForm({
 
   const form = useForm<ApplicationFormValues>({
     resolver: zodResolver(
-      isEdit ? UpdateApplicationSchema : CreateApplicationSchema,
+      isEdit
+        ? schemas.UpdateApplicationSchema
+        : schemas.CreateApplicationSchema,
     ) as Resolver<ApplicationFormValues>,
     defaultValues,
     mode: "onBlur",
@@ -101,14 +106,24 @@ export function ApplicationForm({
   const type = form.watch("type");
   const status = form.watch("status");
 
-  // STATUS_OPTIONS is the shared Ativo/Inativo pair. An application already in
-  // TEMPORARY would otherwise render an empty trigger with no way back.
+  const applicationTypeOptions = useMemo(
+    () =>
+      APPLICATION_TYPE_OPTIONS.map((option) => ({
+        value: option.value,
+        label: t(`types.${option.key}`),
+      })),
+    [t],
+  );
+
   const statusOptions = useMemo(
     () =>
       status === "TEMPORARY"
-        ? [...STATUS_OPTIONS, { value: "TEMPORARY", label: "Temporário" }]
-        : STATUS_OPTIONS,
-    [status],
+        ? [
+            ...baseStatusOptions,
+            { value: "TEMPORARY", label: tc("status.temporary") },
+          ]
+        : baseStatusOptions,
+    [status, baseStatusOptions, tc],
   );
 
   const onSubmit = async (values: ApplicationFormValues) => {
@@ -128,8 +143,8 @@ export function ApplicationForm({
 
         igrpToast({
           type: "success",
-          title: "Aplicação atualizada",
-          description: "A aplicação foi atualizada com sucesso!",
+          title: t("toasts.updatedTitle"),
+          description: t("toasts.updated"),
         });
       } else {
         const payload = normalizeCreateApplication(
@@ -139,8 +154,8 @@ export function ApplicationForm({
 
         igrpToast({
           type: "success",
-          title: "Aplicação criada",
-          description: "A aplicação foi criada com sucesso!",
+          title: t("toasts.createdTitle"),
+          description: t("toasts.created"),
         });
 
         onSuccess();
@@ -152,9 +167,9 @@ export function ApplicationForm({
     } catch (error) {
       igrpToast({
         type: "error",
-        title: isEdit ? "Erro ao atualizar" : "Erro ao criar",
+        title: isEdit ? t("toasts.updateError") : t("toasts.createError"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tc("unknownError"),
       });
     }
   };
@@ -172,7 +187,7 @@ export function ApplicationForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Nome
+                  {t("name")}
                   <span aria-hidden="true" className="text-destructive">
                     *
                   </span>
@@ -180,11 +195,11 @@ export function ApplicationForm({
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Nome da aplicação…"
+                    placeholder={t("namePlaceholder")}
                     autoComplete="off"
                     maxLength={255}
                     aria-required="true"
-                    className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                    className="placeholder:truncate"
                   />
                 </FormControl>
                 <FormMessage />
@@ -199,7 +214,7 @@ export function ApplicationForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Código
+                    {t("code")}
                     <span aria-hidden="true" className="text-destructive">
                       *
                     </span>
@@ -207,14 +222,12 @@ export function ApplicationForm({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="EX: APP_CENTER"
+                      placeholder={t("codePlaceholder")}
                       autoComplete="off"
                       spellCheck={false}
                       maxLength={255}
                       aria-required="true"
-                      className={`uppercase placeholder:truncate placeholder:normal-case border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30 ${
-                        isEdit ? "bg-muted" : ""
-                      }`}
+                      className={cn("uppercase placeholder:truncate placeholder:normal-case", isEdit && "bg-muted")}
                       disabled={isEdit}
                       onChange={(e) => {
                         if (!isEdit) {
@@ -231,39 +244,18 @@ export function ApplicationForm({
               )}
             />
 
-            <FormField
-              control={form.control}
+            <IGRPCombobox
               name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tipo</FormLabel>
-                  <Select
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      if (value === "INTERNAL") {
-                        form.setValue("url", "");
-                      } else {
-                        form.setValue("slug", "");
-                      }
-                    }}
-                    value={field.value}
-                  >
-                    <FormControl className="w-full">
-                      <SelectTrigger className="border-primary/30 focus:ring-2 focus:ring-primary/30">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {APPLICATION_TYPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label={t("type")}
+              options={applicationTypeOptions}
+              showSearch={false}
+              onChange={(value) => {
+                if (value === "INTERNAL") {
+                  form.setValue("url", "");
+                } else {
+                  form.setValue("slug", "");
+                }
+              }}
             />
           </div>
 
@@ -274,7 +266,7 @@ export function ApplicationForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Slug{" "}
+                    {t("slug")}{" "}
                     <span aria-hidden="true" className="text-destructive">
                       *
                     </span>
@@ -285,8 +277,8 @@ export function ApplicationForm({
                       value={field.value || ""}
                       maxLength={255}
                       aria-required="true"
-                      placeholder="/apps/exemplo"
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                      placeholder={t("slugPlaceholder")}
+                      className="placeholder:truncate"
                     />
                   </FormControl>
                   <FormMessage />
@@ -302,7 +294,7 @@ export function ApplicationForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    URL{" "}
+                    {t("url")}{" "}
                     <span aria-hidden="true" className="text-destructive">
                       *
                     </span>
@@ -315,8 +307,8 @@ export function ApplicationForm({
                       autoComplete="off"
                       aria-required="true"
                       value={field.value || ""}
-                      placeholder="https://exemplo.com"
-                      className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
+                      placeholder={t("urlPlaceholder")}
+                      className="placeholder:truncate"
                     />
                   </FormControl>
                   <FormMessage />
@@ -327,37 +319,20 @@ export function ApplicationForm({
 
           <LimitedTextareaField
             id="description"
-            label="Descrição"
+            label={t("description")}
             maxLength={255}
             rows={3}
-            placeholder="Breve descrição da aplicação…"
+            placeholder={t("descriptionPlaceholder")}
             className="resize-none"
           />
 
           {isEdit && (
-            <FormField
-              control={form.control}
+            <IGRPCombobox
               name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estado</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="w-full border-primary/30 focus:ring-2 focus:ring-primary/30">
-                        <SelectValue placeholder="Selecionar estado" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {statusOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label={t("status")}
+              placeholder={t("statusPlaceholder")}
+              options={statusOptions}
+              showSearch={false}
             />
           )}
         </div>
@@ -366,23 +341,24 @@ export function ApplicationForm({
           <IGRPButton
             type="button"
             showIcon
-            iconName="X"
+            iconName="Undo2"
             variant="outline"
             onClick={onSuccess}
           >
-            Cancelar
+            {tc("actions.cancel")}
           </IGRPButton>
           <IGRPButton
             type="submit"
             showIcon
             iconName="Save"
             disabled={form.formState.isSubmitting}
+            iconPlacement="end"
           >
             {form.formState.isSubmitting
-              ? "A guardar..."
+              ? t("saving")
               : isEdit
-                ? "Atualizar Aplicação"
-                : "Criar Aplicação"}
+                ? t("update")
+                : t("create")}
           </IGRPButton>
         </div>
       </form>

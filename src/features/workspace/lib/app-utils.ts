@@ -1,5 +1,7 @@
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
+import { PLATFORM_TIME_ZONE } from "@/features/audit/lib/platform-time";
+
 export const APP_CATALOG_SECTION_ID = "app-catalog";
 
 /** This portal's own application code — never listed as a launchable app on home. */
@@ -27,36 +29,62 @@ export function getAppTileColor(code: string): AppTileColor {
   return TILE_COLORS[hash % TILE_COLORS.length];
 }
 
-export function getLastOpenedLabel(
+/** A `workspace.lastOpened.*` message key plus its values. */
+export type LastOpened =
+  | { key: "justNow" | "yesterday" }
+  | { key: "minutes" | "hours" | "weeks"; count: number }
+  /** `day`: 0 (Sunday) … 6, in the platform zone — picks "no"/"na" in pt. */
+  | { key: "weekday"; date: Date; day: number };
+
+const WEEKDAY_INDEX: Record<string, number> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+const platformWeekday = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+  timeZone: PLATFORM_TIME_ZONE,
+});
+
+/**
+ * How long ago an app was opened, as a message key for the caller to
+ * translate. `null` when there is no usable timestamp — the caller then
+ * renders nothing rather than claim a time it does not have.
+ */
+export function getLastOpened(
   lastAccess: string | null | undefined,
   now = new Date(),
-): string {
-  if (!lastAccess) return "";
+): LastOpened | null {
+  if (!lastAccess) return null;
 
   const date = new Date(lastAccess);
-  if (Number.isNaN(date.getTime())) return "";
+  if (Number.isNaN(date.getTime())) return null;
 
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60_000);
 
-  if (diffMins < 1) return "Aberta agora mesmo";
-  if (diffMins < 60) {
-    return `Aberta há ${diffMins} minuto${diffMins !== 1 ? "s" : ""}`;
-  }
+  if (diffMins < 1) return { key: "justNow" };
+  if (diffMins < 60) return { key: "minutes", count: diffMins };
 
   const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) {
-    return `Aberta há ${diffHours} hora${diffHours !== 1 ? "s" : ""}`;
-  }
+  if (diffHours < 24) return { key: "hours", count: diffHours };
 
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays === 1) return "Aberta ontem";
+  if (diffDays === 1) return { key: "yesterday" };
   if (diffDays < 7) {
-    return `Aberta na ${date.toLocaleDateString("pt-PT", { weekday: "long" })}`;
+    return {
+      key: "weekday",
+      date,
+      day: WEEKDAY_INDEX[platformWeekday.format(date)] ?? 1,
+    };
   }
 
-  const diffWeeks = Math.floor(diffDays / 7);
-  return `Aberta há ${diffWeeks} semana${diffWeeks !== 1 ? "s" : ""}`;
+  return { key: "weeks", count: Math.floor(diffDays / 7) };
 }
 
 export function getAppHref(app: ApplicationDTO): string {

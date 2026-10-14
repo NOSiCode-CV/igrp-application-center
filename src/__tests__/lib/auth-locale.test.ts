@@ -29,7 +29,10 @@ vi.mock("@igrp/framework-next-auth/providers", () => ({
 vi.mock("@igrp/framework-next", () => ({ igrpSetAccessClientConfig: vi.fn() }));
 vi.mock("@igrp/framework-next/errors", () => ({ isIgrpError: () => false }));
 vi.mock("@/lib/report-error", () => ({ reportError: vi.fn() }));
-vi.mock("@/lib/utils", () => ({ isAuthBypass: () => isAuthBypass() }));
+vi.mock("@/lib/utilities", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/utilities")>()),
+  isAuthBypass: () => isAuthBypass(),
+}));
 vi.mock("next/navigation", () => ({ redirect: vi.fn() }));
 
 import { getSessionLocale } from "@/lib/auth";
