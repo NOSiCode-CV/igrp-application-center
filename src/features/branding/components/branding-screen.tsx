@@ -41,7 +41,7 @@ export function BrandingScreen() {
   const query = useBrandingConfig();
   if (query.isPending) return <Skeleton className="h-96 w-full" />;
   // Page-critical data: let the route error boundary handle it.
-  if (query.isError) throw query.error;
+  if (query.isError && query.data === undefined) throw query.error;
   return <BrandingEditor saved={query.data} />;
 }
 

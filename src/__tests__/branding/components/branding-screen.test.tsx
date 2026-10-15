@@ -20,10 +20,10 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: mocks.refresh }),
 }));
 vi.mock("next/image", () => ({
-  // biome-ignore lint/performance/noImgElement: test stub for next/image
-  default: ({ src, alt }: { src: string; alt: string }) => (
-    <img src={src} alt={alt} />
-  ),
+  default: ({ src, alt }: { src: string; alt: string }) => {
+    // biome-ignore lint/performance/noImgElement: test stub for next/image
+    return <img src={src} alt={alt} />;
+  },
 }));
 
 beforeEach(() => {
