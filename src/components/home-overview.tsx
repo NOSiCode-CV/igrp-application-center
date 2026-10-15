@@ -7,6 +7,7 @@ import {
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 /** How one layer of the request handled this render. */
 export type HomeLayerState = "ok" | "preview" | "error";
@@ -31,12 +32,6 @@ export interface HomeOverviewProps {
   previewMode: boolean;
   layers: HomeLayer[];
 }
-
-const STATE_LABEL: Record<HomeLayerState, string> = {
-  ok: "Ativo",
-  preview: "Pré-visualização",
-  error: "Requer atenção",
-};
 
 /** Marker ring + icon colour per state. */
 const STATE_MARKER: Record<HomeLayerState, string> = {
@@ -81,12 +76,6 @@ const HOME_SLUG_EXAMPLE = "NEXT_PUBLIC_IGRP_APP_HOME_SLUG=/dashboard";
 
 type CopyState = "idle" | "copied" | "failed";
 
-const COPY_LABEL: Record<CopyState, string> = {
-  idle: "Copiar",
-  copied: "Copiado",
-  failed: "Copie manualmente",
-};
-
 const COPY_ICON: Record<CopyState, string> = {
   idle: "Copy",
   copied: "Check",
@@ -98,6 +87,7 @@ const COPY_ICON: Record<CopyState, string> = {
  * refuses clipboard access, says to copy by hand — for two seconds.
  */
 function CopyButton({ value }: { value: string }) {
+  const t = useTranslations("home.copy");
   const [state, setState] = useState<CopyState>("idle");
 
   useEffect(() => {
@@ -120,33 +110,17 @@ function CopyButton({ value }: { value: string }) {
           .catch(() => setState("failed"));
       }}
     >
-      {COPY_LABEL[state]}
+      {t(state)}
     </IGRPButton>
   );
 }
 
-/** A real sequence: each step needs the one before it. */
+/** A real sequence: each step needs the one before it. Text in `home.nextSteps.*`. */
 const NEXT_STEPS = [
-  {
-    title: "Escreva a funcionalidade",
-    body: "Componentes, ações e lógica de cada módulo ficam juntos, fora das rotas.",
-    path: "src/app/(myapp)/_features/<módulo>/",
-  },
-  {
-    title: "Dê-lhe uma rota",
-    body: "Uma página dentro de (igrp) herda a sessão, o cabeçalho e o menu lateral.",
-    path: "src/app/(igrp)/<rota>/page.tsx",
-  },
-  {
-    title: "Proteja a página",
-    body: "Sem verificação, a página fica aberta a qualquer utilizador autenticado.",
-    path: 'await igrpAssertAuthorize("<permissão>")',
-  },
-  {
-    title: "Coloque-a no menu",
-    body: "Em produção, o menu vem do Access Management. Em pré-visualização, do ficheiro de exemplo.",
-    path: "src/temp/menus/menus.ts",
-  },
+  { key: "feature", path: "src/app/(myapp)/_features/<módulo>/" },
+  { key: "route", path: "src/app/(igrp)/<rota>/page.tsx" },
+  { key: "guard", path: 'await igrpAssertAuthorize("<permissão>")' },
+  { key: "menu", path: "src/temp/menus/menus.ts" },
 ] as const;
 
 /**
@@ -161,6 +135,7 @@ export function HomeOverview({
   previewMode,
   layers,
 }: HomeOverviewProps) {
+  const t = useTranslations("home");
   const failing = layers.filter((layer) => layer.state === "error").length;
 
   return (
@@ -171,10 +146,10 @@ export function HomeOverview({
         </h1>
         <p className="max-w-[60ch] text-lg text-pretty text-muted-foreground">
           {failing > 0
-            ? `A aplicação está a responder, mas ${failing === 1 ? "uma camada precisa" : `${failing} camadas precisam`} de atenção. Veja abaixo o que falhou neste pedido.`
+            ? t("intro.failing", { count: failing })
             : previewMode
-              ? "A aplicação está a responder em modo de pré-visualização: sem login real e com menus de exemplo."
-              : "A aplicação está a responder. Este pedido passou por todas as camadas abaixo."}
+              ? t("intro.preview")
+              : t("intro.ok")}
         </p>
         <ul className="flex flex-wrap items-center gap-2 text-sm">
           <li
@@ -199,20 +174,20 @@ export function HomeOverview({
               )}
             />
             {failing > 0
-              ? "Requer atenção"
+              ? t("status.failing")
               : previewMode
-                ? "Em pré-visualização"
-                : "Operacional"}
+                ? t("status.preview")
+                : t("status.ok")}
           </li>
           <li className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-muted-foreground">
-            Versão
+            {t("version")}
             <span className="font-medium text-foreground tabular-nums">
               {version || "—"}
             </span>
           </li>
           {appCode ? (
             <li className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-muted-foreground">
-              Código
+              {t("code")}
               <span className="font-mono text-xs text-foreground">
                 {appCode}
               </span>
@@ -227,7 +202,7 @@ export function HomeOverview({
             id="home-request-path"
             className="text-lg font-semibold tracking-tight text-foreground"
           >
-            O caminho deste pedido
+            {t("requestPath.title")}
           </h2>
           <p
             className={cn(
@@ -236,10 +211,10 @@ export function HomeOverview({
             )}
           >
             {failing > 0
-              ? `${failing} de ${layers.length} ${failing === 1 ? "camada requer" : "camadas requerem"} atenção`
+              ? t("requestPath.failing", { failing, total: layers.length })
               : previewMode
-                ? "Modo de pré-visualização: autenticação e dados simulados"
-                : `${layers.length} de ${layers.length} camadas ativas`}
+                ? t("requestPath.preview")
+                : t("requestPath.ok", { total: layers.length })}
           </p>
         </div>
 
@@ -304,7 +279,7 @@ export function HomeOverview({
                           : "text-muted-foreground",
                     )}
                   >
-                    {STATE_LABEL[layer.state]}
+                    {t(`state.${layer.state}`)}
                   </span>
                   <span className="mt-1 text-sm text-pretty text-muted-foreground">
                     {layer.detail}
@@ -334,10 +309,10 @@ export function HomeOverview({
               id="home-next-steps"
               className="text-lg font-semibold tracking-tight text-foreground"
             >
-              Construir o primeiro módulo
+              {t("nextSteps.title")}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {NEXT_STEPS.length} passos, da pasta ao menu
+              {t("nextSteps.subtitle", { count: NEXT_STEPS.length })}
             </p>
           </div>
 
@@ -346,7 +321,7 @@ export function HomeOverview({
               const isLast = index === NEXT_STEPS.length - 1;
               return (
                 <li
-                  key={step.title}
+                  key={step.key}
                   className="relative flex gap-4 pb-8 last:pb-0"
                 >
                   {isLast ? null : (
@@ -363,11 +338,13 @@ export function HomeOverview({
                   </span>
                   <div className="flex min-w-0 max-w-[65ch] flex-1 flex-col gap-1 pt-1.5">
                     <span className="text-lg leading-snug font-semibold tracking-tight text-foreground">
-                      <span className="sr-only">Passo {index + 1}: </span>
-                      {step.title}
+                      <span className="sr-only">
+                        {t("nextSteps.step", { index: index + 1 })}
+                      </span>
+                      {t(`nextSteps.${step.key}.title`)}
                     </span>
                     <span className="text-sm text-pretty text-muted-foreground">
-                      {step.body}
+                      {t(`nextSteps.${step.key}.body`)}
                     </span>
                     <code className={cn(CODE_CHIP, "mt-2 self-start")}>
                       <BreakablePath path={step.path} />
@@ -391,14 +368,16 @@ export function HomeOverview({
               id="home-replace"
               className="text-lg font-semibold tracking-tight text-foreground"
             >
-              Substituir esta página
+              {t("replace.title")}
             </h2>
           </div>
           <div className="flex flex-col gap-4">
             <p className="text-sm text-pretty text-muted-foreground">
-              Para abrir outra página ao entrar na aplicação, defina a rota
-              inicial no <span className="font-mono text-xs">.env</span> e
-              reinicie o servidor.
+              {t.rich("replace.body", {
+                code: (chunks) => (
+                  <span className="font-mono text-xs">{chunks}</span>
+                ),
+              })}
             </p>
             <code className={cn(CODE_CHIP, "self-stretch")}>
               <BreakablePath path={HOME_SLUG_EXAMPLE} />
@@ -407,7 +386,7 @@ export function HomeOverview({
               <CopyButton value={HOME_SLUG_EXAMPLE} />
             </div>
             <p className="text-sm text-pretty text-muted-foreground">
-              Esta página só aparece quando a variável está vazia.
+              {t("replace.note")}
             </p>
           </div>
         </aside>

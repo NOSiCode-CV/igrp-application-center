@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 import { IGRPSegmentError } from "@igrp/framework-next-ui";
 
-import { useErrorCopy } from "@/components/errors/use-error-copy";
+import { resolvePublicErrorCopy } from "@/lib/error-copy";
 import { reportError } from "@/lib/report-error";
 
 export default function RootSegmentError({
@@ -21,8 +21,6 @@ export default function RootSegmentError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const { resolveErrorCopy, labels } = useErrorCopy();
-
   useEffect(() => {
     reportError(error, { segment: "root" });
   }, [error]);
@@ -31,8 +29,7 @@ export default function RootSegmentError({
     <IGRPSegmentError
       error={error}
       reset={reset}
-      resolveCopy={resolveErrorCopy}
-      {...labels}
+      resolveCopy={resolvePublicErrorCopy}
     />
   );
 }

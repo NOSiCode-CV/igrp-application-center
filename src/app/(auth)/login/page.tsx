@@ -1,14 +1,14 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { IGRPLocaleSwitcher } from "@igrp/framework-next/i18n/client";
 import { getAuthProviderIdFromEnv } from "@igrp/framework-next-auth";
 import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
 import { cn } from "@igrp/igrp-framework-react-design-system/cn";
 
 import { carouselItems, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
-import { LocaleSwitcher } from "@/i18n/components/locale-switcher";
-
+import { setLocale } from "@/i18n/actions";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import {
   SILENT_SSO_COOKIE,
@@ -75,10 +75,10 @@ export default async function AuthPage({
   }
 
   return (
- <section className="relative flex min-h-screen flex-col md:flex-row">
+    <section className="relative flex min-h-screen flex-col md:flex-row">
       <div className="absolute top-8 right-16 z-10">
-        <LocaleSwitcher />
-      </div>      
+        <IGRPLocaleSwitcher action={setLocale} />
+      </div>
       <div
         className={cn(
           "relative hidden w-full md:block md:w-1/2",

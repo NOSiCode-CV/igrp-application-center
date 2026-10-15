@@ -1,4 +1,96 @@
 {
+    "app": { "title": "IGRP | Application Template" },
+  "home": {
+    "state": {
+      "ok": "Active",
+      "preview": "Preview",
+      "error": "Needs attention"
+    },
+    "copy": { "idle": "Copy", "copied": "Copied", "failed": "Copy manually" },
+    "intro": {
+      "failing": "The application is responding, but {count, plural, one {one layer needs} other {# layers need}} attention. See below what failed in this request.",
+      "preview": "The application is responding in preview mode: no real sign-in and sample menus.",
+      "ok": "The application is responding. This request went through every layer below."
+    },
+    "status": {
+      "failing": "Needs attention",
+      "preview": "In preview",
+      "ok": "Operational"
+    },
+    "version": "Version",
+    "code": "Code",
+    "requestPath": {
+      "title": "The path of this request",
+      "failing": "{failing} of {total} {failing, plural, one {layer needs} other {layers need}} attention",
+      "preview": "Preview mode: simulated authentication and data",
+      "ok": "{total} of {total} layers active"
+    },
+    "nextSteps": {
+      "title": "Build the first module",
+      "subtitle": "{count} steps, from folder to menu",
+      "step": "Step {index}: ",
+      "feature": {
+        "title": "Write the feature",
+        "body": "Each module's components, actions and logic live together, outside the routes."
+      },
+      "route": {
+        "title": "Give it a route",
+        "body": "A page inside (igrp) inherits the session, the header and the sidebar."
+      },
+      "guard": {
+        "title": "Protect the page",
+        "body": "Without a check, the page is open to any authenticated user."
+      },
+      "menu": {
+        "title": "Put it in the menu",
+        "body": "In production the menu comes from Access Management. In preview, from the sample file."
+      }
+    },
+    "replace": {
+      "title": "Replace this page",
+      "body": "To open another page when entering the application, set the home route in <code>.env</code> and restart the server.",
+      "note": "This page only appears while the variable is empty."
+    },
+    "layers": {
+      "middleware": {
+        "name": "Middleware",
+        "valueBypass": "Lets every request through",
+        "valueAuth": "Requires a signed-in session",
+        "detailBypass": "Authentication is off in this environment.",
+        "detailAuth": "Requests without a session are sent to the login."
+      },
+      "session": {
+        "name": "Session",
+        "valueEmpty": "Session without a user name",
+        "detailBypass": "Preview placeholder user.",
+        "detailAuth": "Signed in with {provider}."
+      },
+      "accessManagement": {
+        "name": "Access Management",
+        "valueBypass": "Sample menus and applications",
+        "detailBypass": "Data comes from src/temp, with no server calls.",
+        "valueOk": "Connected",
+        "detailOk": "Provides the menus, the applications and the user.",
+        "valueMissing": "No address configured",
+        "detailMissing": "Set IGRP_ACCESS_MANAGEMENT_API in .env to load the menus."
+      },
+      "permissions": {
+        "name": "Permissions",
+        "valueAll": "Full access",
+        "valueCount": "{count, plural, one {# permission} other {# permissions}}",
+        "detailBypass": "In preview every check passes.",
+        "detailOrg": "Active department: {org}.",
+        "detailNoOrg": "No active department in the token.",
+        "valueError": "Could not read the token",
+        "detailError": "Every permission check denies access."
+      },
+      "page": {
+        "name": "This page",
+        "value": "Rendered",
+        "detail": "Appears when no home route is set."
+      }
+    }
+  },
   "common": {
     "actions": {
       "back": "Back",

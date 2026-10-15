@@ -1,4 +1,100 @@
 {
+    "app": { "title": "IGRP | Template Aplicações" },
+  "home": {
+    "state": {
+      "ok": "Ativo",
+      "preview": "Pré-visualização",
+      "error": "Requer atenção"
+    },
+    "copy": {
+      "idle": "Copiar",
+      "copied": "Copiado",
+      "failed": "Copie manualmente"
+    },
+    "intro": {
+      "failing": "A aplicação está a responder, mas {count, plural, one {uma camada precisa} other {# camadas precisam}} de atenção. Veja abaixo o que falhou neste pedido.",
+      "preview": "A aplicação está a responder em modo de pré-visualização: sem login real e com menus de exemplo.",
+      "ok": "A aplicação está a responder. Este pedido passou por todas as camadas abaixo."
+    },
+    "status": {
+      "failing": "Requer atenção",
+      "preview": "Em pré-visualização",
+      "ok": "Operacional"
+    },
+    "version": "Versão",
+    "code": "Código",
+    "requestPath": {
+      "title": "O caminho deste pedido",
+      "failing": "{failing} de {total} {failing, plural, one {camada requer} other {camadas requerem}} atenção",
+      "preview": "Modo de pré-visualização: autenticação e dados simulados",
+      "ok": "{total} de {total} camadas ativas"
+    },
+    "nextSteps": {
+      "title": "Construir o primeiro módulo",
+      "subtitle": "{count} passos, da pasta ao menu",
+      "step": "Passo {index}: ",
+      "feature": {
+        "title": "Escreva a funcionalidade",
+        "body": "Componentes, ações e lógica de cada módulo ficam juntos, fora das rotas."
+      },
+      "route": {
+        "title": "Dê-lhe uma rota",
+        "body": "Uma página dentro de (igrp) herda a sessão, o cabeçalho e o menu lateral."
+      },
+      "guard": {
+        "title": "Proteja a página",
+        "body": "Sem verificação, a página fica aberta a qualquer utilizador autenticado."
+      },
+      "menu": {
+        "title": "Coloque-a no menu",
+        "body": "Em produção, o menu vem do Access Management. Em pré-visualização, do ficheiro de exemplo."
+      }
+    },
+    "replace": {
+      "title": "Substituir esta página",
+      "body": "Para abrir outra página ao entrar na aplicação, defina a rota inicial no <code>.env</code> e reinicie o servidor.",
+      "note": "Esta página só aparece quando a variável está vazia."
+    },
+    "layers": {
+      "middleware": {
+        "name": "Middleware",
+        "valueBypass": "Deixa passar todos os pedidos",
+        "valueAuth": "Exige sessão iniciada",
+        "detailBypass": "A autenticação está desligada neste ambiente.",
+        "detailAuth": "Pedidos sem sessão são enviados para o login."
+      },
+      "session": {
+        "name": "Sessão",
+        "valueEmpty": "Sessão sem nome de utilizador",
+        "detailBypass": "Utilizador fictício de pré-visualização.",
+        "detailAuth": "Iniciada com {provider}."
+      },
+      "accessManagement": {
+        "name": "Access Management",
+        "valueBypass": "Menus e aplicações de exemplo",
+        "detailBypass": "Os dados vêm de src/temp, sem chamadas ao servidor.",
+        "valueOk": "Ligado",
+        "detailOk": "Fornece os menus, as aplicações e o utilizador.",
+        "valueMissing": "Sem endereço configurado",
+        "detailMissing": "Defina IGRP_ACCESS_MANAGEMENT_API no .env para carregar os menus."
+      },
+      "permissions": {
+        "name": "Permissões",
+        "valueAll": "Acesso total",
+        "valueCount": "{count, plural, =0 {# permissões} one {# permissão} other {# permissões}}",
+        "detailBypass": "Em pré-visualização todas as verificações passam.",
+        "detailOrg": "Departamento ativo: {org}.",
+        "detailNoOrg": "Sem departamento ativo no token.",
+        "valueError": "Não foi possível ler o token",
+        "detailError": "Todas as verificações de permissão negam o acesso."
+      },
+      "page": {
+        "name": "Esta página",
+        "value": "Apresentada",
+        "detail": "Aparece quando não há uma rota inicial definida."
+      }
+    }
+  },
   "common": {
     "actions": {
       "back": "Voltar",

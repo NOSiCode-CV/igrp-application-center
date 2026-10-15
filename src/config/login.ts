@@ -2,7 +2,8 @@ export const loginConfig = {
   texts: {
     welcome: "Bem-vindo ao IGRP",
     description: "Introduza as suas credenciais para aceder.",
-    loginButton: "Login Now",
+    // No `loginButton`: the framework's chrome catalog supplies it in the
+    // current language. Setting it here would pin one language on every locale.
     copyright: "Desenvolvido por",
     igrpLabel: "igrp",
     igrpUrl: "https://igrp.cv",
