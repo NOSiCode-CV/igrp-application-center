@@ -133,6 +133,23 @@
     },
     "textarea": {
       "charsUsed": "Caracteres utilizados: {length} de {max}"
+    },
+    "fileUpload": {
+      "placeholder": "Arraste a sua imagem",
+      "pick": "Selecionar imagem",
+      "imageFormats": "SVG, PNG, JPG, GIF ou WEBP",
+      "otherFormats": "Selecionar ficheiro",
+      "maxSize": "(máx. {size} MB)",
+      "previewAlt": "Pré-visualização da imagem",
+      "remove": "Remover ficheiro",
+      "tooLarge": "O ficheiro excede o tamanho máximo de {size} MB."
+    },
+    "unsavedChanges": {
+      "region": "Alterações por guardar",
+      "message": "Tem alterações por guardar.",
+      "discard": "Descartar",
+      "save": "Guardar alterações",
+      "saving": "A guardar…"
     }
   },
   "i18n": {
