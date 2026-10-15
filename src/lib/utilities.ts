@@ -233,6 +233,15 @@ export function isAuthBypass(): boolean {
 }
 
 /**
+ * Whether this app shows the Brand editor (spec §7.4). Off when the flag is
+ * not exactly "true" and whenever auth is bypassed, since no save path can run
+ * without a real session.
+ */
+export function isBrandingEnabled(): boolean {
+  return process.env.IGRP_BRANDING_ENABLED === "true" && !isAuthBypass();
+}
+
+/**
  * Validates and normalizes a `callbackUrl` query value.
  *
  * Rules:

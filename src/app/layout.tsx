@@ -20,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const config = await createConfig(await getLayoutConfig());
   const branding = await igrpResolveRequestBranding(config);
   return {
-    title: "IGRP | Template Aplicações",
-    description: "IGRP | Template Aplicações",
+    title: "IGRP | Centro de Aplicações",
+    description: "IGRP | Centro de Aplicações",
     icons: igrpBrandingMetadata(branding, `${basePath}/logo-no-text.png`),
   };
 }
