@@ -103,7 +103,12 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-function isPublicPath(pathname: string): boolean {
+// isPublicPath/isAuthUiPath are exported for `src/__tests__/middleware/
+// path-predicates.test.ts` — the routing table they encode is worth covering
+// directly. Keep the exports when editing this file; they have been dropped
+// three times by unrelated rewrites (4846f4d, ebc0e15, e735154), breaking
+// typecheck each time.
+export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -122,7 +127,7 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-function isAuthUiPath(pathname: string): boolean {
+export function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );

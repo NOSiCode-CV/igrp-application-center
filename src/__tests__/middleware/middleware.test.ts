@@ -69,58 +69,30 @@ describe("middleware auth gate", () => {
   });
 });
 
-describe("locale cookie sync (FR-27)", () => {
-  const withCookie = (path: string, cookie: string) => {
-    const r = req(path);
-    r.cookies.set("IGRP_LOCALE", cookie);
-    return r;
-  };
-
-  it("rewrites IGRP_LOCALE when the session locale differs", async () => {
+// Cookie-first since the framework i18n migration (a331515): no
+// `persistLocale`, so the session locale never rewrites IGRP_LOCALE (FR-27 sync
+// is for session-first apps — see src/i18n/index.ts).
+describe("locale cookie", () => {
+  it("leaves IGRP_LOCALE alone even when the session locale differs", async () => {
     vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
       sub: "u1",
       locale: "en",
     });
-    const res = await middleware(withCookie("/settings/users", "fr"));
+    const r = req("/settings/users");
+    r.cookies.set("IGRP_LOCALE", "fr");
+    const res = await middleware(r);
     expect(res.headers.get("location")).toBeNull();
-    const cookie = res.cookies.get("IGRP_LOCALE");
-    expect(cookie?.value).toBe("en");
-    expect(cookie?.path).toBe("/");
-    expect(cookie?.sameSite).toBe("lax");
-  });
-
-  it("leaves the cookie alone when it already matches", async () => {
-    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
-      sub: "u1",
-      locale: "en",
-    });
-    const res = await middleware(withCookie("/settings/users", "en"));
-    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
-  });
-
-  it("does nothing when the session has no (valid) locale", async () => {
-    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
-      sub: "u1",
-      locale: "de",
-    });
-    const res = await middleware(withCookie("/settings/users", "fr"));
-    expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
-  });
-
-  it("never touches the cookie on public paths", async () => {
-    const res = await middleware(withCookie("/login", "fr"));
-    expect(auth.getTokenFromRequest).not.toHaveBeenCalled();
     expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
   });
 });
 
 describe("security headers (production)", () => {
-  it("sets HSTS and omits the deprecated X-XSS-Protection in production", async () => {
+  it("sets HSTS and disables the legacy XSS auditor in production", async () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.mocked(auth.getTokenFromRequest).mockResolvedValue({ sub: "u1" });
     const res = await middleware(req("/settings/users"));
     expect(res.headers.get("Strict-Transport-Security")).toContain("max-age=");
-    expect(res.headers.get("X-XSS-Protection")).toBeNull();
+    expect(res.headers.get("X-XSS-Protection")).toBe("0");
     vi.unstubAllEnvs();
   });
 
