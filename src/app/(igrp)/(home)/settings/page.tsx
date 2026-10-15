@@ -8,6 +8,7 @@ import {
   type SettingsItem,
 } from "@/features/settings/components/settings-card";
 import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
+import { isBrandingEnabled } from "@/lib/utilities";
 
 /** `settings.items.*` key of each card. */
 type SettingsItemKey =
@@ -63,16 +64,13 @@ const settingsConfig: {
       href: "/settings/audit",
       accent: "info",
     },
-    /* `status: "inativo"` renders these as plain, non-focusable divs with the
-       "Em breve" badge. The `href`s are the routes they will take once built;
-       nothing links to them while the status is set. */
+    /* Active only when the Brand editor is (isBrandingEnabled); otherwise rendered as a plain, non-focusable div with the "Em breve" badge. */
     {
       id: "customizacao",
       key: "customization",
       icon: "Palette",
       href: "/settings/customization",
       accent: "warning",
-      status: "inativo",
     },
   ],
 };
@@ -91,6 +89,9 @@ export default async function SettingsPage() {
     .filter((item) => item.id !== "auditoria-relatorios" || canViewAudit)
     .map(({ key, ...item }) => ({
       ...item,
+      ...(key === "customization" && !isBrandingEnabled()
+        ? { status: "inativo" as const }
+        : {}),
       title: t(`items.${key}.title`),
       description: t(`items.${key}.description`),
     }));

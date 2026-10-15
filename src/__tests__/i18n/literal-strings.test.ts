@@ -27,6 +27,8 @@ const MIGRATED_FOLDERS = [
   "src/app/(igrp)/(home)/settings/applications",
   "src/features/menus",
   "src/app/(invite)",
+  "src/features/branding",
+  "src/app/(igrp)/(home)/settings/customization",
 ];
 
 const USER_FACING_PROPS = new Set([
