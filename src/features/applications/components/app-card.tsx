@@ -1,130 +1,134 @@
 "use client";
 
-import {
-  IGRPBadgePrimitive,
-  IGRPIcon,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPButtonPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipTriggerPrimitive,
-} from "@igrp/igrp-framework-react-design-system";
-import Link from "next/link";
+import type { Route } from "next";
 import Image from "next/image";
-import { useState } from "react";
+
+import {
+  Badge,
+  cn,
+  IGRPButton,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@igrp/igrp-framework-react-design-system";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
-import { formatSlug } from "@/features/applications/app-utils";
+import { formatSlug, isSystemApp } from "@/features/applications/app-utils";
+import { getAppTileColor } from "@/features/workspace/lib/app-utils";
+import { useStatusLabel } from "@/i18n/status";
 import { config, ROUTES } from "@/lib/constants";
-import { cn, getStatusColor, showStatus } from "@/lib/utils";
-import { ApplicationForm } from "./app-form";
-import {
-  ApplicationDTO,
-  ApplicationType,
-} from "@igrp/platform-access-management-client-ts";
+import { getStatusColor } from "@/lib/utilities";
 
-export function ApplicationCard({ app }: { app: ApplicationDTO }) {
-  const { name, code, status, description, slug, url, type } = app;
+interface ApplicationCardProps {
+  app: ApplicationDTO;
+  onEdit?: (app: ApplicationDTO) => void;
+}
+
+const ACTION_BUTTON_HOVER =
+  "hover:bg-primary-subtle hover:text-primary-subtle-foreground";
+
+export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
+  const t = useTranslations("applications.card");
+  const tc = useTranslations("common.actions");
+  const statusLabel = useStatusLabel();
+  const { name, code, status, description, slug, url } = app;
   const href = slug ? formatSlug(slug) : url;
-  const [open, setOpen] = useState(false);
-
+  const isSystem = isSystemApp(app);
+  const color = getAppTileColor(code ?? "");
+  const initial = (name ?? code ?? "").charAt(0).toUpperCase();
   const appImage = app.picture;
+  const imageSrc = appImage
+    ? appImage.startsWith("http")
+      ? appImage
+      : new URL(appImage, config.minioUrl).toString()
+    : null;
 
   return (
-    <>
-      <div className="relative overflow-hidden rounded-lg border bg-card p-6 transition-all duration-300 hover:shadow-lg">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="relative size-12 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-              {appImage ? (
-                <Image
-                  src={config.minioUrl + appImage}
-                  alt={name}
-                  fill
-                  className="object-cover"
-                  quality={100}
-                  sizes="56px"
-                  priority
-                />
-              ) : (
-                <IGRPIcon
-                  iconName="AppWindow"
-                  className="size-6 text-primary"
-                />
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-base line-clamp-1">{name}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">{code}</p>
-            </div>
-          </div>
-
-          <IGRPBadgePrimitive
-            className={cn(getStatusColor(status), "shrink-0")}
-          >
-            {showStatus(status)}
-          </IGRPBadgePrimitive>
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 min-w-0">
+      <div className="flex gap-3 min-w-0">
+        <div
+          className={cn(
+            "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg font-bold text-sm",
+            color.bg,
+            color.text,
+          )}
+        >
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="40px"
+            />
+          ) : (
+            initial
+          )}
         </div>
 
-        <p className="text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
-          {description || "Sem descrição."}
-        </p>
-
-        <div className="flex items-center justify-end gap-1 pt-4 border-t">
-          <ButtonLinkTooltip
-            href={`${ROUTES.APPLICATIONS}/${code}`}
-            icon="Eye"
-            label="Ver"
-            size="icon"
-            variant="ghost"
-            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-          />
-
-          {type !== ("SYSTEM" as ApplicationType) && (
-            <IGRPTooltipProviderPrimitive>
-              <IGRPTooltipPrimitive>
-                <IGRPTooltipTriggerPrimitive asChild>
-                  <IGRPButtonPrimitive
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => setOpen(true)}
-                    className="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-                  >
-                    <IGRPIcon iconName="SquarePen" />
-                  </IGRPButtonPrimitive>
-                </IGRPTooltipTriggerPrimitive>
-                <IGRPTooltipContentPrimitive>
-                  Editar
-                </IGRPTooltipContentPrimitive>
-              </IGRPTooltipPrimitive>
-            </IGRPTooltipProviderPrimitive>
-          )}
-
-          <ButtonLinkTooltip
-            href={href || ""}
-            icon="ExternalLink"
-            label="Abrir"
-            size="icon"
-            variant="ghost"
-            btnClassName="hover:bg-primary/90 hover:text-primary-foreground/90 dark:hover:text-accent-foreground dark:hover:bg-accent/50"
-          />
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <h2 className="truncate text-sm font-semibold text-foreground">
+            {name}
+          </h2>
+          <span className="truncate text-xs text-muted-foreground">{code}</span>
         </div>
       </div>
 
-      <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh]">
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive>
-              Editar Aplicação
-            </IGRPDialogTitlePrimitive>
-          </IGRPDialogHeaderPrimitive>
-          <ApplicationForm application={app} onSuccess={() => setOpen(false)} />
-        </IGRPDialogContentPrimitive>
-      </IGRPDialogPrimitive>
-    </>
+      <p
+        className={cn(
+          "text-xs text-muted-foreground line-clamp-2 leading-relaxed text-pretty",
+          !description && "italic",
+        )}
+      >
+        {description || t("noDescription")}
+      </p>
+
+      <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3">
+        <Badge className={cn(getStatusColor(status), "shrink-0")}>
+          {statusLabel(status)}
+        </Badge>
+
+        <div className="flex items-center gap-1">
+          <ButtonLinkTooltip
+            href={`${ROUTES.APPLICATIONS}/${code}` as Route}
+            icon="Eye"
+            label={t("view", { name })}
+            size="icon"
+            variant="ghost"
+            btnClassName={ACTION_BUTTON_HOVER}
+          />
+
+          {!isSystem && onEdit && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <IGRPButton
+                  size="icon"
+                  variant="ghost"
+                  showIcon
+                  iconName="SquarePen"
+                  onClick={() => onEdit(app)}
+                  className={ACTION_BUTTON_HOVER}
+                  aria-label={t("edit", { name })}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{tc("edit")}</TooltipContent>
+            </Tooltip>
+          )}
+
+          {href && (
+            <ButtonLinkTooltip
+              href={href as Route}
+              icon="ExternalLink"
+              label={t("open", { name })}
+              size="icon"
+              variant="ghost"
+              btnClassName={ACTION_BUTTON_HOVER}
+            />
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

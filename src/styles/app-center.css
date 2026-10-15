@@ -1,0 +1,411 @@
+@import "shadcn/tailwind.css";
+
+@theme inline { 
+  /* Success colors */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  /* Warning colors */
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  /* Info colors */
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  /* Subtle status stops — the quiet variant of each status colour.
+     Use `bg-x-subtle text-x-subtle-foreground`, never `bg-x/15 text-x`. */
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-subtle-foreground: var(--primary-subtle-foreground);
+  --color-success-subtle: var(--success-subtle);
+  --color-success-subtle-foreground: var(--success-subtle-foreground);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-warning-subtle-foreground: var(--warning-subtle-foreground);
+  --color-info-subtle: var(--info-subtle);
+  --color-info-subtle-foreground: var(--info-subtle-foreground);
+  --color-destructive-subtle: var(--destructive-subtle);
+  --color-destructive-subtle-foreground: var(--destructive-subtle-foreground);
+
+  /* The favourited star — see the token comment for why it is not --warning */
+  --color-favorite: var(--favorite);
+
+  /* App tile identity */
+  --color-app-tile-1: var(--app-tile-1);
+  --color-app-tile-1-foreground: var(--app-tile-1-foreground);
+  --color-app-tile-2: var(--app-tile-2);
+  --color-app-tile-2-foreground: var(--app-tile-2-foreground);
+  --color-app-tile-3: var(--app-tile-3);
+  --color-app-tile-3-foreground: var(--app-tile-3-foreground);
+  --color-app-tile-4: var(--app-tile-4);
+  --color-app-tile-4-foreground: var(--app-tile-4-foreground);
+  --color-app-tile-5: var(--app-tile-5);
+  --color-app-tile-5-foreground: var(--app-tile-5-foreground);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6)
+}
+
+:root {
+  /* `--home-scroll-h` / `--home-scroll-h-lg` lived here: two viewport-fit
+   * heights that pinned the home launcher to `100dvh` minus the framework
+   * chrome so an inner panel could own the scroll. The launcher now scrolls
+   * with the document like every other route, so both are gone along with the
+   * second scrollbar they made necessary. Nothing referenced them elsewhere. */
+
+  /* ── Subtle status stops ─────────────────────────────────────────────────
+   * The design system ships `--x` / `--x-foreground` for SOLID status
+   * surfaces. These are the QUIET variant: a tint surface plus the text that
+   * sits on it. They exist because `bg-x/15 text-x` — a token over a 15% wash
+   * of itself — has a contrast ratio that is a pure function of the token's
+   * lightness, so it cannot be validated and cannot survive re-theming.
+   *
+   * CONTRACT: every `--x-subtle` / `--x-subtle-foreground` pair must hold at
+   * least 4.5:1 in BOTH themes. Chroma is capped to the maximum sRGB reaches
+   * at that lightness and hue, so no value relies on browser gamut mapping. */
+  --primary-subtle: oklch(0.965 0.015 235.82);
+  --primary-subtle-foreground: oklch(0.46 0.095 235.82); /* 6.35:1 */
+  --success-subtle: oklch(0.962 0.035 150.069);
+  --success-subtle-foreground: oklch(0.44 0.12 150.069); /* 6.66:1 */
+  --warning-subtle: oklch(0.962 0.025 70.08);
+  --warning-subtle-foreground: oklch(0.44 0.095 70.08); /* 7.09:1 */
+  --info-subtle: oklch(0.962 0.015 264.376);
+  --info-subtle-foreground: oklch(0.44 0.145 264.376); /* 7.15:1 */
+  --destructive-subtle: oklch(0.962 0.015 27.325);
+  --destructive-subtle-foreground: oklch(0.44 0.145 27.325); /* 7.45:1 */
+
+  /* ── App tile identity ───────────────────────────────────────────────────
+   * Deliberately NOT `--chart-*`: those are plot-series colours, so reusing
+   * them would mean a theme cannot recolour app tiles without recolouring
+   * every chart — and the tile's letter would have no anchor of its own.
+   * Built on the design system's chart hues so tiles still read as IGRP. */
+  --app-tile-1: oklch(0.955 0.02 41.116);
+  --app-tile-1-foreground: oklch(0.44 0.135 41.116); /* 7.20:1 */
+  --app-tile-2: oklch(0.955 0.035 184.704);
+  --app-tile-2-foreground: oklch(0.44 0.075 184.704); /* 6.63:1 */
+  --app-tile-3: oklch(0.955 0.025 227.392);
+  --app-tile-3-foreground: oklch(0.44 0.085 227.392); /* 6.70:1 */
+  --app-tile-4: oklch(0.955 0.035 84.429);
+  --app-tile-4-foreground: oklch(0.44 0.09 84.429); /* 6.87:1 */
+  --app-tile-5: oklch(0.955 0.02 292.717);
+  --app-tile-5-foreground: oklch(0.44 0.145 292.717); /* 7.22:1 */
+
+  /* ── Focus ring (LOCAL OVERRIDE of the design system) ────────────────────
+   * The system ships --ring at oklch(0.704 0.04 256.788), which is 2.63:1
+   * against a white card — below the 3:1 WCAG 2.1 §1.4.11 requires of a
+   * non-text indicator, and AA is contractual here (PRODUCT.md). This value
+   * is 4.28:1 light / 7.20:1 dark on the same surfaces.
+   *
+   * This DIVERGES from @igrp/igrp-framework-react-design-system: remove these
+   * two declarations once the system raises --ring upstream.
+   *
+   * It does NOT fix everything. The system's own components draw focus as
+   * `ring-ring/50`, and at 50% alpha NO token value can reach 3:1 against a
+   * white surface — pure black at 50% over white is 1.91:1. That needs an
+   * upstream change to the ring opacity, not a token swap. */
+  --ring: oklch(0.58 0.06 256.788); /* 4.28:1 */
+
+  /* The favourited star. --warning itself is 2.15:1 on a card, so a filled
+   * star was LESS visible than an empty one; this is the lightest amber on
+   * the same hue that clears 3:1, so the colour stays amber rather than
+   * reverting to the brown of --warning-subtle-foreground. */
+  --favorite: oklch(0.67 0.188 70.08); /* 3.09:1 */
+
+  /* ── Scrollbar ───────────────────────────────────────────────────────────
+   * A styled scrollbar is author content, so the thumb owes the same 3:1 a
+   * non-text indicator does. The previous values (`bg-muted-foreground/30`
+   * over a `bg-muted/50` track) measured 1.31:1 against the track in light
+   * mode — slimmer than the platform's, and effectively invisible. */
+  --scrollbar-thumb: oklch(0.66 0.02 257); /* 3.11:1 on --card */
+  --scrollbar-thumb-hover: oklch(0.56 0.02 257); /* 4.36:1 */
+}
+
+.dark {
+  --primary-subtle: oklch(0.3 0.06 235.82);
+  --primary-subtle-foreground: oklch(0.84 0.09 235.82); /* 8.40:1 */
+  --success-subtle: oklch(0.29 0.06 150.069);
+  --success-subtle-foreground: oklch(0.85 0.135 150.069); /* 9.16:1 */
+  --warning-subtle: oklch(0.29 0.06 70.08);
+  --warning-subtle-foreground: oklch(0.85 0.115 70.08); /* 8.87:1 */
+  --info-subtle: oklch(0.29 0.06 264.376);
+  --info-subtle-foreground: oklch(0.85 0.07 264.376); /* 8.96:1 */
+  --destructive-subtle: oklch(0.29 0.06 27.325);
+  --destructive-subtle-foreground: oklch(0.85 0.08 27.325); /* 8.87:1 */
+
+  --app-tile-1: oklch(0.3 0.06 41.116);
+  --app-tile-1-foreground: oklch(0.84 0.09 41.116); /* 8.29:1 */
+  --app-tile-2: oklch(0.3 0.05 184.704);
+  --app-tile-2-foreground: oklch(0.84 0.135 184.704); /* 8.62:1 */
+  --app-tile-3: oklch(0.3 0.055 227.392);
+  --app-tile-3-foreground: oklch(0.84 0.1 227.392); /* 8.43:1 */
+  --app-tile-4: oklch(0.3 0.06 84.429);
+  --app-tile-4-foreground: oklch(0.84 0.135 84.429); /* 8.32:1 */
+  --app-tile-5: oklch(0.3 0.06 292.717);
+  --app-tile-5-foreground: oklch(0.84 0.085 292.717); /* 8.32:1 */
+
+  --ring: oklch(0.72 0.06 256.788); /* 7.20:1 on --card */
+  --favorite: oklch(0.828 0.189 84.429); /* 10.39:1 — dark never failed */
+
+  --scrollbar-thumb: oklch(0.55 0.02 257); /* 3.68:1 on --card */
+  --scrollbar-thumb-hover: oklch(0.65 0.02 257); /* 5.30:1 */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Custom animations */
+@keyframes slideInUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.4s ease-out forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulse 2s infinite;
+}
+
+/* Honor reduced-motion: skip the entrance/loop animations and pin the
+ * elements to their final visible state. Required because the animated
+ * sections also carry an `opacity-0` utility — without this they'd stay
+ * invisible for anyone who has motion disabled. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fadeIn,
+  .animate-slide-in-up,
+  .animate-pulse-subtle {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Custom utility classes */
+.glass-effect {
+  @apply bg-background/80 backdrop-blur-md border border-border/50;
+}
+
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-lg hover:border-primary/20;
+}
+
+/* Status badges */
+.status-badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+/* Built on the `-subtle` pairs above, which carry a measured >=4.5:1 contract
+ * in both themes. The previous definitions used `bg-x/15 text-x` — the exact
+ * idiom the token comment at the top of this file argues cannot be validated —
+ * and measured 4.35:1 (active, inactive), 4.39:1 (deleted) and 1.97:1
+ * (pending) on a light card. All four failed AA. */
+.status-active {
+  @apply bg-success-subtle text-success-subtle-foreground;
+}
+
+.status-inactive {
+  @apply bg-muted text-foreground;
+}
+
+.status-pending {
+  @apply bg-warning-subtle text-warning-subtle-foreground;
+}
+
+.status-deleted {
+  @apply bg-destructive-subtle text-destructive-subtle-foreground;
+}
+
+.home-scroll-viewport {
+  scrollbar-width: none; /* Firefox / standard */
+  -ms-overflow-style: none; /* IE / old Edge */
+}
+.home-scroll-viewport::-webkit-scrollbar {
+  display: none; /* WebKit (Chrome, Safari, Edge) */
+}
+
+/* Scroll without a visible scrollbar. Only for rails that expose their own
+ * affordances (the Recently accessed prev/next buttons) — wheel, trackpad,
+ * touch and keyboard scrolling all still work, so nothing becomes unreachable. */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* The document scrollbar used to be hidden globally so the home launcher
+ * could read as scroll-free. The launcher does not need it: its wrapper is
+ * viewport-height with `overflow-hidden`, so the document never scrolls
+ * there anyway — while every OTHER route (settings, users, profile) lost its
+ * scroll position indicator to serve one page's aesthetic. Left to the
+ * platform; rails that need it opt in with `.scrollbar-hidden` above. */
+
+/* Grid layouts */
+.auto-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+.auto-grid-dense {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 auto-rows-auto grid-flow-dense;
+}
+
+/* ── Scrollbars ────────────────────────────────────────────────────────────
+ * ONE treatment, shared by the document and by any panel that opts in with
+ * `.custom-scrollbar`, so the app does not draw two different scrollbars.
+ *
+ * Why style it at all rather than take the platform's: on a panel inset from
+ * the window edge, the OS scrollbar renders full-width with stepper arrows and
+ * dominates the surface. This keeps the real affordance — same behaviour, same
+ * hit area — at a slimmer weight.
+ *
+ * The track is transparent on purpose: the old one sat at 1.05:1 against the
+ * page, so it added a gutter nobody could see. The thumb carries a 2px
+ * transparent border with `background-clip: content-box`, which insets it to
+ * ~6px of paint inside a 10px hit area — slim to look at, still easy to grab. */
+html,
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+html::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+/* Chrome on Windows still draws stepper arrows at both ends of a styled
+ * scrollbar unless they are explicitly removed — they are most of what makes
+ * the platform bar read as heavy. */
+html::-webkit-scrollbar-button,
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* The corner where a vertical and horizontal bar meet defaults to a grey
+ * square that matches neither theme. */
+html::-webkit-scrollbar-corner,
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+html {
+  scrollbar-gutter: stable 
+}
+
+/* Improved focus styles */
+.focus-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+}

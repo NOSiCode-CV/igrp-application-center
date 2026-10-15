@@ -1,46 +1,51 @@
 "use client";
 
-import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
+import { Fragment, useEffect, useState } from "react";
+
 import {
-  IGRPButtonPrimitive,
-  IGRPCardDescriptionPrimitive,
-  IGRPCardTitlePrimitive,
-  IGRPIcon,
-  useIGRPToast,
-} from "@igrp/igrp-framework-react-design-system";
-import {
-  DndContext,
   closestCenter,
+  DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useEffect, useState } from "react";
-import { ButtonLink } from "@/components/button-link";
-import { AppCenterLoading } from "@/components/loading";
-import { statusSchema } from "@/schemas/global";
-import { MenuDeleteDialog } from "./menu-delete-dialog";
-import { MenuFormDialog } from "./menu-form-dialog";
-import { SortableMenuItem } from "./menu-sortable-item";
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
+  IGRPButton,
+  IGRPIcon,
+  Separator,
+  useIGRPToast,
+} from "@igrp/igrp-framework-react-design-system";
+import type {
   ApplicationDTO,
   MenuType,
   Status,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+
+import { AppCenterLoading } from "@/components/loading";
+import { isSystemApp } from "@/features/applications/app-utils";
 import {
   useMenus,
   useUpdateMenu,
 } from "@/features/applications/use-applications";
+import { resolveMenuDrop } from "@/features/menus/menu-hierarchy";
+import { statusSchema } from "@/schemas/global";
+
+import { MenuDeleteDialog, type MenuDeleteTarget } from "./menu-delete-dialog";
+import { MenuFormDialog } from "./menu-form-dialog";
+import { SortableMenuItem } from "./menu-sortable-item";
+import { MenuTreeContext } from "./menu-tree-context";
 
 export function MenuList({ app }: { app: ApplicationDTO }) {
+  const t = useTranslations("menus");
   const { code } = app;
   const { data: appMenus, isLoading, error: errorGetMenus } = useMenus(code);
   const [menus, setMenus] = useState<IGRPMenuItemArgs[]>([]);
@@ -52,10 +57,9 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
   const [selectedMenu, setSelectedMenu] = useState<
     IGRPMenuItemArgs | undefined
   >();
-  const [menuToDelete, setMenuToDelete] = useState<{
-    code: string;
-    name: string;
-  } | null>(null);
+  const [menuToDelete, setMenuToDelete] = useState<MenuDeleteTarget | null>(
+    null,
+  );
 
   const { igrpToast } = useIGRPToast();
   const updateMenuMutation = useUpdateMenu();
@@ -73,21 +77,26 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
 
   useEffect(() => {
     if (appMenus) {
-      const sorted = [...appMenus].sort((a: any, b: any) => {
-        const aOrder = a.position ?? a.sortOrder ?? 0;
-        const bOrder = b.position ?? b.sortOrder ?? 0;
-        return aOrder - bOrder;
-      });
+      const sorted = [...appMenus].sort(
+        (
+          a: IGRPMenuItemArgs & { sortOrder?: number },
+          b: IGRPMenuItemArgs & { sortOrder?: number },
+        ) => {
+          const aOrder = a.position ?? a.sortOrder ?? 0;
+          const bOrder = b.position ?? b.sortOrder ?? 0;
+          return aOrder - bOrder;
+        },
+      );
       setMenus(sorted);
     }
   }, [appMenus]);
 
-  if (isLoading) return <AppCenterLoading descrption="A carregar menus..." />;
+  if (isLoading) return <AppCenterLoading description={t("list.loading")} />;
 
   if (errorGetMenus) {
     return (
       <div className="rounded-md border py-6">
-        <p className="text-center">Ocorreu um erro ao carregar menus.</p>
+        <p className="text-center">{t("list.loadError")}</p>
         <p className="text-center">{errorGetMenus.message}</p>
       </div>
     );
@@ -106,55 +115,57 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
   };
 
   const handleDelete = (code: string, name: string) => {
-    setMenuToDelete({ code, name });
+    const menu = menus.find((m) => m.code === code);
+    const children = menus
+      .filter(
+        (m) => m.parentCode === code && m.status !== statusSchema.enum.DELETED,
+      )
+      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+      .map((m) => ({ code: m.code, name: m.name, type: m.type }));
+    setMenuToDelete({ code, name, type: menu?.type ?? "MENU_PAGE", children });
     setDeleteDialogOpen(true);
   };
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+    if (!over) return;
 
-    if (!over || active.id === over.id) return;
+    const liveMenus = menus.filter(
+      (m) => m.status !== statusSchema.enum.DELETED,
+    );
+    const drop = resolveMenuDrop(liveMenus, String(active.id), String(over.id));
 
-    const activeMenu = active.data.current?.menu as IGRPMenuItemArgs;
-    const overMenu = over.data.current?.menu as IGRPMenuItemArgs;
-
-    const activeParentCode = activeMenu.parentCode ?? null;
-    const overParentCode = overMenu.parentCode ?? null;
-
-    if (activeParentCode !== overParentCode) {
-      igrpToast({
-        type: "warning",
-        title: "Movimento não permitido",
-        description:
-          "Só é possível reordenar menus no mesmo nível hierárquico.",
-      });
+    if (!drop.ok) {
+      if (drop.reason === "invalidParent") {
+        igrpToast({
+          type: "warning",
+          title: t("reorder.notAllowedTitle"),
+          description: t("reorder.notAllowed"),
+        });
+      }
       return;
     }
 
-    const parentCode = activeParentCode;
-    const siblings = menus.filter((m) => (m.parentCode ?? null) === parentCode);
-    const otherMenus = menus.filter(
-      (m) => (m.parentCode ?? null) !== parentCode,
+    const changedMenus = drop.changes.flatMap((change) => {
+      const menu = menus.find((m) => m.code === change.code);
+      return menu ? [{ menu, change }] : [];
+    });
+    const movedByCode = new Map(
+      changedMenus.map(({ menu, change }) => [
+        menu.code,
+        {
+          ...menu,
+          parentCode: change.parentCode ?? undefined,
+          position: change.position,
+        },
+      ]),
     );
 
-    const oldIndex = siblings.findIndex((item) => item.code === active.id);
-    const newIndex = siblings.findIndex((item) => item.code === over.id);
-
-    if (oldIndex === -1 || newIndex === -1) return;
-
-    const reordered = arrayMove(siblings, oldIndex, newIndex);
-
-    const updatedSiblings = reordered.map((item, index) => ({
-      ...item,
-      position: index,
-      sortOrder: index,
-    }));
-
-    setMenus([...otherMenus, ...updatedSiblings]);
+    setMenus((prev) => prev.map((m) => movedByCode.get(m.code) ?? m));
 
     try {
       const results = await Promise.all(
-        updatedSiblings.map((menu, index) =>
+        changedMenus.map(({ menu, change }) =>
           updateMenuMutation.mutateAsync({
             appCode: app.code,
             menuCode: menu.code,
@@ -166,9 +177,9 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
               status: menu.status as Status,
               url: menu.url,
               pageSlug: menu.pageSlug,
-              parentCode: menu.parentCode,
+              parentCode: change.parentCode,
               target: menu.target,
-              position: index,
+              position: change.position,
             },
           }),
         ),
@@ -181,27 +192,30 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
 
       igrpToast({
         type: "success",
-        title: "Ordem atualizada",
-        description: "A ordem dos menus foi reorganizada.",
+        title: t("reorder.updatedTitle"),
+        description: t("reorder.updated"),
       });
     } catch (error) {
-      console.error("Erro ao atualizar ordem:", error);
+      console.error("[menus] reorder failed", error);
 
       igrpToast({
         type: "error",
-        title: "Erro ao salvar",
+        title: t("reorder.errorTitle"),
         description:
-          error instanceof Error
-            ? error.message
-            : "Não foi possível salvar a ordem dos menus.",
+          error instanceof Error ? error.message : t("reorder.error"),
       });
 
       if (appMenus) {
-        const sorted = [...appMenus].sort((a: any, b: any) => {
-          const aOrder = a.position ?? a.sortOrder ?? 0;
-          const bOrder = b.position ?? b.sortOrder ?? 0;
-          return aOrder - bOrder;
-        });
+        const sorted = [...appMenus].sort(
+          (
+            a: IGRPMenuItemArgs & { sortOrder?: number },
+            b: IGRPMenuItemArgs & { sortOrder?: number },
+          ) => {
+            const aOrder = a.position ?? a.sortOrder ?? 0;
+            const bOrder = b.position ?? b.sortOrder ?? 0;
+            return aOrder - bOrder;
+          },
+        );
         setMenus(sorted);
       }
     }
@@ -221,6 +235,14 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
     setOpenFormDialog(true);
     setOpenTypeFormDialog(undefined);
   };
+
+  const canEdit = !isSystemApp(app);
+
+  function openCreate() {
+    setSelectedMenu(undefined);
+    setOpenFormDialog(true);
+    setOpenTypeFormDialog(undefined);
+  }
 
   const filteredMenus = menus.filter(
     (menu) => menu.status !== statusSchema.enum.DELETED,
@@ -264,59 +286,54 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
   };
 
   return (
-    <div className="pt-6">
-      <div className="flex items-center justify-between">
-        <div className="mb-3">
-          <IGRPCardTitlePrimitive>Menus da Aplicação</IGRPCardTitlePrimitive>
-          <IGRPCardDescriptionPrimitive>
-            Gerir e reorganizar os menus desta aplicação.
-          </IGRPCardDescriptionPrimitive>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold tracking-tight">
+            {t("list.title")}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {t("list.description")}
+          </p>
         </div>
-        {String(app?.type) !== "SYSTEM" && !menuEmpty && (
-          <div className="mb-3 flex justify-end">
-            <ButtonLink
-              onClick={() => {
-                setSelectedMenu(undefined);
-                setOpenFormDialog(true);
-                setOpenTypeFormDialog(undefined);
-              }}
-              icon="ListPlus"
-              href="#"
-              label="Novo Menu"
-            />
-          </div>
+        {canEdit && !menuEmpty && (
+          <IGRPButton
+            showIcon
+            iconName="ListPlus"
+            size="sm"
+            onClick={openCreate}
+          >
+            {t("list.new")}
+          </IGRPButton>
         )}
       </div>
 
-      <div className=" border rounded-md">
+      <div className="overflow-hidden rounded-md border">
         {menuEmpty ? (
-          <div className="text-center py-12 px-4">
-            <div className="flex justify-center mb-4">
-              <div className="p-4 rounded-full bg-muted">
-                <IGRPIcon
-                  iconName="ListTree"
-                  className="size-10 text-muted-foreground"
-                  strokeWidth={1.5}
-                />
-              </div>
-            </div>
-            <h3 className="text-lg font-semibold mb-2">
-              Nenhum menu encontrado
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              Comece criando o primeiro menu para esta aplicação.
+          <div className="flex flex-col items-center gap-2 px-4 py-12 text-center">
+            <span className="mb-2 flex size-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+              <IGRPIcon
+                iconName="ListTree"
+                className="size-6"
+                strokeWidth={1.75}
+              />
+            </span>
+            <h3 className="font-semibold">{t("list.emptyTitle")}</h3>
+            <p className="max-w-sm text-sm text-muted-foreground text-pretty">
+              {canEdit
+                ? t("list.emptyDescription")
+                : t("list.systemEmptyDescription")}
             </p>
-            <IGRPButtonPrimitive
-              onClick={() => {
-                setSelectedMenu(undefined);
-                setOpenFormDialog(true);
-                setOpenTypeFormDialog(undefined);
-              }}
-              variant="default"
-            >
-              <IGRPIcon iconName="Plus" className="mr-2 size-4" />
-              Criar Primeiro Menu
-            </IGRPButtonPrimitive>
+            {canEdit && (
+              <IGRPButton
+                showIcon
+                iconName="Plus"
+                className="mt-4"
+                onClick={openCreate}
+              >
+                {t("list.createFirst")}
+              </IGRPButton>
+            )}
           </div>
         ) : (
           <DndContext
@@ -328,36 +345,34 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
               items={rootMenus.map((m) => m.code)}
               strategy={verticalListSortingStrategy}
             >
-              <div>
-                {rootMenus.map((menu) => {
-                  const childMenus = filteredMenus.filter(
-                    (m) => m.parentCode === menu.code,
-                  );
-
-                  return (
-                    <SortableMenuItem
-                      app={app}
-                      key={menu.code}
-                      menu={menu}
-                      onView={handleView}
-                      onEdit={handleEdit}
-                      onAddChild={handleAddChild}
-                      onDelete={handleDelete}
-                      subMenus={childMenus}
-                      allMenus={filteredMenus}
-                      onAddInternalPage={handleAddInternalPage}
-                      onAddExternalPage={handleAddExternalPage}
-                    />
-                  );
-                })}
-              </div>
+              <MenuTreeContext
+                value={{
+                  app,
+                  allMenus: filteredMenus,
+                  onView: handleView,
+                  onEdit: handleEdit,
+                  onAddChild: handleAddChild,
+                  onDelete: handleDelete,
+                  onAddInternalPage: handleAddInternalPage,
+                  onAddExternalPage: handleAddExternalPage,
+                }}
+              >
+                <div>
+                  {rootMenus.map((menu, index) => (
+                    <Fragment key={menu.code}>
+                      {index > 0 && <Separator />}
+                      <SortableMenuItem menu={menu} />
+                    </Fragment>
+                  ))}
+                </div>
+              </MenuTreeContext>
             </SortableContext>
           </DndContext>
         )}
       </div>
 
       <MenuFormDialog
-        aplicationCode={app.code}
+        appCode={app.code}
         open={openFormDialog}
         onOpenChange={(open) => {
           setOpenFormDialog(open);
@@ -368,9 +383,9 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
         }}
         menu={selectedMenu}
         setMenus={setMenus}
+        allMenus={menus}
         groupMenus={groupMenus}
         folderMenus={folderMenus}
-        appCode={app.code}
         openType={openTypeFormDialog}
       />
 

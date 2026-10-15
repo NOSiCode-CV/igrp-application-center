@@ -1,49 +1,36 @@
-import {
-  cn,
-  IGRPCheckboxPrimitive,
-  IGRPIcon,
-  IGRPTableCellPrimitive,
-  IGRPTableRowPrimitive,
-} from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { MenuWithChildren } from "./dept-menu";
-import { getMenuIcon } from "@/lib/utils";
+
+import {
+  Checkbox,
+  cn,
+  IGRPIcon,
+  TableCell,
+  TableRow,
+} from "@igrp/igrp-framework-react-design-system";
+
+import { getMenuIcon } from "@/lib/utilities";
+
+import type { MenuWithChildren } from "./dept-menu";
 
 const MenuTreeRow = ({
   menu,
   level = 0,
-  setMenuRoleAssignments,
+  toggleMenuRole,
   roles,
   menuRoleAssignments,
+  ancestorCodes,
 }: {
   menu: MenuWithChildren;
   level?: number;
-  setMenuRoleAssignments: React.Dispatch<
-    React.SetStateAction<Map<string, Set<string>>>
-  >;
+  toggleMenuRole: (menuCode: string, roleCode: string) => void;
   roles?: { name: string; code: string }[];
   menuRoleAssignments: Map<string, Set<string>>;
+  ancestorCodes?: ReadonlySet<string>;
 }) => {
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   const hasChildren = menu.children && menu.children.length > 0;
   const isExpanded = expandedMenus.has(menu.code);
-
-  const toggleMenuRole = (menuCode: string, roleCode: string) => {
-    setMenuRoleAssignments((prev) => {
-      const newMap = new Map(prev);
-      const currentRoles = new Set(newMap.get(menuCode) || []);
-
-      if (currentRoles.has(roleCode)) {
-        currentRoles.delete(roleCode);
-      } else {
-        currentRoles.add(roleCode);
-      }
-
-      newMap.set(menuCode, currentRoles);
-      return newMap;
-    });
-  };
 
   const toggleExpand = (menuCode: string) => {
     setExpandedMenus((prev) => {
@@ -59,8 +46,8 @@ const MenuTreeRow = ({
 
   return (
     <>
-      <IGRPTableRowPrimitive className={cn(level > 0 && "bg-muted/20")}>
-        <IGRPTableCellPrimitive>
+      <TableRow className={cn(level > 0 && "bg-muted/20")}>
+        <TableCell>
           <div
             className="flex items-center gap-2"
             style={{ paddingLeft: `${level * 1.5}rem` }}
@@ -68,12 +55,16 @@ const MenuTreeRow = ({
             {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
-                className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                type="button"
+                aria-expanded={isExpanded}
+                aria-label={isExpanded ? "Recolher menu" : "Expandir menu"}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
+                  aria-hidden
                   className={cn(
-                    "w-4 h-4 transition-transform",
+                    "size-4 transition-transform motion-reduce:transition-none",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
@@ -83,7 +74,8 @@ const MenuTreeRow = ({
 
             <IGRPIcon
               iconName={getMenuIcon(menu.type)}
-              className="w-4 h-4 text-primary shrink-0"
+              aria-hidden
+              className="size-4 text-primary shrink-0"
               strokeWidth={2}
             />
 
@@ -96,37 +88,40 @@ const MenuTreeRow = ({
               )}
             </div>
           </div>
-        </IGRPTableCellPrimitive>
+        </TableCell>
 
         {roles?.map((role) => (
-          <IGRPTableCellPrimitive
-            key={role.name}
-            className="text-center border-l"
-          >
+          <TableCell key={role.name} className="text-center border-l">
             <div className="flex items-center justify-center">
-              <IGRPCheckboxPrimitive
+              <Checkbox
                 checked={
                   menuRoleAssignments.get(menu.code)?.has(role.code) ?? false
                 }
                 onCheckedChange={() => toggleMenuRole(menu.code, role.code)}
+                aria-label={`${role.name} — ${menu.name}`}
               />
             </div>
-          </IGRPTableCellPrimitive>
+          </TableCell>
         ))}
-      </IGRPTableRowPrimitive>
+      </TableRow>
 
       {hasChildren &&
         isExpanded &&
-        menu.children?.map((child) => (
-          <MenuTreeRow
-            key={child.code}
-            menu={child}
-            level={level + 1}
-            setMenuRoleAssignments={setMenuRoleAssignments}
-            roles={roles}
-            menuRoleAssignments={menuRoleAssignments}
-          />
-        ))}
+        menu.children?.map((child) =>
+          // Skip any child already in the render path — guards against a
+          // malformed cycle causing infinite recursion.
+          ancestorCodes?.has(child.code) ? null : (
+            <MenuTreeRow
+              key={child.code}
+              menu={child}
+              level={level + 1}
+              toggleMenuRole={toggleMenuRole}
+              roles={roles}
+              menuRoleAssignments={menuRoleAssignments}
+              ancestorCodes={new Set(ancestorCodes ?? []).add(menu.code)}
+            />
+          ),
+        )}
     </>
   );
 };

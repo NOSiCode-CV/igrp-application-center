@@ -1,16 +1,18 @@
 "use client";
 
+import { useState } from "react";
+
 import {
-  IGRPButtonPrimitive,
+  Button,
+  cn,
   IGRPIcon,
-  IGRPTooltipContentPrimitive,
-  IGRPTooltipPrimitive,
-  IGRPTooltipProviderPrimitive,
-  IGRPTooltipTriggerPrimitive,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface CopyToClipboardProps {
   value: string;
@@ -20,6 +22,7 @@ interface CopyToClipboardProps {
 // TODO: Move to design-system package
 
 export function CopyToClipboard({ value }: CopyToClipboardProps) {
+  const t = useTranslations("common");
   const [copied, setCopied] = useState(false);
   const { igrpToast } = useIGRPToast();
 
@@ -32,7 +35,7 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
       setCopied(true);
       igrpToast({
         type: "success",
-        title: "Copiado para a área de transferência",
+        title: t("copy.copied"),
         description: displayValue,
         duration: 2000,
       });
@@ -40,28 +43,23 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Não foi possível copiar para a área de transferência",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+        title: t("copy.failed"),
+        description: error instanceof Error ? error.message : t("unknownError"),
         duration: 2000,
       });
     }
   }
 
   return (
-    <IGRPTooltipProviderPrimitive delayDuration={350}>
-      <IGRPTooltipPrimitive>
-        <IGRPTooltipTriggerPrimitive asChild>
-          <IGRPButtonPrimitive
+    <TooltipProvider delayDuration={350}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
             variant="ghost"
             size="icon"
             className="disabled:opacity-100 size-7"
             onClick={handleCopy}
-            aria-label={
-              copied ? "Copiado" : "Copiar para a área de transferênciawwwww"
-            }
+            aria-label={copied ? t("copy.copiedShort") : t("copy.copy")}
             disabled={copied}
           >
             <div
@@ -90,12 +88,12 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
                 className="size-3"
               />
             </div>
-          </IGRPButtonPrimitive>
-        </IGRPTooltipTriggerPrimitive>
-        <IGRPTooltipContentPrimitive className="px-2 py-1 text-xs">
-          Clique para copiar
-        </IGRPTooltipContentPrimitive>
-      </IGRPTooltipPrimitive>
-    </IGRPTooltipProviderPrimitive>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent className="px-2 py-1 text-xs">
+          {t("copy.clickToCopy")}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

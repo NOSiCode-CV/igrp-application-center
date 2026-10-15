@@ -1,67 +1,92 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  IGRPButtonPrimitive,
-  IGRPCommandEmptyPrimitive,
-  IGRPCommandGroupPrimitive,
-  IGRPCommandInputPrimitive,
-  IGRPCommandItemPrimitive,
-  IGRPCommandListPrimitive,
-  IGRPCommandPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPDialogFooterPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPFormPrimitive,
+  Button,
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  cn,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  IGRPCombobox,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPPopoverContentPrimitive,
-  IGRPPopoverPrimitive,
-  IGRPPopoverTriggerPrimitive,
+  Input,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { InviteUserDTO } from "@igrp/platform-access-management-client-ts";
-import { useEffect, useMemo, useState } from "react";
+import type { InviteUserDTO as SdkInviteUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
+import {
+  MultiSelectField,
+  type MultiSelectOption,
+} from "@/components/multi-select-field";
 import {
   useDepartments,
   useRoles,
 } from "@/features/departments/use-departments";
-import { cn } from "@/lib/utils";
-import { useAddUserRole, useInviteUser } from "../use-users";
+import { LOCALE_NATIVE_NAMES, LOCALES } from "@/i18n/config";
+
+import { useInviteUser } from "../use-users";
+import type { UsersValidationTranslator } from "../user-schemas";
+
+// TODO(i18n): drop this extension once @igrp/platform-access-management-client-ts
+// with `InviteUserDTO.locale` is released.
+type InviteUserDTO = SdkInviteUserDTO & { locale?: string };
+
+const LOCALE_OPTIONS = LOCALES.map((value) => ({
+  value,
+  label: LOCALE_NATIVE_NAMES[value],
+}));
 
 interface UserInviteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const formSchema = z.object({
-  email: z.string().min(1, "Email obrigatório").email("Email inválido"),
-  departmentCode: z.string().optional(),
-  roleCodes: z.array(z.string()),
-});
+const makeFormSchema = (t: UsersValidationTranslator) =>
+  z.object({
+    email: z.email(t("emailInvalid")).min(1, t("emailRequired")),
+    departmentCode: z.string().optional(),
+    roleCodes: z.array(z.string()),
+    locale: z.enum(LOCALES),
+  });
 
-type FormSchema = z.infer<typeof formSchema>;
+type FormSchema = z.infer<ReturnType<typeof makeFormSchema>>;
 
 export function UserInviteDialog({
   open,
   onOpenChange,
 }: UserInviteDialogProps) {
   const [openDepts, setOpenDepts] = useState(false);
-  const [openRoles, setOpenRoles] = useState(false);
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.invite.form");
+  const tv = useTranslations("users.validation");
+  const tc = useTranslations("common.actions");
+  const formSchema = useMemo(() => makeFormSchema(tv), [tv]);
+  // FR-28: the invitee language defaults to the inviter's current locale.
+  const currentLocale = useLocale();
 
-  const { mutateAsync: userInvite, isPending: isInviting } = useInviteUser();
-  // const { mutateAsync: addUserRole } = useAddUserRole();
+  const { mutate: userInvite, isPending: isInviting } = useInviteUser();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -70,6 +95,7 @@ export function UserInviteDialog({
       email: "",
       departmentCode: undefined,
       roleCodes: [] as string[],
+      locale: currentLocale,
     },
   });
 
@@ -79,9 +105,10 @@ export function UserInviteDialog({
         email: "",
         departmentCode: undefined,
         roleCodes: [] as string[],
+        locale: currentLocale,
       });
     }
-  }, [open, form]);
+  }, [open, form, currentLocale]);
 
   const departmentCode = form.watch("departmentCode");
 
@@ -90,145 +117,140 @@ export function UserInviteDialog({
     isLoading: deptLoading,
     error: deptError,
   } = useDepartments();
-  const {
-    data: roles,
-    isLoading: rolesLoading,
-    error: rolesError,
-  } = useRoles(departmentCode || "");
+  const { data: roles, error: rolesError } = useRoles(departmentCode || "");
 
   const isValid = form.formState.isValid;
-  const isSubmitting = form.formState.isSubmitting;
-  const btnDisabled = !isValid || isSubmitting || isInviting;
-
-  const parentValue = form.watch("departmentCode");
+  const btnDisabled = !isValid || isInviting;
 
   const parentSelected = useMemo(
-    () => depts?.find((o) => o.code === parentValue) ?? null,
-    [parentValue, depts],
+    () => depts?.find((o) => o.code === departmentCode) ?? null,
+    [departmentCode, depts],
   );
 
-  const onSubmit = async (values: FormSchema) => {
-    const { email, roleCodes = [] } = values;
+  const onSubmit = (values: FormSchema) => {
+    const { email, roleCodes = [], locale } = values;
 
     const userPayload: InviteUserDTO = {
       email: email.trim(),
       departmentCode: departmentCode || "",
       roles: roleCodes,
+      locale,
     };
 
-    try {
-      const created = await userInvite({ user: userPayload });
-
-      if (!created.success) {
-        throw new Error(created.error);
-      }
-
-      // const finalId = created.data?.id;
-
-      // if (finalId && roleCodes.length > 0) {
-      //   const roleResult = await addUserRole({
-      //     id: finalId,
-      //     departmentCode: departmentCode || "",
-      //     roleCodes,
-      //   });
-
-      //   if (!roleResult.success) {
-      //     throw new Error(roleResult.error);
-      //   }
-      // }
-
-      igrpToast({
-        type: "success",
-        description: "Convite enviado com sucesso!",
-      });
-
-      form.reset({
-        email: "",
-        departmentCode: undefined,
-        roleCodes: [] as string[],
-      });
-      onOpenChange(false);
-    } catch (error: any) {
-      igrpToast({
-        type: "error",
-        title: "Falha ao convidar",
-        description: error.message || `Falha ao convidar: ${String(error)}`,
-      });
-    }
+    userInvite(
+      { user: userPayload },
+      {
+        onSuccess: (result) => {
+          if (!result.success) {
+            igrpToast({
+              type: "error",
+              title: t("toasts.inviteFailed"),
+              description: result.error,
+            });
+            return;
+          }
+          igrpToast({
+            type: "success",
+            description: t("toasts.inviteSent"),
+          });
+          form.reset({
+            email: "",
+            departmentCode: undefined,
+            roleCodes: [] as string[],
+            locale: currentLocale,
+          });
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          const message =
+            error instanceof Error
+              ? error.message
+              : t("toasts.inviteFailedWithReason", { reason: String(error) });
+          igrpToast({
+            type: "error",
+            title: t("toasts.inviteFailed"),
+            description: message,
+          });
+        },
+      },
+    );
   };
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPDialogContentPrimitive className="sm:max-w-2xl">
-        <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive>
-            Convidar Utilizador
-          </IGRPDialogTitlePrimitive>
-          <IGRPDialogDescriptionPrimitive>
-            Envie um convite para um novo utilizador.
-          </IGRPDialogDescriptionPrimitive>
-        </IGRPDialogHeaderPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="md:min-w-2xl max-h-[95vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
+        </DialogHeader>
 
-        <IGRPFormPrimitive {...form}>
+        <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-6"
           >
-            <fieldset className="border border-accent p-4 rounded-md space-y-4">
+            <fieldset className="border border-accent p-4 rounded-md flex flex-col gap-4">
               <legend className="text-base font-semibold px-2 mb-1">
-                Informações Gerais
+                {t("userInfo")}
               </legend>
 
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Email *</IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
-                        placeholder="user@example.com"
+                  <FormItem>
+                    <FormLabel>
+                      {t("emailLabel")}
+                      <span aria-hidden="true" className="text-destructive">
+                        *
+                      </span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={t("emailPlaceholder")}
+                        type="email"
+                        aria-required="true"
                         {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => {
-                          field.onChange(e.target.value.toLowerCase());
-                        }}
                       />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
+              />
+
+              <IGRPCombobox
+                name="locale"
+                label={t("localeLabel")}
+                placeholder={t("localeLabel")}
+                options={LOCALE_OPTIONS}
+                showSearch={false}
+                required
               />
             </fieldset>
 
-            <fieldset className="border border-accent p-4 rounded-md space-y-4">
+            <fieldset className="border border-accent p-4 rounded-md flex flex-col gap-4">
               <legend className="text-base font-semibold px-2 mb-1">
-                Atribuir Perfis
+                {t("assignRoles")}
               </legend>
 
               <p className="text-xs text-muted-foreground -mt-2">
-                Selecione departamento e perfis para o utilizador (opcional).
+                {t("assignRolesHint")}
               </p>
 
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="departmentCode"
                 render={({ field }) => {
-                  const placeholder = "Selecionar departamento";
+                  const placeholder = t("departmentPlaceholder");
                   const isDeptDisabled =
                     deptLoading || !!deptError || (depts?.length ?? 0) === 0;
 
                   return (
-                    <IGRPFormItemPrimitive>
-                      <IGRPFormLabelPrimitive>
-                        Departamento
-                      </IGRPFormLabelPrimitive>
+                    <FormItem>
+                      <FormLabel>{t("departmentLabel")}</FormLabel>
 
-                      <IGRPPopoverPrimitive
-                        open={openDepts}
-                        onOpenChange={setOpenDepts}
-                      >
-                        <IGRPPopoverTriggerPrimitive asChild>
-                          <IGRPButtonPrimitive
+                      <Popover open={openDepts} onOpenChange={setOpenDepts}>
+                        <PopoverTrigger asChild>
+                          <Button
                             type="button"
                             variant="outline"
                             disabled={isDeptDisabled}
@@ -246,21 +268,21 @@ export function UserInviteDialog({
                             <IGRPIcon
                               iconName={openDepts ? "ChevronUp" : "ChevronDown"}
                             />
-                          </IGRPButtonPrimitive>
-                        </IGRPPopoverTriggerPrimitive>
+                          </Button>
+                        </PopoverTrigger>
 
-                        <IGRPPopoverContentPrimitive
+                        <PopoverContent
                           className="p-0 w-[--radix-popover-trigger-width]"
                           align="start"
                         >
-                          <IGRPCommandPrimitive>
-                            <IGRPCommandInputPrimitive placeholder="Procurar..." />
-                            <IGRPCommandListPrimitive className="max-h-64">
-                              <IGRPCommandEmptyPrimitive>
-                                Departamento não encontrado.
-                              </IGRPCommandEmptyPrimitive>
+                          <Command>
+                            <CommandInput placeholder={t("search")} />
+                            <CommandList className="max-h-64">
+                              <CommandEmpty>
+                                {t("departmentEmpty")}
+                              </CommandEmpty>
 
-                              <IGRPCommandItemPrimitive
+                              <CommandItem
                                 key="__none__"
                                 onSelect={() => {
                                   field.onChange("");
@@ -276,11 +298,11 @@ export function UserInviteDialog({
                                 ) : (
                                   <span className="w-4" />
                                 )}
-                                <span>Nenhum</span>
-                              </IGRPCommandItemPrimitive>
+                                <span>{t("none")}</span>
+                              </CommandItem>
 
                               {depts?.map((opt) => (
-                                <IGRPCommandItemPrimitive
+                                <CommandItem
                                   key={opt.code}
                                   onSelect={() => {
                                     form.setValue("departmentCode", opt.code, {
@@ -302,158 +324,78 @@ export function UserInviteDialog({
                                     <span className="w-4" />
                                   )}
                                   <span>{opt.name}</span>
-                                </IGRPCommandItemPrimitive>
+                                </CommandItem>
                               ))}
-                            </IGRPCommandListPrimitive>
-                          </IGRPCommandPrimitive>
-                        </IGRPPopoverContentPrimitive>
-                      </IGRPPopoverPrimitive>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
 
-                      <IGRPFormMessagePrimitive>
+                      <FormMessage>
                         {deptError ? deptError.message : null}
-                      </IGRPFormMessagePrimitive>
-                    </IGRPFormItemPrimitive>
+                      </FormMessage>
+                    </FormItem>
                   );
                 }}
               />
 
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="roleCodes"
                 render={({ field }) => {
                   const isDisabled =
                     !departmentCode || (roles?.length ?? 0) === 0;
-                  const selectedCodes = new Set(field.value ?? []);
-
-                  const toggle = (code: string) => {
-                    const next = new Set(selectedCodes);
-                    if (next.has(code)) next.delete(code);
-                    else next.add(code);
-                    form.setValue("roleCodes", Array.from(next), {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  };
-
-                  const selectedroleCodes =
-                    roles?.filter((role) => selectedCodes.has(role.code)) ?? [];
-
-                  const label =
-                    selectedCodes.size === 0
-                      ? isDisabled
-                        ? "Selecione um departamento"
-                        : "Selecionar perfis"
-                      : selectedCodes.size === 1
-                        ? (selectedroleCodes[0]?.name ?? "1 perfil")
-                        : `${selectedCodes.size} perfis selecionados`;
+                  const roleOptions: MultiSelectOption[] =
+                    roles?.map((role) => ({
+                      value: role.code,
+                      label: role.name ?? role.code,
+                    })) ?? [];
 
                   return (
-                    <IGRPFormItemPrimitive>
-                      <IGRPFormLabelPrimitive>Perfis</IGRPFormLabelPrimitive>
-                      <IGRPPopoverPrimitive
-                        open={openRoles}
-                        onOpenChange={setOpenRoles}
-                      >
-                        <IGRPPopoverTriggerPrimitive asChild>
-                          <IGRPFormControlPrimitive>
-                            <IGRPButtonPrimitive
-                              type="button"
-                              variant="outline"
-                              disabled={isDisabled}
-                              className={cn(
-                                "w-full justify-between",
-                                selectedCodes.size === 0 &&
-                                  "text-muted-foreground",
-                              )}
-                            >
-                              <span className="truncate">{label}</span>
-                              <IGRPIcon iconName="ChevronsUpDown" />
-                            </IGRPButtonPrimitive>
-                          </IGRPFormControlPrimitive>
-                        </IGRPPopoverTriggerPrimitive>
-
-                        <IGRPPopoverContentPrimitive
-                          className="w-[--radix-popover-trigger-width] p-0"
-                          align="start"
-                        >
-                          <IGRPCommandPrimitive>
-                            <IGRPCommandInputPrimitive placeholder="Procurar..." />
-                            <IGRPCommandListPrimitive>
-                              <IGRPCommandEmptyPrimitive>
-                                Nenhum perfil encontrado.
-                              </IGRPCommandEmptyPrimitive>
-                              <IGRPCommandGroupPrimitive>
-                                {roles?.map((role) => {
-                                  const checked = selectedCodes.has(role.code);
-                                  return (
-                                    <IGRPCommandItemPrimitive
-                                      key={role.code}
-                                      value={role.name}
-                                      onSelect={() => toggle(role.code)}
-                                    >
-                                      <IGRPIcon
-                                        iconName="Check"
-                                        className={cn(
-                                          "mr-2",
-                                          checked ? "opacity-100" : "opacity-0",
-                                        )}
-                                      />
-                                      {role.name}
-                                    </IGRPCommandItemPrimitive>
-                                  );
-                                })}
-                              </IGRPCommandGroupPrimitive>
-                            </IGRPCommandListPrimitive>
-                          </IGRPCommandPrimitive>
-                        </IGRPPopoverContentPrimitive>
-                      </IGRPPopoverPrimitive>
-
-                      <IGRPFormMessagePrimitive>
-                        {rolesError ? rolesError.message : null}
-                      </IGRPFormMessagePrimitive>
-
-                      {selectedroleCodes.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {selectedroleCodes.map((role) => (
-                            <span
-                              key={role.code}
-                              className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs"
-                            >
-                              {role.name}
-                              <button
-                                type="button"
-                                className="opacity-60 hover:opacity-100"
-                                onClick={() => toggle(role.code)}
-                                aria-label={`Remover ${role.name}`}
-                              >
-                                ×
-                              </button>
-                            </span>
-                          ))}
-                        </div>
+                    <FormItem>
+                      <FormLabel>{t("rolesLabel")}</FormLabel>
+                      {isDisabled && (
+                        <p className="text-xs text-muted-foreground">
+                          {departmentCode
+                            ? t("rolesNoneInDepartment")
+                            : t("rolesPickDepartment")}
+                        </p>
                       )}
-                    </IGRPFormItemPrimitive>
+                      <MultiSelectField
+                        options={roleOptions}
+                        value={field.value ?? []}
+                        onChange={field.onChange}
+                        disabled={isDisabled}
+                        placeholder={t("selectRoles")}
+                        searchPlaceholder={t("search")}
+                        emptyLabel={t("rolesEmpty")}
+                      />
+
+                      <FormMessage>
+                        {rolesError ? rolesError.message : null}
+                      </FormMessage>
+                    </FormItem>
                   );
                 }}
               />
             </fieldset>
 
-            <IGRPDialogFooterPrimitive>
-              <IGRPButtonPrimitive
+            <DialogFooter>
+              <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={isInviting}
                 type="button"
               >
-                Cancelar
-              </IGRPButtonPrimitive>
-              <IGRPButtonPrimitive type="submit" disabled={btnDisabled}>
-                {isInviting ? "A enviar..." : "Enviar Convite"}
-              </IGRPButtonPrimitive>
-            </IGRPDialogFooterPrimitive>
+                {tc("cancel")}
+              </Button>
+              <Button type="submit" disabled={btnDisabled}>
+                {isInviting ? t("submitting") : t("submit")}
+              </Button>
+            </DialogFooter>
           </form>
-        </IGRPFormPrimitive>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }

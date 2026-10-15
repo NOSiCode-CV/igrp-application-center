@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  cn,
-  IGRPIcon,
-  IGRPInputPrimitive,
-} from "@igrp/igrp-framework-react-design-system";
+import type { Route } from "next";
 import Link from "next/link";
+
+import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 
 type Department = {
   id: number;
@@ -26,11 +24,13 @@ const DepartmentTreeItemSimple = ({
   level = 0,
   expandedDepts,
   setExpandedDepts,
+  ancestorCodes,
 }: {
   dept: DepartmentWithChildren;
   level?: number;
   expandedDepts: Set<string>;
   setExpandedDepts: React.Dispatch<React.SetStateAction<Set<string>>>;
+  ancestorCodes?: ReadonlySet<string>;
 }) => {
   const hasChildren = dept.children && dept.children.length > 0;
   const isExpanded = expandedDepts.has(dept.code);
@@ -59,13 +59,24 @@ const DepartmentTreeItemSimple = ({
       >
         <button
           onClick={toggleExpand}
-          className="w-4 h-4 flex items-center justify-center shrink-0"
+          className="size-4 flex items-center justify-center shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
+          type="button"
+          disabled={!hasChildren}
+          aria-expanded={hasChildren ? isExpanded : undefined}
+          aria-label={
+            hasChildren
+              ? isExpanded
+                ? "Recolher departamento"
+                : "Expandir departamento"
+              : undefined
+          }
         >
           {hasChildren ? (
             <IGRPIcon
               iconName="ChevronRight"
+              aria-hidden
               className={cn(
-                "w-3.5 h-3.5 transition-transform",
+                "size-3.5 transition-transform motion-reduce:transition-none",
                 isExpanded && "rotate-90",
               )}
               strokeWidth={2}
@@ -76,19 +87,24 @@ const DepartmentTreeItemSimple = ({
         </button>
 
         <Link
-          href="/departments"
+          href={"/departments" as Route}
           className="flex items-center gap-2 flex-1 min-w-0 hover:text-primary transition-colors"
         >
           <div className="relative">
             <IGRPIcon
               iconName={isExpanded ? "FolderOpen" : "Folder"}
-              className={cn("w-4 h-4 shrink-0", !isActive && "opacity-50")}
+              aria-hidden
+              className={cn("size-4 shrink-0", !isActive && "opacity-50")}
               strokeWidth={2}
             />
             {!isActive && (
-              <div className="absolute -right-0.5 -bottom-0.5 w-2 h-2 rounded-full bg-red-500/50 border border-background" />
+              <div
+                aria-hidden
+                className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full bg-destructive/50 border border-background"
+              />
             )}
           </div>
+          {!isActive && <span className="sr-only">Inativo:</span>}
           <span className="flex-1 text-left truncate font-medium">
             {dept.name}
           </span>
@@ -97,15 +113,20 @@ const DepartmentTreeItemSimple = ({
 
       {hasChildren &&
         isExpanded &&
-        dept.children?.map((child) => (
-          <DepartmentTreeItemSimple
-            key={child.code}
-            dept={child}
-            level={level + 1}
-            expandedDepts={expandedDepts}
-            setExpandedDepts={setExpandedDepts}
-          />
-        ))}
+        dept.children?.map((child) =>
+          // Skip any child already in the render path — guards against a
+          // malformed cycle causing infinite recursion.
+          ancestorCodes?.has(child.code) ? null : (
+            <DepartmentTreeItemSimple
+              key={child.code}
+              dept={child}
+              level={level + 1}
+              expandedDepts={expandedDepts}
+              setExpandedDepts={setExpandedDepts}
+              ancestorCodes={new Set(ancestorCodes ?? []).add(dept.code)}
+            />
+          ),
+        )}
     </div>
   );
 };

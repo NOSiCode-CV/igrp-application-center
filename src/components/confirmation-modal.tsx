@@ -1,16 +1,17 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import {
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
-import { ReactNode } from "react";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -40,15 +41,13 @@ export function ConfirmDialog({
   variant = "destructive",
 }: ConfirmDialogProps) {
   return (
-    <IGRPAlertDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPAlertDialogContentPrimitive>
-        <IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogTitlePrimitive>{title}</IGRPAlertDialogTitlePrimitive>
-          <IGRPAlertDialogDescriptionPrimitive>
-            {description}
-          </IGRPAlertDialogDescriptionPrimitive>
-        </IGRPAlertDialogHeaderPrimitive>
-        <IGRPAlertDialogFooterPrimitive>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
           <IGRPButton
             type="button"
             variant="outline"
@@ -61,11 +60,8 @@ export function ConfirmDialog({
             {cancelText}
           </IGRPButton>
           <IGRPButton
-            className={
-              variant === "destructive"
-                ? "bg-destructive hover:bg-destructive/90 gap-2 text-white"
-                : "gap-2"
-            }
+            variant={variant}
+            className="gap-2"
             onClick={onConfirm}
             disabled={isLoading}
           >
@@ -73,8 +69,9 @@ export function ConfirmDialog({
               <>
                 <IGRPIcon
                   iconName="LoaderCircle"
-                  className="w-4 h-4 animate-spin"
+                  className="size-4 animate-spin motion-reduce:animate-none"
                   strokeWidth={2}
+                  aria-hidden="true"
                 />
                 {loadingText}
               </>
@@ -84,15 +81,15 @@ export function ConfirmDialog({
                   iconName={
                     variant === "destructive" ? (iconName ?? "Trash") : "Check"
                   }
-                  className="w-4 h-4"
+                  className="size-4"
                   strokeWidth={2}
                 />
                 {confirmText}
               </>
             )}
           </IGRPButton>
-        </IGRPAlertDialogFooterPrimitive>
-      </IGRPAlertDialogContentPrimitive>
-    </IGRPAlertDialogPrimitive>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

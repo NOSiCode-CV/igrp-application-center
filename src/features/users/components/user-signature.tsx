@@ -1,24 +1,23 @@
-import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
-import {
-  cn,
-  IGRPCardContentPrimitive,
-  IGRPCardPrimitive,
-  IGRPIcon,
-  useIGRPToast,
-} from "@igrp/igrp-framework-react-design-system";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import React, { useEffect, useRef, useState } from "react";
-import { useUpdateUser } from "../use-users";
+"use client";
 
-export default function UserSignature({
-  user,
-  refetch,
-}: {
-  user: IGRPUserDTO;
-  refetch: any;
-}) {
-  const { igrpToast } = useIGRPToast();
-  const { mutateAsync: updateUser } = useUpdateUser();
+import Image from "next/image";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
+
+import {
+  Card,
+  CardContent,
+  cn,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+
+import { useFiles } from "@/features/files/use-files";
+import { useUserProfileActions } from "@/features/users/hooks/use-user-profile-actions";
+
+export default function UserSignature({ user }: { user: IGRPUserDTO }) {
+  const t = useTranslations("users.signature");
+  const { uploadSignature, isUploadingSignature } = useUserProfileActions(user);
 
   const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
   const [uploadedSignaturePath, setUploadedSignaturePath] = useState<
@@ -29,49 +28,19 @@ export default function UserSignature({
     user?.signature || uploadedSignaturePath || "",
   );
 
-  const uploadFile = useUploadPublicFiles();
   const signatureInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSignatureChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleSignatureChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      const result = await uploadFile.mutateAsync({
-        file,
-        options: {
-          folder: `users/${user.id}/signature`,
-        },
-      });
-
-      setUploadedSignaturePath(result);
-      const res = await updateUser({
-        id: user.id,
-        user: {
-          ...user,
-          signature: result,
-        },
-      });
-
-      if (!res.success) {
-        throw new Error(res.error);
-      }
-
-      refetch();
-      igrpToast({
-        type: "success",
-        title: "Assinatura atualizada com sucesso",
-        duration: 4000,
-      });
-    } catch (err) {
-      igrpToast({
-        type: "error",
-        title: "Erro ao atualizar assinatura",
-        description: (err as Error).message,
-        duration: 4000,
-      });
+      const path = await uploadSignature(file);
+      setUploadedSignaturePath(path);
+    } catch {
+      // Errors are surfaced via toast inside uploadSignature.
+    } finally {
+      if (signatureInputRef.current) signatureInputRef.current.value = "";
     }
   };
 
@@ -85,43 +54,47 @@ export default function UserSignature({
   const currentSignatureUrl = signaturePreview || signatureUrl?.url || null;
 
   return (
-    <IGRPCardPrimitive className="py-2">
-      <IGRPCardContentPrimitive className="p-4">
-        <div className="space-y-4">
+    <Card className="py-2">
+      <CardContent className="p-4">
+        <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold flex items-center gap-2">
-                Assinatura Digital
+                {t("title")}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Carregue sua assinatura para documentos oficiais
+                {t("description")}
               </p>
             </div>
           </div>
 
-          <div
-            className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-all bg-muted/20 hover:bg-muted/30"
+          <button
+            type="button"
+            className="relative group cursor-pointer overflow-hidden rounded-lg border-2 border-dashed border-border hover:border-primary/50 transition-colors bg-muted/20 hover:bg-muted/30 w-full p-0 text-left"
             onClick={() => signatureInputRef.current?.click()}
           >
             {currentSignatureUrl ? (
-              <div className="relative p-6 min-h-[100px] flex items-center justify-center">
-                <img
+              <div className="relative p-6 min-h-24 flex items-center justify-center">
+                <Image
                   src={currentSignatureUrl}
-                  alt="Assinatura"
+                  alt={t("alt")}
+                  width={160}
+                  height={80}
+                  unoptimized
                   className="max-h-20 max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 rounded-full p-3 shadow-lg">
                     <IGRPIcon
                       iconName={
-                        isLoadingFile || uploadFile.isPending
+                        isLoadingFile || isUploadingSignature
                           ? "LoaderCircle"
                           : "Upload"
                       }
                       className={cn(
-                        "w-5 h-5 text-primary",
-                        isLoadingFile ||
-                          (uploadFile.isPending && "animate-spin"),
+                        "size-5 text-primary",
+                        (isLoadingFile || isUploadingSignature) &&
+                          "animate-spin",
                       )}
                     />
                   </div>
@@ -129,17 +102,12 @@ export default function UserSignature({
               </div>
             ) : (
               <div className="p-8 flex flex-col items-center justify-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <IGRPIcon
-                    iconName="Upload"
-                    className="w-6 h-6 text-primary"
-                  />
+                <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <IGRPIcon iconName="Upload" className="size-6 text-primary" />
                 </div>
                 <div className="text-center">
-                  <p className="font-medium text-sm">Clique para carregar</p>
-                  <p className="text-xs text-muted-foreground">
-                    PNG, JPG até 5MB
-                  </p>
+                  <p className="font-medium text-sm">{t("clickToUpload")}</p>
+                  <p className="text-xs text-muted-foreground">{t("hint")}</p>
                 </div>
               </div>
             )}
@@ -150,11 +118,11 @@ export default function UserSignature({
               accept="image/*"
               onChange={handleSignatureChange}
               className="hidden"
-              disabled={uploadFile.isPending}
+              disabled={isUploadingSignature}
             />
-          </div>
+          </button>
         </div>
-      </IGRPCardContentPrimitive>
-    </IGRPCardPrimitive>
+      </CardContent>
+    </Card>
   );
 }

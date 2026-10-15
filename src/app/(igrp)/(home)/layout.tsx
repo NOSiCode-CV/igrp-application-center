@@ -1,24 +1,25 @@
-import { IGRPLayout } from "@igrp/framework-next";
-import type { IGRPLayoutConfigArgs } from "@igrp/framework-next-types";
-import { createConfig } from "@igrp/template-config";
-import { configLayout } from "@/actions/igrp/layout";
+import { redirect } from "next/navigation";
+
+import { getCurrentUser } from "@/actions/user";
+import { getLayoutConfig, verifySession } from "@/lib/dal";
+
+const TEMPORARY_STATUS = "TEMPORARY";
 
 export default async function HomeLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const layoutConfig = await configLayout();
-  const config = await createConfig(layoutConfig as IGRPLayoutConfigArgs, {
-    showBreadcrumb: true,
-    showSidebar: false,
-    showNotifications: true,
-    showSearch: false,
-    showIGRPHeaderLogo: true,
-    showIGRPHeaderTitle: true,
-    showIGRPSidebarTrigger: false,
-    showSettings: true,
-    settingsUrl: "/settings",
-    settingsIcon: "Settings",
-  });
+  await verifySession();
 
-  return <IGRPLayout config={config}>{children}</IGRPLayout>;
+  const [user] = await Promise.all([getCurrentUser(), getLayoutConfig()]);
+
+  if (!user.success) {
+    if (user.status === 403) redirect("/invite/pending");
+    throw new Error(user.error);
+  }
+
+  if ((user.data?.status as string | undefined) === TEMPORARY_STATUS) {
+    redirect("/invite/pending");
+  }
+
+  return <>{children}</>;
 }

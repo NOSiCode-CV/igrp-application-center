@@ -1,0 +1,594 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
+  cn,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  IGRPButton,
+  IGRPIcon,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Skeleton,
+  Switch,
+  useIGRPToast,
+} from "@igrp/igrp-framework-react-design-system";
+import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+
+import { useApplications } from "@/features/applications/use-applications";
+import { getMenuIcon } from "@/lib/utilities";
+
+import { buildMenuTree } from "../../dept-lib";
+import {
+  useAddMenusToDepartment,
+  useDepartmentAvailableMenus,
+  useDepartmentMenus,
+  useRemoveMenusFromDepartment,
+} from "../../use-departments";
+
+interface ManageMenusModalProps {
+  departmentCode: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+type MenuWithChildren = MenuEntryDTO & {
+  children?: MenuWithChildren[];
+  isAssigned?: boolean;
+};
+
+export function ManageMenusModal({
+  departmentCode,
+  open,
+  onOpenChange,
+}: ManageMenusModalProps) {
+  const { igrpToast } = useIGRPToast();
+
+  const [selectedApp, setSelectedApp] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
+  const [processingMenu, setProcessingMenu] = useState<string | null>(null);
+  const [menuToRemove, setMenuToRemove] = useState<{
+    code: string;
+    name: string;
+  } | null>(null);
+
+  const { data: availableMenus, isLoading: loadingAvailable } =
+    useDepartmentAvailableMenus(selectedApp, departmentCode || "");
+  const { data: assignedMenus, isLoading: loadingAssigned } =
+    useDepartmentMenus(selectedApp, departmentCode || "");
+
+  const addMenusMutation = useAddMenusToDepartment();
+  const removeMenusMutation = useRemoveMenusFromDepartment();
+
+  const { data: assignedApps, isLoading: loadingApps } = useApplications({
+    departmentCode: departmentCode || "",
+  });
+
+  const loading = loadingAvailable || loadingAssigned;
+
+  // Reset UI state when the modal opens or closes.
+  useEffect(() => {
+    if (open) {
+      setSearchTerm("");
+      setSelectedApp("");
+    }
+  }, [open]);
+
+  // Derive a stable label map from the current query data — no ref mutation in
+  // an effect. Both available and assigned menus are merged so items that move
+  // between the two lists keep their labels even across refetches.
+  const retainedMenusRef = useRef<(MenuEntryDTO & { isAssigned: boolean })[]>(
+    [],
+  );
+  const allMenus = useMemo(() => {
+    const byCode = new Map<
+      string,
+      NonNullable<typeof availableMenus>[number]
+    >();
+    availableMenus?.forEach((menu) => {
+      byCode.set(menu.code, menu);
+    });
+    assignedMenus?.forEach((menu) => {
+      byCode.set(menu.code, menu);
+    });
+
+    // Guarantee label stability across a slow refetch: if both queries
+    // momentarily yield no data, keep the last known list rather than blanking.
+    // This is a render-time cache, not the effect-accumulator that was removed.
+    if (byCode.size === 0) return retainedMenusRef.current;
+
+    const assignedCodes = new Set(assignedMenus?.map((menu) => menu.code));
+    return Array.from(byCode.values())
+      .map((menu) => ({ ...menu, isAssigned: assignedCodes.has(menu.code) }))
+      .sort((a, b) => a.name.localeCompare(b.name, "pt"));
+  }, [availableMenus, assignedMenus]);
+  retainedMenusRef.current = allMenus;
+
+  // Department apps sorted once — reused by the Select and the default-selection effect.
+  const sortedApps = useMemo(() => {
+    if (!assignedApps) return [];
+    return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
+  }, [assignedApps]);
+
+  // Set the default selected app once when the modal opens and app data is available.
+  // Uses the department's app list (sortedApps) as the single authoritative source.
+  useEffect(() => {
+    if (open && sortedApps.length > 0 && !selectedApp) {
+      setSelectedApp(sortedApps[0].code);
+    }
+  }, [open, sortedApps, selectedApp]);
+
+  const toggleExpand = (menuCode: string) => {
+    setExpandedMenus((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(menuCode)) {
+        newSet.delete(menuCode);
+      } else {
+        newSet.add(menuCode);
+      }
+      return newSet;
+    });
+  };
+
+  const handleToggleMenu = async (
+    menuCode: string,
+    currentlyAssigned: boolean,
+  ) => {
+    if (currentlyAssigned) {
+      const menu = allMenus.find((m) => m.code === menuCode);
+      setMenuToRemove({ code: menuCode, name: menu?.name || menuCode });
+    } else {
+      await handleAddMenu(menuCode);
+    }
+  };
+
+  const handleAddMenu = async (menuCode: string) => {
+    setProcessingMenu(menuCode);
+    try {
+      const response = await addMenusMutation.mutateAsync({
+        appCode: selectedApp,
+        departmentCode,
+        menuCodes: [menuCode],
+      });
+
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      igrpToast({
+        type: "success",
+        title: "Menu adicionado",
+        description: "O menu foi adicionado com sucesso.",
+      });
+    } catch (error) {
+      igrpToast({
+        type: "error",
+        title: "Erro ao adicionar",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    } finally {
+      setProcessingMenu(null);
+    }
+  };
+
+  const handleConfirmRemove = async () => {
+    if (!menuToRemove) return;
+
+    setProcessingMenu(menuToRemove.code);
+    try {
+      const result = await removeMenusMutation.mutateAsync({
+        appCode: selectedApp,
+        departmentCode,
+        menuCodes: [menuToRemove.code],
+      });
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      igrpToast({
+        type: "success",
+        title: "Menu removido",
+        description: "O menu foi removido com sucesso.",
+      });
+
+      setMenuToRemove(null);
+    } catch (error) {
+      igrpToast({
+        type: "error",
+        title: "Erro ao remover",
+        description:
+          error instanceof Error ? error.message : "Erro desconhecido",
+      });
+    } finally {
+      setProcessingMenu(null);
+    }
+  };
+
+  const filteredMenus = useMemo(() => {
+    let filtered = allMenus;
+
+    if (selectedApp) {
+      filtered = filtered.filter(
+        (menu) => menu.applicationCode === selectedApp,
+      );
+    }
+
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (menu) =>
+          menu.name.toLowerCase().includes(term) ||
+          menu.code.toLowerCase().includes(term) ||
+          menu.url?.toLowerCase().includes(term),
+      );
+    }
+
+    return filtered;
+  }, [allMenus, selectedApp, searchTerm]);
+
+  const menuTree = useMemo(() => {
+    return buildMenuTree(filteredMenus);
+  }, [filteredMenus]);
+
+  const MenuTreeItem = ({
+    menu,
+    level = 0,
+    ancestorCodes,
+  }: {
+    menu: MenuWithChildren;
+    level?: number;
+    ancestorCodes?: ReadonlySet<string>;
+  }) => {
+    const hasChildren = menu.children && menu.children.length > 0;
+    const isExpanded = expandedMenus.has(menu.code);
+    const isAssigned = menu.isAssigned || false;
+
+    return (
+      <>
+        <div
+          className={cn(
+            "group relative rounded-lg border transition-all duration-200",
+            level > 0 && "ml-6",
+            isAssigned
+              ? "bg-primary/5 border-primary/20 hover:border-primary/40 hover:bg-primary/10"
+              : "bg-muted/30 border-muted hover:border-accent hover:bg-muted/50",
+          )}
+        >
+          <div className="flex items-center gap-3 p-3">
+            {hasChildren && (
+              <button
+                onClick={() => toggleExpand(menu.code)}
+                className="size-8 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                type="button"
+                aria-expanded={isExpanded}
+                aria-label={isExpanded ? "Recolher menu" : "Expandir menu"}
+              >
+                <IGRPIcon
+                  iconName="ChevronRight"
+                  aria-hidden
+                  className={cn(
+                    "size-4 transition-transform motion-reduce:transition-none",
+                    isExpanded && "rotate-90",
+                  )}
+                  strokeWidth={2}
+                />
+              </button>
+            )}
+
+            <div
+              className={cn(
+                "flex items-center justify-center size-10 rounded-lg shrink-0 transition-colors",
+                isAssigned
+                  ? "bg-primary/10 text-primary"
+                  : "bg-muted text-muted-foreground",
+              )}
+            >
+              <IGRPIcon
+                iconName={getMenuIcon(menu.type)}
+                aria-hidden
+                className="size-5"
+                strokeWidth={2}
+              />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <h4 className="font-semibold text-sm truncate">{menu.name}</h4>
+                <Badge
+                  variant={isAssigned ? "default" : "secondary"}
+                  className="text-[10px] px-1.5 py-0.5 shrink-0"
+                >
+                  {menu.applicationCode}
+                </Badge>
+              </div>
+              {menu.url && (
+                <p className="text-xs text-muted-foreground truncate">
+                  {menu.url}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="flex flex-col items-end gap-0.5">
+                <span
+                  className={cn(
+                    "text-[10px] font-medium uppercase tracking-wider transition-colors",
+                    isAssigned ? "text-primary" : "text-muted-foreground",
+                  )}
+                >
+                  {isAssigned ? "Adicionado" : "Disponível"}
+                </span>
+                {isAssigned && (
+                  <div className="flex items-center gap-1 text-[10px] text-primary/70">
+                    <div className="size-1.5 rounded-full bg-success" />
+                    Ativo
+                  </div>
+                )}
+              </div>
+              <Switch
+                checked={isAssigned}
+                onCheckedChange={() => handleToggleMenu(menu.code, isAssigned)}
+                disabled={processingMenu !== null}
+                aria-label={
+                  isAssigned
+                    ? `Remover ${menu.name} do departamento`
+                    : `Adicionar ${menu.name} ao departamento`
+                }
+                className={cn(
+                  "data-[state=checked]:bg-success",
+                  processingMenu === menu.code && "opacity-50",
+                )}
+              />
+            </div>
+          </div>
+
+          {processingMenu === menu.code && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] rounded-lg flex items-center justify-center">
+              <div
+                role="status"
+                className="flex items-center gap-2 text-sm font-medium"
+              >
+                <IGRPIcon
+                  iconName="LoaderCircle"
+                  aria-hidden
+                  className="size-4 animate-spin motion-reduce:animate-none"
+                  strokeWidth={2}
+                />
+                A processar…
+              </div>
+            </div>
+          )}
+        </div>
+
+        {hasChildren && isExpanded && (
+          <div className="mt-2 flex flex-col gap-2">
+            {menu.children?.map((child) =>
+              // Skip any child already in the render path — guards against a
+              // malformed cycle causing infinite recursion.
+              ancestorCodes?.has(child.code) ? null : (
+                <MenuTreeItem
+                  key={child.code}
+                  menu={child}
+                  level={level + 1}
+                  ancestorCodes={new Set(ancestorCodes ?? []).add(menu.code)}
+                />
+              ),
+            )}
+          </div>
+        )}
+      </>
+    );
+  };
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <IGRPIcon
+                iconName="Menu"
+                aria-hidden
+                className="size-5"
+                strokeWidth={2}
+              />
+              Gerir Menus
+            </DialogTitle>
+            <DialogDescription>
+              Adicione ou remova menus do departamento com um clique.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col sm:flex-row gap-3 pb-4">
+            <div className="flex-1 relative">
+              <IGRPIcon
+                iconName="Search"
+                aria-hidden
+                className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
+              />
+              <Input
+                type="search"
+                aria-label="Pesquisar menu"
+                autoComplete="off"
+                placeholder="Pesquisar por nome, código ou URL…"
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="">
+              <Select
+                value={selectedApp}
+                onValueChange={setSelectedApp}
+                disabled={loadingApps}
+              >
+                <SelectTrigger className="h-10">
+                  <SelectValue placeholder="Todas aplicações" />
+                </SelectTrigger>
+                <SelectContent>
+                  {loadingApps && (
+                    <SelectItem value="loading">A carregar…</SelectItem>
+                  )}
+                  {sortedApps.map((app) => (
+                    <SelectItem key={app.code} value={app.code}>
+                      <div className="flex items-center gap-2">
+                        <IGRPIcon
+                          iconName="AppWindow"
+                          aria-hidden
+                          className="size-4"
+                          strokeWidth={2}
+                        />
+                        {app.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+            {loading ? (
+              <div className="flex flex-col gap-2">
+                {["sk-1", "sk-2", "sk-3", "sk-4", "sk-5", "sk-6"].map((key) => (
+                  <Skeleton key={key} className="h-20 rounded-lg" />
+                ))}
+              </div>
+            ) : menuTree.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+                <IGRPIcon
+                  iconName="Menu"
+                  aria-hidden
+                  className="size-16 mb-4 opacity-20"
+                  strokeWidth={1.5}
+                />
+                <p className="font-semibold text-lg">Nenhum menu encontrado</p>
+                <p className="text-sm mt-1">
+                  {searchTerm || selectedApp
+                    ? "Tente ajustar os filtros de pesquisa"
+                    : "Não há menus disponíveis"}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {menuTree.map((menu) => (
+                  <MenuTreeItem key={menu.code} menu={menu} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center py-4 ">
+            <div className="text-sm text-muted-foreground">
+              <span className="font-medium">
+                {filteredMenus.filter((m) => m.isAssigned).length}
+              </span>{" "}
+              de <span className="font-medium">{filteredMenus.length}</span>{" "}
+              menus adicionados
+            </div>
+
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={processingMenu !== null}
+              className="gap-2"
+            >
+              <IGRPIcon
+                iconName="X"
+                aria-hidden
+                className="size-4"
+                strokeWidth={2}
+              />
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={!!menuToRemove}
+        onOpenChange={(open) => !open && setMenuToRemove(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <IGRPIcon
+                iconName="AlertTriangle"
+                aria-hidden
+                className="size-5 text-destructive"
+                strokeWidth={2}
+              />
+              Remover Menu
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja remover o menu{" "}
+              <strong className="text-foreground">{menuToRemove?.name}</strong>{" "}
+              deste departamento? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <IGRPButton
+              disabled={processingMenu !== null}
+              variant="outline"
+              onClick={() => {
+                setMenuToRemove(null);
+              }}
+              type="button"
+              showIcon
+              iconPlacement="start"
+              iconName="X"
+            >
+              Cancelar
+            </IGRPButton>
+            <IGRPButton
+              onClick={handleConfirmRemove}
+              disabled={processingMenu !== null}
+              className="bg-destructive hover:bg-destructive/90 text-white gap-2"
+            >
+              {processingMenu ? (
+                <>
+                  <IGRPIcon
+                    iconName="LoaderCircle"
+                    aria-hidden
+                    className="size-4 animate-spin motion-reduce:animate-none"
+                    strokeWidth={2}
+                  />
+                  A remover…
+                </>
+              ) : (
+                <>
+                  <IGRPIcon
+                    iconName="Trash"
+                    aria-hidden
+                    className="size-4"
+                    strokeWidth={2}
+                  />
+                  Remover
+                </>
+              )}
+            </IGRPButton>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}

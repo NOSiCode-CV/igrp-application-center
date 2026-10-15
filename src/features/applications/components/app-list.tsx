@@ -1,187 +1,146 @@
 "use client";
 
-import {
-  IGRPButtonPrimitive,
-  IGRPDropdownMenuCheckboxItemPrimitive,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuSeparatorPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
-  IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogTriggerPrimitive,
-  IGRPButton,
-} from "@igrp/igrp-framework-react-design-system";
 import { useState } from "react";
-import { AppCenterLoading } from "@/components/loading";
-import { AppCenterNotFound } from "@/components/not-found";
-import { PageHeader } from "@/components/page-header";
-import { ApplicationCard } from "@/features/applications/components/app-card";
+
+import {
+  IGRPButton,
+  IGRPPageHeader,
+} from "@igrp/igrp-framework-react-design-system";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+
+import { InlineError } from "@/components/inline-error";
 import { useApplications } from "@/features/applications/use-applications";
-import { STATUS_OPTIONS } from "@/lib/constants";
-import { ApplicationForm } from "./app-form";
+import {
+  PAGE_HEADER_ACTIONS_CLASS,
+  PAGE_HEADER_PROPS,
+} from "@/lib/page-header";
+
+import { AppListSkeleton } from "./app-list-skeleton";
+import { ApplicationFormDialog } from "./application-form-dialog";
+import { ApplicationsGrid } from "./applications-grid";
+import { ApplicationsToolbar } from "./applications-toolbar";
 
 export function ApplicationList() {
+  const t = useTranslations("applications.list");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [open, setOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<ApplicationDTO | undefined>();
 
-  const { data: applications, isLoading, error } = useApplications();
+  const { data: applications, isLoading, error, refetch } = useApplications();
 
-  if (isLoading && !error)
-    return <AppCenterLoading descrption="Carregando aplicações..." />;
+  const openCreate = () => {
+    setEditing(undefined);
+    setDialogOpen(true);
+  };
 
-  if (error) throw error;
+  const openEdit = (app: ApplicationDTO) => {
+    setEditing(app);
+    setDialogOpen(true);
+  };
 
-  // if (!applications || applications.length === 0) {
-  //   return (
-  //     <AppCenterNotFound
-  //       iconName="AppWindow"
-  //       title="Nenhuma aplicação encontrada."
-  //     />
-  //   );
-  // }
+  if (isLoading) return <AppListSkeleton />;
 
-  const allApps = applications;
-  const filteredApps = allApps?.filter((app) => {
-    const matchesSearch =
-      app.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.code?.toLowerCase().includes(searchTerm.toLowerCase());
+  if (error)
+    return (
+      <InlineError
+        title={t("loadErrorTitle")}
+        message={t("loadErrorMessage")}
+        onRetry={() => refetch()}
+      />
+    );
 
-    const matchesStatus =
-      statusFilter.length === 0 || statusFilter.includes(app.status);
+  const allApps = applications ?? [];
+  const appEmpty = allApps.length === 0;
 
-    return matchesSearch && matchesStatus;
-  });
+  /* A plain loop, not `useMemo`: this sits after the loading/error early
+     returns, where a hook would break the rules of hooks — and counting a
+     list this size costs nothing. */
+  const statusCounts: Record<string, number> = {};
+  for (const app of allApps) {
+    const key = String(app.status ?? "");
+    statusCounts[key] = (statusCounts[key] ?? 0) + 1;
+  }
 
-  const appEmpty = allApps?.length === 0;
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter([]);
+  };
+
+  const emptyState = (
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-10 text-center">
+      <p className="font-medium text-foreground">{t("emptyTitle")}</p>
+      <p className="text-sm text-muted-foreground max-w-md">
+        {t("emptyDescription")}
+      </p>
+      <IGRPButton
+        variant="outline"
+        showIcon
+        iconName="Grid2x2Plus"
+        onClick={openCreate}
+      >
+        {t("new")}
+      </IGRPButton>
+    </div>
+  );
 
   return (
-    <div className="flex flex-col gap-10 animate-fade-in">
-      <PageHeader
-        title="Gerir Aplicações"
-        description="Gerir Menus de Aplicações."
-        showActions
+    /* No `animate-fade-in`: the page fading in on every navigation is motion
+       that reports nothing — the content did not change, it arrived. */
+    /* Vertical rhythm shared with `/settings/users`, so the two list pages do
+       not sit at different heights when you move between them:
+         gap-6  page header -> content
+         gap-4  controls (toolbar / tabs) -> results
+         gap-3  result count -> grid (see `applications-grid.tsx`)
+       This page used gap-10/gap-6 and users used gap-5; the header floated
+       twice as far from its content on one as on the other. */
+    <div className="flex flex-col gap-6">
+      {/* "Gestão de Aplicações", the same words as the card that opens this
+          page, so the label promises exactly what the destination delivers. */}
+      <IGRPPageHeader
+        {...PAGE_HEADER_PROPS}
+        title={t("title")}
+        description={t("description")}
+        showBackButton
+        urlBackButton="/settings"
       >
-        <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-          <IGRPDialogTriggerPrimitive asChild>
-            <IGRPButton showIcon iconName="Grid2x2Plus">
-              Nova Aplicação
-            </IGRPButton>
-          </IGRPDialogTriggerPrimitive>
-          <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[90vh]">
-            <IGRPDialogHeaderPrimitive>
-              <IGRPDialogTitlePrimitive>
-                Nova Aplicação
-              </IGRPDialogTitlePrimitive>
-            </IGRPDialogHeaderPrimitive>
-
-            <ApplicationForm onSuccess={() => setOpen(false)} />
-          </IGRPDialogContentPrimitive>
-        </IGRPDialogPrimitive>
-      </PageHeader>
-
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col sm:flex-row items-start gap-4 w-full">
-          <div className="relative w-full max-w-sm">
-            <IGRPIcon
-              iconName="Search"
-              className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-              strokeWidth={2}
-            />
-            <IGRPInputPrimitive
-              type="search"
-              placeholder="Pesquisar aplicações..."
-              className="w-full bg-background pl-8"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              disabled={appEmpty}
-            />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <IGRPDropdownMenuPrimitive>
-              <IGRPDropdownMenuTriggerPrimitive asChild>
-                <IGRPButtonPrimitive
-                  variant="outline"
-                  className="gap-2"
-                  disabled={appEmpty}
-                >
-                  <IGRPIcon iconName="ListFilter" strokeWidth={2} />
-                  Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
-                </IGRPButtonPrimitive>
-              </IGRPDropdownMenuTriggerPrimitive>
-              <IGRPDropdownMenuContentPrimitive align="start" className="w-40">
-                <IGRPDropdownMenuSeparatorPrimitive />
-                {STATUS_OPTIONS.map(({ value, label }) => (
-                  <IGRPDropdownMenuCheckboxItemPrimitive
-                    key={value}
-                    checked={statusFilter.includes(value)}
-                    onCheckedChange={(checked) => {
-                      setStatusFilter(
-                        checked
-                          ? [...statusFilter, value]
-                          : statusFilter.filter((s) => s !== value),
-                      );
-                    }}
-                  >
-                    {label}
-                  </IGRPDropdownMenuCheckboxItemPrimitive>
-                ))}
-                {statusFilter.length > 0 && (
-                  <>
-                    <IGRPDropdownMenuSeparatorPrimitive />
-                    <IGRPDropdownMenuItemPrimitive
-                      onClick={() => setStatusFilter([])}
-                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                    >
-                      <IGRPIcon iconName="X" className="mr-1" strokeWidth={2} />
-                      Limpar
-                    </IGRPDropdownMenuItemPrimitive>
-                  </>
-                )}
-              </IGRPDropdownMenuContentPrimitive>
-            </IGRPDropdownMenuPrimitive>
-          </div>
+        <div className={PAGE_HEADER_ACTIONS_CLASS}>
+          <IGRPButton showIcon iconName="Grid2x2Plus" onClick={openCreate}>
+            {t("new")}
+          </IGRPButton>
         </div>
+      </IGRPPageHeader>
 
-        {filteredApps?.length === 0 && allApps && allApps.length > 0 ? (
-          <div className="text-center py-6 text-muted-foreground">
-            Nenhuma aplicação encontrada. Tente ajustar a sua pesquisa ou
-            filtros.
-          </div>
-        ) : allApps && allApps.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground border border-muted-foreground/30 rounded-md">
-            <p className="mb-4">Nenhuma aplicação encontrada.</p>
-            <IGRPDialogPrimitive open={open} onOpenChange={setOpen}>
-              <IGRPDialogTriggerPrimitive asChild>
-                <IGRPButton variant="outline" showIcon iconName="Grid2x2Plus">
-                  Criar Nova Aplicação
-                </IGRPButton>
-              </IGRPDialogTriggerPrimitive>
-              <IGRPDialogContentPrimitive className="sm:min-w-2xl  max-h-[90vh]">
-                <IGRPDialogHeaderPrimitive>
-                  <IGRPDialogTitlePrimitive>
-                    Nova Aplicação
-                  </IGRPDialogTitlePrimitive>
-                </IGRPDialogHeaderPrimitive>
-                <ApplicationForm onSuccess={() => setOpen(false)} />
-              </IGRPDialogContentPrimitive>
-            </IGRPDialogPrimitive>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredApps?.map((app) => (
-              <ApplicationCard key={app.id} app={app} />
-            ))}
-          </div>
-        )}
+      <div className="flex flex-col gap-4">
+        <ApplicationsToolbar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          disabled={appEmpty}
+          statusCounts={statusCounts}
+          onClearFilters={clearFilters}
+        />
+
+        <ApplicationsGrid
+          applications={allApps}
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          onEdit={openEdit}
+          emptyState={emptyState}
+          onClearFilters={clearFilters}
+        />
       </div>
+
+      <ApplicationFormDialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) setEditing(undefined);
+        }}
+        application={editing}
+      />
     </div>
   );
 }

@@ -1,14 +1,15 @@
 "use client";
 
+import Link, { useLinkStatus } from "next/link";
+
 import {
-  IGRPButtonPrimitive,
+  Button,
+  cn,
   IGRPIcon,
   type IGRPIconProps,
 } from "@igrp/igrp-framework-react-design-system";
-import Link, { useLinkStatus } from "next/link";
-import { cn } from "@/lib/utils";
 
-type IGRPBtnProps = React.ComponentProps<typeof IGRPButtonPrimitive>;
+type IGRPBtnProps = React.ComponentProps<typeof Button>;
 
 export interface ButtonLinkProps extends React.ComponentProps<typeof Link> {
   label?: string;
@@ -18,6 +19,7 @@ export interface ButtonLinkProps extends React.ComponentProps<typeof Link> {
   variant?: IGRPBtnProps["variant"];
   btnClassName?: string;
   size?: IGRPBtnProps["size"];
+  "aria-label"?: string;
 }
 
 export function ButtonLink({
@@ -27,33 +29,34 @@ export function ButtonLink({
   variant,
   btnClassName,
   size,
+  "aria-label": ariaLabel,
   ...props
 }: ButtonLinkProps) {
+  const linkAriaLabel = label ? ariaLabel : (ariaLabel ?? label);
+
   return (
-    <IGRPButtonPrimitive
+    <Button
       asChild
       variant={variant || "default"}
       className={btnClassName}
       size={size}
     >
-      <Link {...props}>
+      <Link aria-label={linkAriaLabel} {...props}>
         <LinkLoadingIndicator iconName={icon} iconClassName={iconClassName} />
         {label}
       </Link>
-    </IGRPButtonPrimitive>
+    </Button>
   );
 }
 
 interface LinkLoadingIndicatorProps {
   iconName: IGRPIconProps["iconName"];
   iconClassName?: string;
-  //                      customIcon?: React.ReactNode;
 }
 
 function LinkLoadingIndicator({
   iconName,
   iconClassName,
-  // customIcon = undefined,
 }: LinkLoadingIndicatorProps) {
   const { pending } = useLinkStatus();
 

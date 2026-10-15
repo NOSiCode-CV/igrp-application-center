@@ -1,3 +1,5 @@
+const bp = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 export const siteConfig = {
   name: "IGRP",
   url: "https://igrp.cv",
@@ -9,8 +11,8 @@ export const siteConfig = {
     github: "https://github.com/NOSiCode-CV/IGRP-Framework",
   },
   logo: {
-    src: "/igrp/logo-no-text.png",
-    srcDark: "/igrp/logo-negative.png",
+    src: `${bp}/logo-no-text.png`,
+    srcDark: `${bp}/logo-no-text.png`,
     width: 100,
     height: 60,
   },

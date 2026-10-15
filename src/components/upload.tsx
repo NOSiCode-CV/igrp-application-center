@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { type ChangeEvent, useCallback, useEffect, useState } from "react";
 
 interface ImageUploadProps {
   value?: File | string | null;
@@ -13,6 +12,7 @@ interface ImageUploadProps {
 export function Upload({
   value = null,
   onChange = () => {},
+  alt = "Profile preview",
 }: ImageUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -59,7 +59,7 @@ export function Upload({
     }
   }, []);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
 
     if (previewUrl?.startsWith("blob:")) {
@@ -102,8 +102,10 @@ export function Upload({
           <div className="relative h-24 w-24 overflow-hidden rounded-full border">
             <Image
               src={previewUrl || "/placeholder.svg"}
-              alt="Profile preview"
-              className="h-full w-full object-cover"
+              alt={alt}
+              fill
+              sizes="96px"
+              className="object-cover"
             />
           </div>
         ) : (

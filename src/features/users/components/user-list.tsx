@@ -1,537 +1,366 @@
 "use client";
 
+import { useCallback, useMemo, useState } from "react";
+
 import {
-  type ColumnDef,
-  IGRPBadgePrimitive,
+  IGRPButton,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
-  IGRPDataTableFacetedFilterFn,
-  IGRPDataTableFilterFaceted,
-  IGRPDataTableFilterInput,
-  IGRPDataTableHeaderDefault,
-  IGRPDataTableHeaderSortToggle,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
-  IGRPIcon,
-  IGRPUserAvatar,
-  type Row,
-  IGRPTabsPrimitive,
-  IGRPTabsListPrimitive,
-  IGRPTabsTriggerPrimitive,
-  IGRPTabsContentPrimitive,
+  IGRPPageHeader,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import type {
+  IGRPUserDTO,
+  InvitationDTO,
+} from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
-import { ButtonLink } from "@/components/button-link";
-import { AppCenterLoading } from "@/components/loading";
-import { PageHeader } from "@/components/page-header";
-import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
-import {
-  useUsers,
-  useGetUserInvitations,
-  useResendUserInvitation,
-  useUpdateUserStatus,
-  useCancelUserInvitation,
-} from "@/features/users/use-users";
-import { STATUS_OPTIONS } from "@/lib/constants";
-import {
-  cn,
-  geInviteTitle,
-  getInitials,
-  getStatusColor,
-  showStatus,
-  statusInviteClass,
-} from "@/lib/utils";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/components/confirmation-modal";
+import { ColumnFacetedFilter } from "@/components/data-table/faceted-filter";
+import { ColumnSearchInput } from "@/components/data-table/search-input";
+import { AppCenterLoading } from "@/components/loading";
+import { getInvitationColumns } from "@/features/users/components/invitations-columns";
+import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
+import { getTableColumns } from "@/features/users/components/users-columns";
+import {
+  useCancelUserInvitation,
+  useGetUserInvitations,
+  useUpdateUserStatus,
+  useUsers,
+} from "@/features/users/use-users";
+import { useFormat } from "@/i18n/format";
+import {
+  PAGE_HEADER_ACTIONS_CLASS,
+  PAGE_HEADER_PROPS,
+} from "@/lib/page-header";
 
-export function UserList() {
-  const [data, setData] = useState<IGRPUserDTO[]>([]);
-  const [pendingData, setPendingData] = useState<IGRPUserDTO[]>([]);
-  const [canceledData, setCanceledData] = useState<IGRPUserDTO[]>([]);
-  const router = useRouter();
+import { useUserStatusOptions } from "../lib/i18n";
+
+interface UserListProps {
+  initialUsers: IGRPUserDTO[];
+  initialInvitations: InvitationDTO[];
+  currentUserId?: string;
+}
+
+type DialogState =
+  | { kind: "none" }
+  | { kind: "status"; user: IGRPUserDTO; newStatus: "ACTIVE" | "INACTIVE" }
+  | { kind: "cancel"; invitation: InvitationDTO };
+
+export function UserList({
+  initialUsers,
+  initialInvitations,
+  currentUserId,
+}: UserListProps) {
+  const t = useTranslations("users");
+  const { formatDate } = useFormat();
+  const statusOptions = useUserStatusOptions();
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [userToUpdate, setUserToUpdate] = useState<{
-    user: IGRPUserDTO;
-    newStatus: "ACTIVE" | "INACTIVE";
-  } | null>(null);
-  const [userToCancel, setUserToCancel] = useState<IGRPUserDTO | null>(null);
+  const [dialog, setDialog] = useState<DialogState>({ kind: "none" });
+  const closeDialog = useCallback(() => setDialog({ kind: "none" }), []);
 
-  const resendMutation = useResendUserInvitation();
   const updateStatusMutation = useUpdateUserStatus();
-
   const cancelUserInvitationMutation = useCancelUserInvitation();
 
-  const { data: users, isLoading, error } = useUsers();
-  const { data: invites, isLoading: isLoadingInvites } =
-    useGetUserInvitations();
+  const {
+    data: users = initialUsers,
+    error,
+    refetch,
+    isFetching,
+  } = useUsers(undefined, {
+    initialData: initialUsers,
+  });
+  const { data: invites, isLoading: isLoadingInvites } = useGetUserInvitations(
+    undefined,
+    { initialData: initialInvitations },
+  );
 
-  console.log("invites", users);
+  const { pendingData, canceledData } = useMemo(() => {
+    const pending: InvitationDTO[] = [];
+    const canceled: InvitationDTO[] = [];
+    for (const inv of invites ?? []) {
+      if (inv.status === "PENDING") pending.push(inv);
+      else if (inv.status === "CANCELED") canceled.push(inv);
+    }
 
-  useEffect(() => {
-    setData(users ?? []);
-  }, [users]);
-
-  useEffect(() => {
-    setPendingData(
-      invites?.filter((invite) => invite.status === "PENDING") ?? [],
-    );
-    setCanceledData(
-      invites?.filter((invite) => invite.status === "CANCELED") ?? [],
-    );
+    return { pendingData: pending, canceledData: canceled };
   }, [invites]);
 
-  const isInviteStatus = (s: string) =>
-    ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
-
-  const getTableColumns = (
-    ActionsCell: (props: { row: Row<IGRPUserDTO> }) => ReactNode,
-    options?: { showInvitationDate?: boolean },
-  ): ColumnDef<IGRPUserDTO>[] => {
-    const showInvitationDate = options?.showInvitationDate !== false;
-    return [
-      {
-        header: ({ column }) => (
-          <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
-        ),
-        accessorKey: "name",
-        cell: ({ row }) => {
-          const email = String(row.getValue("email") ?? "");
-          const nameValue = row.getValue("name");
-          const name =
-            nameValue && String(nameValue) !== "null"
-              ? String(nameValue)
-              : email;
-          return (
-            <div className="flex items-center gap-3">
-              <IGRPUserAvatar
-                alt={name || email}
-                fallbackContent={getInitials(name || email)}
-                className="size-10"
-                fallbackClass="text-base bg-primary text-primary-foreground"
-              />
-              <div>
-                <div className="text-sm leading-none">{name || email}</div>
-                <span className="text-muted-foreground text-xs">{email}</span>
-              </div>
-            </div>
-          );
-        },
-      },
-      {
-        header: ({ column }) => (
-          <IGRPDataTableHeaderSortToggle column={column} title="Email" />
-        ),
-        accessorKey: "email",
-        cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
-      },
-      ...(showInvitationDate
-        ? [
-            {
-              header: "Data do Convite",
-              accessorKey: "invitationDate",
-              cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
-                const date = row.getValue("invitationDate");
-                return (
-                  <div>
-                    {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-                  </div>
-                );
-              },
-            } as ColumnDef<IGRPUserDTO>,
-          ]
-        : []),
-      {
-        header: () => (
-          <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
-        ),
-        accessorKey: "status",
-        cell: ({ row }) => {
-          const status = String(row.getValue("status") ?? "");
-          const isInvite = isInviteStatus(status);
-          return (
-            <div className="text-center">
-              <IGRPBadgePrimitive
-                className={cn(
-                  isInvite ? statusInviteClass(status) : getStatusColor(status),
-                  "capitalize",
-                )}
-              >
-                {isInvite ? geInviteTitle(status) : showStatus(status)}
-              </IGRPBadgePrimitive>
-            </div>
-          );
-        },
-        filterFn: IGRPDataTableFacetedFilterFn,
-        size: 70,
-      },
-      {
-        id: "actions",
-        header: () => <span className="sr-only">Ações</span>,
-        cell: ({ row }) => <ActionsCell row={row} />,
-        size: 60,
-        enableHiding: false,
-      },
-    ];
-  };
-
-  const activeColumns = getTableColumns(ActiveRowActions, {
-    showInvitationDate: false,
-  });
-  const pendingColumns = getTableColumns(PendingRowActions);
-  const canceledColumns = getTableColumns(PendingRowActions);
-
-  function ActiveRowActions({ row }: { row: Row<IGRPUserDTO> }) {
-    const state = String(row.getValue("status"));
-
-    const handleStatusClick = (newStatus: "ACTIVE" | "INACTIVE") => {
-      setUserToUpdate({
-        user: row.original,
-        newStatus,
-      });
-      setStatusDialogOpen(true);
-    };
-
-    return (
-      <IGRPDropdownMenuPrimitive>
-        <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
-          <IGRPIcon iconName="Ellipsis" />
-        </IGRPDropdownMenuTriggerPrimitive>
-
-        <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
-          {state === "ACTIVE" ? (
-            <IGRPDropdownMenuItemPrimitive
-              className="text-destructive focus:text-destructive"
-              onSelect={() => handleStatusClick("INACTIVE")}
-              variant="destructive"
-            >
-              <IGRPIcon iconName="CircleOff" />
-              Desativar
-            </IGRPDropdownMenuItemPrimitive>
-          ) : (
-            <IGRPDropdownMenuItemPrimitive
-              onSelect={() => handleStatusClick("ACTIVE")}
-              variant="default"
-            >
-              <IGRPIcon iconName="CircleCheck" />
-              Ativar
-            </IGRPDropdownMenuItemPrimitive>
-          )}
-
-          <IGRPDropdownMenuItemPrimitive
-            variant="default"
-            onClick={() => router.push(`/settings/users/${row.original.id}`)}
-          >
-            <Link
-              className="flex gap-2"
-              href={`/settings/users/${row.original.id}`}
-            >
-              <IGRPIcon iconName="UserCog" />
-              Gerir
-            </Link>
-          </IGRPDropdownMenuItemPrimitive>
-        </IGRPDropdownMenuContentPrimitive>
-      </IGRPDropdownMenuPrimitive>
-    );
-  }
-
-  function PendingRowActions({ row }: { row: Row<IGRPUserDTO> }) {
-    const handleCopyUrl = () => {
-      const invitationUrl = (row.original as any).invitationUrl;
-      if (invitationUrl) {
-        navigator.clipboard.writeText(invitationUrl);
-        igrpToast({
-          type: "success",
-          title: "URL copiado",
-          description: "URL do convite copiado para a área de transferência",
-          duration: 4000,
-        });
-      } else {
-        igrpToast({
-          type: "error",
-          title: "Erro",
-          description: "URL do convite não disponível",
-          duration: 4000,
-        });
-      }
-    };
-
-    const handleResend = () => {
-      if (row.original.id) {
-        resendMutation.mutate(row.original.id, {
-          onSuccess: () => {
-            igrpToast({
-              type: "success",
-              title: "Convite reenviado",
-              description: "O convite foi reenviado com sucesso",
-              duration: 4000,
-            });
-          },
-          onError: () => {
-            igrpToast({
-              type: "error",
-              title: "Erro",
-              description: "Não foi possível reenviar o convite",
-              duration: 4000,
-            });
-          },
-        });
-      }
-    };
-
-    const handleCancelClick = () => {
-      setUserToCancel(row.original);
-      setCancelDialogOpen(true);
-    };
-
-    return (
-      <IGRPDropdownMenuPrimitive>
-        <IGRPDropdownMenuTriggerPrimitive className="p-1 rounded-sm">
-          <IGRPIcon iconName="Ellipsis" />
-        </IGRPDropdownMenuTriggerPrimitive>
-
-        <IGRPDropdownMenuContentPrimitive align="end" className="min-w-44">
-          {String(row.original.status) !== "CANCELED" &&
-            String(row.original.status) !== "REJECTED" && (
-              <IGRPDropdownMenuItemPrimitive onSelect={handleCopyUrl}>
-                <IGRPIcon iconName="Copy" />
-                Copiar URL
-              </IGRPDropdownMenuItemPrimitive>
-            )}
-
-          <IGRPDropdownMenuItemPrimitive onSelect={handleResend}>
-            <IGRPIcon iconName="Mail" />
-            Reenviar Convite
-          </IGRPDropdownMenuItemPrimitive>
-
-          {String(row.original.status) !== "CANCELED" &&
-            String(row.original.status) !== "REJECTED" && (
-              <IGRPDropdownMenuItemPrimitive
-                className="text-destructive focus:text-destructive"
-                variant="destructive"
-                onSelect={handleCancelClick}
-              >
-                <IGRPIcon iconName="Trash2" />
-                Cancelar Convite
-              </IGRPDropdownMenuItemPrimitive>
-            )}
-        </IGRPDropdownMenuContentPrimitive>
-      </IGRPDropdownMenuPrimitive>
-    );
-  }
-
-  const activeFilters: IGRPDataTableClientFilterListProps<IGRPUserDTO>[] = [
-    {
-      columnId: "name",
-      component: ({ column }) => <IGRPDataTableFilterInput column={column} />,
+  const handleStatusClick = useCallback(
+    (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => {
+      setDialog({ kind: "status", user, newStatus });
     },
-    {
-      columnId: "status",
-      component: ({ column }) => (
-        <IGRPDataTableFilterFaceted
-          column={column}
-          options={STATUS_OPTIONS}
-          placeholder="Estado"
-        />
-      ),
-    },
-  ];
+    [],
+  );
 
-  if (isLoading || (!users && !error)) {
-    return <AppCenterLoading descrption="Carregando utilizadores..." />;
-  }
+  const handleCancelClick = useCallback((invitation: InvitationDTO) => {
+    setDialog({ kind: "cancel", invitation });
+  }, []);
 
-  if (error) throw error;
+  const activeColumns = useMemo(
+    () => getTableColumns(t, handleStatusClick, { currentUserId }),
+    [t, handleStatusClick, currentUserId],
+  );
+  const inviteColumns = useMemo(
+    () => getInvitationColumns(t, formatDate, handleCancelClick),
+    [t, formatDate, handleCancelClick],
+  );
+
+  const activeFilters: IGRPDataTableClientFilterListProps<IGRPUserDTO>[] =
+    useMemo(
+      () => [
+        {
+          columnId: "name",
+          component: ({ column }) => (
+            <ColumnSearchInput
+              column={column}
+              placeholder={t("list.filters.searchByNameOrEmail")}
+              label={t("list.filters.searchByNameOrEmail")}
+            />
+          ),
+        },
+        {
+          columnId: "status",
+          component: ({ column }) => (
+            <ColumnFacetedFilter
+              column={column}
+              options={statusOptions}
+              label={t("list.filters.status")}
+            />
+          ),
+        },
+      ],
+      [t, statusOptions],
+    );
+
+  const inviteFilters: IGRPDataTableClientFilterListProps<InvitationDTO>[] =
+    useMemo(
+      () => [
+        {
+          columnId: "identifierValue",
+          component: ({ column }) => (
+            <ColumnSearchInput
+              column={column}
+              label={t("list.filters.searchInvitations")}
+              placeholder={t("list.filters.searchByEmailPlaceholder")}
+            />
+          ),
+        },
+      ],
+      [t],
+    );
 
   const handleConfirmStatusChange = () => {
-    if (userToUpdate && userToUpdate.user.id) {
-      updateStatusMutation.mutate(
-        { id: userToUpdate.user.id, value: userToUpdate.newStatus },
-        {
-          onSuccess: () => {
-            igrpToast({
-              type: "success",
-              title: "Estado alterado",
-              description: "O estado do utilizador foi alterado com sucesso",
-              duration: 4000,
-            });
-            setStatusDialogOpen(false);
-            setUserToUpdate(null);
-          },
-          onError: () => {
-            igrpToast({
-              type: "error",
-              title: "Erro",
-              description: "Não foi possível alterar o estado do utilizador",
-              duration: 4000,
-            });
-          },
-        },
-      );
-    }
-  };
-
-  const handleConfirmCancel = () => {
-    if (userToCancel) {
-      cancelUserInvitationMutation.mutate(userToCancel.id, {
+    if (dialog.kind !== "status") return;
+    updateStatusMutation.mutate(
+      { id: dialog.user.id, value: dialog.newStatus },
+      {
         onSuccess: () => {
           igrpToast({
             type: "success",
-            title: "Convite cancelado",
-            description: "O convite foi cancelado com sucesso",
-            duration: 4000,
+            title: t("list.toasts.statusChanged"),
+            description: t("list.toasts.statusChangedDescription"),
+            duration: 6000,
           });
-          setCancelDialogOpen(false);
-          setUserToCancel(null);
+          closeDialog();
         },
         onError: () => {
           igrpToast({
             type: "error",
-            title: "Erro",
-            description: "Não foi possível cancelar o convite",
-            duration: 4000,
+            title: t("list.toasts.error"),
+            description: t("list.toasts.statusChangeFailed"),
+            duration: 6000,
           });
         },
-      });
-    }
+      },
+    );
   };
 
-  return (
-    <div className="flex flex-col gap-5 animate-fade-in">
-      <PageHeader
-        title="Gestão de Utilizadores"
-        description="Ver e gerir todos os utilizadores do sistema."
-        showActions
+  const handleConfirmCancel = () => {
+    if (dialog.kind !== "cancel") return;
+    cancelUserInvitationMutation.mutate(dialog.invitation.id, {
+      onSuccess: () => {
+        igrpToast({
+          type: "success",
+          title: t("list.toasts.invitationCanceled"),
+          description: t("list.toasts.invitationCanceledDescription"),
+          duration: 6000,
+        });
+        closeDialog();
+      },
+      onError: () => {
+        igrpToast({
+          type: "error",
+          title: t("list.toasts.error"),
+          description: t("list.toasts.invitationCancelFailed"),
+          duration: 6000,
+        });
+      },
+    });
+  };
+
+  return (   
+    <div className="flex flex-col gap-6">
+      <IGRPPageHeader
+        {...PAGE_HEADER_PROPS}
+        title={t("list.title")}
+        description={t("list.description")}
+        showBackButton
+        urlBackButton="/settings"
       >
-        <ButtonLink
-          onClick={() => setInviteDialogOpen(true)}
-          icon="UserRoundPlus"
-          href="#"
-          label="Convidar Utilizador"
-        />
-      </PageHeader>
+        <div className={PAGE_HEADER_ACTIONS_CLASS}>
+          <IGRPButton
+            showIcon
+            iconName="UserRoundPlus"
+            onClick={() => setInviteDialogOpen(true)}
+          >
+            {t("list.inviteUser")}
+          </IGRPButton>
+        </div>
+      </IGRPPageHeader>
 
-      <IGRPTabsPrimitive defaultValue="active">
-        <IGRPTabsListPrimitive>
-          <IGRPTabsTriggerPrimitive value="active">
-            Utilizadores Ativos
-          </IGRPTabsTriggerPrimitive>
-          <IGRPTabsTriggerPrimitive value="pending">
-            Convites Pendentes ({pendingData.length})
-          </IGRPTabsTriggerPrimitive>
-          <IGRPTabsTriggerPrimitive value="canceled">
-            Convites Cancelados ({canceledData.length})
-          </IGRPTabsTriggerPrimitive>
-        </IGRPTabsListPrimitive>
+      {error && (
+        <div
+          role="status"
+          className="flex flex-col gap-3 rounded-lg bg-warning-subtle px-4 py-3 text-sm text-warning-subtle-foreground sm:flex-row sm:items-center sm:justify-between"
+        >
+          <span>{t("list.staleWarning")}</span>
+          <IGRPButton
+            variant="outline"
+            size="sm"
+            showIcon
+            iconName="RotateCw"
+            disabled={isFetching}
+            onClick={() => refetch()}
+          >
+            {isFetching ? t("list.refreshing") : t("list.refresh")}
+          </IGRPButton>
+        </div>
+      )}
 
-        <IGRPTabsContentPrimitive value="active">
+      <Tabs defaultValue="active" className="flex flex-col gap-6">
+        <TabsList>
+          <TabsTrigger value="active">{t("list.tabs.active")}</TabsTrigger>
+          <TabsTrigger value="pending">
+            {t("list.tabs.pending", { count: pendingData.length })}
+          </TabsTrigger>
+          <TabsTrigger value="canceled">
+            {t("list.tabs.canceled", { count: canceledData.length })}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="active">
           <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
             showFilter
             showPagination
-            tableClassName="table-fixed"
             columns={activeColumns}
-            data={data}
+            data={users}
             clientFilters={activeFilters}
+            tableHeaderClassName="bg-muted"
           />
-        </IGRPTabsContentPrimitive>
+        </TabsContent>
 
-        <IGRPTabsContentPrimitive value="pending">
+        <TabsContent value="pending">
           {isLoadingInvites ? (
-            <AppCenterLoading descrption="Carregando convites..." />
+            <AppCenterLoading description={t("list.loadingInvitations")} />
           ) : (
-            <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
+            <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
-              tableClassName="table-fixed"
-              columns={pendingColumns}
+              columns={inviteColumns}
               data={pendingData}
-              clientFilters={activeFilters}
+              clientFilters={inviteFilters}
+              tableHeaderClassName="bg-muted"
             />
           )}
-        </IGRPTabsContentPrimitive>
+        </TabsContent>
 
-        <IGRPTabsContentPrimitive value="canceled">
+        <TabsContent value="canceled">
           {isLoadingInvites ? (
-            <AppCenterLoading descrption="Carregando convites..." />
+            <AppCenterLoading description={t("list.loadingInvitations")} />
           ) : (
-            <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
+            <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
-              tableClassName="table-fixed"
-              columns={canceledColumns}
+              columns={inviteColumns}
               data={canceledData}
-              clientFilters={activeFilters}
+              clientFilters={inviteFilters}
+              tableHeaderClassName="bg-muted"
             />
           )}
-        </IGRPTabsContentPrimitive>
-      </IGRPTabsPrimitive>
+        </TabsContent>
+      </Tabs>
 
-      {inviteDialogOpen && (
-        <UserInviteDialog
-          open={inviteDialogOpen}
-          onOpenChange={setInviteDialogOpen}
-        />
-      )}
+      <UserInviteDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+      />
 
       <ConfirmDialog
-        open={statusDialogOpen}
-        onOpenChange={setStatusDialogOpen}
+        open={dialog.kind === "status"}
+        onOpenChange={(open) => !open && closeDialog()}
         title={
-          userToUpdate?.newStatus === "INACTIVE"
-            ? "Desativar Utilizador"
-            : "Ativar Utilizador"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? t("list.statusDialog.deactivateTitle")
+            : t("list.statusDialog.activateTitle")
         }
         description={
-          <>
-            Tem certeza que deseja{" "}
-            {userToUpdate?.newStatus === "INACTIVE" ? "desativar" : "ativar"}
-            <strong>
-              {userToUpdate?.user.name || userToUpdate?.user.email}
-            </strong>
-            ?
-          </>
+          dialog.kind === "status"
+            ? t.rich(
+                dialog.newStatus === "INACTIVE"
+                  ? "list.statusDialog.deactivateDescription"
+                  : "list.statusDialog.activateDescription",
+                {
+                  name: dialog.user.name || dialog.user.email,
+                  strong: (chunks) => <strong>{chunks}</strong>,
+                },
+              )
+            : null
         }
         onConfirm={handleConfirmStatusChange}
         confirmText={
-          userToUpdate?.newStatus === "INACTIVE" ? "Desativar" : "Ativar"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? t("list.statusDialog.deactivate")
+            : t("list.statusDialog.activate")
         }
         loadingText={
-          userToUpdate?.newStatus === "INACTIVE"
-            ? "Desativando..."
-            : "Ativando..."
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? t("list.statusDialog.deactivating")
+            : t("list.statusDialog.activating")
         }
         iconName={
-          userToUpdate?.newStatus === "INACTIVE" ? "CircleOff" : "CircleCheck"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? "CircleOff"
+            : "CircleCheck"
         }
         variant={
-          userToUpdate?.newStatus === "INACTIVE" ? "destructive" : "default"
+          dialog.kind === "status" && dialog.newStatus === "INACTIVE"
+            ? "destructive"
+            : "default"
         }
         isLoading={updateStatusMutation.isPending}
       />
 
       <ConfirmDialog
-        open={cancelDialogOpen}
-        onOpenChange={setCancelDialogOpen}
-        title="Cancelar Convite"
+        open={dialog.kind === "cancel"}
+        onOpenChange={(open) => !open && closeDialog()}
+        title={t("list.cancelDialog.title")}
         description={
-          <>
-            Tem certeza que deseja cancelar o convite para{" "}
-            <strong>{userToCancel?.email}</strong>? Esta ação não pode ser
-            desfeita.
-          </>
+          dialog.kind === "cancel"
+            ? t.rich("list.cancelDialog.description", {
+                identifier: dialog.invitation.identifierValue,
+                strong: (chunks) => <strong>{chunks}</strong>,
+              })
+            : null
         }
         onConfirm={handleConfirmCancel}
-        confirmText="Confirmar"
-        loadingText="Cancelando..."
+        confirmText={t("list.cancelDialog.confirm")}
+        loadingText={t("list.cancelDialog.canceling")}
         iconName="Trash"
         variant="destructive"
         isLoading={cancelUserInvitationMutation.isPending}

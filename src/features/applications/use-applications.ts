@@ -1,58 +1,53 @@
+import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import type {
-  ApplicationDTO,
   ApplicationFilters,
   CreateMenuRequest,
   UpdateApplicationRequest,
   UpdateMenuRequest,
 } from "@igrp/platform-access-management-client-ts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import {
   addRolesToMenu,
   createApplication,
   createMenu,
   deleteMenu,
-  getApplicationByCode,
-  getApplications,
   getMenus,
   removeRolesFromMenu,
   updateApplication,
   updateMenu,
 } from "@/actions/applications";
-import { IGRPMenuItemArgs } from "@igrp/framework-next-types";
+import { unwrap } from "@/actions/types";
+
+import { applicationsKeys, menusKeys } from "./query-keys";
+import {
+  applicationByCodeOptions,
+  applicationsListOptions,
+} from "./query-options";
 
 export const useApplications = (filters?: ApplicationFilters) => {
-  return useQuery<ApplicationDTO[], Error>({
-    queryKey: ["applications", filters],
-    queryFn: async () => {
-      const result = await getApplications(filters);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
-    retry: false,
+  return useQuery({
+    ...applicationsListOptions(filters),
+    placeholderData: keepPreviousData,
   });
 };
 
 export const useApplicationByCode = (code: string) => {
-  return useQuery<ApplicationDTO, Error>({
-    queryKey: ["applications", code],
-    queryFn: async () => {
-      const result = await getApplicationByCode(code);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
-    retry: false,
-  });
+  return useQuery(applicationByCodeOptions(code));
 };
 
 export const useCreateApplication = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: createApplication,
     onSuccess: (result) => {
       if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ["applications"] });
+        queryClient.invalidateQueries({ queryKey: applicationsKeys.all });
       }
     },
   });
@@ -60,7 +55,6 @@ export const useCreateApplication = () => {
 
 export const useUpdateApplication = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({
       code,
@@ -69,31 +63,27 @@ export const useUpdateApplication = () => {
       code: string;
       data: UpdateApplicationRequest;
     }) => updateApplication(code, data),
-    onSuccess: (result) => {
+    onSuccess: (result, { code }) => {
       if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ["applications"] });
+        queryClient.invalidateQueries({ queryKey: applicationsKeys.all });
+        queryClient.invalidateQueries({
+          queryKey: applicationsKeys.detail(code),
+        });
       }
     },
   });
 };
 
-// MENU
-export const useMenus = (code?: string) => {
+export const useMenus = (code: string) => {
   return useQuery<IGRPMenuItemArgs[], Error>({
-    queryKey: ["menus", code ?? null],
-    queryFn: async () => {
-      const result = await getMenus(code!);
-      if (!result.success) throw new Error(result.error);
-      return result.data;
-    },
+    queryKey: menusKeys.byApplication(code),
+    queryFn: async () => unwrap(await getMenus(code)),
     enabled: !!code,
-    retry: false,
   });
 };
 
 export const useCreateMenu = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({
       appCode,
@@ -102,19 +92,11 @@ export const useCreateMenu = () => {
       appCode: string;
       menu: CreateMenuRequest;
     }) => createMenu(appCode, menu),
-    onSuccess: (result) => {
+    onSuccess: (result, { appCode }) => {
       if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ["menus"] });
-        if (result.data.applicationCode) {
-          queryClient.invalidateQueries({
-            queryKey: ["menus", "application", result.data.applicationCode],
-          });
-        }
-        if (result.data.parentCode) {
-          queryClient.invalidateQueries({
-            queryKey: ["menus", "parent", result.data.parentCode],
-          });
-        }
+        queryClient.invalidateQueries({
+          queryKey: menusKeys.byApplication(appCode),
+        });
       }
     },
   });
@@ -122,7 +104,6 @@ export const useCreateMenu = () => {
 
 export const useUpdateMenu = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({
       appCode,
@@ -133,20 +114,11 @@ export const useUpdateMenu = () => {
       menuCode: string;
       data: UpdateMenuRequest;
     }) => updateMenu(appCode, menuCode, data),
-    onSuccess: (result, { menuCode }) => {
+    onSuccess: (result, { appCode }) => {
       if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ["menus"] });
-        queryClient.invalidateQueries({ queryKey: ["menus", menuCode] });
-        if (result.data.applicationCode) {
-          queryClient.invalidateQueries({
-            queryKey: ["menus", "application", result.data.applicationCode],
-          });
-        }
-        if (result.data.parentCode) {
-          queryClient.invalidateQueries({
-            queryKey: ["menus", "parent", result.data.parentCode],
-          });
-        }
+        queryClient.invalidateQueries({
+          queryKey: menusKeys.byApplication(appCode),
+        });
       }
     },
   });
@@ -154,7 +126,6 @@ export const useUpdateMenu = () => {
 
 export const useDeleteMenu = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: ({
       appCode,
@@ -163,12 +134,14 @@ export const useDeleteMenu = () => {
       appCode: string;
       menuCode: string;
     }) => deleteMenu(appCode, menuCode),
-    onSuccess: (result, { menuCode }) => {
+    onSuccess: (result, { appCode, menuCode }) => {
       if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ["menus"] });
-        queryClient.removeQueries({ queryKey: ["menus", menuCode] });
-        queryClient.invalidateQueries({ queryKey: ["menus", "application"] });
-        queryClient.invalidateQueries({ queryKey: ["menus", "parent"] });
+        queryClient.invalidateQueries({
+          queryKey: menusKeys.byApplication(appCode),
+        });
+        queryClient.removeQueries({
+          queryKey: menusKeys.roles(appCode, menuCode),
+        });
       }
     },
   });
@@ -188,36 +161,28 @@ export const useAddRolesToMenu = () => {
       departmentCode: string;
       roleNames: string[];
     }) => addRolesToMenu(appCode, menuCode, departmentCode, roleNames),
-
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({
-        queryKey: ["menu-roles", variables.appCode, variables.menuCode],
-      });
-
-      const previousRoles = queryClient.getQueryData([
-        "menu-roles",
-        variables.appCode,
-        variables.menuCode,
+      const key = menusKeys.roles(variables.appCode, variables.menuCode);
+      await queryClient.cancelQueries({ queryKey: key });
+      const previousRoles = queryClient.getQueryData(key);
+      queryClient.setQueryData<{ code: string }[]>(key, (old) => [
+        ...(old ?? []),
+        ...variables.roleNames.map((code) => ({ code })),
       ]);
-
-      queryClient.setQueryData(
-        ["menu-roles", variables.appCode, variables.menuCode],
-        (old: any) => [
-          ...(old || []),
-          ...variables.roleNames.map((code) => ({ code })),
-        ],
-      );
-
       return { previousRoles };
     },
-
-    onError: (err, variables, context) => {
+    onError: (_err, variables, context) => {
       if (context?.previousRoles) {
         queryClient.setQueryData(
-          ["menu-roles", variables.appCode, variables.menuCode],
+          menusKeys.roles(variables.appCode, variables.menuCode),
           context.previousRoles,
         );
       }
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: menusKeys.roles(variables.appCode, variables.menuCode),
+      });
     },
   });
 };
@@ -236,34 +201,27 @@ export const useRemoveRolesFromMenu = () => {
       departmentCode: string;
       roleNames: string[];
     }) => removeRolesFromMenu(appCode, menuCode, departmentCode, roleNames),
-
     onMutate: async (variables) => {
-      await queryClient.cancelQueries({
-        queryKey: ["menu-roles", variables.appCode, variables.menuCode],
-      });
-
-      const previousRoles = queryClient.getQueryData([
-        "menu-roles",
-        variables.appCode,
-        variables.menuCode,
-      ]);
-
-      queryClient.setQueryData(
-        ["menu-roles", variables.appCode, variables.menuCode],
-        (old: any) =>
-          old?.filter((role: any) => !variables.roleNames.includes(role.code)),
+      const key = menusKeys.roles(variables.appCode, variables.menuCode);
+      await queryClient.cancelQueries({ queryKey: key });
+      const previousRoles = queryClient.getQueryData(key);
+      queryClient.setQueryData<{ code: string }[]>(key, (old) =>
+        old?.filter((role) => !variables.roleNames.includes(role.code)),
       );
-
       return { previousRoles };
     },
-
-    onError: (err, variables, context) => {
+    onError: (_err, variables, context) => {
       if (context?.previousRoles) {
         queryClient.setQueryData(
-          ["menu-roles", variables.appCode, variables.menuCode],
+          menusKeys.roles(variables.appCode, variables.menuCode),
           context.previousRoles,
         );
       }
+    },
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: menusKeys.roles(variables.appCode, variables.menuCode),
+      });
     },
   });
 };

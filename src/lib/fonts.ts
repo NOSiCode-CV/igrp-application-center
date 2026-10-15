@@ -1,30 +1,16 @@
-import { Geist, Geist_Mono, Inter, Mulish } from "next/font/google";
-
-import { cn } from "@/lib/utils";
+import { Geist, Geist_Mono } from "next/font/google";
 
 const fontSans = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
+// Not preloaded: only the `theme-mono` theme and `font-mono` utilities use it,
+// so a preload would put it on the critical path of every page for nothing.
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  preload: false,
 });
 
-const fontMullish = Mulish({
-  subsets: ["latin"],
-  variable: "--font-mullish",
-});
-
-const fontInter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-export const fontVariables = cn(
-  fontSans.variable,
-  fontMono.variable,
-  fontMullish.variable,
-  fontInter.variable,
-);
+export const fontVariables = [fontSans.variable, fontMono.variable].join(" ");

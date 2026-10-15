@@ -1,0 +1,168 @@
+"use client";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+import {
+  IGRPButton,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@igrp/igrp-framework-react-design-system";
+import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
+
+import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
+
+import UserApplications from "./user-applications";
+import { UserAuditLogTab } from "./user-audit-tab";
+import { UserMetadataPanel } from "./user-metadata-panel";
+import UserRoleList from "./user-role-list";
+import { UserSessionsTab } from "./user-sessions-tab";
+import UserSignature from "./user-signature";
+
+function TabSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 p-4">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+  );
+}
+
+function TabError({ error, resetErrorBoundary }: FallbackProps) {
+  const t = useTranslations("users.detail");
+  const tc = useTranslations("common.actions");
+  const message = error instanceof Error ? error.message : t("loadError");
+  return (
+    <div className="flex flex-col items-center gap-3 p-6 text-sm text-destructive">
+      <p>{message}</p>
+      <IGRPButton size="sm" onClick={resetErrorBoundary}>
+        {tc("retry")}
+      </IGRPButton>
+    </div>
+  );
+}
+
+function TabPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <ErrorBoundary FallbackComponent={TabError}>
+      <Suspense fallback={<TabSkeleton />}>{children}</Suspense>
+    </ErrorBoundary>
+  );
+}
+
+type TabValue =
+  | "roles"
+  | "departments"
+  | "applications"
+  | "signature"
+  | "sessions"
+  | "audit"
+  | "metadata";
+
+interface UserDetailsTabsProps {
+  user: IGRPUserDTO;
+}
+
+const TAB_VALUES: TabValue[] = [
+  "roles",
+  "departments",
+  "applications",
+  "signature",
+  "sessions",
+  "audit",
+  "metadata",
+];
+
+export function UserDetailsTabs({ user }: UserDetailsTabsProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Tab lives in the URL so the view is linkable and survives a round trip to
+  // the list, matching the departments surface.
+  const requested = searchParams.get("tab") as TabValue | null;
+  const active: TabValue =
+    requested && TAB_VALUES.includes(requested) ? requested : "roles";
+
+  const handleTabChange = (next: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", next);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+  const t = useTranslations("users.detail.tabs");
+
+  return (
+    <Tabs value={active} onValueChange={handleTabChange}>
+      <TabsList>
+        <TabsTrigger value="roles">{t("roles")}</TabsTrigger>
+        <TabsTrigger value="departments">{t("departments")}</TabsTrigger>
+        <TabsTrigger value="applications">{t("applications")}</TabsTrigger>
+        <TabsTrigger value="signature">{t("signature")}</TabsTrigger>
+        <TabsTrigger value="sessions">{t("sessions")}</TabsTrigger>
+        <TabsTrigger value="audit">{t("audit")}</TabsTrigger>
+        <TabsTrigger value="metadata">{t("metadata")}</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="roles">
+        {active === "roles" && (
+          <TabPanel>
+            <UserRoleList user={user} />
+          </TabPanel>
+        )}
+      </TabsContent>
+
+      <TabsContent value="departments">
+        {active === "departments" && (
+          <TabPanel>
+            <DepartmentListSimple user={user} />
+          </TabPanel>
+        )}
+      </TabsContent>
+
+      <TabsContent value="applications">
+        {active === "applications" && (
+          <TabPanel>
+            <UserApplications user={user} />
+          </TabPanel>
+        )}
+      </TabsContent>
+
+      <TabsContent value="signature">
+        {active === "signature" && (
+          <TabPanel>
+            <UserSignature user={user} />
+          </TabPanel>
+        )}
+      </TabsContent>
+
+      <TabsContent value="sessions">
+        {active === "sessions" && user.id && (
+          <TabPanel>
+            <UserSessionsTab username={user.id} />
+          </TabPanel>
+        )}
+      </TabsContent>
+
+      <TabsContent value="audit">
+        {active === "audit" && (
+          <TabPanel>
+            <UserAuditLogTab userId={String(user.id)} />
+          </TabPanel>
+        )}
+      </TabsContent>
+
+      <TabsContent value="metadata">
+        {active === "metadata" && (
+          <TabPanel>
+            <UserMetadataPanel userId={user.id} />
+          </TabPanel>
+        )}
+      </TabsContent>
+    </Tabs>
+  );
+}

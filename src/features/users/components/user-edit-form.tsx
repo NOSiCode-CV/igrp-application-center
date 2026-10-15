@@ -1,26 +1,31 @@
 "use client";
 
 import {
-  IGRPButtonPrimitive,
-  IGRPFormPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPInputPrimitive,
-  useIGRPToast,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   IGRPButton,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type {
+  IGRPUserDTO,
+  Status,
+} from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+
 import { useUpdateUser } from "@/features/users/use-users";
-import { STATUS_OPTIONS } from "@/lib/constants";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+
+import { useUserStatusOptions } from "../lib/i18n";
 
 type UserEditFormProps = {
   user: IGRPUserDTO;
@@ -36,6 +41,9 @@ type FormData = {
 
 export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.editForm");
+  const tc = useTranslations("common.actions");
+  const statusOptions = useUserStatusOptions();
   const updateUser = useUpdateUser();
 
   const form = useForm<FormData>({
@@ -52,11 +60,12 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
       const result = await updateUser.mutateAsync({
         id: user.id,
         user: {
+          ...user,
           name: data.name,
           username: user.username,
           email: user.email,
-          status: data.status as any,
-        } as any,
+          status: data.status as Status,
+        },
       });
 
       if (!result.success) {
@@ -65,65 +74,62 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
 
       igrpToast({
         type: "success",
-        title: "Perfil atualizado com sucesso",
+        title: t("toasts.updated"),
       });
 
       onSuccess();
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao atualizar perfil",
+        title: t("toasts.updateFailed"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : t("toasts.unknownError"),
       });
     }
   };
 
   return (
-    <IGRPFormPrimitive {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <IGRPFormFieldPrimitive
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
+        <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <IGRPFormItemPrimitive>
-              <IGRPFormLabelPrimitive>Nome Completo</IGRPFormLabelPrimitive>
-              <IGRPFormControlPrimitive>
-                <IGRPInputPrimitive {...field} />
-              </IGRPFormControlPrimitive>
-              <IGRPFormMessagePrimitive />
-            </IGRPFormItemPrimitive>
+            <FormItem>
+              <FormLabel>{t("fullName")}</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
         />
 
-        <IGRPFormFieldPrimitive
+        <FormField
           control={form.control}
           name="status"
           render={({ field }) => (
-            <IGRPFormItemPrimitive>
-              <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-              <IGRPSelectPrimitive
-                onValueChange={field.onChange}
-                value={field.value}
-              >
-                <IGRPFormControlPrimitive>
-                  <IGRPSelectTriggerPrimitive className="w-full truncate">
-                    <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                  </IGRPSelectTriggerPrimitive>
-                </IGRPFormControlPrimitive>
-                <IGRPSelectContentPrimitive>
-                  {STATUS_OPTIONS.map((status) => (
-                    <IGRPSelectItemPrimitive
-                      key={status.value}
-                      value={status.value}
-                    >
+            <FormItem>
+              <FormLabel>{t("status")}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-full truncate">
+                    <SelectValue placeholder={t("statusPlaceholder")} />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
                       {status.label}
-                    </IGRPSelectItemPrimitive>
+                    </SelectItem>
                   ))}
-                </IGRPSelectContentPrimitive>
-              </IGRPSelectPrimitive>
-              <IGRPFormMessagePrimitive />
-            </IGRPFormItemPrimitive>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
           )}
         />
 
@@ -135,7 +141,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
             showIcon
             iconName="X"
           >
-            Cancelar
+            {tc("cancel")}
           </IGRPButton>
           <IGRPButton
             showIcon
@@ -143,10 +149,10 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
             type="submit"
             disabled={updateUser.isPending}
           >
-            {updateUser.isPending ? "Gravando..." : "Gravar"}
+            {updateUser.isPending ? t("saving") : t("save")}
           </IGRPButton>
         </div>
       </form>
-    </IGRPFormPrimitive>
+    </Form>
   );
 }

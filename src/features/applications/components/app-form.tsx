@@ -1,40 +1,47 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  cn,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   IGRPButton,
-  IGRPFormControlPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPFormPrimitive,
-  IGRPInputPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPTextAreaPrimitive,
+  IGRPCombobox,
+  Input,
   useIGRPToast,
-  IGRPScrollAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+import { type Resolver, useForm } from "react-hook-form";
 
+import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import {
-  CreateApplicationSchema,
-  type CreateApplicationArgs,
+  type ApplicationFormValues,
   appTypeCrud,
-  normalizeApplication,
+  type CreateApplicationFormValues,
+  makeApplicationSchemas,
+  normalizeCreateApplication,
+  normalizeUpdateApplication,
+  type UpdateApplicationFormValues,
 } from "@/features/applications/app-schemas";
 import {
   useCreateApplication,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
-import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
-import { APPLICATIONS_TYPES_FILTERED } from "@/features/applications/app-utils";
-import { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useStatusOptions } from "@/i18n/status";
+import { ROUTES } from "@/lib/constants";
+
+const APPLICATION_TYPE_OPTIONS = [
+  { value: appTypeCrud.enum.INTERNAL, key: "internal" },
+  { value: appTypeCrud.enum.EXTERNAL, key: "external" },
+] as const;
 
 interface ApplicationFormProps {
   application?: ApplicationDTO;
@@ -46,45 +53,85 @@ export function ApplicationForm({
   onSuccess,
 }: ApplicationFormProps) {
   const router = useRouter();
+  const t = useTranslations("applications.form");
+  const tv = useTranslations("applications.validation");
+  const tc = useTranslations("common");
+  const baseStatusOptions = useStatusOptions();
+  const schemas = useMemo(() => makeApplicationSchemas(tv), [tv]);
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: createApplication } = useCreateApplication();
   const { mutateAsync: updateApplication } = useUpdateApplication();
 
   const isEdit = !!application;
 
-  const form = useForm<CreateApplicationArgs>({
-    resolver: zodResolver(CreateApplicationSchema),
-    defaultValues: isEdit
-      ? {
-          name: application.name,
-          code: application.code,
-          owner: application.owner,
-          type: application.type as "INTERNAL" | "EXTERNAL",
-          slug: application.slug || "",
-          url: application.url || "",
-          description: application.description || "",
-          status: application.status,
-          picture: application.picture || "",
-        }
-      : {
-          name: "",
-          code: "",
-          owner: "",
-          type: appTypeCrud.enum.INTERNAL,
-          slug: "",
-          url: "",
-          description: "",
-          status: "ACTIVE",
-          picture: "",
-        },
+  const defaultValues = useMemo<ApplicationFormValues>(
+    () =>
+      application
+        ? {
+            name: application.name,
+            code: application.code,
+            owner: application.owner ?? "",
+            type: application.type as "INTERNAL" | "EXTERNAL",
+            slug: application.slug || "",
+            url: application.url || "",
+            description: application.description || "",
+            status: application.status,
+            picture: application.picture || "",
+          }
+        : {
+            name: "",
+            code: "",
+            owner: "",
+            type: appTypeCrud.enum.INTERNAL,
+            slug: "",
+            url: "",
+            description: "",
+            status: "ACTIVE",
+            picture: "",
+          },
+    [application],
+  );
+
+  const form = useForm<ApplicationFormValues>({
+    resolver: zodResolver(
+      isEdit
+        ? schemas.UpdateApplicationSchema
+        : schemas.CreateApplicationSchema,
+    ) as Resolver<ApplicationFormValues>,
+    defaultValues,
+    mode: "onBlur",
+    reValidateMode: "onChange",
   });
 
   const type = form.watch("type");
+  const status = form.watch("status");
 
-  const onSubmit = async (values: CreateApplicationArgs) => {
+  const applicationTypeOptions = useMemo(
+    () =>
+      APPLICATION_TYPE_OPTIONS.map((option) => ({
+        value: option.value,
+        label: t(`types.${option.key}`),
+      })),
+    [t],
+  );
+
+  const statusOptions = useMemo(
+    () =>
+      status === "TEMPORARY"
+        ? [
+            ...baseStatusOptions,
+            { value: "TEMPORARY", label: tc("status.temporary") },
+          ]
+        : baseStatusOptions,
+    [status, baseStatusOptions, tc],
+  );
+
+  const onSubmit = async (values: ApplicationFormValues) => {
     try {
       if (isEdit) {
-        const payload = normalizeApplication(values, true);
+        const payload = normalizeUpdateApplication(
+          values as UpdateApplicationFormValues,
+        );
         const created = await updateApplication({
           code: application.code,
           data: payload,
@@ -96,230 +143,225 @@ export function ApplicationForm({
 
         igrpToast({
           type: "success",
-          title: "Aplicação atualizada",
-          description: "A aplicação foi atualizada com sucesso!",
+          title: t("toasts.updatedTitle"),
+          description: t("toasts.updated"),
         });
       } else {
-        const payload = normalizeApplication(values, false);
+        const payload = normalizeCreateApplication(
+          values as CreateApplicationFormValues,
+        );
         await createApplication(payload);
 
         igrpToast({
           type: "success",
-          title: "Aplicação criada",
-          description: "A aplicação foi criada com sucesso!",
+          title: t("toasts.createdTitle"),
+          description: t("toasts.created"),
         });
 
+        onSuccess();
         router.push(`${ROUTES.APPLICATIONS}/${values.code}`);
+        return;
       }
 
       onSuccess();
     } catch (error) {
       igrpToast({
         type: "error",
-        title: isEdit ? "Erro ao atualizar" : "Erro ao criar",
+        title: isEdit ? t("toasts.updateError") : t("toasts.createError"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tc("unknownError"),
       });
     }
   };
 
   return (
-    <IGRPFormPrimitive {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <IGRPScrollAreaPrimitive className="max-h-[calc(100vh-10rem)] h-[calc(100vh-10rem) w-full scroll-auto">
-          <div className="space-y-4">
-            <IGRPFormFieldPrimitive
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                    Nome
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive {...field} required />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
-              )}
-            />
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-4"
+      >
+        <div className="flex flex-col gap-4 max-h-[75vh] overflow-y-auto px-1 pb-2">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t("name")}
+                  <span aria-hidden="true" className="text-destructive">
+                    *
+                  </span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder={t("namePlaceholder")}
+                    autoComplete="off"
+                    maxLength={255}
+                    aria-required="true"
+                    className="placeholder:truncate"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <IGRPFormFieldPrimitive
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField
               control={form.control}
               name="code"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
-                    Código
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive
+                <FormItem>
+                  <FormLabel>
+                    {t("code")}
+                    <span aria-hidden="true" className="text-destructive">
+                      *
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
                       {...field}
-                      className={isEdit ? "bg-muted uppercase" : "uppercase"}
-                      required
+                      placeholder={t("codePlaceholder")}
+                      autoComplete="off"
+                      spellCheck={false}
+                      maxLength={255}
+                      aria-required="true"
+                      className={cn("uppercase placeholder:truncate placeholder:normal-case", isEdit && "bg-muted")}
                       disabled={isEdit}
                       onChange={(e) => {
                         if (!isEdit) {
                           const v = e.target.value
                             .toUpperCase()
-                            .replace(/[^A-Z0-9_]/g, "");
+                            .replace(/[^A-Z0-9_-]/g, "");
                           field.onChange(v);
                         }
                       }}
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
-              control={form.control}
+            <IGRPCombobox
               name="type"
-              render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Tipo</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive
-                    onValueChange={(value) => {
-                      field.onChange(value);
-                      if (value === "INTERNAL") {
-                        form.setValue("url", "");
-                      } else {
-                        form.setValue("slug", "");
-                      }
-                    }}
-                    value={field.value}
-                  >
-                    <IGRPFormControlPrimitive className="w-full">
-                      <IGRPSelectTriggerPrimitive>
-                        <IGRPSelectValuePrimitive />
-                      </IGRPSelectTriggerPrimitive>
-                    </IGRPFormControlPrimitive>
-                    <IGRPSelectContentPrimitive>
-                      {APPLICATIONS_TYPES_FILTERED.map((opt) => (
-                        <IGRPSelectItemPrimitive
-                          key={opt.value}
-                          value={opt.value}
-                        >
-                          {opt.label}
-                        </IGRPSelectItemPrimitive>
-                      ))}
-                    </IGRPSelectContentPrimitive>
-                  </IGRPSelectPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
-              )}
-            />
-
-            {type === "INTERNAL" && (
-              <IGRPFormFieldPrimitive
-                control={form.control}
-                name="slug"
-                render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Slug</IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
-                )}
-              />
-            )}
-
-            {type === "EXTERNAL" && (
-              <IGRPFormFieldPrimitive
-                control={form.control}
-                name="url"
-                render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>URL</IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
-                )}
-              />
-            )}
-
-            <IGRPFormFieldPrimitive
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Descrição</IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPTextAreaPrimitive
-                      {...field}
-                      value={field.value || ""}
-                      rows={3}
-                    />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
-              )}
-            />
-
-            <IGRPFormFieldPrimitive
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                  <IGRPSelectPrimitive
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <IGRPFormControlPrimitive>
-                      <IGRPSelectTriggerPrimitive className="w-full">
-                        <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                      </IGRPSelectTriggerPrimitive>
-                    </IGRPFormControlPrimitive>
-                    <IGRPSelectContentPrimitive>
-                      {STATUS_OPTIONS.map((status) => (
-                        <IGRPSelectItemPrimitive
-                          key={status.value}
-                          value={status.value}
-                        >
-                          {status.label}
-                        </IGRPSelectItemPrimitive>
-                      ))}
-                    </IGRPSelectContentPrimitive>
-                  </IGRPSelectPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
-              )}
+              label={t("type")}
+              options={applicationTypeOptions}
+              showSearch={false}
+              onChange={(value) => {
+                if (value === "INTERNAL") {
+                  form.setValue("url", "");
+                } else {
+                  form.setValue("slug", "");
+                }
+              }}
             />
           </div>
-        </IGRPScrollAreaPrimitive>
 
-        <div className="flex justify-end gap-2 pt-4">
+          {type === "INTERNAL" && (
+            <FormField
+              control={form.control}
+              name="slug"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("slug")}{" "}
+                    <span aria-hidden="true" className="text-destructive">
+                      *
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value || ""}
+                      maxLength={255}
+                      aria-required="true"
+                      placeholder={t("slugPlaceholder")}
+                      className="placeholder:truncate"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
+          {type === "EXTERNAL" && (
+            <FormField
+              control={form.control}
+              name="url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t("url")}{" "}
+                    <span aria-hidden="true" className="text-destructive">
+                      *
+                    </span>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="url"
+                      inputMode="url"
+                      autoComplete="off"
+                      aria-required="true"
+                      value={field.value || ""}
+                      placeholder={t("urlPlaceholder")}
+                      className="placeholder:truncate"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
+          <LimitedTextareaField
+            id="description"
+            label={t("description")}
+            maxLength={255}
+            rows={3}
+            placeholder={t("descriptionPlaceholder")}
+            className="resize-none"
+          />
+
+          {isEdit && (
+            <IGRPCombobox
+              name="status"
+              label={t("status")}
+              placeholder={t("statusPlaceholder")}
+              options={statusOptions}
+              showSearch={false}
+            />
+          )}
+        </div>
+
+        <div className="flex justify-end gap-2">
           <IGRPButton
             type="button"
             showIcon
-            iconName="X"
+            iconName="Undo2"
             variant="outline"
             onClick={onSuccess}
           >
-            Cancelar
+            {tc("actions.cancel")}
           </IGRPButton>
           <IGRPButton
             type="submit"
             showIcon
             iconName="Save"
             disabled={form.formState.isSubmitting}
+            iconPlacement="end"
           >
-            {form.formState.isSubmitting ? "Guardando..." : "Guardar"}
+            {form.formState.isSubmitting
+              ? t("saving")
+              : isEdit
+                ? t("update")
+                : t("create")}
           </IGRPButton>
         </div>
       </form>
-    </IGRPFormPrimitive>
+    </Form>
   );
 }

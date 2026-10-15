@@ -1,77 +1,58 @@
 "use server";
 
-import { igrpSetAccessClientConfig } from "@igrp/framework-next";
-import { getServerSession, type Session } from "@igrp/framework-next-auth";
-import { redirect } from "next/navigation";
+import { buildEndSessionUrl } from "@igrp/framework-next-auth/oidc";
 
-import { authOptions } from "@/lib/auth-options";
+import { auth } from "@/lib/auth";
 
-export async function serverSession() {
-  const apiManagement = process.env.IGRP_ACCESS_MANAGEMENT_API || "";
+/**
+ * Returns the IdP end-session URL for RP-initiated logout, or null when:
+ * - auth is disabled (AUTH_PROVIDER=none)
+ * - no active session
+ * - IdP discovery doc has no end_session_endpoint
+ *
+ * Must be called BEFORE signOut() — the access token is needed to build the URL.
+ */
+export async function getLogoutUrl(
+  postLogoutRedirectUri: string,
+): Promise<string | null> {
+  // [logout] The post_logout_redirect_uri is built on the CLIENT from
+  // `window.location.origin` — so it carries whatever domain the browser is on.
+  // Spring AS only redirects back when this value is registered byte-for-byte in
+  // the client's `postLogoutRedirectUris`. A non-localhost domain that isn't
+  // registered is the #1 cause of "logout errors / doesn't return to the app".
 
-  try {
-    if (!process.env.NEXTAUTH_SECRET) {
-      console.warn(
-        "NEXTAUTH_SECRET is not set. This is required for production.",
-      );
-      if (process.env.NODE_ENV === "production") {
-        throw new Error("NEXTAUTH_SECRET must be set in production");
-      }
-    }
+  const token = await auth.getAccessToken();
 
-    if (
-      !process.env.KEYCLOAK_CLIENT_ID ||
-      !process.env.KEYCLOAK_CLIENT_SECRET ||
-      !process.env.KEYCLOAK_ISSUER
-    ) {
-      console.warn(
-        "Warning: One or more Keycloak environment variables are missing.",
-      );
-      throw new Error(
-        "One or more Keycloak environment variables are missing.",
-      );
-    }
+  // [logout] If `hasToken` is false on a non-localhost domain but works on
+  // localhost, the session cookie isn't being read — almost always a
+  // `__Secure-` cookie-prefix mismatch over https (NEXTAUTH_URL still http /
+  // pointing at localhost). Without a token there is no id_token_hint, so RP-
+  // initiated logout degrades to local-only.
 
-    const session = await getServerSession(authOptions);
-
-    if (session !== null) {
-      igrpSetAccessClientConfig({
-        token: session.accessToken as string,
-        baseUrl: apiManagement,
-      });
-    }
-    return session;
-  } catch (error) {
-    console.error("::Error getting server session::", error);
+  if (!token) {
+    console.warn(
+      "[logout][server] no active token found — skipping IdP logout redirect",
+    );
     return null;
   }
+
+  if (!token.idToken) {
+    console.warn(
+      "[logout][server] token has no idToken — logout URL will be built without id_token_hint (Spring AS will refuse the redirect-back)",
+    );
+  }
+
+  const url = await buildEndSessionUrl(
+    token,
+    process.env,
+    postLogoutRedirectUri,
+  );
+
+  if (!url) {
+    console.warn(
+      "[logout][server] buildEndSessionUrl returned null — IdP may not support end_session_endpoint or auth is disabled",
+    );
+  }
+
+  return url;
 }
-
-// export async function getSession() {
-//   let session: Session | null;
-//   const isPreviewMode = process.env.IGRP_PREVIEW_MODE === "true";
-
-//   if (isPreviewMode) return null;
-
-//   try {
-//     session = await serverSession();
-//     if (!session) return session;
-
-//     const now = Math.floor(Date.now() / 1000) + 60;
-
-//     const providerExp =
-//       typeof session.expiresAt === "number" ? session.expiresAt : undefined;
-//     const providerExpired = providerExp !== undefined && providerExp < now;
-//     const refreshFailed = session.error === "RefreshAccessTokenError";
-
-//     if (providerExpired || refreshFailed) {
-//       const logout = "/logout";
-//       redirect(logout);
-//     }
-//   } catch (error) {
-//     console.error("Failed to get session in layout:", error);
-//     session = null;
-//   }
-
-//   return session;
-// }

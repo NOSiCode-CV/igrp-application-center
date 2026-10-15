@@ -1,36 +1,40 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+
 import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  Badge,
+  Button,
   cn,
-  IGRPAlertDialogPrimitive,
-  IGRPAlertDialogContentPrimitive,
-  IGRPAlertDialogHeaderPrimitive,
-  IGRPAlertDialogTitlePrimitive,
-  IGRPAlertDialogDescriptionPrimitive,
-  IGRPAlertDialogFooterPrimitive,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSkeletonPrimitive,
-  IGRPSwitchPrimitive,
-  useIGRPToast,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   IGRPButton,
-  IGRPScrollAreaPrimitive,
+  IGRPIcon,
+  Input,
+  Skeleton,
+  Switch,
+  useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useEffect, useMemo } from "react";
-import { getStatusColor, showStatus } from "@/lib/utils";
+import type { ResourceDTO } from "@igrp/platform-access-management-client-ts";
+
+type ResourceWithAssignment = ResourceDTO & { isAssigned: boolean };
+
 import {
   useAddResourcesToDepartment,
   useAvailableResources,
   useDepartmentResources,
   useRemoveResourcesFromDepartment,
 } from "@/features/departments/use-departments";
+import { getStatusColor, showStatus } from "@/lib/utilities";
 
 interface ManageResourcesModalProps {
   departmentCode: string;
@@ -75,13 +79,13 @@ export function ManageResourcesModal({
     const available = availableResources || [];
     const assigned = assignedResources || [];
 
-    const resourceMap = new Map<string, any & { isAssigned: boolean }>();
+    const resourceMap = new Map<string, ResourceWithAssignment>();
 
-    available.forEach((resource: any) => {
+    available.forEach((resource: ResourceDTO) => {
       resourceMap.set(resource.name, { ...resource, isAssigned: false });
     });
 
-    assigned.forEach((resource: any) => {
+    assigned.forEach((resource: ResourceDTO) => {
       resourceMap.set(resource.name, { ...resource, isAssigned: true });
     });
 
@@ -91,7 +95,7 @@ export function ManageResourcesModal({
   }, [availableResources, assignedResources]);
 
   const handleToggleResource = async (
-    resource: any & { isAssigned: boolean },
+    resource: ResourceWithAssignment,
     currentlyAssigned: boolean,
   ) => {
     if (currentlyAssigned) {
@@ -171,11 +175,7 @@ export function ManageResourcesModal({
     );
   }, [allResources, searchTerm]);
 
-  const ResourceItem = ({
-    resource,
-  }: {
-    resource: any & { isAssigned: boolean };
-  }) => {
+  const ResourceItem = ({ resource }: { resource: ResourceWithAssignment }) => {
     const isAssigned = resource.isAssigned;
 
     return (
@@ -190,13 +190,18 @@ export function ManageResourcesModal({
         <div className="flex items-center gap-3 p-3">
           <div
             className={cn(
-              "flex items-center justify-center w-10 h-10 rounded-lg shrink-0 transition-colors",
+              "flex items-center justify-center size-10 rounded-lg shrink-0 transition-colors",
               isAssigned
                 ? "bg-primary/10 text-primary"
                 : "bg-muted text-muted-foreground",
             )}
           >
-            <IGRPIcon iconName="Shield" className="w-5 h-5" strokeWidth={2} />
+            <IGRPIcon
+              iconName="Shield"
+              aria-hidden
+              className="size-5"
+              strokeWidth={2}
+            />
           </div>
 
           <div className="flex-1 min-w-0">
@@ -204,21 +209,21 @@ export function ManageResourcesModal({
               <h4 className="font-semibold text-sm truncate">
                 {resource.name}
               </h4>
-              <IGRPBadgePrimitive
+              <Badge
                 variant="outline"
                 className="text-[10px] px-1.5 py-0.5 shrink-0"
               >
                 {resource.type}
-              </IGRPBadgePrimitive>
+              </Badge>
               {resource.status && (
-                <IGRPBadgePrimitive
+                <Badge
                   className={cn(
                     getStatusColor(resource.status),
                     "text-[10px] px-1.5 py-0.5 shrink-0",
                   )}
                 >
                   {showStatus(resource.status)}
-                </IGRPBadgePrimitive>
+                </Badge>
               )}
             </div>
             {resource.description && (
@@ -240,17 +245,22 @@ export function ManageResourcesModal({
               </span>
               {isAssigned && (
                 <div className="flex items-center gap-1 text-[10px] text-primary/70">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  <div className="size-1.5 rounded-full bg-success" />
                   Ativo
                 </div>
               )}
             </div>
-            <IGRPSwitchPrimitive
+            <Switch
               checked={isAssigned}
               onCheckedChange={() => handleToggleResource(resource, isAssigned)}
               disabled={processingResource !== null}
+              aria-label={
+                isAssigned
+                  ? `Remover recurso ${resource.name}`
+                  : `Adicionar recurso ${resource.name}`
+              }
               className={cn(
-                "data-[state=checked]:bg-green-200",
+                "data-[state=checked]:bg-success",
                 processingResource === resource.name && "opacity-50",
               )}
             />
@@ -262,10 +272,11 @@ export function ManageResourcesModal({
             <div className="flex items-center gap-2 text-sm font-medium">
               <IGRPIcon
                 iconName="LoaderCircle"
-                className="w-4 h-4 animate-spin"
+                aria-hidden
+                className="size-4 animate-spin motion-reduce:animate-none"
                 strokeWidth={2}
               />
-              Processando...
+              A processar…
             </div>
           </div>
         )}
@@ -275,27 +286,35 @@ export function ManageResourcesModal({
 
   return (
     <>
-      <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-        <IGRPDialogContentPrimitive className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive className="flex items-center gap-2">
-              <IGRPIcon iconName="Shield" className="w-5 h-5" strokeWidth={2} />
-              Gerenciar Recursos
-            </IGRPDialogTitlePrimitive>
-            <IGRPDialogDescriptionPrimitive>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <IGRPIcon
+                iconName="Shield"
+                aria-hidden
+                className="size-5"
+                strokeWidth={2}
+              />
+              Gerir Recursos
+            </DialogTitle>
+            <DialogDescription>
               Adicione ou remova recursos do departamento com um clique.
-            </IGRPDialogDescriptionPrimitive>
-          </IGRPDialogHeaderPrimitive>
+            </DialogDescription>
+          </DialogHeader>
 
           <div className="pb-4">
             <div className="relative">
               <IGRPIcon
                 iconName="Search"
+                aria-hidden
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
-              <IGRPInputPrimitive
+              <Input
                 type="search"
-                placeholder="Pesquisar por nome, tipo ou descrição..."
+                aria-label="Pesquisar recursos por nome, tipo ou descrição"
+                autoComplete="off"
+                placeholder="Pesquisar por nome, tipo ou descrição…"
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -303,18 +322,20 @@ export function ManageResourcesModal({
             </div>
           </div>
 
-          <IGRPScrollAreaPrimitive className="h-[95vh] w-full">
+          <div className="flex-1 min-h-0 overflow-y-auto pr-1">
             {loading ? (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <IGRPSkeletonPrimitive key={i} className="h-20 rounded-lg" />
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton loader
+                  <Skeleton key={i} className="h-20 rounded-lg" />
                 ))}
               </div>
             ) : filteredResources.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
                 <IGRPIcon
                   iconName="Shield"
-                  className="w-16 h-16 mb-4 opacity-20"
+                  aria-hidden
+                  className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
                 <p className="font-semibold text-lg">
@@ -327,7 +348,7 @@ export function ManageResourcesModal({
                 </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 {filteredResources.map((resource) => (
                   <ResourceItem
                     key={resource.id || resource.name}
@@ -336,7 +357,7 @@ export function ManageResourcesModal({
                 ))}
               </div>
             )}
-          </IGRPScrollAreaPrimitive>
+          </div>
 
           <div className="flex justify-between items-center py-4">
             <div className="text-sm text-muted-foreground">
@@ -347,42 +368,48 @@ export function ManageResourcesModal({
               recursos adicionados
             </div>
 
-            <IGRPButtonPrimitive
+            <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={processingResource !== null}
               className="gap-2"
             >
-              <IGRPIcon iconName="X" className="w-4 h-4" strokeWidth={2} />
+              <IGRPIcon
+                iconName="X"
+                aria-hidden
+                className="size-4"
+                strokeWidth={2}
+              />
               Fechar
-            </IGRPButtonPrimitive>
+            </Button>
           </div>
-        </IGRPDialogContentPrimitive>
-      </IGRPDialogPrimitive>
+        </DialogContent>
+      </Dialog>
 
-      <IGRPAlertDialogPrimitive
+      <AlertDialog
         open={!!resourceToRemove}
         onOpenChange={(open) => !open && setResourceToRemove(null)}
       >
-        <IGRPAlertDialogContentPrimitive>
-          <IGRPAlertDialogHeaderPrimitive>
-            <IGRPAlertDialogTitlePrimitive className="flex items-center gap-2">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
               <IGRPIcon
                 iconName="AlertTriangle"
-                className="w-5 h-5 text-destructive"
+                aria-hidden
+                className="size-5 text-destructive"
                 strokeWidth={2}
               />
               Remover Recurso
-            </IGRPAlertDialogTitlePrimitive>
-            <IGRPAlertDialogDescriptionPrimitive>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
               Tem certeza que deseja remover o recurso{" "}
               <strong className="text-foreground">
                 {resourceToRemove?.name}
               </strong>{" "}
               deste departamento? Esta ação não pode ser desfeita.
-            </IGRPAlertDialogDescriptionPrimitive>
-          </IGRPAlertDialogHeaderPrimitive>
-          <IGRPAlertDialogFooterPrimitive>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
             <IGRPButton
               disabled={processingResource !== null}
               variant="outline"
@@ -403,25 +430,27 @@ export function ManageResourcesModal({
                 <>
                   <IGRPIcon
                     iconName="LoaderCircle"
-                    className="w-4 h-4 animate-spin"
+                    aria-hidden
+                    className="size-4 animate-spin motion-reduce:animate-none"
                     strokeWidth={2}
                   />
-                  Removendo...
+                  A remover…
                 </>
               ) : (
                 <>
                   <IGRPIcon
                     iconName="Trash"
-                    className="w-4 h-4"
+                    aria-hidden
+                    className="size-4"
                     strokeWidth={2}
                   />
                   Remover
                 </>
               )}
             </IGRPButton>
-          </IGRPAlertDialogFooterPrimitive>
-        </IGRPAlertDialogContentPrimitive>
-      </IGRPAlertDialogPrimitive>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

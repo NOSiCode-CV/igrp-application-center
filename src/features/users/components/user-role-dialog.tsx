@@ -1,69 +1,67 @@
 "use client";
 
 import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
   cn,
-  IGRPBadge,
-  IGRPBadgePrimitive,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
   IGRPButton,
-  IGRPButtonPrimitive,
-  IGRPCheckboxPrimitive,
-  IGRPCommandEmptyPrimitive,
-  IGRPCommandGroupPrimitive,
-  IGRPCommandInputPrimitive,
-  IGRPCommandItemPrimitive,
-  IGRPCommandListPrimitive,
-  IGRPCommandPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPLabelPrimitive,
-  IGRPPaginationContentPrimitive,
-  IGRPPaginationItemPrimitive,
-  IGRPPaginationPrimitive,
-  IGRPPopoverContentPrimitive,
-  IGRPPopoverPrimitive,
-  IGRPPopoverTriggerPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Label,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import {
   type ColumnDef,
   type ColumnFiltersState,
   type FilterFn,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
   type PaginationState,
   type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
+
+import { SelectableDataTable } from "@/components/data-table/selectable-data-table";
 import {
   useDepartments,
   useRoles,
 } from "@/features/departments/use-departments";
+import { computeRoleDiff } from "@/features/users/lib/role-diff";
 import {
   useAddUserRole,
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
-import { getStatusColor, showStatus } from "@/lib/utils";
-import { RoleDTO } from "@igrp/platform-access-management-client-ts";
+import { getStatusColor } from "@/lib/utilities";
+
+import { type UsersTranslator, userStatusLabel } from "../lib/i18n";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -77,29 +75,29 @@ const multiColumnFilterFn: FilterFn<RoleDTO> = (
     .trim();
   if (!term) return true;
   const name = String(row.original?.name ?? "").toLowerCase();
-  const desc = String((row.original as any)?.description ?? "").toLowerCase();
+  const desc = String(row.original?.description ?? "").toLowerCase();
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<RoleDTO>[] = [
+const makeColumns = (t: UsersTranslator): ColumnDef<RoleDTO>[] => [
   {
     id: "select",
     header: ({ table }) => (
-      <IGRPCheckboxPrimitive
+      <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("roleDialog.selectAll")}
         className="ring ring-current/50"
       />
     ),
     cell: ({ row }) => (
-      <IGRPCheckboxPrimitive
+      <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("roleDialog.selectRow")}
         className="ring ring-current/50"
       />
     ),
@@ -107,7 +105,7 @@ const columns: ColumnDef<RoleDTO>[] = [
     enableSorting: false,
   },
   {
-    header: "Nome",
+    header: t("roleDialog.columns.name"),
     accessorKey: "name",
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("name")}</div>
@@ -117,50 +115,32 @@ const columns: ColumnDef<RoleDTO>[] = [
     enableColumnFilter: true,
   },
   {
-    header: "Descrição",
+    header: t("roleDialog.columns.description"),
     accessorKey: "description",
-    cell: ({ row }) => <div>{row.getValue("description") || "N/A"}</div>,
+    cell: ({ row }) => (
+      <div>{row.getValue("description") || t("notAvailable")}</div>
+    ),
     enableSorting: false,
   },
   {
-    header: "Estado",
+    header: t("roleDialog.columns.status"),
     accessorKey: "status",
     cell: ({ row }) => (
-      <IGRPBadgePrimitive
+      <Badge
         className={cn(getStatusColor(row.getValue("status")), "capitalize")}
       >
-        {showStatus(row.getValue("status"))}
-      </IGRPBadgePrimitive>
+        {userStatusLabel(t, row.getValue("status"))}
+      </Badge>
     ),
     size: 40,
     enableSorting: false,
   },
 ];
 
-function diffRoles(selected: RoleDTO[], existing: RoleDTO[]) {
-  const selectedNorm = new Set(selected.map((r) => norm(r.code)));
-  const existingNorm = new Set(existing.map((r) => norm(r.code)));
-
-  const toAddNorm = Array.from(selectedNorm).filter(
-    (n) => !existingNorm.has(n),
-  );
-  const toRemoveNorm = Array.from(existingNorm).filter(
-    (n) => !selectedNorm.has(n),
-  );
-
-  const selectedByNorm = new Map(selected.map((r) => [norm(r.code), r.code]));
-  const existingByNorm = new Map(existing.map((r) => [norm(r.code), r.code]));
-
-  return {
-    toAdd: toAddNorm.map((n) => selectedByNorm.get(n)!).filter(Boolean),
-    toRemove: toRemoveNorm.map((n) => existingByNorm.get(n)!).filter(Boolean),
-  };
-}
-
 type UserRolesDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  id: number;
+  id: string;
 };
 
 export function UserRolesDialog({
@@ -171,6 +151,8 @@ export function UserRolesDialog({
   const idValue = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users");
+  const columns = useMemo(() => makeColumns(t), [t]);
 
   const {
     data: depts,
@@ -205,15 +187,16 @@ export function UserRolesDialog({
     refetch: refetchUserRoles,
   } = useUserRoles(id);
 
-  const [data, setData] = useState<RoleDTO[]>([]);
+  const data = useMemo(() => (open ? (roles ?? []) : []), [open, roles]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 15,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [expiresAt, setExpiresAt] = useState<string>("");
 
-  const getRowKey = (r: RoleDTO) => String((r as any).id ?? r.name);
+  const getRowKey = useCallback((r: RoleDTO) => String(r.id ?? r.name), []);
 
   const roleNameSet = useMemo(
     () => new Set((roles ?? []).map((r) => norm(r.name ?? ""))),
@@ -226,41 +209,33 @@ export function UserRolesDialog({
 
   const preselectedKeys = useMemo(() => {
     const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
-    return new Set<string>(list.map((r) => getRowKey(r as any)));
-  }, [userRolesInDept]);
+    return new Set<string>(list.map((r) => getRowKey(r as RoleDTO)));
+  }, [userRolesInDept, getRowKey]);
 
   useEffect(() => {
     if (!open) {
       setDepartmentCode(undefined);
       setRowSelection({});
-      setData([]);
       setColumnFilters([]);
-      setPagination({ pageIndex: 0, pageSize: 5 });
+      setPagination({ pageIndex: 0, pageSize: 15 });
+      setExpiresAt("");
     }
   }, [open]);
 
   useEffect(() => {
-    setData(roles ?? []);
-    setRowSelection({});
-    setPagination((p) => ({ ...p, pageIndex: 0 }));
-  }, [roles, departmentCode]);
-
-  useEffect(() => {
-    if (!data?.length) return;
     const next: RowSelectionState = {};
-    for (const row of data) {
+    for (const row of roles ?? []) {
       const key = getRowKey(row);
       if (preselectedKeys.has(key)) next[key] = true;
     }
     setRowSelection(next);
-  }, [data, preselectedKeys]);
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  }, [roles, preselectedKeys, getRowKey]);
 
   const table = useReactTable({
     data,
     columns,
-    enableSortingRemoval: false,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getRowId: (row) => getRowKey(row),
@@ -276,12 +251,17 @@ export function UserRolesDialog({
 
   const existing = userRolesInDept ?? [];
 
-  const { toAdd, toRemove } = useMemo(
-    () => diffRoles(selectedData, existing as RoleDTO[]),
-    [selectedData, existing],
+  const diff = useMemo(
+    () =>
+      computeRoleDiff(
+        (existing as RoleDTO[]).map((r) => r.code ?? "").filter(Boolean),
+        selectedData.map((r) => r.code ?? "").filter(Boolean),
+        expiresAt || undefined,
+      ),
+    [selectedData, existing, expiresAt],
   );
 
-  const hasChanges = toAdd.length > 0 || toRemove.length > 0;
+  const hasChanges = diff.toAdd.roles.length > 0 || diff.toRemove.length > 0;
 
   const { mutateAsync: addUserRole, isPending: isAdding } = useAddUserRole();
   const { mutateAsync: removeUserRole, isPending: isRemoving } =
@@ -291,31 +271,35 @@ export function UserRolesDialog({
     if (!departmentCode) {
       igrpToast({
         type: "warning",
-        title: "Selecione um departamento primeiro.",
+        title: t("roleDialog.toasts.selectDepartmentFirst"),
       });
       return;
     }
     if (!hasChanges) {
       igrpToast({
         type: "info",
-        title: "Sem alterações",
-        description: "Nada para adicionar ou remover.",
+        title: t("roleDialog.toasts.noChanges"),
+        description: t("roleDialog.toasts.noChangesDescription"),
       });
       return;
     }
 
     try {
-      if (toAdd.length) {
-        const res = await addUserRole({ id, departmentCode, roleCodes: toAdd });
+      if (diff.toAdd.roles.length) {
+        const res = await addUserRole({
+          id,
+          departmentCode,
+          request: diff.toAdd,
+        });
         if (!res.success) {
           throw new Error(res.error);
         }
       }
-      if (toRemove.length) {
+      if (diff.toRemove.length) {
         const res = await removeUserRole({
           id,
           departmentCode,
-          roleCodes: toRemove,
+          roleCodes: diff.toRemove,
         });
         if (!res.success) {
           throw new Error(res.error);
@@ -324,8 +308,11 @@ export function UserRolesDialog({
 
       igrpToast({
         type: "success",
-        title: "Perfis atualizados",
-        description: `+${toAdd.length} adicionada(s), -${toRemove.length} removida(s).`,
+        title: t("roleDialog.toasts.updated"),
+        description: t("roleDialog.toasts.updatedDescription", {
+          added: diff.toAdd.roles.length,
+          removed: diff.toRemove.length,
+        }),
       });
 
       await refetchUserRoles();
@@ -333,11 +320,8 @@ export function UserRolesDialog({
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Falha ao atualizar perfis",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+        title: t("roleDialog.toasts.updateFailed"),
+        description: error instanceof Error ? error.message : t("unknownError"),
       });
     }
   }
@@ -346,20 +330,27 @@ export function UserRolesDialog({
   const err = error || errorUserRoles;
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange} modal={false}>
-      <IGRPDialogContentPrimitive className="md:min-w-2xl max-h-[95vh]">
-        <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive className="text-base">
-            Adicionar ou Remover Perfis
-          </IGRPDialogTitlePrimitive>
-        </IGRPDialogHeaderPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="md:min-w-2xl max-h-[95vh]">
+        <DialogHeader>
+          <DialogTitle className="text-base">
+            {t("roleDialog.title")}
+          </DialogTitle>
+          <DialogDescription>
+            {departmentCode
+              ? t("roleDialog.departmentScope", {
+                  department: deptName(departmentCode),
+                })
+              : t("roleDialog.pickDepartment")}
+          </DialogDescription>
+        </DialogHeader>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
-          <section className="space-y-8 max-w-full">
+          <section className="flex flex-col gap-8 max-w-full">
             <div className="flex flex-col gap-4">
               <div className="flex gap-2 ">
                 <div className="relative flex-1">
-                  <IGRPInputPrimitive
+                  <Input
                     id={`${idValue}-input`}
                     ref={inputRef}
                     className={cn(
@@ -374,9 +365,9 @@ export function UserRolesDialog({
                     onChange={(e) =>
                       table.getColumn("name")?.setFilterValue(e.target.value)
                     }
-                    placeholder="Filtar por nome..."
+                    placeholder={t("roleDialog.filterPlaceholder")}
                     type="text"
-                    aria-label="Filtar por nome"
+                    aria-label={t("roleDialog.filterLabel")}
                     disabled={!departmentCode}
                   />
                   <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
@@ -384,8 +375,9 @@ export function UserRolesDialog({
                   </div>
                   {Boolean(table.getColumn("name")?.getFilterValue()) && (
                     <button
+                      type="button"
                       className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px]"
-                      aria-label="Clear filter"
+                      aria-label={t("roleDialog.clearFilter")}
                       onClick={() => {
                         table.getColumn("name")?.setFilterValue("");
                         inputRef.current?.focus();
@@ -396,13 +388,13 @@ export function UserRolesDialog({
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  <IGRPPopoverPrimitive
+                <div className="flex flex-col gap-2">
+                  <Popover
                     open={deptPopoverOpen}
                     onOpenChange={setDeptPopoverOpen}
                   >
-                    <IGRPPopoverTriggerPrimitive asChild>
-                      <IGRPButtonPrimitive
+                    <PopoverTrigger asChild>
+                      <Button
                         variant="outline"
                         role="combobox"
                         className={cn(
@@ -416,31 +408,33 @@ export function UserRolesDialog({
                         }
                       >
                         {deptsLoading
-                          ? "A carregar departamentos..."
+                          ? t("roleDialog.departments.loading")
                           : departmentCode
                             ? deptName(departmentCode)
                             : deptsError
-                              ? "Erro ao carregar departamentos"
+                              ? t("roleDialog.departments.loadError")
                               : (depts?.length ?? 0) === 0
-                                ? "Sem departamentos"
-                                : "Selecionar departamento"}
+                                ? t("roleDialog.departments.empty")
+                                : t("roleDialog.departments.placeholder")}
                         <IGRPIcon
                           iconName="ChevronsUpDown"
                           className="ml-2 h-4 w-4 opacity-50"
                         />
-                      </IGRPButtonPrimitive>
-                    </IGRPPopoverTriggerPrimitive>
+                      </Button>
+                    </PopoverTrigger>
 
-                    <IGRPPopoverContentPrimitive className="w-[--radix-popover-trigger-width] p-0">
-                      <IGRPCommandPrimitive>
-                        <IGRPCommandInputPrimitive placeholder="Procurar departamento..." />
-                        <IGRPCommandListPrimitive>
-                          <IGRPCommandEmptyPrimitive>
-                            Nenhum departamento encontrado.
-                          </IGRPCommandEmptyPrimitive>
-                          <IGRPCommandGroupPrimitive>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                      <Command>
+                        <CommandInput
+                          placeholder={t("roleDialog.departments.search")}
+                        />
+                        <CommandList>
+                          <CommandEmpty>
+                            {t("roleDialog.departments.notFound")}
+                          </CommandEmpty>
+                          <CommandGroup>
                             {depts?.map((dept) => (
-                              <IGRPCommandItemPrimitive
+                              <CommandItem
                                 key={dept.code}
                                 value={dept.code}
                                 onSelect={(v) => handleSelectDept(v)}
@@ -455,214 +449,63 @@ export function UserRolesDialog({
                                   )}
                                 />
                                 {dept.name}
-                              </IGRPCommandItemPrimitive>
+                              </CommandItem>
                             ))}
-                          </IGRPCommandGroupPrimitive>
-                        </IGRPCommandListPrimitive>
-                      </IGRPCommandPrimitive>
-                    </IGRPPopoverContentPrimitive>
-                  </IGRPPopoverPrimitive>
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="expires-at"
+                  className="text-sm whitespace-nowrap"
+                >
+                  {t("roleDialog.expiresAt")}
+                </Label>
+                <Input
+                  id="expires-at"
+                  type="date"
+                  value={expiresAt}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  className="w-44"
+                />
               </div>
 
               {!departmentCode ? (
                 <div className="rounded-md border py-10 text-center text-muted-foreground ">
-                  Selecione um departamento para listar os perfis.
+                  {t("roleDialog.selectDepartmentHint")}
                 </div>
               ) : loading ? (
                 <div className="rounded-md border py-6 text-center ">
-                  A carregar perfis...
+                  {t("roleDialog.loadingRoles")}
                 </div>
               ) : err ? (
                 <div className="rounded-md border py-6 ">
                   <p className="text-center">
-                    Ocorreu um erro a carregar perfis do utilizador.
+                    {t("roleDialog.loadRolesError")}
                   </p>
                   <p className="text-center">
-                    {(err as any)?.message ?? String(err)}
+                    {err instanceof Error ? err.message : String(err)}
                   </p>
                 </div>
               ) : (
-                <>
-                  <div className="bg-background overflow-hidden rounded-md border ">
-                    <IGRPTablePrimitive className="table-fixed">
-                      <IGRPTableHeaderPrimitive>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                          <IGRPTableRowPrimitive
-                            key={headerGroup.id}
-                            className="hover:bg-transparent"
-                          >
-                            {headerGroup.headers.map((header) => (
-                              <IGRPTableHeadPrimitive
-                                key={header.id}
-                                style={{ width: `${header.getSize()}px` }}
-                                className="h-12"
-                              >
-                                {header.isPlaceholder
-                                  ? null
-                                  : flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext(),
-                                    )}
-                              </IGRPTableHeadPrimitive>
-                            ))}
-                          </IGRPTableRowPrimitive>
-                        ))}
-                      </IGRPTableHeaderPrimitive>
-
-                      <IGRPTableBodyPrimitive>
-                        {table.getRowModel().rows?.length ? (
-                          table.getRowModel().rows.map((row) => (
-                            <IGRPTableRowPrimitive
-                              key={row.id}
-                              data-state={row.getIsSelected() && "selected"}
-                            >
-                              {row.getVisibleCells().map((cell) => (
-                                <IGRPTableCellPrimitive key={cell.id}>
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext(),
-                                  )}
-                                </IGRPTableCellPrimitive>
-                              ))}
-                            </IGRPTableRowPrimitive>
-                          ))
-                        ) : (
-                          <IGRPTableRowPrimitive>
-                            <IGRPTableCellPrimitive
-                              colSpan={columns.length}
-                              className="h-24 text-center"
-                            >
-                              Sem resultados!
-                            </IGRPTableCellPrimitive>
-                          </IGRPTableRowPrimitive>
-                        )}
-                      </IGRPTableBodyPrimitive>
-                    </IGRPTablePrimitive>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-8">
-                    <div className="flex items-center justify-end gap-3">
-                      <IGRPLabelPrimitive
-                        htmlFor={`${idValue}-per-page`}
-                        className="max-sm:sr-only"
-                      >
-                        Rows per page
-                      </IGRPLabelPrimitive>
-                      <IGRPSelectPrimitive
-                        value={table.getState().pagination.pageSize.toString()}
-                        onValueChange={(value) =>
-                          table.setPageSize(Number(value))
-                        }
-                      >
-                        <IGRPSelectTriggerPrimitive
-                          id={`${idValue}-per-page`}
-                          className="w-fit whitespace-nowrap"
-                        >
-                          <IGRPSelectValuePrimitive placeholder="Select number of results" />
-                        </IGRPSelectTriggerPrimitive>
-                        <IGRPSelectContentPrimitive className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
-                          {[5, 10].map((pageSize) => (
-                            <IGRPSelectItemPrimitive
-                              key={pageSize}
-                              value={pageSize.toString()}
-                            >
-                              {pageSize}
-                            </IGRPSelectItemPrimitive>
-                          ))}
-                        </IGRPSelectContentPrimitive>
-                      </IGRPSelectPrimitive>
-                    </div>
-
-                    <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
-                      <p
-                        className="text-muted-foreground text-sm whitespace-nowrap"
-                        aria-live="polite"
-                      >
-                        <span className="text-foreground">
-                          {table.getState().pagination.pageIndex *
-                            table.getState().pagination.pageSize +
-                            1}
-                          -
-                          {Math.min(
-                            Math.max(
-                              table.getState().pagination.pageIndex *
-                                table.getState().pagination.pageSize +
-                                table.getState().pagination.pageSize,
-                              0,
-                            ),
-                            table.getRowCount(),
-                          )}
-                        </span>{" "}
-                        of{" "}
-                        <span className="text-foreground">
-                          {table.getRowCount().toString()}
-                        </span>
-                      </p>
-                    </div>
-
-                    <div>
-                      <IGRPPaginationPrimitive>
-                        <IGRPPaginationContentPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.firstPage()}
-                              disabled={!table.getCanPreviousPage()}
-                              aria-label="Go to first page"
-                            >
-                              <IGRPIcon iconName="ChevronFirst" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.previousPage()}
-                              disabled={!table.getCanPreviousPage()}
-                              aria-label="Go to previous page"
-                            >
-                              <IGRPIcon iconName="ChevronLeft" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.nextPage()}
-                              disabled={!table.getCanNextPage()}
-                              aria-label="Go to next page"
-                            >
-                              <IGRPIcon iconName="ChevronRight" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                          <IGRPPaginationItemPrimitive>
-                            <IGRPButtonPrimitive
-                              size="icon"
-                              variant="outline"
-                              className="disabled:pointer-events-none disabled:opacity-50"
-                              onClick={() => table.lastPage()}
-                              disabled={!table.getCanNextPage()}
-                              aria-label="Go to last page"
-                            >
-                              <IGRPIcon iconName="ChevronLast" />
-                            </IGRPButtonPrimitive>
-                          </IGRPPaginationItemPrimitive>
-                        </IGRPPaginationContentPrimitive>
-                      </IGRPPaginationPrimitive>
-                    </div>
-                  </div>
-                </>
+                <SelectableDataTable
+                  table={table}
+                  columnCount={columns.length}
+                />
               )}
 
               <div className="flex items-center justify-between gap-3">
-                <IGRPBadgePrimitive>
-                  {table.getSelectedRowModel().rows.length} selecionado(s)
-                </IGRPBadgePrimitive>
+                <Badge>
+                  {t("roleDialog.selectedCount", {
+                    count: table.getSelectedRowModel().rows.length,
+                  })}
+                </Badge>
 
                 <div className="flex gap-2">
                   <IGRPButton
@@ -678,14 +521,14 @@ export function UserRolesDialog({
                     showIcon
                     iconName="X"
                   >
-                    Limpar
+                    {t("roleDialog.clear")}
                   </IGRPButton>
                   <IGRPButton
                     variant="default"
                     onClick={onSubmit}
                     disabled={
                       !departmentCode ||
-                      !(toAdd.length || toRemove.length) ||
+                      !(diff.toAdd.roles.length || diff.toRemove.length) ||
                       loading ||
                       isAdding ||
                       isRemoving
@@ -695,15 +538,15 @@ export function UserRolesDialog({
                     showIcon
                   >
                     {loading || isAdding || isRemoving
-                      ? "Guardando..."
-                      : "Guardar"}
+                      ? t("roleDialog.saving")
+                      : t("roleDialog.save")}
                   </IGRPButton>
                 </div>
               </div>
             </div>
           </section>
         </div>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+      </DialogContent>
+    </Dialog>
   );
 }

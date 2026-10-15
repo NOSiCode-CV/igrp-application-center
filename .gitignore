@@ -7,7 +7,7 @@
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
-!.yarn/releases
+!.yarn/releases 
 !.yarn/versions
 
 # testing
@@ -35,13 +35,20 @@ yarn-error.log*
 !.env.example
 !.env.igrp.example
 !.env.production
-
+!env/.env.development
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.idea
 
 # docker
 # docker-compose.yml
+.claude/settings.local.json
+
+# Brainstorming session artefacts
+.superpowers/
+.claude/launch.json
+public/_n_/*

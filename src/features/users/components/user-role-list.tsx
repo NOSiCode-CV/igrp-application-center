@@ -1,63 +1,112 @@
 "use client";
-import React, { useState } from "react";
-import { useGetCurrentUserRoles, useRemoveUserRole } from "../use-users";
+import { useState } from "react";
+
 import {
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
+  Badge,
+  Button,
   IGRPIcon,
+  Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
-import { UserRolesDialog } from "./user-role-dialog";
+import type {
+  IGRPUserDTO,
+  RoleDTO,
+} from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+
+import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
+
+import {
+  useAddUserRole,
+  useGetCurrentUserRoles,
+  useRemoveUserRole,
+  useUserRoles,
+} from "../use-users";
+import { UserRolesDialog } from "./user-role-dialog";
 
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users");
   const { data: userRoles, isLoading } = useGetCurrentUserRoles();
   const {
     mutateAsync: removeUserRole,
     isPending,
     variables,
   } = useRemoveUserRole();
+  const { mutateAsync: addUserRole } = useAddUserRole();
 
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [roleToRevoke, setRoleToRevoke] = useState<RoleDTO | null>(null);
 
-  const handleRevokeRole = async (
-    departmentCode: string,
-    roleCodes: string[],
-  ) => {
-    if (!roleCodes) return;
+  const userLabel = user.name || user.email;
 
+  const restoreRole = async (role: RoleDTO) => {
     try {
-      const res = await removeUserRole({
+      const res = await addUserRole({
         id: user.id,
-        departmentCode,
-        roleCodes,
+        departmentCode: role.departmentCode,
+        request: { roles: [role.code] },
       });
       if (!res.success) {
         throw new Error(res.error);
       }
       igrpToast({
         type: "success",
-        title: "Perfil removido com sucesso.",
+        title: t("roleList.toasts.restored"),
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Não foi possivel remover o perfil.",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+        title: t("roleList.toasts.restoreFailed"),
+        description: error instanceof Error ? error.message : t("unknownError"),
       });
+    }
+  };
+
+  const handleRevokeRole = async (role: RoleDTO) => {
+    try {
+      const res = await removeUserRole({
+        id: user.id,
+        departmentCode: role.departmentCode,
+        roleCodes: [role.code],
+      });
+      if (!res.success) {
+        throw new Error(res.error);
+      }
+      igrpToast({
+        type: "success",
+        title: t("roleList.toasts.revoked"),
+        description: t("roleList.toasts.revokedDescription", {
+          role: role.name ?? role.code,
+          user: userLabel,
+          department: role.departmentCode,
+        }),
+        duration: 10000,
+        action: {
+          label: t("roleList.toasts.undo"),
+          onClick: () => {
+            void restoreRole(role);
+          },
+        },
+      });
+    } catch (error) {
+      igrpToast({
+        type: "error",
+        title: t("roleList.toasts.removeFailed"),
+        description: error instanceof Error ? error.message : t("unknownError"),
+      });
+    } finally {
+      setRoleToRevoke(null);
     }
   };
 
   const isRemovingRole = (roleCode: string) => {
     return isPending && variables?.roleCodes.includes(roleCode);
   };
+
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando perfis..." />;
+    return <AppCenterLoading description={t("roleList.loading")} />;
   }
 
   return (
@@ -65,18 +114,18 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
       {userRoles && userRoles.length > 0 ? (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Perfis Atribuídos</h2>
-            <IGRPButtonPrimitive
+            <h2 className="text-lg font-semibold">{t("roleList.title")}</h2>
+            <Button
               variant="outline"
               size="sm"
               onClick={() => setAssignDialogOpen(true)}
             >
               <IGRPIcon iconName="Plus" />
-              Adicionar
-            </IGRPButtonPrimitive>
+              {t("roleList.add")}
+            </Button>
           </div>
 
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3">
             {userRoles.map((role) => (
               <div
                 key={role.id}
@@ -90,7 +139,7 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                     />
                   </div>
 
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 flex flex-col gap-2">
                     <div>
                       <p className="font-medium text-sm">{role.name}</p>
                       {role.code && (
@@ -114,55 +163,59 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
                       <div className="flex items-center gap-1">
                         <IGRPIcon iconName="Shield" className="h-3 w-3" />
                         <span>
-                          {role.permissions.length}{" "}
-                          {role.permissions.length === 1
-                            ? "permissão"
-                            : "permissões"}
+                          {t("roleList.permissionCount", {
+                            count: role.permissions.length,
+                          })}
                         </span>
                       </div>
                       {role.parentCode && (
                         <div className="text-xs">
-                          Associados:{" "}
-                          <span className="font-mono">{role.parentCode}</span>
+                          {t.rich("roleList.parent", {
+                            code: role.parentCode,
+                            mono: (chunks) => (
+                              <span className="font-mono">{chunks}</span>
+                            ),
+                          })}
                         </div>
                       )}
                     </div>
 
                     {role.permissions.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {role.permissions.slice(0, 3).map((permission: any) => (
-                          <IGRPBadgePrimitive
-                            key={permission}
-                            variant="secondary"
-                            className="text-xs font-mono"
-                          >
-                            {permission}
-                          </IGRPBadgePrimitive>
-                        ))}
+                        {role.permissions
+                          .slice(0, 3)
+                          .map((permission: string) => (
+                            <Badge
+                              key={permission}
+                              variant="secondary"
+                              className="text-xs font-mono"
+                            >
+                              {permission}
+                            </Badge>
+                          ))}
                         {role.permissions.length > 3 && (
-                          <IGRPBadgePrimitive
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            +{role.permissions.length - 3} mais
-                          </IGRPBadgePrimitive>
+                          <Badge variant="secondary" className="text-xs">
+                            {t("roleList.morePermissions", {
+                              count: role.permissions.length - 3,
+                            })}
+                          </Badge>
                         )}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <IGRPButtonPrimitive
-                  variant="ghost"
+                <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() =>
-                    handleRevokeRole(role.departmentCode, [role.code])
-                  }
+                  onClick={() => setRoleToRevoke(role)}
                   disabled={isRemovingRole(role.code || "")}
-                  className="shrink-0 cursor-pointer"
+                  className="shrink-0 cursor-pointer text-destructive hover:text-destructive"
                 >
-                  {isRemovingRole(role.code || "") ? "..." : "Revogar"}
-                </IGRPButtonPrimitive>
+                  {isRemovingRole(role.code || "")
+                    ? "..."
+                    : t("roleList.revoke")}
+                </Button>
               </div>
             ))}
           </div>
@@ -174,18 +227,15 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
             className="size-8 text-muted-foreground"
           />
           <div>
-            <p className="font-medium text-sm">Sem perfis atribuídos</p>
+            <p className="font-medium text-sm">{t("roleList.empty")}</p>
             <p className="text-xs text-muted-foreground">
-              Este utilizador não tem perfis.
+              {t("roleList.emptyDescription")}
             </p>
           </div>
-          <IGRPButtonPrimitive
-            size="sm"
-            onClick={() => setAssignDialogOpen(true)}
-          >
+          <Button size="sm" onClick={() => setAssignDialogOpen(true)}>
             <IGRPIcon iconName="Plus" />
-            Associar Perfis
-          </IGRPButtonPrimitive>
+            {t("roleList.assign")}
+          </Button>
         </div>
       )}
 
@@ -196,6 +246,31 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
           id={user.id}
         />
       )}
+
+      <ConfirmDialog
+        open={roleToRevoke !== null}
+        onOpenChange={(open) => {
+          if (!open) setRoleToRevoke(null);
+        }}
+        title={t("roleList.revokeDialog.title")}
+        description={
+          roleToRevoke
+            ? t("roleList.revokeDialog.description", {
+                role: roleToRevoke.name ?? roleToRevoke.code,
+                user: userLabel,
+                department: roleToRevoke.departmentCode,
+              })
+            : ""
+        }
+        onConfirm={() => {
+          if (roleToRevoke) void handleRevokeRole(roleToRevoke);
+        }}
+        isLoading={isRemovingRole(roleToRevoke?.code ?? "")}
+        confirmText={t("roleList.revoke")}
+        loadingText={t("roleList.revokeDialog.revoking")}
+        iconName="ShieldOff"
+        variant="destructive"
+      />
     </div>
   );
 }

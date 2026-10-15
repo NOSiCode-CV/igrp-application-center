@@ -1,85 +1,110 @@
-"use client";
+import type { Metadata } from "next";
 
-import { useRouter } from "next/navigation";
-import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { igrpAuthorize } from "@igrp/framework-next";
+import { getTranslations } from "next-intl/server";
 
-const settingsConfig = {
-  personal: [
+import {
+  SettingsCard,
+  type SettingsItem,
+} from "@/features/settings/components/settings-card";
+import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
+
+/** `settings.items.*` key of each card. */
+type SettingsItemKey =
+  | "applications"
+  | "users"
+  | "departments"
+  | "oauthClients"
+  | "audit"
+  | "customization";
+
+/* Titles match the heading of the page each card opens, so the label promises
+   exactly what the destination delivers. Descriptions name the actions that
+   are actually available there — nothing the screen cannot do. Both live in
+   the messages under `settings.items.<key>`. */
+const settingsConfig: {
+  general: (Omit<SettingsItem, "title" | "description"> & {
+    key: SettingsItemKey;
+  })[];
+} = {
+  general: [
     {
       id: "gestao-de-aplicacoes",
-      title: "Gestão de Aplicações",
-      description:
-        "Aqui voce pode gerenciar as suas aplicações, incluindo criar, editar e excluir.",
+      key: "applications",
       icon: "AppWindow",
       href: "/settings/applications",
+      accent: "primary",
     },
     {
       id: "gestao-de-utilizadores",
-      title: "Gestão de Utilizadores",
-      description:
-        "Aqui voce pode gerenciar os seus utilizadores, convidar e gerenciar as suas permissões.",
+      key: "users",
       icon: "Users",
       href: "/settings/users",
+      accent: "info",
     },
     {
-      id: "gestao-de-acessos",
-      title: "Gestão de Acessos",
-      description:
-        "Aqui voce pode gerenciar os seus acessos, departamentos e perfis e aplicações.",
+      id: "gestao-de-departamentos",
+      key: "departments",
       icon: "ShieldCheck",
       href: "/settings/departments",
+      accent: "success",
     },
     {
+      id: "gestao-contas-servicos",
+      key: "oauthClients",
+      icon: "KeyRound",
+      href: "/settings/accounts",
+      accent: "primary",
+    },
+    {
+      id: "auditoria-relatorios",
+      key: "audit",
+      icon: "FileChartColumn",
+      href: "/settings/audit",
+      accent: "info",
+    },
+    /* `status: "inativo"` renders these as plain, non-focusable divs with the
+       "Em breve" badge. The `href`s are the routes they will take once built;
+       nothing links to them while the status is set. */
+    {
       id: "customizacao",
-      title: "Customização",
-      description:
-        "Aqui voce pode personalizar a sua interface, incluindo cores, fontes e imagens.",
+      key: "customization",
       icon: "Palette",
-      href: "/settings/theme",
+      href: "/settings/customization",
+      accent: "warning",
       status: "inativo",
     },
   ],
 };
 
-export default function SettingsPage() {
-  const router = useRouter();
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("settings.meta");
+  return { title: t("title"), description: t("description") };
+}
 
-  const handleNavigate = (href: string) => {
-    router.push(href);
-  };
+export default async function SettingsPage() {
+  const [canViewAudit, t] = await Promise.all([
+    igrpAuthorize(AUDIT_VIEW_PERMISSION),
+    getTranslations("settings"),
+  ]);
+  const items: SettingsItem[] = settingsConfig.general
+    .filter((item) => item.id !== "auditoria-relatorios" || canViewAudit)
+    .map(({ key, ...item }) => ({
+      ...item,
+      title: t(`items.${key}.title`),
+      description: t(`items.${key}.description`),
+    }));
 
   return (
-    <div className="mx-auto space-y-12">
+    <div className="flex flex-col gap-12">
       <section>
-        <h2 className="text-xl font-semibold mb-6">Configurações Gerais</h2>
-        <div className="grid gap-4 grid-cols-none sm:grid-cols-3 md:grid-cols-4">
-          {settingsConfig.personal.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => handleNavigate(item.href)}
-              disabled={item.status === "inativo"}
-              className={cn(
-                "text-left p-5 rounded-lg border-0 bg-accent/20 cursor-pointer hover:bg-accent/50 transition-colors",
-                {
-                  "opacity-50 cursor-not-allowed": item.status === "inativo",
-                },
-              )}
-            >
-              <div className="flex items-start gap-4">
-                <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
-                  <IGRPIcon
-                    iconName={item.icon as any}
-                    className="w-5 h-5 text-primary"
-                  />
-                </div>
-                <div className="space-y-1 min-w-0">
-                  <h3 className="font-medium text-primary">{item.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-snug">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            </button>
+        <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground mt-1 mb-6">
+          {t("subtitle")}
+        </p>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item) => (
+            <SettingsCard key={item.id} item={item} />
           ))}
         </div>
       </section>

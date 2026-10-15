@@ -1,17 +1,19 @@
 "use client";
 
-import {
-  cn,
-  IGRPButtonPrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormDescriptionPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPIcon,
-} from "@igrp/igrp-framework-react-design-system";
 import Image from "next/image";
 import { useEffect, useMemo } from "react";
+
+import {
+  Button,
+  cn,
+  FormControl,
+  FormDescription,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
+
 import {
   type FileWithPreview,
   useFileUpload,
@@ -108,12 +110,13 @@ export function FileUploadField(props: FileUploadFieldProps) {
   };
 
   return (
-    <IGRPFormItemPrimitive>
-      {label && <IGRPFormLabelPrimitive>{label}</IGRPFormLabelPrimitive>}
+    <FormItem>
+      {label && <FormLabel>{label}</FormLabel>}
 
-      <IGRPFormControlPrimitive>
+      <FormControl>
         <div className="flex flex-col gap-2">
           <div className="relative">
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop has no keyboard equivalent; the inner Button and file input are the keyboard-accessible interactive elements */}
             <div
               onDragEnter={disabled ? undefined : handleDragEnter}
               onDragLeave={disabled ? undefined : handleDragLeave}
@@ -139,7 +142,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
               {previewUrl ? (
                 <div className="absolute inset-0 flex items-center justify-center p-4">
                   <Image
-                    src={previewUrl || "/igrp/placeholder.svg"}
+                    src={previewUrl || "/placeholder.svg"}
                     alt={fileName || "Atualizar Imagem"}
                     className="mx-auto max-h-full rounded object-contain"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -161,7 +164,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
                       : "Selecionar imagem"}{" "}
                     (max. {maxSizeMB} MB)
                   </p>
-                  <IGRPButtonPrimitive
+                  <Button
                     type="button"
                     variant="outline"
                     className="mt-4 bg-transparent"
@@ -174,7 +177,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
                       aria-hidden="true"
                     />
                     {btnLabel}
-                  </IGRPButtonPrimitive>
+                  </Button>
                 </div>
               )}
             </div>
@@ -206,14 +209,10 @@ export function FileUploadField(props: FileUploadFieldProps) {
             </div>
           )}
         </div>
-      </IGRPFormControlPrimitive>
+      </FormControl>
 
-      {description && (
-        <IGRPFormDescriptionPrimitive>
-          {description}
-        </IGRPFormDescriptionPrimitive>
-      )}
-      <IGRPFormMessagePrimitive />
-    </IGRPFormItemPrimitive>
+      {description && <FormDescription>{description}</FormDescription>}
+      <FormMessage />
+    </FormItem>
   );
 }

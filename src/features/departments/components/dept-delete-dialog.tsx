@@ -1,7 +1,9 @@
 "use client";
 
 import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
+
 import { IGRPDialogDelete } from "@/components/dialog-delete";
+
 import { useDeleteDepartment } from "../use-departments";
 
 interface DepartmentDeleteDialogProps {
@@ -22,16 +24,17 @@ export function DepartmentDeleteDialog({
   async function confirmDelete() {
     try {
       const result = await deleteDepartment(deptToDelete.code);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
       igrpToast({
         type: "success",
         title: "Departamento Eliminado",
         description: `Departamento '${deptToDelete.name}' foi eliminado com sucesso.`,
         duration: 4000,
       });
-
-      if (!result.success) {
-        throw new Error(result.error);
-      }
 
       onOpenChange(false);
     } catch (error) {
@@ -51,7 +54,9 @@ export function DepartmentDeleteDialog({
       toDelete={deptToDelete}
       confirmDelete={confirmDelete}
       isDeleting={isDeleting}
-      label="Nome Departamento"
+      description="Esta ação é irreversível. O departamento é eliminado, juntamente com os perfis, permissões e menus que lhe estão associados."
+      label="Nome do departamento"
+      textHeader="Eliminar departamento"
     />
   );
 }

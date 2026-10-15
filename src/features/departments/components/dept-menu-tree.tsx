@@ -1,12 +1,14 @@
 import {
+  Checkbox,
   cn,
-  IGRPCheckboxPrimitive,
   IGRPIcon,
-  IGRPTableCellPrimitive,
-  IGRPTableRowPrimitive,
+  TableCell,
+  TableRow,
 } from "@igrp/igrp-framework-react-design-system";
-import { MenuWithChildren } from "./dept-menu";
-import { getMenuIcon } from "@/lib/utils";
+
+import { getMenuIcon } from "@/lib/utilities";
+
+import type { MenuWithChildren } from "./dept-menu";
 
 export function MenuTreeRow({
   menu,
@@ -61,8 +63,8 @@ export function MenuTreeRow({
 
   return (
     <>
-      <IGRPTableRowPrimitive className={cn(level > 0 && "bg-muted/20")}>
-        <IGRPTableCellPrimitive>
+      <TableRow className={cn(level > 0 && "bg-muted/20")}>
+        <TableCell>
           <div
             className="flex items-center gap-2"
             style={{ paddingLeft: `${level * 1.5}rem` }}
@@ -70,12 +72,16 @@ export function MenuTreeRow({
             {hasChildren && (
               <button
                 onClick={() => toggleExpand(menu.code)}
-                className="w-5 h-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0"
+                className="size-7 flex items-center justify-center hover:bg-accent rounded transition-colors motion-reduce:transition-none shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                type="button"
+                aria-expanded={isExpanded}
+                aria-label={isExpanded ? "Recolher menu" : "Expandir menu"}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
+                  aria-hidden
                   className={cn(
-                    "w-4 h-4 transition-transform",
+                    "size-4 transition-transform motion-reduce:transition-none",
                     isExpanded && "rotate-90",
                   )}
                   strokeWidth={2}
@@ -85,7 +91,7 @@ export function MenuTreeRow({
 
             <IGRPIcon
               iconName={getMenuIcon(menu.type)}
-              className="w-4 h-4 text-primary shrink-0"
+              className="size-4 text-primary shrink-0"
               strokeWidth={2}
             />
 
@@ -98,19 +104,19 @@ export function MenuTreeRow({
               )}
             </div>
           </div>
-        </IGRPTableCellPrimitive>
+        </TableCell>
 
         {roles?.map((role) => (
-          <IGRPTableCellPrimitive key={role.name} className="text-center">
+          <TableCell key={role.name} className="text-center">
             <div className="flex items-center justify-center">
-              <IGRPCheckboxPrimitive
+              <Checkbox
                 checked={assignedRoles.has(role.name)}
                 onCheckedChange={() => toggleRoleForMenu(menu.code, role.name)}
               />
             </div>
-          </IGRPTableCellPrimitive>
+          </TableCell>
         ))}
-      </IGRPTableRowPrimitive>
+      </TableRow>
 
       {hasChildren &&
         isExpanded &&

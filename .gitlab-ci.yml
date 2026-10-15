@@ -17,16 +17,6 @@ stages:
   - manifest
   - deploy
 
-# =============================================
-#  Release pipelines (NOSi Registry - multi-arch)
-#
-#  Branch  deploy/pre-release  -> tag  pre-release
-#  Branch  deploy/0.1.0-beta   -> tag  0.1.0-beta
-#  Branch  deploy/0.2.0-beta   -> tags 0.2.0-beta + latest
-#
-#  No pipeline runs on the mainline branch.
-# =============================================
-
 # Enforced gate: shadcn/UI rules must stay clean. Blocks merges.
 check-ui:
   stage: validate
@@ -42,8 +32,37 @@ check-ui:
     - pnpm install --frozen-lockfile
     - pnpm check:ui
 
-# Advisory: surfaces lint/typecheck/test status without blocking.
+# is cleared, then it can be removed to make these blocking too.
 validate:
+  stage: validate
+  image: node:22-alpine
+  tags:
+    - nosi-runner
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  allow_failure: true
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm lint
+    - pnpm typecheck
+    - pnpm test
+
+.build-template:
+  tags:
+    - nosi-runner
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+  script:
+    - pnpm install --frozen-lockfile
+    - pnpm check:ui
+
+# Advisory: surfaces lint/typecheck/test status without blocking.
   stage: validate
   image: node:22-alpine
   tags:
@@ -118,6 +137,21 @@ create-manifest:
         docker manifest create "$IMAGE_NAME_FULL:latest" --amend "$IMAGE_NAME_FULL:arm64-$CI_COMMIT_REF_SLUG" --amend "$IMAGE_NAME_FULL:amd64-$CI_COMMIT_REF_SLUG"
         docker manifest push "$IMAGE_NAME_FULL:latest"
       fi
+
+
+build-pre-release:
+  extends: .build-template
+  tags:
+    - nosi-runner
+  stage: build
+  script:
+    - docker buildx create --use --name amd64builder
+    - docker buildx inspect --bootstrap
+    - docker build --platform linux/amd64 -t $IMAGE_NAME_FULL:pre-release --push --output=type=image,name="$IMAGE_NAME_FULL:pre-release",push=true .
+  
+  only:
+    - deploy/pre-release
+
 
 deploy_dev:
   image: gcc:latest

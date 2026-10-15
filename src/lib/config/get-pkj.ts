@@ -1,4 +1,5 @@
-import { IGRPPackageJson } from "@igrp/framework-next-types";
+import type { IGRPPackageJson } from "@igrp/framework-next-types";
+
 import pkg from "../../../package.json";
 
 export function getPackageJson() {
@@ -6,6 +7,8 @@ export function getPackageJson() {
     name: pkg.name,
     version: pkg.version,
     description: pkg.description,
+    displayName: pkg.displayName,
+    slug: process.env.NEXT_PUBLIC_BASE_PATH || "",
   };
   return appInfo;
 }

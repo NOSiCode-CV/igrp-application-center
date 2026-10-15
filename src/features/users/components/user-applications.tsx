@@ -1,36 +1,74 @@
-import React from "react";
-import { useCurrentUserApplications, useUserApplications } from "../use-users";
-import { AppCenterLoading } from "@/components/loading";
-import {
+"use client";
+
+import { useMemo, useState } from "react";
+
+import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
+import type {
   ApplicationDTO,
   IGRPUserDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+
+import { AppCenterLoading } from "@/components/loading";
 import { ApplicationCard } from "@/features/applications/components/app-card";
 
+import { useCurrentUserApplications, useUserApplications } from "../use-users";
+
 export default function UserApplications({ user }: { user?: IGRPUserDTO }) {
+  const t = useTranslations("users.applications");
+  const [search, setSearch] = useState("");
+
   const { data: currentUserApps, isLoading: isLoadingMyApps } =
     useCurrentUserApplications({ enabled: !user });
-  const { data: userApps, isLoading } = useUserApplications(user?.id!, {
-    enabled: !!user,
+  const { data: userApps, isLoading } = useUserApplications(user?.id ?? "", {
+    enabled: !!user?.id,
   });
 
   const apps = user ? userApps : currentUserApps;
+  const loading = isLoadingMyApps || isLoading;
 
-  if (isLoadingMyApps || isLoading) {
-    return <AppCenterLoading descrption="Carregando aplicações..." />;
-  }
+  const filtered = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return apps ?? [];
+    return (apps ?? []).filter((app) =>
+      [app.name, app.code, app.description]
+        .filter((field): field is string => Boolean(field))
+        .some((field) => field.toLowerCase().includes(query)),
+    );
+  }, [apps, search]);
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {apps?.map((app: ApplicationDTO) => (
-        <ApplicationCard key={app.id} app={app} />
-      ))}
+    <div className="flex flex-col gap-4">
+      <div className="relative w-full max-w-sm">
+        <IGRPIcon
+          iconName="Search"
+          aria-hidden="true"
+          className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
+          strokeWidth={2}
+        />
+        <Input
+          type="search"
+          aria-label={t("searchLabel")}
+          spellCheck={false}
+          placeholder={t("searchPlaceholder")}
+          className="w-full bg-background pl-8"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          disabled={loading}
+        />
+      </div>
 
-      {apps?.length === 0 && (
-        <div className="w-full">
-          <div className="text-primary">
-            <p className="text-sm">Nenhum aplicação atribuida</p>
-          </div>
+      {loading ? (
+        <AppCenterLoading description={t("loading")} />
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {search.trim() ? t("noResults") : t("empty")}
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((app: ApplicationDTO) => (
+            <ApplicationCard key={app.id} app={app} />
+          ))}
         </div>
       )}
     </div>

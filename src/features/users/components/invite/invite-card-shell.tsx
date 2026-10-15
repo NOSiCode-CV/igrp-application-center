@@ -1,0 +1,235 @@
+"use client";
+
+import type { ReactNode } from "react";
+
+import {
+  Card,
+  CardContent,
+  cn,
+  IGRPIcon,
+} from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
+
+export type InviteStepIndex = 0 | 1 | 2;
+
+interface InviteCardShellProps {
+  children: ReactNode;
+  step?: InviteStepIndex;
+}
+
+export function InviteCardShell({ children, step }: InviteCardShellProps) {
+  return (
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-10 text-foreground/5.5"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle, currentColor 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 -z-10 bg-linear-to-b from-primary/5 via-transparent to-transparent"
+      />
+
+      <div className="flex w-full flex-col items-center md:w-auto md:flex-row md:items-start md:gap-10">
+        {/* Vertical stepper — desktop only */}
+        {step !== undefined ? (
+          <div className="hidden shrink-0 pt-9 md:block">
+            <VerticalStepIndicator current={step} />
+          </div>
+        ) : null}
+
+        <Card className="w-full max-w-md overflow-hidden rounded-3xl border-border/60 shadow-2xl">
+          <div
+            aria-hidden="true"
+            className="h-0.5 bg-linear-to-r from-transparent via-primary/50 to-transparent"
+          />
+          <CardContent className="flex flex-col gap-8 p-8 sm:p-10">
+            {children}
+          </CardContent>
+        </Card>
+      </div>
+
+      {step !== undefined ? (
+        <div className="mt-6 md:hidden">
+          <HorizontalStepIndicator current={step} />
+        </div>
+      ) : null}
+    </main>
+  );
+}
+
+const STEP_KEYS = ["email", "code", "confirm"] as const;
+
+const TOTAL_STEPS = STEP_KEYS.length;
+
+function useStepData() {
+  const t = useTranslations("users.invite.accept.steps");
+  return STEP_KEYS.map((key) => ({
+    label: t(`${key}.label`),
+    sub: t(`${key}.sub`),
+  }));
+}
+
+function VerticalStepIndicator({ current }: { current: InviteStepIndex }) {
+  const t = useTranslations("users.invite.accept.steps");
+  const steps = useStepData();
+
+  return (
+    <ol
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
+      className="flex flex-col"
+    >
+      {steps.map((step, idx) => {
+        const isDone = idx < current;
+        const isActive = idx === current;
+        const isLast = idx === steps.length - 1;
+
+        return (
+          <li
+            key={step.label}
+            aria-current={isActive ? "step" : undefined}
+            className="flex flex-col"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex flex-col items-center">
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    "flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-[background-color,color,box-shadow] duration-300",
+                    isDone
+                      ? "bg-primary text-primary-foreground"
+                      : isActive
+                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                        : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {isDone ? (
+                    <IGRPIcon
+                      iconName="Check"
+                      className="size-3.5"
+                      strokeWidth={2.5}
+                    />
+                  ) : (
+                    String(idx + 1)
+                  )}
+                </div>
+                {!isLast ? (
+                  <div
+                    aria-hidden="true"
+                    className={cn(
+                      "mt-1.5 w-px transition-colors duration-500",
+                      isDone ? "bg-primary/50" : "bg-border",
+                    )}
+                    style={{ height: "38px" }}
+                  />
+                ) : null}
+              </div>
+
+              <div className="flex flex-col gap-0.5 pt-0.5">
+                <span
+                  className={cn(
+                    "text-sm font-semibold leading-none transition-colors duration-300",
+                    isActive
+                      ? "text-foreground"
+                      : isDone
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground/50",
+                  )}
+                >
+                  {step.label}
+                </span>
+                <span
+                  className={cn(
+                    "text-xs leading-none transition-colors duration-300",
+                    isActive
+                      ? "text-muted-foreground"
+                      : "text-muted-foreground/40",
+                  )}
+                >
+                  {step.sub}
+                </span>
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+// ── Horizontal stepper (mobile fallback, below card) ──────────────────────────
+
+function HorizontalStepIndicator({ current }: { current: InviteStepIndex }) {
+  const t = useTranslations("users.invite.accept.steps");
+  const labels = useStepData().map((step) => step.label);
+  const itemCount = TOTAL_STEPS * 2 - 1;
+
+  return (
+    <ol
+      aria-label={t("stepOf", { current: current + 1, total: TOTAL_STEPS })}
+      className="flex items-start"
+    >
+      {Array.from({ length: itemCount }, (_, i) => {
+        const isConnector = i % 2 === 1;
+        const idx = Math.floor(i / 2);
+
+        if (isConnector) {
+          return (
+            <li
+              key={`c-${idx}`}
+              aria-hidden="true"
+              className="mt-3 flex items-center"
+            >
+              <div
+                className={cn(
+                  "h-px w-10 transition-colors duration-500",
+                  idx < current ? "bg-primary" : "bg-border",
+                )}
+              />
+            </li>
+          );
+        }
+
+        return (
+          <li
+            key={`s-${idx}`}
+            aria-current={idx === current ? "step" : undefined}
+            className="flex flex-col items-center gap-1.5"
+          >
+            <div
+              aria-hidden="true"
+              className={cn(
+                "flex size-6 items-center justify-center rounded-full text-xs font-semibold transition-[background-color,color,box-shadow] duration-300",
+                idx < current
+                  ? "bg-primary text-primary-foreground"
+                  : idx === current
+                    ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
+                    : "bg-muted text-muted-foreground",
+              )}
+            >
+              {idx < current ? (
+                <IGRPIcon iconName="Check" className="size-3" />
+              ) : (
+                String(idx + 1)
+              )}
+            </div>
+            <span
+              className={cn(
+                "w-max text-xs font-medium transition-colors duration-300",
+                idx === current
+                  ? "text-foreground"
+                  : "text-muted-foreground/50",
+              )}
+            >
+              {labels[idx]}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}

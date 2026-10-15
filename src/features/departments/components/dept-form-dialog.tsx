@@ -1,42 +1,45 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
   IGRPButton,
-  IGRPButtonPrimitive,
-  IGRPDialogContentPrimitive,
-  IGRPDialogDescriptionPrimitive,
-  IGRPDialogFooterPrimitive,
-  IGRPDialogHeaderPrimitive,
-  IGRPDialogPrimitive,
-  IGRPDialogTitlePrimitive,
-  IGRPFormControlPrimitive,
-  IGRPFormFieldPrimitive,
-  IGRPFormItemPrimitive,
-  IGRPFormLabelPrimitive,
-  IGRPFormMessagePrimitive,
-  IGRPFormPrimitive,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSelectContentPrimitive,
-  IGRPSelectItemPrimitive,
-  IGRPSelectPrimitive,
-  IGRPSelectTriggerPrimitive,
-  IGRPSelectValuePrimitive,
-  IGRPTextAreaPrimitive,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useEffect, useState } from "react";
+import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import { useForm } from "react-hook-form";
+
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { statusSchema } from "@/schemas/global";
+
 import {
-  DepartmentArgs,
+  type DepartmentArgs,
   departmentSchema,
-  normalizeDeptartment,
+  normalizeDepartment,
 } from "../dept-schemas";
 import { useCreateDepartment, useUpdateDepartment } from "../use-departments";
-import { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 
 interface DepartmentCreateDialogProps {
   open: boolean;
@@ -44,6 +47,14 @@ interface DepartmentCreateDialogProps {
   department: DepartmentDTO | null;
   parentDeptId?: DepartmentDTO | null;
 }
+
+const defaultValues = {
+  name: "",
+  code: "",
+  description: "",
+  status: statusSchema.enum.ACTIVE,
+  parentCode: "",
+};
 
 export function DepartmentFormDialog({
   open,
@@ -57,14 +68,6 @@ export function DepartmentFormDialog({
     useCreateDepartment();
   const { mutateAsync: updateDepartment, isPending: isUpdating } =
     useUpdateDepartment();
-
-  const defaultValues = {
-    name: "",
-    code: "",
-    description: "",
-    status: statusSchema.enum.ACTIVE,
-    parentCode: "",
-  };
 
   const form = useForm<DepartmentArgs>({
     resolver: zodResolver(departmentSchema),
@@ -124,7 +127,7 @@ export function DepartmentFormDialog({
   const isLoading = isCreating || isUpdating;
 
   const onSubmit = async (values: DepartmentArgs) => {
-    const payload = normalizeDeptartment(values);
+    const payload = normalizeDepartment(values);
 
     try {
       if (department) {
@@ -188,30 +191,28 @@ export function DepartmentFormDialog({
       : "Criar um novo departamento";
 
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
-      <IGRPDialogContentPrimitive>
-        <IGRPDialogHeaderPrimitive>
-          <IGRPDialogTitlePrimitive>{titleTxt}</IGRPDialogTitlePrimitive>
-          <IGRPDialogDescriptionPrimitive>
-            {descriptionTxt}
-          </IGRPDialogDescriptionPrimitive>
-        </IGRPDialogHeaderPrimitive>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{titleTxt}</DialogTitle>
+          <DialogDescription>{descriptionTxt}</DialogDescription>
+        </DialogHeader>
 
-        <IGRPFormPrimitive {...form}>
+        <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                <FormItem>
+                  <FormLabel className='after:content-["*"] after:text-destructive'>
                     Nome
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive
+                  </FormLabel>
+                  <FormControl>
+                    <Input
                       placeholder="Nome do Departamento"
                       value={field.value ?? ""}
                       onChange={field.onChange}
@@ -222,22 +223,22 @@ export function DepartmentFormDialog({
                       disabled={isLoading}
                       className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="code"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className='after:content-["*"] after:text-destructive'>
+                <FormItem>
+                  <FormLabel className='after:content-["*"] after:text-destructive'>
                     Código
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPInputPrimitive
+                  </FormLabel>
+                  <FormControl>
+                    <Input
                       placeholder="Código do Departamento"
                       required
                       disabled={isLoading || !!department}
@@ -245,22 +246,20 @@ export function DepartmentFormDialog({
                       onFocus={() => form.trigger("code")}
                       className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
-            <IGRPFormFieldPrimitive
+            <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
-                <IGRPFormItemPrimitive>
-                  <IGRPFormLabelPrimitive className="">
-                    Descrição
-                  </IGRPFormLabelPrimitive>
-                  <IGRPFormControlPrimitive>
-                    <IGRPTextAreaPrimitive
+                <FormItem>
+                  <FormLabel className="">Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea
                       placeholder="Breve descrição do departamento"
                       rows={2}
                       disabled={isLoading}
@@ -271,23 +270,21 @@ export function DepartmentFormDialog({
                       ref={field.ref}
                       className="resize-none placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
                     />
-                  </IGRPFormControlPrimitive>
-                  <IGRPFormMessagePrimitive />
-                </IGRPFormItemPrimitive>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
             {isSubDepartment && (
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="parentCode"
                 render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>
-                      Departamento Pai
-                    </IGRPFormLabelPrimitive>
-                    <IGRPFormControlPrimitive>
-                      <IGRPInputPrimitive
+                  <FormItem>
+                    <FormLabel>Departamento Pai</FormLabel>
+                    <FormControl>
+                      <Input
                         {...field}
                         value={
                           parentDeptId?.name ||
@@ -299,47 +296,41 @@ export function DepartmentFormDialog({
                         placeholder="Departamento pai"
                         className="bg-muted border-primary/30"
                       />
-                    </IGRPFormControlPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             )}
 
             {department && (
-              <IGRPFormFieldPrimitive
+              <FormField
                 control={form.control}
                 name="status"
                 render={({ field }) => (
-                  <IGRPFormItemPrimitive>
-                    <IGRPFormLabelPrimitive>Estado</IGRPFormLabelPrimitive>
-                    <IGRPSelectPrimitive
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
-                      <IGRPFormControlPrimitive>
-                        <IGRPSelectTriggerPrimitive className="w-full truncate">
-                          <IGRPSelectValuePrimitive placeholder="Selecionar estado" />
-                        </IGRPSelectTriggerPrimitive>
-                      </IGRPFormControlPrimitive>
-                      <IGRPSelectContentPrimitive>
+                  <FormItem>
+                    <FormLabel>Estado</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full truncate">
+                          <SelectValue placeholder="Selecionar estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
                         {STATUS_OPTIONS.map((status) => (
-                          <IGRPSelectItemPrimitive
-                            key={status.value}
-                            value={status.value}
-                          >
+                          <SelectItem key={status.value} value={status.value}>
                             {status.label}
-                          </IGRPSelectItemPrimitive>
+                          </SelectItem>
                         ))}
-                      </IGRPSelectContentPrimitive>
-                    </IGRPSelectPrimitive>
-                    <IGRPFormMessagePrimitive />
-                  </IGRPFormItemPrimitive>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             )}
 
-            <IGRPDialogFooterPrimitive className="pt-6 flex justify-between">
+            <DialogFooter className="pt-6 flex justify-between">
               <IGRPButton
                 variant="outline"
                 onClick={() => {
@@ -357,32 +348,32 @@ export function DepartmentFormDialog({
 
               <div className="flex gap-1">
                 {!department && (
-                  <IGRPButtonPrimitive
+                  <Button
                     type="submit"
                     variant="outline"
                     disabled={isLoading}
                     onClick={() => setShouldClose(false)}
                     className="flex items-center gap-1"
                   >
-                    <IGRPIcon iconName="Save" className="size-4" />
-                    {isLoading ? "Guardando..." : "Guardar e Novo"}
-                  </IGRPButtonPrimitive>
+                    <IGRPIcon iconName="Save" aria-hidden className="size-4" />
+                    {isLoading ? "A guardar…" : "Guardar e Novo"}
+                  </Button>
                 )}
 
-                <IGRPButtonPrimitive
+                <Button
                   type="submit"
                   disabled={isLoading}
                   onClick={() => setShouldClose(true)}
                   className="flex items-center gap-1"
                 >
-                  <IGRPIcon iconName="Save" className="size-4" />
-                  {isLoading ? "Guardando..." : "Guardar"}
-                </IGRPButtonPrimitive>
+                  <IGRPIcon iconName="Save" aria-hidden className="size-4" />
+                  {isLoading ? "A guardar…" : "Guardar"}
+                </Button>
               </div>
-            </IGRPDialogFooterPrimitive>
+            </DialogFooter>
           </form>
-        </IGRPFormPrimitive>
-      </IGRPDialogContentPrimitive>
-    </IGRPDialogPrimitive>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }

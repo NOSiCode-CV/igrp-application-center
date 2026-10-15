@@ -1,29 +1,32 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import {
+  Button,
   cn,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSwitchPrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Switch,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState, useMemo } from "react";
-import { ButtonLink } from "@/components/button-link";
-import { ManageResourcesModal } from "./resource-manage-modal";
+
+import { ConfirmDialog } from "@/components/confirmation-modal";
+import { AppCenterLoading } from "@/components/loading";
 import {
+  useAddPermissionsToDepartment,
   useAvailablePermissions,
   useDepartmentPermissions,
-  useAddPermissionsToDepartment,
   useRemovePermissionsFromDepartment,
 } from "@/features/departments/use-departments";
-import { AppCenterLoading } from "@/components/loading";
-import { PermissionArgs } from "../permissions-schemas";
+
+import { ManageResourcesModal } from "./resource-manage-modal";
 
 interface PermissionListProps {
   departmentCode: string;
@@ -33,6 +36,9 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   const { igrpToast } = useIGRPToast();
   const [openManageResources, setOpenManageResources] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [permissionToRevoke, setPermissionToRevoke] = useState<string | null>(
+    null,
+  );
   const [processingPermission, setProcessingPermission] = useState<
     string | null
   >(null);
@@ -50,14 +56,14 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   const allPermissions = useMemo(() => {
     const permissionsMap = new Map();
 
-    availablePermissions?.forEach((perm: PermissionArgs) => {
+    availablePermissions?.forEach((perm) => {
       permissionsMap.set(perm.name, {
         ...perm,
         isAssigned: false,
       });
     });
 
-    departmentPermissions?.forEach((perm: PermissionArgs) => {
+    departmentPermissions?.forEach((perm) => {
       permissionsMap.set(perm.name, {
         ...perm,
         isAssigned: true,
@@ -110,7 +116,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro",
+        title: "Não foi possível alterar a permissão",
         description:
           error instanceof Error ? error.message : "Erro desconhecido",
       });
@@ -120,7 +126,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   };
 
   if (isLoading) {
-    return <AppCenterLoading descrption="Carregando permissões..." />;
+    return <AppCenterLoading description="A carregar permissões…" />;
   }
 
   const permissionEmpty = allPermissions.length === 0;
@@ -137,13 +143,18 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
               </div>
             </div>
             <div className="flex justify-end shrink-0">
-              <ButtonLink
-                onClick={() => setOpenManageResources(true)}
-                icon="Shield"
-                href="#"
-                label="Gerenciar Recursos"
+              <Button
                 variant="outline"
-              />
+                onClick={() => setOpenManageResources(true)}
+              >
+                <IGRPIcon
+                  iconName="Shield"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
+                Gerir Recursos
+              </Button>
             </div>
           </div>
         </div>
@@ -153,11 +164,14 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
             <div className="relative w-full max-w-full">
               <IGRPIcon
                 iconName="Search"
+                aria-hidden
                 className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
               />
-              <IGRPInputPrimitive
+              <Input
                 type="search"
-                placeholder="Pesquisar permissões..."
+                aria-label="Pesquisar permissões"
+                autoComplete="off"
+                placeholder="Pesquisar permissões…"
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -166,10 +180,11 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
           </div>
 
           {permissionEmpty ? (
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
+            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
               <IGRPIcon
                 iconName="ShieldOff"
-                className="w-16 h-16 mb-4 opacity-30"
+                aria-hidden
+                className="size-16 mb-4 opacity-30"
                 strokeWidth={1.5}
               />
               <p className="text-lg font-medium mb-2">
@@ -182,63 +197,73 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
           ) : (
             <div className="w-full min-w-0">
               <div className="rounded-md border overflow-x-auto">
-                <IGRPTablePrimitive className="min-w-full">
-                  <IGRPTableHeaderPrimitive>
-                    <IGRPTableRowPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                <Table className="min-w-full">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">
                         Permissão
-                      </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap">
+                      </TableHead>
+                      <TableHead className="whitespace-nowrap">
                         Descrição
-                      </IGRPTableHeadPrimitive>
-                      <IGRPTableHeadPrimitive className="whitespace-nowrap text-right">
+                      </TableHead>
+                      <TableHead className="whitespace-nowrap text-right">
                         Ativo
-                      </IGRPTableHeadPrimitive>
-                    </IGRPTableRowPrimitive>
-                  </IGRPTableHeaderPrimitive>
-                  <IGRPTableBodyPrimitive>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {filteredPermissions.map((permission) => {
                       const isProcessing =
                         processingPermission === permission.name;
 
                       return (
-                        <IGRPTableRowPrimitive key={permission.id}>
-                          <IGRPTableCellPrimitive className="font-medium whitespace-nowrap">
+                        <TableRow key={permission.id}>
+                          <TableCell className="font-medium whitespace-nowrap">
                             {permission.name}
-                          </IGRPTableCellPrimitive>
-                          <IGRPTableCellPrimitive className="whitespace-nowrap">
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
                             {permission.description || "N/A"}
-                          </IGRPTableCellPrimitive>
-                          <IGRPTableCellPrimitive className="text-right">
+                          </TableCell>
+                          <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
                               {isProcessing && (
                                 <IGRPIcon
                                   iconName="LoaderCircle"
-                                  className="w-4 h-4 animate-spin text-muted-foreground"
+                                  aria-hidden
+                                  className="size-4 animate-spin motion-reduce:animate-none text-muted-foreground"
                                   strokeWidth={2}
                                 />
                               )}
-                              <IGRPSwitchPrimitive
+                              <Switch
                                 checked={permission.isAssigned}
                                 disabled={processingPermission !== null}
-                                onCheckedChange={(checked) =>
-                                  handleTogglePermission(
-                                    permission.name,
-                                    checked,
-                                  )
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    handleTogglePermission(
+                                      permission.name,
+                                      true,
+                                    );
+                                  } else {
+                                    setPermissionToRevoke(permission.name);
+                                  }
+                                }}
+                                aria-label={
+                                  permission.isAssigned
+                                    ? `Remover permissão ${permission.name}`
+                                    : `Adicionar permissão ${permission.name}`
                                 }
                                 className={cn(
-                                  "data-[state=checked]:bg-emerald-500",
+                                  "data-[state=checked]:bg-success",
                                   isProcessing && "opacity-50",
                                 )}
                               />
                             </div>
-                          </IGRPTableCellPrimitive>
-                        </IGRPTableRowPrimitive>
+                          </TableCell>
+                        </TableRow>
                       );
                     })}
-                  </IGRPTableBodyPrimitive>
-                </IGRPTablePrimitive>
+                  </TableBody>
+                </Table>
               </div>
             </div>
           )}
@@ -249,6 +274,31 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         departmentCode={departmentCode}
         open={openManageResources}
         onOpenChange={setOpenManageResources}
+      />
+
+      <ConfirmDialog
+        open={permissionToRevoke !== null}
+        onOpenChange={(open) => {
+          if (!open) setPermissionToRevoke(null);
+        }}
+        title="Remover permissão"
+        description={
+          permissionToRevoke
+            ? `Remover «${permissionToRevoke}» do departamento ${departmentCode}? Todos os perfis deste departamento perdem o acesso que esta permissão concede.`
+            : ""
+        }
+        onConfirm={() => {
+          if (permissionToRevoke) {
+            const name = permissionToRevoke;
+            setPermissionToRevoke(null);
+            void handleTogglePermission(name, false);
+          }
+        }}
+        isLoading={processingPermission === permissionToRevoke}
+        confirmText="Remover"
+        loadingText="A remover..."
+        iconName="ShieldOff"
+        variant="destructive"
       />
     </>
   );

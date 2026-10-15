@@ -1,27 +1,19 @@
 FROM node:22-alpine AS base
-RUN apk add --no-cache libc6-compat && corepack enable
+
+RUN apk add --no-cache libc6-compat
+RUN npm install -g pnpm@11.1.1
 WORKDIR /app
 
 FROM base AS deps
-COPY package.json .npmrc ./
-COPY pnpm-lock.yaml ./
-RUN node -v && pnpm -v
-RUN if [ -f pnpm-lock.yaml ]; then \
-    echo "Using frozen lockfile" && pnpm i --frozen-lockfile; \
-  else \
-    echo "No lockfile found, installing dependencies"; \
-  fi
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm i --frozen-lockfile --ignore-scripts
 
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-ARG NEXT_PUBLIC_BASE_PATH
-ARG NEXT_PUBLIC_ALLOWED_DOMAINS
-
-ENV NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
-ENV NEXT_PUBLIC_ALLOWED_DOMAINS=${NEXT_PUBLIC_ALLOWED_DOMAINS}
+COPY ./env/.env.development .env.production
 
 RUN pnpm build
 
@@ -30,8 +22,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static

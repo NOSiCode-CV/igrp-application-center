@@ -1,37 +1,35 @@
 "use client";
 
+import { useCallback, useMemo, useState } from "react";
+
 import {
-  cn,
-  IGRPBadgePrimitive,
-  IGRPButtonPrimitive,
-  IGRPDropdownMenuCheckboxItemPrimitive,
-  IGRPDropdownMenuContentPrimitive,
-  IGRPDropdownMenuItemPrimitive,
-  IGRPDropdownMenuLabelPrimitive,
-  IGRPDropdownMenuPrimitive,
-  IGRPDropdownMenuSeparatorPrimitive,
-  IGRPDropdownMenuTriggerPrimitive,
+  Button,
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
   IGRPIcon,
-  IGRPInputPrimitive,
-  IGRPSkeletonPrimitive,
-  IGRPTableBodyPrimitive,
-  IGRPTableCellPrimitive,
-  IGRPTableHeaderPrimitive,
-  IGRPTableHeadPrimitive,
-  IGRPTablePrimitive,
-  IGRPTableRowPrimitive,
+  Input,
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@igrp/igrp-framework-react-design-system";
-import { useState } from "react";
-import { ButtonLink } from "@/components/button-link";
+import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
+
+import { AppCenterLoading } from "@/components/loading";
+import { useRoles } from "@/features/departments/use-departments";
 import { STATUS_OPTIONS } from "@/lib/constants";
+
 import type { RoleArgs } from "../role-schemas";
+import { RoleTreeRow } from "./role.tree-row";
 import { RoleDeleteDialog } from "./role-delete-dialog";
 import { RoleFormDialog } from "./role-form-dialog";
 import { RoleDetails } from "./role-permissions-dialog";
-import { RoleTreeRow } from "./role.tree-row";
-import { AppCenterLoading } from "@/components/loading";
-import { useRoles } from "@/features/departments/use-departments";
-import { RoleDTO } from "@igrp/platform-access-management-client-ts";
+import { RoleTreeContext } from "./role-tree-context";
 
 interface RolesListProps {
   departmentCode: string;
@@ -62,11 +60,12 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     });
 
     roles.forEach((role) => {
-      const node = map.get(role.code)!;
+      const node = map.get(role.code);
+      if (!node) return;
       if (role.parentCode) {
         const parent = map.get(role.parentCode);
         if (parent) {
-          parent.children!.push(node);
+          parent.children?.push(node);
         } else {
           roots.push(node);
         }
@@ -78,15 +77,13 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     return roots;
   };
 
-  const toggleExpand = (roleCode: string) => {
-    const newExpanded = new Set(expandedRoles);
-    if (newExpanded.has(roleCode)) {
-      newExpanded.delete(roleCode);
-    } else {
-      newExpanded.add(roleCode);
-    }
-    setExpandedRoles(newExpanded);
-  };
+  const toggleExpand = useCallback((roleCode: string) => {
+    setExpandedRoles((prev) => {
+      const next = new Set(prev);
+      next.has(roleCode) ? next.delete(roleCode) : next.add(roleCode);
+      return next;
+    });
+  }, []);
 
   const handleNewRole = () => {
     setSelectedRole(undefined);
@@ -95,33 +92,52 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     setOpenFormDialog(true);
   };
 
-  const handleDelete = (code: string) => {
+  const handleDelete = useCallback((code: string) => {
     setRoleToDelete(code);
     setOpenDeleteDialog(true);
-  };
+  }, []);
 
-  const handleEdit = (role: RoleArgs) => {
+  const handleEdit = useCallback((role: RoleArgs) => {
     setSelectedRole(role);
     setParentRoleName(null);
     setRoleToDelete(null);
     setOpenDetailsDialog(false);
     setOpenFormDialog(true);
-  };
+  }, []);
 
-  const handleNewSubRole = (role: RoleArgs) => {
+  const handleNewSubRole = useCallback((role: RoleArgs) => {
     setSelectedRole(undefined);
     setParentRoleName(role.code);
     setRoleToDelete(null);
     setOpenDetailsDialog(false);
     setOpenFormDialog(true);
-  };
+  }, []);
 
-  const handlePermissions = (role: RoleArgs) => {
+  const handlePermissions = useCallback((role: RoleArgs) => {
     setSelectedRole(role);
     setRoleToDelete(null);
     setOpenFormDialog(false);
     setOpenDetailsDialog(true);
-  };
+  }, []);
+
+  const treeContextValue = useMemo(
+    () => ({
+      expandedRoles,
+      toggleExpand,
+      handleEdit,
+      handleNewSubRole,
+      handlePermissions,
+      handleDelete,
+    }),
+    [
+      expandedRoles,
+      toggleExpand,
+      handleEdit,
+      handleNewSubRole,
+      handlePermissions,
+      handleDelete,
+    ],
+  );
 
   if (error) {
     return (
@@ -160,12 +176,15 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
           </div>
           {!roleEmpty && (
             <div className="flex justify-end">
-              <ButtonLink
-                onClick={handleNewRole}
-                icon="UserLock"
-                href="#"
-                label="Novo Perfil"
-              />
+              <Button onClick={handleNewRole}>
+                <IGRPIcon
+                  iconName="UserLock"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
+                Novo Perfil
+              </Button>
             </div>
           )}
         </div>
@@ -176,28 +195,31 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
           <div className="relative w-full max-w-sm">
             <IGRPIcon
               iconName="Search"
+              aria-hidden
               className="absolute left-2.5 top-2.5 size-4 text-muted-foreground"
             />
-            <IGRPInputPrimitive
+            <Input
               type="search"
-              placeholder="Pesquisar perfil..."
+              aria-label="Pesquisar perfil"
+              autoComplete="off"
+              placeholder="Pesquisar perfil…"
               className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="flex flex-wrap gap-2 flex-shirnk-0">
-            <IGRPDropdownMenuPrimitive>
-              <IGRPDropdownMenuTriggerPrimitive asChild>
-                <IGRPButtonPrimitive variant="outline" className="gap-2">
-                  <IGRPIcon iconName="ListFilter" strokeWidth={2} />
+          <div className="flex flex-wrap gap-2 flex-shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <IGRPIcon iconName="ListFilter" aria-hidden strokeWidth={2} />
                   Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
-                </IGRPButtonPrimitive>
-              </IGRPDropdownMenuTriggerPrimitive>
-              <IGRPDropdownMenuContentPrimitive align="start" className="w-40">
-                <IGRPDropdownMenuSeparatorPrimitive />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-40">
+                <DropdownMenuSeparator />
                 {STATUS_OPTIONS.map(({ value, label }) => (
-                  <IGRPDropdownMenuCheckboxItemPrimitive
+                  <DropdownMenuCheckboxItem
                     key={value}
                     checked={statusFilter.includes(value)}
                     onCheckedChange={(checked) => {
@@ -209,32 +231,38 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                     }}
                   >
                     {label}
-                  </IGRPDropdownMenuCheckboxItemPrimitive>
+                  </DropdownMenuCheckboxItem>
                 ))}
                 {statusFilter.length > 0 && (
                   <>
-                    <IGRPDropdownMenuSeparatorPrimitive />
-                    <IGRPDropdownMenuItemPrimitive
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
                       onClick={() => setStatusFilter([])}
                       className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
                     >
-                      <IGRPIcon iconName="X" className="mr-1" strokeWidth={2} />
+                      <IGRPIcon
+                        iconName="X"
+                        aria-hidden
+                        className="mr-1"
+                        strokeWidth={2}
+                      />
                       Limpar
-                    </IGRPDropdownMenuItemPrimitive>
+                    </DropdownMenuItem>
                   </>
                 )}
-              </IGRPDropdownMenuContentPrimitive>
-            </IGRPDropdownMenuPrimitive>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
         {isLoading ? (
-          <AppCenterLoading descrption="Carregando Roles..." />
+          <AppCenterLoading description="A carregar perfis…" />
         ) : roleEmpty ? (
-          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border rounded-lg">
+          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
             <IGRPIcon
               iconName="UserLock"
-              className="w-16 h-16 mb-4 opacity-30"
+              aria-hidden
+              className="size-16 mb-4 opacity-30"
               strokeWidth={1.5}
             />
             <p className="text-lg font-medium mb-2">Nenhum perfil criado</p>
@@ -242,46 +270,36 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
             {searchTerm ? (
               "Tente ajustar a sua pesquisa."
             ) : (
-              <ButtonLink
-                onClick={handleNewRole}
-                icon="UserLock"
-                href="#"
-                label="Novo Perfil"
-              />
+              <Button onClick={handleNewRole}>
+                <IGRPIcon
+                  iconName="UserLock"
+                  aria-hidden
+                  className="size-4"
+                  strokeWidth={2}
+                />
+                Novo Perfil
+              </Button>
             )}
           </div>
         ) : (
           <div className="rounded-md border">
-            <IGRPTablePrimitive>
-              <IGRPTableHeaderPrimitive>
-                <IGRPTableRowPrimitive>
-                  <IGRPTableHeadPrimitive className="whitespace-nowrap">
-                    Perfil
-                  </IGRPTableHeadPrimitive>
-                  <IGRPTableHeadPrimitive className="whitespace-nowrap">
-                    Descrição
-                  </IGRPTableHeadPrimitive>
-                  <IGRPTableHeadPrimitive className="whitespace-nowrap">
-                    Estado
-                  </IGRPTableHeadPrimitive>
-                  <IGRPTableHeadPrimitive className="w-24" />
-                </IGRPTableRowPrimitive>
-              </IGRPTableHeaderPrimitive>
-              <IGRPTableBodyPrimitive>
-                {roleTree.map((role) => (
-                  <RoleTreeRow
-                    key={role.id}
-                    role={role}
-                    handlePermissions={handlePermissions}
-                    expandedRoles={expandedRoles}
-                    toggleExpand={toggleExpand}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    handleNewSubRole={handleNewSubRole}
-                  />
-                ))}
-              </IGRPTableBodyPrimitive>
-            </IGRPTablePrimitive>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="whitespace-nowrap">Perfil</TableHead>
+                  <TableHead className="whitespace-nowrap">Descrição</TableHead>
+                  <TableHead className="whitespace-nowrap">Estado</TableHead>
+                  <TableHead className="w-24" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <RoleTreeContext value={treeContextValue}>
+                  {roleTree.map((role) => (
+                    <RoleTreeRow key={role.id} role={role} />
+                  ))}
+                </RoleTreeContext>
+              </TableBody>
+            </Table>
           </div>
         )}
       </div>

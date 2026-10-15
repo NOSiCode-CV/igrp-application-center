@@ -7,11 +7,17 @@ import {
   uploadPublicFile,
 } from "@/actions/file";
 
-export const useFiles = (path: string) => {
+import { filesKeys } from "./query-keys";
+
+export const useFiles = (path: string, options?: { enabled?: boolean }) => {
   return useQuery({
-    queryKey: ["files", path ?? ""],
-    queryFn: ({ queryKey: [, p] }) => getFileUrl(p),
-    enabled: !!path,
+    queryKey: filesKeys.byPath(path ?? ""),
+    queryFn: async ({ queryKey: [, p] }) => {
+      const result = await getFileUrl(p);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
+    enabled: (options?.enabled ?? true) && !!path,
   });
 };
 
@@ -25,12 +31,13 @@ export const useUploadPublicFiles = () => {
     }: {
       file: File | Blob;
       options: UploadFileOptions;
-    }) => uploadPublicFile(file, options),
+    }) => {
+      const result = await uploadPublicFile(file, options);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["public-files-public"],
-      });
-      await queryClient.refetchQueries({ queryKey: ["public-files-public"] });
+      await queryClient.invalidateQueries({ queryKey: filesKeys.all });
     },
   });
 };
@@ -45,12 +52,13 @@ export const useUploadPrivateFiles = () => {
     }: {
       file: File | Blob;
       options: UploadFileOptions;
-    }) => uploadPrivateFile(file, options),
+    }) => {
+      const result = await uploadPrivateFile(file, options);
+      if (!result.success) throw new Error(result.error);
+      return result.data;
+    },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["public-files-private"],
-      });
-      await queryClient.refetchQueries({ queryKey: ["public-files-private"] });
+      await queryClient.invalidateQueries({ queryKey: filesKeys.all });
     },
   });
 };
