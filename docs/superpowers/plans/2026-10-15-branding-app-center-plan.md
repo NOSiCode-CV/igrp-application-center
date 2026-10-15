@@ -31,6 +31,7 @@
 - Document at most 64 KB (`BRANDING_MAX_BYTES`), checked again on the server.
 - Upload folder `"branding"`; asset URL = `NEXT_PUBLIC_IGRP_MINIO_URL` + `/` + returned path.
 - Translations `pt`, `en`, `fr` complete for the `branding` namespace. 73 token labels.
+- Since `a331515`, i18n comes from `@igrp/framework-next/i18n`: messages are typed as `typeof pt & IGRPFrameworkMessages` (`src/i18n/global.d.ts`). Tests still use `renderWithIntl` from `src/__tests__/helpers/intl.tsx` (pt messages).
 - UI rules (AGENTS.md): Horizon/DS components, `gap-*`, `size-N`, no `space-*`, no raw colour classes, no `border-t` dividers, no `dark:` colour overrides. The swatch's inline `style={{ background }}` is the only raw colour.
 - Commit messages carry no `Co-Authored-By:` trailer. `pnpm lint` mutates files: run it before staging, then re-check the diff.
 - Gates before claiming done: `pnpm check:ui`, `pnpm typecheck`, `pnpm test` (compare against the baseline recorded in Task 1).
@@ -41,7 +42,7 @@
 2. **Clearing a Token the saved Brand set.** The real page carries the saved Brand on `html:root`, so a preview that only sets draft values would inherit the saved value for a cleared field. The preview must show the Default. Test in Task 5 (`previewStyle` fills Defaults).
 3. **MinIO base URL shape.** `NEXT_PUBLIC_IGRP_MINIO_URL` with or without a trailing slash and with a bucket path (`https://minio.example/igrp`). `new URL(path, base)` would drop the bucket; the asset URL must keep it. Test in Task 7.
 4. **A stored Brand the editor would not have written.** Hand-written configs may hold `color-mix(...)` or a logo on another host. The editor must load, show the inline error on that field and block save until it is fixed. Test in Task 8.
-5. **`FileUploadField` emits `onChange(null)` on mount.** That must not wipe the saved logo URL from the form. Test in Task 9.
+5. **`FileUploadField` keeps its own file list and re-emits it every render.** `onChange(null)` on mount must not wipe the saved logo URL, and a pick must not come back after Descartar, Repor predefinições or the post-save reset (it would be re-uploaded). Tests in Task 9.
 
 ---
 
@@ -79,108 +80,52 @@
 
 ---
 
-### Task 1: Framework release and preset-theme removal
+### Task 1: Remaining preset-theme leftovers
+
+Commit `a331515` already bumped the framework (`@igrp/framework-next` and `-next-ui` 0.2.0-beta.8, `-next-types` 0.2.0-beta.7, design system 0.2.0-beta.5), removed `getTheme()` from `src/actions/igrp/layout.ts`, fixed the `theme-mono` comment in `src/lib/fonts.ts`, added `branding: { enabled }` to `src/igrp.template.config.ts`, switched `src/app/layout.tsx` to `generateMetadata` with `igrpBrandingMetadata`, and added `IGRP_BRANDING_ENABLED=` to `.env.example`. Do not redo those.
 
 **Files:**
-- Modify: `package.json`, `pnpm-lock.yaml`
-- Modify: `src/actions/igrp/layout.ts`
 - Modify: `src/styles/globals.css:27-50`
-- Modify: `src/lib/fonts.ts:8`
 - Modify: `docs/DESIGN_SYSTEM.md:114`
-
-**Interfaces:**
-- Produces: `configLayout(): Promise<{ session }>` (no `activeThemeValue`/`isScaled`); installed framework packages exporting the symbols listed in Global Constraints.
 
 - [ ] **Step 1: Record the test baseline before touching anything**
 
-Run: `pnpm test 2>&1 | tail -40`
-Write down the failing test files and counts. The last recorded baseline (2026-10-13) was 114 files / 729 tests with 7 pre-existing failures in `users` and `utilities`. Later tasks compare against what you record now.
+Run: `pnpm test 2>&1 | tail -60` (about 6 minutes; run it in the background).
+Expected on 2026-10-15 after `a331515`: 116 files / 745 tests, **37 failures in 14 files** (`applications-grid`, `error-boundaries-i18n`, `i18n/actions`, `i18n/literal-strings` (header), `i18n/request`, `lib/dal`, `lib/utilities`, `menus/menu-i18n`, `middleware/middleware`, `middleware/path-predicates`, `users/*` (3 files), `workspace/app-catalog-states`). Write down what you get. Later tasks compare against it: no new failures, and none in `src/__tests__/branding/` or `src/__tests__/actions/global-configuration.test.ts`.
 
-- [ ] **Step 2: Confirm the framework release exists**
-
-Run: `npm view @igrp/framework-next versions --json` and `npm view @igrp/framework-next-ui versions --json` and `npm view @igrp/framework-next-types versions --json`
-Expected: a version newer than `0.2.0-beta.7` for `framework-next` and `framework-next-ui` (the pending patch changesets give `0.2.0-beta.8`), and newer than `0.2.0-beta.6` for `framework-next-types`.
-If no newer version exists, STOP: the framework branding commits are unpushed and unpublished. Report that the framework release is a prerequisite and wait. Do not link the local framework checkout into this app.
-
-- [ ] **Step 3: Install the release**
-
-```bash
-pnpm add @igrp/framework-next@0.2.0-beta.8 @igrp/framework-next-ui@0.2.0-beta.8
-pnpm add -D @igrp/framework-next-types@0.2.0-beta.7
-```
-(Use the exact versions Step 2 found.) Then verify the exports are present:
+- [ ] **Step 2: Confirm the installed framework has branding**
 
 Run: `grep -rl "igrpInvalidateBranding" node_modules/@igrp/framework-next/dist | head -1` and `grep -rl "IGRP_BRANDING_CORE_TOKENS" node_modules/@igrp/framework-next-ui/dist | head -1`
-Expected: one path each.
+Expected: one path each. If not, run `pnpm install` and retry; if still missing, STOP and report.
 
-The same release carries the framework i18n changesets (`igrpBuildConfig({ i18n })` is optional; this app passes no `i18n`, so behaviour is unchanged). Step 7 confirms.
-
-- [ ] **Step 4: Remove `getTheme()`**
-
-Replace `src/actions/igrp/layout.ts` from the `import { cookies }` line to the end with:
-
-```ts
-import { PREVIEW_SESSION_STUB, serverSession } from "@/lib/auth";
-import { isAuthBypass } from "@/lib/utilities";
-
-export async function configLayout() {
-  // NOTE: This function is called from both the root layout (app/layout.tsx) and the
-  // protected IGRP layout (app/(igrp)/layout.tsx). Auth enforcement is handled by
-  // verifySession() in dal.ts, which is called only from the protected layout.
-  // Do NOT add verifySession() here — it would redirect unauthenticated users on
-  // the root layout, breaking the login page.
-  //
-  // When auth is bypassed (preview mode OR AUTH_PROVIDER=none), provide a mock
-  // session so the layout doesn't kick the user to /login. The framework reads
-  // session existence rather than the preview flag when deciding redirects.
-  // Use the sanitized NextAuth Session — NOT auth.getAccessToken(), which
-  // returns the full JWT (including the refresh token) and would leak it into
-  // the client SessionProvider. serverSession() is redirect-free, so it stays
-  // safe to call from the root layout (auth enforcement lives in verifySession()).
-  const session = isAuthBypass() ? PREVIEW_SESSION_STUB : await serverSession();
-
-  return { session };
-}
-```
-Keep the four-line header comment and `import "server-only";` above it.
-
-- [ ] **Step 5: Remove the other leftovers**
+- [ ] **Step 3: Remove the leftovers**
 
 - `src/styles/globals.css`: delete the whole comment block that starts with `/*` + `── Sidebar appearance ──` and ends with the closing `*/` after the `.dark { … }` example (lines 27–50). Keep the blank line before `/* ── Workspace animations`.
-- `src/lib/fonts.ts:8`: change `// Not preloaded: only the \`theme-mono\` theme and \`font-mono\` utilities use it,` to `// Not preloaded: only the \`font-mono\` utilities use it,`.
 - `docs/DESIGN_SYSTEM.md:114`: replace the line `- Theme overrides: \`src/styles/themes.css\`` with `- Organization Brand (colours and logos): set in the Application Center at \`/settings/customization\`; see [TOKENS.md](TOKENS.md)`.
 
-Run: `grep -rn "getTheme\|activeThemeValue\|isScaled\|igrp_active_theme\|themes.css\|theme-mono" src docs --include=*.ts --include=*.tsx --include=*.css --include=*.md | grep -v superpowers`
+Run: `grep -rn "getTheme\|activeThemeValue\|isScaled\|igrp_active_theme\|themes.css\|theme-mono\|Sidebar appearance" src docs --include=*.ts --include=*.tsx --include=*.css --include=*.md | grep -v superpowers`
 Expected: only `docs/TOKENS.md` hits (rewritten in Task 12).
 
-- [ ] **Step 6: Typecheck**
+- [ ] **Step 4: Typecheck and commit**
 
 Run: `pnpm typecheck`
-Expected: PASS.
-
-- [ ] **Step 7: Test suite against the baseline**
-
-Run: `pnpm test 2>&1 | tail -40`
-Expected: the same failures as Step 1, no new ones.
-
-- [ ] **Step 8: Commit**
+Expected: PASS, or only errors that already exist on `dev` (compare with `git stash`-free check: run it before Step 3 too).
 
 ```bash
 pnpm lint
-git add package.json pnpm-lock.yaml src/actions/igrp/layout.ts src/styles/globals.css src/lib/fonts.ts docs/DESIGN_SYSTEM.md
-git commit -m "chore(branding): bump framework to the branding release and drop preset-theme leftovers"
+git add src/styles/globals.css docs/DESIGN_SYSTEM.md
+git commit -m "chore(branding): drop the preset-theme sidebar comment and themes.css reference"
 ```
 
 ---
 
-### Task 2: Flag wiring, permission constant and favicon metadata
+### Task 2: Enable predicate, permission constant, page title
 
 **Files:**
-- Modify: `src/lib/utilities.ts` (after `isAuthBypass`, ~line 233)
+- Modify: `src/lib/utilities.ts` (after `isAuthBypass`)
 - Modify: `src/lib/constants.ts` (after `AUDIT_VIEW_PERMISSION`)
-- Modify: `src/igrp.template.config.ts:34`
-- Modify: `src/app/layout.tsx`
-- Modify: `.env.example:130`, `docs/ENVIRONMENT.md:34`
+- Modify: `src/app/layout.tsx` (title regression from `a331515`)
+- Modify: `docs/ENVIRONMENT.md:34`
 - Test: `src/__tests__/branding/is-branding-enabled.test.ts`
 
 **Interfaces:**
@@ -254,44 +199,11 @@ In `src/lib/constants.ts`, after `AUDIT_VIEW_PERMISSION`:
 export const CUSTOMIZE_PERMISSION = "igrp.applications.customize";
 ```
 
-In `src/igrp.template.config.ts`, after `syncAccess: …,`:
-
-```ts
-    branding: { enabled: process.env.IGRP_BRANDING_ENABLED === "true" },
-```
-
-In `src/app/layout.tsx`, replace the `IGRPRootLayout` import and the static `metadata` export:
+In `src/app/layout.tsx`, `generateMetadata` was copied from the template and says "Template Aplicações". Restore this app's title:
 
 ```tsx
-import {
-  IGRPRootLayout,
-  igrpBrandingMetadata,
-  igrpResolveRequestBranding,
-} from "@igrp/framework-next";
-```
-
-```tsx
-// The favicon follows the organization Brand when `IGRP_BRANDING_ENABLED=true`;
-// otherwise (and on any failure) the app's own icon.
-export async function generateMetadata(): Promise<Metadata> {
-  const config = await createConfig(await getLayoutConfig());
-  const branding = await igrpResolveRequestBranding(config);
-  return {
     title: "IGRP | Centro de Aplicações",
     description: "IGRP | Centro de Aplicações",
-    icons: igrpBrandingMetadata(branding, `${basePath}/logo-no-text.png`),
-  };
-}
-```
-
-`.env.example`, after `IGRP_SYNC_ACCESS=` and its blank line:
-
-```
-# Load the organization Brand (colours and logos) from Access Management at
-# render time, and enable the Brand editor at /settings/customization.
-# Empty or false keeps the design-system defaults with no request.
-IGRP_BRANDING_ENABLED=
-
 ```
 
 `docs/ENVIRONMENT.md`, after the `IGRP_SYNC_ACCESS` row:
@@ -309,8 +221,8 @@ Expected: PASS.
 
 ```bash
 pnpm lint
-git add src/lib/utilities.ts src/lib/constants.ts src/igrp.template.config.ts src/app/layout.tsx .env.example docs/ENVIRONMENT.md src/__tests__/branding/is-branding-enabled.test.ts
-git commit -m "feat(branding): wire IGRP_BRANDING_ENABLED, the customize permission and the brand favicon"
+git add src/lib/utilities.ts src/lib/constants.ts src/app/layout.tsx docs/ENVIRONMENT.md src/__tests__/branding/is-branding-enabled.test.ts
+git commit -m "feat(branding): add isBrandingEnabled and the customize permission; restore the app title"
 ```
 
 ---
@@ -333,7 +245,7 @@ git commit -m "feat(branding): wire IGRP_BRANDING_ENABLED, the customize permiss
   - `isOnMinioHost(url: string, minioUrl: string): boolean`
   - `isFaviconFile(file: File): boolean`
   - `isNormalizedOklch(value: string): boolean`
-  - `checkSavableBranding(raw: string, minioUrl: string): IGRPBranding | null`
+  - `checkSavableBranding(raw: string, minioUrl: string, tokenNames: readonly string[]): IGRPBranding | null`
 
 - [ ] **Step 1: Add the dependency**
 
@@ -366,6 +278,10 @@ describe("normalizeColor", () => {
     ["  oklch(0.45 0.18 250)  ", "oklch(0.45 0.18 250)"],
   ])("normalizes %j to %j", (input, expected) => {
     expect(normalizeColor(input)).toBe(expected);
+  });
+
+  it("gives greys a zero hue", () => {
+    expect(normalizeColor("#808080")).toMatch(/^oklch\([\d.]+ 0 0\)$/);
   });
 
   it("is idempotent on its own output", () => {
@@ -412,6 +328,7 @@ import {
 } from "@/features/branding/lib/branding-rules";
 
 const MINIO = "https://minio.example/igrp";
+const NAMES = ["--primary", "--ring"];
 const doc = (over: Record<string, unknown> = {}) =>
   JSON.stringify({
     version: 1,
@@ -468,33 +385,37 @@ describe("isNormalizedOklch", () => {
 
 describe("checkSavableBranding", () => {
   it("returns the cleaned document for a valid input", () => {
-    expect(checkSavableBranding(doc(), MINIO)?.tokens.light).toEqual({
+    expect(checkSavableBranding(doc(), MINIO, NAMES)?.tokens.light).toEqual({
       "--primary": "oklch(0.45 0.18 250)",
     });
   });
   it("rejects documents over 64 KB", () => {
-    expect(checkSavableBranding(doc({ pad: "x".repeat(65 * 1024) }), MINIO)).toBeNull();
+    expect(checkSavableBranding(doc({ pad: "x".repeat(65 * 1024) }), MINIO, NAMES)).toBeNull();
   });
   it("rejects unparseable JSON and wrong versions", () => {
-    expect(checkSavableBranding("{", MINIO)).toBeNull();
-    expect(checkSavableBranding(doc({ version: 2 }), MINIO)).toBeNull();
+    expect(checkSavableBranding("{", MINIO, NAMES)).toBeNull();
+    expect(checkSavableBranding(doc({ version: 2 }), MINIO, NAMES)).toBeNull();
   });
   it("rejects colours the editor would not have saved", () => {
     const tokens = { light: { "--primary": "color-mix(in oklch, red, blue)" } };
-    expect(checkSavableBranding(doc({ tokens }), MINIO)).toBeNull();
+    expect(checkSavableBranding(doc({ tokens }), MINIO, NAMES)).toBeNull();
     const hex = { light: { "--primary": "#ff0000" } };
-    expect(checkSavableBranding(doc({ tokens: hex }), MINIO)).toBeNull();
+    expect(checkSavableBranding(doc({ tokens: hex }), MINIO, NAMES)).toBeNull();
   });
   it("rejects a document with any field the framework drops", () => {
     const tokens = { light: { "--Primary": "oklch(0.45 0.18 250)" } };
-    expect(checkSavableBranding(doc({ tokens }), MINIO)).toBeNull();
+    expect(checkSavableBranding(doc({ tokens }), MINIO, NAMES)).toBeNull();
+  });
+  it("rejects Token names outside the catalog", () => {
+    const tokens = { light: { "--radius": "oklch(0.45 0.18 250)" } };
+    expect(checkSavableBranding(doc({ tokens }), MINIO, NAMES)).toBeNull();
   });
   it("rejects logos on a foreign host", () => {
     const logos = { wide: { light: "https://evil.example/logo.svg" } };
-    expect(checkSavableBranding(doc({ logos }), MINIO)).toBeNull();
+    expect(checkSavableBranding(doc({ logos }), MINIO, NAMES)).toBeNull();
   });
   it("drops unknown top-level keys from the returned document", () => {
-    expect(checkSavableBranding(doc({ extra: 1 }), MINIO)).not.toHaveProperty("extra");
+    expect(checkSavableBranding(doc({ extra: 1 }), MINIO, NAMES)).not.toHaveProperty("extra");
   });
 });
 ```
@@ -537,7 +458,9 @@ export function normalizeColor(value: string): string | null {
   const color = toOklch(parse(value.trim()));
   if (!color) return null;
   const alpha = color.alpha ?? 1;
-  const base = `${round(color.l)} ${round(color.c)} ${round(color.h)}`;
+  // Greys carry float residue in a/b, so culori reports a meaningless hue; pin it to 0.
+  const c = round(color.c);
+  const base = `${round(color.l)} ${c} ${c === 0 ? 0 : round(color.h)}`;
   return alpha < 1 ? `oklch(${base} / ${round(alpha)})` : `oklch(${base})`;
 }
 
@@ -550,10 +473,7 @@ export function toHex(value: string): string {
 
 ```ts
 // src/features/branding/lib/branding-rules.ts
-import {
-  BRANDING_MAX_BYTES,
-  igrpParseBranding,
-} from "@igrp/framework-next-ui";
+import { igrpParseBranding } from "@igrp/framework-next-ui";
 import type { IGRPBranding } from "@igrp/framework-next-types";
 
 /* Pure rules shared by the editor (feedback) and saveBranding (enforcement). */
@@ -593,22 +513,27 @@ export function isNormalizedOklch(value: string): boolean {
 
 /**
  * The cleaned Brand when `raw` is something the editor could have produced:
- * within 64 KB, parsed by the framework with nothing dropped, every colour in
- * normalized OKLCH, every logo on the MinIO origin. Otherwise `null`.
+ * within 64 KB (the framework parser rejects larger), nothing dropped, only
+ * catalog Token names (so `--radius` or `--spacing` cannot be set by a direct
+ * action call), every colour in normalized OKLCH, every logo on the MinIO
+ * origin. Otherwise `null`.
  */
 export function checkSavableBranding(
   raw: string,
   minioUrl: string,
+  tokenNames: readonly string[],
 ): IGRPBranding | null {
-  if (new TextEncoder().encode(raw).byteLength > BRANDING_MAX_BYTES) return null;
   const { branding, dropped } = igrpParseBranding(raw);
   if (!branding || dropped > 0) return null;
 
-  const colours = [
-    ...Object.values(branding.tokens.light ?? {}),
-    ...Object.values(branding.tokens.dark ?? {}),
-  ];
-  if (!colours.every(isNormalizedOklch)) return null;
+  const maps = [branding.tokens.light ?? {}, branding.tokens.dark ?? {}];
+  const known = new Set(tokenNames);
+  if (!maps.every((map) => Object.keys(map).every((name) => known.has(name)))) {
+    return null;
+  }
+  if (!maps.every((map) => Object.values(map).every(isNormalizedOklch))) {
+    return null;
+  }
 
   const urls = Object.values(branding.logos).flatMap((slot) =>
     slot ? [slot.light, ...(slot.dark ? [slot.dark] : [])] : [],
@@ -622,7 +547,7 @@ export function checkSavableBranding(
 - [ ] **Step 5: Run the tests**
 
 Run: `pnpm vitest run src/__tests__/branding/color-normalize.test.ts src/__tests__/branding/branding-rules.test.ts`
-Expected: PASS. If a culori value differs in the last decimal, the culori version is not 4.0.2 — pin it, do not edit the expectations.
+Expected: PASS. The expected strings were computed with culori 4.0.2; if one differs, check the installed version first.
 
 - [ ] **Step 6: Commit**
 
@@ -894,7 +819,7 @@ Expected: `src/features/branding/token-defaults.ts` exists with 73 keys per Mode
 
 - [ ] **Step 5: Add the `branding` messages**
 
-Add a top-level `"branding"` object to each file (after `"menus"`). These are all the keys every later task uses.
+Add a top-level `"branding"` object to each file (after `"menus"` in pt and en, after `"home"` in fr). These are all the keys every later task uses. `src/__tests__/i18n/messages.consistency.test.ts` already checks that en/fr add no keys missing from pt and keep the same ICU arguments.
 
 `src/i18n/messages/pt.json`:
 
@@ -1055,6 +980,7 @@ Add a top-level `"branding"` object to each file (after `"menus"`). These are al
     "invalidColor": "Use uma cor concreta: hex, rgb, hsl, oklch, oklab, lab, lch ou um nome de cor.",
     "logoHost": "Só são aceites imagens carregadas aqui.",
     "favicon": "Use um PNG ou ICO até 256 KB.",
+    "image": "Use uma imagem (SVG, PNG, JPG, WEBP ou GIF).",
     "darkWithoutLight": "Adicione a versão clara antes da escura.",
     "invalid": "A personalização tem valores inválidos. Reveja os campos e tente novamente.",
     "generic": "Tente novamente. Se o problema persistir, contacte o suporte."
@@ -1221,6 +1147,7 @@ Add a top-level `"branding"` object to each file (after `"menus"`). These are al
     "invalidColor": "Use a concrete colour: hex, rgb, hsl, oklch, oklab, lab, lch or a colour name.",
     "logoHost": "Only images uploaded here are accepted.",
     "favicon": "Use a PNG or ICO up to 256 KB.",
+    "image": "Use an image (SVG, PNG, JPG, WEBP or GIF).",
     "darkWithoutLight": "Add the light version before the dark one.",
     "invalid": "The customization has invalid values. Check the fields and try again.",
     "generic": "Try again. If the problem persists, contact support."
@@ -1387,6 +1314,7 @@ Add a top-level `"branding"` object to each file (after `"menus"`). These are al
     "invalidColor": "Utilisez une couleur concrète : hex, rgb, hsl, oklch, oklab, lab, lch ou un nom de couleur.",
     "logoHost": "Seules les images téléversées ici sont acceptées.",
     "favicon": "Utilisez un PNG ou un ICO de 256 Ko au maximum.",
+    "image": "Utilisez une image (SVG, PNG, JPG, WEBP ou GIF).",
     "darkWithoutLight": "Ajoutez la version claire avant la sombre.",
     "invalid": "La personnalisation contient des valeurs invalides. Vérifiez les champs et réessayez.",
     "generic": "Réessayez. Si le problème persiste, contactez le support."
@@ -1394,10 +1322,11 @@ Add a top-level `"branding"` object to each file (after `"menus"`). These are al
 }
 ```
 
-In all three files, replace `settings.items.customization.description` ("theme" is retired as a noun, spec §2):
+Replace `settings.items.customization.description` ("theme" is retired as a noun, spec §2) in pt and en:
 - pt: `"Defina as cores e os logótipos da organização em todas as aplicações."`
 - en: `"Set the organization's colours and logos across every app."`
-- fr: `"Définissez les couleurs et les logos de l'organisation dans toutes les applications."`
+
+Since `a331515`, `fr.json` holds only `app` and `home`; everything else falls back to pt per key. Add the `branding` block to fr anyway (spec §2 wants it complete), and do not add a `settings` block there.
 
 - [ ] **Step 6: Run the test and typecheck**
 
@@ -1676,7 +1605,7 @@ git commit -m "feat(branding): map editor form values to the Brand document and 
 - Test: `src/__tests__/actions/global-configuration.test.ts`
 
 **Interfaces:**
-- Consumes: `isBrandingEnabled`, `CUSTOMIZE_PERMISSION` (Task 2); `checkSavableBranding`, `minioBaseUrl` (Task 3).
+- Consumes: `isBrandingEnabled`, `CUSTOMIZE_PERMISSION` (Task 2); `checkSavableBranding`, `minioBaseUrl` (Task 3); `BRANDING_TOKEN_NAMES` (Task 4).
 - Produces:
   - `getBranding(): Promise<ActionResult<IGRPBranding | null>>`
   - `saveBranding(raw: string): Promise<ActionResult<void>>` — failure statuses: `404` flag off, `403` no permission, `422` our validation, otherwise the API status.
@@ -1750,7 +1679,10 @@ beforeEach(() => {
     return { data: {} };
   });
 });
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
 
 describe("getBranding", () => {
   it("parses the stored ORGANIZATION config", async () => {
@@ -1809,6 +1741,7 @@ describe("saveBranding", () => {
     ["a color-mix value", JSON.stringify({ ...valid, tokens: { light: { "--primary": "color-mix(in oklch, red, blue)" } } })],
     ["a non-OKLCH value", JSON.stringify({ ...valid, tokens: { light: { "--primary": "#ff0000" } } })],
     ["a foreign logo host", JSON.stringify({ ...valid, logos: { wide: { light: "https://evil.example/l.svg" } } })],
+    ["a Token outside the catalog", JSON.stringify({ ...valid, tokens: { light: { "--radius": "oklch(0.45 0.18 250)" } } })],
     ["invalid JSON", "{"],
   ])("rejects %s with 422 before calling the SDK", async (_, raw) => {
     expect(await saveBranding(raw)).toMatchObject({ success: false, status: 422 });
@@ -1864,6 +1797,7 @@ import { igrpParseBranding } from "@igrp/framework-next-ui";
 import type { IGRPBranding } from "@igrp/framework-next-types";
 import { GlobalConfigurationType } from "@igrp/platform-access-management-client-ts";
 
+import { BRANDING_TOKEN_NAMES } from "@/features/branding/catalog";
 import {
   checkSavableBranding,
   minioBaseUrl,
@@ -1918,7 +1852,7 @@ export async function getBranding(): Promise<ActionResult<IGRPBranding | null>> 
 export async function saveBranding(raw: string): Promise<ActionResult<void>> {
   if (!isBrandingEnabled()) return DISABLED;
   if (!(await igrpAuthorize(CUSTOMIZE_PERMISSION))) return FORBIDDEN;
-  const branding = checkSavableBranding(raw, minioBaseUrl());
+  const branding = checkSavableBranding(raw, minioBaseUrl(), BRANDING_TOKEN_NAMES);
   if (!branding) return INVALID;
 
   const client = await getClientAccess();
@@ -1967,6 +1901,7 @@ git commit -m "feat(branding): add getBranding and saveBranding server actions"
 ### Task 7: Upload-and-save flow and query hooks
 
 **Files:**
+- Create: `src/features/branding/lib/branding-save-error.ts` (no action imports, so the screen can import it without pulling server modules into client tests)
 - Create: `src/features/branding/lib/persist-branding.ts`
 - Create: `src/features/branding/query-keys.ts`, `src/features/branding/use-branding.ts`
 - Test: `src/__tests__/branding/persist-branding.test.ts`
@@ -1996,8 +1931,8 @@ vi.mock("@/actions/file", () => ({ uploadPublicFile: mocks.upload }));
 vi.mock("@/actions/global-configuration", () => ({ saveBranding: mocks.save }));
 
 import { toFormValues } from "@/features/branding/lib/branding-mapper";
+import { BrandingSaveError } from "@/features/branding/lib/branding-save-error";
 import {
-  BrandingSaveError,
   brandingAssetUrl,
   persistBranding,
 } from "@/features/branding/lib/persist-branding";
@@ -2093,15 +2028,7 @@ import {
   toBrandingDocument,
 } from "./branding-mapper";
 import { minioBaseUrl } from "./branding-rules";
-
-export class BrandingSaveError extends Error {
-  constructor(
-    readonly reason: "upload" | "forbidden" | "invalid" | "api",
-    readonly detail?: string,
-  ) {
-    super(`branding.${reason}`);
-  }
-}
+import { BrandingSaveError } from "./branding-save-error";
 
 /** String join, not `new URL(path, base)`, which would drop a bucket path without a trailing slash. */
 export function brandingAssetUrl(path: string, base = minioBaseUrl()): string {
@@ -2142,6 +2069,19 @@ export async function persistBranding(values: BrandingFormValues): Promise<void>
   if (result.status === 403) throw new BrandingSaveError("forbidden");
   if (result.status === 422) throw new BrandingSaveError("invalid");
   throw new BrandingSaveError("api", result.error);
+}
+```
+
+```ts
+// src/features/branding/lib/branding-save-error.ts
+/** Why a save failed. `detail` is the slot key for "upload", the API message for "api". */
+export class BrandingSaveError extends Error {
+  constructor(
+    readonly reason: "upload" | "forbidden" | "invalid" | "api",
+    readonly detail?: string,
+  ) {
+    super(`branding.${reason}`);
+  }
 }
 ```
 
@@ -2193,7 +2133,7 @@ Expected: PASS.
 
 ```bash
 pnpm lint
-git add src/features/branding/lib/persist-branding.ts src/features/branding/query-keys.ts src/features/branding/use-branding.ts src/__tests__/branding/persist-branding.test.ts
+git add src/features/branding/lib/branding-save-error.ts src/features/branding/lib/persist-branding.ts src/features/branding/query-keys.ts src/features/branding/use-branding.ts src/__tests__/branding/persist-branding.test.ts
 git commit -m "feat(branding): upload logos and save the Brand through a query mutation"
 ```
 
@@ -2211,7 +2151,7 @@ git commit -m "feat(branding): upload logos and save the Brand through a query m
 **Interfaces:**
 - Consumes: `isEditorColor`, `toHex` (Task 3); `isOnMinioHost`, `isFaviconFile`, `minioBaseUrl` (Task 3); `CatalogGroup`, `BRANDING_DEFAULTS` (Task 4); `BrandingFormValues`, `toFormValues` (Task 5).
 - Produces:
-  - `createBrandingSchema(t: (key: BrandingSchemaMessage) => string)`, `type BrandingSchemaMessage = "errors.invalidColor" | "errors.logoHost" | "errors.favicon" | "errors.darkWithoutLight"`
+  - `createBrandingSchema(t: (key: BrandingSchemaMessage) => string)`, `type BrandingSchemaMessage = "errors.invalidColor" | "errors.logoHost" | "errors.favicon" | "errors.image" | "errors.darkWithoutLight"`
   - `<ModeSwitch mode onChange />`, `<ColorField name label defaultValue />`, `<TokenGroup group mode defaultOpen? />`
 
 - [ ] **Step 1: Write the failing tests**
@@ -2263,6 +2203,12 @@ describe("createBrandingSchema", () => {
     const values = toFormValues(null);
     values.logos.header.dark = `${MINIO}/public/d.png`;
     expect(issues(values)).toEqual([["logos.header.light", "errors.darkWithoutLight"]]);
+  });
+
+  it("rejects a header or wide pick that is not an image", () => {
+    const values = toFormValues(null);
+    values.logos.header.light = new File(["x"], "notes.txt", { type: "text/plain" });
+    expect(issues(values)).toEqual([["logos.header.light", "errors.image"]]);
   });
 
   it("rejects a favicon that is not PNG/ICO or is over 256 KB", () => {
@@ -2342,6 +2288,7 @@ export type BrandingSchemaMessage =
   | "errors.invalidColor"
   | "errors.logoHost"
   | "errors.favicon"
+  | "errors.image"
   | "errors.darkWithoutLight";
 
 /** Editor rules (spec §9, marked "editor"). The server re-checks in saveBranding. */
@@ -2372,21 +2319,25 @@ export function createBrandingSchema(t: (key: BrandingSchemaMessage) => string) 
       path: ["light"],
     });
 
-  const favicon = slot.superRefine((s, ctx) => {
-    for (const variant of ["light", "dark"] as const) {
-      const value = s[variant];
-      if (value instanceof File && !isFaviconFile(value)) {
-        ctx.addIssue({ code: "custom", path: [variant], message: t("errors.favicon") });
+  /* File checks per slot. FileUploadField's `accept` does not stop drag-and-drop. */
+  const files = (ok: (file: File) => boolean, message: string) =>
+    slot.superRefine((s, ctx) => {
+      for (const variant of ["light", "dark"] as const) {
+        const value = s[variant];
+        if (value instanceof File && !ok(value)) {
+          ctx.addIssue({ code: "custom", path: [variant], message });
+        }
       }
-    }
-  });
+    });
+  const picture = files((f) => f.type.startsWith("image/"), t("errors.image"));
+  const favicon = files(isFaviconFile, t("errors.favicon"));
 
   return z.object({
     tokens: z.object({
       light: z.record(z.string(), color),
       dark: z.record(z.string(), color),
     }),
-    logos: z.object({ header: slot, wide: slot, favicon }),
+    logos: z.object({ header: picture, wide: picture, favicon }),
   });
 }
 ```
@@ -2401,7 +2352,11 @@ import type { IGRPBrandingMode } from "@igrp/framework-next-types";
 import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
 
-/** Chooses the Mode being edited (form and preview). Never changes the user's theme. */
+/**
+ * Chooses the Mode being edited (form and preview). Never changes the user's theme.
+ * Hand-rolled rather than the DS Switch: spec §2 wants a sun/moon icon in the knob,
+ * which the Radix thumb does not take.
+ */
 export function ModeSwitch({
   mode,
   onChange,
@@ -2621,9 +2576,9 @@ git commit -m "feat(branding): add the editor schema, colour field, token group 
 ```tsx
 // src/__tests__/branding/components/logo-field.test.tsx
 import { Form } from "@igrp/igrp-framework-react-design-system";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { useForm } from "react-hook-form";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { LogoField } from "@/features/branding/components/logo-field";
 import { toFormValues } from "@/features/branding/lib/branding-mapper";
@@ -2631,6 +2586,7 @@ import { toFormValues } from "@/features/branding/lib/branding-mapper";
 import { renderWithIntl as render } from "../../helpers/intl";
 
 vi.mock("next/image", () => ({
+  // biome-ignore lint/performance/noImgElement: test stub for next/image
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }));
 
@@ -2644,9 +2600,18 @@ function Harness() {
       <LogoField slot="header" />
       <output data-testid="light">{String(form.watch("logos.header.light"))}</output>
       <output data-testid="dirty">{String(form.formState.isDirty)}</output>
+      <button type="button" onClick={() => form.reset()}>
+        reset
+      </button>
     </Form>
   );
 }
+
+// jsdom has no object URLs.
+beforeAll(() => {
+  URL.createObjectURL = vi.fn(() => "blob:pick");
+  URL.revokeObjectURL = vi.fn();
+});
 
 describe("LogoField", () => {
   it("keeps the saved URL on mount (FileUploadField emits null)", () => {
@@ -2654,6 +2619,18 @@ describe("LogoField", () => {
     expect(screen.getByTestId("light")).toHaveTextContent(URL_A);
     expect(screen.getByTestId("dirty")).toHaveTextContent("false");
     expect(screen.getByAltText("Imagem atual")).toHaveAttribute("src", URL_A);
+  });
+
+  it("drops a pick when the form resets (Descartar, Repor, after save)", async () => {
+    const { container } = render(<Harness />);
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    const pick = new File(["x"], "new.png", { type: "image/png" });
+    fireEvent.change(input, { target: { files: [pick] } });
+    await waitFor(() => expect(screen.getByTestId("light")).toHaveTextContent("[object File]"));
+
+    fireEvent.click(screen.getByText("reset"));
+    await waitFor(() => expect(screen.getByTestId("light")).toHaveTextContent(URL_A));
+    expect(screen.getByTestId("dirty")).toHaveTextContent("false");
   });
 
   it("removes the saved image on request", () => {
@@ -2671,6 +2648,8 @@ Run: `pnpm vitest run src/__tests__/branding/components/logo-field.test.tsx`
 Expected: FAIL — module not found.
 
 - [ ] **Step 3: Implement**
+
+`FileUploadField` runs its `onChange` effect on every render and keeps its own file list. Two things in `LogoVariant` handle that: the guards in `onChange`, and the `key` that remounts it when the form value stops being a `File`.
 
 ```ts
 // src/features/branding/lib/image-size.ts
@@ -2787,7 +2766,13 @@ function LogoVariant({ slot, variant }: { slot: LogoSlotKey; variant: Variant })
       const current = getValues(name);
       const file = next?.file instanceof File ? next.file : null;
       if (!file) {
-        if (current instanceof File) resetField(name);
+        if (current instanceof File) {
+          resetField(name);
+          if (slot === "wide" && variant === "light") {
+            resetField("logos.wide.width");
+            resetField("logos.wide.height");
+          }
+        }
         return;
       }
       if (file === current) return;
@@ -2831,7 +2816,10 @@ function LogoVariant({ slot, variant }: { slot: LogoSlotKey; variant: Variant })
               </IGRPButton>
             </div>
           )}
+          {/* Remount when the value stops being a pick (Descartar, Repor, post-save
+              reset): FileUploadField keeps its own file list and would re-emit it. */}
           <FileUploadField
+            key={value instanceof File ? "picked" : "saved"}
             value={picked}
             onChange={onChange}
             label={t(variant)}
@@ -2901,6 +2889,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: mocks.refresh }),
 }));
 vi.mock("next/image", () => ({
+  // biome-ignore lint/performance/noImgElement: test stub for next/image
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }));
 
@@ -3155,7 +3144,7 @@ import {
   LOGO_SLOTS,
   toFormValues,
 } from "../lib/branding-mapper";
-import { BrandingSaveError } from "../lib/persist-branding";
+import { BrandingSaveError } from "../lib/branding-save-error";
 import { useBrandingConfig, useSaveBranding } from "../use-branding";
 import { LivePreview } from "./live-preview";
 import { LogoField } from "./logo-field";
@@ -3287,6 +3276,8 @@ function BrandingEditor({ saved }: { saved: IGRPBranding | null }) {
   );
 }
 ```
+
+The save bar is not the shared `UnsavedChangesBar`: that one is hardcoded Portuguese, renders only while dirty and has no slot for "Repor predefinições". Translating it touches other pages (`oauth-client-detail`), so it stays a follow-up.
 
 "Repor predefinições" sets every field to its Default but keeps the saved values as the clean state, so the form is dirty and nothing is saved until Guardar (spec §2).
 
@@ -3494,6 +3485,8 @@ In `src/app/(igrp)/(home)/settings/page.tsx`:
 
 - [ ] **Step 5: Wide logo on invite pages**
 
+Invite visitors are signed out, and the framework never fetches the Brand without a token. The logo shows only when this process already has the Brand cached (spec §2, §14 step 4: the M2M endpoint removes this limit).
+
 ```tsx
 // src/app/(invite)/brand-logo.tsx
 "use client";
@@ -3652,6 +3645,7 @@ git commit -m "docs(branding): describe the Brand editor in TOKENS.md and correc
 
 ## Out of scope (follow-ups)
 
+- The 37 test failures that `a331515` (i18n moved into the framework) left in i18n, error-boundary, middleware and users tests. They are the baseline here, not this plan's to fix.
 - `FileUploadField` has hardcoded Portuguese strings (`aria-label`, the format hint, "Remove file"); en/fr users see them in the logo tab. Translate the shared component separately.
 - The settings card is active for every user once the flag is on; users without the permission get the 403 page. Hiding it per permission (like the audit card) is a product call not in the spec.
 - The backend M2M GET endpoint (spec §14 step 4) and the contrast warning (spec §15).
