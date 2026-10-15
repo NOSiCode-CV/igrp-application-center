@@ -53,5 +53,8 @@ export async function persistBranding(
   if (result.success) return;
   if (result.status === 403) throw new BrandingSaveError("forbidden");
   if (result.status === 422) throw new BrandingSaveError("invalid");
-  throw new BrandingSaveError("api", result.error);
+  throw new BrandingSaveError(
+    "api",
+    result.status === 404 ? undefined : result.error,
+  );
 }

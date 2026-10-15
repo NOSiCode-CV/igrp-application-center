@@ -106,4 +106,16 @@ describe("persistBranding", () => {
       detail,
     });
   });
+
+  it("drops the server string for a 404 (flag off) so the screen shows the generic error", async () => {
+    mocks.save.mockResolvedValue({
+      success: false,
+      error: "Funcionalidade desativada",
+      status: 404,
+    });
+    await expect(persistBranding(toFormValues(null))).rejects.toMatchObject({
+      reason: "api",
+      detail: undefined,
+    });
+  });
 });

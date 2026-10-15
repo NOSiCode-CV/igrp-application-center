@@ -1,5 +1,5 @@
 import { Form } from "@igrp/igrp-framework-react-design-system";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 import { describe, expect, it } from "vitest";
 
@@ -49,5 +49,15 @@ describe("ColorField", () => {
       screen.getByRole("button", { name: /Repor a predefinição/ }),
     );
     expect(screen.getByTestId("value")).toHaveTextContent("");
+  });
+
+  it("returns focus to the input after clearing", async () => {
+    render(<Harness initial="#ff0000" />);
+    fireEvent.click(
+      screen.getByRole("button", { name: /Repor a predefinição/ }),
+    );
+    await waitFor(() =>
+      expect(screen.getByLabelText("Primária")).toHaveFocus(),
+    );
   });
 });

@@ -28,7 +28,7 @@ export function ColorField({
   defaultValue: string;
 }) {
   const t = useTranslations("branding.actions");
-  const { control } = useFormContext<BrandingFormValues>();
+  const { control, setFocus } = useFormContext<BrandingFormValues>();
   return (
     <FormField
       control={control}
@@ -43,7 +43,7 @@ export function ColorField({
               {/* The swatch is the one place a raw colour is rendered (spec §10.6). */}
               <label
                 className="relative size-8 shrink-0 cursor-pointer rounded-md border has-[input:focus-visible]:ring-[3px] has-[input:focus-visible]:ring-ring/50"
-                style={{ background: shown }}
+                style={{ backgroundColor: shown }}
               >
                 <input
                   type="color"
@@ -69,7 +69,10 @@ export function ColorField({
                 size="icon"
                 disabled={!value}
                 aria-label={t("clear", { token: label })}
-                onClick={() => field.onChange("")}
+                onClick={() => {
+                  field.onChange("");
+                  setFocus(name);
+                }}
               >
                 <IGRPIcon
                   iconName="RotateCcw"

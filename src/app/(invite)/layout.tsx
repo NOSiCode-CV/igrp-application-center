@@ -2,10 +2,9 @@ import { IGRPLocaleSwitcher } from "@igrp/framework-next/i18n/client";
 import { IGRPTemplateModeSwitcher } from "@igrp/framework-next-ui";
 import { Toaster } from "@igrp/igrp-framework-react-design-system";
 
+import { InviteBrandLogo } from "@/features/branding/components/invite-brand-logo";
 import { setLocale } from "@/i18n/actions";
 import { IGRPQueryProvider } from "@/providers/query-provider";
-
-import { InviteBrandLogo } from "./brand-logo";
 
 export default function InviteLayout({
   children,
