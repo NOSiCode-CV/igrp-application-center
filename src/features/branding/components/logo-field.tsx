@@ -83,6 +83,8 @@ function LogoVariant({
       setValue(name, file, { shouldDirty: true, shouldValidate: true });
       if (slot === "wide" && variant === "light") {
         const size = await readImageSize(file);
+        // A reset or re-pick during the read makes this size stale.
+        if (getValues(name) !== file) return;
         setValue("logos.wide.width", size?.width, { shouldDirty: true });
         setValue("logos.wide.height", size?.height, { shouldDirty: true });
       }

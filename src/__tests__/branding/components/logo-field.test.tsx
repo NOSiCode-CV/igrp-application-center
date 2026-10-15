@@ -15,6 +15,16 @@ vi.mock("next/image", () => ({
   ),
 }));
 
+const sizeRead = vi.hoisted(() => ({
+  resolve: (_: { width: number; height: number } | null) => {},
+}));
+vi.mock("@/features/branding/lib/image-size", () => ({
+  readImageSize: () =>
+    new Promise((r) => {
+      sizeRead.resolve = r;
+    }),
+}));
+
 const URL_A = "https://minio.example/igrp/public/branding/u/mark.png";
 
 function Harness() {
@@ -43,6 +53,29 @@ beforeAll(() => {
   URL.createObjectURL = vi.fn(() => "blob:pick");
   URL.revokeObjectURL = vi.fn();
 });
+
+function WideHarness() {
+  const form = useForm({
+    defaultValues: toFormValues({
+      version: 1,
+      tokens: {},
+      logos: { wide: { light: URL_A, width: 10, height: 20 } },
+    }),
+  });
+  return (
+    <Form {...form}>
+      <LogoField slot="wide" />
+      <output data-testid="light">
+        {String(form.watch("logos.wide.light"))}
+      </output>
+      <output data-testid="size">{`${form.watch("logos.wide.width")}x${form.watch("logos.wide.height")}`}</output>
+      <output data-testid="dirty">{String(form.formState.isDirty)}</output>
+      <button type="button" onClick={() => form.reset()}>
+        reset
+      </button>
+    </Form>
+  );
+}
 
 describe("LogoField", () => {
   it("keeps the saved URL on mount (FileUploadField emits null)", () => {
@@ -75,5 +108,26 @@ describe("LogoField", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Remover" })[0]);
     expect(screen.getByTestId("light")).toHaveTextContent("");
     expect(screen.getByTestId("dirty")).toHaveTextContent("true");
+  });
+
+  it("ignores a wide size read that finishes after a reset", async () => {
+    const { container } = render(<WideHarness />);
+    const input = container.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(["x"], "w.png", { type: "image/png" })] },
+    });
+    await waitFor(() =>
+      expect(screen.getByTestId("light")).toHaveTextContent("[object File]"),
+    );
+    fireEvent.click(screen.getByText("reset"));
+    await waitFor(() =>
+      expect(screen.getByTestId("light")).toHaveTextContent(URL_A),
+    );
+    sizeRead.resolve({ width: 99, height: 88 });
+    await new Promise((r) => setTimeout(r, 20));
+    expect(screen.getByTestId("size")).toHaveTextContent("10x20");
+    expect(screen.getByTestId("dirty")).toHaveTextContent("false");
   });
 });
