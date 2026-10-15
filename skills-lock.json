@@ -17,13 +17,13 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "skillPath": ".agents/skills/impeccable/SKILL.md",
-      "computedHash": "f4b57f4b6cc2cea947f0bda4cd0ff71551df85c1222c6aba28833c34e371ab19"
+      "computedHash": "e5ad7ca5507bd2b8dbb5bbf57643638a13d1ffa68566089c513fe4136d8b7d10"
     },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
-      "computedHash": "d04e43ec01e921558b93bb8046c14a42a22556689a2827243df900825a4e1604"
+      "computedHash": "7859e9a064940a1a0010c992b63e4633c4f5f39ed367a23c16f24029816b1703"
     },
     "tanstack-query": {
       "source": "tanstack-skills/tanstack-skills",
