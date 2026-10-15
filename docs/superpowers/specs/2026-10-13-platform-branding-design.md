@@ -219,10 +219,9 @@ Labels: 73 entries in `branding.tokens.*`, translated in `pt`, `en` and `fr`.
 - `IGRP_BRANDING_CORE_TOKENS: IGRPBrandingTokenCatalogEntry[]` — the 50 core
   Token names and groups from section 6.1. Runtime constant in this package.
 - `igrpBrandingToCss(branding: IGRPBranding): string` — emits
-  `html:root { … }` and `html.dark { … }` blocks (section 8 explains the selectors).
+  `html:root:not(.dark) { … }` and `html:root.dark { … }` blocks (section 8 explains the selectors).
   Pure, fixed key order, so the hoisted style is byte-stable.
-- `IGRPBrandingStyle({ branding })` — renders
-  `<style href="igrp-branding" precedence="igrp-branding">` with the CSS text.
+- `IGRPBrandingStyle({ branding })` — renders a plain `<style data-igrp-branding>` as the first child of `<body>`. Not a hoisted `href`/`precedence` resource: React dedupes those by `href` and would keep the old Tokens after `router.refresh()` delivers a new Brand.
   Renders nothing for `null` or empty branding.
 - `IGRPBrandingProvider({ branding, children })` and `useIGRPBranding()` — client
   context exposing `logos` and `tokens` to chrome components.
@@ -299,6 +298,7 @@ Labels: 73 entries in `branding.tokens.*`, translated in `pt`, `en` and `fr`.
      previous `value`, and skip retries for 60 seconds.
    - Invalid document: `igrpParseBranding` returns `null`, logs
      `igrp.branding.invalid_config` once, caches `null`.
+   - Fetches are deduplicated per `baseUrl` (cold or warm). Each `igrp_brand_v` value forces at most one refetch, and values older than 300 s or more than 30 s in the future are ignored.
 3. Fetch: `GET {baseUrl}/api/global-configuration?type=ORGANIZATION` through
    `GlobalConfigurationClient` with `Authorization: Bearer <token>` and a 3-second
    timeout.
@@ -307,8 +307,8 @@ Labels: 73 entries in `branding.tokens.*`, translated in `pt`, `en` and `fr`.
    `cookies()`. The cookie only helps browsers that reach the same host, so other
    apps still wait for the TTL.
 5. Application: the resolved Brand feeds `IGRPBrandingStyle` (Tokens) and
-   `IGRPBrandingProvider` (Logos). The stylesheet uses `html:root` and `html.dark`
-   selectors, specificity (0,1,1). This beats the `:root` and `.dark` declarations
+   `IGRPBrandingProvider` (Logos). The stylesheet uses `html:root:not(.dark)` and `html:root.dark`
+   selectors, specificity (0,2,1). The light block excludes `.dark` so a light-only Token never replaces a dark Default. This beats the `:root` and `.dark` declarations
    in `app-center.css` regardless of stylesheet order, so the Brand wins over
    the local `--ring`, `--favorite` and scrollbar defaults. The app-tier
    Defaults in `app-center.css` stay as the fallback when no Brand is set.
@@ -475,7 +475,7 @@ Framework (`vitest`)
 
 - `igrpParseBranding`: valid document, wrong version, oversized, invalid name,
   one bad value dropped while others survive, unknown keys ignored, URL rules.
-- `igrpBrandingToCss`: stable order, `html:root` and `html.dark` selectors, empty maps emit nothing.
+- `igrpBrandingToCss`: stable order, `html:root:not(.dark)` and `html:root.dark` selectors, empty maps emit nothing.
 - `IGRPRootLayout`: flag omitted or `false` → no loader call, no style, providers get `null`;
   flag `true` → loader called once per request. `igrpBuildConfig` preserves the field.
 - Loader cache: fresh hit, stale-while-revalidate, in-flight dedupe, 404 cached as null,
@@ -523,14 +523,13 @@ Implementation is two plans, one per repository, executed in this order.
   app tier gets the organization's values. Document the app-tier names in the
   framework README.
 - **Local overrides in this app.** `app-center.css` sets `--ring`, `--favorite`,
-  `--scrollbar-thumb` and the app tiles. The `html:root` selector (section 8)
+  `--scrollbar-thumb` and the app tiles. The `html:root:not(.dark)` / `html:root.dark` selectors (section 8)
   makes the Brand win; the local values remain the Defaults. Verify with a
   browser check during implementation.
 - **Contrast.** tweakcn ships a contrast checker and this app holds an AA
   contract. v1 leaves contrast warnings out. Open question: should the editor warn
   on text pairs below 4.5:1? Proposed as a follow-up, not v1.
-- **Hydration.** React 19 style hoisting needs `href` and `precedence`. The CSS
-  text must be byte-stable between server and client, which the fixed key order guarantees.
+- **Hydration.** The Brand style is a plain in-body `<style>`; its CSS text is byte-stable between server and client because keys are sorted.
 - **Preset removal.** Users who chose blue, green or amber see the organization
   Brand or the Defaults. Their cookie is ignored.
 - **Cookie scope.** `igrp_brand_v` only helps the same host. Other apps wait for the TTL.
