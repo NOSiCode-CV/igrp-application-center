@@ -111,7 +111,7 @@ Domain components: `IGRPStatusBanner`, `IGRPStatsCardTopBorderColored`, `IGRPUse
 ## Styling
 
 - Tokens: `@igrp/igrp-framework-react-design-system/tokens` (in `src/styles/globals.css`)
-- Theme overrides: `src/styles/themes.css`
+- Organization Brand (colours and logos): set in the Application Center at `/settings/customization`; see [TOKENS.md](TOKENS.md)
 - Do **not** import prebuilt `@igrp/*/styles.css` files.
 
 ## Utilities
