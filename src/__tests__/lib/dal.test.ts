@@ -49,7 +49,7 @@ describe("verifySession", () => {
 });
 
 describe("getAuthenticatedUser", () => {
-  it("narrows the session to id/name/email/accessToken only", async () => {
+  it("narrows the session to id/name/email only (no tokens)", async () => {
     isAuthBypass.mockReturnValue(false);
     getSession.mockResolvedValue({
       user: { id: "u1", name: "Ana", email: "a@x.cv", role: "admin" },
@@ -62,8 +62,6 @@ describe("getAuthenticatedUser", () => {
       id: "u1",
       name: "Ana",
       email: "a@x.cv",
-      accessToken: "tok",
     });
-    expect(u).not.toHaveProperty("refreshToken");
   });
 });

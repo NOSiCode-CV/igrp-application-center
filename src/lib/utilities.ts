@@ -89,7 +89,7 @@ export function formatDate(dateString: string) {
 
 export function showStatus(status: string) {
   if (status == null || status === undefined) return null;
-  return STATUS_OPTIONS.find((s) => s.value === status)?.label;
+  return STATUS_OPTIONS.find((s) => s.value === status)?.label ?? status;
 }
 
 export const getMenuIcon = (type: string) => {
