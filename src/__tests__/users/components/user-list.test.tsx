@@ -7,11 +7,12 @@ import { describe, expect, it, vi } from "vitest";
 // (server-only, IGRP framework wiring) that break under vitest/jsdom.
 // We only need light stand-ins that render children so the row action menu
 // items are visible without dropdown interaction.
-vi.mock("@igrp/igrp-framework-react-design-system", () => {
+vi.mock("@igrp/igrp-framework-react-design-system", async (importOriginal) => {
   const Passthrough = ({ children }: { children?: React.ReactNode }) => (
     <>{children}</>
   );
   return {
+    ...(await importOriginal<object>()),
     Badge: Passthrough,
     DropdownMenu: Passthrough,
     DropdownMenuContent: Passthrough,

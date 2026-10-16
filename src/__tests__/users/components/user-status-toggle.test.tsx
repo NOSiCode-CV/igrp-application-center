@@ -74,10 +74,9 @@ describe("UserStatusToggle", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /desativar/i }));
 
-    // Trigger and confirm now share the label, so take the dialog's own button.
     const dialog = screen.getByRole("dialog");
     await userEvent.click(
-      within(dialog).getByRole("button", { name: /^desativar$/i }),
+      within(dialog).getByRole("button", { name: /^confirmar desativar$/i }),
     );
 
     await waitFor(() => {
