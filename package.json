@@ -29,7 +29,7 @@
     "@igrp/framework-next-auth": "0.2.0-beta.7",
     "@igrp/framework-next-ui": "0.2.0-beta.8",
     "@igrp/igrp-framework-react-design-system": "0.2.0-beta.5",
-    "@igrp/platform-access-management-client-ts": "0.2.0-beta.18",
+    "@igrp/platform-access-management-client-ts": "0.2.0-beta.19",
     "@tanstack/react-query": "5.104.2",
     "@tanstack/react-table": "8.21.3",
     "@tanstack/react-virtual": "3.14.13",

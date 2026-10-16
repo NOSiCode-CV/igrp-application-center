@@ -10,7 +10,9 @@ import { getLayoutConfig } from "@/lib/dal";
 
 /**
  * Platform locales are fixed (pt, en, fr). The region used for formatting is
- * per deployment (`IGRP_FORMAT_LOCALES`, read here and nowhere else). No
+ * per deployment (`IGRP_FORMAT_LOCALES`, read here and nowhere else), as is the
+ * time zone (`IGRP_TIME_ZONE`; unset keeps Atlantic/Cape_Verde, matching pt-CV,
+ * so server and browser render dates alike). No
  * `persistLocale`: the choice lives in the `IGRP_LOCALE` cookie and resolution
  * is cookie-first. An app with a profile write-back passes `persistLocale` and
  * becomes session-first; see docs/I18N.md.
@@ -18,6 +20,7 @@ import { getLayoutConfig } from "@/lib/dal";
 export const i18n = igrpDefineI18n({
   defaultLocale: "pt",
   formatLocales: igrpParseFormatLocales(process.env.IGRP_FORMAT_LOCALES),
+  timeZone: process.env.IGRP_TIME_ZONE || "Atlantic/Cape_Verde",
   getSessionLocale: async () => {
     // Cached per request alongside the root layout's own read. The preview
     // stub session carries no locale, so this is undefined under bypass.
