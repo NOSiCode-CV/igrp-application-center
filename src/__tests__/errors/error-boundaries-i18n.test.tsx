@@ -6,33 +6,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/report-error", () => ({ reportError: vi.fn() }));
 
-type Copy = { title: string; description: string };
-type BoundaryProps = {
-  error: Error;
-  resolveCopy?: (error: Error) => Copy;
-  resetLabel?: string;
-  errorRefLabel?: string;
-};
-
-vi.mock("@igrp/framework-next-ui", () => {
-  const Boundary = ({
-    error,
-    resolveCopy,
-    resetLabel,
-    errorRefLabel,
-  }: BoundaryProps) => {
-    const copy = resolveCopy?.(error);
-    return (
-      <div>
-        <h1>{copy?.title}</h1>
-        <p>{copy?.description}</p>
-        <button type="button">{resetLabel}</button>
-        <span>{errorRefLabel}</span>
-      </div>
-    );
-  };
-  return { IGRPSegmentError: Boundary, IGRPGlobalError: Boundary };
-});
+// The framework boundaries own the copy (catalog titles, IGRP_* codes, cookie
+// language); the app only contributes the public detail via resolveCopy.
+// They read next/navigation, which the global test setup stubs partially.
+vi.mock("next/navigation", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }),
+}));
 
 import AuthSegmentError from "@/app/(auth)/error";
 import RootSegmentError from "@/app/error";
@@ -61,7 +41,7 @@ describe("root error boundary", () => {
       screen.getByText("Utilizador 42 não encontrado"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Ocorreu um erro inesperado." }),
+      screen.getByRole("heading", { name: "Ocorreu um erro nesta secção." }),
     ).toBeInTheDocument();
   });
 
@@ -75,18 +55,18 @@ describe("root error boundary", () => {
     expect(screen.getByText("User 42 not found")).toBeInTheDocument();
   });
 
-  it("falls back to errors.unexpected without a detail", () => {
+  it("falls back to the catalog copy without a detail", () => {
     renderWithIntl(
       <RootSegmentError error={withDigest("12345")} reset={() => {}} />,
     );
-    expect(screen.getByText(/tente novamente\. se o problema/i)).toBeVisible();
+    expect(screen.getByText(/se o problema persistir/i)).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Tentar novamente" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("ID de referência:")).toBeInTheDocument();
+    expect(screen.getByText(/ID de referência:/)).toBeInTheDocument();
   });
 
-  it("maps framework codes to errors.codes.*", () => {
+  it("maps framework codes to their catalog copy", () => {
     renderWithIntl(
       <RootSegmentError
         error={withCode("IGRP_ACCESS_MANAGEMENT_CONFIG_MISSING")}
@@ -100,7 +80,7 @@ describe("root error boundary", () => {
 });
 
 describe("(auth) error boundary", () => {
-  it("uses errors.auth for untyped errors", () => {
+  it("uses the auth copy for untyped errors", () => {
     renderWithIntl(
       <AuthSegmentError error={new Error("boom")} reset={() => {}} />,
     );
@@ -123,7 +103,7 @@ describe("global error boundary (no providers)", () => {
       screen.getByRole("heading", { name: "An unexpected error occurred." }),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Try again" })).toBeVisible();
-    expect(document.querySelector("html[lang='en']")).not.toBeNull();
+    expect(document.querySelector("html[lang='en-GB']")).not.toBeNull();
   });
 
   it("shows the API detail when present", () => {
@@ -137,6 +117,6 @@ describe("global error boundary (no providers)", () => {
     expect(
       screen.getByText("Serviço indisponível: manutenção"),
     ).toBeInTheDocument();
-    expect(document.querySelector("html[lang='pt']")).not.toBeNull();
+    expect(document.querySelector("html[lang='pt-CV']")).not.toBeNull();
   });
 });
