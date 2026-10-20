@@ -7,7 +7,8 @@ import {
   SettingsCard,
   type SettingsItem,
 } from "@/features/settings/components/settings-card";
-import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
+import { AUDIT_VIEW_PERMISSION, CUSTOMIZE_PERMISSION } from "@/lib/constants";
+import { isBrandingEnabled } from "@/lib/utilities";
 
 /** `settings.items.*` key of each card. */
 type SettingsItemKey =
@@ -63,16 +64,15 @@ const settingsConfig: {
       href: "/settings/audit",
       accent: "info",
     },
-    /* `status: "inativo"` renders these as plain, non-focusable divs with the
-       "Em breve" badge. The `href`s are the routes they will take once built;
-       nothing links to them while the status is set. */
+    /* Flag off: a plain, non-focusable div with the "Em breve" badge. Flag on:
+       a link for users with the customize permission, hidden for the rest
+       (like the audit card). */
     {
       id: "customizacao",
       key: "customization",
       icon: "Palette",
       href: "/settings/customization",
       accent: "warning",
-      status: "inativo",
     },
   ],
 };
@@ -83,14 +83,23 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SettingsPage() {
-  const [canViewAudit, t] = await Promise.all([
+  const brandingEnabled = isBrandingEnabled();
+  const [canViewAudit, canCustomize, t] = await Promise.all([
     igrpAuthorize(AUDIT_VIEW_PERMISSION),
+    brandingEnabled && igrpAuthorize(CUSTOMIZE_PERMISSION),
     getTranslations("settings"),
   ]);
   const items: SettingsItem[] = settingsConfig.general
     .filter((item) => item.id !== "auditoria-relatorios" || canViewAudit)
+    .filter(
+      (item) =>
+        item.key !== "customization" || !brandingEnabled || canCustomize,
+    )
     .map(({ key, ...item }) => ({
       ...item,
+      ...(key === "customization" && !brandingEnabled
+        ? { status: "inativo" as const }
+        : {}),
       title: t(`items.${key}.title`),
       description: t(`items.${key}.description`),
     }));

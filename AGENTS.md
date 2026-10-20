@@ -33,7 +33,7 @@ Each doc is the single source of truth for its area; this file does not restate 
 next-intl 4 **without i18n routing** — no `[locale]` segment and no locale in URLs (HAProxy routes `/apps/[slug]`). Full guide: [docs/I18N.md](docs/I18N.md). Spec: `access-management/_specs/i18n/`.
 
 - `config.ts` — `LOCALES` (`pt`, `en`, `fr`), module default `pt`, platform default `pt`, `FORMAT_REGION` (pt-CV / en-GB / fr-FR), cookie `IGRP_LOCALE`, `normalizeLocale()` (`pt-CV` → `pt`, unsupported → `undefined`).
-- `resolve-locale.ts` (server-only) — session `locale` → cookie → `Accept-Language` (q-ordered) → platform default.
+- Locale resolution is the framework's (`igrpResolveLocale` via `request.ts`): cookie → session `locale` → `Accept-Language` → default `pt`.
 - `request.ts` — `getRequestConfig`; messages = `pt.json` deep-merged under the requested file (per-key fallback); a key missing in both renders the key and warns.
 - `messages/{pt,en,fr}.json` — one file per language, top-level namespace per feature, nested camelCase keys, ICU. `pt.json` is complete and types the keys (`global.d.ts`), so `tsc` fails on unknown keys. `en`/`fr` may be partial.
 - `format.ts` — `formatDate`/`formatDateTime`/`formatNumber`/`compare` (+ `useFormat()`); never hardcode a locale/region in feature code.

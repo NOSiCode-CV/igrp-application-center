@@ -32,3 +32,7 @@ export const config = {
    Contains dots, so the framework matches it verbatim against the token's
    permissions — it is never qualified with the active department. */
 export const AUDIT_VIEW_PERMISSION = "igrp.audit.view";
+
+/* Gates the Brand editor (/settings/customization and its actions). Access
+   Management enforces it again on POST /api/global-configuration. */
+export const CUSTOMIZE_PERMISSION = "igrp.applications.customize";

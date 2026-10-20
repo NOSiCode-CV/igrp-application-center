@@ -89,7 +89,7 @@ export function formatDate(dateString: string) {
 
 export function showStatus(status: string) {
   if (status == null || status === undefined) return null;
-  return STATUS_OPTIONS.find((s) => s.value === status)?.label;
+  return STATUS_OPTIONS.find((s) => s.value === status)?.label ?? status;
 }
 
 export const getMenuIcon = (type: string) => {
@@ -230,6 +230,15 @@ export function isAuthDisabled(): boolean {
  */
 export function isAuthBypass(): boolean {
   return isPreviewMode() || isAuthDisabled();
+}
+
+/**
+ * Whether this app shows the Brand editor (spec §7.4). Off when the flag is
+ * not exactly "true" and whenever auth is bypassed, since no save path can run
+ * without a real session.
+ */
+export function isBrandingEnabled(): boolean {
+  return process.env.IGRP_BRANDING_ENABLED === "true" && !isAuthBypass();
 }
 
 /**

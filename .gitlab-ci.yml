@@ -42,7 +42,6 @@ check-ui:
     - pnpm install --frozen-lockfile
     - pnpm check:ui
 
-# Advisory: surfaces lint/typecheck/test status without blocking.
 validate:
   stage: validate
   image: node:22-alpine

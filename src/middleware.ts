@@ -2,11 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { staleAuthCookies } from "@igrp/framework-next-auth/cookies";
 
-import {
-  LOCALE_COOKIE,
-  LOCALE_COOKIE_OPTIONS,
-  normalizeLocale,
-} from "@/i18n/config";// Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
+// Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
 // (which also carries Node-only session helpers — see lib/auth-instance.ts).
 import { auth } from "@/lib/auth-instance";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
@@ -107,7 +103,12 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-function isPublicPath(pathname: string): boolean {
+// isPublicPath/isAuthUiPath are exported for `src/__tests__/middleware/
+// path-predicates.test.ts` — the routing table they encode is worth covering
+// directly. Keep the exports when editing this file; they have been dropped
+// three times by unrelated rewrites (4846f4d, ebc0e15, e735154), breaking
+// typecheck each time.
+export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -126,7 +127,7 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-function isAuthUiPath(pathname: string): boolean {
+export function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
@@ -160,14 +161,21 @@ export async function middleware(request: NextRequest) {
  * keeps sending them to every path on the host — including the IdP — until
  * they expire. `staleAuthCookies` derives those names from this app's basePath
  * only, so another co-hosted app's cookies are never touched. A no-op once the
- * old cookies are gone, and always for a root-path app.
+ * old cookies are gone.
+ *
+ * `sweepStockNames`: this is the host's root-path app, so its pre-terminator
+ * stock-named session cookie sits at `Path=/` and reaches every co-hosted app
+ * on every request. No other root app shares the host, so that name is ours to
+ * expire. Ignored when `NEXT_PUBLIC_BASE_PATH` is set.
  */
 function expireStaleAuthCookies(
   request: NextRequest,
   response: NextResponse,
 ): NextResponse {
   const names = request.cookies.getAll().map((cookie) => cookie.name);
-  for (const { name, options } of staleAuthCookies(BASE_PATH, names)) {
+  for (const { name, options } of staleAuthCookies(BASE_PATH, names, {
+    sweepStockNames: true,
+  })) {
     response.cookies.set(name, "", options);
   }
   return response;
@@ -246,28 +254,13 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
     return loginRedirect();
   }
 
-  return syncLocaleCookie(request, nextWithPath(), token.locale);
+  // i18n: this app is cookie-first (no `persistLocale`), so the middleware
+  // leaves the IGRP_LOCALE cookie alone. A session-first app (one with a
+  // profile write-back) ends this branch with
+  //   return igrpSyncLocaleCookie(request, nextWithPath(), token.locale, i18n)
+  // importing from "@igrp/framework-next/i18n" (Edge-safe), never from "@/i18n".
+  return nextWithPath();
 }
-
-/**
- * FR-27: the user's preference (`metadata.locale`, carried in the session
- * token) wins over the `IGRP_LOCALE` cookie. The resolver already prefers the
- * session; rewriting the cookie keeps pages rendered without a session (login
- * after logout, invitation flow) in the same language. Reuses the token the
- * auth gate already decoded, so it costs nothing extra.
- */
-export function syncLocaleCookie(
-  request: NextRequest,
-  response: NextResponse,
-  tokenLocale: unknown,
-): NextResponse {
-  const locale = normalizeLocale(tokenLocale);
-  if (locale && request.cookies.get(LOCALE_COOKIE)?.value !== locale) {
-    response.cookies.set(LOCALE_COOKIE, locale, LOCALE_COOKIE_OPTIONS);
-  }
-  return response;
-}
-
 
 /**
  * Which requests wake the middleware.

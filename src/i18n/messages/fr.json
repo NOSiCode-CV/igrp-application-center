@@ -1,4 +1,102 @@
 {
+  "app": {
+    "title": "IGRP | Modèle d'application"
+  },
+  "home": {
+    "state": {
+      "ok": "Actif",
+      "preview": "Aperçu",
+      "error": "Attention requise"
+    },
+    "copy": {
+      "idle": "Copier",
+      "copied": "Copié",
+      "failed": "Copiez manuellement"
+    },
+    "intro": {
+      "failing": "L'application répond, mais {count, plural, one {une couche nécessite} other {# couches nécessitent}} votre attention. Voyez ci-dessous ce qui a échoué pour cette requête.",
+      "preview": "L'application répond en mode aperçu : sans vraie connexion et avec des menus d'exemple.",
+      "ok": "L'application répond. Cette requête a traversé toutes les couches ci-dessous."
+    },
+    "status": {
+      "failing": "Attention requise",
+      "preview": "En aperçu",
+      "ok": "Opérationnel"
+    },
+    "version": "Version",
+    "code": "Code",
+    "requestPath": {
+      "title": "Le parcours de cette requête",
+      "failing": "{failing} sur {total} {failing, plural, one {couche nécessite} other {couches nécessitent}} votre attention",
+      "preview": "Mode aperçu : authentification et données simulées",
+      "ok": "{total} sur {total} couches actives"
+    },
+    "nextSteps": {
+      "title": "Construire le premier module",
+      "subtitle": "{count} étapes, du dossier au menu",
+      "step": "Étape {index} : ",
+      "feature": {
+        "title": "Écrivez la fonctionnalité",
+        "body": "Les composants, actions et la logique de chaque module restent ensemble, hors des routes."
+      },
+      "route": {
+        "title": "Donnez-lui une route",
+        "body": "Une page dans (igrp) hérite de la session, de l'en-tête et du menu latéral."
+      },
+      "guard": {
+        "title": "Protégez la page",
+        "body": "Sans vérification, la page est ouverte à tout utilisateur authentifié."
+      },
+      "menu": {
+        "title": "Placez-la dans le menu",
+        "body": "En production, le menu vient d'Access Management. En aperçu, du fichier d'exemple."
+      }
+    },
+    "replace": {
+      "title": "Remplacer cette page",
+      "body": "Pour ouvrir une autre page à l'entrée dans l'application, définissez la route d'accueil dans <code>.env</code> et redémarrez le serveur.",
+      "note": "Cette page n'apparaît que lorsque la variable est vide."
+    },
+    "layers": {
+      "middleware": {
+        "name": "Middleware",
+        "valueBypass": "Laisse passer toutes les requêtes",
+        "valueAuth": "Exige une session ouverte",
+        "detailBypass": "L'authentification est désactivée dans cet environnement.",
+        "detailAuth": "Les requêtes sans session sont envoyées vers la connexion."
+      },
+      "session": {
+        "name": "Session",
+        "valueEmpty": "Session sans nom d'utilisateur",
+        "detailBypass": "Utilisateur fictif d'aperçu.",
+        "detailAuth": "Ouverte avec {provider}."
+      },
+      "accessManagement": {
+        "name": "Access Management",
+        "valueBypass": "Menus et applications d'exemple",
+        "detailBypass": "Les données viennent de src/temp, sans appel au serveur.",
+        "valueOk": "Connecté",
+        "detailOk": "Fournit les menus, les applications et l'utilisateur.",
+        "valueMissing": "Aucune adresse configurée",
+        "detailMissing": "Définissez IGRP_ACCESS_MANAGEMENT_API dans .env pour charger les menus."
+      },
+      "permissions": {
+        "name": "Permissions",
+        "valueAll": "Accès total",
+        "valueCount": "{count, plural, one {# permission} other {# permissions}}",
+        "detailBypass": "En aperçu, toutes les vérifications passent.",
+        "detailOrg": "Département actif : {org}.",
+        "detailNoOrg": "Aucun département actif dans le jeton.",
+        "valueError": "Impossible de lire le jeton",
+        "detailError": "Toutes les vérifications de permission refusent l'accès."
+      },
+      "page": {
+        "name": "Cette page",
+        "value": "Affichée",
+        "detail": "Apparaît lorsqu'aucune route d'accueil n'est définie."
+      }
+    }
+  },
   "common": {
     "actions": {
       "back": "Retour",
@@ -499,7 +597,9 @@
         "activateDescription": "Voulez-vous vraiment activer l’utilisateur <strong>{name}</strong> ?",
         "deactivateDescription": "Voulez-vous vraiment désactiver l’utilisateur <strong>{name}</strong> ?",
         "confirmActivate": "Confirmer l’activation",
-        "confirmDeactivate": "Confirmer la désactivation"
+        "confirmDeactivate": "Confirmer la désactivation",
+        "activating": "Activation...",
+        "deactivating": "Désactivation..."
       },
       "tabs": {
         "departments": "Départements",
@@ -722,7 +822,7 @@
       },
       "customization": {
         "title": "Personnalisation",
-        "description": "Ajustez l’identité visuelle de la plateforme — thème, couleurs et logos."
+        "description": "Définissez les couleurs et les logos de l’organisation dans toutes les applications."
       }
     }
   },
@@ -985,6 +1085,175 @@
       "pageUrlRequired": "Indiquez l’URL relative ou l’URL externe",
       "urlRequired": "L’URL est obligatoire",
       "urlInvalid": "Indiquez une URL complète, avec https:// (ex. : https://exemple.com)"
+    }
+  },
+  "branding": {
+    "meta": {
+      "title": "Personnalisation",
+      "description": "Définissez les couleurs et les logos de l'organisation."
+    },
+    "title": "Personnalisation",
+    "subtitle": "Les couleurs et les logos s'appliquent à toutes les applications IGRP où la personnalisation est activée.",
+    "tabs": {
+      "colors": "Couleurs",
+      "logos": "Logos"
+    },
+    "modes": {
+      "label": "Modifier le mode sombre",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "groups": {
+      "brand": "Marque",
+      "surface": "Surfaces",
+      "text": "Texte",
+      "status": "États",
+      "subtle": "États atténués",
+      "sidebar": "Barre latérale",
+      "chart": "Graphiques",
+      "tiles": "Tuiles d'applications",
+      "other": "Autres",
+      "appOther": "Autres du Centre d'applications"
+    },
+    "tokens": {
+      "primary": "Primaire",
+      "primaryForeground": "Texte sur primaire",
+      "secondary": "Secondaire",
+      "secondaryForeground": "Texte sur secondaire",
+      "accent": "Accent",
+      "accentForeground": "Texte sur accent",
+      "ring": "Anneau de focus",
+      "background": "Arrière-plan",
+      "card": "Carte",
+      "cardForeground": "Texte de la carte",
+      "popover": "Panneau flottant",
+      "popoverForeground": "Texte du panneau flottant",
+      "muted": "Atténué",
+      "border": "Bordure",
+      "input": "Bordure des champs",
+      "foreground": "Texte",
+      "mutedForeground": "Texte atténué",
+      "destructive": "Destructif",
+      "destructiveForeground": "Texte sur destructif",
+      "success": "Succès",
+      "successForeground": "Texte sur succès",
+      "warning": "Avertissement",
+      "warningForeground": "Texte sur avertissement",
+      "info": "Information",
+      "infoForeground": "Texte sur information",
+      "indigo": "Indigo",
+      "indigoForeground": "Texte sur indigo",
+      "highlight": "Surlignage",
+      "highlightForeground": "Texte sur surlignage",
+      "sidebar": "Fond de la barre latérale",
+      "sidebarForeground": "Texte de la barre latérale",
+      "sidebarPrimary": "Primaire de la barre latérale",
+      "sidebarPrimaryForeground": "Texte sur primaire de la barre latérale",
+      "sidebarAccent": "Accent de la barre latérale",
+      "sidebarAccentForeground": "Texte sur accent de la barre latérale",
+      "sidebarActive": "Élément actif",
+      "sidebarActiveForeground": "Texte de l'élément actif",
+      "sidebarBorder": "Bordure de la barre latérale",
+      "sidebarRing": "Anneau de focus de la barre latérale",
+      "chart1": "Graphique 1",
+      "chart2": "Graphique 2",
+      "chart3": "Graphique 3",
+      "chart4": "Graphique 4",
+      "chart5": "Graphique 5",
+      "chart6": "Graphique 6",
+      "chart7": "Graphique 7",
+      "chart8": "Graphique 8",
+      "ringInvalid": "Anneau de champ invalide",
+      "processCompleted": "Processus terminé",
+      "processActive": "Processus actif",
+      "primarySubtle": "Primaire atténué",
+      "primarySubtleForeground": "Texte sur primaire atténué",
+      "successSubtle": "Succès atténué",
+      "successSubtleForeground": "Texte sur succès atténué",
+      "warningSubtle": "Avertissement atténué",
+      "warningSubtleForeground": "Texte sur avertissement atténué",
+      "infoSubtle": "Information atténuée",
+      "infoSubtleForeground": "Texte sur information atténuée",
+      "destructiveSubtle": "Destructif atténué",
+      "destructiveSubtleForeground": "Texte sur destructif atténué",
+      "appTile1": "Tuile 1",
+      "appTile1Foreground": "Texte de la tuile 1",
+      "appTile2": "Tuile 2",
+      "appTile2Foreground": "Texte de la tuile 2",
+      "appTile3": "Tuile 3",
+      "appTile3Foreground": "Texte de la tuile 3",
+      "appTile4": "Tuile 4",
+      "appTile4Foreground": "Texte de la tuile 4",
+      "appTile5": "Tuile 5",
+      "appTile5Foreground": "Texte de la tuile 5",
+      "favorite": "Favori",
+      "scrollbarThumb": "Barre de défilement",
+      "scrollbarThumbHover": "Barre de défilement au survol"
+    },
+    "logos": {
+      "header": {
+        "title": "Marque de l'en-tête",
+        "description": "Image carrée affichée dans l'en-tête de chaque application."
+      },
+      "wide": {
+        "title": "Logo horizontal",
+        "description": "Affiché sur l'écran de connexion et sur les invitations, 80 px de haut au maximum."
+      },
+      "favicon": {
+        "title": "Icône de l'onglet",
+        "description": "PNG ou ICO, jusqu'à 256 Ko."
+      },
+      "light": "Version claire",
+      "dark": "Version sombre (facultative)",
+      "pick": "Choisir une image",
+      "drop": "Glissez l'image ici",
+      "current": "Image actuelle",
+      "remove": "Retirer"
+    },
+    "preview": {
+      "title": "Aperçu",
+      "appName": "Centre d'applications",
+      "cardTitle": "Carte d'exemple",
+      "cardBody": "Texte atténué pour les descriptions.",
+      "primary": "Primaire",
+      "secondary": "Secondaire",
+      "destructive": "Supprimer",
+      "fieldLabel": "Champ avec focus",
+      "fieldValue": "Valeur",
+      "success": "Actif",
+      "warning": "En attente",
+      "info": "Nouveau",
+      "danger": "Erreur",
+      "menuActive": "Page actuelle",
+      "menuItem": "Autre page",
+      "login": "Se connecter"
+    },
+    "actions": {
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "discard": "Abandonner",
+      "reset": "Rétablir les valeurs par défaut",
+      "clear": "Rétablir la valeur par défaut de {token}",
+      "pickColor": "Choisir la couleur de {token}"
+    },
+    "unsaved": "Vous avez des modifications non enregistrées.",
+    "saved": "Personnalisation enregistrée.",
+    "logoAlt": "Logo de l'organisation",
+    "forbidden": {
+      "description": "Vous avez besoin de l'autorisation de personnalisation de la plateforme. Les autorisations viennent de votre rôle actif."
+    },
+    "errors": {
+      "load": "Impossible de charger la personnalisation.",
+      "saveTitle": "Impossible d'enregistrer.",
+      "forbidden": "Vous n'avez pas l'autorisation de personnaliser la plateforme.",
+      "upload": "Impossible de téléverser l'image : {slot}.",
+      "invalidColor": "Utilisez une couleur concrète : hex, rgb, hsl, oklch, oklab, lab, lch ou un nom de couleur.",
+      "logoHost": "Seules les images téléversées ici sont acceptées.",
+      "favicon": "Utilisez un PNG ou un ICO de 256 Ko au maximum.",
+      "image": "Utilisez une image (SVG, PNG, JPG, WEBP ou GIF).",
+      "darkWithoutLight": "Ajoutez la version claire avant la sombre.",
+      "invalid": "La personnalisation contient des valeurs invalides. Vérifiez les champs et réessayez.",
+      "generic": "Réessayez. Si le problème persiste, contactez le support."
     }
   }
 }

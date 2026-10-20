@@ -7,10 +7,16 @@ vi.mock("next-intl/server", () => ({
   // Return the factory itself so the test can invoke it.
   getRequestConfig: <T>(factory: T) => factory,
 }));
-const resolveLocale = vi.fn();
-vi.mock("@/i18n/resolve-locale", () => ({
-  resolveLocale: () => resolveLocale(),
+vi.mock("next/headers", () => ({
+  cookies: async () => new Map([["IGRP_LOCALE", { value: "en" }]]),
+  headers: async () => new Headers(),
 }));
+vi.mock("@/lib/dal", () => ({ getLayoutConfig: async () => ({}) }));
+
+import {
+  igrpGetMessageFallback,
+  igrpOnIntlError,
+} from "@igrp/framework-next/i18n/server";
 
 import { getMessageFallback, onIntlError } from "@/i18n/fallback";
 import { deepMerge, getMessagesFor } from "@/i18n/messages";
@@ -86,8 +92,7 @@ describe("getMessagesFor", () => {
 });
 
 describe("request config", () => {
-  it("resolves the locale and serves merged messages with the fallback handlers", async () => {
-    resolveLocale.mockResolvedValue("en");
+  it("resolves the locale (cookie) and serves merged messages with the framework fallback handlers", async () => {
     const factory = requestConfig as unknown as () => Promise<{
       locale: string;
       messages: typeof pt;
@@ -100,7 +105,7 @@ describe("request config", () => {
     expect(config.messages.errors.unexpected.title).toBe(
       "An unexpected error occurred.",
     );
-    expect(config.onError).toBe(onIntlError);
-    expect(config.getMessageFallback).toBe(getMessageFallback);
+    expect(config.onError).toBe(igrpOnIntlError);
+    expect(config.getMessageFallback).toBe(igrpGetMessageFallback);
   });
 });

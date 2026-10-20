@@ -19,7 +19,6 @@ interface UserStatusToggleProps {
 export function UserStatusToggle({ user }: UserStatusToggleProps) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.profile");
-  const tc = useTranslations("common.actions");
 
   const { mutateAsync: updateStatus, isPending } = useUpdateUserStatus();
   const [open, setOpen] = useState(false);
@@ -85,7 +84,11 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
             ? t("statusDialog.confirmDeactivate")
             : t("statusDialog.confirmActivate")
         }
-        loadingText={isActive ? "A desativar..." : "A ativar..."}
+        loadingText={
+          isActive
+            ? t("statusDialog.deactivating")
+            : t("statusDialog.activating")
+        }
         iconName="Ban"
         variant={isActive ? "destructive" : "default"}
       />

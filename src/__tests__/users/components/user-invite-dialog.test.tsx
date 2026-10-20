@@ -17,11 +17,12 @@ vi.mock("@/features/departments/use-departments", () => ({
   useRoles: () => ({ data: [], error: null }),
 }));
 
-vi.mock("@igrp/igrp-framework-react-design-system", async () => {
+vi.mock("@igrp/igrp-framework-react-design-system", async (importOriginal) => {
   const rhf = await import("react-hook-form");
   const Pass = ({ children }: { children?: ReactNode }) => <>{children}</>;
   const Div = ({ children }: { children?: ReactNode }) => <div>{children}</div>;
   return {
+    ...(await importOriginal<object>()),
     Badge: Div,
     Button: ({
       children,
@@ -93,6 +94,8 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => {
 });
 
 import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
+import type { Locale } from "@/i18n/config";
+import { getMessagesFor } from "@/i18n/messages";
 
 import { renderWithIntl } from "../../helpers/intl";
 
@@ -100,12 +103,13 @@ beforeEach(() => {
   mutate.mockReset();
 });
 
-async function fillAndSubmit() {
+async function fillAndSubmit(locale: Locale = "pt") {
+  const form = getMessagesFor(locale).users.invite.form;
   await userEvent.type(
-    screen.getByPlaceholderText("Ex: joao@email.com"),
+    screen.getByPlaceholderText(form.emailPlaceholder),
     "ana@example.com",
   );
-  const submit = screen.getByRole("button", { name: "Enviar Convite" });
+  const submit = screen.getByRole("button", { name: form.submit });
   await waitFor(() => expect(submit).toBeEnabled());
   await userEvent.click(submit);
   await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));
@@ -117,8 +121,7 @@ describe("UserInviteDialog — invitee language", () => {
     renderWithIntl(<UserInviteDialog open onOpenChange={() => {}} />, {
       locale: "en",
     });
-    // en.json has no `users` namespace yet → pt fallback for the label.
-    const combobox = screen.getByLabelText("Idioma do convidado");
+    const combobox = screen.getByLabelText("Invitee language");
     expect(combobox).toHaveValue("en");
     expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
       "Português",
@@ -131,7 +134,7 @@ describe("UserInviteDialog — invitee language", () => {
     renderWithIntl(<UserInviteDialog open onOpenChange={() => {}} />, {
       locale: "fr",
     });
-    const { user } = await fillAndSubmit();
+    const { user } = await fillAndSubmit("fr");
     expect(user).toEqual({
       email: "ana@example.com",
       departmentCode: "",

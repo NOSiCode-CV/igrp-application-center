@@ -24,31 +24,6 @@
   }
 }
 
-/*
-  ── Sidebar appearance ─────────────────────────────────────────────────────
-  Recolor the sidebar and the active menu item by uncommenting and setting any
-  color below. Set BOTH :root (light) and .dark. Use OKLCH or any CSS color.
-
-  For colors that should change per preset theme, set them inside the .theme-*
-  blocks in themes.css instead. A global override here is NOT recolored by the
-  theme switcher (theme classes set --sidebar-primary, not --sidebar-active).
-
-  :root {
-    --sidebar:                   oklch(0.984 0.003 247.858);  panel background
-    --sidebar-foreground:        oklch(0.129 0.042 264.695);  panel text
-    --sidebar-active:            oklch(0.92 0.04 264);         selected item bg
-    --sidebar-active-foreground: oklch(0.20 0.04 264);         selected item text/icon
-    --sidebar-accent:            oklch(0.968 0.007 247.896);   hover wash
-    --sidebar-border:            oklch(0.929 0.013 255.508);   dividers / borders
-  }
-  .dark {
-    --sidebar:                   oklch(0.208 0.042 265.755);
-    --sidebar-foreground:        oklch(0.984 0.003 247.858);
-    --sidebar-active:            oklch(0.30 0.05 264);
-    --sidebar-active-foreground: oklch(0.984 0.003 247.858);
-  }
-*/
-
 /* ── Workspace animations ──────────────────────────────────────────────────── */
 @keyframes fadeIn {
   from {

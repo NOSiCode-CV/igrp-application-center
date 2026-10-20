@@ -3,6 +3,7 @@ import { cache } from "react";
 import { igrpBuildConfig } from "@igrp/framework-next";
 import type { IGRPConfigClient } from "@igrp/framework-next-types";
 
+import { i18n } from "@/i18n";
 import { fontVariables } from "@/lib/fonts";
 import { isAuthBypass } from "@/lib/utilities";
 import { getMockApps } from "@/temp/applications/use-mock-apps";
@@ -33,7 +34,9 @@ const buildConfig: IGRPConfigClient = (config) => {
     appCode: process.env.IGRP_APP_CODE || "",
     previewMode: bypass,
     syncAccess: process.env.IGRP_SYNC_ACCESS === "true",
+    branding: { enabled: process.env.IGRP_BRANDING_ENABLED === "true" },
     appInformation: getPackageJson(),
+    i18n,
     layoutData: {
       getHeaderData: async () => {
         const user = bypass ? getMockUser().mockUser : undefined;

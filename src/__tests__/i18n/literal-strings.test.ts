@@ -21,12 +21,13 @@ const MIGRATED_FOLDERS = [
   "src/i18n/components",
   "src/features/users",
   "src/features/workspace/components/home-apps",
-  "src/components/header",
   "src/features/settings",
   "src/features/applications",
   "src/app/(igrp)/(home)/settings/applications",
   "src/features/menus",
   "src/app/(invite)",
+  "src/features/branding",
+  "src/app/(igrp)/(home)/settings/customization",
 ];
 
 const USER_FACING_PROPS = new Set([
@@ -41,6 +42,7 @@ const USER_FACING_PROPS = new Set([
   "errorText",
   "searchText",
   "selectLabel",
+  "loadingText",
 ]);
 
 const HAS_LETTER = /\p{L}/u;

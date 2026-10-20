@@ -1,7 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { UnsavedChangesBar } from "@/components/unsaved-changes-bar";
+
+import { renderWithIntl as render } from "../helpers/intl";
 
 describe("UnsavedChangesBar", () => {
   it("announces itself politely to screen readers", () => {

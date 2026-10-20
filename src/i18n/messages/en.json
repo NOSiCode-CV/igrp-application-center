@@ -1,4 +1,102 @@
 {
+  "app": {
+    "title": "IGRP | Application Template"
+  },
+  "home": {
+    "state": {
+      "ok": "Active",
+      "preview": "Preview",
+      "error": "Needs attention"
+    },
+    "copy": {
+      "idle": "Copy",
+      "copied": "Copied",
+      "failed": "Copy manually"
+    },
+    "intro": {
+      "failing": "The application is responding, but {count, plural, one {one layer needs} other {# layers need}} attention. See below what failed in this request.",
+      "preview": "The application is responding in preview mode: no real sign-in and sample menus.",
+      "ok": "The application is responding. This request went through every layer below."
+    },
+    "status": {
+      "failing": "Needs attention",
+      "preview": "In preview",
+      "ok": "Operational"
+    },
+    "version": "Version",
+    "code": "Code",
+    "requestPath": {
+      "title": "The path of this request",
+      "failing": "{failing} of {total} {failing, plural, one {layer needs} other {layers need}} attention",
+      "preview": "Preview mode: simulated authentication and data",
+      "ok": "{total} of {total} layers active"
+    },
+    "nextSteps": {
+      "title": "Build the first module",
+      "subtitle": "{count} steps, from folder to menu",
+      "step": "Step {index}: ",
+      "feature": {
+        "title": "Write the feature",
+        "body": "Each module's components, actions and logic live together, outside the routes."
+      },
+      "route": {
+        "title": "Give it a route",
+        "body": "A page inside (igrp) inherits the session, the header and the sidebar."
+      },
+      "guard": {
+        "title": "Protect the page",
+        "body": "Without a check, the page is open to any authenticated user."
+      },
+      "menu": {
+        "title": "Put it in the menu",
+        "body": "In production the menu comes from Access Management. In preview, from the sample file."
+      }
+    },
+    "replace": {
+      "title": "Replace this page",
+      "body": "To open another page when entering the application, set the home route in <code>.env</code> and restart the server.",
+      "note": "This page only appears while the variable is empty."
+    },
+    "layers": {
+      "middleware": {
+        "name": "Middleware",
+        "valueBypass": "Lets every request through",
+        "valueAuth": "Requires a signed-in session",
+        "detailBypass": "Authentication is off in this environment.",
+        "detailAuth": "Requests without a session are sent to the login."
+      },
+      "session": {
+        "name": "Session",
+        "valueEmpty": "Session without a user name",
+        "detailBypass": "Preview placeholder user.",
+        "detailAuth": "Signed in with {provider}."
+      },
+      "accessManagement": {
+        "name": "Access Management",
+        "valueBypass": "Sample menus and applications",
+        "detailBypass": "Data comes from src/temp, with no server calls.",
+        "valueOk": "Connected",
+        "detailOk": "Provides the menus, the applications and the user.",
+        "valueMissing": "No address configured",
+        "detailMissing": "Set IGRP_ACCESS_MANAGEMENT_API in .env to load the menus."
+      },
+      "permissions": {
+        "name": "Permissions",
+        "valueAll": "Full access",
+        "valueCount": "{count, plural, one {# permission} other {# permissions}}",
+        "detailBypass": "In preview every check passes.",
+        "detailOrg": "Active department: {org}.",
+        "detailNoOrg": "No active department in the token.",
+        "valueError": "Could not read the token",
+        "detailError": "Every permission check denies access."
+      },
+      "page": {
+        "name": "This page",
+        "value": "Rendered",
+        "detail": "Appears when no home route is set."
+      }
+    }
+  },
   "common": {
     "actions": {
       "back": "Back",
@@ -37,6 +135,23 @@
     },
     "textarea": {
       "charsUsed": "Characters used: {length} of {max}"
+    },
+    "fileUpload": {
+      "placeholder": "Drag your image here",
+      "pick": "Choose image",
+      "imageFormats": "SVG, PNG, JPG, GIF or WEBP",
+      "otherFormats": "Choose a file",
+      "maxSize": "(max. {size} MB)",
+      "previewAlt": "Image preview",
+      "remove": "Remove file",
+      "tooLarge": "The file is larger than the {size} MB limit."
+    },
+    "unsavedChanges": {
+      "region": "Unsaved changes",
+      "message": "You have unsaved changes.",
+      "discard": "Discard",
+      "save": "Save changes",
+      "saving": "Saving…"
     }
   },
   "i18n": {
@@ -499,7 +614,9 @@
         "activateDescription": "Are you sure you want to activate the user <strong>{name}</strong>?",
         "deactivateDescription": "Are you sure you want to deactivate the user <strong>{name}</strong>?",
         "confirmActivate": "Confirm Activation",
-        "confirmDeactivate": "Confirm Deactivation"
+        "confirmDeactivate": "Confirm Deactivation",
+        "activating": "Activating...",
+        "deactivating": "Deactivating..."
       },
       "tabs": {
         "departments": "Departments",
@@ -722,7 +839,7 @@
       },
       "customization": {
         "title": "Customization",
-        "description": "Adjust the platform's visual identity — theme, colors and logos."
+        "description": "Set the organization's colours and logos across every app."
       }
     }
   },
@@ -985,6 +1102,175 @@
       "pageUrlRequired": "Enter the relative URL or the external URL",
       "urlRequired": "URL is required",
       "urlInvalid": "Enter a full URL, with https:// (e.g. https://example.com)"
+    }
+  },
+  "branding": {
+    "meta": {
+      "title": "Customization",
+      "description": "Set the organization's colours and logos."
+    },
+    "title": "Customization",
+    "subtitle": "Colours and logos apply to every IGRP app with customization turned on.",
+    "tabs": {
+      "colors": "Colours",
+      "logos": "Logos"
+    },
+    "modes": {
+      "label": "Edit dark mode",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "groups": {
+      "brand": "Brand",
+      "surface": "Surfaces",
+      "text": "Text",
+      "status": "Status",
+      "subtle": "Subtle status",
+      "sidebar": "Sidebar",
+      "chart": "Charts",
+      "tiles": "App tiles",
+      "other": "Other",
+      "appOther": "Other Application Center"
+    },
+    "tokens": {
+      "primary": "Primary",
+      "primaryForeground": "Text on primary",
+      "secondary": "Secondary",
+      "secondaryForeground": "Text on secondary",
+      "accent": "Accent",
+      "accentForeground": "Text on accent",
+      "ring": "Focus ring",
+      "background": "Background",
+      "card": "Card",
+      "cardForeground": "Card text",
+      "popover": "Popover",
+      "popoverForeground": "Popover text",
+      "muted": "Muted",
+      "border": "Border",
+      "input": "Field border",
+      "foreground": "Text",
+      "mutedForeground": "Muted text",
+      "destructive": "Destructive",
+      "destructiveForeground": "Text on destructive",
+      "success": "Success",
+      "successForeground": "Text on success",
+      "warning": "Warning",
+      "warningForeground": "Text on warning",
+      "info": "Info",
+      "infoForeground": "Text on info",
+      "indigo": "Indigo",
+      "indigoForeground": "Text on indigo",
+      "highlight": "Highlight",
+      "highlightForeground": "Text on highlight",
+      "sidebar": "Sidebar background",
+      "sidebarForeground": "Sidebar text",
+      "sidebarPrimary": "Sidebar primary",
+      "sidebarPrimaryForeground": "Text on sidebar primary",
+      "sidebarAccent": "Sidebar accent",
+      "sidebarAccentForeground": "Text on sidebar accent",
+      "sidebarActive": "Active item",
+      "sidebarActiveForeground": "Active item text",
+      "sidebarBorder": "Sidebar border",
+      "sidebarRing": "Sidebar focus ring",
+      "chart1": "Chart 1",
+      "chart2": "Chart 2",
+      "chart3": "Chart 3",
+      "chart4": "Chart 4",
+      "chart5": "Chart 5",
+      "chart6": "Chart 6",
+      "chart7": "Chart 7",
+      "chart8": "Chart 8",
+      "ringInvalid": "Invalid field ring",
+      "processCompleted": "Process completed",
+      "processActive": "Process active",
+      "primarySubtle": "Subtle primary",
+      "primarySubtleForeground": "Text on subtle primary",
+      "successSubtle": "Subtle success",
+      "successSubtleForeground": "Text on subtle success",
+      "warningSubtle": "Subtle warning",
+      "warningSubtleForeground": "Text on subtle warning",
+      "infoSubtle": "Subtle info",
+      "infoSubtleForeground": "Text on subtle info",
+      "destructiveSubtle": "Subtle destructive",
+      "destructiveSubtleForeground": "Text on subtle destructive",
+      "appTile1": "Tile 1",
+      "appTile1Foreground": "Tile 1 text",
+      "appTile2": "Tile 2",
+      "appTile2Foreground": "Tile 2 text",
+      "appTile3": "Tile 3",
+      "appTile3Foreground": "Tile 3 text",
+      "appTile4": "Tile 4",
+      "appTile4Foreground": "Tile 4 text",
+      "appTile5": "Tile 5",
+      "appTile5Foreground": "Tile 5 text",
+      "favorite": "Favourite",
+      "scrollbarThumb": "Scrollbar",
+      "scrollbarThumbHover": "Scrollbar on hover"
+    },
+    "logos": {
+      "header": {
+        "title": "Header mark",
+        "description": "Square image shown in the header of every app."
+      },
+      "wide": {
+        "title": "Wide logo",
+        "description": "Shown on the sign-in screen and on invitations, at most 80 px tall."
+      },
+      "favicon": {
+        "title": "Tab icon",
+        "description": "PNG or ICO, up to 256 KB."
+      },
+      "light": "Light version",
+      "dark": "Dark version (optional)",
+      "pick": "Choose image",
+      "drop": "Drag the image here",
+      "current": "Current image",
+      "remove": "Remove"
+    },
+    "preview": {
+      "title": "Preview",
+      "appName": "Application Center",
+      "cardTitle": "Sample card",
+      "cardBody": "Muted text for descriptions.",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "destructive": "Delete",
+      "fieldLabel": "Focused field",
+      "fieldValue": "Value",
+      "success": "Active",
+      "warning": "Pending",
+      "info": "New",
+      "danger": "Error",
+      "menuActive": "Current page",
+      "menuItem": "Another page",
+      "login": "Sign in"
+    },
+    "actions": {
+      "save": "Save",
+      "saving": "Saving…",
+      "discard": "Discard",
+      "reset": "Restore defaults",
+      "clear": "Restore the default for {token}",
+      "pickColor": "Pick the colour for {token}"
+    },
+    "unsaved": "You have unsaved changes.",
+    "saved": "Customization saved.",
+    "logoAlt": "Organization logo",
+    "forbidden": {
+      "description": "You need the platform customization permission. Permissions come from your active role."
+    },
+    "errors": {
+      "load": "Could not load the customization.",
+      "saveTitle": "Could not save.",
+      "forbidden": "You do not have permission to customize the platform.",
+      "upload": "Could not upload the image: {slot}.",
+      "invalidColor": "Use a concrete colour: hex, rgb, hsl, oklch, oklab, lab, lch or a colour name.",
+      "logoHost": "Only images uploaded here are accepted.",
+      "favicon": "Use a PNG or ICO up to 256 KB.",
+      "image": "Use an image (SVG, PNG, JPG, WEBP or GIF).",
+      "darkWithoutLight": "Add the light version before the dark one.",
+      "invalid": "The customization has invalid values. Check the fields and try again.",
+      "generic": "Try again. If the problem persists, contact support."
     }
   }
 }

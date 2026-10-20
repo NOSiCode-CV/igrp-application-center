@@ -1,4 +1,102 @@
 {
+  "app": {
+    "title": "IGRP | Template Aplicações"
+  },
+  "home": {
+    "state": {
+      "ok": "Ativo",
+      "preview": "Pré-visualização",
+      "error": "Requer atenção"
+    },
+    "copy": {
+      "idle": "Copiar",
+      "copied": "Copiado",
+      "failed": "Copie manualmente"
+    },
+    "intro": {
+      "failing": "A aplicação está a responder, mas {count, plural, one {uma camada precisa} other {# camadas precisam}} de atenção. Veja abaixo o que falhou neste pedido.",
+      "preview": "A aplicação está a responder em modo de pré-visualização: sem login real e com menus de exemplo.",
+      "ok": "A aplicação está a responder. Este pedido passou por todas as camadas abaixo."
+    },
+    "status": {
+      "failing": "Requer atenção",
+      "preview": "Em pré-visualização",
+      "ok": "Operacional"
+    },
+    "version": "Versão",
+    "code": "Código",
+    "requestPath": {
+      "title": "O caminho deste pedido",
+      "failing": "{failing} de {total} {failing, plural, one {camada requer} other {camadas requerem}} atenção",
+      "preview": "Modo de pré-visualização: autenticação e dados simulados",
+      "ok": "{total} de {total} camadas ativas"
+    },
+    "nextSteps": {
+      "title": "Construir o primeiro módulo",
+      "subtitle": "{count} passos, da pasta ao menu",
+      "step": "Passo {index}: ",
+      "feature": {
+        "title": "Escreva a funcionalidade",
+        "body": "Componentes, ações e lógica de cada módulo ficam juntos, fora das rotas."
+      },
+      "route": {
+        "title": "Dê-lhe uma rota",
+        "body": "Uma página dentro de (igrp) herda a sessão, o cabeçalho e o menu lateral."
+      },
+      "guard": {
+        "title": "Proteja a página",
+        "body": "Sem verificação, a página fica aberta a qualquer utilizador autenticado."
+      },
+      "menu": {
+        "title": "Coloque-a no menu",
+        "body": "Em produção, o menu vem do Access Management. Em pré-visualização, do ficheiro de exemplo."
+      }
+    },
+    "replace": {
+      "title": "Substituir esta página",
+      "body": "Para abrir outra página ao entrar na aplicação, defina a rota inicial no <code>.env</code> e reinicie o servidor.",
+      "note": "Esta página só aparece quando a variável está vazia."
+    },
+    "layers": {
+      "middleware": {
+        "name": "Middleware",
+        "valueBypass": "Deixa passar todos os pedidos",
+        "valueAuth": "Exige sessão iniciada",
+        "detailBypass": "A autenticação está desligada neste ambiente.",
+        "detailAuth": "Pedidos sem sessão são enviados para o login."
+      },
+      "session": {
+        "name": "Sessão",
+        "valueEmpty": "Sessão sem nome de utilizador",
+        "detailBypass": "Utilizador fictício de pré-visualização.",
+        "detailAuth": "Iniciada com {provider}."
+      },
+      "accessManagement": {
+        "name": "Access Management",
+        "valueBypass": "Menus e aplicações de exemplo",
+        "detailBypass": "Os dados vêm de src/temp, sem chamadas ao servidor.",
+        "valueOk": "Ligado",
+        "detailOk": "Fornece os menus, as aplicações e o utilizador.",
+        "valueMissing": "Sem endereço configurado",
+        "detailMissing": "Defina IGRP_ACCESS_MANAGEMENT_API no .env para carregar os menus."
+      },
+      "permissions": {
+        "name": "Permissões",
+        "valueAll": "Acesso total",
+        "valueCount": "{count, plural, =0 {# permissões} one {# permissão} other {# permissões}}",
+        "detailBypass": "Em pré-visualização todas as verificações passam.",
+        "detailOrg": "Departamento ativo: {org}.",
+        "detailNoOrg": "Sem departamento ativo no token.",
+        "valueError": "Não foi possível ler o token",
+        "detailError": "Todas as verificações de permissão negam o acesso."
+      },
+      "page": {
+        "name": "Esta página",
+        "value": "Apresentada",
+        "detail": "Aparece quando não há uma rota inicial definida."
+      }
+    }
+  },
   "common": {
     "actions": {
       "back": "Voltar",
@@ -37,6 +135,23 @@
     },
     "textarea": {
       "charsUsed": "Caracteres utilizados: {length} de {max}"
+    },
+    "fileUpload": {
+      "placeholder": "Arraste a sua imagem",
+      "pick": "Selecionar imagem",
+      "imageFormats": "SVG, PNG, JPG, GIF ou WEBP",
+      "otherFormats": "Selecionar ficheiro",
+      "maxSize": "(máx. {size} MB)",
+      "previewAlt": "Pré-visualização da imagem",
+      "remove": "Remover ficheiro",
+      "tooLarge": "O ficheiro excede o tamanho máximo de {size} MB."
+    },
+    "unsavedChanges": {
+      "region": "Alterações por guardar",
+      "message": "Tem alterações por guardar.",
+      "discard": "Descartar",
+      "save": "Guardar alterações",
+      "saving": "A guardar…"
     }
   },
   "i18n": {
@@ -499,7 +614,9 @@
         "activateDescription": "Tem certeza que deseja ativar o utilizador <strong>{name}</strong>?",
         "deactivateDescription": "Tem certeza que deseja desativar o utilizador <strong>{name}</strong>?",
         "confirmActivate": "Confirmar Ativar",
-        "confirmDeactivate": "Confirmar Desativar"
+        "confirmDeactivate": "Confirmar Desativar",
+        "activating": "A ativar...",
+        "deactivating": "A desativar..."
       },
       "tabs": {
         "departments": "Departamentos",
@@ -722,7 +839,7 @@
       },
       "customization": {
         "title": "Customização",
-        "description": "Ajuste a identidade visual da plataforma — tema, cores e logotipos."
+        "description": "Defina as cores e os logótipos da organização em todas as aplicações."
       }
     }
   },
@@ -985,6 +1102,175 @@
       "pageUrlRequired": "Indique o URL relativo ou o URL externo",
       "urlRequired": "URL é obrigatório",
       "urlInvalid": "Indique um URL completo, com https:// (ex.: https://exemplo.com)"
+    }
+  },
+  "branding": {
+    "meta": {
+      "title": "Personalização",
+      "description": "Defina as cores e os logótipos da organização."
+    },
+    "title": "Personalização",
+    "subtitle": "As cores e os logótipos aplicam-se a todas as aplicações IGRP com a personalização ativa.",
+    "tabs": {
+      "colors": "Cores",
+      "logos": "Logótipos"
+    },
+    "modes": {
+      "label": "Editar o modo escuro",
+      "light": "Claro",
+      "dark": "Escuro"
+    },
+    "groups": {
+      "brand": "Marca",
+      "surface": "Superfícies",
+      "text": "Texto",
+      "status": "Estados",
+      "subtle": "Estados suaves",
+      "sidebar": "Barra lateral",
+      "chart": "Gráficos",
+      "tiles": "Mosaicos de aplicações",
+      "other": "Outros",
+      "appOther": "Outros do Centro de Aplicações"
+    },
+    "tokens": {
+      "primary": "Primária",
+      "primaryForeground": "Texto sobre primária",
+      "secondary": "Secundária",
+      "secondaryForeground": "Texto sobre secundária",
+      "accent": "Destaque",
+      "accentForeground": "Texto sobre destaque",
+      "ring": "Anel de foco",
+      "background": "Fundo",
+      "card": "Cartão",
+      "cardForeground": "Texto do cartão",
+      "popover": "Painel flutuante",
+      "popoverForeground": "Texto do painel flutuante",
+      "muted": "Atenuado",
+      "border": "Contorno",
+      "input": "Contorno dos campos",
+      "foreground": "Texto",
+      "mutedForeground": "Texto atenuado",
+      "destructive": "Destrutivo",
+      "destructiveForeground": "Texto sobre destrutivo",
+      "success": "Sucesso",
+      "successForeground": "Texto sobre sucesso",
+      "warning": "Aviso",
+      "warningForeground": "Texto sobre aviso",
+      "info": "Informação",
+      "infoForeground": "Texto sobre informação",
+      "indigo": "Índigo",
+      "indigoForeground": "Texto sobre índigo",
+      "highlight": "Realce",
+      "highlightForeground": "Texto sobre realce",
+      "sidebar": "Fundo da barra lateral",
+      "sidebarForeground": "Texto da barra lateral",
+      "sidebarPrimary": "Primária da barra lateral",
+      "sidebarPrimaryForeground": "Texto sobre primária da barra lateral",
+      "sidebarAccent": "Destaque da barra lateral",
+      "sidebarAccentForeground": "Texto sobre destaque da barra lateral",
+      "sidebarActive": "Item ativo",
+      "sidebarActiveForeground": "Texto do item ativo",
+      "sidebarBorder": "Contorno da barra lateral",
+      "sidebarRing": "Anel de foco da barra lateral",
+      "chart1": "Gráfico 1",
+      "chart2": "Gráfico 2",
+      "chart3": "Gráfico 3",
+      "chart4": "Gráfico 4",
+      "chart5": "Gráfico 5",
+      "chart6": "Gráfico 6",
+      "chart7": "Gráfico 7",
+      "chart8": "Gráfico 8",
+      "ringInvalid": "Anel de campo inválido",
+      "processCompleted": "Processo concluído",
+      "processActive": "Processo ativo",
+      "primarySubtle": "Primária suave",
+      "primarySubtleForeground": "Texto sobre primária suave",
+      "successSubtle": "Sucesso suave",
+      "successSubtleForeground": "Texto sobre sucesso suave",
+      "warningSubtle": "Aviso suave",
+      "warningSubtleForeground": "Texto sobre aviso suave",
+      "infoSubtle": "Informação suave",
+      "infoSubtleForeground": "Texto sobre informação suave",
+      "destructiveSubtle": "Destrutivo suave",
+      "destructiveSubtleForeground": "Texto sobre destrutivo suave",
+      "appTile1": "Mosaico 1",
+      "appTile1Foreground": "Texto do mosaico 1",
+      "appTile2": "Mosaico 2",
+      "appTile2Foreground": "Texto do mosaico 2",
+      "appTile3": "Mosaico 3",
+      "appTile3Foreground": "Texto do mosaico 3",
+      "appTile4": "Mosaico 4",
+      "appTile4Foreground": "Texto do mosaico 4",
+      "appTile5": "Mosaico 5",
+      "appTile5Foreground": "Texto do mosaico 5",
+      "favorite": "Favorito",
+      "scrollbarThumb": "Barra de deslocamento",
+      "scrollbarThumbHover": "Barra de deslocamento ao passar o cursor"
+    },
+    "logos": {
+      "header": {
+        "title": "Marca do cabeçalho",
+        "description": "Imagem quadrada mostrada no cabeçalho de todas as aplicações."
+      },
+      "wide": {
+        "title": "Logótipo horizontal",
+        "description": "Mostrado no ecrã de entrada e nos convites, com altura máxima de 80 px."
+      },
+      "favicon": {
+        "title": "Ícone do separador",
+        "description": "PNG ou ICO, até 256 KB."
+      },
+      "light": "Versão clara",
+      "dark": "Versão escura (opcional)",
+      "pick": "Selecionar imagem",
+      "drop": "Arraste a imagem para aqui",
+      "current": "Imagem atual",
+      "remove": "Remover"
+    },
+    "preview": {
+      "title": "Pré-visualização",
+      "appName": "Centro de Aplicações",
+      "cardTitle": "Cartão de exemplo",
+      "cardBody": "Texto atenuado para descrições.",
+      "primary": "Primário",
+      "secondary": "Secundário",
+      "destructive": "Eliminar",
+      "fieldLabel": "Campo com foco",
+      "fieldValue": "Valor",
+      "success": "Ativo",
+      "warning": "Pendente",
+      "info": "Novo",
+      "danger": "Erro",
+      "menuActive": "Página atual",
+      "menuItem": "Outra página",
+      "login": "Entrar"
+    },
+    "actions": {
+      "save": "Guardar",
+      "saving": "A guardar…",
+      "discard": "Descartar",
+      "reset": "Repor predefinições",
+      "clear": "Repor a predefinição de {token}",
+      "pickColor": "Escolher a cor de {token}"
+    },
+    "unsaved": "Tem alterações por guardar.",
+    "saved": "Personalização guardada.",
+    "logoAlt": "Logótipo da organização",
+    "forbidden": {
+      "description": "Precisa da permissão de personalização da plataforma. As permissões vêm do seu perfil ativo."
+    },
+    "errors": {
+      "load": "Não foi possível carregar a personalização.",
+      "saveTitle": "Não foi possível guardar.",
+      "forbidden": "Não tem permissão para personalizar a plataforma.",
+      "upload": "Não foi possível carregar a imagem: {slot}.",
+      "invalidColor": "Use uma cor concreta: hex, rgb, hsl, oklch, oklab, lab, lch ou um nome de cor.",
+      "logoHost": "Só são aceites imagens carregadas aqui.",
+      "favicon": "Use um PNG ou ICO até 256 KB.",
+      "image": "Use uma imagem (SVG, PNG, JPG, WEBP ou GIF).",
+      "darkWithoutLight": "Adicione a versão clara antes da escura.",
+      "invalid": "A personalização tem valores inválidos. Reveja os campos e tente novamente.",
+      "generic": "Tente novamente. Se o problema persistir, contacte o suporte."
     }
   }
 }
