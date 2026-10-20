@@ -597,7 +597,9 @@
         "activateDescription": "Voulez-vous vraiment activer l’utilisateur <strong>{name}</strong> ?",
         "deactivateDescription": "Voulez-vous vraiment désactiver l’utilisateur <strong>{name}</strong> ?",
         "confirmActivate": "Confirmer l’activation",
-        "confirmDeactivate": "Confirmer la désactivation"
+        "confirmDeactivate": "Confirmer la désactivation",
+        "activating": "Activation...",
+        "deactivating": "Désactivation..."
       },
       "tabs": {
         "departments": "Départements",

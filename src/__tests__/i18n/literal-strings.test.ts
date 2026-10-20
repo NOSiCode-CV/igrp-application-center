@@ -42,6 +42,7 @@ const USER_FACING_PROPS = new Set([
   "errorText",
   "searchText",
   "selectLabel",
+  "loadingText",
 ]);
 
 const HAS_LETTER = /\p{L}/u;

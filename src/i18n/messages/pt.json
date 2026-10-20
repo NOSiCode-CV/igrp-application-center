@@ -1,5 +1,7 @@
 {
-    "app": { "title": "IGRP | Template Aplicações" },
+  "app": {
+    "title": "IGRP | Template Aplicações"
+  },
   "home": {
     "state": {
       "ok": "Ativo",
@@ -595,7 +597,9 @@
         "activateDescription": "Tem certeza que deseja ativar o utilizador <strong>{name}</strong>?",
         "deactivateDescription": "Tem certeza que deseja desativar o utilizador <strong>{name}</strong>?",
         "confirmActivate": "Confirmar Ativar",
-        "confirmDeactivate": "Confirmar Desativar"
+        "confirmDeactivate": "Confirmar Desativar",
+        "activating": "A ativar...",
+        "deactivating": "A desativar..."
       },
       "tabs": {
         "departments": "Departamentos",

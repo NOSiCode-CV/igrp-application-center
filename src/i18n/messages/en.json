@@ -1,12 +1,18 @@
 {
-    "app": { "title": "IGRP | Application Template" },
+  "app": {
+    "title": "IGRP | Application Template"
+  },
   "home": {
     "state": {
       "ok": "Active",
       "preview": "Preview",
       "error": "Needs attention"
     },
-    "copy": { "idle": "Copy", "copied": "Copied", "failed": "Copy manually" },
+    "copy": {
+      "idle": "Copy",
+      "copied": "Copied",
+      "failed": "Copy manually"
+    },
     "intro": {
       "failing": "The application is responding, but {count, plural, one {one layer needs} other {# layers need}} attention. See below what failed in this request.",
       "preview": "The application is responding in preview mode: no real sign-in and sample menus.",
@@ -591,7 +597,9 @@
         "activateDescription": "Are you sure you want to activate the user <strong>{name}</strong>?",
         "deactivateDescription": "Are you sure you want to deactivate the user <strong>{name}</strong>?",
         "confirmActivate": "Confirm Activation",
-        "confirmDeactivate": "Confirm Deactivation"
+        "confirmDeactivate": "Confirm Deactivation",
+        "activating": "Activating...",
+        "deactivating": "Deactivating..."
       },
       "tabs": {
         "departments": "Departments",

@@ -7,6 +7,7 @@ import {
   Badge,
   cn,
   IGRPButton,
+  Separator,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -85,7 +86,8 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
         {description || t("noDescription")}
       </p>
 
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-3">
+      <Separator className="mt-auto" />
+      <div className="flex items-center justify-between gap-2">
         <Badge className={cn(getStatusColor(status), "shrink-0")}>
           {statusLabel(status)}
         </Badge>
