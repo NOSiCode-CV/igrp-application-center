@@ -8,7 +8,12 @@ import pt from "@/i18n/messages/pt.json";
 import { renderWithIntl as render } from "../../helpers/intl";
 
 const mocks = vi.hoisted(() => ({
-  query: { isPending: false, isError: false, error: null, data: null },
+  query: {
+    isPending: false,
+    isError: false,
+    error: null,
+    data: null as unknown,
+  },
   mutation: { mutateAsync: vi.fn(), isPending: false },
   refresh: vi.fn(),
 }));
@@ -26,8 +31,18 @@ vi.mock("next/image", () => ({
   },
 }));
 
+const SAVED_PRIMARY = "oklch(0.45 0.18 250)";
+const SAVED_MARK = "https://minio.example/igrp/public/branding/u/mark.png";
+// Module scope: a new object per render would loop the form reset.
+const saved = {
+  version: 1,
+  tokens: { light: { "--primary": SAVED_PRIMARY }, dark: {} },
+  logos: { header: { light: SAVED_MARK } },
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.query.data = null;
   mocks.mutation.mutateAsync.mockResolvedValue(undefined);
 });
 
@@ -116,6 +131,44 @@ describe("BrandingScreen", () => {
       mocks.mutation.mutateAsync.mock.calls[0][0].tokens.light["--primary"],
     ).toBe("#ff0000");
     await waitFor(() => expect(mocks.refresh).toHaveBeenCalled());
+  });
+
+  it("Repor predefinições clears every value but saves nothing until Guardar", async () => {
+    mocks.query.data = saved;
+    render(<BrandingScreen />);
+    expect(screen.getByLabelText("Primária")).toHaveValue(SAVED_PRIMARY);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: pt.branding.actions.reset }),
+    );
+    expect(screen.getByLabelText("Primária")).toHaveValue("");
+    expect(mocks.mutation.mutateAsync).not.toHaveBeenCalled();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: pt.branding.actions.save }),
+    );
+    await waitFor(() =>
+      expect(mocks.mutation.mutateAsync).toHaveBeenCalledTimes(1),
+    );
+    const values = mocks.mutation.mutateAsync.mock.calls[0][0];
+    expect(values.tokens.light["--primary"]).toBe("");
+    // Logos go back to their Default (none) too — spec §2.
+    expect(values.logos.header.light).toBe("");
+  });
+
+  it("Descartar returns unsaved edits to the saved Brand", () => {
+    mocks.query.data = saved;
+    render(<BrandingScreen />);
+    fireEvent.change(screen.getByLabelText("Primária"), {
+      target: { value: "#ff0000" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: pt.branding.actions.discard }),
+    );
+    expect(screen.getByLabelText("Primária")).toHaveValue(SAVED_PRIMARY);
+    expect(
+      screen.getByRole("button", { name: pt.branding.actions.save }),
+    ).toBeDisabled();
   });
 
   it("disables Guardar and Descartar until something changes", () => {

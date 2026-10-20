@@ -135,6 +135,23 @@
     },
     "textarea": {
       "charsUsed": "Characters used: {length} of {max}"
+    },
+    "fileUpload": {
+      "placeholder": "Drag your image here",
+      "pick": "Choose image",
+      "imageFormats": "SVG, PNG, JPG, GIF or WEBP",
+      "otherFormats": "Choose a file",
+      "maxSize": "(max. {size} MB)",
+      "previewAlt": "Image preview",
+      "remove": "Remove file",
+      "tooLarge": "The file is larger than the {size} MB limit."
+    },
+    "unsavedChanges": {
+      "region": "Unsaved changes",
+      "message": "You have unsaved changes.",
+      "discard": "Discard",
+      "save": "Save changes",
+      "saving": "Saving…"
     }
   },
   "i18n": {

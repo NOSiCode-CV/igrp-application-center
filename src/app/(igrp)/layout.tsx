@@ -75,6 +75,7 @@ export default async function IGRPRootLayout({
             // component as a prop; no next-auth coupling (cookie-first app).
             actions: <IGRPLocaleSwitcher action={setLocale} />,
           }}
+          showSidebar={false}
         >
           {children}
         </IGRPLayoutFull>

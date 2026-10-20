@@ -13,6 +13,7 @@ import {
   FormMessage,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import {
   type FileWithPreview,
@@ -32,6 +33,7 @@ export interface FileUploadFieldProps {
 }
 
 export function FileUploadField(props: FileUploadFieldProps) {
+  const t = useTranslations("common.fileUpload");
   const {
     value,
     onChange,
@@ -39,9 +41,9 @@ export function FileUploadField(props: FileUploadFieldProps) {
     accept = "image/svg+xml,image/png,image/jpeg,image/jpg,image/webp,image/gif",
     label,
     description,
-    placeholder = "Arraste sua imagem",
+    placeholder = t("placeholder"),
     disabled = false,
-    btnLabel = "Selecionar Imagem",
+    btnLabel = t("pick"),
   } = props;
 
   const maxSize = maxSizeMB * 1024 * 1024;
@@ -136,14 +138,14 @@ export function FileUploadField(props: FileUploadFieldProps) {
                 {...getInputProps()}
                 disabled={disabled}
                 className="sr-only"
-                aria-label="Selecionar Imagem"
+                aria-label={t("pick")}
               />
 
               {previewUrl ? (
                 <div className="absolute inset-0 flex items-center justify-center p-4">
                   <Image
                     src={previewUrl || "/placeholder.svg"}
-                    alt={fileName || "Atualizar Imagem"}
+                    alt={fileName || t("previewAlt")}
                     className="mx-auto max-h-full rounded object-contain"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     fill
@@ -160,9 +162,9 @@ export function FileUploadField(props: FileUploadFieldProps) {
                   <p className="mb-1.5 text-sm font-medium">{placeholder}</p>
                   <p className="text-muted-foreground text-xs">
                     {accept.includes("image")
-                      ? "SVG, PNG, JPG, GIF ou WEBP"
-                      : "Selecionar imagem"}{" "}
-                    (max. {maxSizeMB} MB)
+                      ? t("imageFormats")
+                      : t("otherFormats")}{" "}
+                    {t("maxSize", { size: maxSizeMB })}
                   </p>
                   <Button
                     type="button"
@@ -188,7 +190,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
                   type="button"
                   className="focus-visible:border-ring focus-visible:ring-ring/50 z-50 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white transition-[color,box-shadow] outline-none hover:bg-black/80 focus-visible:ring-[3px]"
                   onClick={handleRemove}
-                  aria-label="Remove file"
+                  aria-label={t("remove")}
                 >
                   <IGRPIcon iconName="X" className="size-4" />
                 </button>
@@ -205,7 +207,8 @@ export function FileUploadField(props: FileUploadFieldProps) {
                 iconName="AlertCircleIcon"
                 className="size-3 shrink-0"
               />
-              <span>{errors[0]}</span>
+              {/* Single-file mode: the hook's only reachable error is its (English) size message. */}
+              <span>{t("tooLarge", { size: maxSizeMB })}</span>
             </div>
           )}
         </div>

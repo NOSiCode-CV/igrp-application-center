@@ -179,20 +179,20 @@ importers:
         specifier: 5.9.1
         version: 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(zod@4.6.7)
       '@igrp/framework-next':
-        specifier: 0.2.0-beta.8
-        version: 0.2.0-beta.8(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
+        specifier: 0.2.0-beta.9
+        version: 0.2.0-beta.9(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
       '@igrp/framework-next-auth':
-        specifier: 0.2.0-beta.7
-        version: 0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
-      '@igrp/framework-next-ui':
         specifier: 0.2.0-beta.8
-        version: 0.2.0-beta.8(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
+        version: 0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@igrp/framework-next-ui':
+        specifier: 0.2.0-beta.9
+        version: 0.2.0-beta.9(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
       '@igrp/igrp-framework-react-design-system':
-        specifier: 0.2.0-beta.5
-        version: 0.2.0-beta.5(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
+        specifier: 0.2.0-beta.6
+        version: 0.2.0-beta.6(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
       '@igrp/platform-access-management-client-ts':
-        specifier: 0.2.0-beta.18
-        version: 0.2.0-beta.18
+        specifier: 0.2.0-beta.19
+        version: 0.2.0-beta.19
       '@tanstack/react-query':
         specifier: 5.104.2
         version: 5.104.2(react@19.2.8)
@@ -261,8 +261,8 @@ importers:
         specifier: 3.5.21
         version: 3.5.21
       '@igrp/framework-next-types':
-        specifier: 0.2.0-beta.7
-        version: 0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+        specifier: 0.2.0-beta.8
+        version: 0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       '@tailwindcss/postcss':
         specifier: ^4.3.3
         version: 4.3.3
@@ -735,16 +735,16 @@ packages:
       zod:
         optional: true
 
-  '@igrp/framework-next-auth@0.2.0-beta.7':
-    resolution: {integrity: sha512-JdIertj1yS/WDohWP3h9u4qxynOPoHoXi2gpAY7lov/twIXeCJGMcJioD4i1ULK4UvhWLQXS4jiFcMF/Prrhsg==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-auth/-/framework-next-auth-0.2.0-beta.7.tgz}
+  '@igrp/framework-next-auth@0.2.0-beta.8':
+    resolution: {integrity: sha512-XTRuqMhhULVHPc2vf3ITKI8W4Ak/ttvu2Roo+LPUPhmyNBe9fTtwb6H8E8r+A55PZeztMJymTCPwHEBXxfkJxw==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-auth/-/framework-next-auth-0.2.0-beta.8.tgz}
     engines: {node: '>=22'}
     peerDependencies:
       next: ^15.5.0
       next-auth: ^4.24.0
       react: ^19.0.0
 
-  '@igrp/framework-next-types@0.2.0-beta.7':
-    resolution: {integrity: sha512-vmcGZoJQ6LjrOTNm6+RguHazH/9nW0Vlid7uYG+fgyGK8Q7rQthAk+vL+m/Iu9+msX0RktvQ+MifjAGMdj5w9g==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-types/-/framework-next-types-0.2.0-beta.7.tgz}
+  '@igrp/framework-next-types@0.2.0-beta.8':
+    resolution: {integrity: sha512-X3i7jLKWqGDegqCsOry8EGDoiMuTUxc722NBSCx0dabeUwQaXUQrK6Pm5AoZqLDShTfXsoIrxSQfuMlB7SCgDg==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-types/-/framework-next-types-0.2.0-beta.8.tgz}
     engines: {node: '>=22'}
     peerDependencies:
       next-auth: ^4.24.0
@@ -753,8 +753,8 @@ packages:
       react:
         optional: true
 
-  '@igrp/framework-next-ui@0.2.0-beta.8':
-    resolution: {integrity: sha512-vhE/3oVRMtx8rdftNGg1XJDg74oLw5x1GG5ZH0ZRBvN6NIea1ZtJdEZKfIEVDm8eeMfTk0bjWv1sxSX73lxpIA==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-ui/-/framework-next-ui-0.2.0-beta.8.tgz}
+  '@igrp/framework-next-ui@0.2.0-beta.9':
+    resolution: {integrity: sha512-SxIDiwQR/SDaNMkur4NkncSGa/P+MvyHVk1/0YNY/46Zz13+ztDoesuEqsLG3FYqrsNJYnpLvJTUbC2pxjCRbw==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next-ui/-/framework-next-ui-0.2.0-beta.9.tgz}
     engines: {node: '>=22'}
     peerDependencies:
       next: ^15.5.0
@@ -762,8 +762,8 @@ packages:
       react: ^19.0.0
       react-dom: ^19.0.0
 
-  '@igrp/framework-next@0.2.0-beta.8':
-    resolution: {integrity: sha512-RbO/qeedifkL3JGKcbszpz6FgolIFvrwcaOjrnCBsuF1c5Vqx8eVVphGVEgEoGGG7clvbcAeCgTNpmp2BW7mMQ==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next/-/framework-next-0.2.0-beta.8.tgz}
+  '@igrp/framework-next@0.2.0-beta.9':
+    resolution: {integrity: sha512-8P0n/nDj1hpnE8DWEFEJ7ojJPs6u4xrC4GwqAD3UXjxn/UkntOqsFKuSnKTg4o1iw8/7QXOIKiSPME5qWKzMGA==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/framework-next/-/framework-next-0.2.0-beta.9.tgz}
     engines: {node: '>=22'}
     peerDependencies:
       next: ^15.5.0
@@ -771,8 +771,8 @@ packages:
       react-dom: ^19.0.0
       zod: ^4.5.0
 
-  '@igrp/igrp-framework-react-design-system@0.2.0-beta.5':
-    resolution: {integrity: sha512-Vf+Nd0aYgh+8hGvH67ugMH9E+2EfWU1m5hqoiSFmKwIzSXa2MiV+5ZlYFJyaxdquBNpRxcQ+4eCWzFbCN3nsxQ==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/igrp-framework-react-design-system/-/igrp-framework-react-design-system-0.2.0-beta.5.tgz}
+  '@igrp/igrp-framework-react-design-system@0.2.0-beta.6':
+    resolution: {integrity: sha512-UbmphzZ+y6H2IkkbWWXsjJEdprIDnWzkVsFktGULH9GToibvFZ8dGhqemlO/OqI4Off5cJpbmz6sUy0NUwThLg==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/igrp-framework-react-design-system/-/igrp-framework-react-design-system-0.2.0-beta.6.tgz}
     engines: {node: '>=22'}
     peerDependencies:
       '@tanstack/react-table': ^8.0.0
@@ -785,8 +785,8 @@ packages:
       recharts: ^3.0.0
       zod: ^4.0.0
 
-  '@igrp/platform-access-management-client-ts@0.2.0-beta.18':
-    resolution: {integrity: sha512-gPVwbs321PMGWgrKS22yQ7jhxiuf9RxSbrThYIuYyPtVxdFPXA0kGCM2vJN3DA+fQ23NaLC+OEl40lVTGHEaqA==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/platform-access-management-client-ts/-/platform-access-management-client-ts-0.2.0-beta.18.tgz}
+  '@igrp/platform-access-management-client-ts@0.2.0-beta.19':
+    resolution: {integrity: sha512-hP29rTxCOr8I6KT/9BqlropzqA+FAHEao1XDkRdwHvIes4OmqpDgLuCQVRmM6w82/5XJW+kfWPjq5whAy7Cezw==, tarball: https://sonatype.nosi.cv/repository/igrp/@igrp/platform-access-management-client-ts/-/platform-access-management-client-ts-0.2.0-beta.19.tgz}
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -4474,14 +4474,8 @@ packages:
   prosemirror-tables@1.8.5:
     resolution: {integrity: sha512-V/0cDCsHKHe/tfWkeCmthNUcEp1IVO3p6vwN8XtwE9PZQLAZJigbw3QoraAdfJPir4NKJtNvOB8oYGKRl+t0Dw==}
 
-  prosemirror-transform@1.12.1:
-    resolution: {integrity: sha512-t4F5615FycnCqsX7ShTUs8+jfnwcf46kuFRvSl/3qFx2QTZ4DjgowesLHQXcFP7G//TjesqZG3WtgL7vdyVJyA==}
-
   prosemirror-transform@1.12.2:
     resolution: {integrity: sha512-PE/aY0HEY4zczvmqrilgkUK/WautF0chvMqkmM/iN5/aPHvwrCWaQZjS6CIZp+K84YrvPFqrL+YArrfJX8xX7g==}
-
-  prosemirror-view@1.42.5:
-    resolution: {integrity: sha512-7qcRaCWM48NC4utNQnx5Obvvs48/jMHXXvOXHH6WlBojmiK15eyxoHYlv5aJARHJHiFccSuWZ7ULW2SPrFAS/g==}
 
   prosemirror-view@1.42.6:
     resolution: {integrity: sha512-3g25f6hKV2bBxo3puH3EcYWmmVNSH0iWmNsMVT7sugDSpA025jgpOLarcDWr39SdzPjYMaiYtRdNtXialPSjEQ==}
@@ -5588,26 +5582,26 @@ snapshots:
       ajv-formats: 2.1.1(ajv@8.20.0)
       zod: 4.6.7
 
-  '@igrp/framework-next-auth@0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
+  '@igrp/framework-next-auth@0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
     dependencies:
       next: 15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next-auth: 4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
 
-  '@igrp/framework-next-types@0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
+  '@igrp/framework-next-types@0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)':
     dependencies:
-      '@igrp/framework-next-auth': 0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@igrp/framework-next-auth': 0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       next-auth: 4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
     optionalDependencies:
       react: 19.2.8
     transitivePeerDependencies:
       - next
 
-  '@igrp/framework-next-ui@0.2.0-beta.8(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)':
+  '@igrp/framework-next-ui@0.2.0-beta.9(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)':
     dependencies:
-      '@igrp/framework-next-auth': 0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
-      '@igrp/framework-next-types': 0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
-      '@igrp/igrp-framework-react-design-system': 0.2.0-beta.5(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
+      '@igrp/framework-next-auth': 0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@igrp/framework-next-types': 0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@igrp/igrp-framework-react-design-system': 0.2.0-beta.6(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
       class-variance-authority: 0.7.1
       clsx: 2.1.1
       next: 15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -5650,13 +5644,13 @@ snapshots:
       - yup
       - zod
 
-  '@igrp/framework-next@0.2.0-beta.8(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)':
+  '@igrp/framework-next@0.2.0-beta.9(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)':
     dependencies:
-      '@igrp/framework-next-auth': 0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
-      '@igrp/framework-next-types': 0.2.0-beta.7(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
-      '@igrp/framework-next-ui': 0.2.0-beta.8(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
-      '@igrp/igrp-framework-react-design-system': 0.2.0-beta.5(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
-      '@igrp/platform-access-management-client-ts': 0.2.0-beta.18
+      '@igrp/framework-next-auth': 0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@igrp/framework-next-types': 0.2.0-beta.8(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
+      '@igrp/framework-next-ui': 0.2.0-beta.9(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next-auth@4.24.15(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
+      '@igrp/igrp-framework-react-design-system': 0.2.0-beta.6(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)
+      '@igrp/platform-access-management-client-ts': 0.2.0-beta.19
       next: 15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next-intl: 4.14.9(@types/react@19.2.18)(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
       react: 19.2.8
@@ -5699,7 +5693,7 @@ snapshots:
       - vest
       - yup
 
-  '@igrp/igrp-framework-react-design-system@0.2.0-beta.5(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)':
+  '@igrp/igrp-framework-react-design-system@0.2.0-beta.6(@floating-ui/dom@1.8.0)(@standard-schema/spec@1.1.0)(@tanstack/react-table@8.21.3(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(@tiptap/extensions@3.32.0(@tiptap/core@3.32.0(@tiptap/pm@3.32.0))(@tiptap/pm@3.32.0))(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(date-fns@4.4.0)(lucide-react@0.577.0(react@19.2.8))(next@15.5.25(@babel/core@7.29.7)(@types/node@24.19.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(react@19.2.8)(recharts@3.10.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react-is@17.0.2)(react@19.2.8)(redux@5.0.1))(zod@4.6.7)':
     dependencies:
       '@hookform/resolvers': 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(react-hook-form@7.90.0(@types/react@19.2.18)(react@19.2.8))(zod@4.6.7)
       '@origin-space/image-cropper': 0.1.9(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -5765,7 +5759,7 @@ snapshots:
       - vest
       - yup
 
-  '@igrp/platform-access-management-client-ts@0.2.0-beta.18': {}
+  '@igrp/platform-access-management-client-ts@0.2.0-beta.19': {}
 
   '@img/colour@1.1.0':
     optional: true
@@ -8174,9 +8168,9 @@ snapshots:
   cmdk@1.1.1(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@radix-ui/react-compose-refs': 1.1.5(@types/react@19.2.18)(react@19.2.8)
-      '@radix-ui/react-dialog': 1.2.0(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-dialog': 1.3.1(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@radix-ui/react-id': 1.1.4(@types/react@19.2.18)(react@19.2.8)
-      '@radix-ui/react-primitive': 2.1.11(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-primitive': 2.2.0(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
     transitivePeerDependencies:
@@ -9185,38 +9179,38 @@ snapshots:
 
   prosemirror-changeset@2.4.4:
     dependencies:
-      prosemirror-transform: 1.12.1
+      prosemirror-transform: 1.12.2
 
   prosemirror-commands@1.7.2:
     dependencies:
       prosemirror-model: 1.25.12
       prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
+      prosemirror-transform: 1.12.2
 
   prosemirror-dropcursor@1.8.4:
     dependencies:
       prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
-      prosemirror-view: 1.42.5
+      prosemirror-transform: 1.12.2
+      prosemirror-view: 1.42.6
 
   prosemirror-gapcursor@1.4.1:
     dependencies:
       prosemirror-keymap: 1.2.3
       prosemirror-model: 1.25.12
       prosemirror-state: 1.4.4
-      prosemirror-view: 1.42.5
+      prosemirror-view: 1.42.6
 
   prosemirror-history@1.5.1:
     dependencies:
       prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
-      prosemirror-view: 1.42.5
+      prosemirror-transform: 1.12.2
+      prosemirror-view: 1.42.6
       rope-sequence: 1.3.4
 
   prosemirror-inputrules@1.5.1:
     dependencies:
       prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
+      prosemirror-transform: 1.12.2
 
   prosemirror-keymap@1.2.3:
     dependencies:
@@ -9231,41 +9225,31 @@ snapshots:
     dependencies:
       prosemirror-model: 1.25.12
       prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
+      prosemirror-transform: 1.12.2
 
   prosemirror-state@1.4.4:
     dependencies:
       prosemirror-model: 1.25.12
-      prosemirror-transform: 1.12.1
-      prosemirror-view: 1.42.5
+      prosemirror-transform: 1.12.2
+      prosemirror-view: 1.42.6
 
   prosemirror-tables@1.8.5:
     dependencies:
       prosemirror-keymap: 1.2.3
       prosemirror-model: 1.25.12
       prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
-      prosemirror-view: 1.42.5
-
-  prosemirror-transform@1.12.1:
-    dependencies:
-      prosemirror-model: 1.25.12
+      prosemirror-transform: 1.12.2
+      prosemirror-view: 1.42.6
 
   prosemirror-transform@1.12.2:
     dependencies:
       prosemirror-model: 1.25.12
 
-  prosemirror-view@1.42.5:
-    dependencies:
-      prosemirror-model: 1.25.12
-      prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
-
   prosemirror-view@1.42.6:
     dependencies:
       prosemirror-model: 1.25.12
       prosemirror-state: 1.4.4
-      prosemirror-transform: 1.12.1
+      prosemirror-transform: 1.12.2
 
   proxy-addr@2.0.7:
     dependencies:
@@ -9944,7 +9928,7 @@ snapshots:
 
   vaul@1.1.2(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
-      '@radix-ui/react-dialog': 1.2.0(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@radix-ui/react-dialog': 1.3.1(@types/react-dom@19.2.7(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       react: 19.2.8
       react-dom: 19.2.8(react@19.2.8)
     transitivePeerDependencies:

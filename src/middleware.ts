@@ -161,14 +161,21 @@ export async function middleware(request: NextRequest) {
  * keeps sending them to every path on the host — including the IdP — until
  * they expire. `staleAuthCookies` derives those names from this app's basePath
  * only, so another co-hosted app's cookies are never touched. A no-op once the
- * old cookies are gone, and always for a root-path app.
+ * old cookies are gone.
+ *
+ * `sweepStockNames`: this is the host's root-path app, so its pre-terminator
+ * stock-named session cookie sits at `Path=/` and reaches every co-hosted app
+ * on every request. No other root app shares the host, so that name is ours to
+ * expire. Ignored when `NEXT_PUBLIC_BASE_PATH` is set.
  */
 function expireStaleAuthCookies(
   request: NextRequest,
   response: NextResponse,
 ): NextResponse {
   const names = request.cookies.getAll().map((cookie) => cookie.name);
-  for (const { name, options } of staleAuthCookies(BASE_PATH, names)) {
+  for (const { name, options } of staleAuthCookies(BASE_PATH, names, {
+    sweepStockNames: true,
+  })) {
     response.cookies.set(name, "", options);
   }
   return response;
