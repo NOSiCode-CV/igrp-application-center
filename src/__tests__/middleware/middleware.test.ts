@@ -69,19 +69,37 @@ describe("middleware auth gate", () => {
   });
 });
 
-// Cookie-first since the framework i18n migration (a331515): no
-// `persistLocale`, so the session locale never rewrites IGRP_LOCALE (FR-27 sync
-// is for session-first apps — see src/i18n/index.ts).
+// Session-first: the token's locale (the user's profile) rewrites a stale
+// IGRP_LOCALE cookie, so sessionless pages (login after logout) follow it.
 describe("locale cookie", () => {
-  it("leaves IGRP_LOCALE alone even when the session locale differs", async () => {
+  const withToken = (locale: string, cookie?: string, https = false) => {
     vi.mocked(auth.getTokenFromRequest).mockResolvedValue({
       sub: "u1",
-      locale: "en",
+      locale,
     });
-    const r = req("/settings/users");
-    r.cookies.set("IGRP_LOCALE", "fr");
-    const res = await middleware(r);
+    const r = new NextRequest(new URL("http://localhost/settings/users"), {
+      headers: https ? { "x-forwarded-proto": "https" } : {},
+    });
+    if (cookie) r.cookies.set("IGRP_LOCALE", cookie);
+    return middleware(r);
+  };
+
+  it("rewrites a stale locale cookie from the token", async () => {
+    const res = await withToken("en", "pt", true);
     expect(res.headers.get("location")).toBeNull();
+    expect(res.cookies.get("IGRP_LOCALE")).toMatchObject({
+      value: "en",
+      secure: true,
+    });
+  });
+
+  it("normalizes a regional token locale", async () => {
+    const res = await withToken("pt-CV");
+    expect(res.cookies.get("IGRP_LOCALE")?.value).toBe("pt");
+  });
+
+  it("ignores an unsupported token locale", async () => {
+    const res = await withToken("es", "fr");
     expect(res.cookies.get("IGRP_LOCALE")).toBeUndefined();
   });
 });

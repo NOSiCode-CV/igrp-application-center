@@ -1,11 +1,10 @@
 import { Suspense } from "react";
 
 import { IGRPLayoutFull, igrpGetClaims } from "@igrp/framework-next";
-import { IGRPLocaleSwitcher } from "@igrp/framework-next/i18n/client";
 import { IGRPSectionPermissions } from "@igrp/framework-next-ui";
 
 import { AppSearch } from "@/components/app-search";
-import { setLocale } from "@/i18n/actions";
+import { SessionLocaleSwitcher } from "@/i18n/session-locale-switcher";
 import { createConfig } from "@/igrp.template.config";
 import { getLayoutConfig, verifySession } from "@/lib/dal";
 import {
@@ -71,9 +70,8 @@ export default async function IGRPRootLayout({
                 <AppSearchSlot commands={searchCommands} />
               </Suspense>
             ),
-            // Language selector. The server action crosses to the client
-            // component as a prop; no next-auth coupling (cookie-first app).
-            actions: <IGRPLocaleSwitcher action={setLocale} />,
+            // Language selector: saves to the profile and updates the session.
+            actions: <SessionLocaleSwitcher />,
           }}
           showSidebar={false}
         >

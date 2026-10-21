@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { igrpNormalizeLocale } from "@igrp/framework-next/i18n";
 import { withIGRPAuth } from "@igrp/framework-next-auth/config";
 
 /*
@@ -131,40 +130,6 @@ export const auth = withIGRPAuth({
   // or `withAuth`) land on /login instead of the framework default page.
   pages: { signIn: "/login" },
   callbacks: {
-    /**
-     * Runs after the framework jwt logic (token refresh etc.).
-     *
-     * - Sign-in (`account` present): seed `token.locale` from the OIDC
-     *   `locale` claim (the user's `metadata.locale`).
-     * - `update({ locale })` from the client (language selector): replace
-     *   `token.locale` so the change applies without a new login (FR-25).
-     *
-     * Unsupported values are ignored.
-     */
-    jwt: async (params, igrpToken) => {
-      let token = igrpToken;
-      if (params.account) {
-        const claimLocale = igrpNormalizeLocale(
-          (params.profile as { locale?: unknown } | undefined)?.locale,
-        );
-        if (claimLocale) token = { ...token, locale: claimLocale };
-      }
-      if (params.trigger === "update") {
-        const requested = igrpNormalizeLocale(
-          (params.session as { locale?: unknown } | undefined)?.locale,
-        );
-        if (requested) token = { ...token, locale: requested };
-      }
-      return token;
-    },
-    /** Exposes `session.locale` (resolver priority 1, FR-6). */
-    session: async (params, igrpSession) => {
-      const locale =
-        "token" in params
-          ? igrpNormalizeLocale((params.token as { locale?: unknown }).locale)
-          : undefined;
-      return locale ? { ...igrpSession, locale } : igrpSession;
-    },
     redirect: redirectWithBasePath,
   },
 });

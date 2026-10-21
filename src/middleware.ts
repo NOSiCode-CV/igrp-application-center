@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { IGRP_LOCALES, igrpSyncLocaleCookie } from "@igrp/framework-next/i18n";
 import { staleAuthCookies } from "@igrp/framework-next-auth/cookies";
 
 // Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
@@ -88,6 +89,13 @@ function withSecurityHeaders(response: NextResponse): NextResponse {
   }
   return response;
 }
+
+// Mirrors src/i18n/index.ts (session-first). Edge runtime: constants come from
+// "@igrp/framework-next/i18n", never "@/i18n" (server-only).
+const LOCALE_SYNC = {
+  locales: IGRP_LOCALES,
+  resolution: "session-first",
+} as const;
 
 const AUTH_UI_PREFIXES = ["/login", "/logout", "/api/auth"];
 
@@ -254,12 +262,13 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
     return loginRedirect();
   }
 
-  // i18n: this app is cookie-first (no `persistLocale`), so the middleware
-  // leaves the IGRP_LOCALE cookie alone. A session-first app (one with a
-  // profile write-back) ends this branch with
-  //   return igrpSyncLocaleCookie(request, nextWithPath(), token.locale, i18n)
-  // importing from "@igrp/framework-next/i18n" (Edge-safe), never from "@/i18n".
-  return nextWithPath();
+  // Session-first: the profile locale on the token rewrites a stale cookie.
+  return igrpSyncLocaleCookie(
+    request,
+    nextWithPath(),
+    token.locale,
+    LOCALE_SYNC,
+  );
 }
 
 /**
