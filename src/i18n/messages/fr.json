@@ -1670,5 +1670,152 @@
       "seconds": "secondes",
       "ttlEquals": "= {value}"
     }
+  },
+  "audit": {
+    "meta": {
+      "title": "Audit et rapports",
+      "description": "Consulter les rapports d'accès et de configuration de la plateforme."
+    },
+    "header": {
+      "title": "Audit et rapports",
+      "description": "Consultez les accès et les modifications de configuration enregistrés sur la plateforme."
+    },
+    "reports": {
+      "label": "Rapports",
+      "access": {
+        "title": "Accès",
+        "description": "Qui s'est connecté à la plateforme et ce qu'il a fait dans chaque module."
+      },
+      "settings": {
+        "title": "Configuration",
+        "description": "Modifications des applications, utilisateurs, profils, permissions et menus."
+      }
+    },
+    "error": {
+      "page": "Impossible de charger l'audit.",
+      "access": "Impossible de charger le rapport d'accès.",
+      "settings": "Impossible de charger le rapport de configuration.",
+      "message": "Réessayez. Si le problème persiste, contactez le support."
+    },
+    "forbidden": {
+      "description": "Les permissions proviennent uniquement de votre profil actif. Si la permission d'audit vous a été attribuée dans un autre profil, activez-le dans votre profil et reconnectez-vous.",
+      "homeLabel": "Aller à mon profil"
+    },
+    "fields": {
+      "timestamp": "Date et heure",
+      "username": "Utilisateur",
+      "heldRoles": "Profils détenus",
+      "module": "Module",
+      "action": "Action",
+      "ip": "IP",
+      "status": "Statut",
+      "performedBy": "Effectué par",
+      "area": "Domaine",
+      "operation": "Opération",
+      "type": "Type",
+      "entity": "Entité",
+      "details": "Détails"
+    },
+    "status": {
+      "success": "Succès",
+      "accessDenied": "Accès refusé",
+      "unusualIp": "IP inhabituelle",
+      "pending": "En attente",
+      "error": "Erreur"
+    },
+    "area": {
+      "applications": "Applications",
+      "users": "Utilisateurs",
+      "access": "Accès"
+    },
+    "entityType": {
+      "application": "Application",
+      "user": "Utilisateur",
+      "department": "Département",
+      "role": "Profil",
+      "permission": "Permission",
+      "menu": "Menu"
+    },
+    "operation": {
+      "create": "Création",
+      "delete": "Suppression",
+      "edit": "Modification",
+      "activate": "Activation",
+      "deactivate": "Désactivation",
+      "invite": "Invitation",
+      "cancelInvite": "Annulation d'invitation",
+      "resendInvite": "Renvoi d'invitation",
+      "associate": "Association",
+      "disassociate": "Dissociation",
+      "assign": "Attribution",
+      "unassign": "Retrait d'attribution"
+    },
+    "filters": {
+      "all": "Tous",
+      "noResults": "Aucun résultat",
+      "search": "Rechercher…",
+      "exactMatch": "Correspondance exacte",
+      "rolePlaceholder": "Code du profil",
+      "roleHint": "Contient le code indiqué",
+      "entityPlaceholder": "Nom exact",
+      "clear": "Effacer les filtres"
+    },
+    "period": {
+      "label": "Période",
+      "last24h": "Dernières 24 heures",
+      "last7d": "7 derniers jours",
+      "last30d": "30 derniers jours",
+      "custom": "Personnalisée",
+      "pickDates": "Choisir des dates",
+      "clear": "Effacer",
+      "apply": "OK",
+      "noResults": "Aucun résultat",
+      "capeVerdeTime": "Heure du Cap-Vert"
+    },
+    "panel": {
+      "title": "Période et filtres",
+      "dateSpan": "{from} au {to}",
+      "noFilters": "{period}, sans filtre",
+      "filterCount": "{period}, {count, plural, one {# filtre} other {# filtres}}"
+    },
+    "empty": {
+      "filteredTitle": "Aucun événement ne correspond aux filtres",
+      "filteredDescription": "Les filtres exigent la valeur exacte. Effacez-les pour vérifier s'il existe des événements sur la période.",
+      "title": "Aucun événement sur cette période",
+      "description": "Élargissez la période pour voir les événements antérieurs."
+    },
+    "loading": {
+      "events": "Chargement des événements…"
+    },
+    "pager": {
+      "label": "Pagination du rapport",
+      "summarySingle": "{first} sur {total} {count, plural, one {événement} other {événements}}",
+      "summaryRange": "{first}–{last} sur {total} {count, plural, one {événement} other {événements}}",
+      "rowsPerPage": "Lignes par page",
+      "noResults": "Aucun résultat",
+      "first": "Première page",
+      "previous": "Page précédente",
+      "next": "Page suivante",
+      "last": "Dernière page",
+      "pageNumber": "Page {page}",
+      "pageOf": "Page {page} sur {pages}"
+    },
+    "row": {
+      "showDetails": "Voir les détails",
+      "hideDetails": "Masquer les détails"
+    },
+    "detail": {
+      "ip": "Adresse IP :",
+      "relatedEntity": "Entité associée :",
+      "before": "Avant :",
+      "after": "Après :",
+      "previous": "Précédent",
+      "next": "Nouveau"
+    },
+    "sort": {
+      "by": "Trier par {title}",
+      "asc": "ordre croissant",
+      "desc": "ordre décroissant"
+    }
   }
 }

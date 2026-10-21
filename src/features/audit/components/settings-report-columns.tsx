@@ -9,13 +9,13 @@ import {
 import type { SettingsReportRowDTO } from "@igrp/platform-access-management-client-ts";
 
 import {
-  labelFor,
-  SETTINGS_AREA_LABELS,
-  SETTINGS_ENTITY_TYPE_LABELS,
-  SETTINGS_OPERATION_LABELS,
-} from "../lib/audit-labels";
-import { formatAuditDateTime } from "../lib/platform-time";
+  type AuditTranslator,
+  areaLabel,
+  entityTypeLabel,
+  operationLabel,
+} from "../lib/i18n";
 import { DEFAULT_SORT, type ReportSort } from "../lib/report-query";
+import { AuditDateTime } from "./audit-date-time";
 import { AuditStatusBadge } from "./audit-status-badge";
 import { SettingsChangeDetail } from "./settings-change-detail";
 import { SortableHeader } from "./sortable-header";
@@ -39,6 +39,7 @@ export const renderSettingsDetail = (row: Row<SettingsReportRowDTO>) => (
    (see SortableHeader), so the table's own sorting stays off. The IP lives in
    the expanded detail, not in a column. */
 export function settingsColumns(
+  t: AuditTranslator,
   sort: ReportSort | undefined,
   onSort: (field: string) => void,
 ): ColumnDef<SettingsReportRowDTO>[] {
@@ -57,7 +58,7 @@ export function settingsColumns(
       // The table sets every header to getSize() (150px by default); this
       // column only holds the 36px chevron button plus the cell's 12px padding.
       size: 48,
-      header: () => <span className="sr-only">Detalhes</span>,
+      header: () => <span className="sr-only">{t("fields.details")}</span>,
       cell: ({ row }) =>
         row.getCanExpand() ? (
           <Button
@@ -65,7 +66,7 @@ export function settingsColumns(
             size="icon"
             aria-expanded={row.getIsExpanded()}
             aria-label={
-              row.getIsExpanded() ? "Ocultar detalhes" : "Ver detalhes"
+              row.getIsExpanded() ? t("row.hideDetails") : t("row.showDetails")
             }
             onClick={row.getToggleExpandedHandler()}
           >
@@ -78,43 +79,41 @@ export function settingsColumns(
     },
     {
       accessorKey: "timestamp",
-      header: sortable("Data e hora", "timestamp"),
+      header: sortable(t("fields.timestamp"), "timestamp"),
       cell: ({ row }) => (
         <span className="whitespace-nowrap tabular-nums">
-          {formatAuditDateTime(row.original.timestamp)}
+          <AuditDateTime value={row.original.timestamp} />
         </span>
       ),
     },
     {
       accessorKey: "performedBy",
-      header: sortable("Realizado por", "performedBy"),
+      header: sortable(t("fields.performedBy"), "performedBy"),
       cell: ({ row }) => text(row.original.performedBy),
     },
     {
       accessorKey: "area",
-      header: sortable("Área", "area"),
-      cell: ({ row }) => labelFor(SETTINGS_AREA_LABELS, row.original.area),
+      header: sortable(t("fields.area"), "area"),
+      cell: ({ row }) => areaLabel(t, row.original.area),
     },
     {
       accessorKey: "operation",
-      header: sortable("Operação", "operation"),
-      cell: ({ row }) =>
-        labelFor(SETTINGS_OPERATION_LABELS, row.original.operation),
+      header: sortable(t("fields.operation"), "operation"),
+      cell: ({ row }) => operationLabel(t, row.original.operation),
     },
     {
       accessorKey: "entityType",
-      header: sortable("Tipo", "entityType"),
-      cell: ({ row }) =>
-        labelFor(SETTINGS_ENTITY_TYPE_LABELS, row.original.entityType),
+      header: sortable(t("fields.type"), "entityType"),
+      cell: ({ row }) => entityTypeLabel(t, row.original.entityType),
     },
     {
       accessorKey: "entityName",
-      header: sortable("Entidade", "entityName"),
+      header: sortable(t("fields.entity"), "entityName"),
       cell: ({ row }) => text(row.original.entityName),
     },
     {
       accessorKey: "status",
-      header: sortable("Estado", "status"),
+      header: sortable(t("fields.status"), "status"),
       cell: ({ row }) => <AuditStatusBadge status={row.original.status} />,
     },
   ];

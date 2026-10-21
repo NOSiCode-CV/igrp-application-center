@@ -10,6 +10,7 @@ import {
   EmptyTitle,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 /* A filtered empty page is usually a near-miss on an exact-match filter, not
    missing data (guide §9.8) — so the filtered variant says so and offers the
@@ -21,6 +22,7 @@ export function ReportEmptyState({
   filtered: boolean;
   onClearFilters: () => void;
 }) {
+  const t = useTranslations("audit");
   return (
     <Empty>
       <EmptyHeader>
@@ -28,20 +30,16 @@ export function ReportEmptyState({
           <IGRPIcon iconName="FileSearch" aria-hidden="true" />
         </EmptyMedia>
         <EmptyTitle>
-          {filtered
-            ? "Nenhum evento corresponde aos filtros"
-            : "Sem eventos neste período"}
+          {filtered ? t("empty.filteredTitle") : t("empty.title")}
         </EmptyTitle>
         <EmptyDescription>
-          {filtered
-            ? "Os filtros exigem o valor exato. Limpe-os para confirmar se existem eventos no período."
-            : "Alargue o período para ver eventos anteriores."}
+          {filtered ? t("empty.filteredDescription") : t("empty.description")}
         </EmptyDescription>
       </EmptyHeader>
       {filtered && (
         <EmptyContent>
           <Button variant="outline" onClick={onClearFilters}>
-            Limpar filtros
+            {t("filters.clear")}
           </Button>
         </EmptyContent>
       )}

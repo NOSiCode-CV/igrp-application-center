@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Button,
   IGRPButton,
@@ -12,28 +13,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import {
-  formatYmd,
   isRangePreset,
   localDateToYmd,
-  PLATFORM_TIME_ZONE_LABEL,
   todayYmd,
   ymdToLocalDate,
 } from "../lib/platform-time";
 import type { DateRangeSelection } from "../lib/report-query";
 
-const PRESET_OPTIONS = [
-  { label: "Últimas 24 horas", value: "24h" },
-  { label: "Últimos 7 dias", value: "7d" },
-  { label: "Últimos 30 dias", value: "30d" },
-  { label: "Personalizado", value: "custom" },
-];
+/** The zone the platform default (`IGRP_TIME_ZONE`) names "Cabo Verde time". */
+const CAPE_VERDE_TIME_ZONE = "Atlantic/Cape_Verde";
 
 type DraftRange = { from?: Date; to?: Date } | undefined;
 
-function todayDraft(): DraftRange {
-  const today = ymdToLocalDate(todayYmd(new Date()));
+function todayDraft(timeZone: string | undefined): DraftRange {
+  const today = ymdToLocalDate(todayYmd(new Date(), timeZone));
   return { from: today, to: today };
 }
 
@@ -49,6 +45,17 @@ export function ReportDateRange({
   range: DateRangeSelection;
   onChange: (range: DateRangeSelection) => void;
 }) {
+  const t = useTranslations("audit.period");
+  const { formatDate, timeZone } = useIGRPFormat();
+  const presetOptions = useMemo(
+    () => [
+      { label: t("last24h"), value: "24h" },
+      { label: t("last7d"), value: "7d" },
+      { label: t("last30d"), value: "30d" },
+      { label: t("custom"), value: "custom" },
+    ],
+    [t],
+  );
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<DraftRange>();
   /* "Personalizado" chosen but not yet applied: the URL still holds the old
@@ -64,13 +71,13 @@ export function ReportDateRange({
   const draftFromRange = (): DraftRange =>
     range.preset === "custom"
       ? { from: ymdToLocalDate(range.from), to: ymdToLocalDate(range.to) }
-      : todayDraft();
+      : todayDraft(timeZone);
 
   const handlePreset = (value: string | string[]) => {
     if (value === "custom") {
       if (range.preset === "custom") return;
       setPendingCustom(true);
-      setDraft(todayDraft());
+      setDraft(todayDraft(timeZone));
       setOpen(true);
     } else if (isRangePreset(value)) {
       setPendingCustom(false);
@@ -104,8 +111,8 @@ export function ReportDateRange({
 
   const triggerText =
     range.preset === "custom"
-      ? `${formatYmd(range.from)} – ${formatYmd(range.to)}`
-      : "Escolher datas";
+      ? `${formatDate(range.from)} – ${formatDate(range.to)}`
+      : t("pickDates");
 
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-end">
@@ -116,11 +123,11 @@ export function ReportDateRange({
         <IGRPCombobox
           id="report-range"
           showSearch={false}
-          label="Período"
+          label={t("label")}
           variant="single"
-          options={PRESET_OPTIONS}
+          options={presetOptions}
           value={isCustom ? "custom" : range.preset}
-          selectLabel="Sem resultados"
+          selectLabel={t("noResults")}
           onChange={handlePreset}
         />
       </div>
@@ -137,7 +144,7 @@ export function ReportDateRange({
               date={
                 draft?.from ? { from: draft.from, to: draft.to } : undefined
               }
-              disableAfter={ymdToLocalDate(todayYmd(new Date()))}
+              disableAfter={ymdToLocalDate(todayYmd(new Date(), timeZone))}
               onDateChange={(next) =>
                 setDraft(next ? { from: next.from, to: next.to } : undefined)
               }
@@ -147,15 +154,15 @@ export function ReportDateRange({
                 size="icon"
                 variant="secondary"
                 iconName="Eraser"
-                aria-label="Limpar"
-                title="Limpar"
+                aria-label={t("clear")}
+                title={t("clear")}
                 onClick={() => setDraft(undefined)}
               />
               <IGRPButton
                 size="icon"
                 iconName="Check"
-                aria-label="OK"
-                title="OK"
+                aria-label={t("apply")}
+                title={t("apply")}
                 className="bg-success text-success-foreground hover:bg-success/90"
                 disabled={!draft?.from || !draft.to}
                 onClick={apply}
@@ -165,7 +172,7 @@ export function ReportDateRange({
         </Popover>
       )}
       <p className="text-xs text-muted-foreground md:pb-2">
-        {PLATFORM_TIME_ZONE_LABEL}
+        {timeZone === CAPE_VERDE_TIME_ZONE ? t("capeVerdeTime") : timeZone}
       </p>
     </div>
   );

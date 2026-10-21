@@ -6,8 +6,9 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import type { AccessReportRowDTO } from "@igrp/platform-access-management-client-ts";
 
-import { formatAuditDateTime } from "../lib/platform-time";
+import type { AuditTranslator } from "../lib/i18n";
 import { DEFAULT_SORT, type ReportSort } from "../lib/report-query";
+import { AuditDateTime } from "./audit-date-time";
 import { AuditStatusBadge } from "./audit-status-badge";
 import { SortableHeader } from "./sortable-header";
 
@@ -17,6 +18,7 @@ const text = (value?: string | null) => value || "—";
    referentially stable column array between renders. Sorting is server-side
    (see SortableHeader), so the table's own sorting stays off. */
 export function accessColumns(
+  t: AuditTranslator,
   sort: ReportSort | undefined,
   onSort: (field: string) => void,
 ): ColumnDef<AccessReportRowDTO>[] {
@@ -32,16 +34,16 @@ export function accessColumns(
   return [
     {
       accessorKey: "timestamp",
-      header: sortable("Data e hora", "timestamp"),
+      header: sortable(t("fields.timestamp"), "timestamp"),
       cell: ({ row }) => (
         <span className="whitespace-nowrap tabular-nums">
-          {formatAuditDateTime(row.original.timestamp)}
+          <AuditDateTime value={row.original.timestamp} />
         </span>
       ),
     },
     {
       accessorKey: "username",
-      header: sortable("Utilizador", "username"),
+      header: sortable(t("fields.username"), "username"),
       cell: ({ row }) => text(row.original.username),
     },
     {
@@ -49,31 +51,31 @@ export function accessColumns(
          the Active Role (AUDIT_BACKEND_RESPONSES §4). Label the data as it is;
          rename to "Perfil" when the backend writes the Active Role. */
       accessorKey: "role",
-      header: sortable("Perfis detidos", "role"),
+      header: sortable(t("fields.heldRoles"), "role"),
       cell: ({ row }) => (
         <span className="break-words">{text(row.original.role)}</span>
       ),
     },
     {
       accessorKey: "module",
-      header: () => <IGRPDataTableHeaderDefault title="Módulo" />,
+      header: () => <IGRPDataTableHeaderDefault title={t("fields.module")} />,
       cell: ({ row }) => text(row.original.module),
     },
     {
       accessorKey: "action",
-      header: sortable("Ação", "action"),
+      header: sortable(t("fields.action"), "action"),
       cell: ({ row }) => text(row.original.action),
     },
     {
       accessorKey: "ipAddress",
-      header: sortable("IP", "ipAddress"),
+      header: sortable(t("fields.ip"), "ipAddress"),
       cell: ({ row }) => (
         <span className="tabular-nums">{text(row.original.ipAddress)}</span>
       ),
     },
     {
       accessorKey: "status",
-      header: sortable("Estado", "status"),
+      header: sortable(t("fields.status"), "status"),
       cell: ({ row }) => <AuditStatusBadge status={row.original.status} />,
     },
   ];

@@ -27,28 +27,29 @@ describe("getAppTileColor", () => {
 describe("getLastOpened", () => {
   // A Tuesday, midday in the platform zone (UTC-1).
   const now = new Date("2026-06-30T13:00:00Z");
+  const CV = "Atlantic/Cape_Verde";
 
   it("says nothing when lastAccess is missing", () => {
     // It used to claim "Aberta recentemente" for a timestamp it did not have.
     // The caller renders the label only when present, so null hides the row.
-    expect(getLastOpened(undefined, now)).toBeNull();
-    expect(getLastOpened(null, now)).toBeNull();
+    expect(getLastOpened(undefined, now, CV)).toBeNull();
+    expect(getLastOpened(null, now, CV)).toBeNull();
   });
 
   it("says nothing for an unparseable date", () => {
-    expect(getLastOpened("not-a-date", now)).toBeNull();
+    expect(getLastOpened("not-a-date", now, CV)).toBeNull();
   });
 
   it("says just now under a minute", () => {
     const tenSecondsAgo = new Date(now.getTime() - 10_000).toISOString();
-    expect(getLastOpened(tenSecondsAgo, now)).toEqual({ key: "justNow" });
+    expect(getLastOpened(tenSecondsAgo, now, CV)).toEqual({ key: "justNow" });
   });
 
   it("counts minutes ago", () => {
     const eighteenMinutesAgo = new Date(
       now.getTime() - 18 * 60_000,
     ).toISOString();
-    expect(getLastOpened(eighteenMinutesAgo, now)).toEqual({
+    expect(getLastOpened(eighteenMinutesAgo, now, CV)).toEqual({
       key: "minutes",
       count: 18,
     });
@@ -56,7 +57,7 @@ describe("getLastOpened", () => {
 
   it("counts hours ago", () => {
     const threeHoursAgo = new Date(now.getTime() - 3 * 3_600_000).toISOString();
-    expect(getLastOpened(threeHoursAgo, now)).toEqual({
+    expect(getLastOpened(threeHoursAgo, now, CV)).toEqual({
       key: "hours",
       count: 3,
     });
@@ -64,12 +65,12 @@ describe("getLastOpened", () => {
 
   it("says yesterday", () => {
     const yesterday = new Date(now.getTime() - 25 * 3_600_000).toISOString();
-    expect(getLastOpened(yesterday, now)).toEqual({ key: "yesterday" });
+    expect(getLastOpened(yesterday, now, CV)).toEqual({ key: "yesterday" });
   });
 
   it("names the weekday, in the platform zone, for 2-6 days ago", () => {
     const threeDaysAgo = new Date(now.getTime() - 3 * 86_400_000);
-    expect(getLastOpened(threeDaysAgo.toISOString(), now)).toEqual({
+    expect(getLastOpened(threeDaysAgo.toISOString(), now, CV)).toEqual({
       key: "weekday",
       date: threeDaysAgo,
       day: 6, // Saturday
@@ -78,7 +79,10 @@ describe("getLastOpened", () => {
 
   it("counts weeks ago for 7+ days", () => {
     const twoWeeksAgo = new Date(now.getTime() - 14 * 86_400_000).toISOString();
-    expect(getLastOpened(twoWeeksAgo, now)).toEqual({ key: "weeks", count: 2 });
+    expect(getLastOpened(twoWeeksAgo, now, CV)).toEqual({
+      key: "weeks",
+      count: 2,
+    });
   });
 });
 

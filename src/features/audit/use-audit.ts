@@ -1,6 +1,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
 
+import { useIGRPLocaleInfo } from "@igrp/framework-next/i18n/client";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { HttpStatusError } from "@/lib/errors";
@@ -34,11 +35,22 @@ export function useReportQuery() {
   return [query, setQuery] as const;
 }
 
-export const useAccessReport = (q: ReportQuery) =>
-  useQuery({ ...accessReportOptions(q), placeholderData: keepPreviousData });
+/* The report's dates are read in the platform zone (ADR-0001). */
+export function useAccessReport(q: ReportQuery) {
+  const { timeZone } = useIGRPLocaleInfo();
+  return useQuery({
+    ...accessReportOptions(q, timeZone),
+    placeholderData: keepPreviousData,
+  });
+}
 
-export const useSettingsReport = (q: ReportQuery) =>
-  useQuery({ ...settingsReportOptions(q), placeholderData: keepPreviousData });
+export function useSettingsReport(q: ReportQuery) {
+  const { timeZone } = useIGRPLocaleInfo();
+  return useQuery({
+    ...settingsReportOptions(q, timeZone),
+    placeholderData: keepPreviousData,
+  });
+}
 
 /* The API ends sessions well before tokens expire (guide §9.1). A 401 from a
    report is a dead session, not a bad filter: follow the app's expiry path. */

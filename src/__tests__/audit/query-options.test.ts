@@ -21,6 +21,7 @@ const q: ReportQuery = {
   size: 20,
   filters: { status: "SUCCESS" },
 };
+const CV = "Atlantic/Cape_Verde";
 const page = {
   content: [],
   totalElements: 0,
@@ -35,14 +36,15 @@ afterEach(() => vi.useRealTimers());
 describe("report query options", () => {
   it("keys on the selection, not on computed instants", () => {
     vi.setSystemTime(new Date("2026-09-23T10:00:00Z"));
-    const first = accessReportOptions(q).queryKey;
+    const first = accessReportOptions(q, CV).queryKey;
     vi.setSystemTime(new Date("2026-09-23T11:00:00Z"));
-    expect(accessReportOptions(q).queryKey).toEqual(first);
+    expect(accessReportOptions(q, CV).queryKey).toEqual(first);
   });
 
   it("separates the two reports in the cache", () => {
-    expect(accessReportOptions(q).queryKey).not.toEqual(
-      settingsReportOptions({ ...q, tab: "settings", filters: {} }).queryKey,
+    expect(accessReportOptions(q, CV).queryKey).not.toEqual(
+      settingsReportOptions({ ...q, tab: "settings", filters: {} }, CV)
+        .queryKey,
     );
   });
 
@@ -51,7 +53,7 @@ describe("report query options", () => {
     vi.setSystemTime(new Date("2026-09-23T12:00:00Z"));
 
     // biome-ignore lint/style/noNonNullAssertion: queryOptions always sets queryFn here
-    const data = await accessReportOptions(q).queryFn!({} as never);
+    const data = await accessReportOptions(q, CV).queryFn!({} as never);
 
     expect(data).toBe(page);
     expect(mockGetAccessReport).toHaveBeenCalledWith(
@@ -59,6 +61,24 @@ describe("report query options", () => {
         startDate: "2026-09-22T12:00:00.000Z",
         endDate: "2026-09-23T12:00:00.000Z",
         status: "SUCCESS",
+      }),
+    );
+  });
+
+  it("sends a custom range as the days of the zone it is given", async () => {
+    mockGetAccessReport.mockResolvedValue({ success: true, data: page });
+    const custom: ReportQuery = {
+      ...q,
+      range: { preset: "custom", from: "2026-09-23", to: "2026-09-23" },
+    };
+
+    // biome-ignore lint/style/noNonNullAssertion: queryOptions always sets queryFn here
+    await accessReportOptions(custom, CV).queryFn!({} as never);
+
+    expect(mockGetAccessReport).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        startDate: "2026-09-23T01:00:00.000Z",
+        endDate: "2026-09-24T00:59:59.999Z",
       }),
     );
   });
@@ -71,9 +91,8 @@ describe("report query options", () => {
     });
     await expect(
       // biome-ignore lint/style/noNonNullAssertion: queryOptions always sets queryFn here
-      settingsReportOptions({ ...q, tab: "settings", filters: {} }).queryFn!(
-        {} as never,
-      ),
+      settingsReportOptions({ ...q, tab: "settings", filters: {} }, CV)
+        .queryFn!({} as never),
     ).rejects.toThrow();
   });
 });

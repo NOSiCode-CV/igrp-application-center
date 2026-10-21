@@ -1,30 +1,11 @@
-const DEFAULT_TIME_ZONE = "Atlantic/Cape_Verde";
-
-function isValidTimeZone(timeZone: string): boolean {
-  try {
-    new Intl.DateTimeFormat("en-US", { timeZone });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 /* ADR-0001: every audit date range is interpreted, and every audit time is
-   displayed, in ONE zone — never the server's (UTC in the cluster) or the
+   displayed, in ONE zone: the platform's (`IGRP_TIME_ZONE`, read once in
+   `src/i18n/index.ts`), never the server's (UTC in the cluster) or the
    viewer's browser. That keeps the filter and the times on screen in
    agreement, and makes a shared Report link return the same rows for
-   everyone. A bad NEXT_PUBLIC_AUDIT_TIME_ZONE must not crash the module at
-   import time (the Intl.DateTimeFormat below would throw a RangeError), so
-   an invalid override falls back to the default instead. */
-const configuredTimeZone = process.env.NEXT_PUBLIC_AUDIT_TIME_ZONE;
-export const PLATFORM_TIME_ZONE =
-  configuredTimeZone && isValidTimeZone(configuredTimeZone)
-    ? configuredTimeZone
-    : DEFAULT_TIME_ZONE;
-
-/** Shown beside the date controls. Must be changed together with
-    NEXT_PUBLIC_AUDIT_TIME_ZONE / PLATFORM_TIME_ZONE. */
-export const PLATFORM_TIME_ZONE_LABEL = "Hora de Cabo Verde";
+   everyone. Client code gets the zone from `useIGRPLocaleInfo().timeZone`;
+   every helper below takes it as a parameter. `undefined` (no provider
+   mounted) falls back to the runtime's own zone. */
 
 export const RANGE_PRESETS = ["24h", "7d", "30d"] as const;
 export type RangePreset = (typeof RANGE_PRESETS)[number];
@@ -48,10 +29,15 @@ const PRESET_MS: Record<RangePreset, number> = {
 /** Offset of `timeZone` from UTC at `instant`, in minutes (Cabo Verde → -60). */
 export function zoneOffsetMinutes(
   instant: Date,
-  timeZone: string = PLATFORM_TIME_ZONE,
+  timeZone: string | undefined,
 ): number {
+  // igrp-i18n-ignore: parsed here, never shown: the offset text needs a fixed locale
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "longOffset",
+  });
   const name =
-    new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "longOffset" })
+    formatter
       .formatToParts(instant)
       .find((part) => part.type === "timeZoneName")?.value ?? "GMT";
   // "GMT" for UTC itself, otherwise "GMT-01:00" / "GMT+05:30".
@@ -79,7 +65,7 @@ function addDaysYmd(ymd: string, days: number): string {
   return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
 }
 
-function zonedMidnightUtc(ymd: string, timeZone: string): Date {
+function zonedMidnightUtc(ymd: string, timeZone: string | undefined): Date {
   const [y, m, d] = splitYmd(ymd);
   const utcMidnight = Date.UTC(y, m - 1, d);
   const offset = zoneOffsetMinutes(new Date(utcMidnight), timeZone);
@@ -90,7 +76,7 @@ function zonedMidnightUtc(ymd: string, timeZone: string): Date {
 export function dayRangeToInstants(
   fromYmd: string,
   toYmd: string,
-  timeZone: string = PLATFORM_TIME_ZONE,
+  timeZone: string | undefined,
 ): InstantRange {
   const start = zonedMidnightUtc(fromYmd, timeZone);
   const end = zonedMidnightUtc(addDaysYmd(toYmd, 1), timeZone).getTime() - 1;
@@ -113,11 +99,8 @@ export function isValidYmd(value: unknown): value is string {
   );
 }
 
-export function todayYmd(
-  now: Date,
-  timeZone: string = PLATFORM_TIME_ZONE,
-): string {
-  // en-CA formats as YYYY-MM-DD.
+export function todayYmd(now: Date, timeZone: string | undefined): string {
+  // igrp-i18n-ignore: parsed here, never shown: en-CA formats as YYYY-MM-DD
   return new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -139,26 +122,4 @@ export function localDateToYmd(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
-}
-
-export function formatYmd(ymd: string): string {
-  const [y, m, d] = ymd.split("-");
-  return `${d}/${m}/${y}`;
-}
-
-const dateTimeFormatter = new Intl.DateTimeFormat("pt-PT", {
-  timeZone: PLATFORM_TIME_ZONE,
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-});
-
-export function formatAuditDateTime(value?: string | null): string {
-  if (!value) return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-  return dateTimeFormatter.format(date);
 }

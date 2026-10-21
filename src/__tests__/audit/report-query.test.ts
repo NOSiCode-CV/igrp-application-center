@@ -162,6 +162,8 @@ describe("transitions", () => {
   });
 });
 
+const CV = "Atlantic/Cape_Verde";
+
 describe("SDK filter mappers", () => {
   it("builds Access Report filters with instants resolved from now", () => {
     const q: ReportQuery = {
@@ -169,7 +171,7 @@ describe("SDK filter mappers", () => {
       page: 1,
       filters: { username: "ana@nosi.cv", status: "ACCESS_DENIED" },
     };
-    expect(toAccessReportFilters(q, now)).toEqual({
+    expect(toAccessReportFilters(q, now, CV)).toEqual({
       startDate: "2026-09-16T10:00:00.000Z",
       endDate: "2026-09-23T10:00:00.000Z",
       page: 1,
@@ -188,7 +190,7 @@ describe("SDK filter mappers", () => {
       size: 20,
       filters: { area: "APPLICATIONS" },
     };
-    const result = toSettingsReportFilters(q, now);
+    const result = toSettingsReportFilters(q, now, CV);
     expect(result).toEqual({
       startDate: "2026-09-23T01:00:00.000Z",
       endDate: "2026-09-24T00:59:59.999Z",
@@ -198,6 +200,24 @@ describe("SDK filter mappers", () => {
       area: "APPLICATIONS",
     });
     expect(Object.keys(result)).not.toContain("performedBy");
+  });
+
+  it("reads a custom day range in the zone it is given, not in a fixed one", () => {
+    const q: ReportQuery = {
+      tab: "access",
+      range: { preset: "custom", from: "2026-09-23", to: "2026-09-23" },
+      page: 0,
+      size: 20,
+      filters: {},
+    };
+    expect(toAccessReportFilters(q, now, "UTC")).toMatchObject({
+      startDate: "2026-09-23T00:00:00.000Z",
+      endDate: "2026-09-23T23:59:59.999Z",
+    });
+    expect(toAccessReportFilters(q, now, "Europe/Lisbon")).toMatchObject({
+      startDate: "2026-09-22T23:00:00.000Z",
+      endDate: "2026-09-23T22:59:59.999Z",
+    });
   });
 });
 
@@ -276,11 +296,12 @@ describe("column sort", () => {
 
   it("sends the chosen order to the API, newest first otherwise", () => {
     const now = new Date("2026-09-23T10:00:00.000Z");
-    expect(toAccessReportFilters(base, now).sort).toBe("timestamp,desc");
+    expect(toAccessReportFilters(base, now, CV).sort).toBe("timestamp,desc");
     expect(
       toAccessReportFilters(
         { ...base, sort: { field: "status", direction: "asc" } },
         now,
+        CV,
       ).sort,
     ).toBe("status,asc");
   });

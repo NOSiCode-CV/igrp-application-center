@@ -3,15 +3,16 @@
 import { type ReactNode, useEffect, useMemo } from "react";
 
 import { IGRPDataTable } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { InlineError } from "@/components/inline-error";
 import { useUsers } from "@/features/users/use-users";
 
 import {
-  SETTINGS_AREA_OPTIONS,
-  SETTINGS_ENTITY_TYPE_OPTIONS,
-  SETTINGS_OPERATION_OPTIONS,
-} from "../lib/audit-labels";
+  useSettingsAreaOptions,
+  useSettingsEntityTypeOptions,
+  useSettingsOperationOptions,
+} from "../lib/i18n";
 import {
   clearFilters,
   hasFilters,
@@ -73,6 +74,10 @@ interface ReportTabViewProps extends ReportTabProps {
 }
 
 function SettingsReportFilterBar({ query, onQueryChange }: ReportTabProps) {
+  const t = useTranslations("audit");
+  const areaOptions = useSettingsAreaOptions();
+  const operationOptions = useSettingsOperationOptions();
+  const entityTypeOptions = useSettingsEntityTypeOptions();
   const { data: users } = useUsers();
   const userOptions = useMemo(
     () =>
@@ -90,36 +95,36 @@ function SettingsReportFilterBar({ query, onQueryChange }: ReportTabProps) {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
       <FilterCombobox
         id="settings-performed-by"
-        label="Realizado por"
+        label={t("fields.performedBy")}
         options={userOptions}
         value={query.filters.performedBy}
         onChange={set("performedBy")}
       />
       <FilterSelect
         id="settings-area"
-        label="Área"
-        options={SETTINGS_AREA_OPTIONS}
+        label={t("fields.area")}
+        options={areaOptions}
         value={query.filters.area}
         onChange={set("area")}
       />
       <FilterSelect
         id="settings-operation"
-        label="Operação"
-        options={SETTINGS_OPERATION_OPTIONS}
+        label={t("fields.operation")}
+        options={operationOptions}
         value={query.filters.operation}
         onChange={set("operation")}
       />
       <FilterSelect
         id="settings-entity-type"
-        label="Tipo"
-        options={SETTINGS_ENTITY_TYPE_OPTIONS}
+        label={t("fields.type")}
+        options={entityTypeOptions}
         value={query.filters.entityType}
         onChange={set("entityType")}
       />
       <ExactMatchInput
         id="settings-entity-name"
-        label="Entidade"
-        placeholder="Nome exato"
+        label={t("fields.entity")}
+        placeholder={t("filters.entityPlaceholder")}
         value={query.filters.entityName}
         onCommit={set("entityName")}
       />
@@ -132,6 +137,7 @@ export function SettingsReportTab({
   onQueryChange,
   period,
 }: ReportTabViewProps) {
+  const t = useTranslations("audit");
   const {
     data,
     error,
@@ -144,10 +150,10 @@ export function SettingsReportTab({
   const rows = useMemo(() => data?.content ?? [], [data]);
   const columns = useMemo(
     () =>
-      settingsColumns(query.sort, (field) =>
+      settingsColumns(t, query.sort, (field) =>
         onQueryChange(withSort(query, nextSort(query, field))),
       ),
-    [query, onQueryChange],
+    [t, query, onQueryChange],
   );
   useRedirectOnUnauthorized(error);
 
@@ -178,8 +184,8 @@ export function SettingsReportTab({
       />
       {isError ? (
         <InlineError
-          title="Não foi possível carregar o relatório de configurações."
-          message="Tente novamente. Se o problema persistir, contacte o suporte."
+          title={t("error.settings")}
+          message={t("error.message")}
           onRetry={() => refetch()}
         />
       ) : isPending || isPlaceholderData ? (

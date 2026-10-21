@@ -1,10 +1,12 @@
 "use client";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Button,
   IGRPCombobox,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { PAGE_SIZES } from "../lib/report-query";
 
@@ -16,7 +18,6 @@ const SIZE_OPTIONS = PAGE_SIZES.map((s) => ({
   label: String(s),
   value: String(s),
 }));
-const count = new Intl.NumberFormat("pt-PT");
 
 /**
  * 0-based page indexes to show as numbered buttons, with "gap" where pages
@@ -56,6 +57,8 @@ export function ReportPager({
   onSizeChange,
   disabled = false,
 }: ReportPagerProps) {
+  const t = useTranslations("audit.pager");
+  const { formatNumber } = useIGRPFormat();
   const pages = Math.max(totalPages, 1);
   const first = totalElements === 0 ? 0 : page * size + 1;
   const last = Math.min((page + 1) * size, totalElements);
@@ -64,14 +67,22 @@ export function ReportPager({
 
   return (
     <nav
-      aria-label="Paginação do relatório"
+      aria-label={t("label")}
       className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
     >
       <p className="text-sm text-muted-foreground tabular-nums">
         {first === last
-          ? `${count.format(first)} de ${count.format(totalElements)}`
-          : `${count.format(first)}–${count.format(last)} de ${count.format(totalElements)}`}{" "}
-        {totalElements === 1 ? "evento" : "eventos"}
+          ? t("summarySingle", {
+              first: formatNumber(first),
+              total: formatNumber(totalElements),
+              count: totalElements,
+            })
+          : t("summaryRange", {
+              first: formatNumber(first),
+              last: formatNumber(last),
+              total: formatNumber(totalElements),
+              count: totalElements,
+            })}
       </p>
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -80,21 +91,21 @@ export function ReportPager({
             aria-hidden="true"
             className="whitespace-nowrap text-sm text-muted-foreground"
           >
-            Linhas por página
+            {t("rowsPerPage")}
           </span>
           {/* Picking the current size again makes the combobox report "",
               which is not a size: ignore it. */}
           <IGRPCombobox
             id="report-page-size"
             showSearch={false}
-            label="Linhas por página"
+            label={t("rowsPerPage")}
             labelClassName="sr-only"
             className="w-20"
             variant="single"
             options={SIZE_OPTIONS}
             value={String(size)}
             disabled={disabled}
-            selectLabel="Sem resultados"
+            selectLabel={t("noResults")}
             onChange={(v) => {
               const next = Number(v);
               if (typeof v === "string" && next > 0) onSizeChange(next);
@@ -106,7 +117,7 @@ export function ReportPager({
           <Button
             variant="outline"
             size="icon"
-            aria-label="Primeira página"
+            aria-label={t("first")}
             disabled={atStart}
             onClick={() => onPageChange(0)}
           >
@@ -115,7 +126,7 @@ export function ReportPager({
           <Button
             variant="outline"
             size="icon"
-            aria-label="Página anterior"
+            aria-label={t("previous")}
             disabled={atStart}
             onClick={() => onPageChange(page - 1)}
           >
@@ -139,7 +150,7 @@ export function ReportPager({
                   <Button
                     variant={p === page ? "default" : "ghost"}
                     size="icon"
-                    aria-label={`Página ${p + 1}`}
+                    aria-label={t("pageNumber", { page: String(p + 1) })}
                     aria-current={p === page ? "page" : undefined}
                     disabled={disabled && p !== page}
                     className="tabular-nums"
@@ -154,13 +165,13 @@ export function ReportPager({
             )}
           </ol>
           <span className="whitespace-nowrap px-2 text-sm tabular-nums sm:hidden">
-            Página {page + 1} de {pages}
+            {t("pageOf", { page: String(page + 1), pages: String(pages) })}
           </span>
 
           <Button
             variant="outline"
             size="icon"
-            aria-label="Página seguinte"
+            aria-label={t("next")}
             disabled={atEnd}
             onClick={() => onPageChange(page + 1)}
           >
@@ -169,7 +180,7 @@ export function ReportPager({
           <Button
             variant="outline"
             size="icon"
-            aria-label="Última página"
+            aria-label={t("last")}
             disabled={atEnd}
             onClick={() => onPageChange(pages - 1)}
           >

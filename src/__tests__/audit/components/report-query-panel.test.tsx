@@ -1,11 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { createTranslator } from "next-intl";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   queryLabel,
   ReportQueryPanel,
 } from "@/features/audit/components/report-query-panel";
+import enMessages from "@/i18n/messages/en.json";
+import pt from "@/i18n/messages/pt.json";
 
 function renderPanel(filterCount: number, onClear = vi.fn()) {
   return render(
@@ -57,12 +60,43 @@ describe("ReportQueryPanel", () => {
 });
 
 describe("queryLabel", () => {
+  const t = createTranslator({
+    locale: "pt",
+    messages: pt,
+    namespace: "audit",
+  });
+  const formatDate = (ymd: string) => ymd.split("-").reverse().join("/");
+
   it("names the period and counts filters", () => {
-    expect(queryLabel({ preset: "24h" }, 0)).toBe(
+    expect(queryLabel(t, formatDate, { preset: "24h" }, 0)).toBe(
       "Últimas 24 horas, sem filtros",
     );
     expect(
-      queryLabel({ preset: "custom", from: "2026-09-21", to: "2026-09-28" }, 1),
+      queryLabel(
+        t,
+        formatDate,
+        { preset: "custom", from: "2026-09-21", to: "2026-09-28" },
+        1,
+      ),
     ).toBe("21/09/2026 a 28/09/2026, 1 filtro");
+    expect(queryLabel(t, formatDate, { preset: "7d" }, 3)).toBe(
+      "Últimos 7 dias, 3 filtros",
+    );
+  });
+
+  it("speaks English", () => {
+    const en = createTranslator({
+      locale: "en",
+      messages: enMessages,
+      namespace: "audit",
+    });
+    expect(
+      queryLabel(
+        en,
+        formatDate,
+        { preset: "custom", from: "2026-09-21", to: "2026-09-28" },
+        2,
+      ),
+    ).toBe("21/09/2026 to 28/09/2026, 2 filters");
   });
 });

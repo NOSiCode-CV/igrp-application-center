@@ -1670,5 +1670,152 @@
       "seconds": "seconds",
       "ttlEquals": "= {value}"
     }
+  },
+  "audit": {
+    "meta": {
+      "title": "Audit and Reports",
+      "description": "View the platform's access and configuration reports."
+    },
+    "header": {
+      "title": "Audit and Reports",
+      "description": "Review the accesses and configuration changes recorded on the platform."
+    },
+    "reports": {
+      "label": "Reports",
+      "access": {
+        "title": "Access",
+        "description": "Who signed in to the platform and what they did in each module."
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Changes to applications, users, roles, permissions and menus."
+      }
+    },
+    "error": {
+      "page": "Could not load the audit.",
+      "access": "Could not load the access report.",
+      "settings": "Could not load the settings report.",
+      "message": "Try again. If the problem persists, contact support."
+    },
+    "forbidden": {
+      "description": "Permissions come only from your active role. If the audit permission was granted to you in another role, activate it in your profile and sign in again.",
+      "homeLabel": "Go to my profile"
+    },
+    "fields": {
+      "timestamp": "Date and time",
+      "username": "User",
+      "heldRoles": "Held roles",
+      "module": "Module",
+      "action": "Action",
+      "ip": "IP",
+      "status": "Status",
+      "performedBy": "Performed by",
+      "area": "Area",
+      "operation": "Operation",
+      "type": "Type",
+      "entity": "Entity",
+      "details": "Details"
+    },
+    "status": {
+      "success": "Success",
+      "accessDenied": "Access denied",
+      "unusualIp": "Unusual IP",
+      "pending": "Pending",
+      "error": "Error"
+    },
+    "area": {
+      "applications": "Applications",
+      "users": "Users",
+      "access": "Access"
+    },
+    "entityType": {
+      "application": "Application",
+      "user": "User",
+      "department": "Department",
+      "role": "Role",
+      "permission": "Permission",
+      "menu": "Menu"
+    },
+    "operation": {
+      "create": "Creation",
+      "delete": "Deletion",
+      "edit": "Edit",
+      "activate": "Activation",
+      "deactivate": "Deactivation",
+      "invite": "Invitation",
+      "cancelInvite": "Invitation cancellation",
+      "resendInvite": "Invitation resend",
+      "associate": "Association",
+      "disassociate": "Disassociation",
+      "assign": "Assignment",
+      "unassign": "Assignment removal"
+    },
+    "filters": {
+      "all": "All",
+      "noResults": "No results",
+      "search": "Search…",
+      "exactMatch": "Exact match",
+      "rolePlaceholder": "Role code",
+      "roleHint": "Contains the given code",
+      "entityPlaceholder": "Exact name",
+      "clear": "Clear filters"
+    },
+    "period": {
+      "label": "Period",
+      "last24h": "Last 24 hours",
+      "last7d": "Last 7 days",
+      "last30d": "Last 30 days",
+      "custom": "Custom",
+      "pickDates": "Pick dates",
+      "clear": "Clear",
+      "apply": "OK",
+      "noResults": "No results",
+      "capeVerdeTime": "Cape Verde time"
+    },
+    "panel": {
+      "title": "Period and filters",
+      "dateSpan": "{from} to {to}",
+      "noFilters": "{period}, no filters",
+      "filterCount": "{period}, {count, plural, one {# filter} other {# filters}}"
+    },
+    "empty": {
+      "filteredTitle": "No events match the filters",
+      "filteredDescription": "The filters require the exact value. Clear them to check whether there are events in the period.",
+      "title": "No events in this period",
+      "description": "Widen the period to see earlier events."
+    },
+    "loading": {
+      "events": "Loading events…"
+    },
+    "pager": {
+      "label": "Report pagination",
+      "summarySingle": "{first} of {total} {count, plural, one {event} other {events}}",
+      "summaryRange": "{first}–{last} of {total} {count, plural, one {event} other {events}}",
+      "rowsPerPage": "Rows per page",
+      "noResults": "No results",
+      "first": "First page",
+      "previous": "Previous page",
+      "next": "Next page",
+      "last": "Last page",
+      "pageNumber": "Page {page}",
+      "pageOf": "Page {page} of {pages}"
+    },
+    "row": {
+      "showDetails": "Show details",
+      "hideDetails": "Hide details"
+    },
+    "detail": {
+      "ip": "IP address:",
+      "relatedEntity": "Related entity:",
+      "before": "Before:",
+      "after": "After:",
+      "previous": "Previous",
+      "next": "New"
+    },
+    "sort": {
+      "by": "Sort by {title}",
+      "asc": "ascending order",
+      "desc": "descending order"
+    }
   }
 }

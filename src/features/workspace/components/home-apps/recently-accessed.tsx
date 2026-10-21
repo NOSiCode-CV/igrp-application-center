@@ -97,7 +97,7 @@ export function RecentlyAccessed() {
   const favCodes = new Set(favorites.map((f) => f.code));
 
   function lastOpenedLabel(lastAccess: string | null | undefined): string {
-    const opened = getLastOpened(lastAccess);
+    const opened = getLastOpened(lastAccess, new Date(), format.timeZone);
     if (!opened) return "";
     switch (opened.key) {
       case "weekday":

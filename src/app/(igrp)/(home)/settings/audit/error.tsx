@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { useTranslations } from "next-intl";
+
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { InlineError } from "@/components/inline-error";
 
@@ -12,6 +14,7 @@ export default function AuditError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("audit.error");
   useEffect(() => {
     console.error("[audit-segment] error:", error);
   }, [error]);
@@ -20,11 +23,7 @@ export default function AuditError({
     <StatusAwareError
       error={error}
       fallback={
-        <InlineError
-          title="Não foi possível carregar a auditoria."
-          message="Tente novamente. Se o problema persistir, contacte o suporte."
-          onRetry={reset}
-        />
+        <InlineError title={t("page")} message={t("message")} onRetry={reset} />
       }
     />
   );

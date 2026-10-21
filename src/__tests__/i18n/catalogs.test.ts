@@ -20,6 +20,7 @@ const ALLOWED = new Set([
   "Slug",
   "OAuth",
   "Middleware", // product / layer names
+  "Menu", // same word in pt and en (audit entity type)
   "Access Management",
   "johndoe", // example placeholders
   "page-slug",

@@ -1,13 +1,9 @@
 "use client";
 
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import type { ReportSort } from "../lib/report-query";
-
-const DIRECTION_LABEL = {
-  asc: "ordem crescente",
-  desc: "ordem decrescente",
-} as const;
 
 /* Same look as IGRPDataTable's `IGRPDataTableHeaderSortToggle` (ghost button,
    up / down / both-ways chevron), but driven by the URL instead of the
@@ -25,6 +21,7 @@ export function SortableHeader({
   sort?: ReportSort;
   onSort: (field: string) => void;
 }) {
+  const t = useTranslations("audit.sort");
   const direction = sort?.field === field ? sort.direction : undefined;
   const icon =
     direction === "asc"
@@ -38,7 +35,7 @@ export function SortableHeader({
       variant="ghost"
       size="sm"
       className="px-0 py-0 has-[>svg]:px-0"
-      title={`Ordenar por ${title}`}
+      title={t("by", { title })}
       onClick={() => onSort(field)}
     >
       <span>{title}</span>
@@ -47,9 +44,7 @@ export function SortableHeader({
         className="ms-2 text-muted-foreground"
         aria-hidden="true"
       />
-      {direction && (
-        <span className="sr-only">, {DIRECTION_LABEL[direction]}</span>
-      )}
+      {direction && <span className="sr-only">, {t(direction)}</span>}
     </Button>
   );
 }

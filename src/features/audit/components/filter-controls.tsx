@@ -7,11 +7,12 @@ import {
   Input,
   Label,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
-import type { FilterOption } from "../lib/audit-labels";
+import type { FilterOption } from "../lib/i18n";
 
 /* Every list filter is an `IGRPCombobox`. Fixed lists carry an explicit
-   "Todos" option (a sentinel value) so clearing is one visible choice; the
+   "all" option (a sentinel value) so clearing is one visible choice; the
    combobox also clears when the selected item is picked again (it reports
    ""), which both handlers map to "no filter". */
 const ALL = "__all__";
@@ -25,7 +26,7 @@ interface FilterFieldProps {
   disabled?: boolean;
 }
 
-/** Short, fixed lists (enums): "Todos" listed first; search from 6 options. */
+/** Short, fixed lists (enums): "all" listed first; search from 6 options. */
 export function FilterSelect({
   id,
   label,
@@ -34,9 +35,10 @@ export function FilterSelect({
   onChange,
   disabled,
 }: FilterFieldProps) {
+  const t = useTranslations("audit.filters");
   const withAll = useMemo(
-    () => [{ label: "Todos", value: ALL }, ...options],
-    [options],
+    () => [{ label: t("all"), value: ALL }, ...options],
+    [options, t],
   );
   return (
     <IGRPCombobox
@@ -49,8 +51,8 @@ export function FilterSelect({
       options={withAll}
       value={value ?? ALL}
       disabled={disabled}
-      placeholder="Todos"
-      selectLabel="Sem resultados"
+      placeholder={t("all")}
+      selectLabel={t("noResults")}
       onChange={(next) =>
         onChange(
           typeof next === "string" && next && next !== ALL ? next : undefined,
@@ -69,9 +71,10 @@ export function FilterCombobox({
   onChange,
   disabled,
 }: FilterFieldProps) {
+  const t = useTranslations("audit.filters");
   /* IGRPCombobox renders `selected?.label ?? placeholder`: a URL value that
      isn't in `options` (a deleted/renamed user or module, or the options
-     query still loading) would silently show "Todos" while the report stays
+     query still loading) would silently show "all" while the report stays
      filtered. Appending it as its own option keeps the visible value honest. */
   const withValue = useMemo(() => {
     if (!value || options.some((o) => o.value === value)) return options;
@@ -89,9 +92,9 @@ export function FilterCombobox({
       options={withValue}
       value={value ?? ""}
       disabled={disabled}
-      placeholder="Todos"
-      searchText="Pesquisar…"
-      selectLabel="Sem resultados"
+      placeholder={t("all")}
+      searchText={t("search")}
+      selectLabel={t("noResults")}
       onChange={(next) =>
         onChange(typeof next === "string" && next ? next : undefined)
       }
@@ -117,8 +120,9 @@ export function ExactMatchInput({
   value,
   onCommit,
   placeholder,
-  hint = "Correspondência exata",
+  hint,
 }: ExactMatchInputProps) {
+  const t = useTranslations("audit.filters");
   const [draft, setDraft] = useState(value ?? "");
   useEffect(() => setDraft(value ?? ""), [value]);
 
@@ -143,7 +147,7 @@ export function ExactMatchInput({
         }}
       />
       <p id={`${id}-hint`} className="text-xs text-muted-foreground">
-        {hint}
+        {hint ?? t("exactMatch")}
       </p>
     </div>
   );

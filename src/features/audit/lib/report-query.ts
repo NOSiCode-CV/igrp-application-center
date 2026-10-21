@@ -202,7 +202,7 @@ export function withSort(
 }
 
 /** Header click cycle for a column: ascending → descending → default order.
-    The default column (Data e hora, newest first) just flips: its descending
+    The default column (the timestamp, newest first) just flips: its descending
     step *is* the default. */
 export function nextSort(
   q: ReportQuery,
@@ -253,12 +253,14 @@ export const clearFilters = (q: ReportQuery): ReportQuery => ({
 export const hasFilters = (q: ReportQuery): boolean =>
   Object.keys(q.filters).length > 0;
 
+/** `timeZone`: the platform zone (`useIGRPLocaleInfo().timeZone`). */
 export function rangeToInstants(
   range: DateRangeSelection,
   now: Date,
+  timeZone: string | undefined,
 ): InstantRange {
   return range.preset === "custom"
-    ? dayRangeToInstants(range.from, range.to)
+    ? dayRangeToInstants(range.from, range.to, timeZone)
     : presetToInstants(range.preset, now);
 }
 
@@ -268,9 +270,9 @@ function withoutUndefined<T extends object>(value: T): T {
   ) as T;
 }
 
-function basePage(q: ReportQuery, now: Date) {
+function basePage(q: ReportQuery, now: Date, timeZone: string | undefined) {
   return {
-    ...rangeToInstants(q.range, now),
+    ...rangeToInstants(q.range, now, timeZone),
     page: q.page,
     size: q.size,
     sort: q.sort ? `${q.sort.field},${q.sort.direction}` : REPORT_SORT,
@@ -282,10 +284,11 @@ function basePage(q: ReportQuery, now: Date) {
 export function toAccessReportFilters(
   q: ReportQuery,
   now: Date,
+  timeZone: string | undefined,
 ): AccessReportFilters {
   const f = q.filters;
   return withoutUndefined({
-    ...basePage(q, now),
+    ...basePage(q, now, timeZone),
     username: f.username,
     module: f.module,
     role: f.role,
@@ -296,10 +299,11 @@ export function toAccessReportFilters(
 export function toSettingsReportFilters(
   q: ReportQuery,
   now: Date,
+  timeZone: string | undefined,
 ): SettingsReportFilters {
   const f = q.filters;
   return withoutUndefined({
-    ...basePage(q, now),
+    ...basePage(q, now, timeZone),
     performedBy: f.performedBy,
     area: f.area as SettingsArea | undefined,
     entityType: f.entityType as SettingsEntityType | undefined,

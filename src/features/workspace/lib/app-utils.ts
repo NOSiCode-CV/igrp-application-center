@@ -1,7 +1,5 @@
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 
-import { PLATFORM_TIME_ZONE } from "@/features/audit/lib/platform-time";
-
 export const APP_CATALOG_SECTION_ID = "app-catalog";
 
 /** This portal's own application code — never listed as a launchable app on home. */
@@ -46,19 +44,25 @@ const WEEKDAY_INDEX: Record<string, number> = {
   Sat: 6,
 };
 
-const platformWeekday = new Intl.DateTimeFormat("en-US", {
-  weekday: "short",
-  timeZone: PLATFORM_TIME_ZONE,
-});
+/** The English short weekday ("Sun"…"Sat"), only to index `WEEKDAY_INDEX`: never shown. */
+function weekdayShort(date: Date, timeZone: string | undefined): string {
+  // igrp-i18n-ignore: parsed here, never shown: a fixed locale gives fixed names
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    timeZone,
+  }).format(date);
+}
 
 /**
  * How long ago an app was opened, as a message key for the caller to
  * translate. `null` when there is no usable timestamp — the caller then
- * renders nothing rather than claim a time it does not have.
+ * renders nothing rather than claim a time it does not have. `timeZone` is the
+ * platform zone (`useIGRPFormat().timeZone`) that decides which weekday it was.
  */
 export function getLastOpened(
   lastAccess: string | null | undefined,
-  now = new Date(),
+  now: Date,
+  timeZone: string | undefined,
 ): LastOpened | null {
   if (!lastAccess) return null;
 
@@ -80,7 +84,7 @@ export function getLastOpened(
     return {
       key: "weekday",
       date,
-      day: WEEKDAY_INDEX[platformWeekday.format(date)] ?? 1,
+      day: WEEKDAY_INDEX[weekdayShort(date, timeZone)] ?? 1,
     };
   }
 

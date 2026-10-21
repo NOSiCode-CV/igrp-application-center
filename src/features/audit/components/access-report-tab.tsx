@@ -3,12 +3,13 @@
 import { type ReactNode, useEffect, useMemo } from "react";
 
 import { IGRPDataTable } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { InlineError } from "@/components/inline-error";
 import { useApplications } from "@/features/applications/use-applications";
 import { useUsers } from "@/features/users/use-users";
 
-import { ACCESS_STATUS_OPTIONS } from "../lib/audit-labels";
+import { useAccessStatusOptions } from "../lib/i18n";
 import {
   clearFilters,
   hasFilters,
@@ -51,6 +52,8 @@ interface ReportTabViewProps extends ReportTabProps {
 }
 
 function AccessReportFilterBar({ query, onQueryChange }: ReportTabProps) {
+  const t = useTranslations("audit");
+  const statusOptions = useAccessStatusOptions();
   const { data: users } = useUsers();
   const { data: applications } = useApplications();
 
@@ -76,7 +79,7 @@ function AccessReportFilterBar({ query, onQueryChange }: ReportTabProps) {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <FilterCombobox
         id="access-username"
-        label="Utilizador"
+        label={t("fields.username")}
         options={userOptions}
         value={query.filters.username}
         onChange={set("username")}
@@ -85,23 +88,23 @@ function AccessReportFilterBar({ query, onQueryChange }: ReportTabProps) {
           so "USER" also finds "POWER_USER"; the hint says so. */}
       <ExactMatchInput
         id="access-role"
-        label="Perfis detidos"
-        placeholder="Código do perfil"
-        hint="Contém o código indicado"
+        label={t("fields.heldRoles")}
+        placeholder={t("filters.rolePlaceholder")}
+        hint={t("filters.roleHint")}
         value={query.filters.role}
         onCommit={set("role")}
       />
       <FilterCombobox
         id="access-module"
-        label="Módulo"
+        label={t("fields.module")}
         options={applicationOptions}
         value={query.filters.module}
         onChange={set("module")}
       />
       <FilterSelect
         id="access-status"
-        label="Estado"
-        options={ACCESS_STATUS_OPTIONS}
+        label={t("fields.status")}
+        options={statusOptions}
         value={query.filters.status}
         onChange={set("status")}
       />
@@ -114,6 +117,7 @@ export function AccessReportTab({
   onQueryChange,
   period,
 }: ReportTabViewProps) {
+  const t = useTranslations("audit");
   const {
     data,
     error,
@@ -126,10 +130,10 @@ export function AccessReportTab({
   const rows = useMemo(() => data?.content ?? [], [data]);
   const columns = useMemo(
     () =>
-      accessColumns(query.sort, (field) =>
+      accessColumns(t, query.sort, (field) =>
         onQueryChange(withSort(query, nextSort(query, field))),
       ),
-    [query, onQueryChange],
+    [t, query, onQueryChange],
   );
   useRedirectOnUnauthorized(error);
 
@@ -159,8 +163,8 @@ export function AccessReportTab({
       />
       {isError ? (
         <InlineError
-          title="Não foi possível carregar o relatório de acessos."
-          message="Tente novamente. Se o problema persistir, contacte o suporte."
+          title={t("error.access")}
+          message={t("error.message")}
           onRetry={() => refetch()}
         />
       ) : isPending || isPlaceholderData ? (

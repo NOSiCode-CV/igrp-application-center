@@ -8,6 +8,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { PAGE_HEADER_PROPS } from "@/lib/page-header";
 
@@ -29,28 +30,13 @@ import { SettingsReportTab } from "./settings-report-tab";
    `!` on the background: the primitive's own dark-mode active border and
    background would otherwise win, and `dark:` colour overrides are
    off-limits (check:ui). */
-const REPORTS: {
-  value: AuditTab;
-  title: string;
-  description: string;
-  icon: string;
-}[] = [
-  {
-    value: "access",
-    title: "Acessos",
-    description: "Quem entrou na plataforma e o que fez em cada módulo.",
-    icon: "LogIn",
-  },
-  {
-    value: "settings",
-    title: "Configurações",
-    description:
-      "Alterações a aplicações, utilizadores, perfis, permissões e menus.",
-    icon: "SlidersHorizontal",
-  },
+const REPORTS: { value: AuditTab; icon: string }[] = [
+  { value: "access", icon: "LogIn" },
+  { value: "settings", icon: "SlidersHorizontal" },
 ];
 
 export function AuditScreen() {
+  const t = useTranslations("audit");
   const [query, setQuery] = useReportQuery();
   const period = (
     <ReportDateRange
@@ -63,8 +49,8 @@ export function AuditScreen() {
     <div className="flex flex-col gap-8">
       <IGRPPageHeader
         {...PAGE_HEADER_PROPS}
-        title="Auditoria e Relatórios"
-        description="Consulte os acessos e as alterações de configuração registados na plataforma."
+        title={t("header.title")}
+        description={t("header.description")}
         showBackButton
         urlBackButton="/settings"
       />
@@ -77,7 +63,7 @@ export function AuditScreen() {
         }}
       >
         <TabsList
-          aria-label="Relatórios"
+          aria-label={t("reports.label")}
           className="grid w-full grid-cols-1 gap-3 bg-transparent p-0 group-data-horizontal/tabs:h-auto md:grid-cols-2"
         >
           {REPORTS.map((report) => (
@@ -95,10 +81,10 @@ export function AuditScreen() {
               </span>
               <span className="flex flex-col gap-1">
                 <span className="text-base font-semibold text-foreground">
-                  {report.title}
+                  {t(`reports.${report.value}.title`)}
                 </span>
                 <span className="text-sm font-normal">
-                  {report.description}
+                  {t(`reports.${report.value}.description`)}
                 </span>
               </span>
             </TabsTrigger>
