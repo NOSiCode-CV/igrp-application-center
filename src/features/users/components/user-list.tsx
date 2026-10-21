@@ -105,7 +105,7 @@ export function UserList({
 
   const activeColumns = useMemo(
     () => getTableColumns(t, tStatus, handleStatusClick, { currentUserId }),
-    [t, handleStatusClick, currentUserId],
+    [t, tStatus, handleStatusClick, currentUserId],
   );
   const inviteColumns = useMemo(
     () => getInvitationColumns(t, formatDate, handleCancelClick),
