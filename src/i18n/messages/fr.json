@@ -1264,7 +1264,8 @@
       "addedDescription": "La permission a été ajoutée avec succès.",
       "removedTitle": "Permission retirée",
       "removedDescription": "La permission a été retirée avec succès.",
-      "errorTitle": "Impossible de modifier la permission"
+      "errorTitle": "Impossible de modifier la permission",
+      "unknownError": "Erreur inconnue"
     },
     "revoke": {
       "title": "Retirer la permission",
@@ -1295,7 +1296,8 @@
         "addErrorTitle": "Erreur lors de l’ajout",
         "removedTitle": "Ressource retirée",
         "removedDescription": "La ressource a été retirée avec succès.",
-        "removeErrorTitle": "Erreur lors du retrait"
+        "removeErrorTitle": "Erreur lors du retrait",
+        "unknownError": "Erreur inconnue"
       },
       "remove": {
         "title": "Retirer la ressource",
@@ -1304,12 +1306,6 @@
         "confirm": "Retirer",
         "loading": "Retrait en cours…"
       }
-    },
-    "validation": {
-      "nameMin": "Le nom est obligatoire (min. 3 caractères)",
-      "namePattern": "Seuls les lettres minuscules, les chiffres, le tiret bas (_) et le tiret (-) sont autorisés.",
-      "departmentCodeMin": "Le code du département est obligatoire (min. 4 caractères)",
-      "atLeastOneField": "Au moins un champ doit être fourni pour la mise à jour."
     }
   }
 }

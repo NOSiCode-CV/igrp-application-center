@@ -1264,7 +1264,8 @@
       "addedDescription": "A permissão foi adicionada com sucesso.",
       "removedTitle": "Permissão removida",
       "removedDescription": "A permissão foi removida com sucesso.",
-      "errorTitle": "Não foi possível alterar a permissão"
+      "errorTitle": "Não foi possível alterar a permissão",
+      "unknownError": "Erro desconhecido"
     },
     "revoke": {
       "title": "Remover permissão",
@@ -1295,7 +1296,8 @@
         "addErrorTitle": "Erro ao adicionar",
         "removedTitle": "Recurso removido",
         "removedDescription": "O recurso foi removido com sucesso.",
-        "removeErrorTitle": "Erro ao remover"
+        "removeErrorTitle": "Erro ao remover",
+        "unknownError": "Erro desconhecido"
       },
       "remove": {
         "title": "Remover Recurso",
@@ -1304,12 +1306,6 @@
         "confirm": "Remover",
         "loading": "A remover…"
       }
-    },
-    "validation": {
-      "nameMin": "Nome é obrigatório (min 3 carateres)",
-      "namePattern": "Apenas são permitidas letras minúsculas, números, underscore (_) e hífen (-).",
-      "departmentCodeMin": "Código de departamento é obrigatório (min 4 carateres)",
-      "atLeastOneField": "É necessário fornecer pelo menos um campo para atualização."
     }
   }
 }

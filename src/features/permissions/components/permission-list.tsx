@@ -36,7 +36,6 @@ interface PermissionListProps {
 
 export function PermissionList({ departmentCode }: PermissionListProps) {
   const t = useTranslations("permissions");
-  const tCommon = useTranslations("common");
   const { compare } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
   const [openManageResources, setOpenManageResources] = useState(false);
@@ -123,7 +122,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         type: "error",
         title: t("toast.errorTitle"),
         description:
-          error instanceof Error ? error.message : tCommon("unknownError"),
+          error instanceof Error ? error.message : t("toast.unknownError"),
       });
     } finally {
       setProcessingPermission(null);

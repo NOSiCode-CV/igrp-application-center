@@ -1264,7 +1264,8 @@
       "addedDescription": "The permission was added successfully.",
       "removedTitle": "Permission removed",
       "removedDescription": "The permission was removed successfully.",
-      "errorTitle": "Could not change the permission"
+      "errorTitle": "Could not change the permission",
+      "unknownError": "Unknown error"
     },
     "revoke": {
       "title": "Remove permission",
@@ -1295,7 +1296,8 @@
         "addErrorTitle": "Error adding",
         "removedTitle": "Resource removed",
         "removedDescription": "The resource was removed successfully.",
-        "removeErrorTitle": "Error removing"
+        "removeErrorTitle": "Error removing",
+        "unknownError": "Unknown error"
       },
       "remove": {
         "title": "Remove Resource",
@@ -1304,12 +1306,6 @@
         "confirm": "Remove",
         "loading": "Removing…"
       }
-    },
-    "validation": {
-      "nameMin": "Name is required (min 3 characters)",
-      "namePattern": "Only lowercase letters, numbers, underscore (_) and hyphen (-) are allowed.",
-      "departmentCodeMin": "Department code is required (min 4 characters)",
-      "atLeastOneField": "At least one field must be provided for the update."
     }
   }
 }

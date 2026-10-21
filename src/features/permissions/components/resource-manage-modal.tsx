@@ -51,7 +51,6 @@ export function ManageResourcesModal({
   onOpenChange,
 }: ManageResourcesModalProps) {
   const t = useTranslations("permissions.resources");
-  const tCommon = useTranslations("common");
   const statusLabel = useStatusLabel();
   const { compare } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
@@ -134,7 +133,7 @@ export function ManageResourcesModal({
         type: "error",
         title: t("toast.addErrorTitle"),
         description:
-          error instanceof Error ? error.message : tCommon("unknownError"),
+          error instanceof Error ? error.message : t("toast.unknownError"),
       });
     } finally {
       setProcessingResource(null);
@@ -163,7 +162,7 @@ export function ManageResourcesModal({
         type: "error",
         title: t("toast.removeErrorTitle"),
         description:
-          error instanceof Error ? error.message : tCommon("unknownError"),
+          error instanceof Error ? error.message : t("toast.unknownError"),
       });
     } finally {
       setProcessingResource(null);
