@@ -4,6 +4,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 
 import { signIn } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
+import { useTranslations } from "next-intl";
 
 import { reportError } from "@/lib/report-error";
 
@@ -47,6 +48,7 @@ export function AutoSignIn({
   callbackUrl: string;
   fallback: ReactNode;
 }) {
+  const t = useTranslations("app");
   const startedRef = useRef(false);
   const [showFallback, setShowFallback] = useState(false);
 
@@ -75,7 +77,7 @@ export function AutoSignIn({
 
   return (
     <IGRPTemplateLoading
-      text="A iniciar sessão..."
+      text={t("signingIn")}
       appCode={process.env.NEXT_PUBLIC_IGRP_APP_CODE}
     />
   );

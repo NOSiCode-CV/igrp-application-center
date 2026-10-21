@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
+import { useTranslations } from "next-intl";
 
 import { clearLogoutPending } from "@/lib/logout-pending";
 import { reportError } from "@/lib/report-error";
@@ -22,6 +23,7 @@ import { markSilentSsoTried } from "@/lib/silent-sso";
  * normal login visit never mounts this and shows the form immediately.
  */
 export function LogoutCompletion() {
+  const t = useTranslations("app");
   // Module-instance guard: the async teardown must run exactly once even if the
   // effect re-fires (Strict Mode mount→unmount→mount in dev).
   const startedRef = useRef(false);
@@ -56,7 +58,7 @@ export function LogoutCompletion() {
 
   return (
     <IGRPTemplateLoading
-      text="A terminar sessão..."
+      text={t("signingOut")}
       appCode={process.env.NEXT_PUBLIC_IGRP_APP_CODE}
     />
   );

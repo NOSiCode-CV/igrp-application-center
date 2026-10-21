@@ -1,6 +1,14 @@
 {
   "app": {
-    "title": "IGRP | Application Template"
+    "title": "IGRP | Application Center",
+    "description": "Manage IGRP applications, users, roles and menus.",
+    "notFound": {
+      "title": "404 - Page not found",
+      "description": "The page you are looking for was not found."
+    },
+    "signingIn": "Signing in...",
+    "signingOut": "Signing out...",
+    "pleaseWait": "Please wait..."
   },
   "home": {
     "state": {

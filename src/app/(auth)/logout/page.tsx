@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
+import { useTranslations } from "next-intl";
 
 import { getLogoutUrl } from "@/actions/igrp/auth";
 import { markLogoutPending } from "@/lib/logout-pending";
@@ -49,6 +50,7 @@ function buildLoginUrl(): string {
 type EndSessionPost = { action: string; fields: Record<string, string> };
 
 export default function LogoutPage() {
+  const t = useTranslations("app");
   // When set, the end-session POST form is rendered and auto-submitted. We use
   // POST rather than a `window.location` GET so `id_token_hint` (the full
   // signed ID token) rides in the request body — never the URL, browser
@@ -200,7 +202,7 @@ export default function LogoutPage() {
   return (
     <>
       <IGRPTemplateLoading
-        text="A terminar sessão..."
+        text={t("signingOut")}
         appCode={process.env.NEXT_PUBLIC_IGRP_APP_CODE}
       />
       {endSessionPost && (

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { type AuthProviderId, signIn } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
+import { useTranslations } from "next-intl";
 
 import { reportError } from "@/lib/report-error";
 import { markSilentSsoTried } from "@/lib/silent-sso";
@@ -23,6 +24,7 @@ export function SilentSignIn({
   providerId: AuthProviderId;
   callbackUrl: string;
 }) {
+  const t = useTranslations("app");
   // Module-instance guard: the attempt must start exactly once even if the
   // effect re-fires (Strict Mode mount→unmount→mount in dev).
   const startedRef = useRef(false);
@@ -46,7 +48,7 @@ export function SilentSignIn({
 
   return (
     <IGRPTemplateLoading
-      text="Aguarde..."
+      text={t("pleaseWait")}
       appCode={process.env.NEXT_PUBLIC_IGRP_APP_CODE}
     />
   );

@@ -1,6 +1,14 @@
 {
   "app": {
-    "title": "IGRP | Modèle d'application"
+    "title": "IGRP | Centre d'applications",
+    "description": "Gestion des applications, utilisateurs, rôles et menus IGRP.",
+    "notFound": {
+      "title": "404 - Page introuvable",
+      "description": "La page que vous recherchez est introuvable."
+    },
+    "signingIn": "Connexion en cours...",
+    "signingOut": "Déconnexion en cours...",
+    "pleaseWait": "Veuillez patienter..."
   },
   "home": {
     "state": {

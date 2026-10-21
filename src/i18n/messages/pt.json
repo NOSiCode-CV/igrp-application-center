@@ -1,6 +1,14 @@
 {
   "app": {
-    "title": "IGRP | Template Aplicações"
+    "title": "IGRP | Centro de Aplicações",
+    "description": "Gestão de aplicações, utilizadores, perfis e menus do IGRP.",
+    "notFound": {
+      "title": "404 - Página não encontrada",
+      "description": "A página que procura não foi encontrada."
+    },
+    "signingIn": "A iniciar sessão...",
+    "signingOut": "A terminar sessão...",
+    "pleaseWait": "Aguarde..."
   },
   "home": {
     "state": {
