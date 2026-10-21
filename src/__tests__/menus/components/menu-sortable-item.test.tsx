@@ -22,6 +22,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => {
         children as never,
       );
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     cn: (...classes: unknown[]) => classes.filter(Boolean).join(" "),
     IGRPIcon: () => null,
     Badge: box("span"),

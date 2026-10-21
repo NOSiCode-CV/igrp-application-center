@@ -2,11 +2,14 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => {
+vi.mock("@igrp/igrp-framework-react-design-system", async () => {
   const Pass = ({ children }: { children?: React.ReactNode }) => (
     <div>{children}</div>
   );
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     Button: ({ children }: { children?: React.ReactNode }) => (
       <button type="button">{children}</button>
     ),

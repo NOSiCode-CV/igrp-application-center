@@ -13,14 +13,18 @@ vi.mock("next/headers", () => ({
 }));
 vi.mock("@/lib/dal", () => ({ getLayoutConfig: async () => ({}) }));
 
-import type { IGRPFrameworkMessages } from "@igrp/framework-next/i18n/messages";
+import {
+  type IGRPFrameworkMessages,
+  igrpDeepMergeMessages,
+  igrpMergeMessages,
+} from "@igrp/framework-next/i18n/messages";
 import {
   igrpGetMessageFallback,
   igrpOnIntlError,
 } from "@igrp/framework-next/i18n/server";
 
-import { getMessageFallback, onIntlError } from "@/i18n/fallback";
-import { deepMerge, getMessagesFor } from "@/i18n/messages";
+import en from "@/i18n/messages/en.json";
+import fr from "@/i18n/messages/fr.json";
 import pt from "@/i18n/messages/pt.json";
 import requestConfig from "@/i18n/request";
 
@@ -30,22 +34,22 @@ const PT = {
     invite: { submit: "Enviar convite", cancel: "Cancelar" },
   },
 };
-const FR = { users: { invite: { submit: "Envoyer l'invitation" } } };
+const FR_PART = { users: { invite: { submit: "Envoyer l'invitation" } } };
 
 afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("deepMerge", () => {
+describe("igrpDeepMergeMessages", () => {
   it("returns the requested value when present and pt when missing", () => {
-    const merged = deepMerge(PT, FR);
+    const merged = igrpDeepMergeMessages(PT, FR_PART) as typeof PT;
     expect(merged.users.invite.submit).toBe("Envoyer l'invitation");
     expect(merged.users.invite.cancel).toBe("Cancelar");
     expect(merged.users.title).toBe("Utilizadores");
   });
 
   it("does not mutate its inputs", () => {
-    deepMerge(PT, FR);
+    igrpDeepMergeMessages(PT, FR_PART) as typeof PT;
     expect(PT.users.invite.submit).toBe("Enviar convite");
   });
 });
@@ -53,9 +57,9 @@ describe("deepMerge", () => {
 describe("translator with the merged catalog", () => {
   const t = createTranslator({
     locale: "fr",
-    messages: deepMerge(PT, FR),
-    onError: onIntlError,
-    getMessageFallback,
+    messages: igrpDeepMergeMessages(PT, FR_PART),
+    onError: igrpOnIntlError,
+    getMessageFallback: igrpGetMessageFallback,
   });
 
   it("uses the fr value, then the pt value", () => {
@@ -78,15 +82,21 @@ describe("translator with the merged catalog", () => {
   });
 });
 
-describe("getMessagesFor", () => {
+describe("igrpMergeMessages", () => {
   it("returns the complete pt catalog for pt", () => {
-    expect(getMessagesFor("pt")).toEqual(pt);
+    expect(
+      igrpMergeMessages({ defaultLocale: "pt" }, "pt", { pt, en, fr }).common,
+    ).toMatchObject(pt.common);
   });
 
   it("merges fr over pt", () => {
-    const fr = getMessagesFor("fr");
-    expect(fr.common.actions.backHome).toBe("Retour à l’accueil");
-    expect(fr.errors.unexpected.title).toBe(
+    const merged = igrpMergeMessages({ defaultLocale: "pt" }, "fr", {
+      pt,
+      en,
+      fr,
+    }) as typeof pt;
+    expect(merged.common.actions.backHome).toBe("Retour à l’accueil");
+    expect(merged.errors.unexpected.title).toBe(
       "Une erreur inattendue s’est produite.",
     );
   });

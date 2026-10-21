@@ -4,7 +4,10 @@ import { vi } from "vitest";
 
 import { IntlWrapper } from "../../helpers/intl";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   AlertDialog: ({ children }: { children?: React.ReactNode }) => (
     <div>{children}</div>
   ),

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -17,7 +18,6 @@ import {
 import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
-import { useFormat } from "@/i18n/format";
 import { DATE_TIME_WITH_SECONDS } from "@/lib/utilities";
 
 import { useKillUserSession, useUserSession } from "../use-users";
@@ -34,7 +34,7 @@ export function UserSessionsTab({ username }: UserSessionsTabProps) {
   const t = useTranslations("users.sessions");
   const tc = useTranslations("common.actions");
 
-  const { formatDateTime } = useFormat();
+  const { formatDateTime } = useIGRPFormat();
 
   const [killDialogOpen, setKillDialogOpen] = useState(false);
   const [reason, setReason] = useState("");

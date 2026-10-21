@@ -16,12 +16,15 @@ type MockProps = {
  * primitives the design system's own faceted filter uses on /settings/users.
  * The popover is stubbed open so the option rows are always in the tree.
  */
-vi.mock("@igrp/igrp-framework-react-design-system", () => {
+vi.mock("@igrp/igrp-framework-react-design-system", async () => {
   const React = require("react");
   const passthrough = ({ children }: MockProps) =>
     React.createElement(React.Fragment, null, children);
 
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     Button: ({ children, disabled }: MockProps) =>
       React.createElement("button", { type: "button", disabled }, children),
     IGRPIcon: () => null,

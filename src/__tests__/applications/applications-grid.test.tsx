@@ -1,7 +1,10 @@
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   Badge: () => null,
   Separator: () => null,
   cn: (...classes: unknown[]) => classes.filter(Boolean).join(" "),

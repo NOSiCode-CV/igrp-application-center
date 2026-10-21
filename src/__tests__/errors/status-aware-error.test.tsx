@@ -5,7 +5,10 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ back: vi.fn(), push: vi.fn() }),
 }));
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   IGRPButton: ({
     children,
   }: { children?: React.ReactNode } & Record<string, unknown>) => (

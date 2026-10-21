@@ -3,6 +3,8 @@
 
 import type { ReactNode } from "react";
 
+import type { IGRPLocale } from "@igrp/framework-next/i18n";
+import { igrpMergeMessages } from "@igrp/framework-next/i18n/messages";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -94,8 +96,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", async (importOriginal) => {
 });
 
 import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
-import type { Locale } from "@/i18n/config";
-import { getMessagesFor } from "@/i18n/messages";
+import en from "@/i18n/messages/en.json";
+import fr from "@/i18n/messages/fr.json";
+import pt from "@/i18n/messages/pt.json";
 
 import { renderWithIntl } from "../../helpers/intl";
 
@@ -103,8 +106,14 @@ beforeEach(() => {
   mutate.mockReset();
 });
 
-async function fillAndSubmit(locale: Locale = "pt") {
-  const form = getMessagesFor(locale).users.invite.form;
+async function fillAndSubmit(locale: IGRPLocale = "pt") {
+  const form = (
+    igrpMergeMessages({ defaultLocale: "pt" }, locale, {
+      pt,
+      en,
+      fr,
+    }) as typeof pt
+  ).users.invite.form;
   await userEvent.type(
     screen.getByPlaceholderText(form.emailPlaceholder),
     "ana@example.com",

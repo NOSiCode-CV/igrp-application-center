@@ -16,7 +16,10 @@ const toggleGroup = vi.hoisted(() => ({
   onValueChange: undefined as ((value: string) => void) | undefined,
 }));
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   // Mirrors a trap in the real component: for any `icon*` size, IGRPButton
   // DISCARDS children and renders `iconName` (default "ArrowLeft"). A mock
   // that renders children hides that, which is how three buttons shipped

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Badge,
   Table,
@@ -12,8 +13,6 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
-
-import { useFormat } from "@/i18n/format";
 
 import { useUserAuditLogs } from "../use-users";
 
@@ -43,7 +42,7 @@ interface UserAuditLogTabProps {
 
 export function UserAuditLogTab({ userId }: UserAuditLogTabProps) {
   const t = useTranslations("users.audit");
-  const { formatDateTime } = useFormat();
+  const { formatDateTime } = useIGRPFormat();
   const [page, setPage] = useState(0);
   const { data, isLoading } = useUserAuditLogs(userId, {
     page,

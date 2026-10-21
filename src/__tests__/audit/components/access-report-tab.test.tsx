@@ -15,11 +15,14 @@ vi.mock("@/features/applications/use-applications", () => ({
   useApplications: () => APPS,
 }));
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => {
+vi.mock("@igrp/igrp-framework-react-design-system", async () => {
   const Pass = ({ children }: { children?: React.ReactNode }) => (
     <div>{children}</div>
   );
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     Button: ({
       children,
       onClick,

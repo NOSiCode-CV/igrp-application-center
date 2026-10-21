@@ -1,3 +1,4 @@
+import { igrpDeepMergeMessages } from "@igrp/framework-next/i18n/messages";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -9,7 +10,10 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ back, push }),
 }));
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   IGRPButton: ({
     children,
     onClick,
@@ -24,7 +28,6 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
 }));
 
 import { StatusErrorPage } from "@/components/errors/status-error-page";
-import { deepMerge } from "@/i18n/messages";
 import pt from "@/i18n/messages/pt.json";
 
 import { renderWithIntl } from "../helpers/intl";
@@ -84,7 +87,7 @@ describe("StatusErrorPage", () => {
     renderWithIntl(<StatusErrorPage status={404} />, {
       locale: "en",
       // Only the title is translated here; the rest falls back per key to pt.
-      messages: deepMerge(pt, {
+      messages: igrpDeepMergeMessages(pt, {
         errors: { status: { notFound: { title: "Page not found" } } },
       }),
     });

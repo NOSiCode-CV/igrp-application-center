@@ -1,23 +1,16 @@
 import type { ReactElement, ReactNode } from "react";
 
-import {
-  IGRP_MESSAGES_EN,
-  IGRP_MESSAGES_FR,
-  IGRP_MESSAGES_PT,
-  igrpDeepMergeMessages,
-} from "@igrp/framework-next/i18n/messages";
+import type { IGRPLocale } from "@igrp/framework-next/i18n";
+import { IGRPIntlTestProvider } from "@igrp/framework-next/i18n/testing";
 import { render } from "@testing-library/react";
-import { type AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
+import type { AbstractIntlMessages } from "next-intl";
 
-import type { Locale } from "@/i18n/config";
-import { getMessageFallback, onIntlError } from "@/i18n/fallback";
-import { getMessagesFor } from "@/i18n/messages";
+import en from "@/i18n/messages/en.json";
+import fr from "@/i18n/messages/fr.json";
+import pt from "@/i18n/messages/pt.json";
 
-const FRAMEWORK = {
-  pt: IGRP_MESSAGES_PT,
-  en: IGRP_MESSAGES_EN,
-  fr: IGRP_MESSAGES_FR,
-};
+// Built once: a new object per render would make every consumer re-render.
+const CATALOGS = { pt, en, fr };
 
 /** Wraps `ui` in the same next-intl client context the root layout mounts. */
 export function IntlWrapper({
@@ -25,28 +18,23 @@ export function IntlWrapper({
   messages,
   children,
 }: {
-  locale?: Locale;
+  locale?: IGRPLocale;
   messages?: AbstractIntlMessages;
   children: ReactNode;
 }) {
   return (
-    <NextIntlClientProvider
+    <IGRPIntlTestProvider
       locale={locale}
-      messages={
-        messages ??
-        igrpDeepMergeMessages(FRAMEWORK[locale], getMessagesFor(locale))
-      }
-      onError={onIntlError}
-      getMessageFallback={getMessageFallback}
+      messages={messages ? { [locale]: messages } : CATALOGS}
     >
       {children}
-    </NextIntlClientProvider>
+    </IGRPIntlTestProvider>
   );
 }
 
 export function renderWithIntl(
   ui: ReactElement,
-  options: { locale?: Locale; messages?: AbstractIntlMessages } = {},
+  options: { locale?: IGRPLocale; messages?: AbstractIntlMessages } = {},
 ) {
   return render(ui, {
     wrapper: ({ children }) => (

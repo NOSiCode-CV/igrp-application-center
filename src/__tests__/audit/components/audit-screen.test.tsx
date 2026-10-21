@@ -24,11 +24,14 @@ vi.mock("@/features/audit/components/settings-report-tab", () => ({
 vi.mock("@/features/audit/components/report-date-range", () => ({
   ReportDateRange: () => null,
 }));
-vi.mock("@igrp/igrp-framework-react-design-system", () => {
+vi.mock("@igrp/igrp-framework-react-design-system", async () => {
   const Pass = ({ children }: { children?: React.ReactNode }) => (
     <div>{children}</div>
   );
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     IGRPIcon: () => null,
     IGRPPageHeader: ({ title }: { title: string }) => <h1>{title}</h1>,
     Tabs: ({

@@ -4,10 +4,10 @@ import type {
   Status,
   UpdateApplicationRequest,
 } from "@igrp/platform-access-management-client-ts";
+import type { Messages } from "next-intl";
 import { z } from "zod";
 
 import { fileWithPreviewSchema } from "@/features/files/files-schemas";
-import type { Messages } from "@/i18n/messages";
 import { emptyToNull, statusWithTemporarySchema } from "@/schemas/global";
 
 import { APPLICATIONS_TYPES } from "./app-utils";

@@ -77,6 +77,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => {
     );
   };
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     AlertDialog: ({ open, onOpenChange, children }: Props) =>
       open
         ? createElement(

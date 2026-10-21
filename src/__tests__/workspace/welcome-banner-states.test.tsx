@@ -5,7 +5,10 @@ import { renderWithIntl as render } from "../helpers/intl";
 
 // Renders as a <span>, like the real Badge, and keeps `className` so the
 // colour assertions below have something to read.
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   Badge: ({
     children,
     className,

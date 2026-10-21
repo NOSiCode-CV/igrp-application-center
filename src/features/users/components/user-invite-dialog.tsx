@@ -4,6 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  IGRP_LOCALE_NATIVE_NAMES,
+  IGRP_LOCALES,
+} from "@igrp/framework-next/i18n";
+import {
   Button,
   Command,
   CommandEmpty,
@@ -44,7 +48,6 @@ import {
   useDepartments,
   useRoles,
 } from "@/features/departments/use-departments";
-import { LOCALE_NATIVE_NAMES, LOCALES } from "@/i18n/config";
 
 import { useInviteUser } from "../use-users";
 import type { UsersValidationTranslator } from "../user-schemas";
@@ -53,9 +56,9 @@ import type { UsersValidationTranslator } from "../user-schemas";
 // with `InviteUserDTO.locale` is released.
 type InviteUserDTO = SdkInviteUserDTO & { locale?: string };
 
-const LOCALE_OPTIONS = LOCALES.map((value) => ({
+const LOCALE_OPTIONS = IGRP_LOCALES.map((value) => ({
   value,
-  label: LOCALE_NATIVE_NAMES[value],
+  label: IGRP_LOCALE_NATIVE_NAMES[value],
 }));
 
 interface UserInviteDialogProps {
@@ -68,7 +71,7 @@ const makeFormSchema = (t: UsersValidationTranslator) =>
     email: z.email(t("emailInvalid")).min(1, t("emailRequired")),
     departmentCode: z.string().optional(),
     roleCodes: z.array(z.string()),
-    locale: z.enum(LOCALES),
+    locale: z.enum(IGRP_LOCALES),
   });
 
 type FormSchema = z.infer<ReturnType<typeof makeFormSchema>>;

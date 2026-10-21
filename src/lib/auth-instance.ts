@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 
+import { igrpNormalizeLocale } from "@igrp/framework-next/i18n";
 import { withIGRPAuth } from "@igrp/framework-next-auth/config";
-
-import { normalizeLocale } from "@/i18n/config";
 
 /*
  * EDGE-SAFE MODULE — `src/middleware.ts` imports this, and middleware runs on
@@ -145,13 +144,13 @@ export const auth = withIGRPAuth({
     jwt: async (params, igrpToken) => {
       let token = igrpToken;
       if (params.account) {
-        const claimLocale = normalizeLocale(
+        const claimLocale = igrpNormalizeLocale(
           (params.profile as { locale?: unknown } | undefined)?.locale,
         );
         if (claimLocale) token = { ...token, locale: claimLocale };
       }
       if (params.trigger === "update") {
-        const requested = normalizeLocale(
+        const requested = igrpNormalizeLocale(
           (params.session as { locale?: unknown } | undefined)?.locale,
         );
         if (requested) token = { ...token, locale: requested };
@@ -162,7 +161,7 @@ export const auth = withIGRPAuth({
     session: async (params, igrpSession) => {
       const locale =
         "token" in params
-          ? normalizeLocale((params.token as { locale?: unknown }).locale)
+          ? igrpNormalizeLocale((params.token as { locale?: unknown }).locale)
           : undefined;
       return locale ? { ...igrpSession, locale } : igrpSession;
     },

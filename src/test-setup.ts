@@ -22,23 +22,22 @@ vi.mock("next/navigation", () => ({
 vi.mock("@testing-library/react", async (importOriginal) => {
   const rtl = await importOriginal<typeof import("@testing-library/react")>();
   const { createElement } = await import("react");
-  const { NextIntlClientProvider } = await import("next-intl");
-  const { getMessagesFor } = await import("@/i18n/messages");
-  const { getMessageFallback, onIntlError } = await import("@/i18n/fallback");
-  const { PLATFORM_TIME_ZONE } = await import(
-    "@/features/audit/lib/platform-time"
+  const { IGRPIntlTestProvider } = await import(
+    "@igrp/framework-next/i18n/testing"
   );
+  const { default: pt } = await import("@/i18n/messages/pt.json");
+  const { default: en } = await import("@/i18n/messages/en.json");
+  const { default: fr } = await import("@/i18n/messages/fr.json");
+  const messages = { pt, en, fr };
 
   type Wrapper = React.JSXElementConstructor<{ children: React.ReactNode }>;
   const withIntl =
     (Inner?: Wrapper): Wrapper =>
     ({ children }) =>
-      createElement(NextIntlClientProvider, {
+      createElement(IGRPIntlTestProvider, {
         locale: "pt",
-        messages: getMessagesFor("pt"),
-        timeZone: PLATFORM_TIME_ZONE,
-        onError: onIntlError,
-        getMessageFallback,
+        timeZone: "Atlantic/Cape_Verde",
+        messages,
         children: Inner ? createElement(Inner, null, children) : children,
       });
 

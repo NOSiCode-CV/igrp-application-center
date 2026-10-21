@@ -8,7 +8,10 @@ import {
 
 import { renderWithIntl as render } from "../../helpers/intl";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   IGRPIcon: () => null,
   Badge: ({ children, className }: React.HTMLAttributes<HTMLSpanElement>) => (
     <span className={className}>{children}</span>

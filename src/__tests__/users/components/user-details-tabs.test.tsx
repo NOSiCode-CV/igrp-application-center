@@ -42,6 +42,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => {
     setValue: (v: string) => void;
   }>({ value: "", setValue: () => {} });
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     IGRPButton: ({
       children,
       onClick,

@@ -33,6 +33,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => {
   const Dialog = ({ open, children }: Props) =>
     open ? (children as never) : null;
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     cn: (...classes: unknown[]) => classes.filter(Boolean).join(" "),
     useIGRPToast: () => ({ igrpToast: vi.fn() }),
     IGRPIcon: () => null,

@@ -1,7 +1,7 @@
 // FE-9 (FR-21): error boundaries show the API/public detail when available,
 // otherwise generic `errors.*` messages in the current language.
 
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/report-error", () => ({ reportError: vi.fn() }));
@@ -19,6 +19,12 @@ import RootSegmentError from "@/app/error";
 import GlobalError from "@/app/global-error";
 
 import { renderWithIntl } from "../helpers/intl";
+
+// The global setup wraps `render` in a provider; the global boundary must be
+// proven without one, so this takes the unwrapped render.
+const { render } = await vi.importActual<
+  typeof import("@testing-library/react")
+>("@testing-library/react");
 
 const withDigest = (digest: string) =>
   Object.assign(new Error("redacted"), { digest });

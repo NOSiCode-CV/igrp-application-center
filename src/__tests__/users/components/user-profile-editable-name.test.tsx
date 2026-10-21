@@ -6,7 +6,10 @@ import { UserProfileEditableName } from "@/features/users/components/user-profil
 
 import { renderWithIntl } from "../../helpers/intl";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   IGRPButton: ({
     children,
     onClick,

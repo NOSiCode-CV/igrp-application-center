@@ -1,8 +1,11 @@
+import { igrpMergeMessages } from "@igrp/framework-next/i18n/messages";
 import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import { makeApplicationSchemas } from "@/features/applications/app-schemas";
-import { getMessagesFor } from "@/i18n/messages";
+import en from "@/i18n/messages/en.json";
+import fr from "@/i18n/messages/fr.json";
+import pt from "@/i18n/messages/pt.json";
 
 // The schemas take their messages from the catalog; built here in pt, so the
 // expectations below read as the user sees them in the module default.
@@ -10,7 +13,11 @@ const { CreateApplicationSchema, UpdateApplicationSchema } =
   makeApplicationSchemas(
     createTranslator({
       locale: "pt",
-      messages: getMessagesFor("pt"),
+      messages: igrpMergeMessages({ defaultLocale: "pt" }, "pt", {
+        pt,
+        en,
+        fr,
+      }) as typeof pt,
       namespace: "applications.validation",
     }),
   );

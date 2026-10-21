@@ -15,6 +15,9 @@ vi.mock("@/features/users/use-users", () => ({
 }));
 
 vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   IGRPButton: ({
     children,
     onClick,

@@ -2,9 +2,9 @@ import type {
   MenuType,
   Status,
 } from "@igrp/platform-access-management-client-ts";
+import type { Messages } from "next-intl";
 import { z } from "zod";
 
-import type { Messages } from "@/i18n/messages";
 import { statusSchema } from "@/schemas/global";
 
 /**

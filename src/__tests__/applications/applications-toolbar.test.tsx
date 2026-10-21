@@ -7,9 +7,12 @@ type MockProps = {
   [key: string]: unknown;
 };
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => {
+vi.mock("@igrp/igrp-framework-react-design-system", async () => {
   const React = require("react");
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     IGRPButton: ({ children, ...props }: MockProps) =>
       React.createElement("button", { type: "button", ...props }, children),
     IGRPIcon: (props: MockProps) =>

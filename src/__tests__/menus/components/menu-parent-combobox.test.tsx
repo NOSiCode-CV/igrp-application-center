@@ -47,6 +47,9 @@ vi.mock("@igrp/igrp-framework-react-design-system", async () => {
     render: (args: { field: unknown }) => unknown;
   }) => render({ field: useController({ control, name }).field }) as never;
   return {
+    ...(await vi.importActual<object>(
+      "@igrp/igrp-framework-react-design-system",
+    )),
     cn: (...classes: unknown[]) => classes.filter(Boolean).join(" "),
     IGRPIcon: () => null,
     Button: box("button"),

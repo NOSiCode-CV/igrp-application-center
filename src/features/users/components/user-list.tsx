@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   IGRPButton,
   IGRPDataTable,
@@ -32,7 +33,6 @@ import {
   useUpdateUserStatus,
   useUsers,
 } from "@/features/users/use-users";
-import { useFormat } from "@/i18n/format";
 import {
   PAGE_HEADER_ACTIONS_CLASS,
   PAGE_HEADER_PROPS,
@@ -58,7 +58,7 @@ export function UserList({
 }: UserListProps) {
   const t = useTranslations("users");
   const tStatus = useTranslations("common.status");
-  const { formatDate } = useFormat();
+  const { formatDate } = useIGRPFormat();
   const statusOptions = useUserStatusOptions();
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);

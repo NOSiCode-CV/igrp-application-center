@@ -161,32 +161,6 @@
       "title": "Não foi possível concluir a autenticação.",
       "description": "Verifique a configuração do provedor de autenticação e as variáveis de ambiente. Se o problema persistir, contacte o suporte."
     },
-    "codes": {
-      "configNotInitialized": {
-        "title": "Configuração do IGRP não inicializada",
-        "description": "O ficheiro de configuração da aplicação não foi carregado. Contacte a equipa técnica para verificar o arranque do servidor."
-      },
-      "accessManagementConfigMissing": {
-        "title": "Gestão de acesso não configurada",
-        "description": "A URL da API de gestão de acesso não está definida. Defina a variável de ambiente da aplicação ou active o modo de pré-visualização para continuar."
-      },
-      "appCodeMissing": {
-        "title": "Código da aplicação em falta",
-        "description": "A aplicação não declarou o seu código identificador. Verifique o ficheiro de configuração do IGRP."
-      },
-      "appHomeSlugInvalid": {
-        "title": "URL inicial da aplicação inválida",
-        "description": "O valor de NEXT_PUBLIC_IGRP_APP_HOME_SLUG não começa por \"/\". Corrija a variável de ambiente e reinicie o servidor."
-      },
-      "authConfigInvalid": {
-        "title": "Configuração de autenticação inválida",
-        "description": "Uma ou mais variáveis de ambiente necessárias ao provedor de autenticação estão em falta ou incorrectas."
-      },
-      "layoutDataFailed": {
-        "title": "Falha ao carregar os dados de layout",
-        "description": "Não foi possível carregar os menus ou dados do utilizador. Tente novamente; se persistir, contacte o suporte."
-      }
-    },
     "status": {
       "unauthorized": {
         "title": "Acesso não autorizado",

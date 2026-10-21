@@ -161,32 +161,6 @@
       "title": "Authentication could not be completed.",
       "description": "Check the authentication provider configuration and the environment variables. If the problem persists, contact support."
     },
-    "codes": {
-      "configNotInitialized": {
-        "title": "IGRP configuration not initialized",
-        "description": "The application configuration file was not loaded. Contact the technical team to check the server startup."
-      },
-      "accessManagementConfigMissing": {
-        "title": "Access management not configured",
-        "description": "The access management API URL is not set. Set the application environment variable or enable preview mode to continue."
-      },
-      "appCodeMissing": {
-        "title": "Application code missing",
-        "description": "The application has not declared its identifier code. Check the IGRP configuration file."
-      },
-      "appHomeSlugInvalid": {
-        "title": "Invalid application home URL",
-        "description": "The value of NEXT_PUBLIC_IGRP_APP_HOME_SLUG does not start with \"/\". Fix the environment variable and restart the server."
-      },
-      "authConfigInvalid": {
-        "title": "Invalid authentication configuration",
-        "description": "One or more environment variables required by the authentication provider are missing or incorrect."
-      },
-      "layoutDataFailed": {
-        "title": "Failed to load layout data",
-        "description": "The menus or user data could not be loaded. Please try again; if it persists, contact support."
-      }
-    },
     "status": {
       "unauthorized": {
         "title": "Unauthorized access",
