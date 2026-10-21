@@ -1307,5 +1307,26 @@
         "loading": "Retrait en cours…"
       }
     }
+  },
+  "profile": {
+    "meta": {
+      "title": "Profil"
+    },
+    "roleList": {
+      "loading": "Chargement des profils…",
+      "title": "Profils attribués",
+      "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
+      "parent": "Associés : <mono>{code}</mono>",
+      "morePermissions": "+{count} de plus",
+      "activate": "Activer",
+      "activating": "Activation…",
+      "empty": "Aucun profil attribué",
+      "emptyDescription": "Aucun profil ne vous est encore attribué.",
+      "toasts": {
+        "activated": "Profil activé avec succès.",
+        "activateFailed": "Échec de l'activation du profil.",
+        "unknownError": "Erreur inconnue."
+      }
+    }
   }
 }

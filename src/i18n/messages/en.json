@@ -1307,5 +1307,26 @@
         "loading": "Removing…"
       }
     }
+  },
+  "profile": {
+    "meta": {
+      "title": "Profile"
+    },
+    "roleList": {
+      "loading": "Loading roles…",
+      "title": "Assigned Roles",
+      "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
+      "parent": "Associated: <mono>{code}</mono>",
+      "morePermissions": "+{count} more",
+      "activate": "Activate",
+      "activating": "Activating…",
+      "empty": "No roles assigned",
+      "emptyDescription": "You don't have any roles assigned yet.",
+      "toasts": {
+        "activated": "Role activated successfully.",
+        "activateFailed": "Failed to activate role.",
+        "unknownError": "Unknown error."
+      }
+    }
   }
 }

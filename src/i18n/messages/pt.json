@@ -1307,5 +1307,26 @@
         "loading": "A remover…"
       }
     }
+  },
+  "profile": {
+    "meta": {
+      "title": "Perfil"
+    },
+    "roleList": {
+      "loading": "A carregar perfis…",
+      "title": "Perfis Atribuídos",
+      "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
+      "parent": "Associados: <mono>{code}</mono>",
+      "morePermissions": "+{count} mais",
+      "activate": "Ativar",
+      "activating": "A ativar…",
+      "empty": "Sem perfis atribuídos",
+      "emptyDescription": "Ainda não tem perfis atribuídos.",
+      "toasts": {
+        "activated": "Perfil ativado com sucesso.",
+        "activateFailed": "Erro ao ativar perfil.",
+        "unknownError": "Erro desconhecido."
+      }
+    }
   }
 }

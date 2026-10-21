@@ -8,6 +8,7 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 import {
@@ -17,6 +18,7 @@ import {
 } from "@/features/users/use-users";
 
 export default function ProfileRoleList() {
+  const t = useTranslations("profile.roleList");
   const { igrpToast } = useIGRPToast();
   const { data: userRoles, isLoading } = useGetCurrentUserRoles();
 
@@ -43,14 +45,14 @@ export default function ProfileRoleList() {
 
       igrpToast({
         type: "success",
-        title: "Perfil ativado com sucesso.",
+        title: t("toasts.activated"),
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao ativar perfil.",
+        title: t("toasts.activateFailed"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido.",
+          error instanceof Error ? error.message : t("toasts.unknownError"),
       });
     } finally {
       setActivatingCode(null);
@@ -62,7 +64,7 @@ export default function ProfileRoleList() {
   };
 
   if (isLoading) {
-    return <AppCenterLoading description="A carregar perfis…" />;
+    return <AppCenterLoading description={t("loading")} />;
   }
 
   return (
@@ -70,7 +72,7 @@ export default function ProfileRoleList() {
       {userRoles && userRoles.length > 0 ? (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Perfis Atribuídos</h2>
+            <h2 className="text-lg font-semibold">{t("title")}</h2>
           </div>
 
           <div className="flex flex-col gap-3">
@@ -113,16 +115,19 @@ export default function ProfileRoleList() {
                       <div className="flex items-center gap-1">
                         <IGRPIcon iconName="Shield" className="size-3" />
                         <span>
-                          {role.permissions.length}{" "}
-                          {role.permissions.length === 1
-                            ? "permissão"
-                            : "permissões"}
+                          {t("permissionCount", {
+                            count: role.permissions.length,
+                          })}
                         </span>
                       </div>
                       {role.parentCode && (
                         <div className="text-xs">
-                          Associados:{" "}
-                          <span className="font-mono">{role.parentCode}</span>
+                          {t.rich("parent", {
+                            code: role.parentCode,
+                            mono: (chunks) => (
+                              <span className="font-mono">{chunks}</span>
+                            ),
+                          })}
                         </div>
                       )}
                     </div>
@@ -142,7 +147,9 @@ export default function ProfileRoleList() {
                           ))}
                         {role.permissions.length > 3 && (
                           <Badge variant="secondary" className="text-xs">
-                            +{role.permissions.length - 3} mais
+                            {t("morePermissions", {
+                              count: role.permissions.length - 3,
+                            })}
                           </Badge>
                         )}
                       </div>
@@ -167,7 +174,9 @@ export default function ProfileRoleList() {
                         activatingCode === role.code && "animate-spin",
                       )}
                     />
-                    {activatingCode === role.code ? "A ativar…" : "Ativar"}
+                    {activatingCode === role.code
+                      ? t("activating")
+                      : t("activate")}
                   </Button>
                 )}
               </div>
@@ -181,9 +190,9 @@ export default function ProfileRoleList() {
             className="size-8 text-muted-foreground"
           />
           <div>
-            <p className="font-medium text-sm">Sem perfis atribuídos</p>
+            <p className="font-medium text-sm">{t("empty")}</p>
             <p className="text-xs text-muted-foreground">
-              Ainda não tem perfis atribuídos.
+              {t("emptyDescription")}
             </p>
           </div>
         </div>
