@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 const pathname = vi.hoisted(() => ({ value: "/settings/accounts/clients" }));
@@ -6,10 +6,12 @@ vi.mock("next/navigation", () => ({ usePathname: () => pathname.value }));
 
 import { AccountsTabs } from "@/features/accounts/components/accounts-tabs";
 
+import { renderWithIntl } from "../helpers/intl";
+
 describe("AccountsTabs", () => {
   it("marks the clients tab current on a client route", () => {
     pathname.value = "/settings/accounts/clients/abc";
-    render(<AccountsTabs />);
+    renderWithIntl(<AccountsTabs />);
     expect(screen.getByRole("tab", { name: "Clientes OAuth" })).toHaveAttribute(
       "aria-current",
       "page",
@@ -21,9 +23,16 @@ describe("AccountsTabs", () => {
 
   it("marks the services tab current on a services route", () => {
     pathname.value = "/settings/accounts/services";
-    render(<AccountsTabs />);
+    renderWithIntl(<AccountsTabs />);
     expect(
       screen.getByRole("tab", { name: "Contas de Serviço" }),
     ).toHaveAttribute("aria-current", "page");
+  });
+
+  it("renders the tabs in English", () => {
+    pathname.value = "/settings/accounts/clients";
+    renderWithIntl(<AccountsTabs />, { locale: "en" });
+    expect(screen.getByRole("tab", { name: "OAuth Clients" })).toBeVisible();
+    expect(screen.getByRole("tab", { name: "Service Accounts" })).toBeVisible();
   });
 });

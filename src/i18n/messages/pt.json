@@ -1328,5 +1328,20 @@
         "unknownError": "Erro desconhecido."
       }
     }
+  },
+  "accounts": {
+    "layout": {
+      "title": "Contas e Serviços",
+      "description": "Identidades que acedem às APIs do iGRP: clientes OAuth e as contas de serviço que os envolvem."
+    },
+    "tabs": {
+      "label": "Secções de Contas e Serviços",
+      "oauthClients": "Clientes OAuth",
+      "serviceAccounts": "Contas de Serviço"
+    },
+    "cells": {
+      "copyClientId": "Copiar client ID {clientId}",
+      "noApplication": "Sem aplicação"
+    }
   }
 }

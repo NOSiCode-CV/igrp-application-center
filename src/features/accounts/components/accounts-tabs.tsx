@@ -9,12 +9,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { ROUTES } from "@/lib/constants";
 
 const TABS = [
-  { href: ROUTES.OAUTH_CLIENTS, label: "Clientes OAuth" },
-  { href: ROUTES.SERVICE_ACCOUNTS, label: "Contas de Serviço" },
+  { href: ROUTES.OAUTH_CLIENTS, labelKey: "oauthClients" },
+  { href: ROUTES.SERVICE_ACCOUNTS, labelKey: "serviceAccounts" },
 ] as const;
 
 /**
@@ -23,6 +24,7 @@ const TABS = [
  * middle-click, back button) and the layout's children fill the one panel.
  */
 export function AccountsTabs({ children }: { children?: React.ReactNode }) {
+  const t = useTranslations("accounts.tabs");
   const pathname = usePathname();
   const current =
     TABS.find(
@@ -35,14 +37,14 @@ export function AccountsTabs({ children }: { children?: React.ReactNode }) {
       activationMode="manual"
       className="flex flex-col gap-6"
     >
-      <TabsList aria-label="Secções de Contas e Serviços">
+      <TabsList aria-label={t("label")}>
         {TABS.map((tab) => (
           <TabsTrigger key={tab.href} value={tab.href} asChild>
             <Link
               href={tab.href}
               aria-current={tab.href === current ? "page" : undefined}
             >
-              {tab.label}
+              {t(tab.labelKey)}
             </Link>
           </TabsTrigger>
         ))}

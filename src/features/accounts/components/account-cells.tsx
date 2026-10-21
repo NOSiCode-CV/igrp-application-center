@@ -9,6 +9,7 @@ import {
   IGRPIcon,
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 /**
  * Table cells shared by the two Accounts tabs. An OAuth client and the
@@ -42,13 +43,14 @@ export function CopyClientIdButton({
   clientId: string;
   onCopy: (clientId: string) => void;
 }) {
+  const t = useTranslations("accounts.cells");
   return (
     <Button
       type="button"
       variant="ghost"
       size="icon-xs"
       className="shrink-0 text-muted-foreground"
-      aria-label={`Copiar client ID ${clientId}`}
+      aria-label={t("copyClientId", { clientId })}
       onClick={() => onCopy(clientId)}
     >
       <IGRPIcon iconName="Copy" aria-hidden="true" />
@@ -115,8 +117,9 @@ export function ApplicationCell({
   code?: string;
   name?: string;
 }) {
+  const t = useTranslations("accounts.cells");
   if (!code) {
-    return <span className="text-muted-foreground">Sem aplicação</span>;
+    return <span className="text-muted-foreground">{t("noApplication")}</span>;
   }
   if (!name || name === code) {
     return <span className="font-mono text-xs">{code}</span>;
