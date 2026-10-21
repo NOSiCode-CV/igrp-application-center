@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -25,6 +26,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ResourceDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 type ResourceWithAssignment = ResourceDTO & { isAssigned: boolean };
 
@@ -34,7 +36,8 @@ import {
   useDepartmentResources,
   useRemoveResourcesFromDepartment,
 } from "@/features/departments/use-departments";
-import { getStatusColor, showStatus } from "@/lib/utilities";
+import { useStatusLabel } from "@/i18n/status";
+import { getStatusColor } from "@/lib/utilities";
 
 interface ManageResourcesModalProps {
   departmentCode: string;
@@ -47,6 +50,10 @@ export function ManageResourcesModal({
   open,
   onOpenChange,
 }: ManageResourcesModalProps) {
+  const t = useTranslations("permissions.resources");
+  const tCommon = useTranslations("common");
+  const statusLabel = useStatusLabel();
+  const { compare } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -90,9 +97,9 @@ export function ManageResourcesModal({
     });
 
     return Array.from(resourceMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name, "pt"),
+      compare(a.name, b.name),
     );
-  }, [availableResources, assignedResources]);
+  }, [availableResources, assignedResources, compare]);
 
   const handleToggleResource = async (
     resource: ResourceWithAssignment,
@@ -119,15 +126,15 @@ export function ManageResourcesModal({
 
       igrpToast({
         type: "success",
-        title: "Recurso adicionado",
-        description: "O recurso foi adicionado com sucesso.",
+        title: t("toast.addedTitle"),
+        description: t("toast.addedDescription"),
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao adicionar",
+        title: t("toast.addErrorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tCommon("unknownError"),
       });
     } finally {
       setProcessingResource(null);
@@ -146,17 +153,17 @@ export function ManageResourcesModal({
 
       igrpToast({
         type: "success",
-        title: "Recurso removido",
-        description: "O recurso foi removido com sucesso.",
+        title: t("toast.removedTitle"),
+        description: t("toast.removedDescription"),
       });
 
       setResourceToRemove(null);
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao remover",
+        title: t("toast.removeErrorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tCommon("unknownError"),
       });
     } finally {
       setProcessingResource(null);
@@ -222,7 +229,7 @@ export function ManageResourcesModal({
                     "text-[10px] px-1.5 py-0.5 shrink-0",
                   )}
                 >
-                  {showStatus(resource.status)}
+                  {statusLabel(resource.status)}
                 </Badge>
               )}
             </div>
@@ -241,12 +248,12 @@ export function ManageResourcesModal({
                   isAssigned ? "text-primary" : "text-muted-foreground",
                 )}
               >
-                {isAssigned ? "Adicionado" : "Disponível"}
+                {isAssigned ? t("added") : t("available")}
               </span>
               {isAssigned && (
                 <div className="flex items-center gap-1 text-[10px] text-primary/70">
                   <div className="size-1.5 rounded-full bg-success" />
-                  Ativo
+                  {t("active")}
                 </div>
               )}
             </div>
@@ -256,8 +263,8 @@ export function ManageResourcesModal({
               disabled={processingResource !== null}
               aria-label={
                 isAssigned
-                  ? `Remover recurso ${resource.name}`
-                  : `Adicionar recurso ${resource.name}`
+                  ? t("removeLabel", { name: resource.name })
+                  : t("addLabel", { name: resource.name })
               }
               className={cn(
                 "data-[state=checked]:bg-success",
@@ -276,7 +283,7 @@ export function ManageResourcesModal({
                 className="size-4 animate-spin motion-reduce:animate-none"
                 strokeWidth={2}
               />
-              A processar…
+              {t("processing")}
             </div>
           </div>
         )}
@@ -296,11 +303,9 @@ export function ManageResourcesModal({
                 className="size-5"
                 strokeWidth={2}
               />
-              Gerir Recursos
+              {t("title")}
             </DialogTitle>
-            <DialogDescription>
-              Adicione ou remova recursos do departamento com um clique.
-            </DialogDescription>
+            <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
 
           <div className="pb-4">
@@ -312,9 +317,9 @@ export function ManageResourcesModal({
               />
               <Input
                 type="search"
-                aria-label="Pesquisar recursos por nome, tipo ou descrição"
+                aria-label={t("searchLabel")}
                 autoComplete="off"
-                placeholder="Pesquisar por nome, tipo ou descrição…"
+                placeholder={t("searchPlaceholder")}
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -338,13 +343,9 @@ export function ManageResourcesModal({
                   className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
-                <p className="font-semibold text-lg">
-                  Nenhum recurso encontrado
-                </p>
+                <p className="font-semibold text-lg">{t("emptyTitle")}</p>
                 <p className="text-sm mt-1">
-                  {searchTerm
-                    ? "Tente ajustar os filtros de pesquisa"
-                    : "Não há recursos disponíveis"}
+                  {searchTerm ? t("emptyFiltered") : t("emptyNone")}
                 </p>
               </div>
             ) : (
@@ -361,11 +362,10 @@ export function ManageResourcesModal({
 
           <div className="flex justify-between items-center py-4">
             <div className="text-sm text-muted-foreground">
-              <span className="font-medium">
-                {filteredResources.filter((r) => r.isAssigned).length}
-              </span>{" "}
-              de <span className="font-medium">{filteredResources.length}</span>{" "}
-              recursos adicionados
+              {t("summary", {
+                assigned: filteredResources.filter((r) => r.isAssigned).length,
+                total: filteredResources.length,
+              })}
             </div>
 
             <Button
@@ -380,7 +380,7 @@ export function ManageResourcesModal({
                 className="size-4"
                 strokeWidth={2}
               />
-              Fechar
+              {t("close")}
             </Button>
           </div>
         </DialogContent>
@@ -399,14 +399,15 @@ export function ManageResourcesModal({
                 className="size-5 text-destructive"
                 strokeWidth={2}
               />
-              Remover Recurso
+              {t("remove.title")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover o recurso{" "}
-              <strong className="text-foreground">
-                {resourceToRemove?.name}
-              </strong>{" "}
-              deste departamento? Esta ação não pode ser desfeita.
+              {t.rich("remove.description", {
+                name: resourceToRemove?.name ?? "",
+                strong: (chunks) => (
+                  <strong className="text-foreground">{chunks}</strong>
+                ),
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -419,7 +420,7 @@ export function ManageResourcesModal({
               iconPlacement="start"
               iconName="X"
             >
-              Cancelar
+              {t("remove.cancel")}
             </IGRPButton>
             <IGRPButton
               onClick={handleConfirmRemove}
@@ -434,7 +435,7 @@ export function ManageResourcesModal({
                     className="size-4 animate-spin motion-reduce:animate-none"
                     strokeWidth={2}
                   />
-                  A remover…
+                  {t("remove.loading")}
                 </>
               ) : (
                 <>
@@ -444,7 +445,7 @@ export function ManageResourcesModal({
                     className="size-4"
                     strokeWidth={2}
                   />
-                  Remover
+                  {t("remove.confirm")}
                 </>
               )}
             </IGRPButton>

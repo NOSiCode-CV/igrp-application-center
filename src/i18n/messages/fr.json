@@ -1241,5 +1241,75 @@
       "invalid": "La personnalisation contient des valeurs invalides. Vérifiez les champs et réessayez.",
       "generic": "Réessayez. Si le problème persiste, contactez le support."
     }
+  },
+  "permissions": {
+    "list": {
+      "title": "Permissions",
+      "subtitle": "Gérer et réorganiser les permissions.",
+      "manageResources": "Gérer les ressources",
+      "searchLabel": "Rechercher des permissions",
+      "searchPlaceholder": "Rechercher des permissions…",
+      "loading": "Chargement des permissions…",
+      "emptyTitle": "Aucune permission disponible",
+      "emptyDescription": "Il n’existe aucune permission pour ce département.",
+      "columnPermission": "Permission",
+      "columnDescription": "Description",
+      "columnActive": "Actif",
+      "noDescription": "N/A",
+      "removeLabel": "Retirer la permission {name}",
+      "addLabel": "Ajouter la permission {name}"
+    },
+    "toast": {
+      "addedTitle": "Permission ajoutée",
+      "addedDescription": "La permission a été ajoutée avec succès.",
+      "removedTitle": "Permission retirée",
+      "removedDescription": "La permission a été retirée avec succès.",
+      "errorTitle": "Impossible de modifier la permission"
+    },
+    "revoke": {
+      "title": "Retirer la permission",
+      "description": "Retirer « {name} » du département {department} ? Tous les profils de ce département perdent l’accès accordé par cette permission.",
+      "cancel": "Annuler",
+      "confirm": "Retirer",
+      "loading": "Retrait en cours..."
+    },
+    "resources": {
+      "title": "Gérer les ressources",
+      "description": "Ajoutez ou retirez les ressources du département en un clic.",
+      "searchLabel": "Rechercher des ressources par nom, type ou description",
+      "searchPlaceholder": "Rechercher par nom, type ou description…",
+      "emptyTitle": "Aucune ressource trouvée",
+      "emptyFiltered": "Essayez d’ajuster les filtres de recherche",
+      "emptyNone": "Aucune ressource disponible",
+      "added": "Ajoutée",
+      "available": "Disponible",
+      "active": "Actif",
+      "processing": "Traitement en cours…",
+      "summary": "{assigned} sur {total} ressources ajoutées",
+      "close": "Fermer",
+      "removeLabel": "Retirer la ressource {name}",
+      "addLabel": "Ajouter la ressource {name}",
+      "toast": {
+        "addedTitle": "Ressource ajoutée",
+        "addedDescription": "La ressource a été ajoutée avec succès.",
+        "addErrorTitle": "Erreur lors de l’ajout",
+        "removedTitle": "Ressource retirée",
+        "removedDescription": "La ressource a été retirée avec succès.",
+        "removeErrorTitle": "Erreur lors du retrait"
+      },
+      "remove": {
+        "title": "Retirer la ressource",
+        "description": "Voulez-vous vraiment retirer la ressource <strong>{name}</strong> de ce département ? Cette action est irréversible.",
+        "cancel": "Annuler",
+        "confirm": "Retirer",
+        "loading": "Retrait en cours…"
+      }
+    },
+    "validation": {
+      "nameMin": "Le nom est obligatoire (min. 3 caractères)",
+      "namePattern": "Seuls les lettres minuscules, les chiffres, le tiret bas (_) et le tiret (-) sont autorisés.",
+      "departmentCodeMin": "Le code du département est obligatoire (min. 4 caractères)",
+      "atLeastOneField": "Au moins un champ doit être fourni pour la mise à jour."
+    }
   }
 }

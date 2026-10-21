@@ -1241,5 +1241,75 @@
       "invalid": "A personalização tem valores inválidos. Reveja os campos e tente novamente.",
       "generic": "Tente novamente. Se o problema persistir, contacte o suporte."
     }
+  },
+  "permissions": {
+    "list": {
+      "title": "Permissões",
+      "subtitle": "Gerir e reorganizar as permissões.",
+      "manageResources": "Gerir Recursos",
+      "searchLabel": "Pesquisar permissões",
+      "searchPlaceholder": "Pesquisar permissões…",
+      "loading": "A carregar permissões…",
+      "emptyTitle": "Nenhuma permissão disponível",
+      "emptyDescription": "Não existem permissões para este departamento.",
+      "columnPermission": "Permissão",
+      "columnDescription": "Descrição",
+      "columnActive": "Ativo",
+      "noDescription": "N/A",
+      "removeLabel": "Remover permissão {name}",
+      "addLabel": "Adicionar permissão {name}"
+    },
+    "toast": {
+      "addedTitle": "Permissão adicionada",
+      "addedDescription": "A permissão foi adicionada com sucesso.",
+      "removedTitle": "Permissão removida",
+      "removedDescription": "A permissão foi removida com sucesso.",
+      "errorTitle": "Não foi possível alterar a permissão"
+    },
+    "revoke": {
+      "title": "Remover permissão",
+      "description": "Remover «{name}» do departamento {department}? Todos os perfis deste departamento perdem o acesso que esta permissão concede.",
+      "cancel": "Cancelar",
+      "confirm": "Remover",
+      "loading": "A remover..."
+    },
+    "resources": {
+      "title": "Gerir Recursos",
+      "description": "Adicione ou remova recursos do departamento com um clique.",
+      "searchLabel": "Pesquisar recursos por nome, tipo ou descrição",
+      "searchPlaceholder": "Pesquisar por nome, tipo ou descrição…",
+      "emptyTitle": "Nenhum recurso encontrado",
+      "emptyFiltered": "Tente ajustar os filtros de pesquisa",
+      "emptyNone": "Não há recursos disponíveis",
+      "added": "Adicionado",
+      "available": "Disponível",
+      "active": "Ativo",
+      "processing": "A processar…",
+      "summary": "{assigned} de {total} recursos adicionados",
+      "close": "Fechar",
+      "removeLabel": "Remover recurso {name}",
+      "addLabel": "Adicionar recurso {name}",
+      "toast": {
+        "addedTitle": "Recurso adicionado",
+        "addedDescription": "O recurso foi adicionado com sucesso.",
+        "addErrorTitle": "Erro ao adicionar",
+        "removedTitle": "Recurso removido",
+        "removedDescription": "O recurso foi removido com sucesso.",
+        "removeErrorTitle": "Erro ao remover"
+      },
+      "remove": {
+        "title": "Remover Recurso",
+        "description": "Tem certeza que deseja remover o recurso <strong>{name}</strong> deste departamento? Esta ação não pode ser desfeita.",
+        "cancel": "Cancelar",
+        "confirm": "Remover",
+        "loading": "A remover…"
+      }
+    },
+    "validation": {
+      "nameMin": "Nome é obrigatório (min 3 carateres)",
+      "namePattern": "Apenas são permitidas letras minúsculas, números, underscore (_) e hífen (-).",
+      "departmentCodeMin": "Código de departamento é obrigatório (min 4 carateres)",
+      "atLeastOneField": "É necessário fornecer pelo menos um campo para atualização."
+    }
   }
 }
