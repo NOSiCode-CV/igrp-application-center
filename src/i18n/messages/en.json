@@ -1343,5 +1343,105 @@
       "copyClientId": "Copy client ID {clientId}",
       "noApplication": "No application"
     }
+  },
+  "roles": {
+    "validation": {
+      "nameRequired": "Name is required (min 3 characters)",
+      "nameMax": "Name must be at most 50 characters",
+      "namePattern": "Name may only contain letters, numbers, hyphens and underscores",
+      "codeRequired": "Code is required (min 2 characters)",
+      "departmentRequired": "Department code is required (min 1 character)"
+    },
+    "list": {
+      "title": "Roles",
+      "subtitle": "Manage and reorganize the roles.",
+      "newRole": "New Role",
+      "searchLabel": "Search role",
+      "searchPlaceholder": "Search role…",
+      "statusFilter": "Status",
+      "loadError": "An error occurred while loading roles.",
+      "loading": "Loading roles…",
+      "emptyTitle": "No roles created",
+      "emptyDescription": "There are no roles yet.",
+      "adjustSearch": "Try adjusting your search.",
+      "columnRole": "Role",
+      "columnDescription": "Description",
+      "columnStatus": "Status",
+      "noDescription": "N/A"
+    },
+    "row": {
+      "collapse": "Collapse role",
+      "expand": "Expand role",
+      "openMenu": "Open Menu",
+      "actions": "Actions",
+      "edit": "Edit",
+      "createSubRole": "Create sub role",
+      "permissions": "Permissions",
+      "delete": "Delete"
+    },
+    "form": {
+      "titleEdit": "Edit Role",
+      "titleCreate": "Create New Role",
+      "subRoleOf": "This will be a sub-role of: <strong>{parent}</strong>",
+      "name": "Name",
+      "namePlaceholder": "Role name",
+      "code": "Code",
+      "codePlaceholder": "E.g.: ADMIN_ROLE",
+      "description": "Description",
+      "descriptionPlaceholder": "Short description of this role's responsibilities",
+      "status": "Status",
+      "statusPlaceholder": "Select the status",
+      "cancel": "Cancel",
+      "saving": "Saving…",
+      "creating": "Creating…",
+      "save": "Save Changes",
+      "create": "Create Role",
+      "toast": {
+        "updatedTitle": "Update Role",
+        "updatedDescription": "The role was updated successfully.",
+        "createdTitle": "Add Role",
+        "createdDescription": "The role was added successfully.",
+        "errorTitle": "Failed to add role",
+        "errorDescription": "Please try again. {error}"
+      }
+    },
+    "delete": {
+      "title": "Confirmation",
+      "description": "This action is irreversible. The role and all its data will be permanently deleted. To confirm, type <code>{name}</code> below:",
+      "label": "Role Name",
+      "placeholder": "Type ''{name}'' to confirm",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "pending": "Please wait…",
+      "toast": {
+        "successTitle": "Role Deleted",
+        "successDescription": "Role ''{name}'' was deleted successfully.",
+        "errorTitle": "Failed to delete."
+      }
+    },
+    "permissions": {
+      "title": "Add or Remove Role Permissions",
+      "selectAll": "Select all permissions",
+      "selectOne": "Select permission {name}",
+      "columnName": "Name",
+      "columnDescription": "Description",
+      "noDescription": "N/A",
+      "filterPlaceholder": "Filter by name…",
+      "filterLabel": "Filter by name",
+      "clearFilter": "Clear filter",
+      "selected": "{count} selected",
+      "loading": "Loading permissions…",
+      "rowsPerPage": "Rows per page",
+      "save": "Save",
+      "toast": {
+        "noChangesTitle": "No changes",
+        "noChangesDescription": "Nothing to add or remove.",
+        "updatedTitle": "Permissions updated",
+        "updatedDescription": "+{added} added, -{removed} removed.",
+        "errorTitle": "Failed to update permissions",
+        "unknownError": "An unknown error occurred.",
+        "loadErrorTitle": "The role has associated permissions, but they could not be loaded."
+      }
+    }
   }
 }

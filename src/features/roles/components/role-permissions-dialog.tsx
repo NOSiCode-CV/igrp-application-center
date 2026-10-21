@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Badge,
   Checkbox,
@@ -34,6 +35,7 @@ import {
   type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { SelectableDataTable } from "@/components/data-table/selectable-data-table";
 import { AppCenterLoading } from "@/components/loading";
@@ -66,7 +68,11 @@ const multiColumnFilterFn: FilterFn<PermissionLike> = (
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<PermissionLike>[] = [
+type PermissionsTranslator = ReturnType<
+  typeof useTranslations<"roles.permissions">
+>;
+
+const makeColumns = (t: PermissionsTranslator): ColumnDef<PermissionLike>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -76,7 +82,7 @@ const columns: ColumnDef<PermissionLike>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Selecionar todas as permissões"
+        aria-label={t("selectAll")}
         className="ring ring-current/50"
       />
     ),
@@ -84,7 +90,7 @@ const columns: ColumnDef<PermissionLike>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label={`Selecionar permissão ${row.original.name}`}
+        aria-label={t("selectOne", { name: row.original.name })}
         className="ring ring-current/50"
       />
     ),
@@ -92,7 +98,7 @@ const columns: ColumnDef<PermissionLike>[] = [
     enableSorting: false,
   },
   {
-    header: "Nome",
+    header: t("columnName"),
     accessorKey: "name",
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("name")}</div>
@@ -102,9 +108,11 @@ const columns: ColumnDef<PermissionLike>[] = [
     enableColumnFilter: true,
   },
   {
-    header: "Descrição",
+    header: t("columnDescription"),
     accessorKey: "description",
-    cell: ({ row }) => <div>{row.getValue("description") || "N/A"}</div>,
+    cell: ({ row }) => (
+      <div>{row.getValue("description") || t("noDescription")}</div>
+    ),
     enableSorting: false,
   },
 ];
@@ -149,6 +157,9 @@ export function RoleDetails({
   open,
   onOpenChange,
 }: RoleDetailsProps) {
+  const t = useTranslations("roles.permissions");
+  const { compare } = useIGRPFormat();
+  const columns = useMemo(() => makeColumns(t), [t]);
   const id = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
@@ -176,9 +187,9 @@ export function RoleDetails({
 
   const allPermissions = useMemo(() => {
     return ((departmentPermissions ?? []) as PermissionLike[]).sort((a, b) =>
-      a.name.localeCompare(b.name, "pt"),
+      compare(a.name, b.name),
     );
-  }, [departmentPermissions]);
+  }, [departmentPermissions, compare]);
 
   const getRowKey = useCallback(
     (r: PermissionLike) => String(r.id ?? r.name),
@@ -237,8 +248,8 @@ export function RoleDetails({
     if (!hasChanges) {
       igrpToast({
         type: "info",
-        title: "Sem alterações",
-        description: "Nada para adicionar ou remover.",
+        title: t("toast.noChangesTitle"),
+        description: t("toast.noChangesDescription"),
       });
       return;
     }
@@ -269,19 +280,20 @@ export function RoleDetails({
 
       igrpToast({
         type: "success",
-        title: "Permissões atualizadas",
-        description: `+${toAdd.length} adicionada(s), -${toRemove.length} removida(s).`,
+        title: t("toast.updatedTitle"),
+        description: t("toast.updatedDescription", {
+          added: toAdd.length,
+          removed: toRemove.length,
+        }),
       });
 
       onOpenChange(false);
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Falha ao atualizar permissões",
+        title: t("toast.errorTitle"),
         description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+          error instanceof Error ? error.message : t("toast.unknownError"),
       });
     }
   }
@@ -290,18 +302,17 @@ export function RoleDetails({
     if (errorPermissionsByRole) {
       igrpToast({
         type: "error",
-        title: "Perfil tem permissões associadas, mas não foram carregadas.",
+        title: t("toast.loadErrorTitle"),
       });
     }
-  }, [errorPermissionsByRole, igrpToast]);
+  }, [errorPermissionsByRole, igrpToast, t]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
       <DialogContent className="md:min-w-2xl max-h-[95vh]">
         <DialogHeader>
           <DialogTitle className="text-base">
-            Adicionar ou Remover Permissões de perfil{" "}
-            <IGRPBadge>{role.name}</IGRPBadge>
+            {t("title")} <IGRPBadge>{role.name}</IGRPBadge>
           </DialogTitle>
         </DialogHeader>
 
@@ -323,10 +334,10 @@ export function RoleDetails({
                   onChange={(e) =>
                     table.getColumn("name")?.setFilterValue(e.target.value)
                   }
-                  placeholder="Filtrar por nome…"
+                  placeholder={t("filterPlaceholder")}
                   type="search"
                   autoComplete="off"
-                  aria-label="Filtrar por nome"
+                  aria-label={t("filterLabel")}
                 />
                 <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
                   <IGRPIcon iconName="Search" aria-hidden />
@@ -334,7 +345,7 @@ export function RoleDetails({
                 {Boolean(table.getColumn("name")?.getFilterValue()) && (
                   <button
                     className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label="Limpar filtro"
+                    aria-label={t("clearFilter")}
                     onClick={() => {
                       table.getColumn("name")?.setFilterValue("");
                       inputRef.current?.focus();
@@ -347,15 +358,15 @@ export function RoleDetails({
               </div>
 
               <div className="flex items-center justify-between gap-3 px-3">
-                <Badge>{selectedRows.length} selecionado(s)</Badge>
+                <Badge>{t("selected", { count: selectedRows.length })}</Badge>
               </div>
               {isLoading ? (
-                <AppCenterLoading description="A carregar permissões…" />
+                <AppCenterLoading description={t("loading")} />
               ) : (
                 <SelectableDataTable
                   table={table}
                   columnCount={columns.length}
-                  rowsPerPageLabel="Registos por página"
+                  rowsPerPageLabel={t("rowsPerPage")}
                 />
               )}
 
@@ -368,7 +379,7 @@ export function RoleDetails({
                   iconName="Save"
                   showIcon
                 >
-                  Guardar
+                  {t("save")}
                 </IGRPButton>
               </div>
             </div>

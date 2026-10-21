@@ -1343,5 +1343,105 @@
       "copyClientId": "Copier le client ID {clientId}",
       "noApplication": "Aucune application"
     }
+  },
+  "roles": {
+    "validation": {
+      "nameRequired": "Le nom est obligatoire (min. 3 caractères)",
+      "nameMax": "Le nom doit comporter au maximum 50 caractères",
+      "namePattern": "Le nom ne peut contenir que des lettres, des chiffres, des traits d'union et des underscores",
+      "codeRequired": "Le code est obligatoire (min. 2 caractères)",
+      "departmentRequired": "Le code du département est obligatoire (min. 1 caractère)"
+    },
+    "list": {
+      "title": "Profils",
+      "subtitle": "Gérer et réorganiser les profils.",
+      "newRole": "Nouveau profil",
+      "searchLabel": "Rechercher un profil",
+      "searchPlaceholder": "Rechercher un profil…",
+      "statusFilter": "Statut",
+      "loadError": "Une erreur s'est produite lors du chargement des profils.",
+      "loading": "Chargement des profils…",
+      "emptyTitle": "Aucun profil créé",
+      "emptyDescription": "Il n'existe pas encore de profils.",
+      "adjustSearch": "Essayez d'ajuster votre recherche.",
+      "columnRole": "Profil",
+      "columnDescription": "Description",
+      "columnStatus": "Statut",
+      "noDescription": "N/A"
+    },
+    "row": {
+      "collapse": "Réduire le profil",
+      "expand": "Développer le profil",
+      "openMenu": "Ouvrir le menu",
+      "actions": "Actions",
+      "edit": "Modifier",
+      "createSubRole": "Créer un sous-profil",
+      "permissions": "Permissions",
+      "delete": "Supprimer"
+    },
+    "form": {
+      "titleEdit": "Modifier le profil",
+      "titleCreate": "Créer un nouveau profil",
+      "subRoleOf": "Ce sera un sous-profil de : <strong>{parent}</strong>",
+      "name": "Nom",
+      "namePlaceholder": "Nom du profil",
+      "code": "Code",
+      "codePlaceholder": "Ex : PROFIL_ADMIN",
+      "description": "Description",
+      "descriptionPlaceholder": "Brève description des responsabilités de ce profil",
+      "status": "Statut",
+      "statusPlaceholder": "Sélectionnez le statut",
+      "cancel": "Annuler",
+      "saving": "Enregistrement…",
+      "creating": "Création…",
+      "save": "Enregistrer les modifications",
+      "create": "Créer le profil",
+      "toast": {
+        "updatedTitle": "Modifier le profil",
+        "updatedDescription": "Le profil a été mis à jour avec succès.",
+        "createdTitle": "Ajouter un profil",
+        "createdDescription": "Le profil a été ajouté avec succès.",
+        "errorTitle": "Échec de l'ajout du profil",
+        "errorDescription": "Veuillez réessayer. {error}"
+      }
+    },
+    "delete": {
+      "title": "Confirmation",
+      "description": "Cette action est irréversible. Le profil et toutes ses données seront supprimés définitivement. Pour confirmer, saisissez <code>{name}</code> ci-dessous :",
+      "label": "Nom du profil",
+      "placeholder": "Saisissez « {name} » pour confirmer",
+      "cancel": "Annuler",
+      "confirm": "Supprimer",
+      "pending": "Veuillez patienter…",
+      "toast": {
+        "successTitle": "Profil supprimé",
+        "successDescription": "Le profil « {name} » a été supprimé avec succès.",
+        "errorTitle": "Échec de la suppression."
+      }
+    },
+    "permissions": {
+      "title": "Ajouter ou retirer des permissions du profil",
+      "selectAll": "Sélectionner toutes les permissions",
+      "selectOne": "Sélectionner la permission {name}",
+      "columnName": "Nom",
+      "columnDescription": "Description",
+      "noDescription": "N/A",
+      "filterPlaceholder": "Filtrer par nom…",
+      "filterLabel": "Filtrer par nom",
+      "clearFilter": "Effacer le filtre",
+      "selected": "{count} sélectionné(s)",
+      "loading": "Chargement des permissions…",
+      "rowsPerPage": "Lignes par page",
+      "save": "Enregistrer",
+      "toast": {
+        "noChangesTitle": "Aucune modification",
+        "noChangesDescription": "Rien à ajouter ou à retirer.",
+        "updatedTitle": "Permissions mises à jour",
+        "updatedDescription": "+{added} ajoutée(s), -{removed} retirée(s).",
+        "errorTitle": "Échec de la mise à jour des permissions",
+        "unknownError": "Une erreur inconnue s'est produite.",
+        "loadErrorTitle": "Le profil a des permissions associées, mais elles n'ont pas pu être chargées."
+      }
+    }
   }
 }

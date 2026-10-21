@@ -15,6 +15,7 @@ import {
   Label,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { useDeleteRole } from "@/features/departments/use-departments";
 
@@ -31,6 +32,7 @@ export function RoleDeleteDialog({
   onOpenChange,
   roleToDelete,
 }: RoleDeleteDialogProps) {
+  const t = useTranslations("roles.delete");
   const [confirmation, setConfirmation] = useState("");
   const { igrpToast } = useIGRPToast();
 
@@ -49,15 +51,15 @@ export function RoleDeleteDialog({
       }
       igrpToast({
         type: "success",
-        title: "Role Eliminado",
-        description: `Role '${roleToDelete}' foi eliminado com sucesso.`,
+        title: t("toast.successTitle"),
+        description: t("toast.successDescription", { name: roleToDelete }),
         duration: 4000,
       });
     } catch (error) {
       console.log("Erro ao eliminar role:", error);
       igrpToast({
         type: "error",
-        title: "Erro ao eliminar.",
+        title: t("toast.errorTitle"),
         description: (error as Error).message,
         duration: 4000,
       });
@@ -84,18 +86,18 @@ export function RoleDeleteDialog({
                   className="opacity-80 size-4"
                 />
               </div>
-              <DialogTitle>Confirmação</DialogTitle>
+              <DialogTitle>{t("title")}</DialogTitle>
             </div>
             <DialogDescription className="flex flex-col items-center text-base text-balance text-foreground mx-auto">
               <div>
-                <span>
-                  Esta ação é irreversível. O menu e todos os seus dados serão
-                  eliminados permanentemente. Para confirmar, escreva
-                </span>{" "}
-                <span className="font-semibold italic bg-destructive text-destructive-foreground p-0.5 rounded-sm">
-                  {roleToDelete}
-                </span>{" "}
-                abaixo:
+                {t.rich("description", {
+                  name: roleToDelete,
+                  code: (chunks) => (
+                    <span className="font-semibold italic bg-destructive text-destructive-foreground p-0.5 rounded-sm">
+                      {chunks}
+                    </span>
+                  ),
+                })}
               </div>
             </DialogDescription>
           </DialogHeader>
@@ -106,13 +108,13 @@ export function RoleDeleteDialog({
             htmlFor="confirmation"
             className='after:content-["*"] after:text-destructive gap-0.5 mb-1'
           >
-            Nome Perfil
+            {t("label")}
           </Label>
           <Input
             id="confirmation"
             value={confirmation}
             onChange={(e) => setConfirmation(e.target.value)}
-            placeholder={`Digite '${roleToDelete}' para confirmação`}
+            placeholder={t("placeholder", { name: roleToDelete })}
             className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
             required
           />
@@ -128,7 +130,7 @@ export function RoleDeleteDialog({
             showIcon
             iconName="X"
           >
-            Cancelar
+            {t("cancel")}
           </IGRPButton>
           <IGRPButton
             variant="destructive"
@@ -140,7 +142,7 @@ export function RoleDeleteDialog({
             showIcon
             iconName="Trash"
           >
-            {isPending ? "Aguarde…" : "Eliminar"}
+            {isPending ? t("pending") : t("confirm")}
           </IGRPButton>
         </DialogFooter>
       </DialogContent>

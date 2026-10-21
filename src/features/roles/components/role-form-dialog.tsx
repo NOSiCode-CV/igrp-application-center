@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -24,22 +24,22 @@ import {
   Textarea,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import {
   useCreateRole,
   useUpdateRole,
 } from "@/features/departments/use-departments";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { useStatusOptions } from "@/i18n/status";
 import { statusSchema } from "@/schemas/global";
 
 import {
   type CreateRoleArgs,
-  createRoleSchema,
+  makeRoleSchemas,
   normalizeRole,
   type RoleArgs,
   type UpdateRoleArgs,
-  updateRoleSchema,
 } from "../role-schemas";
 
 const emptyRoleValues = {
@@ -66,6 +66,13 @@ export function RoleFormDialog({
   role,
   parentRoleName,
 }: RoleFormDialogProps) {
+  const t = useTranslations("roles.form");
+  const tv = useTranslations("roles.validation");
+  const statusOptions = useStatusOptions();
+  const { createRoleSchema, updateRoleSchema } = useMemo(
+    () => makeRoleSchemas(tv),
+    [tv],
+  );
   const { mutateAsync: createRole, isPending: isCreating } = useCreateRole();
   const { mutateAsync: updateRole, isPending: isUpdating } = useUpdateRole();
 
@@ -128,8 +135,8 @@ export function RoleFormDialog({
 
         igrpToast({
           type: "success",
-          title: "Atualizar Perfil",
-          description: "Perfil foi atualizado com sucesso.",
+          title: t("toast.updatedTitle"),
+          description: t("toast.updatedDescription"),
         });
       } else {
         const payload = normalizeRole(values);
@@ -141,8 +148,8 @@ export function RoleFormDialog({
 
         igrpToast({
           type: "success",
-          title: "Adicionar Perfil",
-          description: "Perfil foi adicionado com sucesso.",
+          title: t("toast.createdTitle"),
+          description: t("toast.createdDescription"),
         });
       }
 
@@ -155,8 +162,8 @@ export function RoleFormDialog({
       console.error("Falha ao adicionar perfil:", error);
       igrpToast({
         type: "error",
-        title: "Falha ao adicionar perfil",
-        description: `Tente novamente. ${error}`,
+        title: t("toast.errorTitle"),
+        description: t("toast.errorDescription", { error: String(error) }),
       });
     }
   };
@@ -174,18 +181,12 @@ export function RoleFormDialog({
     }
   };
 
-  const _titleText = isEdit
-    ? "Editar Perfil"
-    : isSubRole
-      ? "Criar Sub Perfil"
-      : "Adicionar Perfil";
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Editar Perfil" : "Criar Novo Perfil"}
+            {isEdit ? t("titleEdit") : t("titleCreate")}
           </DialogTitle>
         </DialogHeader>
 
@@ -198,8 +199,12 @@ export function RoleFormDialog({
               <div className="p-3 rounded-md bg-muted/50 border text-sm text-muted-foreground flex items-center gap-2">
                 <IGRPIcon iconName="Info" aria-hidden className="size-4" />
                 <span>
-                  Este será um sub-perfil de:{" "}
-                  <strong className="text-foreground">{parentRoleName}</strong>
+                  {t.rich("subRoleOf", {
+                    parent: parentRoleName,
+                    strong: (chunks) => (
+                      <strong className="text-foreground">{chunks}</strong>
+                    ),
+                  })}
                 </span>
               </div>
             )}
@@ -209,9 +214,9 @@ export function RoleFormDialog({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome</FormLabel>
+                  <FormLabel>{t("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome do perfil" {...field} />
+                    <Input placeholder={t("namePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -223,10 +228,10 @@ export function RoleFormDialog({
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Código</FormLabel>
+                  <FormLabel>{t("code")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Ex: PERFIL_ADMIN"
+                      placeholder={t("codePlaceholder")}
                       disabled={isEdit}
                       {...field}
                     />
@@ -241,10 +246,10 @@ export function RoleFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descrição</FormLabel>
+                  <FormLabel>{t("description")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Breve descrição das responsabilidades deste perfil"
+                      placeholder={t("descriptionPlaceholder")}
                       className="resize-none"
                       {...field}
                       value={field.value ?? ""}
@@ -260,7 +265,7 @@ export function RoleFormDialog({
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Estado</FormLabel>
+                  <FormLabel>{t("status")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -268,11 +273,11 @@ export function RoleFormDialog({
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione o estado" />
+                        <SelectValue placeholder={t("statusPlaceholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {STATUS_OPTIONS.map((option) => (
+                      {statusOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -291,7 +296,7 @@ export function RoleFormDialog({
                 type="button"
                 disabled={isLoading}
               >
-                Cancelar
+                {t("cancel")}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
@@ -301,12 +306,12 @@ export function RoleFormDialog({
                       aria-hidden
                       className="mr-2 h-4 w-4 animate-spin motion-reduce:animate-none"
                     />
-                    {isEdit ? "A guardar…" : "A criar…"}
+                    {isEdit ? t("saving") : t("creating")}
                   </>
                 ) : isEdit ? (
-                  "Guardar Alterações"
+                  t("save")
                 ) : (
-                  "Criar Perfil"
+                  t("create")
                 )}
               </Button>
             </DialogFooter>

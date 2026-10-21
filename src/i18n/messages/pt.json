@@ -1343,5 +1343,105 @@
       "copyClientId": "Copiar client ID {clientId}",
       "noApplication": "Sem aplicação"
     }
+  },
+  "roles": {
+    "validation": {
+      "nameRequired": "Nome é obrigatório (min 3 caracteres)",
+      "nameMax": "Nome deve ter no máximo 50 caracteres",
+      "namePattern": "Nome deve conter apenas letras, números, hífens e underscores",
+      "codeRequired": "Código é obrigatório , minimo 2 caracteres",
+      "departmentRequired": "Código de departamento é obrigatório (min 1 carateres)"
+    },
+    "list": {
+      "title": "Perfis",
+      "subtitle": "Gerir e reorganizar os perfis.",
+      "newRole": "Novo Perfil",
+      "searchLabel": "Pesquisar perfil",
+      "searchPlaceholder": "Pesquisar perfil…",
+      "statusFilter": "Estado",
+      "loadError": "Ocorreu um erro ao carregar roles.",
+      "loading": "A carregar perfis…",
+      "emptyTitle": "Nenhum perfil criado",
+      "emptyDescription": "Ainda não existem perfis criados.",
+      "adjustSearch": "Tente ajustar a sua pesquisa.",
+      "columnRole": "Perfil",
+      "columnDescription": "Descrição",
+      "columnStatus": "Estado",
+      "noDescription": "N/A"
+    },
+    "row": {
+      "collapse": "Recolher perfil",
+      "expand": "Expandir perfil",
+      "openMenu": "Abrir Menu",
+      "actions": "Ações",
+      "edit": "Editar",
+      "createSubRole": "Criar sub perfil",
+      "permissions": "Permissões",
+      "delete": "Eliminar"
+    },
+    "form": {
+      "titleEdit": "Editar Perfil",
+      "titleCreate": "Criar Novo Perfil",
+      "subRoleOf": "Este será um sub-perfil de: <strong>{parent}</strong>",
+      "name": "Nome",
+      "namePlaceholder": "Nome do perfil",
+      "code": "Código",
+      "codePlaceholder": "Ex: PERFIL_ADMIN",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Breve descrição das responsabilidades deste perfil",
+      "status": "Estado",
+      "statusPlaceholder": "Selecione o estado",
+      "cancel": "Cancelar",
+      "saving": "A guardar…",
+      "creating": "A criar…",
+      "save": "Guardar Alterações",
+      "create": "Criar Perfil",
+      "toast": {
+        "updatedTitle": "Atualizar Perfil",
+        "updatedDescription": "Perfil foi atualizado com sucesso.",
+        "createdTitle": "Adicionar Perfil",
+        "createdDescription": "Perfil foi adicionado com sucesso.",
+        "errorTitle": "Falha ao adicionar perfil",
+        "errorDescription": "Tente novamente. {error}"
+      }
+    },
+    "delete": {
+      "title": "Confirmação",
+      "description": "Esta ação é irreversível. O menu e todos os seus dados serão eliminados permanentemente. Para confirmar, escreva <code>{name}</code> abaixo:",
+      "label": "Nome Perfil",
+      "placeholder": "Digite ''{name}'' para confirmação",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "pending": "Aguarde…",
+      "toast": {
+        "successTitle": "Role Eliminado",
+        "successDescription": "Role ''{name}'' foi eliminado com sucesso.",
+        "errorTitle": "Erro ao eliminar."
+      }
+    },
+    "permissions": {
+      "title": "Adicionar ou Remover Permissões de perfil",
+      "selectAll": "Selecionar todas as permissões",
+      "selectOne": "Selecionar permissão {name}",
+      "columnName": "Nome",
+      "columnDescription": "Descrição",
+      "noDescription": "N/A",
+      "filterPlaceholder": "Filtrar por nome…",
+      "filterLabel": "Filtrar por nome",
+      "clearFilter": "Limpar filtro",
+      "selected": "{count} selecionado(s)",
+      "loading": "A carregar permissões…",
+      "rowsPerPage": "Registos por página",
+      "save": "Guardar",
+      "toast": {
+        "noChangesTitle": "Sem alterações",
+        "noChangesDescription": "Nada para adicionar ou remover.",
+        "updatedTitle": "Permissões atualizadas",
+        "updatedDescription": "+{added} adicionada(s), -{removed} removida(s).",
+        "errorTitle": "Falha ao atualizar permissões",
+        "unknownError": "Ocorreu um erro desconhecido.",
+        "loadErrorTitle": "Perfil tem permissões associadas, mas não foram carregadas."
+      }
+    }
   }
 }

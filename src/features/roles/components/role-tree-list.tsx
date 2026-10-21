@@ -19,10 +19,11 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 import { useRoles } from "@/features/departments/use-departments";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { useStatusOptions } from "@/i18n/status";
 
 import type { RoleArgs } from "../role-schemas";
 import { RoleTreeRow } from "./role.tree-row";
@@ -38,6 +39,9 @@ interface RolesListProps {
 export type RoleWithChildren = RoleArgs & { children?: RoleWithChildren[] };
 
 export function RolesListTree({ departmentCode }: RolesListProps) {
+  const t = useTranslations("roles.list");
+  const tc = useTranslations("common.actions");
+  const statusOptions = useStatusOptions();
   const [searchTerm, setSearchTerm] = useState("");
   const [openFormDialog, setOpenFormDialog] = useState(false);
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
@@ -142,7 +146,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
   if (error) {
     return (
       <div className="rounded-md border py-6">
-        <p className="text-center">Ocorreu um erro ao carregar roles.</p>
+        <p className="text-center">{t("loadError")}</p>
         <p className="text-center">{error.message}</p>
       </div>
     );
@@ -169,10 +173,8 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
       <div>
         <div className="flex items-center justify-between">
           <div>
-            <div className="leading-none font-semibold">Perfis</div>
-            <div className="text-muted-foreground text-sm">
-              Gerir e reorganizar os perfis.
-            </div>
+            <div className="leading-none font-semibold">{t("title")}</div>
+            <div className="text-muted-foreground text-sm">{t("subtitle")}</div>
           </div>
           {!roleEmpty && (
             <div className="flex justify-end">
@@ -183,7 +185,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                   className="size-4"
                   strokeWidth={2}
                 />
-                Novo Perfil
+                {t("newRole")}
               </Button>
             </div>
           )}
@@ -200,9 +202,9 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
             />
             <Input
               type="search"
-              aria-label="Pesquisar perfil"
+              aria-label={t("searchLabel")}
               autoComplete="off"
-              placeholder="Pesquisar perfil…"
+              placeholder={t("searchPlaceholder")}
               className="pl-8"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -213,12 +215,13 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
                   <IGRPIcon iconName="ListFilter" aria-hidden strokeWidth={2} />
-                  Estado {statusFilter.length > 0 && `(${statusFilter.length})`}
+                  {t("statusFilter")}{" "}
+                  {statusFilter.length > 0 && `(${statusFilter.length})`}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-40">
                 <DropdownMenuSeparator />
-                {STATUS_OPTIONS.map(({ value, label }) => (
+                {statusOptions.map(({ value, label }) => (
                   <DropdownMenuCheckboxItem
                     key={value}
                     checked={statusFilter.includes(value)}
@@ -246,7 +249,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                         className="mr-1"
                         strokeWidth={2}
                       />
-                      Limpar
+                      {tc("clear")}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -256,7 +259,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
         </div>
 
         {isLoading ? (
-          <AppCenterLoading description="A carregar perfis…" />
+          <AppCenterLoading description={t("loading")} />
         ) : roleEmpty ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
             <IGRPIcon
@@ -265,10 +268,10 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
               className="size-16 mb-4 opacity-30"
               strokeWidth={1.5}
             />
-            <p className="text-lg font-medium mb-2">Nenhum perfil criado</p>
-            <p className="text-sm mb-4">Ainda não existem perfis criados.</p>
+            <p className="text-lg font-medium mb-2">{t("emptyTitle")}</p>
+            <p className="text-sm mb-4">{t("emptyDescription")}</p>
             {searchTerm ? (
-              "Tente ajustar a sua pesquisa."
+              t("adjustSearch")
             ) : (
               <Button onClick={handleNewRole}>
                 <IGRPIcon
@@ -277,7 +280,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
                   className="size-4"
                   strokeWidth={2}
                 />
-                Novo Perfil
+                {t("newRole")}
               </Button>
             )}
           </div>
@@ -286,9 +289,15 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="whitespace-nowrap">Perfil</TableHead>
-                  <TableHead className="whitespace-nowrap">Descrição</TableHead>
-                  <TableHead className="whitespace-nowrap">Estado</TableHead>
+                  <TableHead className="whitespace-nowrap">
+                    {t("columnRole")}
+                  </TableHead>
+                  <TableHead className="whitespace-nowrap">
+                    {t("columnDescription")}
+                  </TableHead>
+                  <TableHead className="whitespace-nowrap">
+                    {t("columnStatus")}
+                  </TableHead>
                   <TableHead className="w-24" />
                 </TableRow>
               </TableHeader>
