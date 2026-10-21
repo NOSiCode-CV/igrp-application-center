@@ -61,7 +61,11 @@ import {
 } from "@/features/users/use-users";
 import { getStatusColor } from "@/lib/utilities";
 
-import { type UsersTranslator, userStatusLabel } from "../lib/i18n";
+import {
+  type StatusTranslator,
+  type UsersTranslator,
+  userStatusLabel,
+} from "../lib/i18n";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -79,7 +83,10 @@ const multiColumnFilterFn: FilterFn<RoleDTO> = (
   return name.includes(term) || desc.includes(term);
 };
 
-const makeColumns = (t: UsersTranslator): ColumnDef<RoleDTO>[] => [
+const makeColumns = (
+  t: UsersTranslator,
+  tStatus: StatusTranslator,
+): ColumnDef<RoleDTO>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -129,7 +136,7 @@ const makeColumns = (t: UsersTranslator): ColumnDef<RoleDTO>[] => [
       <Badge
         className={cn(getStatusColor(row.getValue("status")), "capitalize")}
       >
-        {userStatusLabel(t, row.getValue("status"))}
+        {userStatusLabel(tStatus, row.getValue("status"))}
       </Badge>
     ),
     size: 40,
@@ -152,7 +159,8 @@ export function UserRolesDialog({
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users");
-  const columns = useMemo(() => makeColumns(t), [t]);
+  const tStatus = useTranslations("common.status");
+  const columns = useMemo(() => makeColumns(t, tStatus), [t, tStatus]);
 
   const {
     data: depts,

@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "build": "pnpm lint && pnpm lint:i18n && next build --turbopack",
-    "lint:i18n": "igrp-i18n check-catalogs src/i18n/messages --default pt --allow-missing && igrp-i18n check-literals src/features/users src/features/workspace/components/home-apps src/features/settings src/features/applications \"src/app/(igrp)/(home)/settings/applications\" src/features/menus \"src/app/(invite)\" src/features/branding \"src/app/(igrp)/(home)/settings/customization\"",
+    "lint:i18n": "igrp-i18n check-catalogs src/i18n/messages --default pt && igrp-i18n check-literals src/features/users src/features/workspace/components/home-apps src/features/settings src/features/applications \"src/app/(igrp)/(home)/settings/applications\" src/features/menus \"src/app/(invite)\" src/features/branding \"src/app/(igrp)/(home)/settings/customization\"",
     "start": "next start --port 3000",
     "branding:defaults": "node scripts/branding-defaults.mjs",
     "lint": "biome check --write",

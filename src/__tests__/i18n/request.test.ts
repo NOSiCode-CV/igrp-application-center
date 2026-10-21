@@ -13,6 +13,7 @@ vi.mock("next/headers", () => ({
 }));
 vi.mock("@/lib/dal", () => ({ getLayoutConfig: async () => ({}) }));
 
+import type { IGRPFrameworkMessages } from "@igrp/framework-next/i18n/messages";
 import {
   igrpGetMessageFallback,
   igrpOnIntlError,
@@ -84,7 +85,7 @@ describe("getMessagesFor", () => {
 
   it("merges fr over pt", () => {
     const fr = getMessagesFor("fr");
-    expect(fr.i18n.localeSwitcher.label).toBe("Langue");
+    expect(fr.common.actions.backHome).toBe("Retour à l’accueil");
     expect(fr.errors.unexpected.title).toBe(
       "Une erreur inattendue s’est produite.",
     );
@@ -101,7 +102,10 @@ describe("request config", () => {
     }>;
     const config = await factory();
     expect(config.locale).toBe("en");
-    expect(config.messages.i18n.localeSwitcher.label).toBe("Language");
+    expect(
+      (config.messages as unknown as IGRPFrameworkMessages).i18n.localeSwitcher
+        .label,
+    ).toBe("Language");
     expect(config.messages.errors.unexpected.title).toBe(
       "An unexpected error occurred.",
     );

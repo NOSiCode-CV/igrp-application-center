@@ -102,9 +102,6 @@
       "back": "Retour",
       "home": "Accueil",
       "backHome": "Retour à l’accueil",
-      "retry": "Réessayer",
-      "retrying": "Nouvelle tentative...",
-      "cancel": "Annuler",
       "clear": "Effacer",
       "clearFilters": "Effacer les filtres",
       "edit": "Modifier"
@@ -135,12 +132,23 @@
     },
     "textarea": {
       "charsUsed": "Caractères utilisés : {length} sur {max}"
-    }
-  },
-  "i18n": {
-    "localeSwitcher": {
-      "label": "Langue",
-      "changeError": "Impossible de changer la langue. Veuillez réessayer."
+    },
+    "fileUpload": {
+      "placeholder": "Glissez votre image ici",
+      "pick": "Choisir une image",
+      "imageFormats": "SVG, PNG, JPG, GIF ou WEBP",
+      "otherFormats": "Choisir un fichier",
+      "maxSize": "(max. {size} Mo)",
+      "previewAlt": "Aperçu de l'image",
+      "remove": "Supprimer le fichier",
+      "tooLarge": "Le fichier dépasse la limite de {size} Mo."
+    },
+    "unsavedChanges": {
+      "region": "Modifications non enregistrées",
+      "message": "Vous avez des modifications non enregistrées.",
+      "discard": "Annuler les modifications",
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement…"
     }
   },
   "errors": {
@@ -413,10 +421,6 @@
       "emailRequired": "E-mail obligatoire",
       "usersMin": "Ajoutez au moins un utilisateur",
       "otpDigits": "Le code doit contenir 6 chiffres"
-    },
-    "status": {
-      "active": "Actif",
-      "inactive": "Inactif"
     },
     "columns": {
       "name": "Nom",

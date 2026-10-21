@@ -35,6 +35,7 @@ export function UserProfileHeader(props: UserProfileHeaderProps) {
     actions,
   } = props;
   const t = useTranslations("users");
+  const tStatus = useTranslations("common.status");
 
   return (
     <Card className="py-2 border-0 shadow-sm">
@@ -56,8 +57,8 @@ export function UserProfileHeader(props: UserProfileHeaderProps) {
               />
               <Badge className={cn(getStatusColor(user.status ?? ""))}>
                 {user.status === "ACTIVE"
-                  ? t("status.active")
-                  : t("status.inactive")}
+                  ? tStatus("active")
+                  : tStatus("inactive")}
               </Badge>
               {actions ? <div className="ml-auto">{actions}</div> : null}
             </div>

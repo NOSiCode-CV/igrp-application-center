@@ -102,9 +102,6 @@
       "back": "Back",
       "home": "Home",
       "backHome": "Back to home",
-      "retry": "Try again",
-      "retrying": "Retrying...",
-      "cancel": "Cancel",
       "clear": "Clear",
       "clearFilters": "Clear filters",
       "edit": "Edit"
@@ -152,12 +149,6 @@
       "discard": "Discard",
       "save": "Save changes",
       "saving": "Saving…"
-    }
-  },
-  "i18n": {
-    "localeSwitcher": {
-      "label": "Language",
-      "changeError": "The language could not be changed. Please try again."
     }
   },
   "errors": {
@@ -430,10 +421,6 @@
       "emailRequired": "Email is required",
       "usersMin": "Add at least one user",
       "otpDigits": "Code must have 6 digits"
-    },
-    "status": {
-      "active": "Active",
-      "inactive": "Inactive"
     },
     "columns": {
       "name": "Name",

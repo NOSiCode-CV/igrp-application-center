@@ -102,9 +102,6 @@
       "back": "Voltar",
       "home": "Início",
       "backHome": "Voltar ao início",
-      "retry": "Tentar novamente",
-      "retrying": "A tentar...",
-      "cancel": "Cancelar",
       "clear": "Limpar",
       "clearFilters": "Limpar filtros",
       "edit": "Editar"
@@ -152,12 +149,6 @@
       "discard": "Descartar",
       "save": "Guardar alterações",
       "saving": "A guardar…"
-    }
-  },
-  "i18n": {
-    "localeSwitcher": {
-      "label": "Idioma",
-      "changeError": "Não foi possível alterar o idioma. Tente novamente."
     }
   },
   "errors": {
@@ -407,7 +398,7 @@
       "deactivated": "Utilizador Desativado",
       "deactivatedDescription": "Utilizador ''{name}'' foi desativado com sucesso.",
       "deactivateFailed": "Erro ao desativar.",
-      "label": "Username",
+      "label": "Nome de utilizador",
       "confirm": "Desativar",
       "title": "Desativar utilizador",
       "description": "O utilizador deixa de poder entrar na plataforma. As atribuições de perfil são mantidas e a conta pode ser reativada mais tarde."
@@ -430,10 +421,6 @@
       "emailRequired": "Email obrigatório",
       "usersMin": "Adicionar pelo menos um utilizador",
       "otpDigits": "Código deve ter 6 dígitos"
-    },
-    "status": {
-      "active": "Ativo",
-      "inactive": "Inativo"
     },
     "columns": {
       "name": "Nome",
@@ -569,18 +556,18 @@
         "statusChangeFailed": "Erro ao alterar estado"
       },
       "form": {
-        "loading": "Carregando profile...",
+        "loading": "A carregar perfil...",
         "notFound": "Nenhum utilizador encontrada.",
-        "title": "Edit User Profile",
-        "cardTitle": "Detailed information about this user.",
-        "cardDescription": "Manage your personal information and account settings.",
-        "fullName": "Full Name",
+        "title": "Editar perfil do utilizador",
+        "cardTitle": "Informação detalhada sobre este utilizador.",
+        "cardDescription": "Gerir as informações pessoais e as definições da conta.",
+        "fullName": "Nome completo",
         "fullNamePlaceholder": "johndoe",
-        "fullNameDescription": "The user full name.",
-        "picture": "Profile Image",
-        "pictureDescription": "Upload a profile picture for this user.",
-        "signature": "Signature",
-        "signatureDescription": "The user's digital signature.",
+        "fullNameDescription": "O nome completo do utilizador.",
+        "picture": "Imagem de perfil",
+        "pictureDescription": "Carregue uma fotografia de perfil para este utilizador.",
+        "signature": "Assinatura",
+        "signatureDescription": "A assinatura digital do utilizador.",
         "processing": "A processar...",
         "save": "Guardar Alterações",
         "toasts": {
@@ -591,16 +578,16 @@
       "loading": "Carregando utilizador…",
       "notFound": "Nenhum utilizador encontrado.",
       "imageUpload": {
-        "previewAlt": "Profile preview",
-        "empty": "No image",
-        "upload": "Upload image",
-        "remove": "Remove"
+        "previewAlt": "Pré-visualização da imagem de perfil",
+        "empty": "Sem imagem",
+        "upload": "Carregar imagem",
+        "remove": "Remover"
       },
       "signatureUpload": {
-        "previewAlt": "Signature preview",
-        "empty": "No signature",
-        "upload": "Upload signature",
-        "remove": "Remove"
+        "previewAlt": "Pré-visualização da assinatura",
+        "empty": "Sem assinatura",
+        "upload": "Carregar assinatura",
+        "remove": "Remover"
       },
       "statusButton": {
         "activate": "Ativar",
@@ -621,17 +608,17 @@
       "tabs": {
         "departments": "Departamentos",
         "applications": "Aplicações",
-        "roles": "Roles",
+        "roles": "Perfis",
         "signature": "Assinatura"
       }
     },
     "metadata": {
       "title": "Metadados",
-      "addField": "+ Add field",
+      "addField": "+ Adicionar campo",
       "keyPlaceholder": "chave",
       "valuePlaceholder": "valor",
       "remove": "remover",
-      "save": "Save",
+      "save": "Guardar",
       "toasts": {
         "updated": "Metadados atualizados",
         "updateFailed": "Erro ao atualizar metadados"
@@ -650,8 +637,8 @@
     "unknownError": "Ocorreu um erro desconhecido.",
     "roleDialog": {
       "title": "Adicionar ou Remover Perfis",
-      "selectAll": "Select all",
-      "selectRow": "Select row",
+      "selectAll": "Selecionar tudo",
+      "selectRow": "Selecionar linha",
       "columns": {
         "name": "Nome",
         "description": "Descrição",
@@ -659,7 +646,7 @@
       },
       "filterPlaceholder": "Filtar por nome...",
       "filterLabel": "Filtar por nome",
-      "clearFilter": "Clear filter",
+      "clearFilter": "Limpar filtro",
       "departments": {
         "loading": "A carregar departamentos...",
         "loadError": "Erro ao carregar departamentos",

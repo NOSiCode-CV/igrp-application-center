@@ -13,7 +13,11 @@ import { useTranslations } from "next-intl";
 
 import { getStatusColor } from "@/lib/utilities";
 
-import { type UsersTranslator, userStatusLabel } from "../lib/i18n";
+import {
+  type StatusTranslator,
+  type UsersTranslator,
+  userStatusLabel,
+} from "../lib/i18n";
 import {
   actionsColumn,
   IdentityCell,
@@ -75,6 +79,7 @@ function ActiveRowActionsCell({
 
 export function getTableColumns(
   t: UsersTranslator,
+  tStatus: StatusTranslator,
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void,
   options?: { currentUserId?: string },
 ): ColumnDef<IGRPUserDTO>[] {
@@ -104,7 +109,7 @@ export function getTableColumns(
     },
     statusColumn<IGRPUserDTO>(t, (status) => ({
       className: getStatusColor(status),
-      label: userStatusLabel(t, status),
+      label: userStatusLabel(tStatus, status),
     })),
     actionsColumn<IGRPUserDTO>(t, (row) => (
       <ActiveRowActionsCell

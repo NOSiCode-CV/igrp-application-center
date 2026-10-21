@@ -57,6 +57,7 @@ export function UserList({
   currentUserId,
 }: UserListProps) {
   const t = useTranslations("users");
+  const tStatus = useTranslations("common.status");
   const { formatDate } = useFormat();
   const statusOptions = useUserStatusOptions();
   const { igrpToast } = useIGRPToast();
@@ -103,7 +104,7 @@ export function UserList({
   }, []);
 
   const activeColumns = useMemo(
-    () => getTableColumns(t, handleStatusClick, { currentUserId }),
+    () => getTableColumns(t, tStatus, handleStatusClick, { currentUserId }),
     [t, handleStatusClick, currentUserId],
   );
   const inviteColumns = useMemo(
@@ -204,7 +205,7 @@ export function UserList({
     });
   };
 
-  return (   
+  return (
     <div className="flex flex-col gap-6">
       <IGRPPageHeader
         {...PAGE_HEADER_PROPS}

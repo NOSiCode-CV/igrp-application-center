@@ -3,23 +3,18 @@ import { useMemo } from "react";
 import type { IGRPOptionsProps } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
 
+import { statusKey } from "@/i18n/status";
 import { STATUS_OPTIONS } from "@/lib/constants";
 
 /** `useTranslations("users")` / `getTranslations("users")` result. */
 export type UsersTranslator = ReturnType<typeof useTranslations<"users">>;
 
-type UserStatusKey = "active" | "inactive";
 type InviteStatusKey = "pending" | "canceled" | "rejected";
 
-const USER_STATUS_KEYS: Record<string, UserStatusKey> = {
-  ACTIVE: "active",
-  INACTIVE: "inactive",
-};
-
-/** Status code sent by the API → `users.status.*` key (undefined when unknown). */
-export function userStatusKey(status: unknown): UserStatusKey | undefined {
-  return typeof status === "string" ? USER_STATUS_KEYS[status] : undefined;
-}
+/** `useTranslations("common.status")` result. */
+export type StatusTranslator = ReturnType<
+  typeof useTranslations<"common.status">
+>;
 
 /**
  * Invitation status code → `users.invite.status.*` key. Mirrors the former
@@ -38,11 +33,11 @@ export function inviteStatusKey(status: string): InviteStatusKey {
 
 /** Translated label of an ACTIVE/INACTIVE status (undefined when unknown, like `showStatus`). */
 export function userStatusLabel(
-  t: UsersTranslator,
+  t: StatusTranslator,
   status: unknown,
 ): string | undefined {
-  const key = userStatusKey(status);
-  return key ? t(`status.${key}`) : undefined;
+  const key = statusKey(status);
+  return key ? t(key) : undefined;
 }
 
 export function inviteStatusLabel(t: UsersTranslator, status: string): string {
@@ -51,7 +46,7 @@ export function inviteStatusLabel(t: UsersTranslator, status: string): string {
 
 /** `STATUS_OPTIONS` with labels in the current language. */
 export function useUserStatusOptions(): IGRPOptionsProps[] {
-  const t = useTranslations("users");
+  const t = useTranslations("common.status");
   return useMemo(
     () =>
       STATUS_OPTIONS.map((option) => ({
