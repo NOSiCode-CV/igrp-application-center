@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { igrpCompare } from "@igrp/framework-next/i18n";
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -30,6 +32,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useApplications } from "@/features/applications/use-applications";
 import { getMenuIcon } from "@/lib/utilities";
@@ -58,6 +61,10 @@ export function ManageMenusModal({
   open,
   onOpenChange,
 }: ManageMenusModalProps) {
+  const t = useTranslations("departments.manageMenus");
+  const tActions = useTranslations("departments.actions");
+  const tRoot = useTranslations("departments");
+  const { formatLocale } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
 
   const [selectedApp, setSelectedApp] = useState<string>("");
@@ -117,15 +124,17 @@ export function ManageMenusModal({
     const assignedCodes = new Set(assignedMenus?.map((menu) => menu.code));
     return Array.from(byCode.values())
       .map((menu) => ({ ...menu, isAssigned: assignedCodes.has(menu.code) }))
-      .sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [availableMenus, assignedMenus]);
+      .sort((a, b) => igrpCompare(a.name, b.name, formatLocale));
+  }, [availableMenus, assignedMenus, formatLocale]);
   retainedMenusRef.current = allMenus;
 
   // Department apps sorted once — reused by the Select and the default-selection effect.
   const sortedApps = useMemo(() => {
     if (!assignedApps) return [];
-    return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [assignedApps]);
+    return [...assignedApps].sort((a, b) =>
+      igrpCompare(a.name, b.name, formatLocale),
+    );
+  }, [assignedApps, formatLocale]);
 
   // Set the default selected app once when the modal opens and app data is available.
   // Uses the department's app list (sortedApps) as the single authoritative source.
@@ -174,15 +183,15 @@ export function ManageMenusModal({
 
       igrpToast({
         type: "success",
-        title: "Menu adicionado",
-        description: "O menu foi adicionado com sucesso.",
+        title: t("toast.addedTitle"),
+        description: t("toast.addedDescription"),
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao adicionar",
+        title: t("toast.addErrorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tRoot("unknownError"),
       });
     } finally {
       setProcessingMenu(null);
@@ -206,17 +215,17 @@ export function ManageMenusModal({
 
       igrpToast({
         type: "success",
-        title: "Menu removido",
-        description: "O menu foi removido com sucesso.",
+        title: t("toast.removedTitle"),
+        description: t("toast.removedDescription"),
       });
 
       setMenuToRemove(null);
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao remover",
+        title: t("toast.removeErrorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tRoot("unknownError"),
       });
     } finally {
       setProcessingMenu(null);
@@ -280,7 +289,7 @@ export function ManageMenusModal({
                 className="size-8 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 type="button"
                 aria-expanded={isExpanded}
-                aria-label={isExpanded ? "Recolher menu" : "Expandir menu"}
+                aria-label={isExpanded ? t("collapse") : t("expand")}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
@@ -335,12 +344,12 @@ export function ManageMenusModal({
                     isAssigned ? "text-primary" : "text-muted-foreground",
                   )}
                 >
-                  {isAssigned ? "Adicionado" : "Disponível"}
+                  {isAssigned ? t("added") : t("available")}
                 </span>
                 {isAssigned && (
                   <div className="flex items-center gap-1 text-[10px] text-primary/70">
                     <div className="size-1.5 rounded-full bg-success" />
-                    Ativo
+                    {t("active")}
                   </div>
                 )}
               </div>
@@ -350,8 +359,8 @@ export function ManageMenusModal({
                 disabled={processingMenu !== null}
                 aria-label={
                   isAssigned
-                    ? `Remover ${menu.name} do departamento`
-                    : `Adicionar ${menu.name} ao departamento`
+                    ? t("removeAria", { name: menu.name })
+                    : t("addAria", { name: menu.name })
                 }
                 className={cn(
                   "data-[state=checked]:bg-success",
@@ -373,7 +382,7 @@ export function ManageMenusModal({
                   className="size-4 animate-spin motion-reduce:animate-none"
                   strokeWidth={2}
                 />
-                A processar…
+                {tActions("processing")}
               </div>
             </div>
           )}
@@ -411,11 +420,9 @@ export function ManageMenusModal({
                 className="size-5"
                 strokeWidth={2}
               />
-              Gerir Menus
+              {t("title")}
             </DialogTitle>
-            <DialogDescription>
-              Adicione ou remova menus do departamento com um clique.
-            </DialogDescription>
+            <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col sm:flex-row gap-3 pb-4">
@@ -427,9 +434,9 @@ export function ManageMenusModal({
               />
               <Input
                 type="search"
-                aria-label="Pesquisar menu"
+                aria-label={t("searchLabel")}
                 autoComplete="off"
-                placeholder="Pesquisar por nome, código ou URL…"
+                placeholder={t("searchPlaceholder")}
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -442,11 +449,11 @@ export function ManageMenusModal({
                 disabled={loadingApps}
               >
                 <SelectTrigger className="h-10">
-                  <SelectValue placeholder="Todas aplicações" />
+                  <SelectValue placeholder={t("allApps")} />
                 </SelectTrigger>
                 <SelectContent>
                   {loadingApps && (
-                    <SelectItem value="loading">A carregar…</SelectItem>
+                    <SelectItem value="loading">{t("loading")}</SelectItem>
                   )}
                   {sortedApps.map((app) => (
                     <SelectItem key={app.code} value={app.code}>
@@ -481,11 +488,11 @@ export function ManageMenusModal({
                   className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
-                <p className="font-semibold text-lg">Nenhum menu encontrado</p>
+                <p className="font-semibold text-lg">{t("emptyTitle")}</p>
                 <p className="text-sm mt-1">
                   {searchTerm || selectedApp
-                    ? "Tente ajustar os filtros de pesquisa"
-                    : "Não há menus disponíveis"}
+                    ? t("emptyFilters")
+                    : t("emptyNone")}
                 </p>
               </div>
             ) : (
@@ -499,11 +506,11 @@ export function ManageMenusModal({
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">
-              <span className="font-medium">
-                {filteredMenus.filter((m) => m.isAssigned).length}
-              </span>{" "}
-              de <span className="font-medium">{filteredMenus.length}</span>{" "}
-              menus adicionados
+              {t.rich("summary", {
+                added: filteredMenus.filter((m) => m.isAssigned).length,
+                total: filteredMenus.length,
+                b: (chunks) => <span className="font-medium">{chunks}</span>,
+              })}
             </div>
 
             <Button
@@ -518,7 +525,7 @@ export function ManageMenusModal({
                 className="size-4"
                 strokeWidth={2}
               />
-              Fechar
+              {tActions("close")}
             </Button>
           </div>
         </DialogContent>
@@ -537,12 +544,15 @@ export function ManageMenusModal({
                 className="size-5 text-destructive"
                 strokeWidth={2}
               />
-              Remover Menu
+              {t("removeTitle")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover o menu{" "}
-              <strong className="text-foreground">{menuToRemove?.name}</strong>{" "}
-              deste departamento? Esta ação não pode ser desfeita.
+              {t.rich("removeDescription", {
+                name: menuToRemove?.name ?? "",
+                b: (chunks) => (
+                  <strong className="text-foreground">{chunks}</strong>
+                ),
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -557,7 +567,7 @@ export function ManageMenusModal({
               iconPlacement="start"
               iconName="X"
             >
-              Cancelar
+              {tActions("cancel")}
             </IGRPButton>
             <IGRPButton
               onClick={handleConfirmRemove}
@@ -572,7 +582,7 @@ export function ManageMenusModal({
                     className="size-4 animate-spin motion-reduce:animate-none"
                     strokeWidth={2}
                   />
-                  A remover…
+                  {tActions("removing")}
                 </>
               ) : (
                 <>
@@ -582,7 +592,7 @@ export function ManageMenusModal({
                     className="size-4"
                     strokeWidth={2}
                   />
-                  Remover
+                  {tActions("remove")}
                 </>
               )}
             </IGRPButton>

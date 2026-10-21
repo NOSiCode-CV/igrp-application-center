@@ -11,11 +11,12 @@ import {
   IGRPTabs,
 } from "@igrp/igrp-framework-react-design-system";
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { PermissionList } from "@/features/permissions/components/permission-list";
 import { RolesListTree } from "@/features/roles/components/role-tree-list";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { useStatusLabel } from "@/i18n/status";
 import { getStatusColor } from "@/lib/utilities";
 
 import { MenuPermissions } from "./dept-menu";
@@ -27,28 +28,31 @@ interface Props {
 }
 
 export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
+  const t = useTranslations("departments.detail");
+  const tActions = useTranslations("departments.actions");
+  const statusLabel = useStatusLabel();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const tabs = useMemo<IGRPTabItem[]>(
     () => [
       {
-        label: "Perfis (Roles)",
+        label: t("tabRoles"),
         value: "roles",
         content: <RolesListTree departmentCode={department.code} />,
       },
       {
-        label: "Permissões",
+        label: t("tabPermissions"),
         value: "permissions",
         content: <PermissionList departmentCode={department.code} />,
       },
       {
-        label: "Menus",
+        label: t("tabMenus"),
         value: "menus",
         content: <MenuPermissions departmentCode={department.code} />,
       },
     ],
-    [department.code],
+    [department.code, t],
   );
 
   const requestedTab = searchParams.get("tab");
@@ -63,11 +67,6 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
-  const statusLabel =
-    STATUS_OPTIONS.find((o) => o.value === department.status)?.label ??
-    department.status ??
-    "—";
-
   return (
     <div className="w-full">
       <div className="flex flex-col lg:flex-row items-start justify-between mb-6 gap-4">
@@ -77,7 +76,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
               {department.name}
             </h1>
             <Badge className={getStatusColor(department.status ?? "ACTIVE")}>
-              {statusLabel}
+              {department.status ? statusLabel(department.status) : "—"}
             </Badge>
           </div>
           <div className="flex items-center">
@@ -90,7 +89,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
             <CopyToClipboard value={department.code} />
           </div>
           <p className="text-muted-foreground text-sm">
-            {department.description || "Sem descrição."}
+            {department.description || t("noDescription")}
           </p>
         </div>
 
@@ -106,7 +105,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
               className="size-4"
               strokeWidth={2}
             />
-            Editar
+            {tActions("edit")}
           </Button>
           <Button
             variant="outline"
@@ -119,7 +118,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
               className="size-4"
               strokeWidth={2}
             />
-            Gerir Aplicações
+            {t("manageApps")}
           </Button>
         </div>
       </div>

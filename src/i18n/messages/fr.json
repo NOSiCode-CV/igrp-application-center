@@ -1817,5 +1817,209 @@
       "asc": "ordre croissant",
       "desc": "ordre décroissant"
     }
+  },
+  "departments": {
+    "meta": {
+      "title": "Départements",
+      "description": "Gérer les départements, profils, permissions et menus."
+    },
+    "page": {
+      "title": "Gestion des départements",
+      "description": "Organisez les départements ainsi que les profils, permissions et menus associés."
+    },
+    "error": {
+      "title": "Impossible de charger les départements",
+      "message": "Une erreur s'est produite lors de la récupération de la liste. Réessayez ; si le problème persiste, contactez le support.",
+      "retry": "Réessayer",
+      "ref": "Réf. : {digest}"
+    },
+    "validation": {
+      "codePattern": "Le code doit contenir des majuscules, des chiffres et des tirets bas",
+      "codeMin": "Le code est obligatoire (min. 2 caractères)",
+      "nameMin": "Le nom est obligatoire (min. 2 caractères)",
+      "namePattern": "Le nom ne peut pas contenir de caractères spéciaux"
+    },
+    "unknownError": "Erreur inconnue",
+    "actions": {
+      "newDepartment": "Nouveau département",
+      "edit": "Modifier",
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "remove": "Retirer",
+      "removing": "Retrait en cours…",
+      "saving": "Enregistrement…",
+      "processing": "Traitement en cours…"
+    },
+    "sidebar": {
+      "title": "Gestion des départements",
+      "summaryWithInactive": "{active} actifs · {inactive} inactifs",
+      "summary": "{count, plural, =1 {# département} other {# départements}}",
+      "searchLabel": "Rechercher un département",
+      "searchPlaceholder": "Rechercher un département…",
+      "filtering": "Filtrage en cours…",
+      "openList": "Ouvrir la liste des départements",
+      "listTitle": "Départements"
+    },
+    "tree": {
+      "collapse": "Réduire le département",
+      "expand": "Développer le département",
+      "inactive": "Inactif :",
+      "openMenu": "Ouvrir le menu",
+      "createSub": "Créer un sous-département",
+      "delete": "Supprimer"
+    },
+    "empty": {
+      "sidebarEmpty": {
+        "title": "Aucun département",
+        "body": "Utilisez le bouton « Nouveau département » pour créer le premier département et organiser les profils et permissions."
+      },
+      "sidebarNoResults": {
+        "title": "Aucun département trouvé",
+        "body": "Essayez un autre terme de recherche ou videz le champ."
+      },
+      "main": {
+        "title": "Commencez par un département",
+        "body": "Les départements organisent les profils, permissions et menus. Créez le premier pour configurer le système."
+      }
+    },
+    "detail": {
+      "tabRoles": "Profils (Roles)",
+      "tabPermissions": "Permissions",
+      "tabMenus": "Menus",
+      "noDescription": "Aucune description.",
+      "manageApps": "Gérer les applications"
+    },
+    "form": {
+      "titleEdit": "Modifier le département",
+      "titleCreateSub": "Créer un sous-département",
+      "titleCreate": "Créer un nouveau département",
+      "descriptionEdit": "Mettre à jour le département",
+      "descriptionCreateSub": "Créer un nouveau sous-département",
+      "descriptionCreate": "Créer un nouveau département",
+      "name": "Nom",
+      "namePlaceholder": "Nom du département",
+      "code": "Code",
+      "codePlaceholder": "Code du département",
+      "description": "Description",
+      "descriptionPlaceholder": "Brève description du département",
+      "parent": "Département parent",
+      "parentPlaceholder": "Département parent",
+      "status": "Statut",
+      "statusPlaceholder": "Sélectionner le statut",
+      "saveAndNew": "Enregistrer et nouveau",
+      "save": "Enregistrer",
+      "toast": {
+        "successTitle": "Département",
+        "updated": "Le département a été mis à jour avec succès.",
+        "created": "Le département a été créé avec succès.",
+        "updateErrorTitle": "Impossible de mettre à jour le département.",
+        "createErrorTitle": "Impossible de créer le département.",
+        "unknownError": "Une erreur inconnue s'est produite."
+      }
+    },
+    "delete": {
+      "title": "Supprimer le département",
+      "description": "Cette action est irréversible. Le département est supprimé, ainsi que les profils, permissions et menus qui lui sont associés.",
+      "label": "Nom du département",
+      "toast": {
+        "successTitle": "Département supprimé",
+        "successDescription": "Le département « {name} » a été supprimé avec succès.",
+        "errorTitle": "Échec de la suppression."
+      }
+    },
+    "simple": {
+      "loading": "Chargement des départements…",
+      "searchLabel": "Rechercher un département",
+      "searchPlaceholder": "Rechercher un département…",
+      "none": "Aucun département"
+    },
+    "menus": {
+      "title": "Menus",
+      "subtitle": "Gérez les applications, menus et profils du département.",
+      "manage": "Gérer les menus",
+      "allApps": "Toutes les applications",
+      "searchLabel": "Rechercher un menu",
+      "searchPlaceholder": "Rechercher un menu…",
+      "loading": "Chargement des menus…",
+      "emptyTitle": "Aucun menu trouvé",
+      "emptySearch": "Essayez d'ajuster les termes de recherche",
+      "emptySetup": "Configurez d'abord les applications et les menus",
+      "filteredBy": "Filtré par : {app}",
+      "columnMenu": "Menu",
+      "selectAll": "Tout sélectionner",
+      "toggleAll": "Cocher/décocher tout",
+      "collapse": "Réduire le menu",
+      "expand": "Développer le menu",
+      "assign": "{role} — {menu}",
+      "summary": "{menus, plural, =1 {# menu} other {# menus}} • {roles, plural, =1 {# profil} other {# profils}}",
+      "savePermissions": "Enregistrer les permissions",
+      "toast": {
+        "noChangesTitle": "Aucune modification",
+        "noChangesDescription": "Aucun changement n'a été détecté.",
+        "savedTitle": "Permissions enregistrées",
+        "savedDescription": "Les profils ont été attribués aux menus avec succès.",
+        "errorTitle": "Erreur lors de l'enregistrement"
+      },
+      "unsaved": {
+        "title": "Modifications non enregistrées",
+        "description": "Vous avez des modifications des permissions des menus qui n'ont pas été enregistrées. Enregistrer avant de changer d'application ou les abandonner ?",
+        "discard": "Abandonner et changer",
+        "saveAndSwitch": "Enregistrer et changer"
+      }
+    },
+    "manageApps": {
+      "title": "Gérer les applications",
+      "description": "Ajoutez ou retirez des applications du département en un clic.",
+      "searchLabel": "Rechercher une application",
+      "searchPlaceholder": "Rechercher par nom, code ou description…",
+      "emptyTitle": "Aucune application trouvée",
+      "emptySearch": "Essayez d'ajuster les termes de recherche",
+      "emptyNone": "Aucune application disponible",
+      "added": "Ajoutée",
+      "available": "Disponible",
+      "active": "Active",
+      "removeAria": "Retirer {name} du département",
+      "addAria": "Ajouter {name} au département",
+      "summary": "<b>{added}</b> sur <b>{total}</b> applications ajoutées",
+      "removeTitle": "Retirer l'application",
+      "removeDescription": "Voulez-vous vraiment retirer l'application <b>{name}</b> de ce département ? Cette action est irréversible.",
+      "toast": {
+        "addedTitle": "Application ajoutée",
+        "addedDescription": "L'application a été ajoutée avec succès.",
+        "addErrorTitle": "Erreur lors de l'ajout",
+        "removedTitle": "Application retirée",
+        "removedDescription": "L'application a été retirée avec succès.",
+        "removeErrorTitle": "Erreur lors du retrait"
+      }
+    },
+    "manageMenus": {
+      "title": "Gérer les menus",
+      "description": "Ajoutez ou retirez des menus du département en un clic.",
+      "searchLabel": "Rechercher un menu",
+      "searchPlaceholder": "Rechercher par nom, code ou URL…",
+      "allApps": "Toutes les applications",
+      "loading": "Chargement…",
+      "emptyTitle": "Aucun menu trouvé",
+      "emptyFilters": "Essayez d'ajuster les filtres de recherche",
+      "emptyNone": "Aucun menu disponible",
+      "collapse": "Réduire le menu",
+      "expand": "Développer le menu",
+      "added": "Ajouté",
+      "available": "Disponible",
+      "active": "Actif",
+      "removeAria": "Retirer {name} du département",
+      "addAria": "Ajouter {name} au département",
+      "summary": "<b>{added}</b> sur <b>{total}</b> menus ajoutés",
+      "removeTitle": "Retirer le menu",
+      "removeDescription": "Voulez-vous vraiment retirer le menu <b>{name}</b> de ce département ? Cette action est irréversible.",
+      "toast": {
+        "addedTitle": "Menu ajouté",
+        "addedDescription": "Le menu a été ajouté avec succès.",
+        "addErrorTitle": "Erreur lors de l'ajout",
+        "removedTitle": "Menu retiré",
+        "removedDescription": "Le menu a été retiré avec succès.",
+        "removeErrorTitle": "Erreur lors du retrait"
+      }
+    }
   }
 }

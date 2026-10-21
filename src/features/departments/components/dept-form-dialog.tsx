@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,14 +29,15 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { useStatusOptions } from "@/i18n/status";
 import { statusSchema } from "@/schemas/global";
 
 import {
   type DepartmentArgs,
-  departmentSchema,
+  makeDepartmentSchema,
   normalizeDepartment,
 } from "../dept-schemas";
 import { useCreateDepartment, useUpdateDepartment } from "../use-departments";
@@ -62,6 +63,11 @@ export function DepartmentFormDialog({
   department,
   parentDeptId,
 }: DepartmentCreateDialogProps) {
+  const t = useTranslations("departments.form");
+  const tv = useTranslations("departments.validation");
+  const tActions = useTranslations("departments.actions");
+  const statusOptions = useStatusOptions();
+  const departmentSchema = useMemo(() => makeDepartmentSchema(tv), [tv]);
   const { igrpToast } = useIGRPToast();
   const [shouldClose, setShouldClose] = useState(false);
   const { mutateAsync: createDepartment, isPending: isCreating } =
@@ -147,10 +153,8 @@ export function DepartmentFormDialog({
 
       igrpToast({
         type: "success",
-        title: "Departamento",
-        description: `O departamento foi ${
-          department ? "atualizado" : "criado"
-        } com sucesso.`,
+        title: t("toast.successTitle"),
+        description: department ? t("toast.updated") : t("toast.created"),
       });
 
       if (shouldClose) {
@@ -165,13 +169,11 @@ export function DepartmentFormDialog({
     } catch (error) {
       igrpToast({
         type: "error",
-        title: `Não foi possível ${
-          department ? "atualizar" : "criar"
-        } departamento.`,
+        title: department
+          ? t("toast.updateErrorTitle")
+          : t("toast.createErrorTitle"),
         description:
-          error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+          error instanceof Error ? error.message : t("toast.unknownError"),
       });
     }
   };
@@ -179,16 +181,16 @@ export function DepartmentFormDialog({
   const isSubDepartment = Boolean(parentDeptId?.code);
 
   const titleTxt = department
-    ? "Editar Departamento"
+    ? t("titleEdit")
     : isSubDepartment
-      ? "Criar Sub Departamento"
-      : "Criar Novo Departamento";
+      ? t("titleCreateSub")
+      : t("titleCreate");
 
   const descriptionTxt = department
-    ? "Atualizar Departamento"
+    ? t("descriptionEdit")
     : isSubDepartment
-      ? "Criar um novo sub departamento"
-      : "Criar um novo departamento";
+      ? t("descriptionCreateSub")
+      : t("descriptionCreate");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -209,11 +211,11 @@ export function DepartmentFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='after:content-["*"] after:text-destructive'>
-                    Nome
+                    {t("name")}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Nome do Departamento"
+                      placeholder={t("namePlaceholder")}
                       value={field.value ?? ""}
                       onChange={field.onChange}
                       onBlur={field.onBlur}
@@ -235,11 +237,11 @@ export function DepartmentFormDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='after:content-["*"] after:text-destructive'>
-                    Código
+                    {t("code")}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Código do Departamento"
+                      placeholder={t("codePlaceholder")}
                       required
                       disabled={isLoading || !!department}
                       {...field}
@@ -257,10 +259,10 @@ export function DepartmentFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="">Descrição</FormLabel>
+                  <FormLabel className="">{t("description")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Breve descrição do departamento"
+                      placeholder={t("descriptionPlaceholder")}
                       rows={2}
                       disabled={isLoading}
                       value={field.value ?? ""}
@@ -282,7 +284,7 @@ export function DepartmentFormDialog({
                 name="parentCode"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Departamento Pai</FormLabel>
+                    <FormLabel>{t("parent")}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -293,7 +295,7 @@ export function DepartmentFormDialog({
                           ""
                         }
                         disabled
-                        placeholder="Departamento pai"
+                        placeholder={t("parentPlaceholder")}
                         className="bg-muted border-primary/30"
                       />
                     </FormControl>
@@ -309,15 +311,15 @@ export function DepartmentFormDialog({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Estado</FormLabel>
+                    <FormLabel>{t("status")}</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger className="w-full truncate">
-                          <SelectValue placeholder="Selecionar estado" />
+                          <SelectValue placeholder={t("statusPlaceholder")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {STATUS_OPTIONS.map((status) => (
+                        {statusOptions.map((status) => (
                           <SelectItem key={status.value} value={status.value}>
                             {status.label}
                           </SelectItem>
@@ -343,7 +345,7 @@ export function DepartmentFormDialog({
                 iconPlacement="start"
                 iconName="X"
               >
-                Cancelar
+                {tActions("cancel")}
               </IGRPButton>
 
               <div className="flex gap-1">
@@ -356,7 +358,7 @@ export function DepartmentFormDialog({
                     className="flex items-center gap-1"
                   >
                     <IGRPIcon iconName="Save" aria-hidden className="size-4" />
-                    {isLoading ? "A guardar…" : "Guardar e Novo"}
+                    {isLoading ? tActions("saving") : t("saveAndNew")}
                   </Button>
                 )}
 
@@ -367,7 +369,7 @@ export function DepartmentFormDialog({
                   className="flex items-center gap-1"
                 >
                   <IGRPIcon iconName="Save" aria-hidden className="size-4" />
-                  {isLoading ? "A guardar…" : "Guardar"}
+                  {isLoading ? tActions("saving") : t("save")}
                 </Button>
               </div>
             </DialogFooter>

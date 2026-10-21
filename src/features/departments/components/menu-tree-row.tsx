@@ -7,6 +7,7 @@ import {
   TableCell,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { getMenuIcon } from "@/lib/utilities";
 
@@ -27,6 +28,7 @@ const MenuTreeRow = ({
   menuRoleAssignments: Map<string, Set<string>>;
   ancestorCodes?: ReadonlySet<string>;
 }) => {
+  const t = useTranslations("departments.menus");
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(new Set());
 
   const hasChildren = menu.children && menu.children.length > 0;
@@ -58,7 +60,7 @@ const MenuTreeRow = ({
                 className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 type="button"
                 aria-expanded={isExpanded}
-                aria-label={isExpanded ? "Recolher menu" : "Expandir menu"}
+                aria-label={isExpanded ? t("collapse") : t("expand")}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
@@ -98,7 +100,7 @@ const MenuTreeRow = ({
                   menuRoleAssignments.get(menu.code)?.has(role.code) ?? false
                 }
                 onCheckedChange={() => toggleMenuRole(menu.code, role.code)}
-                aria-label={`${role.name} — ${menu.name}`}
+                aria-label={t("assign", { role: role.name, menu: menu.name })}
               />
             </div>
           </TableCell>

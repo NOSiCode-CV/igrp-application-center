@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { useDeptTree } from "./dept-tree-context";
@@ -22,6 +23,7 @@ interface Props {
 }
 
 const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
+  const t = useTranslations("departments");
   const {
     selectedCode,
     expanded,
@@ -61,8 +63,8 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
           aria-label={
             hasChildren
               ? isExpanded
-                ? "Recolher departamento"
-                : "Expandir departamento"
+                ? t("tree.collapse")
+                : t("tree.expand")
               : undefined
           }
         >
@@ -93,7 +95,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                 aria-hidden
                 className="size-1.5 rounded-full bg-muted-foreground shrink-0"
               />
-              <span className="sr-only">Inativo:</span>
+              <span className="sr-only">{t("tree.inactive")}</span>
             </>
           )}
           <span className="flex-1 text-left truncate">{dept.name}</span>
@@ -106,7 +108,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                 variant="ghost"
                 className="size-8 p-0"
                 onClick={(e: MouseEvent) => e.stopPropagation()}
-                aria-label="Abrir menu"
+                aria-label={t("tree.openMenu")}
               >
                 <IGRPIcon
                   iconName="EllipsisVertical"
@@ -125,7 +127,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
-                Editar
+                {t("actions.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => onCreateSub(dept)}>
                 <IGRPIcon
@@ -134,7 +136,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
-                Criar Sub-departamento
+                {t("tree.createSub")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -147,7 +149,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
-                Eliminar
+                {t("tree.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

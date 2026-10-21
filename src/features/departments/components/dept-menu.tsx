@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { igrpCompare } from "@igrp/framework-next/i18n";
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -31,6 +33,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 import {
@@ -55,6 +58,10 @@ interface MenuPermissionsProps {
 export type MenuWithChildren = MenuEntryDTO & { children?: MenuWithChildren[] };
 
 export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
+  const t = useTranslations("departments.menus");
+  const tActions = useTranslations("departments.actions");
+  const tRoot = useTranslations("departments");
+  const { formatLocale } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
 
   const [selectedApp, setSelectedApp] = useState<string>("");
@@ -80,11 +87,11 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   useEffect(() => {
     if (assignedApps && assignedApps.length > 0 && !selectedApp) {
       const sortedApps = [...assignedApps].sort((a, b) =>
-        a.name.localeCompare(b.name, "pt"),
+        igrpCompare(a.name, b.name, formatLocale),
       );
       setSelectedApp(sortedApps[0].code);
     }
-  }, [assignedApps, selectedApp]);
+  }, [assignedApps, selectedApp, formatLocale]);
 
   const filteredByApp = useMemo(
     () =>
@@ -152,8 +159,8 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
       if (promises.length === 0) {
         igrpToast({
           type: "info",
-          title: "Sem alterações",
-          description: "Nenhuma mudança foi detectada.",
+          title: t("toast.noChangesTitle"),
+          description: t("toast.noChangesDescription"),
         });
         return true;
       }
@@ -167,17 +174,17 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
       igrpToast({
         type: "success",
-        title: "Permissões salvas",
-        description: "Os perfis foram atribuídos aos menus com sucesso.",
+        title: t("toast.savedTitle"),
+        description: t("toast.savedDescription"),
       });
       return true;
     } catch (error) {
       console.error("Erro:", error);
       igrpToast({
         type: "error",
-        title: "Erro ao salvar",
+        title: t("toast.errorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tRoot("unknownError"),
       });
       return false;
     }
@@ -211,18 +218,18 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
   const sortedApps = useMemo(() => {
     if (!assignedApps) return [];
-    return [...assignedApps].sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [assignedApps]);
+    return [...assignedApps].sort((a, b) =>
+      igrpCompare(a.name, b.name, formatLocale),
+    );
+  }, [assignedApps, formatLocale]);
 
   return (
     <>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="leading-none font-semibold mb-1">Menus</div>
-            <div className="text-muted-foreground text-sm">
-              Faça a gestão de aplicações, menus e perfis do departamento.
-            </div>
+            <div className="leading-none font-semibold mb-1">{t("title")}</div>
+            <div className="text-muted-foreground text-sm">{t("subtitle")}</div>
           </div>
 
           <div className="flex gap-2">
@@ -237,7 +244,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 className="size-4"
                 strokeWidth={2}
               />
-              <span>Gerir Menus</span>
+              <span>{t("manage")}</span>
             </Button>
           </div>
         </div>
@@ -251,7 +258,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 disabled={loading || loadingApps}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Todas as aplicações" />
+                  <SelectValue placeholder={t("allApps")} />
                 </SelectTrigger>
                 <SelectContent>
                   {sortedApps.map((app) => (
@@ -282,9 +289,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 />
                 <Input
                   type="search"
-                  aria-label="Pesquisar menu"
+                  aria-label={t("searchLabel")}
                   autoComplete="off"
-                  placeholder="Pesquisar menu…"
+                  placeholder={t("searchPlaceholder")}
                   className="pl-8"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -295,7 +302,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         </div>
 
         {loading || isLoadingRoles ? (
-          <AppCenterLoading description="A carregar menus…" />
+          <AppCenterLoading description={t("loading")} />
         ) : menuTree.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border rounded-lg">
             <IGRPIcon
@@ -304,11 +311,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
               className="size-16 mb-4 opacity-30"
               strokeWidth={1.5}
             />
-            <p className="text-lg font-medium mb-2">Nenhum menu encontrado</p>
+            <p className="text-lg font-medium mb-2">{t("emptyTitle")}</p>
             <p className="text-sm mb-4">
-              {searchTerm
-                ? "Tente ajustar os termos de pesquisa"
-                : "Configure aplicações e menus primeiro"}
+              {searchTerm ? t("emptySearch") : t("emptySetup")}
             </p>
             <div className="flex gap-2">
               <Button
@@ -322,7 +327,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   className="size-4"
                   strokeWidth={2}
                 />
-                Gerir Menus
+                {t("manage")}
               </Button>
             </div>
           </div>
@@ -337,9 +342,11 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                     className="size-3"
                     strokeWidth={2}
                   />
-                  Filtrado por:{" "}
-                  {sortedApps.find((app) => app.code === selectedApp)?.name ||
-                    selectedApp}
+                  {t("filteredBy", {
+                    app:
+                      sortedApps.find((app) => app.code === selectedApp)
+                        ?.name || selectedApp,
+                  })}
                 </Badge>
               </div>
             )}
@@ -349,7 +356,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="whitespace-nowrap min-w-[320px]">
-                      Menu
+                      {t("columnMenu")}
                     </TableHead>
 
                     {roles?.map((role) => (
@@ -393,12 +400,12 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                                       strokeWidth={2}
                                     />
                                     <span className="sr-only">
-                                      Selecionar todos
+                                      {t("selectAll")}
                                     </span>
                                   </button>
                                 </TooltipTrigger>
                                 <TooltipContent className="px-2 py-1 text-xs">
-                                  Marcar/desmarcar todos
+                                  {t("toggleAll")}
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -434,8 +441,10 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
 
             <div className="flex justify-between items-center pt-2">
               <div className="text-sm text-muted-foreground">
-                {menus?.length} menu{menus?.length !== 1 ? "s" : ""} •{" "}
-                {roles?.length || 0} perf{roles?.length !== 1 ? "is" : "il"}
+                {t("summary", {
+                  menus: menus?.length ?? 0,
+                  roles: roles?.length ?? 0,
+                })}
               </div>
 
               <div className="flex gap-2">
@@ -452,7 +461,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                         className="size-4 animate-spin motion-reduce:animate-none"
                         strokeWidth={2}
                       />
-                      A guardar…
+                      {tActions("saving")}
                     </>
                   ) : (
                     <>
@@ -462,7 +471,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                         className="size-4"
                         strokeWidth={2}
                       />
-                      Guardar Permissões
+                      {t("savePermissions")}
                     </>
                   )}
                 </Button>
@@ -491,11 +500,10 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                 className="size-5 text-warning"
                 strokeWidth={2}
               />
-              Alterações por guardar
+              {t("unsaved.title")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem alterações nas permissões dos menus que ainda não foram
-              guardadas. Guardar antes de mudar de aplicação ou descartar?
+              {t("unsaved.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-col sm:justify-between sm:flex-row gap-2">
@@ -511,7 +519,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   className="size-4"
                   strokeWidth={2}
                 />
-                Cancelar
+                {tActions("cancel")}
               </Button>
             </div>
             <div className="flex gap-2">
@@ -527,7 +535,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                   className="size-4"
                   strokeWidth={2}
                 />
-                Descartar e mudar
+                {t("unsaved.discard")}
               </Button>
               <Button
                 onClick={handleSaveAndSwitch}
@@ -542,7 +550,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                       className="size-4 animate-spin motion-reduce:animate-none"
                       strokeWidth={2}
                     />
-                    A guardar…
+                    {tActions("saving")}
                   </>
                 ) : (
                   <>
@@ -552,7 +560,7 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
                       className="size-4"
                       strokeWidth={2}
                     />
-                    Guardar e mudar
+                    {t("unsaved.saveAndSwitch")}
                   </>
                 )}
               </Button>

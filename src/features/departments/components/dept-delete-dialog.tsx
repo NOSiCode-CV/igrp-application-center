@@ -1,6 +1,7 @@
 "use client";
 
 import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
 
@@ -17,6 +18,7 @@ export function DepartmentDeleteDialog({
   onOpenChange,
   deptToDelete,
 }: DepartmentDeleteDialogProps) {
+  const t = useTranslations("departments");
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: deleteDepartment, isPending: isDeleting } =
     useDeleteDepartment();
@@ -31,8 +33,10 @@ export function DepartmentDeleteDialog({
 
       igrpToast({
         type: "success",
-        title: "Departamento Eliminado",
-        description: `Departamento '${deptToDelete.name}' foi eliminado com sucesso.`,
+        title: t("delete.toast.successTitle"),
+        description: t("delete.toast.successDescription", {
+          name: deptToDelete.name,
+        }),
         duration: 4000,
       });
 
@@ -40,7 +44,7 @@ export function DepartmentDeleteDialog({
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao eliminar.",
+        title: t("delete.toast.errorTitle"),
         description: (error as Error).message,
         duration: 4000,
       });
@@ -54,9 +58,11 @@ export function DepartmentDeleteDialog({
       toDelete={deptToDelete}
       confirmDelete={confirmDelete}
       isDeleting={isDeleting}
-      description="Esta ação é irreversível. O departamento é eliminado, juntamente com os perfis, permissões e menus que lhe estão associados."
-      label="Nome do departamento"
-      textHeader="Eliminar departamento"
+      description={t("delete.description")}
+      label={t("delete.label")}
+      textHeader={t("delete.title")}
+      labelBtnCancel={t("actions.cancel")}
+      labelBtnDelete={t("tree.delete")}
     />
   );
 }

@@ -4,6 +4,7 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 type Department = {
   id: number;
@@ -32,6 +33,7 @@ const DepartmentTreeItemSimple = ({
   setExpandedDepts: React.Dispatch<React.SetStateAction<Set<string>>>;
   ancestorCodes?: ReadonlySet<string>;
 }) => {
+  const t = useTranslations("departments.tree");
   const hasChildren = dept.children && dept.children.length > 0;
   const isExpanded = expandedDepts.has(dept.code);
   const isActive = dept.status === "ACTIVE";
@@ -64,11 +66,7 @@ const DepartmentTreeItemSimple = ({
           disabled={!hasChildren}
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-label={
-            hasChildren
-              ? isExpanded
-                ? "Recolher departamento"
-                : "Expandir departamento"
-              : undefined
+            hasChildren ? (isExpanded ? t("collapse") : t("expand")) : undefined
           }
         >
           {hasChildren ? (
@@ -104,7 +102,7 @@ const DepartmentTreeItemSimple = ({
               />
             )}
           </div>
-          {!isActive && <span className="sr-only">Inativo:</span>}
+          {!isActive && <span className="sr-only">{t("inactive")}</span>}
           <span className="flex-1 text-left truncate font-medium">
             {dept.name}
           </span>

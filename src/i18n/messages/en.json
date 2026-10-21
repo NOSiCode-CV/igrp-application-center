@@ -1817,5 +1817,209 @@
       "asc": "ascending order",
       "desc": "descending order"
     }
+  },
+  "departments": {
+    "meta": {
+      "title": "Departments",
+      "description": "Manage departments, roles, permissions and menus."
+    },
+    "page": {
+      "title": "Department Management",
+      "description": "Organize departments and their associated roles, permissions and menus."
+    },
+    "error": {
+      "title": "Could not load departments",
+      "message": "An error occurred while fetching the list. Try again; if it persists, contact support.",
+      "retry": "Try again",
+      "ref": "Ref: {digest}"
+    },
+    "validation": {
+      "codePattern": "The code must contain uppercase letters, numbers and underscores",
+      "codeMin": "Code is required (min 2 characters)",
+      "nameMin": "Name is required (min 2 characters)",
+      "namePattern": "The name cannot contain special characters"
+    },
+    "unknownError": "Unknown error",
+    "actions": {
+      "newDepartment": "New Department",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "close": "Close",
+      "remove": "Remove",
+      "removing": "Removing…",
+      "saving": "Saving…",
+      "processing": "Processing…"
+    },
+    "sidebar": {
+      "title": "Department Management",
+      "summaryWithInactive": "{active} active · {inactive} inactive",
+      "summary": "{count, plural, =1 {# department} other {# departments}}",
+      "searchLabel": "Search department",
+      "searchPlaceholder": "Search department…",
+      "filtering": "Filtering…",
+      "openList": "Open department list",
+      "listTitle": "Departments"
+    },
+    "tree": {
+      "collapse": "Collapse department",
+      "expand": "Expand department",
+      "inactive": "Inactive:",
+      "openMenu": "Open menu",
+      "createSub": "Create Sub-department",
+      "delete": "Delete"
+    },
+    "empty": {
+      "sidebarEmpty": {
+        "title": "No departments",
+        "body": "Use the ''New Department'' button to create the first department to organize roles and permissions."
+      },
+      "sidebarNoResults": {
+        "title": "No departments found",
+        "body": "Try another search term or clear the field."
+      },
+      "main": {
+        "title": "Start with a department",
+        "body": "Departments organize roles, permissions and menus. Create the first one to set up the system."
+      }
+    },
+    "detail": {
+      "tabRoles": "Roles",
+      "tabPermissions": "Permissions",
+      "tabMenus": "Menus",
+      "noDescription": "No description.",
+      "manageApps": "Manage Applications"
+    },
+    "form": {
+      "titleEdit": "Edit Department",
+      "titleCreateSub": "Create Sub Department",
+      "titleCreate": "Create New Department",
+      "descriptionEdit": "Update Department",
+      "descriptionCreateSub": "Create a new sub department",
+      "descriptionCreate": "Create a new department",
+      "name": "Name",
+      "namePlaceholder": "Department name",
+      "code": "Code",
+      "codePlaceholder": "Department code",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the department",
+      "parent": "Parent Department",
+      "parentPlaceholder": "Parent department",
+      "status": "Status",
+      "statusPlaceholder": "Select status",
+      "saveAndNew": "Save and New",
+      "save": "Save",
+      "toast": {
+        "successTitle": "Department",
+        "updated": "The department was updated successfully.",
+        "created": "The department was created successfully.",
+        "updateErrorTitle": "Could not update the department.",
+        "createErrorTitle": "Could not create the department.",
+        "unknownError": "An unknown error occurred."
+      }
+    },
+    "delete": {
+      "title": "Delete department",
+      "description": "This action is irreversible. The department is deleted, along with the roles, permissions and menus associated with it.",
+      "label": "Department name",
+      "toast": {
+        "successTitle": "Department Deleted",
+        "successDescription": "Department ''{name}'' was deleted successfully.",
+        "errorTitle": "Failed to delete."
+      }
+    },
+    "simple": {
+      "loading": "Loading departments…",
+      "searchLabel": "Search department",
+      "searchPlaceholder": "Search department…",
+      "none": "No departments"
+    },
+    "menus": {
+      "title": "Menus",
+      "subtitle": "Manage the department's applications, menus and roles.",
+      "manage": "Manage Menus",
+      "allApps": "All applications",
+      "searchLabel": "Search menu",
+      "searchPlaceholder": "Search menu…",
+      "loading": "Loading menus…",
+      "emptyTitle": "No menus found",
+      "emptySearch": "Try adjusting your search terms",
+      "emptySetup": "Set up applications and menus first",
+      "filteredBy": "Filtered by: {app}",
+      "columnMenu": "Menu",
+      "selectAll": "Select all",
+      "toggleAll": "Check/uncheck all",
+      "collapse": "Collapse menu",
+      "expand": "Expand menu",
+      "assign": "{role} — {menu}",
+      "summary": "{menus, plural, =1 {# menu} other {# menus}} • {roles, plural, =1 {# role} other {# roles}}",
+      "savePermissions": "Save Permissions",
+      "toast": {
+        "noChangesTitle": "No changes",
+        "noChangesDescription": "No changes were detected.",
+        "savedTitle": "Permissions saved",
+        "savedDescription": "The roles were assigned to the menus successfully.",
+        "errorTitle": "Error saving"
+      },
+      "unsaved": {
+        "title": "Unsaved changes",
+        "description": "You have changes to the menu permissions that have not been saved. Save before switching application, or discard them?",
+        "discard": "Discard and switch",
+        "saveAndSwitch": "Save and switch"
+      }
+    },
+    "manageApps": {
+      "title": "Manage Applications",
+      "description": "Add or remove the department's applications with one click.",
+      "searchLabel": "Search application",
+      "searchPlaceholder": "Search by name, code or description…",
+      "emptyTitle": "No applications found",
+      "emptySearch": "Try adjusting your search terms",
+      "emptyNone": "There are no applications available",
+      "added": "Added",
+      "available": "Available",
+      "active": "Active",
+      "removeAria": "Remove {name} from the department",
+      "addAria": "Add {name} to the department",
+      "summary": "<b>{added}</b> of <b>{total}</b> applications added",
+      "removeTitle": "Remove Application",
+      "removeDescription": "Are you sure you want to remove the application <b>{name}</b> from this department? This action cannot be undone.",
+      "toast": {
+        "addedTitle": "Application added",
+        "addedDescription": "The application was added successfully.",
+        "addErrorTitle": "Error adding",
+        "removedTitle": "Application removed",
+        "removedDescription": "The application was removed successfully.",
+        "removeErrorTitle": "Error removing"
+      }
+    },
+    "manageMenus": {
+      "title": "Manage Menus",
+      "description": "Add or remove the department's menus with one click.",
+      "searchLabel": "Search menu",
+      "searchPlaceholder": "Search by name, code or URL…",
+      "allApps": "All applications",
+      "loading": "Loading…",
+      "emptyTitle": "No menus found",
+      "emptyFilters": "Try adjusting your search filters",
+      "emptyNone": "There are no menus available",
+      "collapse": "Collapse menu",
+      "expand": "Expand menu",
+      "added": "Added",
+      "available": "Available",
+      "active": "Active",
+      "removeAria": "Remove {name} from the department",
+      "addAria": "Add {name} to the department",
+      "summary": "<b>{added}</b> of <b>{total}</b> menus added",
+      "removeTitle": "Remove Menu",
+      "removeDescription": "Are you sure you want to remove the menu <b>{name}</b> from this department? This action cannot be undone.",
+      "toast": {
+        "addedTitle": "Menu added",
+        "addedDescription": "The menu was added successfully.",
+        "addErrorTitle": "Error adding",
+        "removedTitle": "Menu removed",
+        "removedDescription": "The menu was removed successfully.",
+        "removeErrorTitle": "Error removing"
+      }
+    }
   }
 }

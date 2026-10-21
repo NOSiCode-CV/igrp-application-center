@@ -1817,5 +1817,209 @@
       "asc": "ordem crescente",
       "desc": "ordem decrescente"
     }
+  },
+  "departments": {
+    "meta": {
+      "title": "Departamentos",
+      "description": "Gerir departamentos, perfis, permissões e menus."
+    },
+    "page": {
+      "title": "Gestão de Departamentos",
+      "description": "Organize os departamentos e os perfis, permissões e menus associados."
+    },
+    "error": {
+      "title": "Não foi possível carregar departamentos",
+      "message": "Ocorreu um erro ao obter a lista. Tenta novamente; se persistir, contacta o suporte.",
+      "retry": "Tentar novamente",
+      "ref": "Ref: {digest}"
+    },
+    "validation": {
+      "codePattern": "O código deve conter maiusculas, números e sublinhados",
+      "codeMin": "Código é obrigatório (min 2 carateres)",
+      "nameMin": "Nome é obrigatório (min 2 carateres)",
+      "namePattern": "O nome não pode conter caracteres especiais"
+    },
+    "unknownError": "Erro desconhecido",
+    "actions": {
+      "newDepartment": "Novo Departamento",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "remove": "Remover",
+      "removing": "A remover…",
+      "saving": "A guardar…",
+      "processing": "A processar…"
+    },
+    "sidebar": {
+      "title": "Gestão de Departamentos",
+      "summaryWithInactive": "{active} ativos · {inactive} inativos",
+      "summary": "{count, plural, =1 {# departamento} other {# departamentos}}",
+      "searchLabel": "Pesquisar departamento",
+      "searchPlaceholder": "Pesquisar departamento…",
+      "filtering": "A filtrar…",
+      "openList": "Abrir lista de departamentos",
+      "listTitle": "Departamentos"
+    },
+    "tree": {
+      "collapse": "Recolher departamento",
+      "expand": "Expandir departamento",
+      "inactive": "Inativo:",
+      "openMenu": "Abrir menu",
+      "createSub": "Criar Sub-departamento",
+      "delete": "Eliminar"
+    },
+    "empty": {
+      "sidebarEmpty": {
+        "title": "Nenhum departamento",
+        "body": "Use o botão 'Novo Departamento' para criar o primeiro departamento para organizar perfis e permissões."
+      },
+      "sidebarNoResults": {
+        "title": "Nenhum departamento encontrado",
+        "body": "Tente outro termo na pesquisa ou limpe o campo."
+      },
+      "main": {
+        "title": "Comece por um departamento",
+        "body": "Os departamentos organizam perfis, permissões e menus. Crie o primeiro para configurar o sistema."
+      }
+    },
+    "detail": {
+      "tabRoles": "Perfis (Roles)",
+      "tabPermissions": "Permissões",
+      "tabMenus": "Menus",
+      "noDescription": "Sem descrição.",
+      "manageApps": "Gerir Aplicações"
+    },
+    "form": {
+      "titleEdit": "Editar Departamento",
+      "titleCreateSub": "Criar Sub Departamento",
+      "titleCreate": "Criar Novo Departamento",
+      "descriptionEdit": "Atualizar Departamento",
+      "descriptionCreateSub": "Criar um novo sub departamento",
+      "descriptionCreate": "Criar um novo departamento",
+      "name": "Nome",
+      "namePlaceholder": "Nome do Departamento",
+      "code": "Código",
+      "codePlaceholder": "Código do Departamento",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Breve descrição do departamento",
+      "parent": "Departamento Pai",
+      "parentPlaceholder": "Departamento pai",
+      "status": "Estado",
+      "statusPlaceholder": "Selecionar estado",
+      "saveAndNew": "Guardar e Novo",
+      "save": "Guardar",
+      "toast": {
+        "successTitle": "Departamento",
+        "updated": "O departamento foi atualizado com sucesso.",
+        "created": "O departamento foi criado com sucesso.",
+        "updateErrorTitle": "Não foi possível atualizar departamento.",
+        "createErrorTitle": "Não foi possível criar departamento.",
+        "unknownError": "Ocorreu um erro desconhecido."
+      }
+    },
+    "delete": {
+      "title": "Eliminar departamento",
+      "description": "Esta ação é irreversível. O departamento é eliminado, juntamente com os perfis, permissões e menus que lhe estão associados.",
+      "label": "Nome do departamento",
+      "toast": {
+        "successTitle": "Departamento Eliminado",
+        "successDescription": "Departamento ''{name}'' foi eliminado com sucesso.",
+        "errorTitle": "Erro ao eliminar."
+      }
+    },
+    "simple": {
+      "loading": "A carregar departamentos…",
+      "searchLabel": "Pesquisar departamento",
+      "searchPlaceholder": "Pesquisar departamento…",
+      "none": "Nenhum departamento"
+    },
+    "menus": {
+      "title": "Menus",
+      "subtitle": "Faça a gestão de aplicações, menus e perfis do departamento.",
+      "manage": "Gerir Menus",
+      "allApps": "Todas as aplicações",
+      "searchLabel": "Pesquisar menu",
+      "searchPlaceholder": "Pesquisar menu…",
+      "loading": "A carregar menus…",
+      "emptyTitle": "Nenhum menu encontrado",
+      "emptySearch": "Tente ajustar os termos de pesquisa",
+      "emptySetup": "Configure aplicações e menus primeiro",
+      "filteredBy": "Filtrado por: {app}",
+      "columnMenu": "Menu",
+      "selectAll": "Selecionar todos",
+      "toggleAll": "Marcar/desmarcar todos",
+      "collapse": "Recolher menu",
+      "expand": "Expandir menu",
+      "assign": "{role} — {menu}",
+      "summary": "{menus, plural, =1 {# menu} other {# menus}} • {roles, plural, =1 {# perfil} other {# perfis}}",
+      "savePermissions": "Guardar Permissões",
+      "toast": {
+        "noChangesTitle": "Sem alterações",
+        "noChangesDescription": "Nenhuma mudança foi detectada.",
+        "savedTitle": "Permissões salvas",
+        "savedDescription": "Os perfis foram atribuídos aos menus com sucesso.",
+        "errorTitle": "Erro ao salvar"
+      },
+      "unsaved": {
+        "title": "Alterações por guardar",
+        "description": "Tem alterações nas permissões dos menus que ainda não foram guardadas. Guardar antes de mudar de aplicação ou descartar?",
+        "discard": "Descartar e mudar",
+        "saveAndSwitch": "Guardar e mudar"
+      }
+    },
+    "manageApps": {
+      "title": "Gerir Aplicações",
+      "description": "Adicione ou remova aplicações do departamento com um clique.",
+      "searchLabel": "Pesquisar aplicação",
+      "searchPlaceholder": "Pesquisar por nome, código ou descrição…",
+      "emptyTitle": "Nenhuma aplicação encontrada",
+      "emptySearch": "Tente ajustar os termos de pesquisa",
+      "emptyNone": "Não há aplicações disponíveis",
+      "added": "Adicionado",
+      "available": "Disponível",
+      "active": "Ativo",
+      "removeAria": "Remover {name} do departamento",
+      "addAria": "Adicionar {name} ao departamento",
+      "summary": "<b>{added}</b> de <b>{total}</b> aplicações adicionadas",
+      "removeTitle": "Remover Aplicação",
+      "removeDescription": "Tem certeza que deseja remover a aplicação <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
+      "toast": {
+        "addedTitle": "Aplicação adicionada",
+        "addedDescription": "A aplicação foi adicionada com sucesso.",
+        "addErrorTitle": "Erro ao adicionar",
+        "removedTitle": "Aplicação removida",
+        "removedDescription": "A aplicação foi removida com sucesso.",
+        "removeErrorTitle": "Erro ao remover"
+      }
+    },
+    "manageMenus": {
+      "title": "Gerir Menus",
+      "description": "Adicione ou remova menus do departamento com um clique.",
+      "searchLabel": "Pesquisar menu",
+      "searchPlaceholder": "Pesquisar por nome, código ou URL…",
+      "allApps": "Todas aplicações",
+      "loading": "A carregar…",
+      "emptyTitle": "Nenhum menu encontrado",
+      "emptyFilters": "Tente ajustar os filtros de pesquisa",
+      "emptyNone": "Não há menus disponíveis",
+      "collapse": "Recolher menu",
+      "expand": "Expandir menu",
+      "added": "Adicionado",
+      "available": "Disponível",
+      "active": "Ativo",
+      "removeAria": "Remover {name} do departamento",
+      "addAria": "Adicionar {name} ao departamento",
+      "summary": "<b>{added}</b> de <b>{total}</b> menus adicionados",
+      "removeTitle": "Remover Menu",
+      "removeDescription": "Tem certeza que deseja remover o menu <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
+      "toast": {
+        "addedTitle": "Menu adicionado",
+        "addedDescription": "O menu foi adicionado com sucesso.",
+        "addErrorTitle": "Erro ao adicionar",
+        "removedTitle": "Menu removido",
+        "removedDescription": "O menu foi removido com sucesso.",
+        "removeErrorTitle": "Erro ao remover"
+      }
+    }
   }
 }

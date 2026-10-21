@@ -2,6 +2,8 @@
 
 import { useMemo, useRef, useState } from "react";
 
+import { igrpCompare } from "@igrp/framework-next/i18n";
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -24,6 +26,7 @@ import {
   Switch,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { useApplications } from "@/features/applications/use-applications";
 
@@ -44,6 +47,10 @@ export function ManageAppsModal({
   open,
   onOpenChange,
 }: ManageAppsModalProps) {
+  const t = useTranslations("departments.manageApps");
+  const tActions = useTranslations("departments.actions");
+  const tRoot = useTranslations("departments");
+  const { formatLocale } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,8 +93,8 @@ export function ManageAppsModal({
     const assignedCodes = new Set(assignedApps?.map((app) => app.code));
     return Array.from(byCode.values())
       .map((app) => ({ ...app, isAssigned: assignedCodes.has(app.code) }))
-      .sort((a, b) => a.name.localeCompare(b.name, "pt"));
-  }, [availableApps, assignedApps]);
+      .sort((a, b) => igrpCompare(a.name, b.name, formatLocale));
+  }, [availableApps, assignedApps, formatLocale]);
   retainedAppsRef.current = allApps;
 
   const filteredApps = useMemo(() => {
@@ -126,15 +133,15 @@ export function ManageAppsModal({
 
       igrpToast({
         type: "success",
-        title: "Aplicação adicionada",
-        description: "A aplicação foi adicionada com sucesso.",
+        title: t("toast.addedTitle"),
+        description: t("toast.addedDescription"),
       });
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao adicionar",
+        title: t("toast.addErrorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tRoot("unknownError"),
       });
     } finally {
       setProcessingApp(null);
@@ -155,17 +162,17 @@ export function ManageAppsModal({
 
       igrpToast({
         type: "success",
-        title: "Aplicação removida",
-        description: "A aplicação foi removida com sucesso.",
+        title: t("toast.removedTitle"),
+        description: t("toast.removedDescription"),
       });
 
       setAppToRemove(null);
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro ao remover",
+        title: t("toast.removeErrorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error ? error.message : tRoot("unknownError"),
       });
     } finally {
       setProcessingApp(null);
@@ -184,11 +191,9 @@ export function ManageAppsModal({
                 className="size-5"
                 strokeWidth={2}
               />
-              Gerir Aplicações
+              {t("title")}
             </DialogTitle>
-            <DialogDescription>
-              Adicione ou remova aplicações do departamento com um clique.
-            </DialogDescription>
+            <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
 
           <div className="pb-4">
@@ -200,9 +205,9 @@ export function ManageAppsModal({
               />
               <Input
                 type="search"
-                aria-label="Pesquisar aplicação"
+                aria-label={t("searchLabel")}
                 autoComplete="off"
-                placeholder="Pesquisar por nome, código ou descrição…"
+                placeholder={t("searchPlaceholder")}
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -226,13 +231,9 @@ export function ManageAppsModal({
                   className="size-16 mb-4 opacity-20"
                   strokeWidth={1.5}
                 />
-                <p className="font-semibold text-lg">
-                  Nenhuma aplicação encontrada
-                </p>
+                <p className="font-semibold text-lg">{t("emptyTitle")}</p>
                 <p className="text-sm mt-1">
-                  {searchTerm
-                    ? "Tente ajustar os termos de pesquisa"
-                    : "Não há aplicações disponíveis"}
+                  {searchTerm ? t("emptySearch") : t("emptyNone")}
                 </p>
               </div>
             ) : (
@@ -293,12 +294,12 @@ export function ManageAppsModal({
                                 : "text-muted-foreground",
                             )}
                           >
-                            {app.isAssigned ? "Adicionado" : "Disponível"}
+                            {app.isAssigned ? t("added") : t("available")}
                           </span>
                           {app.isAssigned && (
                             <div className="flex items-center gap-1 text-[10px] text-primary/70">
                               <div className="size-1.5 rounded-full bg-success" />
-                              Ativo
+                              {t("active")}
                             </div>
                           )}
                         </div>
@@ -310,8 +311,8 @@ export function ManageAppsModal({
                           disabled={processingApp !== null}
                           aria-label={
                             app.isAssigned
-                              ? `Remover ${app.name} do departamento`
-                              : `Adicionar ${app.name} ao departamento`
+                              ? t("removeAria", { name: app.name })
+                              : t("addAria", { name: app.name })
                           }
                           className={cn(
                             "data-[state=checked]:bg-success",
@@ -333,7 +334,7 @@ export function ManageAppsModal({
                             className="size-4 animate-spin motion-reduce:animate-none"
                             strokeWidth={2}
                           />
-                          A processar…
+                          {tActions("processing")}
                         </div>
                       </div>
                     )}
@@ -345,11 +346,11 @@ export function ManageAppsModal({
 
           <div className="flex justify-between items-center py-4 ">
             <div className="text-sm text-muted-foreground">
-              <span className="font-medium">
-                {filteredApps.filter((app) => app.isAssigned).length}
-              </span>{" "}
-              de <span className="font-medium">{filteredApps.length}</span>{" "}
-              aplicações adicionadas
+              {t.rich("summary", {
+                added: filteredApps.filter((app) => app.isAssigned).length,
+                total: filteredApps.length,
+                b: (chunks) => <span className="font-medium">{chunks}</span>,
+              })}
             </div>
 
             <Button
@@ -364,7 +365,7 @@ export function ManageAppsModal({
                 className="size-4"
                 strokeWidth={2}
               />
-              Fechar
+              {tActions("close")}
             </Button>
           </div>
         </DialogContent>
@@ -383,12 +384,15 @@ export function ManageAppsModal({
                 className="size-5 text-destructive"
                 strokeWidth={2}
               />
-              Remover Aplicação
+              {t("removeTitle")}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover a aplicação{" "}
-              <strong className="text-foreground">{appToRemove?.name}</strong>{" "}
-              deste departamento? Esta ação não pode ser desfeita.
+              {t.rich("removeDescription", {
+                name: appToRemove?.name ?? "",
+                b: (chunks) => (
+                  <strong className="text-foreground">{chunks}</strong>
+                ),
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -403,7 +407,7 @@ export function ManageAppsModal({
               iconPlacement="start"
               iconName="X"
             >
-              Cancelar
+              {tActions("cancel")}
             </IGRPButton>
             <IGRPButton
               onClick={handleConfirmRemove}
@@ -418,7 +422,7 @@ export function ManageAppsModal({
                     className="size-4 animate-spin motion-reduce:animate-none"
                     strokeWidth={2}
                   />
-                  A remover…
+                  {tActions("removing")}
                 </>
               ) : (
                 <>
@@ -428,7 +432,7 @@ export function ManageAppsModal({
                     className="size-4"
                     strokeWidth={2}
                   />
-                  Remover
+                  {tActions("remove")}
                 </>
               )}
             </IGRPButton>

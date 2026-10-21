@@ -21,6 +21,9 @@ const ALLOWED = new Set([
   "OAuth",
   "Middleware", // product / layer names
   "Menu", // same word in pt and en (audit entity type)
+  "Menus", // same word in pt and en (departments)
+  "Ref: {digest}", // error reference prefix (departments)
+  "{role} — {menu}", // label made only of placeholders (departments)
   "Access Management",
   "johndoe", // example placeholders
   "page-slug",

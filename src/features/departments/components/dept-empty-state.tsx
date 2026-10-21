@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 interface Props {
   variant: "sidebar-empty" | "sidebar-no-results" | "main-no-departments";
@@ -11,24 +12,22 @@ const copy = {
   "sidebar-empty": {
     iconSize: "size-8",
     iconStroke: 1.5,
-    title: "Nenhum departamento",
-    body: "Use o botão 'Novo Departamento' para criar o primeiro departamento para organizar perfis e permissões.",
+    key: "sidebarEmpty",
   },
   "sidebar-no-results": {
     iconSize: "size-8",
     iconStroke: 1.5,
-    title: "Nenhum departamento encontrado",
-    body: "Tente outro termo na pesquisa ou limpe o campo.",
+    key: "sidebarNoResults",
   },
   "main-no-departments": {
     iconSize: "size-12",
     iconStroke: 1.5,
-    title: "Comece por um departamento",
-    body: "Os departamentos organizam perfis, permissões e menus. Crie o primeiro para configurar o sistema.",
+    key: "main",
   },
 } as const;
 
 export function DepartmentEmptyState({ variant, onCreate }: Props) {
+  const t = useTranslations("departments");
   const c = copy[variant];
   const isMain = variant === "main-no-departments";
 
@@ -59,7 +58,7 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
           isMain ? "text-lg font-semibold mb-2" : "text-sm font-semibold mb-1"
         }
       >
-        {c.title}
+        {t(`empty.${c.key}.title`)}
       </h3>
       <p
         className={
@@ -68,7 +67,7 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
             : "text-muted-foreground text-xs mb-4 max-w-[220px]"
         }
       >
-        {c.body}
+        {t(`empty.${c.key}.body`)}
       </p>
       {onCreate && (
         <Button onClick={onCreate}>
@@ -78,7 +77,7 @@ export function DepartmentEmptyState({ variant, onCreate }: Props) {
             className="size-4"
             strokeWidth={2}
           />
-          Novo Departamento
+          {t("actions.newDepartment")}
         </Button>
       )}
     </div>

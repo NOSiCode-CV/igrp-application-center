@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { parseHttpStatusDigest } from "@/lib/errors";
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export default function DepartmentsError({ error, reset }: Props) {
+  const t = useTranslations("departments.error");
   useEffect(() => {
     // Skip reporting expected client errors (4xx like 401/403/404) — they are
     // routine authorization/not-found outcomes, not observability signal.
@@ -35,19 +37,18 @@ export default function DepartmentsError({ error, reset }: Props) {
             className="size-10 text-destructive"
             strokeWidth={1.5}
           />
-          <h2 className="text-lg font-semibold">
-            Não foi possível carregar departamentos
-          </h2>
+          <h2 className="text-lg font-semibold">{t("title")}</h2>
           <p className="text-muted-foreground text-sm max-w-md">
-            Ocorreu um erro ao obter a lista. Tenta novamente; se persistir,
-            contacta o suporte.
+            {t("message")}
           </p>
           <Button onClick={reset} variant="outline">
             <IGRPIcon iconName="RefreshCw" className="size-4" strokeWidth={2} />
-            Tentar novamente
+            {t("retry")}
           </Button>
           {error.digest && (
-            <p className="text-muted-foreground text-xs">Ref: {error.digest}</p>
+            <p className="text-muted-foreground text-xs">
+              {t("ref", { digest: error.digest })}
+            </p>
           )}
         </div>
       }
