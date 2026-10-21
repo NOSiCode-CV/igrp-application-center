@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 
 import {
   Button,
@@ -9,12 +10,12 @@ import {
   IGRPIcon,
   type IGRPOptionsProps,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { FacetedFilter } from "@/components/data-table/faceted-filter";
 import { SearchInput } from "@/components/data-table/search-input";
-import { ROUTES, STATUS_OPTIONS } from "@/lib/constants";
-
-import { CLIENT_KIND_LABEL } from "../lib/oauth-client-utils";
+import { useStatusOptions } from "@/i18n/status";
+import { ROUTES } from "@/lib/constants";
 
 export interface OAuthClientFilters {
   search: string;
@@ -33,11 +34,6 @@ export const EMPTY_OAUTH_CLIENT_FILTERS: OAuthClientFilters = {
 
 type FacetKey = "kind" | "status";
 
-const KIND_OPTIONS = [
-  { value: "web", label: CLIENT_KIND_LABEL.web },
-  { value: "machine", label: CLIENT_KIND_LABEL.machine },
-];
-
 interface OAuthClientToolbarProps {
   filters: OAuthClientFilters;
   onFiltersChange: (next: OAuthClientFilters) => void;
@@ -54,6 +50,16 @@ export function OAuthClientToolbar({
   counts,
   disabled = false,
 }: OAuthClientToolbarProps) {
+  const t = useTranslations("oauthClients");
+  const tc = useTranslations("common.actions");
+  const statusOptions = useStatusOptions();
+  const kindOptions = useMemo(
+    () => [
+      { value: "web", label: t("kind.web") },
+      { value: "machine", label: t("kind.machine") },
+    ],
+    [t],
+  );
   const isFiltered =
     filters.search !== "" ||
     filters.kind.length > 0 ||
@@ -71,8 +77,8 @@ export function OAuthClientToolbar({
         <SearchInput
           value={filters.search}
           onChange={(v) => set("search", v)}
-          label="Pesquisar clientes"
-          placeholder="Pesquisar por nome ou client ID…"
+          label={t("toolbar.searchLabel")}
+          placeholder={t("toolbar.searchPlaceholder")}
           disabled={disabled}
         />
         <div className="flex flex-wrap items-start gap-2">
@@ -88,23 +94,23 @@ export function OAuthClientToolbar({
               onChange={(v) =>
                 set("application", typeof v === "string" ? v : "")
               }
-              placeholder="Aplicação"
-              searchText="Pesquisar aplicações…"
-              selectLabel="Nenhuma aplicação encontrada."
+              placeholder={t("toolbar.application")}
+              searchText={t("toolbar.applicationSearch")}
+              selectLabel={t("toolbar.applicationEmpty")}
               disabled={disabled}
             />
           </div>
           <FacetedFilter
-            label="Tipo"
-            options={KIND_OPTIONS}
+            label={t("toolbar.kind")}
+            options={kindOptions}
             value={filters.kind}
             onChange={(v) => set("kind", v)}
             counts={counts.kind}
             disabled={disabled}
           />
           <FacetedFilter
-            label="Estado"
-            options={STATUS_OPTIONS}
+            label={t("toolbar.status")}
+            options={statusOptions}
             value={filters.status}
             onChange={(v) => set("status", v)}
             counts={counts.status}
@@ -117,7 +123,7 @@ export function OAuthClientToolbar({
               iconName="X"
               onClick={() => onFiltersChange(EMPTY_OAUTH_CLIENT_FILTERS)}
             >
-              Limpar
+              {tc("clear")}
             </IGRPButton>
           )}
         </div>
@@ -125,7 +131,7 @@ export function OAuthClientToolbar({
       <Button asChild className="shrink-0">
         <Link href={ROUTES.OAUTH_CLIENT_NEW}>
           <IGRPIcon iconName="Plus" aria-hidden="true" />
-          Registar cliente
+          {t("toolbar.register")}
         </Link>
       </Button>
     </div>

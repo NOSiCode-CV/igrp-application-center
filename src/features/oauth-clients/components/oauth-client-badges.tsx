@@ -1,12 +1,14 @@
 import { Badge, cn } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
-import { CLIENT_KIND_LABEL, getClientKind } from "../lib/oauth-client-utils";
+import { getClientKind } from "../lib/oauth-client-utils";
 
 export function ClientKindBadge({
   grantTypes,
 }: {
   grantTypes: readonly string[];
 }) {
+  const t = useTranslations("oauthClients");
   const kind = getClientKind(grantTypes);
   return (
     <Badge
@@ -17,7 +19,7 @@ export function ClientKindBadge({
           : "bg-primary-subtle text-primary-subtle-foreground",
       )}
     >
-      {CLIENT_KIND_LABEL[kind]}
+      {t(`kind.${kind}`)}
     </Badge>
   );
 }
@@ -29,13 +31,14 @@ export function ActiveBadge({
   active: boolean;
   feminine?: boolean;
 }) {
+  const t = useTranslations("oauthClients.badge");
   const label = active
     ? feminine
-      ? "Ativa"
-      : "Ativo"
+      ? t("activeFeminine")
+      : t("active")
     : feminine
-      ? "Inativa"
-      : "Inativo";
+      ? t("inactiveFeminine")
+      : t("inactive");
   return (
     <Badge
       variant="secondary"

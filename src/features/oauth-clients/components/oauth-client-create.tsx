@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -17,6 +17,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { type Resolver, useForm } from "react-hook-form";
 
 import { SensitiveValueDisclosure } from "@/components/sensitive-value-disclosure";
@@ -24,14 +25,20 @@ import { ROUTES } from "@/lib/constants";
 
 import {
   emptyOAuthClientFormValues,
+  makeOAuthClientSchemas,
   type OAuthClientFormValues,
-  oauthClientFormSchema,
   toCreateRequest,
 } from "../oauth-client-schemas";
 import { useCreateOAuthClient } from "../use-oauth-clients";
 import { OAuthClientFormSections } from "./oauth-client-form-sections";
 
 export function OAuthClientCreate() {
+  const t = useTranslations("oauthClients");
+  const tv = useTranslations("oauthClients.validation");
+  const { oauthClientFormSchema } = useMemo(
+    () => makeOAuthClientSchemas(tv),
+    [tv],
+  );
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const create = useCreateOAuthClient();
@@ -78,14 +85,14 @@ export function OAuthClientCreate() {
     if (result.status === 409) {
       form.setError(
         "clientId",
-        { message: "Já existe um cliente com este client ID." },
+        { message: t("create.conflict") },
         { shouldFocus: true },
       );
       return;
     }
     igrpToast({
       type: "error",
-      title: "Não foi possível registar o cliente",
+      title: t("create.errorTitle"),
       description: result.error,
     });
   }
@@ -96,7 +103,7 @@ export function OAuthClientCreate() {
         {created ? null : submitting ? (
           <Button variant="secondary" disabled>
             <IGRPIcon iconName="X" aria-hidden="true" />
-            Cancelar
+            {t("actions.cancel")}
           </Button>
         ) : (
           <Button asChild variant="secondary">
@@ -109,7 +116,7 @@ export function OAuthClientCreate() {
               }}
             >
               <IGRPIcon iconName="X" aria-hidden="true" />
-              Cancelar
+              {t("actions.cancel")}
             </Link>
           </Button>
         )}
@@ -129,9 +136,7 @@ export function OAuthClientCreate() {
             className="size-4 shrink-0"
             aria-hidden="true"
           />
-          {created
-            ? "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página."
-            : "O segredo é mostrado uma única vez, no fim do registo."}
+          {created ? t("create.noteCreated") : t("create.noteInfo")}
         </p>
       </div>
 
@@ -145,7 +150,7 @@ export function OAuthClientCreate() {
       ) : (
         <>
           <h2 className="text-2xl font-semibold tracking-tight">
-            Registar cliente OAuth2
+            {t("create.title")}
           </h2>
           <Form {...form}>
             <form
@@ -158,7 +163,7 @@ export function OAuthClientCreate() {
               <div className="flex justify-end p-4">
                 <Button type="submit" disabled={submitting}>
                   <IGRPIcon iconName="Save" aria-hidden="true" />
-                  {submitting ? "A registar…" : "Registar"}
+                  {submitting ? t("create.submitting") : t("create.submit")}
                 </Button>
               </div>
             </form>
@@ -170,10 +175,10 @@ export function OAuthClientCreate() {
         open={confirmLeave}
         onOpenChange={setConfirmLeave}
         variant="destructive"
-        title="Sair sem registar o cliente?"
-        description="Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los."
-        cancelLabel="Continuar a preencher"
-        actionLabel="Sair e descartar"
+        title={t("create.leaveTitle")}
+        description={t("create.leaveDescription")}
+        cancelLabel={t("create.leaveCancel")}
+        actionLabel={t("create.leaveAction")}
         onAction={() => router.push(ROUTES.OAUTH_CLIENTS)}
       />
     </div>
@@ -191,17 +196,25 @@ function CreatedResult({
   onConfirmedChange: (confirmed: boolean) => void;
   onDone: () => void;
 }) {
+  const t = useTranslations("oauthClients");
   const secret = client.clientSecret;
+  const rich = {
+    id: (chunks: ReactNode) => (
+      <span className="font-mono text-foreground">{chunks}</span>
+    ),
+  };
   return (
     <div className="flex flex-col gap-6 rounded-xl border border-border bg-card p-6">
       <div className="flex flex-col gap-1.5">
-        <h2 className="text-lg font-semibold">Cliente registado</h2>
+        <h2 className="text-lg font-semibold">{t("create.doneTitle")}</h2>
         <p className="text-sm text-muted-foreground">
-          O cliente{" "}
-          <span className="font-mono text-foreground">{client.clientId}</span>{" "}
-          {secret
-            ? "já pode pedir tokens. Guarde as credenciais antes de sair."
-            : "foi criado, mas sem credenciais utilizáveis."}
+          {t.rich(
+            secret ? "create.doneWithSecret" : "create.doneWithoutSecret",
+            {
+              clientId: client.clientId,
+              ...rich,
+            },
+          )}
         </p>
       </div>
       {secret ? (
@@ -217,25 +230,23 @@ function CreatedResult({
             />
             <div className="flex flex-col gap-0.5">
               <strong className="font-semibold">
-                Este segredo não volta a ser mostrado.
+                {t("secret.warningTitle")}
               </strong>
-              <span className="text-sm">
-                Nem a si, nem a outro administrador. Guarde-o já no seu gestor
-                de segredos.
-              </span>
+              <span className="text-sm">{t("secret.warningBody")}</span>
             </div>
           </div>
           <SensitiveValueDisclosure
-            label="Client secret"
+            label={t("secret.label")}
+            confirmationLabel={t("secret.confirmLabel")}
             value={secret}
             onConfirmedChange={onConfirmedChange}
           />
           <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-muted-foreground">
-              Se o segredo for exposto, gere um novo nos detalhes do cliente.
+              {t("create.rotateHint")}
             </p>
             <Button type="button" disabled={!confirmed} onClick={onDone}>
-              Concluir — ver detalhes
+              {t("create.finish")}
             </Button>
           </div>
         </>
@@ -243,14 +254,11 @@ function CreatedResult({
         <>
           <Alert variant="destructive">
             <IGRPIcon iconName="TriangleAlert" aria-hidden="true" />
-            <AlertDescription>
-              O servidor não devolveu o segredo. Gere um novo nos detalhes do
-              cliente.
-            </AlertDescription>
+            <AlertDescription>{t("create.missingAlert")}</AlertDescription>
           </Alert>
           <div className="flex justify-end">
             <Button type="button" onClick={onDone}>
-              Ver detalhes
+              {t("actions.viewDetails")}
             </Button>
           </div>
         </>

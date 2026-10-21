@@ -1443,5 +1443,232 @@
         "loadErrorTitle": "The role has associated permissions, but they could not be loaded."
       }
     }
+  },
+  "oauthClients": {
+    "meta": {
+      "listTitle": "OAuth clients",
+      "listDescription": "API consumers registered with the iGRP authorization server.",
+      "newTitle": "Register OAuth client",
+      "detailTitle": "{name} · OAuth clients",
+      "detailFallback": "OAuth client"
+    },
+    "error": {
+      "listTitle": "Could not load the OAuth clients.",
+      "listMessage": "Try again. If the problem persists, contact support.",
+      "detailTitle": "Could not load the OAuth client."
+    },
+    "loading": {
+      "list": "Loading OAuth clients...",
+      "new": "Preparing the registration..."
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "viewDetails": "View details",
+      "copyClientId": "Copy client ID",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "delete": "Delete",
+      "rotateSecret": "Generate new secret",
+      "finish": "Done",
+      "close": "Close"
+    },
+    "secret": {
+      "label": "Client secret",
+      "warningTitle": "This secret will not be shown again.",
+      "warningBody": "Not to you, nor to another administrator. Store it in your secrets manager now.",
+      "confirmLabel": "I have stored the secret in a safe place"
+    },
+    "kind": {
+      "web": "Web application",
+      "machine": "Machine"
+    },
+    "badge": {
+      "active": "Active",
+      "activeFeminine": "Active",
+      "inactive": "Inactive",
+      "inactiveFeminine": "Inactive"
+    },
+    "linkUnknown": "Could not check whether a service account exists.",
+    "deleteBlockedByAccount": "Remove the service account «{name}» first.",
+    "duration": {
+      "days": "{count, plural, one {{count} day} other {{count} days}}",
+      "hours": "{count, plural, one {{count} hour} other {{count} hours}}",
+      "minutes": "{count, plural, one {{count} minute} other {{count} minutes}}",
+      "seconds": "{count, plural, one {{count} second} other {{count} seconds}}"
+    },
+    "grants": {
+      "authorizationCode": "Users sign in through the browser.",
+      "refreshToken": "Renews the session without a new sign-in.",
+      "clientCredentials": "Machine to machine, no user. Required for a service account.",
+      "deviceCode": "Devices without a browser (TV, command line)."
+    },
+    "copy": {
+      "successTitle": "Copied",
+      "successDescription": "Client ID {clientId} copied.",
+      "errorTitle": "Could not copy",
+      "errorDescription": "Select the client ID and copy it manually."
+    },
+    "validation": {
+      "ttlInteger": "Use a whole number of seconds.",
+      "clientIdRequired": "Enter the client ID.",
+      "clientIdMax": "Up to 100 characters.",
+      "clientIdPattern": "Use lowercase letters, numbers and hyphens (e.g. my-invoice).",
+      "nameRequired": "Enter the name.",
+      "nameMax": "Up to 255 characters.",
+      "descriptionMax": "Up to 140 characters.",
+      "grantTypesRequired": "Choose at least one grant type.",
+      "redirectRequired": "Add at least one redirect URI.",
+      "redirectNotAllowed": "«{uri}» is not allowed. Use https:// (or http://localhost)."
+    },
+    "list": {
+      "accountsErrorTitle": "Could not check the service accounts.",
+      "accountsErrorMessage": "Delete, activate and deactivate are unavailable until the check succeeds.",
+      "emptyTitle": "There are no OAuth clients yet",
+      "emptyDescription": "An OAuth client is an application or service registered to request tokens from the iGRP authorization server.",
+      "emptyAction": "Register the first client",
+      "noMatches": "No client matches the filters."
+    },
+    "toolbar": {
+      "searchLabel": "Search clients",
+      "searchPlaceholder": "Search by name or client ID…",
+      "application": "Application",
+      "applicationSearch": "Search applications…",
+      "applicationEmpty": "No application found.",
+      "kind": "Type",
+      "status": "Status",
+      "register": "Register client"
+    },
+    "columns": {
+      "client": "Client",
+      "kind": "Type",
+      "serviceAccount": "Service account",
+      "application": "Application",
+      "status": "Status",
+      "actions": "Actions",
+      "rowActions": "Actions for {name}",
+      "toVerify": "To be checked",
+      "noAccount": "No account"
+    },
+    "activation": {
+      "titleActivate": "Activate client",
+      "titleDeactivate": "Deactivate client",
+      "descActivateLinked": "The client and the service account «{name}» can authenticate again.",
+      "descActivate": "The client can request tokens again.",
+      "descDeactivateLinked": "The client and the service account «{name}» can no longer authenticate until they are reactivated.",
+      "descDeactivate": "Applications that use this client can no longer authenticate. You can reactivate it later.",
+      "loadingActivate": "Activating…",
+      "loadingDeactivate": "Deactivating…",
+      "toastActivated": "Client activated",
+      "toastDeactivated": "Client deactivated",
+      "errorActivate": "Could not activate",
+      "errorDeactivate": "Could not deactivate",
+      "errorActivateStep": "Could not activate (failed: {step})",
+      "errorDeactivateStep": "Could not deactivate (failed: {step})",
+      "retry": "{error} Try again.",
+      "stepClient": "OAuth client",
+      "stepServiceAccount": "service account"
+    },
+    "delete": {
+      "errorTitle": "Could not delete",
+      "linkedError": "This client has a linked service account. Delete the service account first.",
+      "successTitle": "Client deleted",
+      "description": "The record is removed and the credentials stop working immediately. It cannot be recovered.",
+      "label": "Client ID",
+      "header": "Delete OAuth client"
+    },
+    "rotate": {
+      "confirmTitle": "Generate new secret",
+      "description": "The current secret stops working immediately. Tokens already issued remain valid until they expire. The client ID does not change: only the secret has to be distributed again.",
+      "descriptionLinked": "The current secret stops working immediately, for the service account «{name}» too. Tokens already issued remain valid until they expire. The client ID does not change: only the secret has to be distributed again.",
+      "loading": "Generating…",
+      "errorTitle": "Could not generate a new secret",
+      "doneTitle": "New secret generated",
+      "doneWithSecret": "The previous secret of <id>{clientId}</id> no longer works. Update the applications that use this client.",
+      "doneWithoutSecret": "The previous secret of <id>{clientId}</id> no longer works. The server did not return the new secret.",
+      "missingAlert": "Generate another secret. Until then, no application can authenticate with this client.",
+      "closeTitle": "Close without confirming?",
+      "closeDescription": "You will not be able to see this secret again. Close anyway?",
+      "closeBack": "Back",
+      "closeAnyway": "Close anyway"
+    },
+    "create": {
+      "noteInfo": "The secret is shown only once, at the end of the registration.",
+      "noteCreated": "The OAuth client has been registered. Save the secret before leaving this page.",
+      "title": "Register OAuth2 client",
+      "submit": "Register",
+      "submitting": "Registering…",
+      "conflict": "A client with this client ID already exists.",
+      "errorTitle": "Could not register the client",
+      "leaveTitle": "Leave without registering the client?",
+      "leaveDescription": "The data you filled in has not been saved. If you leave now, you will lose it.",
+      "leaveCancel": "Keep editing",
+      "leaveAction": "Leave and discard",
+      "doneTitle": "Client registered",
+      "doneWithSecret": "The client <id>{clientId}</id> can now request tokens. Save the credentials before leaving.",
+      "doneWithoutSecret": "The client <id>{clientId}</id> was created, but without usable credentials.",
+      "rotateHint": "If the secret is exposed, generate a new one in the client details.",
+      "finish": "Done — view details",
+      "missingAlert": "The server did not return the secret. Generate a new one in the client details."
+    },
+    "detail": {
+      "back": "OAuth clients",
+      "clientId": "Client ID",
+      "duplicateAccounts": "This client has more than one linked service account. This should not happen — contact support.",
+      "saveErrorTitle": "Could not save",
+      "savedTitle": "Changes saved",
+      "recordTitle": "Record",
+      "recordDescription": "When this client was registered and last changed.",
+      "createdAt": "Created on",
+      "updatedAt": "Updated on",
+      "dangerZone": "Danger zone",
+      "rotateDescription": "The current secret stops working immediately. Use it if the secret was exposed or lost.",
+      "deactivateLinked": "Also deactivates the service account «{name}». The identity can no longer authenticate.",
+      "deleteTitle": "Delete client",
+      "deleteDescription": "Removes the record. The credentials stop working immediately and it cannot be recovered."
+    },
+    "serviceAccount": {
+      "title": "Service account",
+      "description": "The machine identity that authenticates with this client, with its roles and permissions.",
+      "saveFirst": "Save the changes to be able to create a service account for this client.",
+      "none": "This client does not have a service account yet.",
+      "create": "Create a service account for this client"
+    },
+    "form": {
+      "basicTitle": "Basic information",
+      "basicDescription": "How the client is identified on the authorization server.",
+      "clientId": "Client ID",
+      "clientIdRequired": "Client ID *",
+      "clientIdHelpCreate": "Lowercase letters, numbers and hyphens. It cannot be changed later.",
+      "clientIdHelpEdit": "Set at registration. It cannot be changed.",
+      "name": "Name *",
+      "secretHidden": "Shown only once, when it is generated",
+      "secretHelp": "The server stores only an encrypted version — nobody can read it again. If it was exposed, generate a new one in the danger zone.",
+      "description": "Description",
+      "application": "Application",
+      "applicationPlaceholder": "Select application",
+      "applicationSearch": "Search application…",
+      "applicationEmpty": "No application found.",
+      "applicationHelp": "The application this client belongs to. A service account inherits it.",
+      "applicationLocked": "Fixed while the service account «{name}» exists.",
+      "grantsTitle": "Grant types",
+      "grantsDescription": "How this client obtains tokens. The sections below change with the choice.",
+      "grantFixed": "Fixed for service accounts.",
+      "grantLocked": "Required while the service account «{name}» exists.",
+      "redirectsTitle": "Redirect URIs",
+      "redirectsDescription": "Where the server sends the user after sign-in. It appears because <mono>authorization_code</mono> is active.",
+      "redirectsLabel": "Redirect URIs *",
+      "redirectsPlaceholder": "Add URI…",
+      "redirectsHelp": "Press Enter after each URI. Only https://, except http://localhost.",
+      "scopesTitle": "Scopes",
+      "scopesDescription": "Information the client can request.",
+      "scopesPlaceholder": "Add scope…",
+      "ttlTitle": "Token lifetime",
+      "ttlDescription": "Leave blank to use the server's values.",
+      "ttlAccessToken": "Access token",
+      "ttlRefreshToken": "Refresh token",
+      "ttlAuthorizationCode": "Authorization code",
+      "seconds": "seconds",
+      "ttlEquals": "= {value}"
+    }
   }
 }

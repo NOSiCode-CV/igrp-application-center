@@ -17,6 +17,7 @@ import type {
   OAuthClientDTO,
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import {
   ApplicationCell,
@@ -29,7 +30,7 @@ import { ROUTES } from "@/lib/constants";
 import {
   getClientKind,
   getDeleteBlockedReason,
-  LINK_UNKNOWN_REASON,
+  type OAuthClientsTranslator,
 } from "../lib/oauth-client-utils";
 import { ActiveBadge, ClientKindBadge } from "./oauth-client-badges";
 
@@ -72,13 +73,14 @@ export function OAuthClientRowActions({
   onCopy,
   linkUnknown,
 }: { row: ClientRow } & RowHandlers) {
+  const t = useTranslations("oauthClients");
   const name = row.clientName || row.clientId;
-  const canDelete = !getDeleteBlockedReason(row.linkedAccount, linkUnknown);
+  const canDelete = !getDeleteBlockedReason(t, row.linkedAccount, linkUnknown);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         className="inline-flex size-9 items-center justify-center rounded-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label={`Ações para ${name}`}
+        aria-label={t("columns.rowActions", { name })}
       >
         <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
       </DropdownMenuTrigger>
@@ -89,18 +91,18 @@ export function OAuthClientRowActions({
             className="flex gap-2"
           >
             <IGRPIcon iconName="Settings2" aria-hidden="true" />
-            Ver detalhes
+            {t("actions.viewDetails")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => onCopy(row.clientId)}>
           <IGRPIcon iconName="Copy" aria-hidden="true" />
-          Copiar client ID
+          {t("actions.copyClientId")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {linkUnknown && !row.linkedAccount ? (
           <BlockedMenuItem
-            label={row.active ? "Desativar" : "Ativar"}
-            reason={LINK_UNKNOWN_REASON}
+            label={row.active ? t("actions.deactivate") : t("actions.activate")}
+            reason={t("linkUnknown")}
           />
         ) : row.active ? (
           <DropdownMenuItem
@@ -108,12 +110,12 @@ export function OAuthClientRowActions({
             onSelect={() => onToggleActive(row)}
           >
             <IGRPIcon iconName="CircleOff" aria-hidden="true" />
-            Desativar
+            {t("actions.deactivate")}
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem onSelect={() => onToggleActive(row)}>
             <IGRPIcon iconName="CircleCheck" aria-hidden="true" />
-            Ativar
+            {t("actions.activate")}
           </DropdownMenuItem>
         )}
         {/* Only offered when it can succeed: a linked service account (or an
@@ -124,7 +126,7 @@ export function OAuthClientRowActions({
             onSelect={() => onDelete(row)}
           >
             <IGRPIcon iconName="Trash" aria-hidden="true" />
-            Eliminar
+            {t("actions.delete")}
           </DropdownMenuItem>
         ) : null}
       </DropdownMenuContent>
@@ -133,9 +135,11 @@ export function OAuthClientRowActions({
 }
 
 export function getOAuthClientColumns({
+  t,
   applicationName,
   ...handlers
 }: RowHandlers & {
+  t: OAuthClientsTranslator;
   /** Application name by code; the cell falls back to the code. */
   applicationName: (code: string) => string | undefined;
 }): ColumnDef<ClientRow>[] {
@@ -144,7 +148,10 @@ export function getOAuthClientColumns({
       id: "client",
       accessorFn: (r) => r.clientName || r.clientId,
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle title="Cliente" column={column} />
+        <IGRPDataTableHeaderSortToggle
+          title={t("columns.client")}
+          column={column}
+        />
       ),
       cell: ({ row }) => (
         <div className="flex min-w-0 flex-col gap-0.5">
@@ -163,7 +170,10 @@ export function getOAuthClientColumns({
       id: "kind",
       accessorFn: (r) => getClientKind(r.grantTypes),
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle title="Tipo" column={column} />
+        <IGRPDataTableHeaderSortToggle
+          title={t("columns.kind")}
+          column={column}
+        />
       ),
       cell: ({ row }) => (
         <ClientKindBadge grantTypes={row.original.grantTypes} />
@@ -173,7 +183,9 @@ export function getOAuthClientColumns({
     {
       id: "serviceAccount",
       accessorFn: (r) => r.linkedAccount?.name ?? "",
-      header: () => <IGRPDataTableHeaderDefault title="Conta de serviço" />,
+      header: () => (
+        <IGRPDataTableHeaderDefault title={t("columns.serviceAccount")} />
+      ),
       cell: ({ row }) => {
         const account = row.original.linkedAccount;
         if (account) {
@@ -191,7 +203,9 @@ export function getOAuthClientColumns({
         }
         return (
           <span className="text-muted-foreground">
-            {handlers.linkUnknown ? "Por verificar" : "Sem conta"}
+            {handlers.linkUnknown
+              ? t("columns.toVerify")
+              : t("columns.noAccount")}
           </span>
         );
       },
@@ -200,7 +214,9 @@ export function getOAuthClientColumns({
     {
       id: "application",
       accessorFn: (r) => r.applicationCode ?? "",
-      header: () => <IGRPDataTableHeaderDefault title="Aplicação" />,
+      header: () => (
+        <IGRPDataTableHeaderDefault title={t("columns.application")} />
+      ),
       cell: ({ row }) => {
         const code = row.original.applicationCode;
         return (
@@ -216,14 +232,17 @@ export function getOAuthClientColumns({
       id: "status",
       accessorFn: (r) => (r.active ? "ACTIVE" : "INACTIVE"),
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle title="Estado" column={column} />
+        <IGRPDataTableHeaderSortToggle
+          title={t("columns.status")}
+          column={column}
+        />
       ),
       cell: ({ row }) => <ActiveBadge active={row.original.active} />,
       size: 100,
     },
     {
       id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
+      header: () => <span className="sr-only">{t("columns.actions")}</span>,
       cell: ({ row }) => (
         <OAuthClientRowActions row={row.original} {...handlers} />
       ),

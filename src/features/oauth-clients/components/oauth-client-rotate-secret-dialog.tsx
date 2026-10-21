@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 import {
   Alert,
@@ -24,6 +24,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { SensitiveValueDisclosure } from "@/components/sensitive-value-disclosure";
@@ -46,6 +47,7 @@ export function OAuthClientRotateSecretDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("oauthClients");
   const { igrpToast } = useIGRPToast();
   const rotate = useRotateOAuthClientSecret();
   const { reset: resetRotate } = rotate;
@@ -60,7 +62,7 @@ export function OAuthClientRotateSecretDialog({
     if (!result.success) {
       igrpToast({
         type: "error",
-        title: "Não foi possível gerar um novo segredo",
+        title: t("rotate.errorTitle"),
         description: result.error,
       });
       return;
@@ -85,21 +87,17 @@ export function OAuthClientRotateSecretDialog({
         onOpenChange={(o) => {
           if (!rotate.isPending) onOpenChange(o);
         }}
-        title="Gerar novo segredo"
+        title={t("rotate.confirmTitle")}
         description={
-          <>
-            O segredo atual deixa de funcionar de imediato
-            {linkedAccountName
-              ? `, também para a conta de serviço «${linkedAccountName}»`
-              : ""}
-            . Os tokens já emitidos continuam válidos até expirarem. O client ID
-            não muda: só o segredo tem de ser distribuído de novo.
-          </>
+          linkedAccountName
+            ? t("rotate.descriptionLinked", { name: linkedAccountName })
+            : t("rotate.description")
         }
         onConfirm={confirmRotate}
         isLoading={rotate.isPending}
-        confirmText="Gerar novo segredo"
-        loadingText="A gerar…"
+        confirmText={t("actions.rotateSecret")}
+        cancelText={t("actions.cancel")}
+        loadingText={t("rotate.loading")}
         iconName="KeyRound"
         variant="destructive"
       />
@@ -111,16 +109,17 @@ export function OAuthClientRotateSecretDialog({
       <IGRPModalDialog open={open} onOpenChange={requestClose}>
         <IGRPModalDialogContent onInteractOutside={(e) => e.preventDefault()}>
           <IGRPModalDialogHeader>
-            <IGRPModalDialogTitle>Novo segredo gerado</IGRPModalDialogTitle>
+            <IGRPModalDialogTitle>{t("rotate.doneTitle")}</IGRPModalDialogTitle>
             <IGRPModalDialogDescription>
-              O segredo anterior de{" "}
-              <span className="font-mono text-foreground">
-                {client.clientId}
-              </span>{" "}
-              já não funciona.{" "}
-              {secret
-                ? "Atualize as aplicações que usam este cliente."
-                : "O servidor não devolveu o novo segredo."}
+              {t.rich(
+                secret ? "rotate.doneWithSecret" : "rotate.doneWithoutSecret",
+                {
+                  clientId: client.clientId,
+                  id: (chunks: ReactNode) => (
+                    <span className="font-mono text-foreground">{chunks}</span>
+                  ),
+                },
+              )}
             </IGRPModalDialogDescription>
           </IGRPModalDialogHeader>
           {secret ? (
@@ -136,16 +135,14 @@ export function OAuthClientRotateSecretDialog({
                 />
                 <div className="flex flex-col gap-0.5">
                   <strong className="font-semibold">
-                    Este segredo não volta a ser mostrado.
+                    {t("secret.warningTitle")}
                   </strong>
-                  <span className="text-sm">
-                    Nem a si, nem a outro administrador. Guarde-o já no seu
-                    gestor de segredos.
-                  </span>
+                  <span className="text-sm">{t("secret.warningBody")}</span>
                 </div>
               </div>
               <SensitiveValueDisclosure
-                label="Client secret"
+                label={t("secret.label")}
+                confirmationLabel={t("secret.confirmLabel")}
                 value={secret}
                 onConfirmedChange={setConfirmed}
               />
@@ -155,7 +152,7 @@ export function OAuthClientRotateSecretDialog({
                   disabled={!confirmed}
                   onClick={() => onOpenChange(false)}
                 >
-                  Concluir
+                  {t("actions.finish")}
                 </Button>
               </IGRPModalDialogFooter>
             </>
@@ -163,14 +160,11 @@ export function OAuthClientRotateSecretDialog({
             <>
               <Alert variant="destructive">
                 <IGRPIcon iconName="TriangleAlert" aria-hidden="true" />
-                <AlertDescription>
-                  Gere outro segredo. Até lá, nenhuma aplicação consegue
-                  autenticar com este cliente.
-                </AlertDescription>
+                <AlertDescription>{t("rotate.missingAlert")}</AlertDescription>
               </Alert>
               <IGRPModalDialogFooter>
                 <Button type="button" onClick={() => onOpenChange(false)}>
-                  Fechar
+                  {t("actions.close")}
                 </Button>
               </IGRPModalDialogFooter>
             </>
@@ -181,15 +175,15 @@ export function OAuthClientRotateSecretDialog({
       <AlertDialog open={confirmClose} onOpenChange={setConfirmClose}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Fechar sem confirmar?</AlertDialogTitle>
+            <AlertDialogTitle>{t("rotate.closeTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Não poderá voltar a ver este segredo. Fechar mesmo assim?
+              {t("rotate.closeDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>{t("rotate.closeBack")}</AlertDialogCancel>
             <AlertDialogAction onClick={() => onOpenChange(false)}>
-              Fechar mesmo assim
+              {t("rotate.closeAnyway")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

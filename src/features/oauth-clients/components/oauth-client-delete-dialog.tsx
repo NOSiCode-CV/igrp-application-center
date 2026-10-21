@@ -2,6 +2,7 @@
 
 import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
 
@@ -18,6 +19,8 @@ export function OAuthClientDeleteDialog({
   onOpenChange: (open: boolean) => void;
   onDeleted?: () => void;
 }) {
+  const t = useTranslations("oauthClients.delete");
+  const ta = useTranslations("oauthClients.actions");
   const { igrpToast } = useIGRPToast();
   const mutation = useDeleteOAuthClient();
 
@@ -29,17 +32,15 @@ export function OAuthClientDeleteDialog({
       const linked = result.status === 409;
       igrpToast({
         type: "error",
-        title: "Não foi possível eliminar",
-        description: linked
-          ? "Este cliente tem uma conta de serviço associada. Elimine primeiro a conta de serviço."
-          : result.error,
+        title: t("errorTitle"),
+        description: linked ? t("linkedError") : result.error,
       });
       if (linked) onOpenChange(false);
       return;
     }
     igrpToast({
       type: "success",
-      title: "Cliente eliminado",
+      title: t("successTitle"),
       description: client.clientId,
     });
     onOpenChange(false);
@@ -53,9 +54,11 @@ export function OAuthClientDeleteDialog({
       toDelete={{ name: client.clientId }}
       confirmDelete={confirmDelete}
       isDeleting={mutation.isPending}
-      description="O registo é removido e as credenciais deixam de funcionar de imediato. Não é possível recuperá-lo."
-      label="Client ID"
-      textHeader="Eliminar cliente OAuth"
+      description={t("description")}
+      label={t("label")}
+      textHeader={t("header")}
+      labelBtnCancel={ta("cancel")}
+      labelBtnDelete={ta("delete")}
     />
   );
 }

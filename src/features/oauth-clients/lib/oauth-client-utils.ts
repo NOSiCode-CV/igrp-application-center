@@ -2,34 +2,29 @@ import type {
   OAuthGrantType,
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
+import type { useTranslations } from "next-intl";
 
-/** Order and copy match the grant-type cards in the design canvas. */
+/** `useTranslations("oauthClients")` / `getTranslations("oauthClients")` result. */
+export type OAuthClientsTranslator = ReturnType<
+  typeof useTranslations<"oauthClients">
+>;
+
+/** Order matches the grant-type cards in the design canvas. */
 export const GRANT_TYPES: readonly {
   value: OAuthGrantType;
-  description: string;
+  descriptionKey:
+    | "authorizationCode"
+    | "refreshToken"
+    | "clientCredentials"
+    | "deviceCode";
 }[] = [
-  {
-    value: "authorization_code",
-    description: "Utilizadores iniciam sessão no browser.",
-  },
-  { value: "refresh_token", description: "Renova a sessão sem novo login." },
-  {
-    value: "client_credentials",
-    description:
-      "Máquina a máquina, sem utilizador. Necessário para uma conta de serviço.",
-  },
-  {
-    value: "device_code",
-    description: "Dispositivos sem browser (TV, linha de comandos).",
-  },
+  { value: "authorization_code", descriptionKey: "authorizationCode" },
+  { value: "refresh_token", descriptionKey: "refreshToken" },
+  { value: "client_credentials", descriptionKey: "clientCredentials" },
+  { value: "device_code", descriptionKey: "deviceCode" },
 ] as const;
 
 export type ClientKind = "web" | "machine";
-
-export const CLIENT_KIND_LABEL: Record<ClientKind, string> = {
-  web: "Aplicação web",
-  machine: "Máquina",
-};
 
 export function getClientKind(grantTypes: readonly string[]): ClientKind {
   return grantTypes.includes("authorization_code") ? "web" : "machine";
@@ -50,22 +45,24 @@ export function isAllowedRedirectUri(uri: string): boolean {
 }
 
 const UNITS = [
-  { size: 86_400, one: "dia", many: "dias" },
-  { size: 3_600, one: "hora", many: "horas" },
-  { size: 60, one: "minuto", many: "minutos" },
+  { size: 86_400, key: "days" },
+  { size: 3_600, key: "hours" },
+  { size: 60, key: "minutes" },
 ] as const;
 
 /** Largest unit that divides exactly; otherwise seconds. Empty when unknown. */
-export function formatSeconds(seconds: number | undefined): string {
+export function formatSeconds(
+  t: OAuthClientsTranslator,
+  seconds: number | undefined,
+): string {
   if (seconds === undefined || !Number.isFinite(seconds) || seconds <= 0)
     return "";
   for (const unit of UNITS) {
     if (seconds % unit.size === 0) {
-      const n = seconds / unit.size;
-      return `${n} ${n === 1 ? unit.one : unit.many}`;
+      return t(`duration.${unit.key}`, { count: seconds / unit.size });
     }
   }
-  return `${seconds} ${seconds === 1 ? "segundo" : "segundos"}`;
+  return t("duration.seconds", { count: seconds });
 }
 
 export function findLinkedServiceAccount(
@@ -78,19 +75,16 @@ export function findLinkedServiceAccount(
   return { account: linked[0], duplicate: linked.length > 1 };
 }
 
-/** Shown wherever the SA list is loading or failed, so the link is unknown. */
-export const LINK_UNKNOWN_REASON =
-  "Não foi possível verificar se existe uma conta de serviço.";
-
 /**
  * Why this client cannot be deleted, or `null` when it can. A linked service
  * account must go first; an unknown link state fails safe the same way.
  */
 export function getDeleteBlockedReason(
+  t: OAuthClientsTranslator,
   linkedAccount: { name: string } | undefined,
   linkUnknown: boolean | undefined,
 ): string | null {
   if (linkedAccount)
-    return `Remova primeiro a conta de serviço «${linkedAccount.name}».`;
-  return linkUnknown ? LINK_UNKNOWN_REASON : null;
+    return t("deleteBlockedByAccount", { name: linkedAccount.name });
+  return linkUnknown ? t("linkUnknown") : null;
 }

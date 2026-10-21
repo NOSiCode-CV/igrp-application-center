@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getTranslations } from "next-intl/server";
 
 import { OAuthClientDetail } from "@/features/oauth-clients/components/oauth-client-detail";
 import {
@@ -15,11 +16,12 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+  const t = await getTranslations("oauthClients.meta");
   const result = await getOAuthClientCached(id);
-  const title = result.success
+  const name = result.success
     ? result.data.clientName || result.data.clientId
-    : "Cliente OAuth";
-  return { title: `${title} · Clientes OAuth` };
+    : t("detailFallback");
+  return { title: t("detailTitle", { name }) };
 }
 
 export default async function OAuthClientDetailPage({

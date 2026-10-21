@@ -1,4 +1,5 @@
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -7,6 +8,13 @@ import {
   getClientKind,
   isAllowedRedirectUri,
 } from "@/features/oauth-clients/lib/oauth-client-utils";
+import pt from "@/i18n/messages/pt.json";
+
+const t = createTranslator({
+  locale: "pt",
+  messages: pt,
+  namespace: "oauthClients",
+});
 
 describe("getClientKind", () => {
   it("is web when authorization_code is present", () => {
@@ -46,12 +54,12 @@ describe("formatSeconds", () => {
     [45, "45 segundos"],
     [1, "1 segundo"],
     [90, "90 segundos"],
-  ])("formats %i as %s", (s, text) => expect(formatSeconds(s)).toBe(text));
+  ])("formats %i as %s", (s, text) => expect(formatSeconds(t, s)).toBe(text));
 
   it("returns empty for missing or non-positive values", () => {
-    expect(formatSeconds(undefined)).toBe("");
-    expect(formatSeconds(0)).toBe("");
-    expect(formatSeconds(Number.NaN)).toBe("");
+    expect(formatSeconds(t, undefined)).toBe("");
+    expect(formatSeconds(t, 0)).toBe("");
+    expect(formatSeconds(t, Number.NaN)).toBe("");
   });
 });
 

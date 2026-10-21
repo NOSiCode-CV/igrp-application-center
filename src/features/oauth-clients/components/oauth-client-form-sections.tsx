@@ -16,17 +16,14 @@ import {
   Input,
   useFormField,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { ChipInput } from "@/components/chip-input";
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import { useApplications } from "@/features/applications/use-applications";
 
-import {
-  formatSeconds,
-  GRANT_TYPES,
-  LINK_UNKNOWN_REASON,
-} from "../lib/oauth-client-utils";
+import { formatSeconds, GRANT_TYPES } from "../lib/oauth-client-utils";
 import {
   DEFAULT_WEB_SCOPES,
   type OAuthClientFormValues,
@@ -60,10 +57,13 @@ export function FormSection({
 }
 
 const TTL_FIELDS = [
-  { name: "accessTokenTtl", label: "Access token" },
-  { name: "refreshTokenTtl", label: "Refresh token" },
-  { name: "authorizationCodeTtl", label: "Authorization code" },
+  { name: "accessTokenTtl", labelKey: "ttlAccessToken" },
+  { name: "refreshTokenTtl", labelKey: "ttlRefreshToken" },
+  { name: "authorizationCodeTtl", labelKey: "ttlAuthorizationCode" },
 ] as const;
+
+// A protocol token, not copy: it is the same in every language.
+const CLIENT_CREDENTIALS = "client_credentials";
 
 export type ClientCredentialsLock = { accountName: string } | { unknown: true };
 
@@ -91,17 +91,16 @@ export function OAuthClientFormSections({
   grantTypesFixed?: boolean;
   children?: ReactNode;
 }) {
+  const t = useTranslations("oauthClients");
   const lockHelp = (linked: (name: string) => string) =>
     lockClientCredentials
       ? "accountName" in lockClientCredentials
         ? linked(lockClientCredentials.accountName)
-        : LINK_UNKNOWN_REASON
+        : t("linkUnknown")
       : null;
-  const grantLockHelp = lockHelp(
-    (name) => `Necessário enquanto a conta de serviço «${name}» existir.`,
-  );
-  const applicationLockHelp = lockHelp(
-    (name) => `Fixa enquanto a conta de serviço «${name}» existir.`,
+  const grantLockHelp = lockHelp((name) => t("form.grantLocked", { name }));
+  const applicationLockHelp = lockHelp((name) =>
+    t("form.applicationLocked", { name }),
   );
   const form = useFormContext<OAuthClientFormValues>();
   const grantTypes = useWatch({ control: form.control, name: "grantTypes" });
@@ -116,7 +115,7 @@ export function OAuthClientFormSections({
   useEffect(() => {
     applicationFieldRef.current
       ?.querySelector('[role="combobox"]')
-      ?.setAttribute("aria-label", "Aplicação");
+      ?.setAttribute("aria-label", t("form.application"));
   });
 
   function syncScopeDefaults(
@@ -144,15 +143,19 @@ export function OAuthClientFormSections({
     <div className="flex flex-col divide-y divide-border">
       <FormSection
         id="sec-basic"
-        title="Informação básica"
-        description="Como o cliente é identificado no servidor de autorização."
+        title={t("form.basicTitle")}
+        description={t("form.basicDescription")}
       >
         <FormField
           control={form.control}
           name="clientId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Client ID{mode === "create" ? " *" : ""}</FormLabel>
+              <FormLabel>
+                {mode === "create"
+                  ? t("form.clientIdRequired")
+                  : t("form.clientId")}
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
@@ -164,8 +167,8 @@ export function OAuthClientFormSections({
               </FormControl>
               <FormDescription>
                 {mode === "create"
-                  ? "Minúsculas, números e hífenes. Não pode ser alterado depois."
-                  : "Definido no registo. Não pode ser alterado."}
+                  ? t("form.clientIdHelpCreate")
+                  : t("form.clientIdHelpEdit")}
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -176,7 +179,7 @@ export function OAuthClientFormSections({
           name="clientName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome *</FormLabel>
+              <FormLabel>{t("form.name")}</FormLabel>
               <FormControl>
                 <Input {...field} autoComplete="off" />
               </FormControl>
@@ -186,20 +189,19 @@ export function OAuthClientFormSections({
         />
         {mode === "edit" ? (
           <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">Client secret</span>
+            <span className="text-sm font-medium">{t("secret.label")}</span>
             <div className="flex h-9 items-center gap-2.5 rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground">
               <IGRPIcon iconName="Lock" className="size-4" aria-hidden="true" />
-              Mostrado apenas uma vez, quando é gerado
+              {t("form.secretHidden")}
             </div>
             <p className="text-sm text-muted-foreground">
-              O servidor guarda só uma versão cifrada — ninguém o pode voltar a
-              ler. Se foi exposto, gere um novo na zona de perigo.
+              {t("form.secretHelp")}
             </p>
           </div>
         ) : null}
         <LimitedTextareaField
           id="description"
-          label="Descrição"
+          label={t("form.description")}
           maxLength={140}
         />
         <fieldset
@@ -209,27 +211,24 @@ export function OAuthClientFormSections({
         >
           <IGRPCombobox
             name="applicationCode"
-            label="Aplicação"
-            placeholder="Selecionar aplicação"
-            searchText="Pesquisar aplicação…"
-            selectLabel="Nenhuma aplicação encontrada."
+            label={t("form.application")}
+            placeholder={t("form.applicationPlaceholder")}
+            searchText={t("form.applicationSearch")}
+            selectLabel={t("form.applicationEmpty")}
             disabled={!!applicationLockHelp}
             options={applications.map((app) => ({
               value: app.code,
               label: app.name || app.code,
             }))}
-            helperText={
-              applicationLockHelp ??
-              "A aplicação a que este cliente pertence. Uma conta de serviço herda-a."
-            }
+            helperText={applicationLockHelp ?? t("form.applicationHelp")}
           />
         </fieldset>
       </FormSection>
 
       <FormSection
         id="sec-grants"
-        title="Grant types"
-        description="Como este cliente obtém tokens. As secções abaixo mudam conforme a escolha."
+        title={t("form.grantsTitle")}
+        description={t("form.grantsDescription")}
       >
         {grantTypesFixed ? (
           <div className="flex items-start gap-3 rounded-lg border border-foreground p-3.5 ring-1 ring-foreground">
@@ -240,10 +239,10 @@ export function OAuthClientFormSections({
             />
             <span className="flex flex-col gap-1">
               <span className="font-mono text-sm font-medium">
-                client_credentials
+                {CLIENT_CREDENTIALS}
               </span>
               <span className="text-sm text-muted-foreground">
-                Fixo para contas de serviço.
+                {t("form.grantFixed")}
               </span>
             </span>
           </div>
@@ -254,7 +253,7 @@ export function OAuthClientFormSections({
             render={({ field }) => (
               <FormItem>
                 <GrantTypesFieldset>
-                  <legend className="sr-only">Grant types</legend>
+                  <legend className="sr-only">{t("form.grantsTitle")}</legend>
                   {GRANT_TYPES.map((grant) => {
                     const checked = field.value.includes(grant.value);
                     const locked =
@@ -294,7 +293,9 @@ export function OAuthClientFormSections({
                             id={`${inputId}-help`}
                             className="text-sm text-muted-foreground"
                           >
-                            {locked ? grantLockHelp : grant.description}
+                            {locked
+                              ? grantLockHelp
+                              : t(`grants.${grant.descriptionKey}`)}
                           </span>
                         </span>
                       </label>
@@ -311,33 +312,26 @@ export function OAuthClientFormSections({
       {usesRedirects ? (
         <FormSection
           id="sec-redirects"
-          title="Redirect URIs"
-          description={
-            <>
-              Para onde o servidor devolve o utilizador depois do login. Aparece
-              porque <span className="font-mono">authorization_code</span> está
-              ativo.
-            </>
-          }
+          title={t("form.redirectsTitle")}
+          description={t.rich("form.redirectsDescription", {
+            mono: (chunks) => <span className="font-mono">{chunks}</span>,
+          })}
         >
           <FormField
             control={form.control}
             name="redirectUris"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>URIs de redirecionamento *</FormLabel>
+                <FormLabel>{t("form.redirectsLabel")}</FormLabel>
                 <FormControl>
                   <ChipInput
                     mono
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Adicionar URI…"
+                    placeholder={t("form.redirectsPlaceholder")}
                   />
                 </FormControl>
-                <FormDescription>
-                  Prima Enter depois de cada URI. Só https://, exceto
-                  http://localhost.
-                </FormDescription>
+                <FormDescription>{t("form.redirectsHelp")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -347,21 +341,21 @@ export function OAuthClientFormSections({
 
       <FormSection
         id="sec-scopes"
-        title="Scopes"
-        description="Informação que o cliente pode pedir."
+        title={t("form.scopesTitle")}
+        description={t("form.scopesDescription")}
       >
         <FormField
           control={form.control}
           name="scopes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Scopes</FormLabel>
+              <FormLabel>{t("form.scopesTitle")}</FormLabel>
               <FormControl>
                 <ChipInput
                   mono
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Adicionar scope…"
+                  placeholder={t("form.scopesPlaceholder")}
                 />
               </FormControl>
               <FormMessage />
@@ -372,8 +366,8 @@ export function OAuthClientFormSections({
 
       <FormSection
         id="sec-ttl"
-        title="Duração dos tokens"
-        description="Deixe em branco para usar os valores do servidor."
+        title={t("form.ttlTitle")}
+        description={t("form.ttlDescription")}
       >
         <div className="flex flex-col gap-4">
           {TTL_FIELDS.map((ttl, i) => (
@@ -383,7 +377,7 @@ export function OAuthClientFormSections({
               name={ttl.name}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{ttl.label}</FormLabel>
+                  <FormLabel>{t(`form.${ttl.labelKey}`)}</FormLabel>
                   <div className="flex items-center gap-2">
                     <FormControl>
                       <Input
@@ -397,12 +391,14 @@ export function OAuthClientFormSections({
                       />
                     </FormControl>
                     <span className="text-sm text-muted-foreground">
-                      segundos
+                      {t("form.seconds")}
                     </span>
                   </div>
                   <FormDescription aria-live="polite">
-                    {formatSeconds(ttls[i])
-                      ? `= ${formatSeconds(ttls[i])}`
+                    {formatSeconds(t, ttls[i])
+                      ? t("form.ttlEquals", {
+                          value: formatSeconds(t, ttls[i]),
+                        })
                       : " "}
                   </FormDescription>
                   <FormMessage />

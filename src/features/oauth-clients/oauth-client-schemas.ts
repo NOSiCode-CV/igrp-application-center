@@ -2,6 +2,7 @@ import type {
   OAuthClientDTO,
   OAuthGrantType,
 } from "@igrp/platform-access-management-client-ts";
+import type { Messages } from "next-intl";
 import { z } from "zod";
 
 import {
@@ -17,62 +18,73 @@ export const grantTypeSchema = z.enum([
   "device_code",
 ]);
 
-const ttlSchema = z
-  .number({ error: "Use um número inteiro de segundos." })
-  .int("Use um número inteiro de segundos.")
-  .positive("Use um número inteiro de segundos.")
-  .optional();
+/**
+ * Translator for `oauthClients.validation.*`, satisfied by
+ * `useTranslations("oauthClients.validation")`.
+ */
+export type OAuthClientsValidationTranslator = (
+  key: keyof Messages["oauthClients"]["validation"],
+  values?: Record<string, string>,
+) => string;
 
-export const oauthClientFormSchema = z
-  .object({
-    clientId: z
-      .string()
-      .trim()
-      .min(1, "Indique o client ID.")
-      .max(100, "Até 100 caracteres.")
-      .regex(
-        /^[a-z0-9]+(-[a-z0-9]+)*$/,
-        "Use minúsculas, números e hífenes (ex.: my-invoice).",
-      ),
-    clientName: z
-      .string()
-      .trim()
-      .min(1, "Indique o nome.")
-      .max(255, "Até 255 caracteres."),
-    description: z.string().trim().max(140, "Até 140 caracteres."),
-    // IGRPCombobox emits "" when the selected option is picked again.
-    applicationCode: z.string().trim().optional(),
-    grantTypes: z
-      .array(grantTypeSchema)
-      .min(1, "Escolha pelo menos um grant type."),
-    redirectUris: z.array(z.string().trim()),
-    scopes: z.array(z.string().trim().min(1)),
-    accessTokenTtl: ttlSchema,
-    refreshTokenTtl: ttlSchema,
-    authorizationCodeTtl: ttlSchema,
-    active: z.boolean(),
-  })
-  .superRefine((v, ctx) => {
-    if (!v.grantTypes.includes("authorization_code")) return;
-    if (v.redirectUris.length === 0) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["redirectUris"],
-        message: "Adicione pelo menos um URI de redirecionamento.",
-      });
-    }
-    for (const uri of v.redirectUris) {
-      if (!isAllowedRedirectUri(uri)) {
+/** Validation messages come from the catalog, so the schema is built per translator. */
+export function makeOAuthClientSchemas(t: OAuthClientsValidationTranslator) {
+  const ttlSchema = z
+    .number({ error: t("ttlInteger") })
+    .int(t("ttlInteger"))
+    .positive(t("ttlInteger"))
+    .optional();
+
+  const oauthClientFormSchema = z
+    .object({
+      clientId: z
+        .string()
+        .trim()
+        .min(1, t("clientIdRequired"))
+        .max(100, t("clientIdMax"))
+        .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, t("clientIdPattern")),
+      clientName: z
+        .string()
+        .trim()
+        .min(1, t("nameRequired"))
+        .max(255, t("nameMax")),
+      description: z.string().trim().max(140, t("descriptionMax")),
+      // IGRPCombobox emits "" when the selected option is picked again.
+      applicationCode: z.string().trim().optional(),
+      grantTypes: z.array(grantTypeSchema).min(1, t("grantTypesRequired")),
+      redirectUris: z.array(z.string().trim()),
+      scopes: z.array(z.string().trim().min(1)),
+      accessTokenTtl: ttlSchema,
+      refreshTokenTtl: ttlSchema,
+      authorizationCodeTtl: ttlSchema,
+      active: z.boolean(),
+    })
+    .superRefine((v, ctx) => {
+      if (!v.grantTypes.includes("authorization_code")) return;
+      if (v.redirectUris.length === 0) {
         ctx.addIssue({
           code: "custom",
           path: ["redirectUris"],
-          message: `«${uri}» não é permitido. Use https:// (ou http://localhost).`,
+          message: t("redirectRequired"),
         });
       }
-    }
-  });
+      for (const uri of v.redirectUris) {
+        if (!isAllowedRedirectUri(uri)) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["redirectUris"],
+            message: t("redirectNotAllowed", { uri }),
+          });
+        }
+      }
+    });
 
-export type OAuthClientFormValues = z.infer<typeof oauthClientFormSchema>;
+  return { oauthClientFormSchema };
+}
+
+export type OAuthClientFormValues = z.infer<
+  ReturnType<typeof makeOAuthClientSchemas>["oauthClientFormSchema"]
+>;
 
 /** Scope defaults while authorization_code is selected (spec §4.3). */
 export const DEFAULT_WEB_SCOPES = ["openid", "email", "profile"] as const;

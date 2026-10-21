@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Alert,
   AlertDescription,
@@ -13,17 +14,17 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import { type Resolver, useForm } from "react-hook-form";
 
 import { UnsavedChangesBar } from "@/components/unsaved-changes-bar";
 import { useLinkedServiceAccount } from "@/features/service-accounts/use-service-accounts";
 import { ROUTES } from "@/lib/constants";
-import { formatDate } from "@/lib/utilities";
 
-import { LINK_UNKNOWN_REASON } from "../lib/oauth-client-utils";
+import { getDeleteBlockedReason } from "../lib/oauth-client-utils";
 import {
+  makeOAuthClientSchemas,
   type OAuthClientFormValues,
-  oauthClientFormSchema,
   toFormValues,
   toUpdateRequest,
 } from "../oauth-client-schemas";
@@ -42,13 +43,24 @@ import { OAuthClientServiceAccountSection } from "./oauth-client-service-account
 
 const FORM_ID = "oauth-client-edit";
 
-/** Record timestamps: date and time in pt-PT, "—" when absent or unparseable. */
-function formatTimestamp(value?: string) {
-  if (!value || Number.isNaN(new Date(value).getTime())) return "—";
-  return formatDate(value);
-}
-
 export function OAuthClientDetail({ id }: { id: string }) {
+  const t = useTranslations("oauthClients");
+  const tv = useTranslations("oauthClients.validation");
+  const { formatDateTime } = useIGRPFormat();
+  const { oauthClientFormSchema } = useMemo(
+    () => makeOAuthClientSchemas(tv),
+    [tv],
+  );
+
+  /** Record timestamps: date and time, "—" when absent or unparseable. */
+  function formatTimestamp(value?: string) {
+    if (!value || Number.isNaN(new Date(value).getTime())) return "—";
+    return formatDateTime(new Date(value), {
+      dateStyle: "long",
+      timeStyle: "short",
+    });
+  }
+
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
   const copyClientId = useCopyClientId();
@@ -99,7 +111,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
     if (!result.success) {
       igrpToast({
         type: "error",
-        title: "Não foi possível guardar",
+        title: t("detail.saveErrorTitle"),
         description: result.error,
       });
       return;
@@ -110,7 +122,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
     form.reset(toFormValues(result.data));
     igrpToast({
       type: "success",
-      title: "Alterações guardadas",
+      title: t("detail.savedTitle"),
       description: result.data.clientName || result.data.clientId,
     });
   }
@@ -119,11 +131,11 @@ export function OAuthClientDetail({ id }: { id: string }) {
   // activation are blocked and client_credentials/application stay locked,
   // as if a service account were linked.
   const linkUnknown = !linked.account && (linked.isLoading || linked.isError);
-  const deleteBlockedReason = linked.account
-    ? `Remova primeiro a conta de serviço «${linked.account.name}».`
-    : linkUnknown
-      ? LINK_UNKNOWN_REASON
-      : null;
+  const deleteBlockedReason = getDeleteBlockedReason(
+    t,
+    linked.account,
+    linkUnknown,
+  );
   const clientCredentialsLock: ClientCredentialsLock | undefined =
     linked.account
       ? { accountName: linked.account.name }
@@ -138,7 +150,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
         className="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <IGRPIcon iconName="ArrowLeft" className="size-4" aria-hidden="true" />
-        Clientes OAuth
+        {t("detail.back")}
       </Link>
       <header className="flex items-center gap-4">
         <div className="flex size-13 items-center justify-center rounded-xl bg-info-subtle text-info-subtle-foreground">
@@ -151,7 +163,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <ClientKindBadge grantTypes={client.grantTypes} />
             <span className="inline-flex items-center gap-1">
-              Client ID{" "}
+              {t("detail.clientId")}{" "}
               <span className="rounded-sm bg-muted px-1.5 py-0.5 font-mono text-foreground">
                 {client.clientId}
               </span>
@@ -160,7 +172,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
                 variant="ghost"
                 size="icon"
                 className="size-7"
-                aria-label="Copiar client ID"
+                aria-label={t("actions.copyClientId")}
                 onClick={() => copyClientId(client.clientId)}
               >
                 <IGRPIcon
@@ -177,10 +189,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
 
       {linked.duplicate ? (
         <Alert variant="destructive">
-          <AlertDescription>
-            Este cliente tem mais do que uma conta de serviço associada. Isto
-            não devia acontecer — contacte o suporte.
-          </AlertDescription>
+          <AlertDescription>{t("detail.duplicateAccounts")}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -203,18 +212,18 @@ export function OAuthClientDetail({ id }: { id: string }) {
             />
             <FormSection
               id="sec-record"
-              title="Registo"
-              description="Quando este cliente foi registado e alterado pela última vez."
+              title={t("detail.recordTitle")}
+              description={t("detail.recordDescription")}
             >
               <dl className="grid gap-4 text-sm sm:grid-cols-2">
                 <div className="flex flex-col gap-1">
-                  <dt className="font-medium">Criado em</dt>
+                  <dt className="font-medium">{t("detail.createdAt")}</dt>
                   <dd className="text-muted-foreground">
                     {formatTimestamp(client.createdAt)}
                   </dd>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <dt className="font-medium">Atualizado em</dt>
+                  <dt className="font-medium">{t("detail.updatedAt")}</dt>
                   <dd className="text-muted-foreground">
                     {formatTimestamp(client.updatedAt)}
                   </dd>
@@ -230,15 +239,14 @@ export function OAuthClientDetail({ id }: { id: string }) {
           id="danger-zone"
           className="text-base font-semibold text-destructive"
         >
-          Zona de perigo
+          {t("detail.dangerZone")}
         </h3>
         <div className="flex flex-col divide-y divide-destructive/20 rounded-xl border border-destructive/30 bg-card">
           <div className="flex items-center gap-6 p-5">
             <div className="flex flex-1 flex-col gap-1">
-              <span className="font-medium">Gerar novo segredo</span>
+              <span className="font-medium">{t("actions.rotateSecret")}</span>
               <span className="text-sm text-muted-foreground">
-                O segredo atual deixa de funcionar de imediato. Use-o se o
-                segredo foi exposto ou perdido.
+                {t("detail.rotateDescription")}
               </span>
             </div>
             <Button
@@ -246,22 +254,26 @@ export function OAuthClientDetail({ id }: { id: string }) {
               className="text-destructive"
               onClick={() => setDialog("rotate")}
             >
-              Gerar novo segredo
+              {t("actions.rotateSecret")}
             </Button>
           </div>
           <div className="flex items-center gap-6 p-5">
             <div className="flex flex-1 flex-col gap-1">
               <span className="font-medium">
-                {client.active ? "Desativar cliente" : "Ativar cliente"}
+                {client.active
+                  ? t("activation.titleDeactivate")
+                  : t("activation.titleActivate")}
               </span>
               <span className="text-sm text-muted-foreground">
                 {linkUnknown
-                  ? LINK_UNKNOWN_REASON
+                  ? t("linkUnknown")
                   : client.active
                     ? linked.account
-                      ? `Desativa também a conta de serviço «${linked.account.name}». A identidade deixa de conseguir autenticar.`
-                      : "As aplicações que usam este cliente deixam de conseguir autenticar. Pode reativá-lo depois."
-                    : "O cliente volta a poder pedir tokens."}
+                      ? t("detail.deactivateLinked", {
+                          name: linked.account.name,
+                        })
+                      : t("activation.descDeactivate")
+                    : t("activation.descActivate")}
               </span>
             </div>
             <Button
@@ -270,15 +282,14 @@ export function OAuthClientDetail({ id }: { id: string }) {
               disabled={linkUnknown}
               onClick={() => setDialog("activation")}
             >
-              {client.active ? "Desativar" : "Ativar"}
+              {client.active ? t("actions.deactivate") : t("actions.activate")}
             </Button>
           </div>
           <div className="flex items-center gap-6 p-5">
             <div className="flex flex-1 flex-col gap-1">
-              <span className="font-medium">Eliminar cliente</span>
+              <span className="font-medium">{t("detail.deleteTitle")}</span>
               <span className="text-sm text-muted-foreground">
-                {deleteBlockedReason ??
-                  "Remove o registo. As credenciais deixam de funcionar de imediato e não é possível recuperá-lo."}
+                {deleteBlockedReason ?? t("detail.deleteDescription")}
               </span>
             </div>
             <Button
@@ -286,7 +297,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
               disabled={!!deleteBlockedReason}
               onClick={() => setDialog("delete")}
             >
-              Eliminar
+              {t("actions.delete")}
             </Button>
           </div>
         </div>

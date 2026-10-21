@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { useTranslations } from "next-intl";
+
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { InlineError } from "@/components/inline-error";
 
@@ -12,6 +14,7 @@ export default function OAuthClientDetailError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("oauthClients.error");
   useEffect(() => {
     console.error("[oauth-client] segment error", error);
   }, [error]);
@@ -21,7 +24,7 @@ export default function OAuthClientDetailError({
       error={error}
       fallback={
         <InlineError
-          title="Não foi possível carregar o cliente OAuth."
+          title={t("detailTitle")}
           message={error.message}
           onRetry={reset}
         />

@@ -7,14 +7,15 @@ import type {
   OAuthClientDTO,
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
 
 import { useSetClientActive } from "../use-oauth-clients";
 
-const STEP_LABEL = {
-  client: "cliente OAuth",
-  serviceAccount: "conta de serviço",
+const STEP_KEY = {
+  client: "stepClient",
+  serviceAccount: "stepServiceAccount",
 } as const;
 
 export function OAuthClientActivationDialog({
@@ -28,17 +29,18 @@ export function OAuthClientActivationDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("oauthClients");
   const { igrpToast } = useIGRPToast();
   const mutation = useSetClientActive();
   const [activate] = useState(() => !client.active);
 
   const description = activate
     ? linkedAccount
-      ? `O cliente e a conta de serviço «${linkedAccount.name}» voltam a poder autenticar.`
-      : "O cliente volta a poder pedir tokens."
+      ? t("activation.descActivateLinked", { name: linkedAccount.name })
+      : t("activation.descActivate")
     : linkedAccount
-      ? `O cliente e a conta de serviço «${linkedAccount.name}» deixam de conseguir autenticar até serem reativados.`
-      : "As aplicações que usam este cliente deixam de conseguir autenticar. Pode reativá-lo depois.";
+      ? t("activation.descDeactivateLinked", { name: linkedAccount.name })
+      : t("activation.descDeactivate");
 
   async function confirm() {
     const result = await mutation.mutateAsync({
@@ -49,7 +51,9 @@ export function OAuthClientActivationDialog({
     if (result.success) {
       igrpToast({
         type: "success",
-        title: activate ? "Cliente ativado" : "Cliente desativado",
+        title: activate
+          ? t("activation.toastActivated")
+          : t("activation.toastDeactivated"),
         description: client.clientName || client.clientId,
       });
       onOpenChange(false);
@@ -57,12 +61,20 @@ export function OAuthClientActivationDialog({
     }
     const step =
       "failedStep" in result
-        ? ` (falhou: ${STEP_LABEL[result.failedStep]})`
-        : "";
+        ? t(`activation.${STEP_KEY[result.failedStep]}`)
+        : null;
+    const errorTitle =
+      step === null
+        ? activate
+          ? t("activation.errorActivate")
+          : t("activation.errorDeactivate")
+        : activate
+          ? t("activation.errorActivateStep", { step })
+          : t("activation.errorDeactivateStep", { step });
     igrpToast({
       type: "error",
-      title: `Não foi possível ${activate ? "ativar" : "desativar"}${step}`,
-      description: `${result.error} Tente novamente.`,
+      title: errorTitle,
+      description: t("activation.retry", { error: result.error }),
     });
   }
 
@@ -70,12 +82,21 @@ export function OAuthClientActivationDialog({
     <ConfirmDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={activate ? "Ativar cliente" : "Desativar cliente"}
+      title={
+        activate
+          ? t("activation.titleActivate")
+          : t("activation.titleDeactivate")
+      }
       description={description}
       onConfirm={confirm}
       isLoading={mutation.isPending}
-      confirmText={activate ? "Ativar" : "Desativar"}
-      loadingText={activate ? "A ativar…" : "A desativar…"}
+      confirmText={activate ? t("actions.activate") : t("actions.deactivate")}
+      cancelText={t("actions.cancel")}
+      loadingText={
+        activate
+          ? t("activation.loadingActivate")
+          : t("activation.loadingDeactivate")
+      }
       variant={activate ? "default" : "destructive"}
     />
   );

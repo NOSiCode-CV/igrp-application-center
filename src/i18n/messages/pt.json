@@ -1443,5 +1443,232 @@
         "loadErrorTitle": "Perfil tem permissões associadas, mas não foram carregadas."
       }
     }
+  },
+  "oauthClients": {
+    "meta": {
+      "listTitle": "Clientes OAuth",
+      "listDescription": "Consumidores de API registados no servidor de autorização iGRP.",
+      "newTitle": "Registar cliente OAuth",
+      "detailTitle": "{name} · Clientes OAuth",
+      "detailFallback": "Cliente OAuth"
+    },
+    "error": {
+      "listTitle": "Não foi possível carregar os clientes OAuth.",
+      "listMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "detailTitle": "Não foi possível carregar o cliente OAuth."
+    },
+    "loading": {
+      "list": "A carregar clientes OAuth...",
+      "new": "A preparar o registo..."
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "viewDetails": "Ver detalhes",
+      "copyClientId": "Copiar client ID",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "delete": "Eliminar",
+      "rotateSecret": "Gerar novo segredo",
+      "finish": "Concluir",
+      "close": "Fechar"
+    },
+    "secret": {
+      "label": "Client secret",
+      "warningTitle": "Este segredo não volta a ser mostrado.",
+      "warningBody": "Nem a si, nem a outro administrador. Guarde-o já no seu gestor de segredos.",
+      "confirmLabel": "Guardei o segredo num local seguro"
+    },
+    "kind": {
+      "web": "Aplicação web",
+      "machine": "Máquina"
+    },
+    "badge": {
+      "active": "Ativo",
+      "activeFeminine": "Ativa",
+      "inactive": "Inativo",
+      "inactiveFeminine": "Inativa"
+    },
+    "linkUnknown": "Não foi possível verificar se existe uma conta de serviço.",
+    "deleteBlockedByAccount": "Remova primeiro a conta de serviço «{name}».",
+    "duration": {
+      "days": "{count, plural, one {{count} dia} other {{count} dias}}",
+      "hours": "{count, plural, one {{count} hora} other {{count} horas}}",
+      "minutes": "{count, plural, one {{count} minuto} other {{count} minutos}}",
+      "seconds": "{count, plural, one {{count} segundo} other {{count} segundos}}"
+    },
+    "grants": {
+      "authorizationCode": "Utilizadores iniciam sessão no browser.",
+      "refreshToken": "Renova a sessão sem novo login.",
+      "clientCredentials": "Máquina a máquina, sem utilizador. Necessário para uma conta de serviço.",
+      "deviceCode": "Dispositivos sem browser (TV, linha de comandos)."
+    },
+    "copy": {
+      "successTitle": "Copiado",
+      "successDescription": "Client ID {clientId} copiado.",
+      "errorTitle": "Não foi possível copiar",
+      "errorDescription": "Selecione o client ID e copie-o manualmente."
+    },
+    "validation": {
+      "ttlInteger": "Use um número inteiro de segundos.",
+      "clientIdRequired": "Indique o client ID.",
+      "clientIdMax": "Até 100 caracteres.",
+      "clientIdPattern": "Use minúsculas, números e hífenes (ex.: my-invoice).",
+      "nameRequired": "Indique o nome.",
+      "nameMax": "Até 255 caracteres.",
+      "descriptionMax": "Até 140 caracteres.",
+      "grantTypesRequired": "Escolha pelo menos um grant type.",
+      "redirectRequired": "Adicione pelo menos um URI de redirecionamento.",
+      "redirectNotAllowed": "«{uri}» não é permitido. Use https:// (ou http://localhost)."
+    },
+    "list": {
+      "accountsErrorTitle": "Não foi possível verificar as contas de serviço.",
+      "accountsErrorMessage": "Eliminar, ativar e desativar estão indisponíveis até a verificação ser feita.",
+      "emptyTitle": "Ainda não há clientes OAuth",
+      "emptyDescription": "Um cliente OAuth é uma aplicação ou serviço registado para pedir tokens ao servidor de autorização iGRP.",
+      "emptyAction": "Registar o primeiro cliente",
+      "noMatches": "Nenhum cliente corresponde aos filtros."
+    },
+    "toolbar": {
+      "searchLabel": "Pesquisar clientes",
+      "searchPlaceholder": "Pesquisar por nome ou client ID…",
+      "application": "Aplicação",
+      "applicationSearch": "Pesquisar aplicações…",
+      "applicationEmpty": "Nenhuma aplicação encontrada.",
+      "kind": "Tipo",
+      "status": "Estado",
+      "register": "Registar cliente"
+    },
+    "columns": {
+      "client": "Cliente",
+      "kind": "Tipo",
+      "serviceAccount": "Conta de serviço",
+      "application": "Aplicação",
+      "status": "Estado",
+      "actions": "Ações",
+      "rowActions": "Ações para {name}",
+      "toVerify": "Por verificar",
+      "noAccount": "Sem conta"
+    },
+    "activation": {
+      "titleActivate": "Ativar cliente",
+      "titleDeactivate": "Desativar cliente",
+      "descActivateLinked": "O cliente e a conta de serviço «{name}» voltam a poder autenticar.",
+      "descActivate": "O cliente volta a poder pedir tokens.",
+      "descDeactivateLinked": "O cliente e a conta de serviço «{name}» deixam de conseguir autenticar até serem reativados.",
+      "descDeactivate": "As aplicações que usam este cliente deixam de conseguir autenticar. Pode reativá-lo depois.",
+      "loadingActivate": "A ativar…",
+      "loadingDeactivate": "A desativar…",
+      "toastActivated": "Cliente ativado",
+      "toastDeactivated": "Cliente desativado",
+      "errorActivate": "Não foi possível ativar",
+      "errorDeactivate": "Não foi possível desativar",
+      "errorActivateStep": "Não foi possível ativar (falhou: {step})",
+      "errorDeactivateStep": "Não foi possível desativar (falhou: {step})",
+      "retry": "{error} Tente novamente.",
+      "stepClient": "cliente OAuth",
+      "stepServiceAccount": "conta de serviço"
+    },
+    "delete": {
+      "errorTitle": "Não foi possível eliminar",
+      "linkedError": "Este cliente tem uma conta de serviço associada. Elimine primeiro a conta de serviço.",
+      "successTitle": "Cliente eliminado",
+      "description": "O registo é removido e as credenciais deixam de funcionar de imediato. Não é possível recuperá-lo.",
+      "label": "Client ID",
+      "header": "Eliminar cliente OAuth"
+    },
+    "rotate": {
+      "confirmTitle": "Gerar novo segredo",
+      "description": "O segredo atual deixa de funcionar de imediato. Os tokens já emitidos continuam válidos até expirarem. O client ID não muda: só o segredo tem de ser distribuído de novo.",
+      "descriptionLinked": "O segredo atual deixa de funcionar de imediato, também para a conta de serviço «{name}». Os tokens já emitidos continuam válidos até expirarem. O client ID não muda: só o segredo tem de ser distribuído de novo.",
+      "loading": "A gerar…",
+      "errorTitle": "Não foi possível gerar um novo segredo",
+      "doneTitle": "Novo segredo gerado",
+      "doneWithSecret": "O segredo anterior de <id>{clientId}</id> já não funciona. Atualize as aplicações que usam este cliente.",
+      "doneWithoutSecret": "O segredo anterior de <id>{clientId}</id> já não funciona. O servidor não devolveu o novo segredo.",
+      "missingAlert": "Gere outro segredo. Até lá, nenhuma aplicação consegue autenticar com este cliente.",
+      "closeTitle": "Fechar sem confirmar?",
+      "closeDescription": "Não poderá voltar a ver este segredo. Fechar mesmo assim?",
+      "closeBack": "Voltar",
+      "closeAnyway": "Fechar mesmo assim"
+    },
+    "create": {
+      "noteInfo": "O segredo é mostrado uma única vez, no fim do registo.",
+      "noteCreated": "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página.",
+      "title": "Registar cliente OAuth2",
+      "submit": "Registar",
+      "submitting": "A registar…",
+      "conflict": "Já existe um cliente com este client ID.",
+      "errorTitle": "Não foi possível registar o cliente",
+      "leaveTitle": "Sair sem registar o cliente?",
+      "leaveDescription": "Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los.",
+      "leaveCancel": "Continuar a preencher",
+      "leaveAction": "Sair e descartar",
+      "doneTitle": "Cliente registado",
+      "doneWithSecret": "O cliente <id>{clientId}</id> já pode pedir tokens. Guarde as credenciais antes de sair.",
+      "doneWithoutSecret": "O cliente <id>{clientId}</id> foi criado, mas sem credenciais utilizáveis.",
+      "rotateHint": "Se o segredo for exposto, gere um novo nos detalhes do cliente.",
+      "finish": "Concluir — ver detalhes",
+      "missingAlert": "O servidor não devolveu o segredo. Gere um novo nos detalhes do cliente."
+    },
+    "detail": {
+      "back": "Clientes OAuth",
+      "clientId": "Client ID",
+      "duplicateAccounts": "Este cliente tem mais do que uma conta de serviço associada. Isto não devia acontecer — contacte o suporte.",
+      "saveErrorTitle": "Não foi possível guardar",
+      "savedTitle": "Alterações guardadas",
+      "recordTitle": "Registo",
+      "recordDescription": "Quando este cliente foi registado e alterado pela última vez.",
+      "createdAt": "Criado em",
+      "updatedAt": "Atualizado em",
+      "dangerZone": "Zona de perigo",
+      "rotateDescription": "O segredo atual deixa de funcionar de imediato. Use-o se o segredo foi exposto ou perdido.",
+      "deactivateLinked": "Desativa também a conta de serviço «{name}». A identidade deixa de conseguir autenticar.",
+      "deleteTitle": "Eliminar cliente",
+      "deleteDescription": "Remove o registo. As credenciais deixam de funcionar de imediato e não é possível recuperá-lo."
+    },
+    "serviceAccount": {
+      "title": "Conta de serviço",
+      "description": "A identidade de máquina que autentica com este cliente, com os seus perfis e permissões.",
+      "saveFirst": "Guarde as alterações para poder criar uma conta de serviço para este cliente.",
+      "none": "Este cliente ainda não tem conta de serviço.",
+      "create": "Criar conta de serviço para este cliente"
+    },
+    "form": {
+      "basicTitle": "Informação básica",
+      "basicDescription": "Como o cliente é identificado no servidor de autorização.",
+      "clientId": "Client ID",
+      "clientIdRequired": "Client ID *",
+      "clientIdHelpCreate": "Minúsculas, números e hífenes. Não pode ser alterado depois.",
+      "clientIdHelpEdit": "Definido no registo. Não pode ser alterado.",
+      "name": "Nome *",
+      "secretHidden": "Mostrado apenas uma vez, quando é gerado",
+      "secretHelp": "O servidor guarda só uma versão cifrada — ninguém o pode voltar a ler. Se foi exposto, gere um novo na zona de perigo.",
+      "description": "Descrição",
+      "application": "Aplicação",
+      "applicationPlaceholder": "Selecionar aplicação",
+      "applicationSearch": "Pesquisar aplicação…",
+      "applicationEmpty": "Nenhuma aplicação encontrada.",
+      "applicationHelp": "A aplicação a que este cliente pertence. Uma conta de serviço herda-a.",
+      "applicationLocked": "Fixa enquanto a conta de serviço «{name}» existir.",
+      "grantsTitle": "Grant types",
+      "grantsDescription": "Como este cliente obtém tokens. As secções abaixo mudam conforme a escolha.",
+      "grantFixed": "Fixo para contas de serviço.",
+      "grantLocked": "Necessário enquanto a conta de serviço «{name}» existir.",
+      "redirectsTitle": "Redirect URIs",
+      "redirectsDescription": "Para onde o servidor devolve o utilizador depois do login. Aparece porque <mono>authorization_code</mono> está ativo.",
+      "redirectsLabel": "URIs de redirecionamento *",
+      "redirectsPlaceholder": "Adicionar URI…",
+      "redirectsHelp": "Prima Enter depois de cada URI. Só https://, exceto http://localhost.",
+      "scopesTitle": "Scopes",
+      "scopesDescription": "Informação que o cliente pode pedir.",
+      "scopesPlaceholder": "Adicionar scope…",
+      "ttlTitle": "Duração dos tokens",
+      "ttlDescription": "Deixe em branco para usar os valores do servidor.",
+      "ttlAccessToken": "Access token",
+      "ttlRefreshToken": "Refresh token",
+      "ttlAuthorizationCode": "Authorization code",
+      "seconds": "segundos",
+      "ttlEquals": "= {value}"
+    }
   }
 }

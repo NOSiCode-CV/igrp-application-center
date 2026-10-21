@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Button,
   Empty,
@@ -12,6 +13,7 @@ import {
   IGRPDataTable,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { InlineError } from "@/components/inline-error";
 import { useApplications } from "@/features/applications/use-applications";
@@ -53,6 +55,9 @@ function countBy(values: string[]) {
 }
 
 export function OAuthClientList() {
+  const t = useTranslations("oauthClients");
+  const tAccounts = useTranslations("accounts.cells");
+  const { compare } = useIGRPFormat();
   const copyClientId = useCopyClientId();
   const { data: clients = [] } = useOAuthClients();
   const accounts = useServiceAccounts();
@@ -104,27 +109,28 @@ export function OAuthClientList() {
       appOptions: [...new Set(all.map((f) => f.application))]
         .map((code) =>
           code === "—"
-            ? { value: code, label: "Sem aplicação" }
+            ? { value: code, label: tAccounts("noApplication") }
             : {
                 value: code,
                 label: nameByCode.get(code) || code,
                 description: code,
               },
         )
-        .sort((a, b) => a.label.localeCompare(b.label)),
+        .sort((a, b) => compare(a.label, b.label)),
     };
-  }, [rows, nameByCode]);
+  }, [rows, nameByCode, tAccounts, compare]);
 
   const columns = useMemo(
     () =>
       getOAuthClientColumns({
+        t,
         onToggleActive: (row) => setDialog({ kind: "activation", row }),
         onDelete: (row) => setDialog({ kind: "delete", row }),
         onCopy: copyClientId,
         linkUnknown,
         applicationName: (code) => nameByCode.get(code),
       }),
-    [copyClientId, linkUnknown, nameByCode],
+    [copyClientId, linkUnknown, nameByCode, t],
   );
 
   return (
@@ -139,8 +145,8 @@ export function OAuthClientList() {
 
       {accounts.isError ? (
         <InlineError
-          title="Não foi possível verificar as contas de serviço."
-          message="Eliminar, ativar e desativar estão indisponíveis até a verificação ser feita."
+          title={t("list.accountsErrorTitle")}
+          message={t("list.accountsErrorMessage")}
           onRetry={() => accounts.refetch()}
         />
       ) : null}
@@ -148,16 +154,13 @@ export function OAuthClientList() {
       {rows.length === 0 ? (
         <Empty className="rounded-xl border border-border">
           <EmptyHeader>
-            <EmptyTitle>Ainda não há clientes OAuth</EmptyTitle>
-            <EmptyDescription>
-              Um cliente OAuth é uma aplicação ou serviço registado para pedir
-              tokens ao servidor de autorização iGRP.
-            </EmptyDescription>
+            <EmptyTitle>{t("list.emptyTitle")}</EmptyTitle>
+            <EmptyDescription>{t("list.emptyDescription")}</EmptyDescription>
           </EmptyHeader>
           <Button asChild>
             <Link href={ROUTES.OAUTH_CLIENT_NEW}>
               <IGRPIcon iconName="Plus" aria-hidden="true" />
-              Registar o primeiro cliente
+              {t("list.emptyAction")}
             </Link>
           </Button>
         </Empty>
@@ -168,7 +171,7 @@ export function OAuthClientList() {
           tableHeaderClassName="bg-muted"
           columns={columns}
           data={filteredRows}
-          notFoundLabel="Nenhum cliente corresponde aos filtros."
+          notFoundLabel={t("list.noMatches")}
         />
       )}
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,12 +14,13 @@ import {
   IGRPIcon,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import { type Resolver, useForm } from "react-hook-form";
 
 import { useApplications } from "@/features/applications/use-applications";
 import {
+  makeOAuthClientSchemas,
   type OAuthClientFormValues,
-  oauthClientFormSchema,
   toCreateRequest,
 } from "@/features/oauth-clients/oauth-client-schemas";
 import { useOAuthClients } from "@/features/oauth-clients/use-oauth-clients";
@@ -74,6 +75,11 @@ export function ServiceAccountWizard({
   const { data: allClients = [] } = useOAuthClients();
   const { data: applications = [] } = useApplications();
   const create = useCreateServiceAccount();
+  const tClientValidation = useTranslations("oauthClients.validation");
+  const { oauthClientFormSchema } = useMemo(
+    () => makeOAuthClientSchemas(tClientValidation),
+    [tClientValidation],
+  );
   const clientForm = useForm<OAuthClientFormValues>({
     resolver: zodResolver(
       oauthClientFormSchema,

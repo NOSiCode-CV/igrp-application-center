@@ -23,6 +23,17 @@ const ALLOWED = new Set([
   "Access Management",
   "johndoe", // example placeholders
   "page-slug",
+  // OAuth protocol terms, kept in English in every language (oauth-clients)
+  "Client ID",
+  "Client ID *",
+  "Client secret",
+  "Grant types",
+  "Redirect URIs",
+  "Scopes",
+  "Access token",
+  "Refresh token",
+  "Authorization code",
+  "= {value}",
 ]);
 
 describe("catalogs", () => {

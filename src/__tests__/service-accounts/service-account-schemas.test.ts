@@ -1,11 +1,13 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
-import { oauthClientFormSchema } from "@/features/oauth-clients/oauth-client-schemas";
+import { makeOAuthClientSchemas } from "@/features/oauth-clients/oauth-client-schemas";
 import {
   emptyIdentityValues,
   machineClientFormValues,
   serviceAccountIdentitySchema,
 } from "@/features/service-accounts/service-account-schemas";
+import pt from "@/i18n/messages/pt.json";
 
 function issues(values: unknown) {
   const r = serviceAccountIdentitySchema.safeParse(values);
@@ -47,6 +49,14 @@ describe("serviceAccountIdentitySchema", () => {
     );
   });
 });
+
+const { oauthClientFormSchema } = makeOAuthClientSchemas(
+  createTranslator({
+    locale: "pt",
+    messages: pt,
+    namespace: "oauthClients.validation",
+  }),
+);
 
 describe("machineClientFormValues", () => {
   it("is a client_credentials-only client with no scopes", () => {

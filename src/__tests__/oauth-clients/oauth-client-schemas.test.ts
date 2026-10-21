@@ -1,13 +1,25 @@
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import {
   emptyOAuthClientFormValues,
-  oauthClientFormSchema,
+  makeOAuthClientSchemas,
   toCreateRequest,
   toFormValues,
   toUpdateRequest,
 } from "@/features/oauth-clients/oauth-client-schemas";
+import en from "@/i18n/messages/en.json";
+import pt from "@/i18n/messages/pt.json";
+
+const translator = (locale: "pt" | "en") =>
+  createTranslator({
+    locale,
+    messages: locale === "pt" ? pt : en,
+    namespace: "oauthClients.validation",
+  });
+// Built in pt, so the expectations read as the user sees them by default.
+const { oauthClientFormSchema } = makeOAuthClientSchemas(translator("pt"));
 
 const valid = {
   ...emptyOAuthClientFormValues(),
@@ -36,6 +48,19 @@ describe("oauthClientFormSchema", () => {
       ).toBe(true);
     },
   );
+
+  it("reports validation messages in English", () => {
+    const { oauthClientFormSchema: schemaEn } = makeOAuthClientSchemas(
+      translator("en"),
+    );
+    const r = schemaEn.safeParse({
+      ...valid,
+      redirectUris: ["http://evil.com"],
+    });
+    expect(r.success ? [] : r.error.issues.map((i) => i.message)).toContain(
+      "«http://evil.com» is not allowed. Use https:// (or http://localhost).",
+    );
+  });
 
   it("requires a redirect URI when authorization_code is selected", () => {
     expect(issues({ ...valid, redirectUris: [] })).toContain(

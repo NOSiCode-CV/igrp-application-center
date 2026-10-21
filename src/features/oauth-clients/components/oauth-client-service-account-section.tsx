@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import {
@@ -13,7 +14,6 @@ import {
 import { useLinkedServiceAccount } from "@/features/service-accounts/use-service-accounts";
 import { ROUTES } from "@/lib/constants";
 
-import { LINK_UNKNOWN_REASON } from "../lib/oauth-client-utils";
 import { ActiveBadge } from "./oauth-client-badges";
 import { FormSection } from "./oauth-client-form-sections";
 
@@ -26,6 +26,7 @@ export function OAuthClientServiceAccountSection({
   /** The loaded (saved) client already has client_credentials. */
   savedWithClientCredentials: boolean;
 }) {
+  const t = useTranslations("oauthClients");
   const form = useFormContext<{ grantTypes: string[] }>();
   const grantTypes = useWatch({ control: form.control, name: "grantTypes" });
   const linked = useLinkedServiceAccount(clientId);
@@ -34,8 +35,8 @@ export function OAuthClientServiceAccountSection({
   return (
     <FormSection
       id="sec-service-account"
-      title="Conta de serviço"
-      description="A identidade de máquina que autentica com este cliente, com os seus perfis e permissões."
+      title={t("serviceAccount.title")}
+      description={t("serviceAccount.description")}
     >
       {linked.account ? (
         <div className="flex items-center gap-3 rounded-lg border border-border p-3.5">
@@ -61,16 +62,15 @@ export function OAuthClientServiceAccountSection({
           <ActiveBadge active={linked.account.active} feminine />
         </div>
       ) : linked.isLoading || linked.isError ? (
-        <p className="text-sm text-muted-foreground">{LINK_UNKNOWN_REASON}</p>
+        <p className="text-sm text-muted-foreground">{t("linkUnknown")}</p>
       ) : !savedWithClientCredentials ? (
         <p className="text-sm text-muted-foreground">
-          Guarde as alterações para poder criar uma conta de serviço para este
-          cliente.
+          {t("serviceAccount.saveFirst")}
         </p>
       ) : (
         <div className="flex flex-col items-start gap-2">
           <p className="text-sm text-muted-foreground">
-            Este cliente ainda não tem conta de serviço.
+            {t("serviceAccount.none")}
           </p>
           <Button asChild variant="outline">
             <Link
@@ -79,7 +79,7 @@ export function OAuthClientServiceAccountSection({
                 query: { oauthClientId: clientId },
               }}
             >
-              Criar conta de serviço para este cliente
+              {t("serviceAccount.create")}
             </Link>
           </Button>
         </div>
