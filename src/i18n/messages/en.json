@@ -2021,5 +2021,242 @@
         "removeErrorTitle": "Error removing"
       }
     }
+  },
+  "serviceAccounts": {
+    "meta": {
+      "listTitle": "Service Accounts",
+      "listDescription": "Machine identities that authenticate through client_credentials.",
+      "newTitle": "New service account",
+      "detailTitle": "{name} · Service Accounts",
+      "detailFallback": "Service account"
+    },
+    "loading": {
+      "list": "Loading service accounts...",
+      "new": "Preparing the wizard...",
+      "detail": "Loading the service account..."
+    },
+    "error": {
+      "listTitle": "Could not load the service accounts.",
+      "listMessage": "Try again. If the problem persists, contact support.",
+      "detailTitle": "Could not load the service account."
+    },
+    "shared": {
+      "cancel": "Cancel",
+      "continue": "Continue",
+      "save": "Save",
+      "saving": "Saving…",
+      "creating": "Creating…",
+      "remove": "Remove",
+      "confirmRemove": "Confirm removal",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "delete": "Delete",
+      "roles": "Roles",
+      "directPermissions": "Direct permissions",
+      "addPermission": "Add permission",
+      "directBadge": "direct",
+      "directNote": "Direct permissions are not revoked when a role is removed. Prefer roles.",
+      "application": "Application",
+      "inheritedApplication": "Inherited from the OAuth client.",
+      "identity": "Identity",
+      "oauthClient": "OAuth client",
+      "name": "Name *",
+      "description": "Description",
+      "status": "Status",
+      "clientId": "Client ID",
+      "copyClientId": "Copy client ID",
+      "noApplication": "No application"
+    },
+    "accessSummary": "{roles, plural, one {# role} other {# roles}} · {direct, plural, one {# direct} other {# direct}}",
+    "permissionCount": "{count, plural, one {# permission} other {# permissions}}",
+    "validation": {
+      "nameRequired": "Enter the name.",
+      "nameMax": "Up to {max} characters.",
+      "descriptionMax": "Up to {max} characters."
+    },
+    "list": {
+      "emptyTitle": "There are no service accounts yet",
+      "emptyDescription": "A service account wraps a client_credentials OAuth client and gives it roles and permissions, so a system can reach the APIs without a user.",
+      "emptyAction": "Create the first service account",
+      "noMatches": "No account matches the filters."
+    },
+    "toolbar": {
+      "searchLabel": "Search accounts",
+      "searchPlaceholder": "Search by name or client ID…",
+      "application": "Application",
+      "applicationSearch": "Search applications…",
+      "applicationEmpty": "No application found.",
+      "statusActive": "Active",
+      "statusInactive": "Inactive",
+      "clear": "Clear",
+      "create": "New service account"
+    },
+    "columns": {
+      "account": "Account",
+      "client": "OAuth client",
+      "application": "Application",
+      "access": "Access",
+      "status": "Status",
+      "actions": "Actions",
+      "rowActions": "Actions for {name}",
+      "viewDetails": "View details",
+      "rolesPopover": "Roles"
+    },
+    "detail": {
+      "back": "Service accounts",
+      "authenticatesAs": "Authenticates as",
+      "dangerZone": "Danger zone",
+      "activateTitle": "Activate account",
+      "deactivateTitle": "Deactivate account",
+      "activateDescription": "Also reactivates the OAuth client {clientId}.",
+      "deactivateDescription": "Also deactivates the OAuth client {clientId}. The identity can no longer authenticate.",
+      "deleteTitle": "Delete account",
+      "deleteDescription": "Removes the account and, by default, the OAuth client. They cannot be recovered."
+    },
+    "clientCard": {
+      "open": "Open",
+      "errorTitle": "Could not load the OAuth client.",
+      "errorMessage": "Try again. If the problem persists, contact support.",
+      "name": "Name",
+      "grantType": "Grant type",
+      "grantFixed": "Fixed while this account exists."
+    },
+    "identityCard": {
+      "edit": "Edit identity",
+      "saveErrorTitle": "Could not save",
+      "savedTitle": "Identity saved",
+      "createdAt": "Created on",
+      "updatedAt": "Updated on"
+    },
+    "effective": {
+      "title": "Effective permissions",
+      "description": "What the account can do: the permissions of its roles added to the direct permissions.",
+      "hideList": "Hide list",
+      "showList": "View full list",
+      "fromRoles": "From roles",
+      "direct": "Direct",
+      "total": "Unique total",
+      "loadError": "Could not load the permissions of the roles, so the counts are incomplete.",
+      "retry": "Try again",
+      "via": "via {roles}"
+    },
+    "rolesSection": {
+      "assign": "Assign role",
+      "loadErrorTitle": "Could not load the roles.",
+      "loadErrorMessage": "Try again.",
+      "loading": "Loading roles…",
+      "empty": "This account has no roles yet.",
+      "removeLabel": "Remove role {code}",
+      "saveError": "Could not save the roles",
+      "removed": "Role removed",
+      "updated": "Roles updated"
+    },
+    "permissionsSection": {
+      "note": "Direct permissions are not revoked when a role is removed. Prefer roles.",
+      "empty": "No direct permissions.",
+      "removeLabel": "Remove permission {name}",
+      "unpaired": "Cannot remove: the server did not say which permission matches each identifier.",
+      "saveError": "Could not save the permissions",
+      "removed": "Permission removed",
+      "updated": "Permissions updated"
+    },
+    "rolePicker": {
+      "title": "Assign roles",
+      "description": "Roles from other departments are not changed here.",
+      "confirm": "Save roles"
+    },
+    "permissionPicker": {
+      "title": "Add direct permissions",
+      "confirm": "Save permissions"
+    },
+    "scopedPicker": {
+      "department": "Department",
+      "departmentPlaceholder": "Select a department",
+      "departmentSearch": "Search department…",
+      "departmentEmpty": "No department found.",
+      "filter": "Filter",
+      "filterPlaceholder": "Name or code",
+      "pickDepartment": "Choose a department to see what you can assign.",
+      "loading": "Loading…",
+      "loadError": "Could not load the list. Close and try again.",
+      "empty": "Nothing found."
+    },
+    "activation": {
+      "titleActivate": "Activate service account",
+      "titleDeactivate": "Deactivate service account",
+      "descActivate": "The account “{name}” and the OAuth client {clientId} can authenticate again.",
+      "descDeactivate": "The account “{name}” and the OAuth client {clientId} can no longer authenticate until they are reactivated.",
+      "loadingActivate": "Activating…",
+      "loadingDeactivate": "Deactivating…",
+      "toastActivated": "Account activated",
+      "toastDeactivated": "Account deactivated",
+      "errorActivate": "Could not activate (failed: {step})",
+      "errorDeactivate": "Could not deactivate (failed: {step})",
+      "retry": "{error} Try again.",
+      "stepClient": "OAuth client",
+      "stepServiceAccount": "service account"
+    },
+    "delete": {
+      "successBoth": "Account and client deleted",
+      "successAccount": "Account deleted",
+      "successBothDescription": "{name} · {clientId}",
+      "clientFailedTitle": "The account was deleted, the client was not",
+      "clientFailedDescription": "Delete the OAuth client {clientId} on the OAuth Clients page. {error}",
+      "errorTitle": "Could not delete",
+      "description": "The account ceases to exist, along with the roles and permissions it had. It cannot be recovered.",
+      "label": "Account name",
+      "header": "Delete service account",
+      "buttonBoth": "Delete account and client",
+      "buttonAccount": "Delete account",
+      "alsoClient": "Also delete the OAuth client <mono>{clientId}</mono>",
+      "alsoClientHint": "Without the account, the client can still authenticate."
+    },
+    "wizard": {
+      "stepsLabel": "Steps",
+      "stepAccess": "Roles and permissions",
+      "stepCurrent": ", current step",
+      "stepDone": ", completed",
+      "noteInfo": "Nothing is created until you confirm in the last step.",
+      "unavailable": "This client cannot get a service account: it already has one, or it does not use client_credentials. Choose another one in step 1.",
+      "newSummary": "New: {clientId}",
+      "submitNoteNew": "Registers the OAuth client and creates the account. The new client's secret is shown only once, right after.",
+      "submitNoteExisting": "Creates the service account linked to the chosen client.",
+      "failedTitle": "Could not create the account",
+      "alreadyHasAccount": "This OAuth client already has a service account. Choose another client in step 1.",
+      "createdTitle": "Service account created",
+      "leaveTitle": "Leave without creating the account?",
+      "leaveDescription": "The data you entered has not been saved yet. If you leave now, you will lose it.",
+      "leaveCancel": "Keep filling in",
+      "leaveAction": "Leave and discard"
+    },
+    "clientStep": {
+      "description": "The account authenticates as this client. Only client_credentials clients without a service account are listed.",
+      "modeExisting": "Use an existing OAuth client",
+      "modeNew": "Register a new OAuth client",
+      "placeholder": "Select a client",
+      "search": "Search client…",
+      "empty": "No client found.",
+      "none": "No clients available. Register a new client."
+    },
+    "identityStep": {
+      "description": "How this account appears to administrators.",
+      "activeOnCreate": "Active on creation",
+      "followsClient": "Status: follows the OAuth client ({state})."
+    },
+    "accessStep": {
+      "description": "What this account can do. You can change it later.",
+      "addRole": "Add role",
+      "removeRole": "Remove role {code}",
+      "removePermission": "Remove permission {name}",
+      "submit": "Create account"
+    },
+    "result": {
+      "clientRegisteredTitle": "Client registered",
+      "registered": "The client <mono>{clientId}</mono> has been registered. Save the secret before leaving this page.",
+      "missingSecret": "The server did not return the secret. Deactivate this client and register a new one.",
+      "accountFailed": "The service account was not created: {error} The client already exists; you can try to create the account again with the same data.",
+      "retry": "Try creating the account again",
+      "finish": "Finish — view account"
+    }
   }
 }

@@ -3,6 +3,7 @@ import type {
   RoleDTO,
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -16,6 +17,13 @@ import {
   permissionNamesOf,
   roleIdsOf,
 } from "@/features/service-accounts/lib/service-account-utils";
+import pt from "@/i18n/messages/pt.json";
+
+const t = createTranslator({
+  locale: "pt",
+  messages: pt,
+  namespace: "serviceAccounts",
+});
 
 const client = (id: string, grantTypes: string[]) =>
   ({ id, clientId: id, grantTypes }) as OAuthClientDTO;
@@ -44,7 +52,7 @@ describe("formatAccessSummary", () => {
     [1, 1, "1 perfil · 1 direta"],
     [2, 3, "2 perfis · 3 diretas"],
   ])("formats %i roles and %i direct", (r, d, text) =>
-    expect(formatAccessSummary(r, d)).toBe(text),
+    expect(formatAccessSummary(t, r, d)).toBe(text),
   );
 });
 

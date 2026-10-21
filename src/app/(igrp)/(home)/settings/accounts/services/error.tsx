@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { useTranslations } from "next-intl";
+
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { InlineError } from "@/components/inline-error";
 
@@ -12,6 +14,7 @@ export default function ServiceAccountsError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("serviceAccounts.error");
   useEffect(() => {
     console.error("[service-accounts] segment error", error);
   }, [error]);
@@ -21,8 +24,8 @@ export default function ServiceAccountsError({
       error={error}
       fallback={
         <InlineError
-          title="Não foi possível carregar as contas de serviço."
-          message="Tente novamente. Se o problema persistir, contacte o suporte."
+          title={t("listTitle")}
+          message={t("listMessage")}
           onRetry={reset}
         />
       }

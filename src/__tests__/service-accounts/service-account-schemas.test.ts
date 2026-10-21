@@ -5,9 +5,17 @@ import { makeOAuthClientSchemas } from "@/features/oauth-clients/oauth-client-sc
 import {
   emptyIdentityValues,
   machineClientFormValues,
-  serviceAccountIdentitySchema,
+  makeServiceAccountIdentitySchema,
 } from "@/features/service-accounts/service-account-schemas";
 import pt from "@/i18n/messages/pt.json";
+
+const serviceAccountIdentitySchema = makeServiceAccountIdentitySchema(
+  createTranslator({
+    locale: "pt",
+    messages: pt,
+    namespace: "serviceAccounts.validation",
+  }),
+);
 
 function issues(values: unknown) {
   const r = serviceAccountIdentitySchema.safeParse(values);

@@ -2021,5 +2021,242 @@
         "removeErrorTitle": "Erro ao remover"
       }
     }
+  },
+  "serviceAccounts": {
+    "meta": {
+      "listTitle": "Contas de Serviço",
+      "listDescription": "Identidades de máquina que autenticam via client_credentials.",
+      "newTitle": "Nova conta de serviço",
+      "detailTitle": "{name} · Contas de Serviço",
+      "detailFallback": "Conta de serviço"
+    },
+    "loading": {
+      "list": "A carregar contas de serviço...",
+      "new": "A preparar o assistente...",
+      "detail": "A carregar a conta de serviço..."
+    },
+    "error": {
+      "listTitle": "Não foi possível carregar as contas de serviço.",
+      "listMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "detailTitle": "Não foi possível carregar a conta de serviço."
+    },
+    "shared": {
+      "cancel": "Cancelar",
+      "continue": "Continuar",
+      "save": "Guardar",
+      "saving": "A guardar…",
+      "creating": "A criar…",
+      "remove": "Remover",
+      "confirmRemove": "Confirmar remoção",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "delete": "Eliminar",
+      "roles": "Perfis",
+      "directPermissions": "Permissões diretas",
+      "addPermission": "Adicionar permissão",
+      "directBadge": "direta",
+      "directNote": "Permissões diretas não são revogadas ao remover um perfil. Prefira perfis.",
+      "application": "Aplicação",
+      "inheritedApplication": "Herdada do cliente OAuth.",
+      "identity": "Identidade",
+      "oauthClient": "Cliente OAuth",
+      "name": "Nome *",
+      "description": "Descrição",
+      "status": "Estado",
+      "clientId": "Client ID",
+      "copyClientId": "Copiar client ID",
+      "noApplication": "Sem aplicação"
+    },
+    "accessSummary": "{roles, plural, =1 {# perfil} other {# perfis}} · {direct, plural, =1 {# direta} other {# diretas}}",
+    "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
+    "validation": {
+      "nameRequired": "Indique o nome.",
+      "nameMax": "Até {max} caracteres.",
+      "descriptionMax": "Até {max} caracteres."
+    },
+    "list": {
+      "emptyTitle": "Ainda não há contas de serviço",
+      "emptyDescription": "Uma conta de serviço envolve um cliente OAuth client_credentials e dá-lhe perfis e permissões, para que um sistema aceda às APIs sem utilizador.",
+      "emptyAction": "Criar a primeira conta de serviço",
+      "noMatches": "Nenhuma conta corresponde aos filtros."
+    },
+    "toolbar": {
+      "searchLabel": "Pesquisar contas",
+      "searchPlaceholder": "Pesquisar por nome ou client ID…",
+      "application": "Aplicação",
+      "applicationSearch": "Pesquisar aplicações…",
+      "applicationEmpty": "Nenhuma aplicação encontrada.",
+      "statusActive": "Ativa",
+      "statusInactive": "Inativa",
+      "clear": "Limpar",
+      "create": "Nova conta de serviço"
+    },
+    "columns": {
+      "account": "Conta",
+      "client": "Cliente OAuth",
+      "application": "Aplicação",
+      "access": "Acesso",
+      "status": "Estado",
+      "actions": "Ações",
+      "rowActions": "Ações para {name}",
+      "viewDetails": "Ver detalhes",
+      "rolesPopover": "Perfis"
+    },
+    "detail": {
+      "back": "Contas de serviço",
+      "authenticatesAs": "Autentica como",
+      "dangerZone": "Zona de perigo",
+      "activateTitle": "Ativar conta",
+      "deactivateTitle": "Desativar conta",
+      "activateDescription": "Reativa também o cliente OAuth {clientId}.",
+      "deactivateDescription": "Desativa também o cliente OAuth {clientId}. A identidade deixa de conseguir autenticar.",
+      "deleteTitle": "Eliminar conta",
+      "deleteDescription": "Remove a conta e, por defeito, o cliente OAuth. Não é possível recuperá-los."
+    },
+    "clientCard": {
+      "open": "Abrir",
+      "errorTitle": "Não foi possível carregar o cliente OAuth.",
+      "errorMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "name": "Nome",
+      "grantType": "Grant type",
+      "grantFixed": "Fixo enquanto esta conta existir."
+    },
+    "identityCard": {
+      "edit": "Editar identidade",
+      "saveErrorTitle": "Não foi possível guardar",
+      "savedTitle": "Identidade guardada",
+      "createdAt": "Criada em",
+      "updatedAt": "Atualizada em"
+    },
+    "effective": {
+      "title": "Permissões efetivas",
+      "description": "O que a conta pode fazer: as permissões dos seus perfis somadas às permissões diretas.",
+      "hideList": "Ocultar lista",
+      "showList": "Ver lista completa",
+      "fromRoles": "De perfis",
+      "direct": "Diretas",
+      "total": "Total únicas",
+      "loadError": "Não foi possível carregar as permissões dos perfis, por isso as contagens estão incompletas.",
+      "retry": "Tentar novamente",
+      "via": "via {roles}"
+    },
+    "rolesSection": {
+      "assign": "Atribuir perfil",
+      "loadErrorTitle": "Não foi possível carregar os perfis.",
+      "loadErrorMessage": "Tente novamente.",
+      "loading": "A carregar perfis…",
+      "empty": "Esta conta ainda não tem perfis.",
+      "removeLabel": "Remover perfil {code}",
+      "saveError": "Não foi possível guardar os perfis",
+      "removed": "Perfil removido",
+      "updated": "Perfis atualizados"
+    },
+    "permissionsSection": {
+      "note": "Permissões diretas não são revogadas quando se remove um perfil. Prefira perfis.",
+      "empty": "Sem permissões diretas.",
+      "removeLabel": "Remover permissão {name}",
+      "unpaired": "Não é possível remover: o servidor não indicou que permissão corresponde a cada identificador.",
+      "saveError": "Não foi possível guardar as permissões",
+      "removed": "Permissão removida",
+      "updated": "Permissões atualizadas"
+    },
+    "rolePicker": {
+      "title": "Atribuir perfis",
+      "description": "Os perfis de outros departamentos não são alterados aqui.",
+      "confirm": "Guardar perfis"
+    },
+    "permissionPicker": {
+      "title": "Adicionar permissões diretas",
+      "confirm": "Guardar permissões"
+    },
+    "scopedPicker": {
+      "department": "Departamento",
+      "departmentPlaceholder": "Selecionar departamento",
+      "departmentSearch": "Pesquisar departamento…",
+      "departmentEmpty": "Nenhum departamento encontrado.",
+      "filter": "Filtrar",
+      "filterPlaceholder": "Nome ou código",
+      "pickDepartment": "Escolha um departamento para ver o que pode atribuir.",
+      "loading": "A carregar…",
+      "loadError": "Não foi possível carregar a lista. Feche e tente novamente.",
+      "empty": "Nada encontrado."
+    },
+    "activation": {
+      "titleActivate": "Ativar conta de serviço",
+      "titleDeactivate": "Desativar conta de serviço",
+      "descActivate": "A conta «{name}» e o cliente OAuth {clientId} voltam a poder autenticar.",
+      "descDeactivate": "A conta «{name}» e o cliente OAuth {clientId} deixam de conseguir autenticar até serem reativados.",
+      "loadingActivate": "A ativar…",
+      "loadingDeactivate": "A desativar…",
+      "toastActivated": "Conta ativada",
+      "toastDeactivated": "Conta desativada",
+      "errorActivate": "Não foi possível ativar (falhou: {step})",
+      "errorDeactivate": "Não foi possível desativar (falhou: {step})",
+      "retry": "{error} Tente novamente.",
+      "stepClient": "cliente OAuth",
+      "stepServiceAccount": "conta de serviço"
+    },
+    "delete": {
+      "successBoth": "Conta e cliente eliminados",
+      "successAccount": "Conta eliminada",
+      "successBothDescription": "{name} · {clientId}",
+      "clientFailedTitle": "A conta foi eliminada, o cliente não",
+      "clientFailedDescription": "Elimine o cliente OAuth {clientId} na página Clientes OAuth. {error}",
+      "errorTitle": "Não foi possível eliminar",
+      "description": "A conta deixa de existir, com os perfis e permissões que tinha. Não é possível recuperá-la.",
+      "label": "Nome da conta",
+      "header": "Eliminar conta de serviço",
+      "buttonBoth": "Eliminar conta e cliente",
+      "buttonAccount": "Eliminar conta",
+      "alsoClient": "Eliminar também o cliente OAuth <mono>{clientId}</mono>",
+      "alsoClientHint": "Sem a conta, o cliente continua a conseguir autenticar."
+    },
+    "wizard": {
+      "stepsLabel": "Passos",
+      "stepAccess": "Perfis e permissões",
+      "stepCurrent": ", passo atual",
+      "stepDone": ", concluído",
+      "noteInfo": "Nada é criado até confirmar no último passo.",
+      "unavailable": "Este cliente não pode receber uma conta de serviço: já tem uma, ou não usa client_credentials. Escolha outro no passo 1.",
+      "newSummary": "Novo: {clientId}",
+      "submitNoteNew": "Regista o cliente OAuth e cria a conta. O segredo do novo cliente é mostrado uma única vez, a seguir.",
+      "submitNoteExisting": "Cria a conta de serviço ligada ao cliente escolhido.",
+      "failedTitle": "Não foi possível criar a conta",
+      "alreadyHasAccount": "Este cliente OAuth já tem uma conta de serviço. Escolha outro cliente no passo 1.",
+      "createdTitle": "Conta de serviço criada",
+      "leaveTitle": "Sair sem criar a conta?",
+      "leaveDescription": "Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los.",
+      "leaveCancel": "Continuar a preencher",
+      "leaveAction": "Sair e descartar"
+    },
+    "clientStep": {
+      "description": "A conta autentica como este cliente. Só aparecem clientes client_credentials sem conta de serviço.",
+      "modeExisting": "Usar um cliente OAuth existente",
+      "modeNew": "Registar um novo cliente OAuth",
+      "placeholder": "Selecionar cliente",
+      "search": "Pesquisar cliente…",
+      "empty": "Nenhum cliente encontrado.",
+      "none": "Não há clientes disponíveis. Registe um novo cliente."
+    },
+    "identityStep": {
+      "description": "Como esta conta aparece aos administradores.",
+      "activeOnCreate": "Ativa na criação",
+      "followsClient": "Estado: segue o cliente OAuth ({state})."
+    },
+    "accessStep": {
+      "description": "O que esta conta pode fazer. Pode alterar depois.",
+      "addRole": "Adicionar perfil",
+      "removeRole": "Remover perfil {code}",
+      "removePermission": "Remover permissão {name}",
+      "submit": "Criar conta"
+    },
+    "result": {
+      "clientRegisteredTitle": "Cliente registado",
+      "registered": "O cliente <mono>{clientId}</mono> foi registado. Guarde o segredo antes de sair desta página.",
+      "missingSecret": "O servidor não devolveu o segredo. Desative este cliente e registe um novo.",
+      "accountFailed": "A conta de serviço não foi criada: {error} O cliente já existe; pode tentar criar a conta novamente com os mesmos dados.",
+      "retry": "Tentar criar a conta novamente",
+      "finish": "Concluir — ver conta"
+    }
   }
 }

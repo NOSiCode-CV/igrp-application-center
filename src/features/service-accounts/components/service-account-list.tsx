@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Button,
   Empty,
@@ -13,6 +14,7 @@ import {
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useApplications } from "@/features/applications/use-applications";
 import { useCopyClientId } from "@/features/oauth-clients/use-copy-client-id";
@@ -37,6 +39,8 @@ const statusOf = (r: ServiceAccountDTO) => (r.active ? "ACTIVE" : "INACTIVE");
 const appOf = (r: ServiceAccountDTO) => r.applicationCode ?? "—";
 
 export function ServiceAccountList() {
+  const t = useTranslations("serviceAccounts");
+  const { compare } = useIGRPFormat();
   const copyClientId = useCopyClientId();
   const { data: rows = [] } = useServiceAccounts();
   const { data: applications = [] } = useApplications();
@@ -72,26 +76,27 @@ export function ServiceAccountList() {
       appOptions: [...new Set(rows.map(appOf))]
         .map((code) =>
           code === "—"
-            ? { value: code, label: "Sem aplicação" }
+            ? { value: code, label: t("shared.noApplication") }
             : {
                 value: code,
                 label: nameByCode.get(code) || code,
                 description: code,
               },
         )
-        .sort((a, b) => a.label.localeCompare(b.label)),
+        .sort((a, b) => compare(a.label, b.label)),
     };
-  }, [rows, nameByCode]);
+  }, [rows, nameByCode, compare, t]);
 
   const columns = useMemo(
     () =>
       getServiceAccountColumns({
+        t,
         onToggleActive: (row) => setDialog({ kind: "activation", row }),
         onDelete: (row) => setDialog({ kind: "delete", row }),
         onCopy: copyClientId,
         applicationName: (code) => nameByCode.get(code),
       }),
-    [copyClientId, nameByCode],
+    [copyClientId, nameByCode, t],
   );
 
   return (
@@ -107,17 +112,13 @@ export function ServiceAccountList() {
       {rows.length === 0 ? (
         <Empty className="rounded-xl border border-border">
           <EmptyHeader>
-            <EmptyTitle>Ainda não há contas de serviço</EmptyTitle>
-            <EmptyDescription>
-              Uma conta de serviço envolve um cliente OAuth client_credentials e
-              dá-lhe perfis e permissões, para que um sistema aceda às APIs sem
-              utilizador.
-            </EmptyDescription>
+            <EmptyTitle>{t("list.emptyTitle")}</EmptyTitle>
+            <EmptyDescription>{t("list.emptyDescription")}</EmptyDescription>
           </EmptyHeader>
           <Button asChild>
             <Link href={ROUTES.SERVICE_ACCOUNT_NEW}>
               <IGRPIcon iconName="Plus" aria-hidden="true" />
-              Criar a primeira conta de serviço
+              {t("list.emptyAction")}
             </Link>
           </Button>
         </Empty>
@@ -128,7 +129,7 @@ export function ServiceAccountList() {
           tableHeaderClassName="bg-muted"
           columns={columns}
           data={filteredRows}
-          notFoundLabel="Nenhuma conta corresponde aos filtros."
+          notFoundLabel={t("list.noMatches")}
         />
       )}
 

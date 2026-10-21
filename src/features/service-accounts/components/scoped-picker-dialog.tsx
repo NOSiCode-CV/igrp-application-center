@@ -15,6 +15,7 @@ import {
   IGRPInputText,
   Label,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { useDepartments } from "@/features/departments/use-departments";
 
@@ -58,6 +59,7 @@ export function ScopedPickerDialog({
   isSaving: boolean;
   confirmLabel: string;
 }) {
+  const t = useTranslations("serviceAccounts");
   const id = useId();
   const { data: departments = [] } = useDepartments();
   const [filter, setFilter] = useState("");
@@ -111,7 +113,7 @@ export function ScopedPickerDialog({
         <div className="grid gap-3 sm:grid-cols-2 sm:items-start">
           <IGRPCombobox
             id={`${id}-dept`}
-            label="Departamento"
+            label={t("scopedPicker.department")}
             variant="single"
             showSearch={departments.length >= 6}
             options={departments.map((d) => ({
@@ -122,14 +124,14 @@ export function ScopedPickerDialog({
             onChange={(v) => {
               if (typeof v === "string" && v) onDepartmentChange(v);
             }}
-            placeholder="Selecionar departamento"
-            searchText="Pesquisar departamento…"
-            selectLabel="Nenhum departamento encontrado."
+            placeholder={t("scopedPicker.departmentPlaceholder")}
+            searchText={t("scopedPicker.departmentSearch")}
+            selectLabel={t("scopedPicker.departmentEmpty")}
           />
           <IGRPInputText
             id={`${id}-filter`}
-            label="Filtrar"
-            placeholder="Nome ou código"
+            label={t("scopedPicker.filter")}
+            placeholder={t("scopedPicker.filterPlaceholder")}
             showIcon
             iconName="Search"
             iconPlacement="start"
@@ -143,19 +145,19 @@ export function ScopedPickerDialog({
         <div className="max-h-80 overflow-y-auto rounded-md border border-border">
           {!departmentCode ? (
             <p className="p-6 text-center text-sm text-muted-foreground">
-              Escolha um departamento para ver o que pode atribuir.
+              {t("scopedPicker.pickDepartment")}
             </p>
           ) : isLoading ? (
             <p className="p-6 text-center text-sm text-muted-foreground">
-              A carregar…
+              {t("scopedPicker.loading")}
             </p>
           ) : isError ? (
             <p className="p-6 text-center text-sm text-destructive">
-              Não foi possível carregar a lista. Feche e tente novamente.
+              {t("scopedPicker.loadError")}
             </p>
           ) : visible.length === 0 ? (
             <p className="p-6 text-center text-sm text-muted-foreground">
-              Nada encontrado.
+              {t("scopedPicker.empty")}
             </p>
           ) : (
             <ul className="flex flex-col divide-y divide-border">
@@ -190,7 +192,7 @@ export function ScopedPickerDialog({
             onClick={() => onOpenChange(false)}
             disabled={isSaving}
           >
-            Cancelar
+            {t("shared.cancel")}
           </Button>
           <Button
             disabled={!departmentCode || isLoading || isError || isSaving}
@@ -201,7 +203,7 @@ export function ScopedPickerDialog({
               })
             }
           >
-            {isSaving ? "A guardar…" : confirmLabel}
+            {isSaving ? t("shared.saving") : confirmLabel}
           </Button>
         </DialogFooter>
       </DialogContent>

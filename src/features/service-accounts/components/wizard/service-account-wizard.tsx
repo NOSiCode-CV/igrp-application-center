@@ -51,19 +51,22 @@ function isNextSignal(error: unknown) {
   return typeof digest === "string" && digest.startsWith("NEXT_REDIRECT");
 }
 
-const STEPS: { step: WizardStep; title: string }[] = [
-  { step: 1, title: "Cliente OAuth" },
-  { step: 2, title: "Identidade" },
-  { step: 3, title: "Perfis e permissões" },
-];
+const STEPS: readonly WizardStep[] = [1, 2, 3];
 
 export function ServiceAccountWizard({
   initialOAuthClientId,
 }: {
   initialOAuthClientId?: string;
 }) {
+  const t = useTranslations("serviceAccounts");
+  const tClient = useTranslations("oauthClients");
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
+  const stepTitles: Record<WizardStep, string> = {
+    1: t("shared.oauthClient"),
+    2: t("shared.identity"),
+    3: t("wizard.stepAccess"),
+  };
   const [state, dispatch] = useReducer(
     wizardReducer,
     initialOAuthClientId,
@@ -123,7 +126,7 @@ export function ServiceAccountWizard({
   const appName = applications.find((a) => a.code === applicationCode)?.name;
   const applicationLabel = applicationCode
     ? (appName ?? applicationCode)
-    : "Sem aplicação";
+    : t("shared.noApplication");
 
   const clientLabel = (id: string) => {
     const c = allClients.find((x) => x.id === id);
@@ -149,7 +152,7 @@ export function ServiceAccountWizard({
     if (isNextSignal(error)) throw error;
     igrpToast({
       type: "error",
-      title: "Não foi possível criar a conta",
+      title: t("wizard.failedTitle"),
       description: error instanceof Error ? error.message : String(error),
     });
   }
@@ -173,18 +176,16 @@ export function ServiceAccountWizard({
     if (!result.success) {
       igrpToast({
         type: "error",
-        title: "Não foi possível criar a conta",
+        title: t("wizard.failedTitle"),
         // 409: the backend enforces one service account per client.
         description:
-          result.status === 409
-            ? "Este cliente OAuth já tem uma conta de serviço. Escolha outro cliente no passo 1."
-            : result.error,
+          result.status === 409 ? t("wizard.alreadyHasAccount") : result.error,
       });
       return;
     }
     igrpToast({
       type: "success",
-      title: "Conta de serviço criada",
+      title: t("wizard.createdTitle"),
       description: result.data.name,
     });
     router.push(`${ROUTES.SERVICE_ACCOUNTS}/${result.data.id}`);
@@ -233,14 +234,14 @@ export function ServiceAccountWizard({
       dispatch({ type: "goTo", step: 1 });
       clientForm.setError(
         "clientId",
-        { message: "Já existe um cliente com este client ID." },
+        { message: tClient("create.conflict") },
         { shouldFocus: true },
       );
       return;
     }
     igrpToast({
       type: "error",
-      title: "Não foi possível registar o cliente",
+      title: tClient("create.errorTitle"),
       description: result.error,
     });
   }
@@ -290,7 +291,7 @@ export function ServiceAccountWizard({
               }}
             >
               <IGRPIcon iconName="X" aria-hidden="true" />
-              Cancelar
+              {t("shared.cancel")}
             </Link>
           </Button>
         )}
@@ -308,9 +309,7 @@ export function ServiceAccountWizard({
             className="size-4 shrink-0"
             aria-hidden="true"
           />
-          {outcome
-            ? "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página."
-            : "Nada é criado até confirmar no último passo."}
+          {outcome ? tClient("create.noteCreated") : t("wizard.noteInfo")}
         </p>
       </div>
 
@@ -318,14 +317,18 @@ export function ServiceAccountWizard({
         {/* A connected rail: the marker carries each step's state (done,
             current, still ahead) and the line between markers fills in as
             steps are completed. Done steps stay clickable to revisit. */}
-        <nav aria-label="Passos" className="md:sticky md:top-6 md:self-start">
+        <nav
+          aria-label={t("wizard.stepsLabel")}
+          className="md:sticky md:top-6 md:self-start"
+        >
           <ol className="flex flex-col">
-            {STEPS.map(({ step, title }, index) => {
+            {STEPS.map((step, index) => {
+              const title = stepTitles[step];
               const current = state.step === step;
               const reachable = canGoTo(state, step) && !outcome;
               const summary =
                 step < state.step || (reachable && !current)
-                  ? stepSummary(state, step, clientLabel)
+                  ? stepSummary(state, step, t, clientLabel)
                   : undefined;
               const done = !!summary;
               const last = index === STEPS.length - 1;
@@ -379,7 +382,11 @@ export function ServiceAccountWizard({
                     >
                       {title}
                       <span className="sr-only">
-                        {current ? ", passo atual" : done ? ", concluído" : ""}
+                        {current
+                          ? t("wizard.stepCurrent")
+                          : done
+                            ? t("wizard.stepDone")
+                            : ""}
                       </span>
                     </span>
                     {summary ? (
@@ -409,11 +416,7 @@ export function ServiceAccountWizard({
             <>
               {unavailable && state.step !== 1 ? (
                 <Alert variant="destructive" className="mb-6">
-                  <AlertDescription>
-                    Este cliente não pode receber uma conta de serviço: já tem
-                    uma, ou não usa client_credentials. Escolha outro no passo
-                    1.
-                  </AlertDescription>
+                  <AlertDescription>{t("wizard.unavailable")}</AlertDescription>
                 </Alert>
               ) : null}
               {state.step === 1 ? (
@@ -458,8 +461,8 @@ export function ServiceAccountWizard({
                   isSubmitting={create.isPending || createWithClient.isPending}
                   submitNote={
                     state.client?.kind === "new"
-                      ? "Regista o cliente OAuth e cria a conta. O segredo do novo cliente é mostrado uma única vez, a seguir."
-                      : "Cria a conta de serviço ligada ao cliente escolhido."
+                      ? t("wizard.submitNoteNew")
+                      : t("wizard.submitNoteExisting")
                   }
                 />
               )}
@@ -472,10 +475,10 @@ export function ServiceAccountWizard({
         open={confirmLeave}
         onOpenChange={setConfirmLeave}
         variant="destructive"
-        title="Sair sem criar a conta?"
-        description="Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los."
-        cancelLabel="Continuar a preencher"
-        actionLabel="Sair e descartar"
+        title={t("wizard.leaveTitle")}
+        description={t("wizard.leaveDescription")}
+        cancelLabel={t("wizard.leaveCancel")}
+        actionLabel={t("wizard.leaveAction")}
         onAction={() => router.push(ROUTES.SERVICE_ACCOUNTS)}
       />
     </div>

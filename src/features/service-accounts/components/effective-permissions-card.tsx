@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 
 import { Badge, Button } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { computeEffectivePermissions } from "../lib/service-account-utils";
 
@@ -21,6 +22,7 @@ export function EffectivePermissionsCard({
   /** Reloads the roles that failed; shown with the error when given. */
   onRetry?: () => void;
 }) {
+  const t = useTranslations("serviceAccounts");
   const id = useId();
   const [open, setOpen] = useState(false);
   const result = computeEffectivePermissions(roles, directNames);
@@ -35,13 +37,12 @@ export function EffectivePermissionsCard({
       <div className="flex items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h3 id={`${id}-title`} className="font-semibold">
-            Permissões efetivas
+            {t("effective.title")}
           </h3>
           {/* A read-only summary, not something to fill in: it counts what
               the roles and direct permissions above add up to. */}
           <p className="text-sm text-muted-foreground">
-            O que a conta pode fazer: as permissões dos seus perfis somadas às
-            permissões diretas.
+            {t("effective.description")}
           </p>
         </div>
         <Button
@@ -52,14 +53,18 @@ export function EffectivePermissionsCard({
           disabled={unknown}
           onClick={() => setOpen((o) => !o)}
         >
-          {open ? "Ocultar lista" : "Ver lista completa"}
+          {open ? t("effective.hideList") : t("effective.showList")}
         </Button>
       </div>
       <dl className="grid grid-cols-3 gap-3">
         {[
-          { key: "from-roles", label: "De perfis", value: result.fromRoles },
-          { key: "direct", label: "Diretas", value: result.direct },
-          { key: "total", label: "Total únicas", value: result.total },
+          {
+            key: "from-roles",
+            label: t("effective.fromRoles"),
+            value: result.fromRoles,
+          },
+          { key: "direct", label: t("effective.direct"), value: result.direct },
+          { key: "total", label: t("effective.total"), value: result.total },
         ].map((s) => (
           <div
             key={s.key}
@@ -77,13 +82,10 @@ export function EffectivePermissionsCard({
       </dl>
       {isError ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-destructive">
-            Não foi possível carregar as permissões dos perfis, por isso as
-            contagens estão incompletas.
-          </p>
+          <p className="text-sm text-destructive">{t("effective.loadError")}</p>
           {onRetry ? (
             <Button variant="outline" size="sm" onClick={onRetry}>
-              Tentar novamente
+              {t("effective.retry")}
             </Button>
           ) : null}
         </div>
@@ -99,10 +101,12 @@ export function EffectivePermissionsCard({
               className="flex flex-wrap items-center gap-2 p-3 text-sm"
             >
               <span className="font-mono">{p.name}</span>
-              {p.direct ? <Badge variant="secondary">direta</Badge> : null}
+              {p.direct ? (
+                <Badge variant="secondary">{t("shared.directBadge")}</Badge>
+              ) : null}
               {p.roleCodes.length ? (
                 <span className="text-muted-foreground">
-                  via {p.roleCodes.join(", ")}
+                  {t("effective.via", { roles: p.roleCodes.join(", ") })}
                 </span>
               ) : null}
             </li>

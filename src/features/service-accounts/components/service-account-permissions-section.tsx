@@ -9,6 +9,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import type { AccessChange } from "@/actions/service-accounts";
 
@@ -25,14 +26,12 @@ import { PermissionPickerDialog } from "./permission-picker-dialog";
 // Stable across renders — a fresh `[]` literal every render would re-seed
 // `ScopedPickerDialog`'s selection effect and wipe unsaved ticks while open.
 
-const UNPAIRED_REASON =
-  "Não é possível remover: o servidor não indicou que permissão corresponde a cada identificador.";
-
 export function ServiceAccountPermissionsSection({
   account,
 }: {
   account: ServiceAccountDTO;
 }) {
+  const t = useTranslations("serviceAccounts");
   const { igrpToast } = useIGRPToast();
   const access = useSetServiceAccountAccess(account.id);
   const busy = useAccountBusy(account.id);
@@ -40,6 +39,7 @@ export function ServiceAccountPermissionsSection({
   const [confirming, setConfirming] = useState<string | null>(null);
   const permissionIds = useMemo(() => permissionIdsOf(account), [account]);
   const { items, reliable } = pairDirectPermissions(account);
+  const unpairedReason = t("permissionsSection.unpaired");
 
   async function save(
     permissions: NonNullable<AccessChange["permissions"]>,
@@ -52,7 +52,7 @@ export function ServiceAccountPermissionsSection({
     if (!result.success) {
       igrpToast({
         type: "error",
-        title: "Não foi possível guardar as permissões",
+        title: t("permissionsSection.saveError"),
         description: result.error,
       });
       return false;
@@ -68,7 +68,7 @@ export function ServiceAccountPermissionsSection({
     >
       <div className="flex items-center justify-between gap-3">
         <h3 id="sa-direct" className="font-semibold">
-          Permissões diretas
+          {t("shared.directPermissions")}
         </h3>
         <Button
           size="sm"
@@ -76,7 +76,7 @@ export function ServiceAccountPermissionsSection({
           disabled={busy}
           onClick={() => setPicking(true)}
         >
-          Adicionar permissão
+          {t("shared.addPermission")}
         </Button>
       </div>
       <p
@@ -88,11 +88,12 @@ export function ServiceAccountPermissionsSection({
           className="mt-0.5 size-4 shrink-0"
           aria-hidden="true"
         />
-        Permissões diretas não são revogadas quando se remove um perfil. Prefira
-        perfis.
+        {t("permissionsSection.note")}
       </p>
       {items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sem permissões diretas.</p>
+        <p className="text-sm text-muted-foreground">
+          {t("permissionsSection.empty")}
+        </p>
       ) : (
         <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
           {items.map((p, index) => {
@@ -102,7 +103,7 @@ export function ServiceAccountPermissionsSection({
             return (
               <li key={rowKey} className="flex items-center gap-3 p-3">
                 <span className="flex-1 font-mono text-sm">{p.name}</span>
-                <Badge variant="secondary">direta</Badge>
+                <Badge variant="secondary">{t("shared.directBadge")}</Badge>
                 {confirming === rowKey && permissionId !== null ? (
                   <div className="flex gap-2">
                     <Button
@@ -111,7 +112,7 @@ export function ServiceAccountPermissionsSection({
                       onClick={() => setConfirming(null)}
                       disabled={busy}
                     >
-                      Cancelar
+                      {t("shared.cancel")}
                     </Button>
                     <Button
                       size="sm"
@@ -121,25 +122,27 @@ export function ServiceAccountPermissionsSection({
                         if (
                           await save(
                             { remove: [{ id: permissionId, name: p.name }] },
-                            "Permissão removida",
+                            t("permissionsSection.removed"),
                           )
                         )
                           setConfirming(null);
                       }}
                     >
-                      Confirmar remoção
+                      {t("shared.confirmRemove")}
                     </Button>
                   </div>
                 ) : (
                   <Button
                     size="sm"
                     variant="ghost"
-                    aria-label={`Remover permissão ${p.name}`}
-                    title={reliable ? undefined : UNPAIRED_REASON}
+                    aria-label={t("permissionsSection.removeLabel", {
+                      name: p.name,
+                    })}
+                    title={reliable ? undefined : unpairedReason}
                     disabled={!reliable || busy}
                     onClick={() => setConfirming(rowKey)}
                   >
-                    Remover
+                    {t("shared.remove")}
                   </Button>
                 )}
               </li>
@@ -148,7 +151,7 @@ export function ServiceAccountPermissionsSection({
         </ul>
       )}
       {!reliable ? (
-        <p className="text-sm text-muted-foreground">{UNPAIRED_REASON}</p>
+        <p className="text-sm text-muted-foreground">{unpairedReason}</p>
       ) : null}
       {picking ? (
         <PermissionPickerDialog
@@ -161,7 +164,8 @@ export function ServiceAccountPermissionsSection({
               scope: scope.map((p) => p.id),
               selected: selected.map((p) => p.id),
             };
-            if (await save(change, "Permissões atualizadas")) setPicking(false);
+            if (await save(change, t("permissionsSection.updated")))
+              setPicking(false);
           }}
         />
       ) : null}

@@ -1,3 +1,4 @@
+import { createTranslator } from "next-intl";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -8,6 +9,13 @@ import {
   wizardReducer,
 } from "@/features/service-accounts/lib/wizard-state";
 import { machineClientFormValues } from "@/features/service-accounts/service-account-schemas";
+import pt from "@/i18n/messages/pt.json";
+
+const t = createTranslator({
+  locale: "pt",
+  messages: pt,
+  namespace: "serviceAccounts",
+});
 
 const identity = { name: " Nightly ETL ", description: "", active: true };
 
@@ -80,16 +88,16 @@ describe("wizard state", () => {
         values: { ...machineClientFormValues(), clientId: "nightly-etl-m2m" },
       },
     });
-    expect(stepSummary(newClient, 1)).toBe("Novo: nightly-etl-m2m");
+    expect(stepSummary(newClient, 1, t)).toBe("Novo: nightly-etl-m2m");
     const existing = initialWizardState("c1");
-    expect(stepSummary(existing, 1, () => "etl-runner")).toBe("etl-runner");
+    expect(stepSummary(existing, 1, t, () => "etl-runner")).toBe("etl-runner");
     const withIdentity = wizardReducer(existing, {
       type: "setIdentity",
       identity,
     });
-    expect(stepSummary(withIdentity, 2)).toBe("Nightly ETL");
-    expect(stepSummary(withIdentity, 3)).toBe("0 perfis · 0 diretas");
-    expect(stepSummary(initialWizardState(), 2)).toBeUndefined();
+    expect(stepSummary(withIdentity, 2, t)).toBe("Nightly ETL");
+    expect(stepSummary(withIdentity, 3, t)).toBe("0 perfis · 0 diretas");
+    expect(stepSummary(initialWizardState(), 2, t)).toBeUndefined();
   });
 
   it("keeps an unconfirmed identity draft without completing step 2", () => {

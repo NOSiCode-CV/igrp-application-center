@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { PermissionDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useDepartmentPermissions } from "@/features/departments/use-departments";
 
@@ -21,6 +22,7 @@ export function PermissionPickerDialog({
   onConfirm: (r: { scope: PermissionDTO[]; selected: PermissionDTO[] }) => void;
   isSaving: boolean;
 }) {
+  const t = useTranslations("serviceAccounts");
   const [departmentCode, setDepartmentCode] = useState<string>();
   const permissions = useDepartmentPermissions(departmentCode);
   const data = permissions.data;
@@ -37,8 +39,8 @@ export function PermissionPickerDialog({
     <ScopedPickerDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Adicionar permissões diretas"
-      description="Permissões diretas não são revogadas ao remover um perfil. Prefira perfis."
+      title={t("permissionPicker.title")}
+      description={t("shared.directNote")}
       departmentCode={departmentCode}
       onDepartmentChange={setDepartmentCode}
       items={items}
@@ -46,7 +48,7 @@ export function PermissionPickerDialog({
       isError={permissions.isError}
       selectedIds={selectedIds}
       isSaving={isSaving}
-      confirmLabel="Guardar permissões"
+      confirmLabel={t("permissionPicker.confirm")}
       onConfirm={({ scopeIds, selectedIds: ids }) => {
         const all = data ?? [];
         onConfirm({

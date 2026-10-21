@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { type ReactNode, useId, useState } from "react";
 
 import {
   Checkbox,
@@ -8,6 +8,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
 
@@ -24,6 +25,7 @@ export function ServiceAccountDeleteDialog({
   onOpenChange: (open: boolean) => void;
   onDeleted?: () => void;
 }) {
+  const t = useTranslations("serviceAccounts");
   const id = useId();
   const { igrpToast } = useIGRPToast();
   const mutation = useDeleteServiceAccount(account.id);
@@ -39,10 +41,13 @@ export function ServiceAccountDeleteDialog({
       igrpToast({
         type: "success",
         title: alsoDeleteClient
-          ? "Conta e cliente eliminados"
-          : "Conta eliminada",
+          ? t("delete.successBoth")
+          : t("delete.successAccount"),
         description: alsoDeleteClient
-          ? `${account.name} · ${account.clientId}`
+          ? t("delete.successBothDescription", {
+              name: account.name,
+              clientId: account.clientId,
+            })
           : account.name,
       });
       onOpenChange(false);
@@ -52,8 +57,11 @@ export function ServiceAccountDeleteDialog({
     if (result.failedStep === "client") {
       igrpToast({
         type: "error",
-        title: "A conta foi eliminada, o cliente não",
-        description: `Elimine o cliente OAuth ${account.clientId} na página Clientes OAuth. ${result.error}`,
+        title: t("delete.clientFailedTitle"),
+        description: t("delete.clientFailedDescription", {
+          clientId: account.clientId,
+          error: result.error,
+        }),
       });
       onOpenChange(false);
       onDeleted?.();
@@ -61,7 +69,7 @@ export function ServiceAccountDeleteDialog({
     }
     igrpToast({
       type: "error",
-      title: "Não foi possível eliminar",
+      title: t("delete.errorTitle"),
       description: result.error,
     });
   }
@@ -73,11 +81,12 @@ export function ServiceAccountDeleteDialog({
       toDelete={{ name: account.name }}
       confirmDelete={confirmDelete}
       isDeleting={mutation.isPending}
-      description="A conta deixa de existir, com os perfis e permissões que tinha. Não é possível recuperá-la."
-      label="Nome da conta"
-      textHeader="Eliminar conta de serviço"
+      description={t("delete.description")}
+      label={t("delete.label")}
+      textHeader={t("delete.header")}
+      labelBtnCancel={t("shared.cancel")}
       labelBtnDelete={
-        alsoDeleteClient ? "Eliminar conta e cliente" : "Eliminar conta"
+        alsoDeleteClient ? t("delete.buttonBoth") : t("delete.buttonAccount")
       }
     >
       <Label
@@ -91,11 +100,15 @@ export function ServiceAccountDeleteDialog({
         />
         <span className="flex flex-col gap-0.5">
           <span>
-            Eliminar também o cliente OAuth{" "}
-            <span className="font-mono">{account.clientId}</span>
+            {t.rich("delete.alsoClient", {
+              clientId: account.clientId,
+              mono: (chunks: ReactNode) => (
+                <span className="font-mono">{chunks}</span>
+              ),
+            })}
           </span>
           <span className="text-sm text-muted-foreground">
-            Sem a conta, o cliente continua a conseguir autenticar.
+            {t("delete.alsoClientHint")}
           </span>
         </span>
       </Label>

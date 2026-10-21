@@ -2,7 +2,10 @@ import type { ServiceAccountInput } from "@/actions/service-accounts";
 import type { OAuthClientFormValues } from "@/features/oauth-clients/oauth-client-schemas";
 
 import type { ServiceAccountIdentityValues } from "../service-account-schemas";
-import { formatAccessSummary } from "./service-account-utils";
+import {
+  formatAccessSummary,
+  type ServiceAccountsTranslator,
+} from "./service-account-utils";
 
 export type WizardStep = 1 | 2 | 3;
 
@@ -100,17 +103,18 @@ export function toAccountInput(
 export function stepSummary(
   state: WizardState,
   step: WizardStep,
+  t: ServiceAccountsTranslator,
   clientLabel?: (oauthClientId: string) => string,
 ): string | undefined {
   if (step === 1) {
     if (!state.client) return undefined;
     return state.client.kind === "new"
-      ? `Novo: ${state.client.values.clientId}`
+      ? t("wizard.newSummary", { clientId: state.client.values.clientId })
       : (clientLabel?.(state.client.oauthClientId) ??
           state.client.oauthClientId);
   }
   if (step === 2) return state.identity?.name.trim();
   return state.identity
-    ? formatAccessSummary(state.roles.length, state.permissions.length)
+    ? formatAccessSummary(t, state.roles.length, state.permissions.length)
     : undefined;
 }

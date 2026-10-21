@@ -5,6 +5,7 @@ import {
   Form,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 
 import { OAuthClientFormSections } from "@/features/oauth-clients/components/oauth-client-form-sections";
@@ -18,6 +19,7 @@ export function WizardNewClientForm({
   form: UseFormReturn<OAuthClientFormValues>;
   onContinue: (values: OAuthClientFormValues) => void;
 }) {
+  const t = useTranslations("serviceAccounts");
   return (
     <Form {...form}>
       <form
@@ -28,7 +30,7 @@ export function WizardNewClientForm({
         <OAuthClientFormSections mode="create" grantTypesFixed />
         <div className="flex justify-end p-4">
           <Button type="submit">
-            Continuar
+            {t("shared.continue")}
             <IGRPIcon iconName="ArrowRight" aria-hidden="true" />
           </Button>
         </div>

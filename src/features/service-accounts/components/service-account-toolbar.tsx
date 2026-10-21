@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 
 import {
   Button,
@@ -9,6 +10,7 @@ import {
   IGRPIcon,
   type IGRPOptionsProps,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { FacetedFilter } from "@/components/data-table/faceted-filter";
 import { SearchInput } from "@/components/data-table/search-input";
@@ -27,11 +29,6 @@ export const EMPTY_SERVICE_ACCOUNT_FILTERS: ServiceAccountFilters = {
   status: [],
 };
 
-const STATUS = [
-  { value: "ACTIVE", label: "Ativa" },
-  { value: "INACTIVE", label: "Inativa" },
-];
-
 export function ServiceAccountToolbar({
   filters,
   onFiltersChange,
@@ -45,6 +42,14 @@ export function ServiceAccountToolbar({
   statusCounts: Record<string, number>;
   disabled?: boolean;
 }) {
+  const t = useTranslations("serviceAccounts");
+  const statusOptions = useMemo(
+    () => [
+      { value: "ACTIVE", label: t("toolbar.statusActive") },
+      { value: "INACTIVE", label: t("toolbar.statusInactive") },
+    ],
+    [t],
+  );
   const isFiltered =
     filters.search !== "" ||
     filters.application !== "" ||
@@ -60,8 +65,8 @@ export function ServiceAccountToolbar({
         <SearchInput
           value={filters.search}
           onChange={(v) => set("search", v)}
-          label="Pesquisar contas"
-          placeholder="Pesquisar por nome ou client ID…"
+          label={t("toolbar.searchLabel")}
+          placeholder={t("toolbar.searchPlaceholder")}
           disabled={disabled}
         />
         <div className="flex flex-wrap items-start gap-2">
@@ -77,15 +82,15 @@ export function ServiceAccountToolbar({
               onChange={(v) =>
                 set("application", typeof v === "string" ? v : "")
               }
-              placeholder="Aplicação"
-              searchText="Pesquisar aplicações…"
-              selectLabel="Nenhuma aplicação encontrada."
+              placeholder={t("toolbar.application")}
+              searchText={t("toolbar.applicationSearch")}
+              selectLabel={t("toolbar.applicationEmpty")}
               disabled={disabled}
             />
           </div>
           <FacetedFilter
-            label="Estado"
-            options={STATUS}
+            label={t("shared.status")}
+            options={statusOptions}
             value={filters.status}
             onChange={(v) => set("status", v)}
             counts={statusCounts}
@@ -98,7 +103,7 @@ export function ServiceAccountToolbar({
               iconName="X"
               onClick={() => onFiltersChange(EMPTY_SERVICE_ACCOUNT_FILTERS)}
             >
-              Limpar
+              {t("toolbar.clear")}
             </IGRPButton>
           ) : null}
         </div>
@@ -106,7 +111,7 @@ export function ServiceAccountToolbar({
       <Button asChild className="shrink-0">
         <Link href={ROUTES.SERVICE_ACCOUNT_NEW}>
           <IGRPIcon iconName="Plus" aria-hidden="true" />
-          Nova conta de serviço
+          {t("toolbar.create")}
         </Link>
       </Button>
     </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
 import { Button, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { ActiveBadge } from "@/features/oauth-clients/components/oauth-client-badges";
 import { ROUTES } from "@/lib/constants";
@@ -23,6 +24,7 @@ export function ServiceAccountDetail({
   /** The access column (Task 7). */
   main?: ReactNode;
 }) {
+  const t = useTranslations("serviceAccounts");
   const router = useRouter();
   const { data: account } = useServiceAccount(id);
   const busy = useAccountBusy(id);
@@ -39,7 +41,7 @@ export function ServiceAccountDetail({
         className="inline-flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <IGRPIcon iconName="ArrowLeft" className="size-4" aria-hidden="true" />
-        Contas de serviço
+        {t("detail.back")}
       </Link>
 
       <header className="flex items-center gap-4">
@@ -53,13 +55,13 @@ export function ServiceAccountDetail({
           <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <ActiveBadge active={account.active} feminine />
             <span>
-              Aplicação{" "}
+              {t("shared.application")}{" "}
               <span className="font-mono text-foreground">
                 {account.applicationCode ?? "—"}
               </span>
             </span>
             <span>
-              Autentica como{" "}
+              {t("detail.authenticatesAs")}{" "}
               <Link
                 href={`${ROUTES.OAUTH_CLIENTS}/${account.oauthClientId}`}
                 className="font-mono text-foreground underline"
@@ -84,18 +86,24 @@ export function ServiceAccountDetail({
           id="danger-zone"
           className="text-base font-semibold text-destructive"
         >
-          Zona de perigo
+          {t("detail.dangerZone")}
         </h3>
         <div className="flex flex-col divide-y divide-destructive/20 rounded-xl border border-destructive/30 bg-card">
           <div className="flex items-center gap-6 p-5">
             <div className="flex flex-1 flex-col gap-1">
               <span className="font-medium">
-                {account.active ? "Desativar conta" : "Ativar conta"}
+                {account.active
+                  ? t("detail.deactivateTitle")
+                  : t("detail.activateTitle")}
               </span>
               <span className="text-sm text-muted-foreground">
                 {account.active
-                  ? `Desativa também o cliente OAuth ${account.clientId}. A identidade deixa de conseguir autenticar.`
-                  : `Reativa também o cliente OAuth ${account.clientId}.`}
+                  ? t("detail.deactivateDescription", {
+                      clientId: account.clientId,
+                    })
+                  : t("detail.activateDescription", {
+                      clientId: account.clientId,
+                    })}
               </span>
             </div>
             <Button
@@ -104,15 +112,14 @@ export function ServiceAccountDetail({
               disabled={busy}
               onClick={() => setDialog("activation")}
             >
-              {account.active ? "Desativar" : "Ativar"}
+              {account.active ? t("shared.deactivate") : t("shared.activate")}
             </Button>
           </div>
           <div className="flex items-center gap-6 p-5">
             <div className="flex flex-1 flex-col gap-1">
-              <span className="font-medium">Eliminar conta</span>
+              <span className="font-medium">{t("detail.deleteTitle")}</span>
               <span className="text-sm text-muted-foreground">
-                Remove a conta e, por defeito, o cliente OAuth. Não é possível
-                recuperá-los.
+                {t("detail.deleteDescription")}
               </span>
             </div>
             <Button
@@ -120,7 +127,7 @@ export function ServiceAccountDetail({
               disabled={busy}
               onClick={() => setDialog("delete")}
             >
-              Eliminar
+              {t("shared.delete")}
             </Button>
           </div>
         </div>

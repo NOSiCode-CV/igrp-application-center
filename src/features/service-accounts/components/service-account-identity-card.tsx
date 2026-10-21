@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Button,
   Form,
@@ -15,37 +16,42 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import type { z } from "zod";
 
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
-import { formatDate } from "@/lib/utilities";
 
 import {
+  makeServiceAccountIdentitySchema,
   SERVICE_ACCOUNT_DESCRIPTION_MAX,
-  serviceAccountIdentitySchema,
+  type ServiceAccountIdentityValues,
 } from "../service-account-schemas";
 import {
   useAccountBusy,
   useUpdateServiceAccountIdentity,
 } from "../use-service-accounts";
 
-const identitySchema = serviceAccountIdentitySchema.pick({
-  name: true,
-  description: true,
-});
-type IdentityValues = z.infer<typeof identitySchema>;
-
-function timestamp(value?: string) {
-  if (!value || Number.isNaN(new Date(value).getTime())) return "—";
-  return formatDate(value);
-}
+type IdentityValues = Pick<
+  ServiceAccountIdentityValues,
+  "name" | "description"
+>;
 
 export function ServiceAccountIdentityCard({
   account,
 }: {
   account: ServiceAccountDTO;
 }) {
+  const t = useTranslations("serviceAccounts");
+  const tv = useTranslations("serviceAccounts.validation");
+  const { formatDateTime } = useIGRPFormat();
+  const identitySchema = useMemo(
+    () =>
+      makeServiceAccountIdentitySchema(tv).pick({
+        name: true,
+        description: true,
+      }),
+    [tv],
+  );
   const { igrpToast } = useIGRPToast();
   const update = useUpdateServiceAccountIdentity(account.id);
   const busy = useAccountBusy(account.id);
@@ -54,6 +60,17 @@ export function ServiceAccountIdentityCard({
     resolver: zodResolver(identitySchema),
     values: { name: account.name, description: account.description ?? "" },
   });
+
+  function timestamp(value?: string) {
+    if (!value || Number.isNaN(new Date(value).getTime())) return "—";
+    return formatDateTime(new Date(value), {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   async function onSubmit(values: IdentityValues) {
     const result = await update.mutateAsync({
@@ -66,14 +83,14 @@ export function ServiceAccountIdentityCard({
     if (!result.success) {
       igrpToast({
         type: "error",
-        title: "Não foi possível guardar",
+        title: t("identityCard.saveErrorTitle"),
         description: result.error,
       });
       return;
     }
     igrpToast({
       type: "success",
-      title: "Identidade guardada",
+      title: t("identityCard.savedTitle"),
       description: values.name,
     });
     setEditing(false);
@@ -86,7 +103,7 @@ export function ServiceAccountIdentityCard({
     >
       <div className="flex items-center justify-between gap-3">
         <h3 id="sa-identity" className="font-semibold">
-          Identidade
+          {t("shared.identity")}
         </h3>
         {editing ? null : (
           <Button
@@ -95,7 +112,7 @@ export function ServiceAccountIdentityCard({
             disabled={busy}
             onClick={() => setEditing(true)}
           >
-            Editar identidade
+            {t("identityCard.edit")}
           </Button>
         )}
       </div>
@@ -111,7 +128,7 @@ export function ServiceAccountIdentityCard({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome *</FormLabel>
+                  <FormLabel>{t("shared.name")}</FormLabel>
                   <FormControl>
                     <Input {...field} autoComplete="off" />
                   </FormControl>
@@ -121,7 +138,7 @@ export function ServiceAccountIdentityCard({
             />
             <LimitedTextareaField
               id="description"
-              label="Descrição"
+              label={t("shared.description")}
               maxLength={SERVICE_ACCOUNT_DESCRIPTION_MAX}
             />
             <div className="flex justify-end gap-2">
@@ -134,10 +151,10 @@ export function ServiceAccountIdentityCard({
                   setEditing(false);
                 }}
               >
-                Cancelar
+                {t("shared.cancel")}
               </Button>
               <Button type="submit" disabled={busy}>
-                {update.isPending ? "A guardar…" : "Guardar"}
+                {update.isPending ? t("shared.saving") : t("shared.save")}
               </Button>
             </div>
           </form>
@@ -145,26 +162,30 @@ export function ServiceAccountIdentityCard({
       ) : (
         <dl className="flex flex-col gap-3 text-sm">
           <div className="flex flex-col gap-1">
-            <dt className="text-muted-foreground">Descrição</dt>
+            <dt className="text-muted-foreground">{t("shared.description")}</dt>
             <dd>{account.description || "—"}</dd>
           </div>
           <div className="flex flex-col gap-1">
-            <dt className="text-muted-foreground">Aplicação</dt>
+            <dt className="text-muted-foreground">{t("shared.application")}</dt>
             <dd className="flex flex-col gap-0.5">
               <span className="font-mono">
                 {account.applicationCode ?? "—"}
               </span>
               <span className="text-muted-foreground">
-                Herdada do cliente OAuth.
+                {t("shared.inheritedApplication")}
               </span>
             </dd>
           </div>
           <div className="flex flex-col gap-1">
-            <dt className="text-muted-foreground">Criada em</dt>
+            <dt className="text-muted-foreground">
+              {t("identityCard.createdAt")}
+            </dt>
             <dd>{timestamp(account.createdAt)}</dd>
           </div>
           <div className="flex flex-col gap-1">
-            <dt className="text-muted-foreground">Atualizada em</dt>
+            <dt className="text-muted-foreground">
+              {t("identityCard.updatedAt")}
+            </dt>
             <dd>{timestamp(account.updatedAt)}</dd>
           </div>
         </dl>

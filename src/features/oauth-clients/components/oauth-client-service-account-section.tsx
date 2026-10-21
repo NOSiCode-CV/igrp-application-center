@@ -27,6 +27,7 @@ export function OAuthClientServiceAccountSection({
   savedWithClientCredentials: boolean;
 }) {
   const t = useTranslations("oauthClients");
+  const tAccounts = useTranslations("serviceAccounts");
   const form = useFormContext<{ grantTypes: string[] }>();
   const grantTypes = useWatch({ control: form.control, name: "grantTypes" });
   const linked = useLinkedServiceAccount(clientId);
@@ -54,6 +55,7 @@ export function OAuthClientServiceAccountSection({
             </Link>
             <span className="text-sm text-muted-foreground">
               {formatAccessSummary(
+                tAccounts,
                 roleIdsOf(linked.account).length,
                 permissionIdsOf(linked.account).length,
               )}

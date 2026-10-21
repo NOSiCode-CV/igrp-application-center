@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useRoles } from "@/features/departments/use-departments";
 
@@ -21,6 +22,7 @@ export function RolePickerDialog({
   onConfirm: (r: { scope: RoleDTO[]; selected: RoleDTO[] }) => void;
   isSaving: boolean;
 }) {
+  const t = useTranslations("serviceAccounts");
   const [departmentCode, setDepartmentCode] = useState<string>();
   const roles = useRoles(departmentCode ?? "");
   const data = roles.data;
@@ -37,8 +39,8 @@ export function RolePickerDialog({
     <ScopedPickerDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Atribuir perfis"
-      description="Os perfis de outros departamentos não são alterados aqui."
+      title={t("rolePicker.title")}
+      description={t("rolePicker.description")}
       departmentCode={departmentCode}
       onDepartmentChange={setDepartmentCode}
       items={items}
@@ -46,7 +48,7 @@ export function RolePickerDialog({
       isError={roles.isError}
       selectedIds={selectedIds}
       isSaving={isSaving}
-      confirmLabel="Guardar perfis"
+      confirmLabel={t("rolePicker.confirm")}
       onConfirm={({ scopeIds, selectedIds: ids }) => {
         const all = data ?? [];
         onConfirm({

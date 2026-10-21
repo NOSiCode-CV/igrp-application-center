@@ -17,6 +17,7 @@ import {
   RadioGroupItem,
 } from "@igrp/igrp-framework-react-design-system";
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import type { WizardAction, WizardState } from "../../lib/wizard-state";
 
@@ -38,6 +39,7 @@ export function WizardClientStep({
   /** A client picked here but not yet confirmed with Continuar. */
   onDirtyChange?: (dirty: boolean) => void;
 }) {
+  const t = useTranslations("serviceAccounts");
   const id = useId();
   const initial =
     state.client?.kind === "existing" ? state.client.oauthClientId : undefined;
@@ -55,10 +57,9 @@ export function WizardClientStep({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1.5">
-        <h3 className="text-lg font-semibold">Cliente OAuth</h3>
+        <h3 className="text-lg font-semibold">{t("shared.oauthClient")}</h3>
         <p className="text-sm text-muted-foreground">
-          A conta autentica como este cliente. Só aparecem clientes
-          client_credentials sem conta de serviço.
+          {t("clientStep.description")}
         </p>
       </div>
 
@@ -70,13 +71,13 @@ export function WizardClientStep({
         <div className="flex items-center gap-2">
           <RadioGroupItem value="existing" id={`${id}-mode-existing`} />
           <Label htmlFor={`${id}-mode-existing`} className="cursor-pointer">
-            Usar um cliente OAuth existente
+            {t("clientStep.modeExisting")}
           </Label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="new" id={`${id}-mode-new`} />
           <Label htmlFor={`${id}-mode-new`} className="cursor-pointer">
-            Registar um novo cliente OAuth
+            {t("clientStep.modeNew")}
           </Label>
         </div>
       </RadioGroup>
@@ -93,13 +94,13 @@ export function WizardClientStep({
               onChange={(v) =>
                 setOAuthClientId(typeof v === "string" && v ? v : undefined)
               }
-              placeholder="Selecionar cliente"
-              searchText="Pesquisar cliente…"
-              selectLabel="Nenhum cliente encontrado."
+              placeholder={t("clientStep.placeholder")}
+              searchText={t("clientStep.search")}
+              selectLabel={t("clientStep.empty")}
             />
             {available.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Não há clientes disponíveis. Registe um novo cliente.
+                {t("clientStep.none")}
               </p>
             ) : null}
           </div>
@@ -114,7 +115,7 @@ export function WizardClientStep({
                 })
               }
             >
-              Continuar
+              {t("shared.continue")}
               <IGRPIcon iconName="ArrowRight" aria-hidden="true" />
             </Button>
           </div>

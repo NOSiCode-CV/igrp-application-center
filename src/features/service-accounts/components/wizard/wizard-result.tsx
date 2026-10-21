@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import {
   Alert,
@@ -9,6 +9,7 @@ import {
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
 import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { SensitiveValueDisclosure } from "@/components/sensitive-value-disclosure";
 
@@ -31,6 +32,8 @@ export function WizardResult({
   isRetrying: boolean;
   onDone: (accountId: string) => void;
 }) {
+  const t = useTranslations("serviceAccounts");
+  const tClient = useTranslations("oauthClients");
   const [confirmed, setConfirmed] = useState(false);
   const secret = outcome.client.clientSecret;
 
@@ -39,15 +42,16 @@ export function WizardResult({
       <div className="flex flex-col gap-1.5">
         <h3 className="text-lg font-semibold">
           {outcome.kind === "created"
-            ? "Conta de serviço criada"
-            : "Cliente registado"}
+            ? t("wizard.createdTitle")
+            : t("result.clientRegisteredTitle")}
         </h3>
         <p className="text-sm text-muted-foreground">
-          O cliente{" "}
-          <span className="font-mono text-foreground">
-            {outcome.client.clientId}
-          </span>{" "}
-          foi registado. Guarde o segredo antes de sair desta página.
+          {t.rich("result.registered", {
+            clientId: outcome.client.clientId,
+            mono: (chunks: ReactNode) => (
+              <span className="font-mono text-foreground">{chunks}</span>
+            ),
+          })}
         </p>
       </div>
       {secret ? (
@@ -63,50 +67,44 @@ export function WizardResult({
             />
             <div className="flex flex-col gap-0.5">
               <strong className="font-semibold">
-                Este segredo não volta a ser mostrado.
+                {tClient("secret.warningTitle")}
               </strong>
-              <span className="text-sm">
-                Nem a si, nem a outro administrador. Guarde-o já no seu gestor
-                de segredos.
-              </span>
+              <span className="text-sm">{tClient("secret.warningBody")}</span>
             </div>
           </div>
           <SensitiveValueDisclosure
-            label="Client secret"
+            label={tClient("secret.label")}
+            confirmationLabel={tClient("secret.confirmLabel")}
             value={secret}
             onConfirmedChange={setConfirmed}
           />
         </>
       ) : (
         <Alert variant="destructive">
-          <AlertDescription>
-            O servidor não devolveu o segredo. Desative este cliente e registe
-            um novo.
-          </AlertDescription>
+          <AlertDescription>{t("result.missingSecret")}</AlertDescription>
         </Alert>
       )}
       {outcome.kind === "accountFailed" ? (
         <Alert variant="destructive">
           <AlertDescription>
-            A conta de serviço não foi criada: {outcome.error} O cliente já
-            existe; pode tentar criar a conta novamente com os mesmos dados.
+            {t("result.accountFailed", { error: outcome.error })}
           </AlertDescription>
         </Alert>
       ) : null}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-muted-foreground">
-          Se o segredo for exposto, gere um novo nos detalhes do cliente.
+          {tClient("create.rotateHint")}
         </p>
         {outcome.kind === "accountFailed" ? (
           <Button onClick={onRetry} disabled={isRetrying}>
-            {isRetrying ? "A criar…" : "Tentar criar a conta novamente"}
+            {isRetrying ? t("shared.creating") : t("result.retry")}
           </Button>
         ) : (
           <Button
             disabled={!!secret && !confirmed}
             onClick={() => onDone(outcome.accountId)}
           >
-            Concluir — ver conta
+            {t("result.finish")}
           </Button>
         )}
       </div>

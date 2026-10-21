@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import {
   ApplicationCell,
@@ -31,6 +32,7 @@ import {
   formatAccessSummary,
   permissionIdsOf,
   roleIdsOf,
+  type ServiceAccountsTranslator,
 } from "../lib/service-account-utils";
 
 interface RowHandlers {
@@ -45,11 +47,12 @@ export function ServiceAccountRowActions({
   onDelete,
   onCopy,
 }: { row: ServiceAccountDTO } & RowHandlers) {
+  const t = useTranslations("serviceAccounts");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         className="inline-flex size-9 items-center justify-center rounded-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label={`Ações para ${row.name}`}
+        aria-label={t("columns.rowActions", { name: row.name })}
       >
         <IGRPIcon iconName="Ellipsis" aria-hidden="true" />
       </DropdownMenuTrigger>
@@ -60,12 +63,12 @@ export function ServiceAccountRowActions({
             className="flex gap-2"
           >
             <IGRPIcon iconName="Settings2" aria-hidden="true" />
-            Ver detalhes
+            {t("columns.viewDetails")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => onCopy(row.clientId)}>
           <IGRPIcon iconName="Copy" aria-hidden="true" />
-          Copiar client ID
+          {t("shared.copyClientId")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {row.active ? (
@@ -74,17 +77,17 @@ export function ServiceAccountRowActions({
             onSelect={() => onToggleActive(row)}
           >
             <IGRPIcon iconName="CircleOff" aria-hidden="true" />
-            Desativar
+            {t("shared.deactivate")}
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem onSelect={() => onToggleActive(row)}>
             <IGRPIcon iconName="CircleCheck" aria-hidden="true" />
-            Ativar
+            {t("shared.activate")}
           </DropdownMenuItem>
         )}
         <DropdownMenuItem variant="destructive" onSelect={() => onDelete(row)}>
           <IGRPIcon iconName="Trash" aria-hidden="true" />
-          Eliminar
+          {t("shared.delete")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -107,8 +110,10 @@ function roleLabels(row: ServiceAccountDTO): { key: string; label: string }[] {
 }
 
 function AccessCell({ row }: { row: ServiceAccountDTO }) {
+  const t = useTranslations("serviceAccounts");
   const roles = roleLabels(row);
   const summary = formatAccessSummary(
+    t,
     roleIdsOf(row).length,
     permissionIdsOf(row).length,
   );
@@ -119,7 +124,7 @@ function AccessCell({ row }: { row: ServiceAccountDTO }) {
         {summary}
       </PopoverTrigger>
       <PopoverContent className="w-max max-w-80">
-        <p className="mb-2 text-sm font-medium">Perfis</p>
+        <p className="mb-2 text-sm font-medium">{t("columns.rolesPopover")}</p>
         <ul className="flex flex-col gap-1 font-mono text-xs">
           {roles.map((role) => (
             <li key={role.key}>{role.label}</li>
@@ -131,9 +136,11 @@ function AccessCell({ row }: { row: ServiceAccountDTO }) {
 }
 
 export function getServiceAccountColumns({
+  t,
   applicationName,
   ...handlers
 }: RowHandlers & {
+  t: ServiceAccountsTranslator;
   /** Application name by code; the cell falls back to the code. */
   applicationName: (code: string) => string | undefined;
 }): ColumnDef<ServiceAccountDTO>[] {
@@ -142,7 +149,10 @@ export function getServiceAccountColumns({
       id: "name",
       accessorFn: (r) => r.name,
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle title="Conta" column={column} />
+        <IGRPDataTableHeaderSortToggle
+          title={t("columns.account")}
+          column={column}
+        />
       ),
       cell: ({ row }) => (
         <div className="flex min-w-0 flex-col gap-0.5">
@@ -161,7 +171,7 @@ export function getServiceAccountColumns({
     {
       id: "clientId",
       accessorFn: (r) => r.clientId,
-      header: () => <IGRPDataTableHeaderDefault title="Cliente OAuth" />,
+      header: () => <IGRPDataTableHeaderDefault title={t("columns.client")} />,
       cell: ({ row }) => (
         <div className="flex min-w-0 items-center gap-1">
           <LinkedIdentity
@@ -181,7 +191,9 @@ export function getServiceAccountColumns({
     {
       id: "application",
       accessorFn: (r) => r.applicationCode ?? "",
-      header: () => <IGRPDataTableHeaderDefault title="Aplicação" />,
+      header: () => (
+        <IGRPDataTableHeaderDefault title={t("columns.application")} />
+      ),
       cell: ({ row }) => {
         const code = row.original.applicationCode;
         return (
@@ -195,7 +207,7 @@ export function getServiceAccountColumns({
     },
     {
       id: "access",
-      header: () => <IGRPDataTableHeaderDefault title="Acesso" />,
+      header: () => <IGRPDataTableHeaderDefault title={t("columns.access")} />,
       cell: ({ row }) => <AccessCell row={row.original} />,
       size: 160,
     },
@@ -203,14 +215,17 @@ export function getServiceAccountColumns({
       id: "status",
       accessorFn: (r) => (r.active ? "ACTIVE" : "INACTIVE"),
       header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle title="Estado" column={column} />
+        <IGRPDataTableHeaderSortToggle
+          title={t("columns.status")}
+          column={column}
+        />
       ),
       cell: ({ row }) => <ActiveBadge active={row.original.active} feminine />,
       size: 100,
     },
     {
       id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
+      header: () => <span className="sr-only">{t("columns.actions")}</span>,
       cell: ({ row }) => (
         <ServiceAccountRowActions row={row.original} {...handlers} />
       ),

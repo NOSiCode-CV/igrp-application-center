@@ -32,6 +32,9 @@ const ALLOWED = new Set([
   "Client ID *",
   "Client secret",
   "Grant types",
+  "Grant type",
+  "via {roles}", // same word in pt and en (service-accounts)
+  "{name} · {clientId}", // label made only of placeholders (service-accounts)
   "Redirect URIs",
   "Scopes",
   "Access token",

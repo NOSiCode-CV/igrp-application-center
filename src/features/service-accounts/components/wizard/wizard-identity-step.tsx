@@ -1,6 +1,6 @@
 "use client";
 
-import { type Dispatch, useEffect, useRef } from "react";
+import { type Dispatch, useEffect, useMemo, useRef } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,6 +15,7 @@ import {
   IGRPIcon,
   Input,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
@@ -22,9 +23,9 @@ import { LimitedTextareaField } from "@/components/limited-textarea-field";
 import type { WizardAction, WizardState } from "../../lib/wizard-state";
 import {
   emptyIdentityValues,
+  makeServiceAccountIdentitySchema,
   SERVICE_ACCOUNT_DESCRIPTION_MAX,
   type ServiceAccountIdentityValues,
-  serviceAccountIdentitySchema,
 } from "../../service-account-schemas";
 
 export function WizardIdentityStep({
@@ -46,8 +47,16 @@ export function WizardIdentityStep({
   /** Edits typed here but not yet confirmed with Continuar. */
   onDirtyChange?: (dirty: boolean) => void;
 }) {
+  const t = useTranslations("serviceAccounts");
+  const tState = useTranslations("oauthClients.badge");
+  const tCommon = useTranslations("common.actions");
+  const tv = useTranslations("serviceAccounts.validation");
+  const identitySchema = useMemo(
+    () => makeServiceAccountIdentitySchema(tv),
+    [tv],
+  );
   const form = useForm<ServiceAccountIdentityValues>({
-    resolver: zodResolver(serviceAccountIdentitySchema),
+    resolver: zodResolver(identitySchema),
     // An unconfirmed draft wins over the confirmed values: it is newer.
     defaultValues:
       state.identityDraft ?? state.identity ?? emptyIdentityValues(),
@@ -89,9 +98,9 @@ export function WizardIdentityStep({
         })}
       >
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-lg font-semibold">Identidade</h3>
+          <h3 className="text-lg font-semibold">{t("shared.identity")}</h3>
           <p className="text-sm text-muted-foreground">
-            Como esta conta aparece aos administradores.
+            {t("identityStep.description")}
           </p>
         </div>
         <FormField
@@ -99,7 +108,7 @@ export function WizardIdentityStep({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome *</FormLabel>
+              <FormLabel>{t("shared.name")}</FormLabel>
               <FormControl>
                 <Input {...field} autoComplete="off" />
               </FormControl>
@@ -109,14 +118,14 @@ export function WizardIdentityStep({
         />
         <LimitedTextareaField
           id="description"
-          label="Descrição"
+          label={t("shared.description")}
           maxLength={SERVICE_ACCOUNT_DESCRIPTION_MAX}
         />
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium">Aplicação</span>
+          <span className="text-sm font-medium">{t("shared.application")}</span>
           <span className="text-sm">{applicationLabel}</span>
           <span className="text-sm text-muted-foreground">
-            Herdada do cliente OAuth.
+            {t("shared.inheritedApplication")}
           </span>
         </div>
         {clientActive === undefined ? (
@@ -131,13 +140,17 @@ export function WizardIdentityStep({
                     onCheckedChange={(c) => field.onChange(c === true)}
                   />
                 </FormControl>
-                <FormLabel className="font-normal">Ativa na criação</FormLabel>
+                <FormLabel className="font-normal">
+                  {t("identityStep.activeOnCreate")}
+                </FormLabel>
               </FormItem>
             )}
           />
         ) : (
           <p className="text-sm text-muted-foreground">
-            {`Estado: segue o cliente OAuth (${clientActive ? "Ativo" : "Inativo"}).`}
+            {t("identityStep.followsClient", {
+              state: clientActive ? tState("active") : tState("inactive"),
+            })}
           </p>
         )}
         <div className="flex justify-between">
@@ -147,10 +160,10 @@ export function WizardIdentityStep({
             onClick={() => dispatch({ type: "goTo", step: 1 })}
           >
             <IGRPIcon iconName="ArrowLeft" aria-hidden="true" />
-            Voltar
+            {tCommon("back")}
           </Button>
           <Button type="submit">
-            Continuar
+            {t("shared.continue")}
             <IGRPIcon iconName="ArrowRight" aria-hidden="true" />
           </Button>
         </div>

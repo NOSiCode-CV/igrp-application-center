@@ -1,5 +1,8 @@
+import { getTranslations } from "next-intl/server";
+
 import { AppCenterLoading } from "@/components/loading";
 
-export default function ServiceAccountsLoading() {
-  return <AppCenterLoading description="A carregar contas de serviço..." />;
+export default async function ServiceAccountsLoading() {
+  const t = await getTranslations("serviceAccounts.loading");
+  return <AppCenterLoading description={t("list")} />;
 }

@@ -7,6 +7,7 @@ import type {
   RoleDTO,
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import type { AccessChange } from "@/actions/service-accounts";
 import { InlineError } from "@/components/inline-error";
@@ -37,6 +38,7 @@ export function ServiceAccountRolesSection({
   isError: boolean;
   onRetry: () => void;
 }) {
+  const t = useTranslations("serviceAccounts");
   const { igrpToast } = useIGRPToast();
   const access = useSetServiceAccountAccess(account.id);
   const busy = useAccountBusy(account.id);
@@ -55,7 +57,7 @@ export function ServiceAccountRolesSection({
     if (!result.success) {
       igrpToast({
         type: "error",
-        title: "Não foi possível guardar os perfis",
+        title: t("rolesSection.saveError"),
         description: result.error,
       });
       return false;
@@ -71,7 +73,7 @@ export function ServiceAccountRolesSection({
     >
       <div className="flex items-center justify-between gap-3">
         <h3 id="sa-roles" className="font-semibold">
-          Perfis
+          {t("shared.roles")}
         </h3>
         <Button
           size="sm"
@@ -79,20 +81,22 @@ export function ServiceAccountRolesSection({
           disabled={busy}
           onClick={() => setPicking(true)}
         >
-          Atribuir perfil
+          {t("rolesSection.assign")}
         </Button>
       </div>
       {isError ? (
         <InlineError
-          title="Não foi possível carregar os perfis."
-          message="Tente novamente."
+          title={t("rolesSection.loadErrorTitle")}
+          message={t("rolesSection.loadErrorMessage")}
           onRetry={onRetry}
         />
       ) : isLoading ? (
-        <p className="text-sm text-muted-foreground">A carregar perfis…</p>
+        <p className="text-sm text-muted-foreground">
+          {t("rolesSection.loading")}
+        </p>
       ) : roleIds.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          Esta conta ainda não tem perfis.
+          {t("rolesSection.empty")}
         </p>
       ) : (
         groupRolesByDepartment(roles).map((group) => (
@@ -112,7 +116,9 @@ export function ServiceAccountRolesSection({
                     ) : null}
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    {(role.permissions ?? []).length} permissões
+                    {t("permissionCount", {
+                      count: (role.permissions ?? []).length,
+                    })}
                   </span>
                   {confirming === role.id ? (
                     <div className="flex gap-2">
@@ -122,7 +128,7 @@ export function ServiceAccountRolesSection({
                         onClick={() => setConfirming(null)}
                         disabled={busy}
                       >
-                        Cancelar
+                        {t("shared.cancel")}
                       </Button>
                       <Button
                         size="sm"
@@ -130,23 +136,28 @@ export function ServiceAccountRolesSection({
                         disabled={busy}
                         onClick={async () => {
                           if (
-                            await save({ remove: [role.id] }, "Perfil removido")
+                            await save(
+                              { remove: [role.id] },
+                              t("rolesSection.removed"),
+                            )
                           )
                             setConfirming(null);
                         }}
                       >
-                        Confirmar remoção
+                        {t("shared.confirmRemove")}
                       </Button>
                     </div>
                   ) : (
                     <Button
                       size="sm"
                       variant="ghost"
-                      aria-label={`Remover perfil ${role.code}`}
+                      aria-label={t("rolesSection.removeLabel", {
+                        code: role.code,
+                      })}
                       disabled={busy}
                       onClick={() => setConfirming(role.id)}
                     >
-                      Remover
+                      {t("shared.remove")}
                     </Button>
                   )}
                 </li>
@@ -166,7 +177,8 @@ export function ServiceAccountRolesSection({
               scope: scope.map((r) => r.id),
               selected: selected.map((r) => r.id),
             };
-            if (await save(change, "Perfis atualizados")) setPicking(false);
+            if (await save(change, t("rolesSection.updated")))
+              setPicking(false);
           }}
         />
       ) : null}

@@ -4,14 +4,15 @@ import { useState } from "react";
 
 import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
 
 import { useSetServiceAccountActive } from "../use-service-accounts";
 
-const STEP_LABEL = {
-  client: "cliente OAuth",
-  serviceAccount: "conta de serviço",
+const STEP_KEY = {
+  client: "stepClient",
+  serviceAccount: "stepServiceAccount",
 } as const;
 
 export function ServiceAccountActivationDialog({
@@ -23,6 +24,7 @@ export function ServiceAccountActivationDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("serviceAccounts");
   const { igrpToast } = useIGRPToast();
   const mutation = useSetServiceAccountActive(account.id);
   // Frozen at open: a refetch mid-dialog must not flip the action.
@@ -36,7 +38,9 @@ export function ServiceAccountActivationDialog({
     if (result.success) {
       igrpToast({
         type: "success",
-        title: activate ? "Conta ativada" : "Conta desativada",
+        title: activate
+          ? t("activation.toastActivated")
+          : t("activation.toastDeactivated"),
         description: account.name,
       });
       onOpenChange(false);
@@ -44,8 +48,11 @@ export function ServiceAccountActivationDialog({
     }
     igrpToast({
       type: "error",
-      title: `Não foi possível ${activate ? "ativar" : "desativar"} (falhou: ${STEP_LABEL[result.failedStep]})`,
-      description: `${result.error} Tente novamente.`,
+      title: t(
+        activate ? "activation.errorActivate" : "activation.errorDeactivate",
+        { step: t(`activation.${STEP_KEY[result.failedStep]}`) },
+      ),
+      description: t("activation.retry", { error: result.error }),
     });
   }
 
@@ -54,17 +61,23 @@ export function ServiceAccountActivationDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={
-        activate ? "Ativar conta de serviço" : "Desativar conta de serviço"
-      }
-      description={
         activate
-          ? `A conta «${account.name}» e o cliente OAuth ${account.clientId} voltam a poder autenticar.`
-          : `A conta «${account.name}» e o cliente OAuth ${account.clientId} deixam de conseguir autenticar até serem reativados.`
+          ? t("activation.titleActivate")
+          : t("activation.titleDeactivate")
       }
+      description={t(
+        activate ? "activation.descActivate" : "activation.descDeactivate",
+        { name: account.name, clientId: account.clientId },
+      )}
       onConfirm={confirm}
       isLoading={mutation.isPending}
-      confirmText={activate ? "Ativar" : "Desativar"}
-      loadingText={activate ? "A ativar…" : "A desativar…"}
+      confirmText={activate ? t("shared.activate") : t("shared.deactivate")}
+      cancelText={t("shared.cancel")}
+      loadingText={
+        activate
+          ? t("activation.loadingActivate")
+          : t("activation.loadingDeactivate")
+      }
       variant={activate ? "default" : "destructive"}
     />
   );

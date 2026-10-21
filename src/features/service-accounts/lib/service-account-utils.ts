@@ -3,6 +3,7 @@ import type {
   RoleDTO,
   ServiceAccountDTO,
 } from "@igrp/platform-access-management-client-ts";
+import type { useTranslations } from "next-intl";
 
 /** client_credentials clients with no Service Account yet (spec §5.3). */
 export function getAvailableOAuthClients(
@@ -15,13 +16,17 @@ export function getAvailableOAuthClients(
   );
 }
 
+/** `useTranslations("serviceAccounts")` / `getTranslations("serviceAccounts")` result. */
+export type ServiceAccountsTranslator = ReturnType<
+  typeof useTranslations<"serviceAccounts">
+>;
+
 export function formatAccessSummary(
+  t: ServiceAccountsTranslator,
   roleCount: number,
   directCount: number,
 ): string {
-  const roles = `${roleCount} ${roleCount === 1 ? "perfil" : "perfis"}`;
-  const direct = `${directCount} ${directCount === 1 ? "direta" : "diretas"}`;
-  return `${roles} · ${direct}`;
+  return t("accessSummary", { roles: roleCount, direct: directCount });
 }
 
 export type EffectivePermission = {

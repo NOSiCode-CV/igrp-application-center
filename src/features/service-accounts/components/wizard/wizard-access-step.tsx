@@ -7,6 +7,7 @@ import {
   Button,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { mergeScopedSelection } from "../../lib/service-account-utils";
 import type { WizardAction, WizardState } from "../../lib/wizard-state";
@@ -29,6 +30,8 @@ export function WizardAccessStep({
   /** What "Criar conta" will do, stated before the click (spec §5.4). */
   submitNote: string;
 }) {
+  const t = useTranslations("serviceAccounts");
+  const tCommon = useTranslations("common.actions");
   const [picker, setPicker] = useState<"none" | "roles" | "permissions">(
     "none",
   );
@@ -49,23 +52,23 @@ export function WizardAccessStep({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1.5">
-        <h3 className="text-lg font-semibold">Perfis e permissões</h3>
+        <h3 className="text-lg font-semibold">{t("wizard.stepAccess")}</h3>
         <p className="text-sm text-muted-foreground">
-          O que esta conta pode fazer. Pode alterar depois.
+          {t("accessStep.description")}
         </p>
       </div>
 
       <section aria-labelledby="wz-roles" className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <h4 id="wz-roles" className="font-medium">
-            Perfis
+            {t("shared.roles")}
           </h4>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setPicker("roles")}
           >
-            Adicionar perfil
+            {t("accessStep.addRole")}
           </Button>
         </div>
         <ul className="flex flex-wrap gap-2">
@@ -75,7 +78,7 @@ export function WizardAccessStep({
                 {r.code}
                 <button
                   type="button"
-                  aria-label={`Remover perfil ${r.code}`}
+                  aria-label={t("accessStep.removeRole", { code: r.code })}
                   onClick={() =>
                     dispatch({
                       type: "setRoles",
@@ -98,29 +101,32 @@ export function WizardAccessStep({
       <section aria-labelledby="wz-direct" className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <h4 id="wz-direct" className="font-medium">
-            Permissões diretas
+            {t("shared.directPermissions")}
           </h4>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setPicker("permissions")}
           >
-            Adicionar permissão
+            {t("shared.addPermission")}
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
-          Permissões diretas não são revogadas ao remover um perfil. Prefira
-          perfis.
+          {t("shared.directNote")}
         </p>
         <ul className="flex flex-wrap gap-2">
           {state.permissions.map((p) => (
             <li key={p.id}>
               <Badge variant="secondary" className="gap-1 font-mono">
                 {p.name}
-                <span className="font-sans text-xs">direta</span>
+                <span className="font-sans text-xs">
+                  {t("shared.directBadge")}
+                </span>
                 <button
                   type="button"
-                  aria-label={`Remover permissão ${p.name}`}
+                  aria-label={t("accessStep.removePermission", {
+                    name: p.name,
+                  })}
                   onClick={() =>
                     dispatch({
                       type: "setPermissions",
@@ -161,11 +167,11 @@ export function WizardAccessStep({
             disabled={isSubmitting}
           >
             <IGRPIcon iconName="ArrowLeft" aria-hidden="true" />
-            Voltar
+            {tCommon("back")}
           </Button>
           <Button onClick={onSubmit} disabled={isSubmitting}>
             <IGRPIcon iconName="Save" aria-hidden="true" />
-            {isSubmitting ? "A criar…" : "Criar conta"}
+            {isSubmitting ? t("shared.creating") : t("accessStep.submit")}
           </Button>
         </div>
       </div>
