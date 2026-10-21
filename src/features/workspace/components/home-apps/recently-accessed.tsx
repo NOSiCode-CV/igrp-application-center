@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import { IGRPButton, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import { InlineError } from "@/components/inline-error";
 import {
@@ -74,7 +75,7 @@ function useRailScroll(itemCount: number) {
 
 export function RecentlyAccessed() {
   const t = useTranslations("workspace");
-  const format = useFormatter();
+  const format = useIGRPFormat();
   const {
     data: allRecent = [],
     isError,
@@ -102,7 +103,7 @@ export function RecentlyAccessed() {
       case "weekday":
         return t("lastOpened.weekday", {
           day: String(opened.day),
-          weekday: format.dateTime(opened.date, { weekday: "long" }),
+          weekday: format.formatDate(opened.date, { weekday: "long" }),
         });
       case "minutes":
       case "hours":

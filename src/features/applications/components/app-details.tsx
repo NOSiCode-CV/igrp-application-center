@@ -4,6 +4,7 @@ import type { Route } from "next";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Badge,
   cn,
@@ -14,7 +15,7 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
-import { useFormatter, useNow, useTranslations } from "next-intl";
+import { useNow, useTranslations } from "next-intl";
 
 import { BackButton } from "@/components/back-button";
 import { ButtonLink } from "@/components/button-link";
@@ -51,7 +52,7 @@ function appAddress(app: ApplicationDTO): string | null {
 export function ApplicationDetails({ code }: { code: string }) {
   const t = useTranslations("applications");
   const tc = useTranslations("common.actions");
-  const format = useFormatter();
+  const format = useIGRPFormat();
   const now = useNow({ updateInterval: 60_000 });
   const statusLabel = useStatusLabel();
   const { igrpToast } = useIGRPToast();
@@ -175,12 +176,12 @@ export function ApplicationDetails({ code }: { code: string }) {
       value: (
         <time
           dateTime={updatedAt}
-          title={format.dateTime(new Date(updatedAt), {
+          title={format.formatDateTime(new Date(updatedAt), {
             dateStyle: "long",
             timeStyle: "short",
           })}
         >
-          {format.relativeTime(new Date(updatedAt), now)}
+          {format.formatRelativeTime(new Date(updatedAt), now)}
         </time>
       ),
     },
