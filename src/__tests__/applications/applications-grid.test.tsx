@@ -101,7 +101,7 @@ describe("ApplicationsGrid count", () => {
   it("says how many are shown when filtered", () => {
     renderGrid("fr", apps, ["INACTIVE"]);
     expect(
-      screen.getByText("1 affichée(s) sur 3 applications"),
+      screen.getByText("Affichage de 1 sur 3 applications"),
     ).toBeInTheDocument();
   });
 });

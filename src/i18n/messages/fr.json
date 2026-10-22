@@ -700,7 +700,7 @@
       "selectDepartmentHint": "Sélectionnez un département pour afficher les rôles.",
       "loadingRoles": "Chargement des rôles...",
       "loadRolesError": "Une erreur s’est produite lors du chargement des rôles de l’utilisateur.",
-      "selectedCount": "{count} sélectionné(s)",
+      "selectedCount": "Sélection : {count}",
       "clear": "Effacer",
       "save": "Enregistrer",
       "saving": "Enregistrement...",
@@ -709,7 +709,7 @@
         "noChanges": "Aucune modification",
         "noChangesDescription": "Rien à ajouter ni à retirer.",
         "updated": "Rôles mis à jour",
-        "updatedDescription": "+{added} ajouté(s), -{removed} retiré(s).",
+        "updatedDescription": "Ajouts : {added}, retraits : {removed}.",
         "updateFailed": "Échec de la mise à jour des rôles"
       },
       "departmentScope": "Seuls les rôles du département {department} sont affichés. Les rôles des autres départements ne sont pas modifiés ici.",
@@ -894,7 +894,7 @@
     },
     "grid": {
       "count": "{total, plural, one {# application} other {# applications}}",
-      "countFiltered": "{shown} affichée(s) sur {total, plural, one {# application} other {# applications}}",
+      "countFiltered": "Affichage de {shown} sur {total, plural, one {# application} other {# applications}}",
       "noMatchTitle": "Aucune application ne correspond aux filtres",
       "noMatchDescription": "Ajustez la recherche ou le statut pour voir les applications enregistrées."
     },
@@ -1489,7 +1489,7 @@
       "filterPlaceholder": "Filtrer par nom…",
       "filterLabel": "Filtrer par nom",
       "clearFilter": "Effacer le filtre",
-      "selected": "{count} sélectionné(s)",
+      "selected": "Sélection : {count}",
       "loading": "Chargement des permissions…",
       "rowsPerPage": "Lignes par page",
       "save": "Enregistrer",
@@ -1497,7 +1497,7 @@
         "noChangesTitle": "Aucune modification",
         "noChangesDescription": "Rien à ajouter ou à retirer.",
         "updatedTitle": "Permissions mises à jour",
-        "updatedDescription": "+{added} ajoutée(s), -{removed} retirée(s).",
+        "updatedDescription": "Ajouts : {added}, retraits : {removed}.",
         "errorTitle": "Échec de la mise à jour des permissions",
         "unknownError": "Une erreur inconnue s’est produite.",
         "loadErrorTitle": "Le rôle a des permissions associées, mais elles n’ont pas pu être chargées."
