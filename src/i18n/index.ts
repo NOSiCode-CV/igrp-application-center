@@ -6,7 +6,6 @@ import {
   igrpParseFormatLocales,
 } from "@igrp/framework-next/i18n";
 
-import { updateCurrentUserLocale } from "@/actions/access-client";
 import { serverSession } from "@/lib/auth";
 import { getLayoutConfig } from "@/lib/dal";
 import { isAuthBypass } from "@/lib/utilities";
@@ -39,6 +38,9 @@ export const i18n = igrpDefineI18n({
   // propagate, so igrpSetLocale answers 500 and writes no cookie.
   persistLocale: async (locale) => {
     if (isAuthBypass() || !(await serverSession())) return false;
+    // Lazy: access-client imports next-intl/server, which loads request.ts,
+    // which imports this module — a static import is a cycle at load time.
+    const { updateCurrentUserLocale } = await import("@/actions/access-client");
     await updateCurrentUserLocale(locale);
     return true;
   },
