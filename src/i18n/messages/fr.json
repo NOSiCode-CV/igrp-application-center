@@ -719,7 +719,7 @@
       "loading": "Chargement des profils...",
       "title": "Profils attribués",
       "add": "Ajouter",
-      "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
+      "permissionCount": "{count, plural, one {# permission} other {# permissions}}",
       "parent": "Sous-rôle de <mono>{code}</mono>",
       "morePermissions": "+{count} de plus",
       "revoke": "Révoquer",
@@ -1120,7 +1120,7 @@
       "titleFolder": "Supprimer ce dossier ?",
       "titlePage": "Supprimer cette page ?",
       "contents": "{count, plural, one {Contient # menu} other {Contient # menus}}",
-      "more": "{count, plural, other {et # de plus}}",
+      "more": "{count, plural, one {et # autre} other {et # autres}}",
       "confirmGroup": "Supprimer le groupe",
       "confirmFolder": "Supprimer le dossier",
       "confirmPage": "Supprimer la page"
@@ -1375,7 +1375,7 @@
     "roleList": {
       "loading": "Chargement des profils…",
       "title": "Profils attribués",
-      "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
+      "permissionCount": "{count, plural, one {# permission} other {# permissions}}",
       "parent": "Sous-rôle de <mono>{code}</mono>",
       "morePermissions": "+{count} de plus",
       "activate": "Activer",
@@ -1913,7 +1913,7 @@
     "sidebar": {
       "title": "Gestion des départements",
       "summaryWithInactive": "{active} actifs · {inactive} inactifs",
-      "summary": "{count, plural, =1 {# département} other {# départements}}",
+      "summary": "{count, plural, one {# département} other {# départements}}",
       "searchLabel": "Rechercher un département",
       "searchPlaceholder": "Rechercher un département…",
       "filtering": "Filtrage en cours…",
@@ -2011,7 +2011,7 @@
       "collapse": "Réduire le menu",
       "expand": "Développer le menu",
       "assign": "{role} — {menu}",
-      "summary": "{menus, plural, =1 {# menu} other {# menus}} • {roles, plural, =1 {# profil} other {# profils}}",
+      "summary": "{menus, plural, one {# menu} other {# menus}} • {roles, plural, one {# profil} other {# profils}}",
       "savePermissions": "Enregistrer les permissions",
       "toast": {
         "noChangesTitle": "Aucune modification",
