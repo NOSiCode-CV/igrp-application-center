@@ -249,6 +249,12 @@
     }
   },
   "users": {
+    "error": {
+      "listTitle": "Could not load the users.",
+      "listMessage": "Try again. If the problem persists, contact support.",
+      "detailTitle": "Could not load this user.",
+      "backToList": "Back to the user list"
+    },
     "invite": {
       "form": {
         "localeLabel": "Invitee language",

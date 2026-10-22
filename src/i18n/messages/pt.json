@@ -249,6 +249,12 @@
     }
   },
   "users": {
+    "error": {
+      "listTitle": "Não foi possível carregar os utilizadores.",
+      "listMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "detailTitle": "Não foi possível carregar este utilizador.",
+      "backToList": "Voltar à lista de utilizadores"
+    },
     "invite": {
       "form": {
         "localeLabel": "Idioma do convidado",

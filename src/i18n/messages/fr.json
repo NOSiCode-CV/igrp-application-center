@@ -249,6 +249,12 @@
     }
   },
   "users": {
+    "error": {
+      "listTitle": "Impossible de charger les utilisateurs.",
+      "listMessage": "Réessayez. Si le problème persiste, contactez le support.",
+      "detailTitle": "Impossible de charger cet utilisateur.",
+      "backToList": "Retour à la liste des utilisateurs"
+    },
     "invite": {
       "form": {
         "localeLabel": "Langue de l’invité",

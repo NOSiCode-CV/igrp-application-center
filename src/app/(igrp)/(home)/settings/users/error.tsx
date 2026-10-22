@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { useTranslations } from "next-intl";
+
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { InlineError } from "@/components/inline-error";
 
@@ -12,6 +14,7 @@ export default function UsersError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("users.error");
   useEffect(() => {
     console.error("[users-segment] error:", error);
   }, [error]);
@@ -25,8 +28,8 @@ export default function UsersError({
       error={error}
       fallback={
         <InlineError
-          title="Não foi possível carregar os utilizadores."
-          message="Tente novamente. Se o problema persistir, contacte o suporte."
+          title={t("listTitle")}
+          message={t("listMessage")}
           onRetry={reset}
         />
       }

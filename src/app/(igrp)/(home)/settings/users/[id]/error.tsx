@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect } from "react";
 
+import { useTranslations } from "next-intl";
+
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { InlineError } from "@/components/inline-error";
 
@@ -13,6 +15,7 @@ export default function UserDetailsError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("users.error");
   useEffect(() => {
     console.error("[users/:id] segment error", error);
   }, [error]);
@@ -23,7 +26,7 @@ export default function UserDetailsError({
       fallback={
         <div className="flex flex-col items-center gap-4">
           <InlineError
-            title="Não foi possível carregar este utilizador."
+            title={t("detailTitle")}
             message={error.message}
             onRetry={reset}
           />
@@ -31,7 +34,7 @@ export default function UserDetailsError({
             href="/settings/users"
             className="text-sm underline underline-offset-4 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
           >
-            Voltar à lista de utilizadores
+            {t("backToList")}
           </Link>
         </div>
       }
