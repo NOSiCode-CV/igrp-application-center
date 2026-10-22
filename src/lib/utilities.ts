@@ -1,5 +1,3 @@
-import { STATUS_OPTIONS } from "./constants";
-
 export function getStatusColor(status: string) {
   return status === "ACTIVE" ? "status-active" : "status-inactive";
 }
@@ -85,11 +83,6 @@ export function formatDate(dateString: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
-}
-
-export function showStatus(status: string) {
-  if (status == null || status === undefined) return null;
-  return STATUS_OPTIONS.find((s) => s.value === status)?.label ?? status;
 }
 
 export const getMenuIcon = (type: string) => {

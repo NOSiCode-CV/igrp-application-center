@@ -1,7 +1,6 @@
 // Translated labels for the platform's entity statuses (`common.status.*`).
 //
-// Replaces `showStatus()` / `STATUS_OPTIONS` labels (pt only) in migrated
-// code: the status codes stay the API's, only the label is translated.
+// The status codes stay the API's, only the label is translated.
 
 import { useMemo } from "react";
 
@@ -35,7 +34,7 @@ export function useStatusLabel(): (
   };
 }
 
-/** The shared ACTIVE/INACTIVE options, translated (replaces `STATUS_OPTIONS`). */
+/** The shared ACTIVE/INACTIVE options, translated. */
 export function useStatusOptions(): { value: string; label: string }[] {
   const t = useTranslations("common.status");
   return useMemo(

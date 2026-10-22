@@ -33,12 +33,11 @@ import {
   useUpdateUserStatus,
   useUsers,
 } from "@/features/users/use-users";
+import { useStatusOptions } from "@/i18n/status";
 import {
   PAGE_HEADER_ACTIONS_CLASS,
   PAGE_HEADER_PROPS,
 } from "@/lib/page-header";
-
-import { useUserStatusOptions } from "../lib/i18n";
 
 interface UserListProps {
   initialUsers: IGRPUserDTO[];
@@ -59,7 +58,7 @@ export function UserList({
   const t = useTranslations("users");
   const tStatus = useTranslations("common.status");
   const { formatDate } = useIGRPFormat();
-  const statusOptions = useUserStatusOptions();
+  const statusOptions = useStatusOptions();
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [dialog, setDialog] = useState<DialogState>({ kind: "none" });

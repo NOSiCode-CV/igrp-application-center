@@ -24,8 +24,7 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { useUpdateUser } from "@/features/users/use-users";
-
-import { useUserStatusOptions } from "../lib/i18n";
+import { useStatusOptions } from "@/i18n/status";
 
 type UserEditFormProps = {
   user: IGRPUserDTO;
@@ -43,7 +42,7 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.editForm");
   const tc = useTranslations("common.actions");
-  const statusOptions = useUserStatusOptions();
+  const statusOptions = useStatusOptions();
   const updateUser = useUpdateUser();
 
   const form = useForm<FormData>({

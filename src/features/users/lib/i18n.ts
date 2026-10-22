@@ -1,10 +1,6 @@
-import { useMemo } from "react";
-
-import type { IGRPOptionsProps } from "@igrp/igrp-framework-react-design-system";
-import { useTranslations } from "next-intl";
+import type { useTranslations } from "next-intl";
 
 import { statusKey } from "@/i18n/status";
-import { STATUS_OPTIONS } from "@/lib/constants";
 
 /** `useTranslations("users")` / `getTranslations("users")` result. */
 export type UsersTranslator = ReturnType<typeof useTranslations<"users">>;
@@ -31,7 +27,7 @@ export function inviteStatusKey(status: string): InviteStatusKey {
   }
 }
 
-/** Translated label of an ACTIVE/INACTIVE status (undefined when unknown, like `showStatus`). */
+/** Translated label of an ACTIVE/INACTIVE status (undefined when unknown). */
 export function userStatusLabel(
   t: StatusTranslator,
   status: unknown,
@@ -42,17 +38,4 @@ export function userStatusLabel(
 
 export function inviteStatusLabel(t: UsersTranslator, status: string): string {
   return t(`invite.status.${inviteStatusKey(status)}`);
-}
-
-/** `STATUS_OPTIONS` with labels in the current language. */
-export function useUserStatusOptions(): IGRPOptionsProps[] {
-  const t = useTranslations("common.status");
-  return useMemo(
-    () =>
-      STATUS_OPTIONS.map((option) => ({
-        ...option,
-        label: userStatusLabel(t, option.value) ?? option.label,
-      })),
-    [t],
-  );
 }
