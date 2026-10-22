@@ -397,7 +397,7 @@
       }
     },
     "detail": {
-      "loading": "Carregando...",
+      "loading": "A carregar...",
       "loadError": "Erro ao carregar dados",
       "tabs": {
         "roles": "Perfis",
@@ -412,7 +412,7 @@
     "applications": {
       "searchLabel": "Pesquisar aplicação",
       "searchPlaceholder": "Pesquisar aplicação…",
-      "loading": "Carregando aplicações…",
+      "loading": "A carregar aplicações…",
       "noResults": "Nenhuma aplicação corresponde à pesquisa.",
       "empty": "Nenhuma aplicação atribuída."
     },
@@ -498,7 +498,7 @@
       "title": "Gestão de Utilizadores",
       "description": "Ver e gerir todos os utilizadores do sistema.",
       "inviteUser": "Convidar Utilizador",
-      "loadingInvitations": "Carregando convites...",
+      "loadingInvitations": "A carregar convites...",
       "tabs": {
         "active": "Utilizadores Ativos",
         "pending": "Convites Pendentes ({count})",
@@ -525,8 +525,8 @@
       "statusDialog": {
         "activateTitle": "Ativar Utilizador",
         "deactivateTitle": "Desativar Utilizador",
-        "activateDescription": "Tem certeza que deseja ativar <strong>{name}</strong>?",
-        "deactivateDescription": "Tem certeza que deseja desativar <strong>{name}</strong>?",
+        "activateDescription": "Tem a certeza de que deseja ativar <strong>{name}</strong>?",
+        "deactivateDescription": "Tem a certeza de que deseja desativar <strong>{name}</strong>?",
         "activate": "Ativar",
         "deactivate": "Desativar",
         "activating": "Ativando...",
@@ -534,7 +534,7 @@
       },
       "cancelDialog": {
         "title": "Cancelar Convite",
-        "description": "Tem certeza que deseja cancelar o convite para <strong>{identifier}</strong>? Esta ação não pode ser desfeita.",
+        "description": "Tem a certeza de que deseja cancelar o convite para <strong>{identifier}</strong>? Esta ação não pode ser desfeita.",
         "confirm": "Confirmar",
         "canceling": "Cancelando..."
       },
@@ -612,11 +612,11 @@
         "processing": "A processar...",
         "save": "Guardar Alterações",
         "toasts": {
-          "updated": "Usuario Atualizado",
-          "updatedDescription": "O Usuario foi atualizado com sucesso!"
+          "updated": "Utilizador atualizado",
+          "updatedDescription": "O utilizador foi atualizado com sucesso!"
         }
       },
-      "loading": "Carregando utilizador…",
+      "loading": "A carregar utilizador…",
       "notFound": "Nenhum utilizador encontrado.",
       "imageUpload": {
         "previewAlt": "Pré-visualização da imagem de perfil",
@@ -639,8 +639,8 @@
       "statusDialog": {
         "activateTitle": "Ativar Utilizador",
         "deactivateTitle": "Desativar Utilizador",
-        "activateDescription": "Tem certeza que deseja ativar o utilizador <strong>{name}</strong>?",
-        "deactivateDescription": "Tem certeza que deseja desativar o utilizador <strong>{name}</strong>?",
+        "activateDescription": "Tem a certeza de que deseja ativar o utilizador <strong>{name}</strong>?",
+        "deactivateDescription": "Tem a certeza de que deseja desativar o utilizador <strong>{name}</strong>?",
         "confirmActivate": "Confirmar Ativar",
         "confirmDeactivate": "Confirmar Desativar",
         "activating": "A ativar...",
@@ -716,7 +716,7 @@
       "pickDepartment": "Escolha um departamento para ver os perfis que pode atribuir."
     },
     "roleList": {
-      "loading": "Carregando perfis...",
+      "loading": "A carregar perfis...",
       "title": "Perfis Atribuídos",
       "add": "Adicionar",
       "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
@@ -742,7 +742,7 @@
       }
     },
     "rolesList": {
-      "loading": "Carregando...",
+      "loading": "A carregar...",
       "loadError": "Erro ao carregar perfis",
       "empty": "Sem perfis atribuídos",
       "emptyDescription": "Este utilizador ainda não tem perfis atribuídos."
@@ -1360,7 +1360,7 @@
       },
       "remove": {
         "title": "Remover Recurso",
-        "description": "Tem certeza que deseja remover o recurso <strong>{name}</strong> deste departamento? Esta ação não pode ser desfeita.",
+        "description": "Tem a certeza de que deseja remover o recurso <strong>{name}</strong> deste departamento? Esta ação não pode ser desfeita.",
         "cancel": "Cancelar",
         "confirm": "Remover",
         "loading": "A remover…"
@@ -1408,7 +1408,7 @@
       "nameRequired": "Nome é obrigatório (min 3 caracteres)",
       "nameMax": "Nome deve ter no máximo 50 caracteres",
       "namePattern": "Nome deve conter apenas letras, números, hífens e underscores",
-      "codeRequired": "Código é obrigatório , minimo 2 caracteres",
+      "codeRequired": "Código é obrigatório, mínimo 2 caracteres",
       "departmentRequired": "Código de departamento é obrigatório (min 1 carateres)"
     },
     "list": {
@@ -1418,7 +1418,7 @@
       "searchLabel": "Pesquisar perfil",
       "searchPlaceholder": "Pesquisar perfil…",
       "statusFilter": "Estado",
-      "loadError": "Ocorreu um erro ao carregar roles.",
+      "loadError": "Ocorreu um erro ao carregar perfis.",
       "loading": "A carregar perfis…",
       "emptyTitle": "Nenhum perfil criado",
       "emptyDescription": "Ainda não existem perfis criados.",
@@ -1466,14 +1466,14 @@
     },
     "delete": {
       "title": "Confirmação",
-      "description": "Esta ação é irreversível. O menu e todos os seus dados serão eliminados permanentemente. Para confirmar, escreva <code>{name}</code> abaixo:",
+      "description": "Esta ação é irreversível. O perfil e todos os seus dados serão eliminados permanentemente. Para confirmar, escreva <code>{name}</code> abaixo:",
       "label": "Nome Perfil",
       "placeholder": "Digite ''{name}'' para confirmação",
       "cancel": "Cancelar",
       "confirm": "Eliminar",
       "pending": "Aguarde…",
       "toast": {
-        "successTitle": "Role Eliminado",
+        "successTitle": "Perfil eliminado",
         "successDescription": "Role ''{name}'' foi eliminado com sucesso.",
         "errorTitle": "Erro ao eliminar."
       }
@@ -2041,7 +2041,7 @@
       "addAria": "Adicionar {name} ao departamento",
       "summary": "<b>{added}</b> de <b>{total}</b> aplicações adicionadas",
       "removeTitle": "Remover Aplicação",
-      "removeDescription": "Tem certeza que deseja remover a aplicação <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
+      "removeDescription": "Tem a certeza de que deseja remover a aplicação <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
       "toast": {
         "addedTitle": "Aplicação adicionada",
         "addedDescription": "A aplicação foi adicionada com sucesso.",
@@ -2070,7 +2070,7 @@
       "addAria": "Adicionar {name} ao departamento",
       "summary": "<b>{added}</b> de <b>{total}</b> menus adicionados",
       "removeTitle": "Remover Menu",
-      "removeDescription": "Tem certeza que deseja remover o menu <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
+      "removeDescription": "Tem a certeza de que deseja remover o menu <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
       "toast": {
         "addedTitle": "Menu adicionado",
         "addedDescription": "O menu foi adicionado com sucesso.",
