@@ -149,13 +149,13 @@
       "otherFormats": "Choisir un fichier",
       "maxSize": "(max. {size} Mo)",
       "previewAlt": "Aperçu de l'image",
-      "remove": "Supprimer le fichier",
+      "remove": "Retirer le fichier",
       "tooLarge": "Le fichier dépasse la limite de {size} Mo."
     },
     "unsavedChanges": {
       "region": "Modifications non enregistrées",
       "message": "Vous avez des modifications non enregistrées.",
-      "discard": "Annuler les modifications",
+      "discard": "Abandonner",
       "save": "Enregistrer les modifications",
       "saving": "Enregistrement…"
     },
@@ -229,7 +229,7 @@
       },
       "forbidden": {
         "title": "Accès refusé",
-        "description": "Vous n’avez pas l’autorisation de consulter cette ressource."
+        "description": "Vous n’avez pas la permission de consulter cette ressource."
       },
       "notFound": {
         "title": "Page introuvable",
@@ -252,7 +252,7 @@
   "users": {
     "error": {
       "listTitle": "Impossible de charger les utilisateurs.",
-      "listMessage": "Réessayez. Si le problème persiste, contactez le support.",
+      "listMessage": "Réessayez. Si le problème persiste, contactez l’assistance.",
       "detailTitle": "Impossible de charger cet utilisateur.",
       "backToList": "Retour à la liste des utilisateurs"
     },
@@ -264,18 +264,18 @@
         "userInfo": "Informations de l’utilisateur",
         "emailLabel": "E-mail",
         "emailPlaceholder": "Ex. : jean@email.com",
-        "assignRoles": "Attribuer des profils",
-        "assignRolesHint": "Sélectionnez un département et des profils pour l’utilisateur (facultatif).",
+        "assignRoles": "Attribuer des rôles",
+        "assignRolesHint": "Sélectionnez un département et des rôles pour l’utilisateur (facultatif).",
         "departmentLabel": "Département",
         "departmentPlaceholder": "Sélectionner un département",
         "departmentEmpty": "Département introuvable.",
         "search": "Rechercher...",
         "none": "Aucun",
-        "rolesLabel": "Profils",
-        "rolesEmpty": "Aucun profil trouvé.",
+        "rolesLabel": "Rôles",
+        "rolesEmpty": "Aucun rôle trouvé.",
         "selectDepartmentFirst": "Sélectionnez un département",
-        "selectRoles": "Sélectionner des profils",
-        "rolesSelected": "{count, plural, one {# profil sélectionné} other {# profils sélectionnés}}",
+        "selectRoles": "Sélectionner des rôles",
+        "rolesSelected": "{count, plural, one {# rôle sélectionné} other {# rôles sélectionnés}}",
         "removeRole": "Retirer {name}",
         "submit": "Envoyer l’invitation",
         "submitting": "Envoi...",
@@ -284,8 +284,8 @@
           "inviteFailedWithReason": "Échec de l’invitation : {reason}",
           "inviteSent": "Invitation envoyée avec succès !"
         },
-        "rolesNoneInDepartment": "Ce département n’a encore aucun profil.",
-        "rolesPickDepartment": "Choisissez d’abord un département pour voir les profils disponibles."
+        "rolesNoneInDepartment": "Ce département n’a encore aucun rôle.",
+        "rolesPickDepartment": "Choisissez d’abord un département pour voir les rôles disponibles."
       },
       "accept": {
         "errors": {
@@ -379,7 +379,7 @@
           "description": "Vérifiez les détails avant de confirmer.",
           "email": "E-mail",
           "department": "Département",
-          "roles": "Profils",
+          "roles": "Rôles",
           "accept": "Accepter l’invitation",
           "processing": "Traitement…",
           "reject": "Refuser",
@@ -400,7 +400,7 @@
       "loading": "Chargement...",
       "loadError": "Erreur lors du chargement des données",
       "tabs": {
-        "roles": "Profils",
+        "roles": "Rôles",
         "departments": "Départements",
         "applications": "Applications",
         "signature": "Signature",
@@ -442,7 +442,7 @@
       "label": "Nom d’utilisateur",
       "confirm": "Désactiver",
       "title": "Désactiver l’utilisateur",
-      "description": "L’utilisateur ne pourra plus se connecter à la plateforme. Les attributions de profils sont conservées et le compte pourra être réactivé ultérieurement."
+      "description": "L’utilisateur ne pourra plus se connecter à la plateforme. Les attributions de rôles sont conservées et le compte pourra être réactivé ultérieurement."
     },
     "editForm": {
       "fullName": "Nom complet",
@@ -622,13 +622,13 @@
         "previewAlt": "Aperçu du profil",
         "empty": "Aucune image",
         "upload": "Téléverser une image",
-        "remove": "Supprimer"
+        "remove": "Retirer"
       },
       "signatureUpload": {
         "previewAlt": "Aperçu de la signature",
         "empty": "Aucune signature",
         "upload": "Téléverser une signature",
-        "remove": "Supprimer"
+        "remove": "Retirer"
       },
       "statusButton": {
         "activate": "Activer",
@@ -649,7 +649,7 @@
       "tabs": {
         "departments": "Départements",
         "applications": "Applications",
-        "roles": "Profils",
+        "roles": "Rôles",
         "signature": "Signature"
       }
     },
@@ -658,7 +658,7 @@
       "addField": "+ Ajouter un champ",
       "keyPlaceholder": "clé",
       "valuePlaceholder": "valeur",
-      "remove": "supprimer",
+      "remove": "retirer",
       "save": "Enregistrer",
       "toasts": {
         "updated": "Métadonnées mises à jour",
@@ -677,7 +677,7 @@
     },
     "unknownError": "Une erreur inconnue s’est produite.",
     "roleDialog": {
-      "title": "Ajouter ou retirer des profils",
+      "title": "Ajouter ou retirer des rôles",
       "selectAll": "Tout sélectionner",
       "selectRow": "Sélectionner la ligne",
       "columns": {
@@ -697,9 +697,9 @@
         "notFound": "Aucun département trouvé."
       },
       "expiresAt": "Expiration (facultatif)",
-      "selectDepartmentHint": "Sélectionnez un département pour afficher les profils.",
-      "loadingRoles": "Chargement des profils...",
-      "loadRolesError": "Une erreur s’est produite lors du chargement des profils de l’utilisateur.",
+      "selectDepartmentHint": "Sélectionnez un département pour afficher les rôles.",
+      "loadingRoles": "Chargement des rôles...",
+      "loadRolesError": "Une erreur s’est produite lors du chargement des rôles de l’utilisateur.",
       "selectedCount": "{count} sélectionné(s)",
       "clear": "Effacer",
       "save": "Enregistrer",
@@ -708,44 +708,44 @@
         "selectDepartmentFirst": "Sélectionnez d’abord un département.",
         "noChanges": "Aucune modification",
         "noChangesDescription": "Rien à ajouter ni à retirer.",
-        "updated": "Profils mis à jour",
+        "updated": "Rôles mis à jour",
         "updatedDescription": "+{added} ajouté(s), -{removed} retiré(s).",
-        "updateFailed": "Échec de la mise à jour des profils"
+        "updateFailed": "Échec de la mise à jour des rôles"
       },
-      "departmentScope": "Seuls les profils du département {department} sont affichés. Les profils des autres départements ne sont pas modifiés ici.",
-      "pickDepartment": "Choisissez un département pour voir les profils que vous pouvez attribuer."
+      "departmentScope": "Seuls les rôles du département {department} sont affichés. Les rôles des autres départements ne sont pas modifiés ici.",
+      "pickDepartment": "Choisissez un département pour voir les rôles que vous pouvez attribuer."
     },
     "roleList": {
-      "loading": "Chargement des profils...",
-      "title": "Profils attribués",
+      "loading": "Chargement des rôles...",
+      "title": "Rôles attribués",
       "add": "Ajouter",
       "permissionCount": "{count, plural, one {# permission} other {# permissions}}",
       "parent": "Sous-rôle de <mono>{code}</mono>",
       "morePermissions": "+{count} de plus",
       "revoke": "Révoquer",
-      "empty": "Aucun profil attribué",
-      "emptyDescription": "Cet utilisateur n’a aucun profil.",
-      "assign": "Associer des profils",
+      "empty": "Aucun rôle attribué",
+      "emptyDescription": "Cet utilisateur n’a aucun rôle.",
+      "assign": "Associer des rôles",
       "toasts": {
-        "removed": "Profil retiré avec succès.",
-        "removeFailed": "Impossible de retirer le profil.",
-        "revoked": "Profil révoqué.",
+        "removed": "Rôle retiré avec succès.",
+        "removeFailed": "Impossible de retirer le rôle.",
+        "revoked": "Rôle révoqué.",
         "revokedDescription": "« {role} » a été retiré de {user} dans le département {department}.",
         "undo": "Annuler",
-        "restored": "Profil rétabli.",
-        "restoreFailed": "Impossible de rétablir le profil."
+        "restored": "Rôle rétabli.",
+        "restoreFailed": "Impossible de rétablir le rôle."
       },
       "revokeDialog": {
-        "title": "Révoquer le profil",
-        "description": "Révoquer « {role} » de {user} dans le département {department} ? L’utilisateur perd les accès accordés par ce profil.",
+        "title": "Révoquer le rôle",
+        "description": "Révoquer « {role} » de {user} dans le département {department} ? L’utilisateur perd les accès accordés par ce rôle.",
         "revoking": "Révocation..."
       }
     },
     "rolesList": {
       "loading": "Chargement...",
-      "loadError": "Erreur lors du chargement des profils",
-      "empty": "Aucun profil attribué",
-      "emptyDescription": "Aucun profil n’a encore été attribué à cet utilisateur."
+      "loadError": "Erreur lors du chargement des rôles",
+      "empty": "Aucun rôle attribué",
+      "emptyDescription": "Aucun rôle n’a encore été attribué à cet utilisateur."
     }
   },
   "header": {
@@ -770,7 +770,7 @@
       },
       "welcome": "Bienvenue",
       "department": "Département",
-      "activeRole": "Profil actif"
+      "activeRole": "Rôle actif"
     },
     "recent": {
       "title": "Consultées récemment",
@@ -809,7 +809,7 @@
       "errorTitle": "Impossible de charger les applications.",
       "errorMessage": "La liste est temporairement indisponible. Votre accès n’a pas été modifié.",
       "emptyTitle": "Aucune application ne vous est encore attribuée",
-      "emptyDescription": "L’accès est accordé par profil et département. Contactez l’administrateur si vous vous attendiez à voir quelque chose ici.",
+      "emptyDescription": "L’accès est accordé par rôle et département. Contactez l’administrateur si vous vous attendiez à voir quelque chose ici.",
       "noFavoritesTitle": "Pas encore de favoris",
       "noFavoritesDescription": "Cliquez sur l’étoile ★ d’une application pour l’ajouter ici",
       "noFavoriteMatch": "Aucun favori ne correspond à « {query} ».",
@@ -851,11 +851,11 @@
       },
       "users": {
         "title": "Gestion des utilisateurs",
-        "description": "Invitez des utilisateurs et gérez leurs comptes, profils et permissions."
+        "description": "Invitez des utilisateurs et gérez leurs comptes, rôles et permissions."
       },
       "departments": {
         "title": "Gestion des départements",
-        "description": "Organisez la structure des départements ainsi que les profils, permissions et menus associés."
+        "description": "Organisez la structure des départements ainsi que les rôles, permissions et menus associés."
       },
       "oauthClients": {
         "title": "Gestion des clients OAuth",
@@ -885,7 +885,7 @@
       "loadErrorTitle": "Impossible de charger les applications.",
       "loadErrorMessage": "Veuillez réessayer. Si le problème persiste, contactez l’assistance.",
       "emptyTitle": "Il n’y a pas encore d’applications",
-      "emptyDescription": "Les applications sont ce que les utilisateurs ouvrent depuis la page d’accueil. Créez la première pour pouvoir l’associer à des départements et des profils."
+      "emptyDescription": "Les applications sont ce que les utilisateurs ouvrent depuis la page d’accueil. Créez la première pour pouvoir l’associer à des départements et des rôles."
     },
     "toolbar": {
       "searchLabel": "Rechercher des applications",
@@ -1059,7 +1059,7 @@
       "selectIconPlaceholder": "Sélectionner une icône...",
       "searchIcon": "Rechercher une icône...",
       "noIconFound": "Aucune icône trouvée.",
-      "status": "État",
+      "status": "Statut",
       "pageType": "Type de page",
       "internalPage": "Page interne",
       "externalPage": "Page externe",
@@ -1286,12 +1286,12 @@
     "saved": "Personnalisation enregistrée.",
     "logoAlt": "Logo de l'organisation",
     "forbidden": {
-      "description": "Vous avez besoin de l'autorisation de personnalisation de la plateforme. Les autorisations viennent de votre rôle actif."
+      "description": "Vous avez besoin de la permission de personnalisation de la plateforme. Les permissions viennent de votre rôle actif."
     },
     "errors": {
       "load": "Impossible de charger la personnalisation.",
       "saveTitle": "Impossible d'enregistrer.",
-      "forbidden": "Vous n'avez pas l'autorisation de personnaliser la plateforme.",
+      "forbidden": "Vous n'avez pas la permission de personnaliser la plateforme.",
       "upload": "Impossible de téléverser l'image : {slot}.",
       "invalidColor": "Utilisez une couleur concrète : hex, rgb, hsl, oklch, oklab, lab, lch ou un nom de couleur.",
       "logoHost": "Seules les images téléversées ici sont acceptées.",
@@ -1299,7 +1299,7 @@
       "image": "Utilisez une image (SVG, PNG, JPG, WEBP ou GIF).",
       "darkWithoutLight": "Ajoutez la version claire avant la sombre.",
       "invalid": "La personnalisation contient des valeurs invalides. Vérifiez les champs et réessayez.",
-      "generic": "Réessayez. Si le problème persiste, contactez le support."
+      "generic": "Réessayez. Si le problème persiste, contactez l’assistance."
     }
   },
   "permissions": {
@@ -1315,7 +1315,7 @@
       "columnPermission": "Permission",
       "columnDescription": "Description",
       "columnActive": "Actif",
-      "noDescription": "N/A",
+      "noDescription": "N/D",
       "removeLabel": "Retirer la permission {name}",
       "addLabel": "Ajouter la permission {name}"
     },
@@ -1329,7 +1329,7 @@
     },
     "revoke": {
       "title": "Retirer la permission",
-      "description": "Retirer « {name} » du département {department} ? Tous les profils de ce département perdent l’accès accordé par cette permission.",
+      "description": "Retirer « {name} » du département {department} ? Tous les rôles de ce département perdent l’accès accordé par cette permission.",
       "cancel": "Annuler",
       "confirm": "Retirer",
       "loading": "Retrait en cours..."
@@ -1373,18 +1373,18 @@
       "title": "Profil"
     },
     "roleList": {
-      "loading": "Chargement des profils…",
-      "title": "Profils attribués",
+      "loading": "Chargement des rôles…",
+      "title": "Rôles attribués",
       "permissionCount": "{count, plural, one {# permission} other {# permissions}}",
       "parent": "Sous-rôle de <mono>{code}</mono>",
       "morePermissions": "+{count} de plus",
       "activate": "Activer",
       "activating": "Activation…",
-      "empty": "Aucun profil attribué",
-      "emptyDescription": "Aucun profil ne vous est encore attribué.",
+      "empty": "Aucun rôle attribué",
+      "emptyDescription": "Aucun rôle ne vous est encore attribué.",
       "toasts": {
-        "activated": "Profil activé avec succès.",
-        "activateFailed": "Échec de l'activation du profil.",
+        "activated": "Rôle activé avec succès.",
+        "activateFailed": "Échec de l'activation du rôle.",
         "unknownError": "Erreur inconnue."
       }
     }
@@ -1413,79 +1413,79 @@
       "departmentRequired": "Le code du département est obligatoire (min. 1 caractère)"
     },
     "list": {
-      "title": "Profils",
-      "subtitle": "Gérer et réorganiser les profils.",
-      "newRole": "Nouveau profil",
-      "searchLabel": "Rechercher un profil",
-      "searchPlaceholder": "Rechercher un profil…",
+      "title": "Rôles",
+      "subtitle": "Gérer et réorganiser les rôles.",
+      "newRole": "Nouveau rôle",
+      "searchLabel": "Rechercher un rôle",
+      "searchPlaceholder": "Rechercher un rôle…",
       "statusFilter": "Statut",
-      "loadError": "Une erreur s'est produite lors du chargement des profils.",
-      "loading": "Chargement des profils…",
-      "emptyTitle": "Aucun profil créé",
-      "emptyDescription": "Il n'existe pas encore de profils.",
+      "loadError": "Une erreur s'est produite lors du chargement des rôles.",
+      "loading": "Chargement des rôles…",
+      "emptyTitle": "Aucun rôle créé",
+      "emptyDescription": "Il n'existe pas encore de rôles.",
       "adjustSearch": "Essayez d'ajuster votre recherche.",
-      "columnRole": "Profil",
+      "columnRole": "Rôle",
       "columnDescription": "Description",
       "columnStatus": "Statut",
-      "noDescription": "N/A"
+      "noDescription": "N/D"
     },
     "row": {
-      "collapse": "Réduire le profil",
-      "expand": "Développer le profil",
+      "collapse": "Réduire le rôle",
+      "expand": "Développer le rôle",
       "openMenu": "Ouvrir le menu",
       "actions": "Actions",
       "edit": "Modifier",
-      "createSubRole": "Créer un sous-profil",
+      "createSubRole": "Créer un sous-rôle",
       "permissions": "Permissions",
       "delete": "Supprimer"
     },
     "form": {
-      "titleEdit": "Modifier le profil",
-      "titleCreate": "Créer un nouveau profil",
-      "subRoleOf": "Ce sera un sous-profil de : <strong>{parent}</strong>",
+      "titleEdit": "Modifier le rôle",
+      "titleCreate": "Créer un nouveau rôle",
+      "subRoleOf": "Ce sera un sous-rôle de : <strong>{parent}</strong>",
       "name": "Nom",
-      "namePlaceholder": "Nom du profil",
+      "namePlaceholder": "Nom du rôle",
       "code": "Code",
-      "codePlaceholder": "Ex : PROFIL_ADMIN",
+      "codePlaceholder": "Ex : ROLE_ADMIN",
       "description": "Description",
-      "descriptionPlaceholder": "Brève description des responsabilités de ce profil",
+      "descriptionPlaceholder": "Brève description des responsabilités de ce rôle",
       "status": "Statut",
       "statusPlaceholder": "Sélectionnez le statut",
       "cancel": "Annuler",
       "saving": "Enregistrement…",
       "creating": "Création…",
       "save": "Enregistrer les modifications",
-      "create": "Créer le profil",
+      "create": "Créer le rôle",
       "toast": {
         "updatedTitle": "Rôle mis à jour",
-        "updatedDescription": "Le profil a été mis à jour avec succès.",
+        "updatedDescription": "Le rôle a été mis à jour avec succès.",
         "createdTitle": "Rôle créé",
-        "createdDescription": "Le profil a été ajouté avec succès.",
+        "createdDescription": "Le rôle a été ajouté avec succès.",
         "errorTitle": "Impossible d’enregistrer le rôle",
         "errorDescription": "Veuillez réessayer. {error}"
       }
     },
     "delete": {
       "title": "Confirmation",
-      "description": "Cette action est irréversible. Le profil et toutes ses données seront supprimés définitivement. Pour confirmer, saisissez <code>{name}</code> ci-dessous :",
+      "description": "Cette action est irréversible. Le rôle et toutes ses données seront supprimés définitivement. Pour confirmer, saisissez <code>{name}</code> ci-dessous :",
       "label": "Nom du rôle",
       "placeholder": "Saisissez « {name} » pour confirmer",
       "cancel": "Annuler",
       "confirm": "Supprimer",
       "pending": "Veuillez patienter…",
       "toast": {
-        "successTitle": "Profil supprimé",
-        "successDescription": "Le profil « {name} » a été supprimé avec succès.",
+        "successTitle": "Rôle supprimé",
+        "successDescription": "Le rôle « {name} » a été supprimé avec succès.",
         "errorTitle": "Échec de la suppression."
       }
     },
     "permissions": {
-      "title": "Ajouter ou retirer des permissions du profil",
+      "title": "Ajouter ou retirer des permissions du rôle",
       "selectAll": "Sélectionner toutes les permissions",
       "selectOne": "Sélectionner la permission {name}",
       "columnName": "Nom",
       "columnDescription": "Description",
-      "noDescription": "N/A",
+      "noDescription": "N/D",
       "filterPlaceholder": "Filtrer par nom…",
       "filterLabel": "Filtrer par nom",
       "clearFilter": "Effacer le filtre",
@@ -1500,7 +1500,7 @@
         "updatedDescription": "+{added} ajoutée(s), -{removed} retirée(s).",
         "errorTitle": "Échec de la mise à jour des permissions",
         "unknownError": "Une erreur inconnue s'est produite.",
-        "loadErrorTitle": "Le profil a des permissions associées, mais elles n'ont pas pu être chargées."
+        "loadErrorTitle": "Le rôle a des permissions associées, mais elles n'ont pas pu être chargées."
       }
     }
   },
@@ -1514,7 +1514,7 @@
     },
     "error": {
       "listTitle": "Impossible de charger les clients OAuth.",
-      "listMessage": "Réessayez. Si le problème persiste, contactez le support.",
+      "listMessage": "Réessayez. Si le problème persiste, contactez l’assistance.",
       "detailTitle": "Impossible de charger le client OAuth."
     },
     "loading": {
@@ -1673,7 +1673,7 @@
     "detail": {
       "back": "Clients OAuth",
       "clientId": "Client ID",
-      "duplicateAccounts": "Ce client a plus d'un compte de service associé. Cela ne devrait pas arriver — contactez le support.",
+      "duplicateAccounts": "Ce client a plus d'un compte de service associé. Cela ne devrait pas arriver — contactez l’assistance.",
       "saveErrorTitle": "Impossible d'enregistrer",
       "savedTitle": "Modifications enregistrées",
       "recordTitle": "Enregistrement",
@@ -1688,7 +1688,7 @@
     },
     "serviceAccount": {
       "title": "Compte de service",
-      "description": "L'identité machine qui s'authentifie avec ce client, avec ses profils et ses permissions.",
+      "description": "L'identité machine qui s'authentifie avec ce client, avec ses rôles et ses permissions.",
       "saveFirst": "Enregistrez les modifications pour pouvoir créer un compte de service pour ce client.",
       "none": "Ce client n'a pas encore de compte de service.",
       "create": "Créer un compte de service pour ce client"
@@ -1748,23 +1748,23 @@
       },
       "settings": {
         "title": "Configuration",
-        "description": "Modifications des applications, utilisateurs, profils, permissions et menus."
+        "description": "Modifications des applications, utilisateurs, rôles, permissions et menus."
       }
     },
     "error": {
       "page": "Impossible de charger l'audit.",
       "access": "Impossible de charger le rapport d'accès.",
       "settings": "Impossible de charger le rapport de configuration.",
-      "message": "Réessayez. Si le problème persiste, contactez le support."
+      "message": "Réessayez. Si le problème persiste, contactez l’assistance."
     },
     "forbidden": {
-      "description": "Les permissions proviennent uniquement de votre profil actif. Si la permission d'audit vous a été attribuée dans un autre profil, activez-le dans votre profil et reconnectez-vous.",
+      "description": "Les permissions proviennent uniquement de votre rôle actif. Si la permission d'audit vous a été attribuée dans un autre rôle, activez-le dans votre profil et reconnectez-vous.",
       "homeLabel": "Aller à mon profil"
     },
     "fields": {
       "timestamp": "Date et heure",
       "username": "Utilisateur",
-      "heldRoles": "Profils détenus",
+      "heldRoles": "Rôles détenus",
       "module": "Module",
       "action": "Action",
       "ip": "IP",
@@ -1792,7 +1792,7 @@
       "application": "Application",
       "user": "Utilisateur",
       "department": "Département",
-      "role": "Profil",
+      "role": "Rôle",
       "permission": "Permission",
       "menu": "Menu"
     },
@@ -1815,7 +1815,7 @@
       "noResults": "Aucun résultat",
       "search": "Rechercher…",
       "exactMatch": "Correspondance exacte",
-      "rolePlaceholder": "Code du profil",
+      "rolePlaceholder": "Code du rôle",
       "roleHint": "Contient le code indiqué",
       "entityPlaceholder": "Nom exact",
       "clear": "Effacer les filtres"
@@ -1881,15 +1881,15 @@
   "departments": {
     "meta": {
       "title": "Départements",
-      "description": "Gérer les départements, profils, permissions et menus."
+      "description": "Gérer les départements, rôles, permissions et menus."
     },
     "page": {
       "title": "Gestion des départements",
-      "description": "Organisez les départements ainsi que les profils, permissions et menus associés."
+      "description": "Organisez les départements ainsi que les rôles, permissions et menus associés."
     },
     "error": {
       "title": "Impossible de charger les départements",
-      "message": "Une erreur s'est produite lors de la récupération de la liste. Réessayez ; si le problème persiste, contactez le support.",
+      "message": "Une erreur s'est produite lors de la récupération de la liste. Réessayez ; si le problème persiste, contactez l’assistance.",
       "retry": "Réessayer",
       "ref": "Réf. : {digest}"
     },
@@ -1931,7 +1931,7 @@
     "empty": {
       "sidebarEmpty": {
         "title": "Aucun département",
-        "body": "Utilisez le bouton « Nouveau département » pour créer le premier département et organiser les profils et permissions."
+        "body": "Utilisez le bouton « Nouveau département » pour créer le premier département et organiser les rôles et permissions."
       },
       "sidebarNoResults": {
         "title": "Aucun département trouvé",
@@ -1939,7 +1939,7 @@
       },
       "main": {
         "title": "Commencez par un département",
-        "body": "Les départements organisent les profils, permissions et menus. Créez le premier pour configurer le système."
+        "body": "Les départements organisent les rôles, permissions et menus. Créez le premier pour configurer le système."
       }
     },
     "detail": {
@@ -1979,7 +1979,7 @@
     },
     "delete": {
       "title": "Supprimer le département",
-      "description": "Cette action est irréversible. Le département est supprimé, ainsi que les profils, permissions et menus qui lui sont associés.",
+      "description": "Cette action est irréversible. Le département est supprimé, ainsi que les rôles, permissions et menus qui lui sont associés.",
       "label": "Nom du département",
       "toast": {
         "successTitle": "Département supprimé",
@@ -1995,7 +1995,7 @@
     },
     "menus": {
       "title": "Menus",
-      "subtitle": "Gérez les applications, menus et profils du département.",
+      "subtitle": "Gérez les applications, menus et rôles du département.",
       "manage": "Gérer les menus",
       "allApps": "Toutes les applications",
       "searchLabel": "Rechercher un menu",
@@ -2011,13 +2011,13 @@
       "collapse": "Réduire le menu",
       "expand": "Développer le menu",
       "assign": "{role} — {menu}",
-      "summary": "{menus, plural, one {# menu} other {# menus}} • {roles, plural, one {# profil} other {# profils}}",
+      "summary": "{menus, plural, one {# menu} other {# menus}} • {roles, plural, one {# rôle} other {# rôles}}",
       "savePermissions": "Enregistrer les permissions",
       "toast": {
         "noChangesTitle": "Aucune modification",
         "noChangesDescription": "Aucun changement n'a été détecté.",
         "savedTitle": "Permissions enregistrées",
-        "savedDescription": "Les profils ont été attribués aux menus avec succès.",
+        "savedDescription": "Les rôles ont été attribués aux menus avec succès.",
         "errorTitle": "Erreur lors de l'enregistrement"
       },
       "unsaved": {
@@ -2097,7 +2097,7 @@
     },
     "error": {
       "listTitle": "Impossible de charger les comptes de service.",
-      "listMessage": "Réessayez. Si le problème persiste, contactez le support.",
+      "listMessage": "Réessayez. Si le problème persiste, contactez l’assistance.",
       "detailTitle": "Impossible de charger le compte de service."
     },
     "shared": {
@@ -2111,11 +2111,11 @@
       "activate": "Activer",
       "deactivate": "Désactiver",
       "delete": "Supprimer",
-      "roles": "Profils",
+      "roles": "Rôles",
       "directPermissions": "Permissions directes",
       "addPermission": "Ajouter une permission",
       "directBadge": "directe",
-      "directNote": "Les permissions directes ne sont pas révoquées lorsqu'un profil est retiré. Privilégiez les profils.",
+      "directNote": "Les permissions directes ne sont pas révoquées lorsqu'un rôle est retiré. Privilégiez les rôles.",
       "application": "Application",
       "inheritedApplication": "Héritée du client OAuth.",
       "identity": "Identité",
@@ -2127,7 +2127,7 @@
       "copyClientId": "Copier le client ID",
       "noApplication": "Aucune application"
     },
-    "accessSummary": "{roles, plural, one {# profil} other {# profils}} · {direct, plural, one {# directe} other {# directes}}",
+    "accessSummary": "{roles, plural, one {# rôle} other {# rôles}} · {direct, plural, one {# directe} other {# directes}}",
     "permissionCount": "{count, plural, one {# permission} other {# permissions}}",
     "validation": {
       "nameRequired": "Indiquez le nom.",
@@ -2136,7 +2136,7 @@
     },
     "list": {
       "emptyTitle": "Il n'y a pas encore de compte de service",
-      "emptyDescription": "Un compte de service encapsule un client OAuth client_credentials et lui donne des profils et des permissions, afin qu'un système accède aux API sans utilisateur.",
+      "emptyDescription": "Un compte de service encapsule un client OAuth client_credentials et lui donne des rôles et des permissions, afin qu'un système accède aux API sans utilisateur.",
       "emptyAction": "Créer le premier compte de service",
       "noMatches": "Aucun compte ne correspond aux filtres."
     },
@@ -2160,7 +2160,7 @@
       "actions": "Actions",
       "rowActions": "Actions pour {name}",
       "viewDetails": "Voir les détails",
-      "rolesPopover": "Profils"
+      "rolesPopover": "Rôles"
     },
     "detail": {
       "back": "Comptes de service",
@@ -2176,7 +2176,7 @@
     "clientCard": {
       "open": "Ouvrir",
       "errorTitle": "Impossible de charger le client OAuth.",
-      "errorMessage": "Réessayez. Si le problème persiste, contactez le support.",
+      "errorMessage": "Réessayez. Si le problème persiste, contactez l’assistance.",
       "name": "Nom",
       "grantType": "Grant type",
       "grantFixed": "Fixe tant que ce compte existe."
@@ -2190,29 +2190,29 @@
     },
     "effective": {
       "title": "Permissions effectives",
-      "description": "Ce que le compte peut faire : les permissions de ses profils ajoutées aux permissions directes.",
+      "description": "Ce que le compte peut faire : les permissions de ses rôles ajoutées aux permissions directes.",
       "hideList": "Masquer la liste",
       "showList": "Voir la liste complète",
       "fromRoles": "Via les rôles",
       "direct": "Directes",
       "total": "Total (sans doublons)",
-      "loadError": "Impossible de charger les permissions des profils, les totaux sont donc incomplets.",
+      "loadError": "Impossible de charger les permissions des rôles, les totaux sont donc incomplets.",
       "retry": "Réessayer",
       "via": "via {roles}"
     },
     "rolesSection": {
-      "assign": "Attribuer un profil",
-      "loadErrorTitle": "Impossible de charger les profils.",
+      "assign": "Attribuer un rôle",
+      "loadErrorTitle": "Impossible de charger les rôles.",
       "loadErrorMessage": "Réessayez.",
-      "loading": "Chargement des profils…",
-      "empty": "Ce compte n'a pas encore de profil.",
-      "removeLabel": "Retirer le profil {code}",
-      "saveError": "Impossible d'enregistrer les profils",
-      "removed": "Profil retiré",
-      "updated": "Profils mis à jour"
+      "loading": "Chargement des rôles…",
+      "empty": "Ce compte n'a pas encore de rôle.",
+      "removeLabel": "Retirer le rôle {code}",
+      "saveError": "Impossible d'enregistrer les rôles",
+      "removed": "Rôle retiré",
+      "updated": "Rôles mis à jour"
     },
     "permissionsSection": {
-      "note": "Les permissions directes ne sont pas révoquées lorsqu'un profil est retiré. Privilégiez les profils.",
+      "note": "Les permissions directes ne sont pas révoquées lorsqu'un rôle est retiré. Privilégiez les rôles.",
       "empty": "Aucune permission directe.",
       "removeLabel": "Retirer la permission {name}",
       "unpaired": "Retrait impossible : le serveur n'a pas indiqué quelle permission correspond à chaque identifiant.",
@@ -2221,9 +2221,9 @@
       "updated": "Permissions mises à jour"
     },
     "rolePicker": {
-      "title": "Attribuer des profils",
-      "description": "Les profils des autres départements ne sont pas modifiés ici.",
-      "confirm": "Enregistrer les profils"
+      "title": "Attribuer des rôles",
+      "description": "Les rôles des autres départements ne sont pas modifiés ici.",
+      "confirm": "Enregistrer les rôles"
     },
     "permissionPicker": {
       "title": "Ajouter des permissions directes",
@@ -2263,7 +2263,7 @@
       "clientFailedTitle": "Le compte a été supprimé, pas le client",
       "clientFailedDescription": "Supprimez le client OAuth {clientId} dans la page Clients OAuth. {error}",
       "errorTitle": "Impossible de supprimer",
-      "description": "Le compte cesse d'exister, avec les profils et permissions qu'il avait. Il est impossible de le récupérer.",
+      "description": "Le compte cesse d'exister, avec les rôles et permissions qu'il avait. Il est impossible de le récupérer.",
       "label": "Nom du compte",
       "header": "Supprimer le compte de service",
       "buttonBoth": "Supprimer le compte et le client",
@@ -2273,7 +2273,7 @@
     },
     "wizard": {
       "stepsLabel": "Étapes",
-      "stepAccess": "Profils et permissions",
+      "stepAccess": "Rôles et permissions",
       "stepCurrent": ", étape actuelle",
       "stepDone": ", terminée",
       "noteInfo": "Rien n'est créé avant la confirmation à la dernière étape.",
@@ -2305,8 +2305,8 @@
     },
     "accessStep": {
       "description": "Ce que ce compte peut faire. Vous pourrez le modifier plus tard.",
-      "addRole": "Ajouter un profil",
-      "removeRole": "Retirer le profil {code}",
+      "addRole": "Ajouter un rôle",
+      "removeRole": "Retirer le rôle {code}",
       "removePermission": "Retirer la permission {name}",
       "submit": "Créer le compte"
     },
