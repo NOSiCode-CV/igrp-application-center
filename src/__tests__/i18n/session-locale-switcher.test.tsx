@@ -32,9 +32,14 @@ const changed = (persisted: boolean) => ({
   data: { locale: "en", persisted },
 });
 
+const ERROR_LABEL = "Não foi possível alterar o idioma. Tente novamente.";
+
 beforeEach(() => {
   vi.clearAllMocks();
-  update.mockResolvedValue(null);
+  // next-auth's update() resolves the new session, or null when it can't write it.
+  update.mockImplementation(async ({ locale }: { locale: string }) => ({
+    user: { locale },
+  }));
 });
 
 describe("SessionLocaleSwitcher", () => {
@@ -44,6 +49,24 @@ describe("SessionLocaleSwitcher", () => {
     await waitFor(() => expect(refresh).toHaveBeenCalled());
     expect(setLocale).toHaveBeenCalledWith("en");
     expect(update).toHaveBeenCalledWith({ locale: "en" });
+    expect(screen.getByRole("button", { name: "Idioma" })).toBeInTheDocument();
+  });
+
+  it.each([
+    ["resolves null", () => update.mockResolvedValue(null)],
+    [
+      "keeps another locale",
+      () => update.mockResolvedValue({ user: { locale: "pt" } }),
+    ],
+    ["rejects", () => update.mockRejectedValue(new Error("store down"))],
+  ])("shows the error state when the session update %s", async (_, arrange) => {
+    arrange();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    setLocale.mockResolvedValue(changed(true));
+    await chooseEnglish();
+    expect(
+      await screen.findByRole("button", { name: ERROR_LABEL }),
+    ).toBeInTheDocument();
   });
 
   it("refreshes only after the session update resolves", async () => {
