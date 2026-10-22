@@ -25,6 +25,7 @@ export function IntlWrapper({
   return (
     <IGRPIntlTestProvider
       locale={locale}
+      timeZone="Atlantic/Cape_Verde"
       messages={messages ? { [locale]: messages } : CATALOGS}
     >
       {children}

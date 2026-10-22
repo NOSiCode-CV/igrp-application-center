@@ -74,17 +74,6 @@ export function lowerCaseWithSpace(v: string | null | undefined) {
     : (v ?? null);
 }
 
-export function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("pt-PT", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
-
 export const getMenuIcon = (type: string) => {
   switch (type) {
     case "FOLDER":
@@ -280,20 +269,6 @@ export const DATE_TIME_WITH_SECONDS: Intl.DateTimeFormatOptions = {
   minute: "2-digit",
   second: "2-digit",
 };
-
-/**
- * Table-column date in pt-PT. `toLocaleDateString()` with no locale follows the
- * BROWSER's locale, so the same row read 22/09/2026 on one machine and 9/22/2026
- * on another — PRODUCT.md requires one language per surface, including dates
- * generated in code. A missing or unparseable value says so rather than
- * rendering the untranslated "N/A".
- */
-export function formatDateShort(value: unknown): string {
-  if (value === null || value === undefined || value === "") return "Sem data";
-  const date = new Date(String(value));
-  if (Number.isNaN(date.getTime())) return "Sem data";
-  return new Intl.DateTimeFormat("pt-PT", { dateStyle: "short" }).format(date);
-}
 
 interface ApiErrorLike {
   details?: unknown;
