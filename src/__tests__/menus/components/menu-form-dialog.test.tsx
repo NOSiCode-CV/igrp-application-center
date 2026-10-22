@@ -175,7 +175,7 @@ afterEach(cleanup);
 describe("MenuFormDialog", () => {
   it("names the type picked in the first step", () => {
     renderDialog();
-    expect(screen.getByRole("heading", { name: "New Menu" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "New menu" })).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: /^Page/ }));
     expect(screen.getByRole("heading", { name: "New page" })).toBeVisible();
     expect(
@@ -223,7 +223,7 @@ describe("MenuFormDialog", () => {
       screen.getByRole("switch", { name: /Open in new tab/ }),
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByLabelText("External Page"));
+    fireEvent.click(screen.getByLabelText("External page"));
     expect(
       screen.queryByRole("switch", { name: /Open in new tab/ }),
     ).not.toBeInTheDocument();
@@ -245,7 +245,7 @@ describe("MenuFormDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Group/ }));
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "New Menu" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "New menu" })).toBeVisible();
   });
 
   it("asks before going back over entered values", () => {
@@ -266,7 +266,7 @@ describe("MenuFormDialog", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
     fireEvent.click(screen.getByRole("button", { name: "Discard" }));
-    expect(screen.getByRole("heading", { name: "New Menu" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "New menu" })).toBeVisible();
   });
 
   it("previews the menu where it will sit in the tree", () => {

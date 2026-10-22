@@ -54,7 +54,7 @@ describe("audit in English", () => {
   it("renders the page header and the two report tiles", () => {
     renderWithIntl(<AuditScreen />, { locale: "en" });
     expect(
-      screen.getByRole("heading", { name: "Audit and Reports" }),
+      screen.getByRole("heading", { name: "Audit and reports" }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(

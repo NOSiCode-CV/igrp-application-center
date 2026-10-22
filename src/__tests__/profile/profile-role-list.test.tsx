@@ -41,7 +41,7 @@ describe("ProfileRoleList", () => {
 
   it("renders in English", () => {
     renderWithIntl(<ProfileRoleList />, { locale: "en" });
-    expect(screen.getByText("Assigned Roles")).toBeTruthy();
+    expect(screen.getByText("Assigned roles")).toBeTruthy();
     expect(screen.getByText("5 permissions")).toBeTruthy();
     expect(screen.getByText("+2 more")).toBeTruthy();
     expect(screen.getByText("Activate")).toBeTruthy();

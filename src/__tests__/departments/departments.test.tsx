@@ -68,14 +68,14 @@ describe("DepartmentListTree", () => {
 
   it("renders in English", () => {
     renderWithIntl(<DepartmentListTree />, { locale: "en" });
-    expect(screen.getAllByText("Department Management").length).toBeGreaterThan(
+    expect(screen.getAllByText("Department management").length).toBeGreaterThan(
       0,
     );
-    expect(screen.getAllByText("New Department").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("New department").length).toBeGreaterThan(0);
     expect(screen.getAllByPlaceholderText("Search department…").length).toBe(1);
     expect(screen.getByText("1 department")).toBeTruthy();
     expect(screen.getByText("No description.")).toBeTruthy();
-    expect(screen.getByText("Manage Applications")).toBeTruthy();
+    expect(screen.getByText("Manage applications")).toBeTruthy();
     expect(screen.getByText("Active")).toBeTruthy();
   });
 });
@@ -86,9 +86,9 @@ describe("Department dialogs", () => {
       <DepartmentFormDialog open onOpenChange={() => {}} department={null} />,
       { locale: "en" },
     );
-    expect(screen.getByText("Create New Department")).toBeTruthy();
+    expect(screen.getByText("Create new department")).toBeTruthy();
     expect(screen.getByPlaceholderText("Department name")).toBeTruthy();
-    expect(screen.getByText("Save and New")).toBeTruthy();
+    expect(screen.getByText("Save and new")).toBeTruthy();
   });
 
   it("renders the manage applications modal in English", () => {
@@ -96,7 +96,7 @@ describe("Department dialogs", () => {
       <ManageAppsModal departmentCode="DEPT1" open onOpenChange={() => {}} />,
       { locale: "en" },
     );
-    expect(screen.getByText("Manage Applications")).toBeTruthy();
+    expect(screen.getByText("Manage applications")).toBeTruthy();
     expect(
       screen.getByText("There are no applications available"),
     ).toBeTruthy();

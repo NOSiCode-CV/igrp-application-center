@@ -100,10 +100,10 @@ describe("MenuList i18n", () => {
 
   it("renders the empty state in English", () => {
     renderWithIntl(<MenuList app={app} />, { locale: "en" });
-    expect(screen.getByText("Application Menus")).toBeInTheDocument();
+    expect(screen.getByText("Application menus")).toBeInTheDocument();
     expect(screen.getByText("No menus found")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Create First Menu/ }),
+      screen.getByRole("button", { name: /Create first menu/ }),
     ).toBeInTheDocument();
   });
 
@@ -120,7 +120,7 @@ describe("MenuList i18n", () => {
       ),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: /Create First Menu/ }),
+      screen.queryByRole("button", { name: /Create first menu/ }),
     ).not.toBeInTheDocument();
   });
 

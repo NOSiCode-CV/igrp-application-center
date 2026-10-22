@@ -46,7 +46,7 @@ describe("RolesListTree", () => {
       locale: "en",
     });
     expect(screen.getByText("Manage and reorganize the roles.")).toBeTruthy();
-    expect(screen.getByText("New Role")).toBeTruthy();
+    expect(screen.getByText("New role")).toBeTruthy();
     expect(screen.getByText("Active")).toBeTruthy();
     expect(screen.getByText("N/A")).toBeTruthy();
   });
@@ -63,7 +63,7 @@ describe("Role dialogs", () => {
       />,
       { locale: "en" },
     );
-    expect(screen.getByText("Create New Role")).toBeTruthy();
+    expect(screen.getByText("Create new role")).toBeTruthy();
     expect(screen.getByPlaceholderText("Role name")).toBeTruthy();
   });
 

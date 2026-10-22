@@ -173,10 +173,10 @@
     "deleteDialog": {
       "cancel": "Cancel",
       "delete": "Delete",
-      "header": "Final Confirmation",
+      "header": "Final confirmation",
       "confirmPrefix": "To confirm, type",
       "placeholder": "Type ''{name}'' to confirm",
-      "mismatch": "The text does not match «{name}».",
+      "mismatch": "The text does not match “{name}”.",
       "wait": "Please wait..."
     },
     "confirmDialog": {
@@ -259,12 +259,12 @@
     "invite": {
       "form": {
         "localeLabel": "Invitee language",
-        "title": "Invite User",
+        "title": "Invite user",
         "description": "Send an email invitation to a new user.",
-        "userInfo": "User Information",
+        "userInfo": "User information",
         "emailLabel": "Email",
         "emailPlaceholder": "e.g. john@email.com",
-        "assignRoles": "Assign Roles",
+        "assignRoles": "Assign roles",
         "assignRolesHint": "Select a department and roles for the user (optional).",
         "departmentLabel": "Department",
         "departmentPlaceholder": "Select department",
@@ -277,7 +277,7 @@
         "selectRoles": "Select roles",
         "rolesSelected": "{count, plural, one {# role selected} other {# roles selected}}",
         "removeRole": "Remove {name}",
-        "submit": "Send Invitation",
+        "submit": "Send invitation",
         "submitting": "Sending...",
         "toasts": {
           "inviteFailed": "Invitation failed",
@@ -375,12 +375,12 @@
         },
         "responseStep": {
           "eyebrow": "Invitation",
-          "title": "Accept Access",
+          "title": "Accept access",
           "description": "Review the details before confirming.",
           "email": "Email",
           "department": "Department",
           "roles": "Roles",
-          "accept": "Accept Invitation",
+          "accept": "Accept invitation",
           "processing": "Processing…",
           "reject": "Reject",
           "rejectConfirm": {
@@ -436,7 +436,7 @@
       "updateFailed": "Error updating photo"
     },
     "deleteDialog": {
-      "deactivated": "User Deactivated",
+      "deactivated": "User deactivated",
       "deactivatedDescription": "User ''{name}'' was deactivated successfully.",
       "deactivateFailed": "Error deactivating.",
       "label": "Username",
@@ -445,7 +445,7 @@
       "description": "The user will no longer be able to sign in to the platform. Role assignments are kept and the account can be reactivated later."
     },
     "editForm": {
-      "fullName": "Full Name",
+      "fullName": "Full name",
       "status": "Status",
       "statusPlaceholder": "Select status",
       "save": "Save",
@@ -466,7 +466,7 @@
     "columns": {
       "name": "Name",
       "email": "Email",
-      "invitationDate": "Invitation Date",
+      "invitationDate": "Invitation date",
       "status": "Status",
       "actions": "Actions",
       "activate": "Activate",
@@ -477,8 +477,8 @@
     "invitations": {
       "actions": {
         "copyUrl": "Copy URL",
-        "resend": "Resend Invitation",
-        "cancel": "Cancel Invitation"
+        "resend": "Resend invitation",
+        "cancel": "Cancel invitation"
       },
       "toasts": {
         "urlCopied": "URL copied",
@@ -495,14 +495,14 @@
       "actionsFor": "Actions for the invitation to {identifier}"
     },
     "list": {
-      "title": "User Management",
+      "title": "User management",
       "description": "View and manage all system users.",
-      "inviteUser": "Invite User",
+      "inviteUser": "Invite user",
       "loadingInvitations": "Loading invitations...",
       "tabs": {
-        "active": "Active Users",
-        "pending": "Pending Invitations ({count})",
-        "canceled": "Canceled Invitations ({count})"
+        "active": "Active users",
+        "pending": "Pending invitations ({count})",
+        "canceled": "Canceled invitations ({count})"
       },
       "filters": {
         "searchByNameOrEmail": "Search by name or email...",
@@ -523,8 +523,8 @@
         "invitationCancelFailed": "The invitation could not be canceled"
       },
       "statusDialog": {
-        "activateTitle": "Activate User",
-        "deactivateTitle": "Deactivate User",
+        "activateTitle": "Activate user",
+        "deactivateTitle": "Deactivate user",
         "activateDescription": "Are you sure you want to activate <strong>{name}</strong>?",
         "deactivateDescription": "Are you sure you want to deactivate <strong>{name}</strong>?",
         "activate": "Activate",
@@ -533,7 +533,7 @@
         "deactivating": "Deactivating..."
       },
       "cancelDialog": {
-        "title": "Cancel Invitation",
+        "title": "Cancel invitation",
         "description": "Are you sure you want to cancel the invitation for <strong>{identifier}</strong>? This action cannot be undone.",
         "confirm": "Confirm",
         "canceling": "Canceling..."
@@ -549,7 +549,7 @@
     "sessions": {
       "noExternalId": "External identifier not available for this user.",
       "empty": "No active sessions.",
-      "title": "Active Session",
+      "title": "Active session",
       "fields": {
         "sessionId": "Session ID",
         "startedAt": "Started at",
@@ -571,7 +571,7 @@
       "loading": "Loading user sessions..."
     },
     "signature": {
-      "title": "Digital Signature",
+      "title": "Digital signature",
       "description": "Upload your signature for official documents",
       "alt": "Signature",
       "clickToUpload": "Click to upload",
@@ -599,20 +599,20 @@
       "form": {
         "loading": "Loading profile...",
         "notFound": "No user found.",
-        "title": "Edit User Profile",
+        "title": "Edit user profile",
         "cardTitle": "Detailed information about this user.",
         "cardDescription": "Manage this user’s personal information and account settings.",
-        "fullName": "Full Name",
+        "fullName": "Full name",
         "fullNamePlaceholder": "johndoe",
         "fullNameDescription": "The user's full name.",
-        "picture": "Profile Image",
+        "picture": "Profile image",
         "pictureDescription": "Upload a profile picture for this user.",
         "signature": "Signature",
         "signatureDescription": "The user's digital signature.",
         "processing": "Processing...",
-        "save": "Save Changes",
+        "save": "Save changes",
         "toasts": {
-          "updated": "User Updated",
+          "updated": "User updated",
           "updatedDescription": "The user was updated successfully!"
         }
       },
@@ -637,12 +637,12 @@
         "deactivateLabel": "Deactivate user"
       },
       "statusDialog": {
-        "activateTitle": "Activate User",
-        "deactivateTitle": "Deactivate User",
+        "activateTitle": "Activate user",
+        "deactivateTitle": "Deactivate user",
         "activateDescription": "Are you sure you want to activate the user <strong>{name}</strong>?",
         "deactivateDescription": "Are you sure you want to deactivate the user <strong>{name}</strong>?",
         "confirmActivate": "Activate",
-        "confirmDeactivate": "Confirm Deactivation",
+        "confirmDeactivate": "Confirm deactivation",
         "activating": "Activating...",
         "deactivating": "Deactivating..."
       },
@@ -677,7 +677,7 @@
     },
     "unknownError": "An unknown error occurred.",
     "roleDialog": {
-      "title": "Add or Remove Roles",
+      "title": "Add or remove roles",
       "selectAll": "Select all",
       "selectRow": "Select row",
       "columns": {
@@ -717,7 +717,7 @@
     },
     "roleList": {
       "loading": "Loading roles...",
-      "title": "Assigned Roles",
+      "title": "Assigned roles",
       "add": "Add",
       "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
       "parent": "Sub-role of <mono>{code}</mono>",
@@ -725,7 +725,7 @@
       "revoke": "Revoke",
       "empty": "No roles assigned",
       "emptyDescription": "This user has no roles.",
-      "assign": "Assign Roles",
+      "assign": "Assign roles",
       "toasts": {
         "removed": "Role removed successfully.",
         "removeFailed": "The role could not be removed.",
@@ -841,33 +841,33 @@
       "title": "Settings",
       "description": "Manage the platform's applications, users and access."
     },
-    "title": "General Settings",
+    "title": "General settings",
     "subtitle": "Choose the area you want to manage.",
     "comingSoon": "Coming soon",
     "items": {
       "applications": {
-        "title": "Application Management",
+        "title": "Application management",
         "description": "Register applications, edit their details and control the status of each one."
       },
       "users": {
-        "title": "User Management",
+        "title": "User management",
         "description": "Invite users and manage their accounts, roles and permissions."
       },
       "departments": {
-        "title": "Department Management",
+        "title": "Department management",
         "description": "Organize the department structure and the associated roles, permissions and menus."
       },
       "oauthClients": {
-        "title": "OAuth Client Management",
+        "title": "OAuth client management",
         "description": "Register OAuth clients and manage the service accounts that access the APIs."
       },
       "audit": {
-        "title": "Audit and Reports",
+        "title": "Audit and reports",
         "description": "Review the access and configuration changes recorded on the platform."
       },
       "customization": {
         "title": "Customization",
-        "description": "Set the organization's colours and logos across every app."
+        "description": "Set the organization's colors and logos across every app."
       }
     },
     "loadError": "Could not load the settings."
@@ -879,7 +879,7 @@
       "detailTitle": "{name} · Applications"
     },
     "list": {
-      "title": "Application Management",
+      "title": "Application management",
       "description": "Register new applications and manage existing ones.",
       "new": "New Application",
       "loadErrorTitle": "Applications could not be loaded.",
@@ -941,7 +941,7 @@
       "name": "Name",
       "namePlaceholder": "Application name…",
       "code": "Code",
-      "codePlaceholder": "E.g. APP_CENTER",
+      "codePlaceholder": "e.g. APP_CENTER",
       "type": "Type",
       "types": {
         "internal": "Internal",
@@ -988,14 +988,14 @@
   },
   "menus": {
     "list": {
-      "title": "Application Menus",
+      "title": "Application menus",
       "description": "Manage and reorder this application's menus.",
-      "new": "New Menu",
+      "new": "New menu",
       "loading": "Loading menus...",
       "loadError": "An error occurred while loading the menus.",
       "emptyTitle": "No menus found",
       "emptyDescription": "Start by creating the first menu for this application.",
-      "createFirst": "Create First Menu",
+      "createFirst": "Create first menu",
       "systemEmptyDescription": "Menus of system applications are managed by the platform."
     },
     "reorder": {
@@ -1015,8 +1015,8 @@
       "openActions": "Open menu actions",
       "view": "View",
       "edit": "Edit",
-      "addFolder": "Add Folder",
-      "addPage": "Add Page",
+      "addFolder": "Add folder",
+      "addPage": "Add page",
       "delete": "Delete"
     },
     "types": {
@@ -1028,11 +1028,11 @@
       "pageDescription": "Menu that opens a page of the application"
     },
     "dialog": {
-      "viewTitle": "View Menu",
-      "editTitle": "Edit Menu",
-      "addFolderTitle": "Add Folder",
-      "addMenuTitle": "Add Menu",
-      "newTitle": "New Menu",
+      "viewTitle": "View menu",
+      "editTitle": "Edit menu",
+      "addFolderTitle": "Add folder",
+      "addMenuTitle": "Add menu",
+      "newTitle": "New menu",
       "viewDescription": "View the menu details",
       "editDescription": "Update the details of this menu",
       "createDescription": "Fill in the details of the new menu",
@@ -1060,27 +1060,27 @@
       "searchIcon": "Search icon...",
       "noIconFound": "No icon found.",
       "status": "Status",
-      "pageType": "Page Type",
-      "internalPage": "Internal Page",
-      "externalPage": "External Page",
+      "pageType": "Page type",
+      "internalPage": "Internal page",
+      "externalPage": "External page",
       "relativeUrl": "Relative URL",
       "relativeUrlPlaceholder": "page-slug",
       "externalUrl": "External URL",
       "externalUrlPlaceholder": "https://example.com",
       "openInNewTab": "Open in new tab",
-      "groupOptional": "Group (Optional)",
-      "folderOptional": "Folder (Optional)",
+      "groupOptional": "Group (optional)",
+      "folderOptional": "Folder (optional)",
       "selectGroup": "Select group...",
       "selectFolder": "Select folder...",
       "noGroupFound": "No group found.",
       "noFolderFound": "No folder found.",
-      "noneRoot": "None (Root)",
+      "noneRoot": "None (root)",
       "saving": "Saving...",
       "update": "Update",
       "toasts": {
-        "updatedTitle": "Menu Updated",
+        "updatedTitle": "Menu updated",
         "updated": "The menu was updated successfully.",
-        "createdTitle": "Menu Created",
+        "createdTitle": "Menu created",
         "created": "The menu was created successfully.",
         "errorTitle": "Error",
         "error": "Something went wrong. Please try again."
@@ -1112,7 +1112,7 @@
     "delete": {
       "description": "It's removed from the application's navigation. This can't be undone.",
       "nameLabel": "To confirm, type <highlight>{name}</highlight>",
-      "successTitle": "Menu Deleted",
+      "successTitle": "Menu deleted",
       "success": "The menu \"{name}\" was deleted successfully.",
       "errorTitle": "Error deleting.",
       "deleting": "Deleting...",
@@ -1136,12 +1136,12 @@
   "branding": {
     "meta": {
       "title": "Customization",
-      "description": "Set the organization's colours and logos."
+      "description": "Set the organization's colors and logos."
     },
     "title": "Customization",
-    "subtitle": "Colours and logos apply to every IGRP app with customization turned on.",
+    "subtitle": "Colors and logos apply to every IGRP app with customization turned on.",
     "tabs": {
-      "colors": "Colours",
+      "colors": "Colors",
       "logos": "Logos"
     },
     "modes": {
@@ -1232,7 +1232,7 @@
       "appTile4Foreground": "Tile 4 text",
       "appTile5": "Tile 5",
       "appTile5Foreground": "Tile 5 text",
-      "favorite": "Favourite",
+      "favorite": "Favorite",
       "scrollbarThumb": "Scrollbar",
       "scrollbarThumbHover": "Scrollbar on hover"
     },
@@ -1280,7 +1280,7 @@
       "discard": "Discard",
       "reset": "Restore defaults",
       "clear": "Restore the default for {token}",
-      "pickColor": "Pick the colour for {token}"
+      "pickColor": "Pick the color for {token}"
     },
     "unsaved": "You have unsaved changes.",
     "saved": "Customization saved.",
@@ -1293,7 +1293,7 @@
       "saveTitle": "Could not save.",
       "forbidden": "You do not have permission to customize the platform.",
       "upload": "Could not upload the image: {slot}.",
-      "invalidColor": "Use a concrete colour: hex, rgb, hsl, oklch, oklab, lab, lch or a colour name.",
+      "invalidColor": "Use a concrete color: hex, rgb, hsl, oklch, oklab, lab, lch or a color name.",
       "logoHost": "Only images uploaded here are accepted.",
       "favicon": "Use a PNG or ICO up to 256 KB.",
       "image": "Use an image (SVG, PNG, JPG, WEBP or GIF).",
@@ -1305,8 +1305,8 @@
   "permissions": {
     "list": {
       "title": "Permissions",
-      "subtitle": "Manage and reorganise permissions.",
-      "manageResources": "Manage Resources",
+      "subtitle": "Manage and reorganize permissions.",
+      "manageResources": "Manage resources",
       "searchLabel": "Search permissions",
       "searchPlaceholder": "Search permissions…",
       "loading": "Loading permissions…",
@@ -1335,7 +1335,7 @@
       "loading": "Removing..."
     },
     "resources": {
-      "title": "Manage Resources",
+      "title": "Manage resources",
       "description": "Add or remove the department's resources with one click.",
       "searchLabel": "Search resources by name, type or description",
       "searchPlaceholder": "Search by name, type or description…",
@@ -1360,7 +1360,7 @@
         "unknownError": "Unknown error"
       },
       "remove": {
-        "title": "Remove Resource",
+        "title": "Remove resource",
         "description": "Are you sure you want to remove the resource <strong>{name}</strong> from this department? This action cannot be undone.",
         "cancel": "Cancel",
         "confirm": "Remove",
@@ -1374,7 +1374,7 @@
     },
     "roleList": {
       "loading": "Loading roles…",
-      "title": "Assigned Roles",
+      "title": "Assigned roles",
       "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
       "parent": "Sub-role of <mono>{code}</mono>",
       "morePermissions": "+{count} more",
@@ -1391,13 +1391,13 @@
   },
   "accounts": {
     "layout": {
-      "title": "Accounts and Services",
+      "title": "Accounts and services",
       "description": "Identities that access the iGRP APIs: OAuth clients and the service accounts that wrap them."
     },
     "tabs": {
-      "label": "Accounts and Services sections",
-      "oauthClients": "OAuth Clients",
-      "serviceAccounts": "Service Accounts"
+      "label": "Accounts and services sections",
+      "oauthClients": "OAuth clients",
+      "serviceAccounts": "Service accounts"
     },
     "cells": {
       "copyClientId": "Copy client ID {clientId}",
@@ -1415,7 +1415,7 @@
     "list": {
       "title": "Roles",
       "subtitle": "Manage and reorganize the roles.",
-      "newRole": "New Role",
+      "newRole": "New role",
       "searchLabel": "Search role",
       "searchPlaceholder": "Search role…",
       "statusFilter": "Status",
@@ -1432,21 +1432,21 @@
     "row": {
       "collapse": "Collapse role",
       "expand": "Expand role",
-      "openMenu": "Open Menu",
+      "openMenu": "Open menu",
       "actions": "Actions",
       "edit": "Edit",
-      "createSubRole": "Create sub role",
+      "createSubRole": "Create sub-role",
       "permissions": "Permissions",
       "delete": "Delete"
     },
     "form": {
-      "titleEdit": "Edit Role",
-      "titleCreate": "Create New Role",
+      "titleEdit": "Edit role",
+      "titleCreate": "Create new role",
       "subRoleOf": "This will be a sub-role of: <strong>{parent}</strong>",
       "name": "Name",
       "namePlaceholder": "Role name",
       "code": "Code",
-      "codePlaceholder": "E.g.: ADMIN_ROLE",
+      "codePlaceholder": "e.g. ADMIN_ROLE",
       "description": "Description",
       "descriptionPlaceholder": "Short description of this role's responsibilities",
       "status": "Status",
@@ -1454,8 +1454,8 @@
       "cancel": "Cancel",
       "saving": "Saving…",
       "creating": "Creating…",
-      "save": "Save Changes",
-      "create": "Create Role",
+      "save": "Save changes",
+      "create": "Create role",
       "toast": {
         "updatedTitle": "Role updated",
         "updatedDescription": "The role was updated successfully.",
@@ -1474,13 +1474,13 @@
       "confirm": "Delete",
       "pending": "Please wait…",
       "toast": {
-        "successTitle": "Role Deleted",
+        "successTitle": "Role deleted",
         "successDescription": "Role ''{name}'' was deleted successfully.",
         "errorTitle": "Failed to delete."
       }
     },
     "permissions": {
-      "title": "Add or Remove Role Permissions",
+      "title": "Add or remove role permissions",
       "selectAll": "Select all permissions",
       "selectOne": "Select permission {name}",
       "columnName": "Name",
@@ -1549,7 +1549,7 @@
       "inactiveFeminine": "Inactive"
     },
     "linkUnknown": "Could not check whether a service account exists.",
-    "deleteBlockedByAccount": "Remove the service account «{name}» first.",
+    "deleteBlockedByAccount": "Remove the service account “{name}” first.",
     "duration": {
       "days": "{count, plural, one {{count} day} other {{count} days}}",
       "hours": "{count, plural, one {{count} hour} other {{count} hours}}",
@@ -1578,7 +1578,7 @@
       "descriptionMax": "Up to 140 characters.",
       "grantTypesRequired": "Choose at least one grant type.",
       "redirectRequired": "Add at least one redirect URI.",
-      "redirectNotAllowed": "«{uri}» is not allowed. Use https:// (or http://localhost)."
+      "redirectNotAllowed": "“{uri}” is not allowed. Use https:// (or http://localhost)."
     },
     "list": {
       "accountsErrorTitle": "Could not check the service accounts.",
@@ -1612,9 +1612,9 @@
     "activation": {
       "titleActivate": "Activate client",
       "titleDeactivate": "Deactivate client",
-      "descActivateLinked": "The client and the service account «{name}» can authenticate again.",
+      "descActivateLinked": "The client and the service account “{name}” can authenticate again.",
       "descActivate": "The client can request tokens again.",
-      "descDeactivateLinked": "The client and the service account «{name}» can no longer authenticate until they are reactivated.",
+      "descDeactivateLinked": "The client and the service account “{name}” can no longer authenticate until they are reactivated.",
       "descDeactivate": "Applications that use this client can no longer authenticate. You can reactivate it later.",
       "loadingActivate": "Activating…",
       "loadingDeactivate": "Deactivating…",
@@ -1639,7 +1639,7 @@
     "rotate": {
       "confirmTitle": "Generate new secret",
       "description": "The current secret stops working immediately. Tokens already issued remain valid until they expire. The client ID does not change: only the secret has to be distributed again.",
-      "descriptionLinked": "The current secret stops working immediately, for the service account «{name}» too. Tokens already issued remain valid until they expire. The client ID does not change: only the secret has to be distributed again.",
+      "descriptionLinked": "The current secret stops working immediately, for the service account “{name}” too. Tokens already issued remain valid until they expire. The client ID does not change: only the secret has to be distributed again.",
       "loading": "Generating…",
       "errorTitle": "Could not generate a new secret",
       "doneTitle": "New secret generated",
@@ -1682,7 +1682,7 @@
       "updatedAt": "Updated on",
       "dangerZone": "Danger zone",
       "rotateDescription": "The current secret stops working immediately. Use it if the secret was exposed or lost.",
-      "deactivateLinked": "Also deactivates the service account «{name}». The identity can no longer authenticate.",
+      "deactivateLinked": "Also deactivates the service account “{name}”. The identity can no longer authenticate.",
       "deleteTitle": "Delete client",
       "deleteDescription": "Removes the record. The credentials stop working immediately and it cannot be recovered."
     },
@@ -1709,11 +1709,11 @@
       "applicationSearch": "Search application…",
       "applicationEmpty": "No application found.",
       "applicationHelp": "The application this client belongs to. A service account inherits it.",
-      "applicationLocked": "Fixed while the service account «{name}» exists.",
+      "applicationLocked": "Fixed while the service account “{name}” exists.",
       "grantsTitle": "Grant types",
       "grantsDescription": "How this client obtains tokens. The sections below change with the choice.",
       "grantFixed": "Fixed for service accounts.",
-      "grantLocked": "Required while the service account «{name}» exists.",
+      "grantLocked": "Required while the service account “{name}” exists.",
       "redirectsTitle": "Redirect URIs",
       "redirectsDescription": "Where the server sends the user after sign-in. It appears because <mono>authorization_code</mono> is active.",
       "redirectsLabel": "Redirect URIs *",
@@ -1733,11 +1733,11 @@
   },
   "audit": {
     "meta": {
-      "title": "Audit and Reports",
+      "title": "Audit and reports",
       "description": "View the platform's access and configuration reports."
     },
     "header": {
-      "title": "Audit and Reports",
+      "title": "Audit and reports",
       "description": "Review the sign-ins and configuration changes recorded on the platform."
     },
     "reports": {
@@ -1803,7 +1803,7 @@
       "activate": "Activation",
       "deactivate": "Deactivation",
       "invite": "Invitation",
-      "cancelInvite": "Invitation cancellation",
+      "cancelInvite": "Invitation canceled",
       "resendInvite": "Invitation resend",
       "associate": "Association",
       "disassociate": "Disassociation",
@@ -1884,7 +1884,7 @@
       "description": "Manage departments, roles, permissions and menus."
     },
     "page": {
-      "title": "Department Management",
+      "title": "Department management",
       "description": "Organize departments and their associated roles, permissions and menus."
     },
     "error": {
@@ -1901,7 +1901,7 @@
     },
     "unknownError": "Unknown error",
     "actions": {
-      "newDepartment": "New Department",
+      "newDepartment": "New department",
       "edit": "Edit",
       "cancel": "Cancel",
       "close": "Close",
@@ -1911,7 +1911,7 @@
       "processing": "Processing…"
     },
     "sidebar": {
-      "title": "Department Management",
+      "title": "Department management",
       "summaryWithInactive": "{active} active · {inactive} inactive",
       "summary": "{count, plural, =1 {# department} other {# departments}}",
       "searchLabel": "Search department",
@@ -1925,13 +1925,13 @@
       "expand": "Expand department",
       "inactive": "Inactive:",
       "openMenu": "Open menu",
-      "createSub": "Create Sub-department",
+      "createSub": "Create sub-department",
       "delete": "Delete"
     },
     "empty": {
       "sidebarEmpty": {
         "title": "No departments",
-        "body": "Use the ''New Department'' button to create the first department to organize roles and permissions."
+        "body": "Use the ''New department'' button to create the first department to organize roles and permissions."
       },
       "sidebarNoResults": {
         "title": "No departments found",
@@ -1947,14 +1947,14 @@
       "tabPermissions": "Permissions",
       "tabMenus": "Menus",
       "noDescription": "No description.",
-      "manageApps": "Manage Applications"
+      "manageApps": "Manage applications"
     },
     "form": {
-      "titleEdit": "Edit Department",
-      "titleCreateSub": "Create Sub Department",
-      "titleCreate": "Create New Department",
-      "descriptionEdit": "Update Department",
-      "descriptionCreateSub": "Create a new sub department",
+      "titleEdit": "Edit department",
+      "titleCreateSub": "Create sub-department",
+      "titleCreate": "Create new department",
+      "descriptionEdit": "Update department",
+      "descriptionCreateSub": "Create a new sub-department",
       "descriptionCreate": "Create a new department",
       "name": "Name",
       "namePlaceholder": "Department name",
@@ -1962,11 +1962,11 @@
       "codePlaceholder": "Department code",
       "description": "Description",
       "descriptionPlaceholder": "Brief description of the department",
-      "parent": "Parent Department",
+      "parent": "Parent department",
       "parentPlaceholder": "Parent department",
       "status": "Status",
       "statusPlaceholder": "Select status",
-      "saveAndNew": "Save and New",
+      "saveAndNew": "Save and new",
       "save": "Save",
       "toast": {
         "successTitle": "Department",
@@ -1982,7 +1982,7 @@
       "description": "This action is irreversible. The department is deleted, along with the roles, permissions and menus associated with it.",
       "label": "Department name",
       "toast": {
-        "successTitle": "Department Deleted",
+        "successTitle": "Department deleted",
         "successDescription": "Department ''{name}'' was deleted successfully.",
         "errorTitle": "Failed to delete."
       }
@@ -1996,7 +1996,7 @@
     "menus": {
       "title": "Menus",
       "subtitle": "Manage the department's applications, menus and roles.",
-      "manage": "Manage Menus",
+      "manage": "Manage menus",
       "allApps": "All applications",
       "searchLabel": "Search menu",
       "searchPlaceholder": "Search menu…",
@@ -2012,7 +2012,7 @@
       "expand": "Expand menu",
       "assign": "{role} — {menu}",
       "summary": "{menus, plural, =1 {# menu} other {# menus}} • {roles, plural, =1 {# role} other {# roles}}",
-      "savePermissions": "Save Permissions",
+      "savePermissions": "Save permissions",
       "toast": {
         "noChangesTitle": "No changes",
         "noChangesDescription": "No changes were detected.",
@@ -2028,7 +2028,7 @@
       }
     },
     "manageApps": {
-      "title": "Manage Applications",
+      "title": "Manage applications",
       "description": "Add or remove the department's applications with one click.",
       "searchLabel": "Search application",
       "searchPlaceholder": "Search by name, code or description…",
@@ -2053,7 +2053,7 @@
       }
     },
     "manageMenus": {
-      "title": "Manage Menus",
+      "title": "Manage menus",
       "description": "Add or remove the department's menus with one click.",
       "searchLabel": "Search menu",
       "searchPlaceholder": "Search by name, code or URL…",
@@ -2070,7 +2070,7 @@
       "removeAria": "Remove {name} from the department",
       "addAria": "Add {name} to the department",
       "summary": "<b>{added}</b> of <b>{total}</b> menus added",
-      "removeTitle": "Remove Menu",
+      "removeTitle": "Remove menu",
       "removeDescription": "Are you sure you want to remove the menu <b>{name}</b> from this department? This action cannot be undone.",
       "toast": {
         "addedTitle": "Menu added",
@@ -2084,10 +2084,10 @@
   },
   "serviceAccounts": {
     "meta": {
-      "listTitle": "Service Accounts",
+      "listTitle": "Service accounts",
       "listDescription": "Machine identities that authenticate through client_credentials.",
       "newTitle": "New service account",
-      "detailTitle": "{name} · Service Accounts",
+      "detailTitle": "{name} · Service accounts",
       "detailFallback": "Service account"
     },
     "loading": {
@@ -2261,7 +2261,7 @@
       "successAccount": "Account deleted",
       "successBothDescription": "{name} · {clientId}",
       "clientFailedTitle": "The account was deleted, the client was not",
-      "clientFailedDescription": "Delete the OAuth client {clientId} on the OAuth Clients page. {error}",
+      "clientFailedDescription": "Delete the OAuth client {clientId} on the OAuth clients page. {error}",
       "errorTitle": "Could not delete",
       "description": "The account ceases to exist, along with the roles and permissions it had. It cannot be recovered.",
       "label": "Account name",

@@ -100,7 +100,7 @@ describe("oauth-clients in English", () => {
       { locale: "en" },
     );
     expect(
-      screen.getByText(/for the service account «Nightly Invoice» too/),
+      screen.getByText(/for the service account “Nightly Invoice” too/),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Generate new secret" }),

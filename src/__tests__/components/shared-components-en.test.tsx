@@ -48,7 +48,7 @@ describe("shared components in English", () => {
     const input = screen.getByPlaceholderText("Type 'acme' to confirm");
     await userEvent.type(input, "ac");
     expect(
-      screen.getByText("The text does not match «acme»."),
+      screen.getByText("The text does not match “acme”."),
     ).toBeInTheDocument();
   });
 });

@@ -85,7 +85,7 @@ describe("audit labels", () => {
     );
     expect(operationLabel(t, "CREATE")).toBe("Criação");
     expect(operationLabel(translators.en, "CANCEL_INVITE")).toBe(
-      "Invitation cancellation",
+      "Invitation canceled",
     );
   });
 

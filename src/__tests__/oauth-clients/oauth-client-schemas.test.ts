@@ -58,7 +58,7 @@ describe("oauthClientFormSchema", () => {
       redirectUris: ["http://evil.com"],
     });
     expect(r.success ? [] : r.error.issues.map((i) => i.message)).toContain(
-      "«http://evil.com» is not allowed. Use https:// (or http://localhost).",
+      "“http://evil.com” is not allowed. Use https:// (or http://localhost).",
     );
   });
 

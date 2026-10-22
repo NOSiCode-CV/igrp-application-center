@@ -38,7 +38,7 @@ describe("PermissionList", () => {
       locale: "en",
     });
     expect(screen.getByText("Permissions")).toBeTruthy();
-    expect(screen.getByText("Manage Resources")).toBeTruthy();
+    expect(screen.getByText("Manage resources")).toBeTruthy();
     expect(screen.getByLabelText("Remove permission read_users")).toBeTruthy();
   });
 });

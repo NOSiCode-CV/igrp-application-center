@@ -32,7 +32,7 @@ describe("AccountsTabs", () => {
   it("renders the tabs in English", () => {
     pathname.value = "/settings/accounts/clients";
     renderWithIntl(<AccountsTabs />, { locale: "en" });
-    expect(screen.getByRole("tab", { name: "OAuth Clients" })).toBeVisible();
-    expect(screen.getByRole("tab", { name: "Service Accounts" })).toBeVisible();
+    expect(screen.getByRole("tab", { name: "OAuth clients" })).toBeVisible();
+    expect(screen.getByRole("tab", { name: "Service accounts" })).toBeVisible();
   });
 });
