@@ -3,6 +3,7 @@
 import { type KeyboardEvent, useState } from "react";
 
 import { cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 interface ChipInputProps {
   /** Optional because the DS `FormControl` (a Radix `Slot`) injects it at runtime. */
@@ -19,10 +20,11 @@ export function ChipInput({
   id,
   value,
   onChange,
-  placeholder = "Adicionar…",
+  placeholder,
   mono,
   ...aria
 }: ChipInputProps) {
+  const t = useTranslations("common.chipInput");
   const [draft, setDraft] = useState("");
   const [announcement, setAnnouncement] = useState("");
 
@@ -31,7 +33,7 @@ export function ChipInput({
     setDraft("");
     if (!next || value.includes(next)) return;
     onChange([...value, next]);
-    setAnnouncement(`${next} adicionado`);
+    setAnnouncement(t("added", { chip: next }));
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -62,7 +64,7 @@ export function ChipInput({
           <button
             type="button"
             className="inline-flex size-7 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            aria-label={`Remover ${chip}`}
+            aria-label={t("remove", { chip })}
             onClick={() => onChange(value.filter((v) => v !== chip))}
           >
             <IGRPIcon iconName="X" className="size-3.5" aria-hidden="true" />
@@ -75,7 +77,7 @@ export function ChipInput({
         onChange={(e) => setDraft(e.target.value)}
         onKeyDown={onKeyDown}
         onBlur={commit}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t("placeholder")}
         className={cn(
           "h-7 min-w-48 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground",
           mono && "font-mono text-xs",

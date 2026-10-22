@@ -157,6 +157,63 @@
       "discard": "Discard",
       "save": "Save changes",
       "saving": "Saving…"
+    },
+    "sensitiveValue": {
+      "confirmation": "I saved the secret in a safe place",
+      "copied": "Copied",
+      "copiedDescription": "{label} copied.",
+      "copyFailed": "Could not copy",
+      "copyFailedDescription": "Reveal the value and copy it manually.",
+      "hide": "Hide",
+      "show": "Show",
+      "copy": "Copy",
+      "hint": "Hidden by default so it does not show up in screen shares. Copy always copies the full value."
+    },
+    "deleteDialog": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "header": "Final Confirmation",
+      "confirmPrefix": "To confirm, type",
+      "placeholder": "Type ''{name}'' to confirm",
+      "mismatch": "The text does not match «{name}».",
+      "wait": "Please wait..."
+    },
+    "confirmDialog": {
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "loading": "Processing..."
+    },
+    "chipInput": {
+      "placeholder": "Add…",
+      "added": "{chip} added",
+      "remove": "Remove {chip}"
+    },
+    "multiSelect": {
+      "placeholder": "Select options",
+      "empty": "No options available.",
+      "search": "Search…",
+      "selectedCount": "{count} options selected",
+      "counter": "{selected} of {total}",
+      "max": " (max. {max})",
+      "selectAll": "Select all",
+      "clear": "Clear",
+      "done": "Done",
+      "remove": "Remove {label}"
+    },
+    "dataTable": {
+      "empty": "No results!",
+      "rowsPerPage": "Rows per page",
+      "pageSizePlaceholder": "Select number of results",
+      "range": "of",
+      "first": "Go to first page",
+      "previous": "Go to previous page",
+      "next": "Go to next page",
+      "last": "Go to last page"
+    },
+    "imageUpload": {
+      "none": "No image",
+      "upload": "Upload image",
+      "remove": "Remove"
     }
   },
   "errors": {

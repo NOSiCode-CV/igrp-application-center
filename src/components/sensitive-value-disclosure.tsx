@@ -10,6 +10,7 @@ import {
   Label,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 interface SensitiveValueDisclosureProps {
   label: string;
@@ -26,9 +27,10 @@ interface SensitiveValueDisclosureProps {
 export function SensitiveValueDisclosure({
   label,
   value,
-  confirmationLabel = "Guardei o segredo num local seguro",
+  confirmationLabel,
   onConfirmedChange,
 }: SensitiveValueDisclosureProps) {
+  const t = useTranslations("common.sensitiveValue");
   const id = useId();
   const [revealed, setRevealed] = useState(false);
   const { igrpToast } = useIGRPToast();
@@ -38,14 +40,14 @@ export function SensitiveValueDisclosure({
       await navigator.clipboard.writeText(value);
       igrpToast({
         type: "success",
-        title: "Copiado",
-        description: `${label} copiado.`,
+        title: t("copied"),
+        description: t("copiedDescription", { label }),
       });
     } catch {
       igrpToast({
         type: "error",
-        title: "Não foi possível copiar",
-        description: "Revele o valor e copie-o manualmente.",
+        title: t("copyFailed"),
+        description: t("copyFailedDescription"),
       });
     }
   }
@@ -73,16 +75,15 @@ export function SensitiveValueDisclosure({
               iconName={revealed ? "EyeOff" : "Eye"}
               aria-hidden="true"
             />
-            {revealed ? "Ocultar" : "Mostrar"}
+            {revealed ? t("hide") : t("show")}
           </Button>
           <Button type="button" variant="outline" onClick={copy}>
             <IGRPIcon iconName="Copy" aria-hidden="true" />
-            Copiar
+            {t("copy")}
           </Button>
         </div>
         <p id={`${id}-help`} className="text-sm text-muted-foreground">
-          Oculto por defeito, para não aparecer em partilhas de ecrã. Copiar
-          copia sempre o valor completo.
+          {t("hint")}
         </p>
       </div>
       <Label
@@ -93,7 +94,7 @@ export function SensitiveValueDisclosure({
           id={`${id}-confirm`}
           onCheckedChange={(checked) => onConfirmedChange(checked === true)}
         />
-        {confirmationLabel}
+        {confirmationLabel ?? t("confirmation")}
       </Label>
     </div>
   );

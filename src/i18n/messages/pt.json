@@ -157,6 +157,63 @@
       "discard": "Descartar",
       "save": "Guardar alterações",
       "saving": "A guardar…"
+    },
+    "sensitiveValue": {
+      "confirmation": "Guardei o segredo num local seguro",
+      "copied": "Copiado",
+      "copiedDescription": "{label} copiado.",
+      "copyFailed": "Não foi possível copiar",
+      "copyFailedDescription": "Revele o valor e copie-o manualmente.",
+      "hide": "Ocultar",
+      "show": "Mostrar",
+      "copy": "Copiar",
+      "hint": "Oculto por defeito, para não aparecer em partilhas de ecrã. Copiar copia sempre o valor completo."
+    },
+    "deleteDialog": {
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "header": "Confirmação Final",
+      "confirmPrefix": "Para confirmar, escreva",
+      "placeholder": "Digite ''{name}'' para confirmação",
+      "mismatch": "O texto não coincide com «{name}».",
+      "wait": "Aguarde..."
+    },
+    "confirmDialog": {
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "loading": "Processando..."
+    },
+    "chipInput": {
+      "placeholder": "Adicionar…",
+      "added": "{chip} adicionado",
+      "remove": "Remover {chip}"
+    },
+    "multiSelect": {
+      "placeholder": "Selecione as opções",
+      "empty": "Sem opções disponíveis.",
+      "search": "Pesquisar…",
+      "selectedCount": "{count} opções selecionadas",
+      "counter": "{selected} de {total}",
+      "max": " (máx. {max})",
+      "selectAll": "Selecionar tudo",
+      "clear": "Limpar",
+      "done": "Concluir",
+      "remove": "Remover {label}"
+    },
+    "dataTable": {
+      "empty": "Sem resultados!",
+      "rowsPerPage": "Linhas por página",
+      "pageSizePlaceholder": "Selecionar número de resultados",
+      "range": "de",
+      "first": "Ir para a primeira página",
+      "previous": "Ir para a página anterior",
+      "next": "Ir para a página seguinte",
+      "last": "Ir para a última página"
+    },
+    "imageUpload": {
+      "none": "No image",
+      "upload": "Upload image",
+      "remove": "Remove"
     }
   },
   "errors": {

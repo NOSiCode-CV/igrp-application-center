@@ -12,6 +12,7 @@ import {
   Input,
   Label,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 interface IGRPDialogDeleteProps {
   open: boolean;
@@ -44,13 +45,15 @@ function IGRPDialogDelete({
   isDeleting,
   description,
   label,
-  labelBtnCancel = "Cancelar",
-  labelBtnDelete = "Eliminar",
-  textHeader = "Confirmação Final",
+  labelBtnCancel,
+  labelBtnDelete,
+  textHeader: textHeaderProp,
   confirmIconName = "Trash",
   children,
 }: IGRPDialogDeleteProps) {
+  const t = useTranslations("common.deleteDialog");
   const id = useId();
+  const textHeader = textHeaderProp ?? t("header");
   const [confirmation, setConfirmation] = useState("");
 
   const isConfirmed = confirmation === toDelete.name;
@@ -75,7 +78,7 @@ function IGRPDialogDelete({
             <DialogDescription className="text-foreground text-base">
               {description}{" "}
               <span>
-                Para confirmar, escreva{" "}
+                {t("confirmPrefix")}{" "}
                 <span className="font-semibold">{toDelete.name}.</span>
               </span>
             </DialogDescription>
@@ -94,7 +97,7 @@ function IGRPDialogDelete({
               id={`confirmation-${id}`}
               value={confirmation}
               onChange={(e) => setConfirmation(e.target.value)}
-              placeholder={`Digite '${toDelete.name}' para confirmação`}
+              placeholder={t("placeholder", { name: toDelete.name })}
               className="placeholder:truncate border-primary/30 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:border-primary/30"
               aria-invalid={hasMismatch}
               aria-describedby={hasMismatch ? `mismatch-${id}` : undefined}
@@ -106,7 +109,7 @@ function IGRPDialogDelete({
                 className="text-sm text-destructive"
                 role="alert"
               >
-                O texto não coincide com «{toDelete.name}».
+                {t("mismatch", { name: toDelete.name })}
               </p>
             )}
           </div>
@@ -122,7 +125,7 @@ function IGRPDialogDelete({
             type="button"
           >
             <IGRPIcon iconName="X" className=" size-4" strokeWidth={2} />
-            {labelBtnCancel}
+            {labelBtnCancel ?? t("cancel")}
           </Button>
           <Button
             variant="destructive"
@@ -137,7 +140,7 @@ function IGRPDialogDelete({
               className="size-4"
               strokeWidth={2}
             />
-            {isDeleting ? "Aguarde..." : labelBtnDelete}
+            {isDeleting ? t("wait") : (labelBtnDelete ?? t("delete"))}
           </Button>
         </DialogFooter>
       </DialogContent>

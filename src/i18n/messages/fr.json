@@ -157,6 +157,63 @@
       "discard": "Annuler les modifications",
       "save": "Enregistrer les modifications",
       "saving": "Enregistrement…"
+    },
+    "sensitiveValue": {
+      "confirmation": "J'ai enregistré le secret dans un endroit sûr",
+      "copied": "Copié",
+      "copiedDescription": "{label} copié.",
+      "copyFailed": "Impossible de copier",
+      "copyFailedDescription": "Affichez la valeur et copiez-la manuellement.",
+      "hide": "Masquer",
+      "show": "Afficher",
+      "copy": "Copier",
+      "hint": "Masquée par défaut pour ne pas apparaître lors des partages d'écran. Copier copie toujours la valeur complète."
+    },
+    "deleteDialog": {
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "header": "Confirmation finale",
+      "confirmPrefix": "Pour confirmer, saisissez",
+      "placeholder": "Saisissez ''{name}'' pour confirmer",
+      "mismatch": "Le texte ne correspond pas à «{name}».",
+      "wait": "Veuillez patienter..."
+    },
+    "confirmDialog": {
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "loading": "Traitement en cours..."
+    },
+    "chipInput": {
+      "placeholder": "Ajouter…",
+      "added": "{chip} ajouté",
+      "remove": "Retirer {chip}"
+    },
+    "multiSelect": {
+      "placeholder": "Sélectionnez les options",
+      "empty": "Aucune option disponible.",
+      "search": "Rechercher…",
+      "selectedCount": "{count} options sélectionnées",
+      "counter": "{selected} sur {total}",
+      "max": " (max. {max})",
+      "selectAll": "Tout sélectionner",
+      "clear": "Effacer",
+      "done": "Terminer",
+      "remove": "Retirer {label}"
+    },
+    "dataTable": {
+      "empty": "Aucun résultat !",
+      "rowsPerPage": "Lignes par page",
+      "pageSizePlaceholder": "Sélectionner le nombre de résultats",
+      "range": "sur",
+      "first": "Aller à la première page",
+      "previous": "Aller à la page précédente",
+      "next": "Aller à la page suivante",
+      "last": "Aller à la dernière page"
+    },
+    "imageUpload": {
+      "none": "Aucune image",
+      "upload": "Téléverser une image",
+      "remove": "Retirer"
     }
   },
   "errors": {

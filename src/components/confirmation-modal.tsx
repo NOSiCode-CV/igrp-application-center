@@ -12,6 +12,7 @@ import {
   IGRPButton,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -35,11 +36,12 @@ export function ConfirmDialog({
   onConfirm,
   isLoading = false,
   iconName = "Trash",
-  confirmText = "Confirmar",
-  cancelText = "Cancelar",
-  loadingText = "Processando...",
+  confirmText,
+  cancelText,
+  loadingText,
   variant = "destructive",
 }: ConfirmDialogProps) {
+  const t = useTranslations("common.confirmDialog");
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -57,7 +59,7 @@ export function ConfirmDialog({
             disabled={isLoading}
             onClick={() => onOpenChange(false)}
           >
-            {cancelText}
+            {cancelText ?? t("cancel")}
           </IGRPButton>
           <IGRPButton
             variant={variant}
@@ -73,7 +75,7 @@ export function ConfirmDialog({
                   strokeWidth={2}
                   aria-hidden="true"
                 />
-                {loadingText}
+                {loadingText ?? t("loading")}
               </>
             ) : (
               <>
@@ -84,7 +86,7 @@ export function ConfirmDialog({
                   className="size-4"
                   strokeWidth={2}
                 />
-                {confirmText}
+                {confirmText ?? t("confirm")}
               </>
             )}
           </IGRPButton>

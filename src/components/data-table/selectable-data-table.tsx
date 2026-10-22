@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
 import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 export interface SelectableDataTableProps<TData> {
   table: TanstackTable<TData>;
@@ -35,10 +36,13 @@ export interface SelectableDataTableProps<TData> {
 export function SelectableDataTable<TData>({
   table,
   columnCount,
-  emptyMessage = "Sem resultados!",
-  rowsPerPageLabel = "Linhas por página",
+  emptyMessage: emptyMessageProp,
+  rowsPerPageLabel: rowsPerPageLabelProp,
   pageSizes = [5, 10],
 }: SelectableDataTableProps<TData>): React.JSX.Element {
+  const t = useTranslations("common.dataTable");
+  const emptyMessage = emptyMessageProp ?? t("empty");
+  const rowsPerPageLabel = rowsPerPageLabelProp ?? t("rowsPerPage");
   const id = useId();
 
   const { pageIndex, pageSize } = table.getState().pagination;
@@ -112,7 +116,7 @@ export function SelectableDataTable<TData>({
               id={`${id}-per-page`}
               className="w-fit whitespace-nowrap"
             >
-              <SelectValue placeholder="Selecionar número de resultados" />
+              <SelectValue placeholder={t("pageSizePlaceholder")} />
             </SelectTrigger>
             <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
               {pageSizes.map((ps) => (
@@ -132,7 +136,8 @@ export function SelectableDataTable<TData>({
             <span className="text-foreground">
               {start}-{end}
             </span>{" "}
-            de <span className="text-foreground">{rowCount.toString()}</span>
+            {t("range")}{" "}
+            <span className="text-foreground">{rowCount.toString()}</span>
           </p>
         </div>
 
@@ -146,7 +151,7 @@ export function SelectableDataTable<TData>({
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.firstPage()}
                   disabled={!table.getCanPreviousPage()}
-                  aria-label="Ir para a primeira página"
+                  aria-label={t("first")}
                 >
                   <IGRPIcon iconName="ChevronFirst" aria-hidden />
                 </Button>
@@ -158,7 +163,7 @@ export function SelectableDataTable<TData>({
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
-                  aria-label="Ir para a página anterior"
+                  aria-label={t("previous")}
                 >
                   <IGRPIcon iconName="ChevronLeft" aria-hidden />
                 </Button>
@@ -170,7 +175,7 @@ export function SelectableDataTable<TData>({
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
-                  aria-label="Ir para a página seguinte"
+                  aria-label={t("next")}
                 >
                   <IGRPIcon iconName="ChevronRight" aria-hidden />
                 </Button>
@@ -182,7 +187,7 @@ export function SelectableDataTable<TData>({
                   className="disabled:pointer-events-none disabled:opacity-50"
                   onClick={() => table.lastPage()}
                   disabled={!table.getCanNextPage()}
-                  aria-label="Ir para a última página"
+                  aria-label={t("last")}
                 >
                   <IGRPIcon iconName="ChevronLast" aria-hidden />
                 </Button>

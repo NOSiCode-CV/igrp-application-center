@@ -21,6 +21,7 @@ import {
   PopoverTrigger,
   Separator,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 export type MultiSelectOption = IGRPOptionsProps & { disabled?: boolean };
 
@@ -82,9 +83,9 @@ export function MultiSelectField({
   disabled,
   helperText,
   errorText,
-  placeholder = "Selecione as opções",
-  emptyLabel = "Sem opções disponíveis.",
-  searchPlaceholder = "Pesquisar…",
+  placeholder: placeholderProp,
+  emptyLabel: emptyLabelProp,
+  searchPlaceholder: searchPlaceholderProp,
   showSearch,
   hideBulkActions,
   maxSelected,
@@ -92,6 +93,10 @@ export function MultiSelectField({
   value: valueProp,
   onChange,
 }: MultiSelectFieldProps) {
+  const t = useTranslations("common.multiSelect");
+  const placeholder = placeholderProp ?? t("placeholder");
+  const emptyLabel = emptyLabelProp ?? t("empty");
+  const searchPlaceholder = searchPlaceholderProp ?? t("search");
   const fieldId = useId();
   const listId = `${fieldId}-list`;
   const helperId = `${fieldId}-helper`;
@@ -178,7 +183,7 @@ export function MultiSelectField({
       ? placeholder
       : selected.length === 1
         ? (optionByValue.get(selected[0])?.label ?? selected[0])
-        : `${selected.length} opções selecionadas`;
+        : t("selectedCount", { count: selected.length });
 
   return (
     <div className={cn("flex w-full min-w-0 flex-col gap-2", className)}>
@@ -283,8 +288,13 @@ export function MultiSelectField({
               <span className="text-xs text-muted-foreground tabular-nums">
                 {hideBulkActions || options.length === 0 ? null : (
                   <>
-                    {selected.length} de {options.length}
-                    {maxSelected !== undefined ? ` (máx. ${maxSelected})` : ""}
+                    {t("counter", {
+                      selected: selected.length,
+                      total: options.length,
+                    })}
+                    {maxSelected !== undefined
+                      ? t("max", { max: maxSelected })
+                      : ""}
                   </>
                 )}
               </span>
@@ -299,7 +309,7 @@ export function MultiSelectField({
                         disabled={allSelected || selectableValues.length === 0}
                         onClick={() => commit(selectableValues)}
                       >
-                        Selecionar tudo
+                        {t("selectAll")}
                       </Button>
                     ) : null}
                     <Button
@@ -309,7 +319,7 @@ export function MultiSelectField({
                       disabled={selected.length === 0}
                       onClick={() => commit([])}
                     >
-                      Limpar
+                      {t("clear")}
                     </Button>
                   </>
                 )}
@@ -318,8 +328,8 @@ export function MultiSelectField({
                 <Button
                   type="button"
                   size="icon-sm"
-                  aria-label="Concluir"
-                  title="Concluir"
+                  aria-label={t("done")}
+                  title={t("done")}
                   onClick={() => setOpen(false)}
                 >
                   <IGRPIcon iconName="Check" aria-hidden="true" />
@@ -345,7 +355,7 @@ export function MultiSelectField({
                     <button
                       type="button"
                       onClick={() => remove(v)}
-                      aria-label={`Remover ${option?.label ?? v}`}
+                      aria-label={t("remove", { label: option?.label ?? v })}
                       className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-background/60 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
                     >
                       <IGRPIcon iconName="X" className="size-3" />
