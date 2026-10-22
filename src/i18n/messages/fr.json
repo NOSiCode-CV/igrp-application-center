@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "IGRP | Centre d'applications",
+    "title": "IGRP | Centre d’applications",
     "description": "Gestion des applications, utilisateurs, rôles et menus IGRP.",
     "notFound": {
       "title": "404 - Page introuvable",
@@ -22,9 +22,9 @@
       "failed": "Copiez manuellement"
     },
     "intro": {
-      "failing": "L'application répond, mais {count, plural, one {une couche nécessite} other {# couches nécessitent}} votre attention. Voyez ci-dessous ce qui a échoué pour cette requête.",
-      "preview": "L'application répond en mode aperçu : sans vraie connexion et avec des menus d'exemple.",
-      "ok": "L'application répond. Cette requête a traversé toutes les couches ci-dessous."
+      "failing": "L’application répond, mais {count, plural, one {une couche nécessite} other {# couches nécessitent}} votre attention. Voyez ci-dessous ce qui a échoué pour cette requête.",
+      "preview": "L’application répond en mode aperçu : sans vraie connexion et avec des menus d’exemple.",
+      "ok": "L’application répond. Cette requête a traversé toutes les couches ci-dessous."
     },
     "status": {
       "failing": "Attention requise",
@@ -36,20 +36,20 @@
     "requestPath": {
       "title": "Le parcours de cette requête",
       "failing": "{failing} sur {total} {failing, plural, one {couche nécessite} other {couches nécessitent}} votre attention",
-      "preview": "Mode aperçu : authentification et données simulées",
+      "preview": "Mode aperçu : authentification et données simulées",
       "ok": "{total} sur {total} couches actives"
     },
     "nextSteps": {
       "title": "Construire le premier module",
       "subtitle": "{count} étapes, du dossier au menu",
-      "step": "Étape {index} : ",
+      "step": "Étape {index} : ",
       "feature": {
         "title": "Écrivez la fonctionnalité",
         "body": "Les composants, actions et la logique de chaque module restent ensemble, hors des routes."
       },
       "route": {
         "title": "Donnez-lui une route",
-        "body": "Une page dans (igrp) hérite de la session, de l'en-tête et du menu latéral."
+        "body": "Une page dans (igrp) hérite de la session, de l’en-tête et du menu latéral."
       },
       "guard": {
         "title": "Protégez la page",
@@ -57,34 +57,34 @@
       },
       "menu": {
         "title": "Placez-la dans le menu",
-        "body": "En production, le menu vient d'Access Management. En aperçu, du fichier d'exemple."
+        "body": "En production, le menu vient d’Access Management. En aperçu, du fichier d’exemple."
       }
     },
     "replace": {
       "title": "Remplacer cette page",
-      "body": "Pour ouvrir une autre page à l'entrée dans l'application, définissez la route d'accueil dans <code>.env</code> et redémarrez le serveur.",
-      "note": "Cette page n'apparaît que lorsque la variable est vide."
+      "body": "Pour ouvrir une autre page à l’entrée dans l’application, définissez la route d’accueil dans <code>.env</code> et redémarrez le serveur.",
+      "note": "Cette page n’apparaît que lorsque la variable est vide."
     },
     "layers": {
       "middleware": {
         "name": "Middleware",
         "valueBypass": "Laisse passer toutes les requêtes",
         "valueAuth": "Exige une session ouverte",
-        "detailBypass": "L'authentification est désactivée dans cet environnement.",
+        "detailBypass": "L’authentification est désactivée dans cet environnement.",
         "detailAuth": "Les requêtes sans session sont envoyées vers la connexion."
       },
       "session": {
         "name": "Session",
-        "valueEmpty": "Session sans nom d'utilisateur",
-        "detailBypass": "Utilisateur fictif d'aperçu.",
+        "valueEmpty": "Session sans nom d’utilisateur",
+        "detailBypass": "Utilisateur fictif d’aperçu.",
         "detailAuth": "Ouverte avec {provider}."
       },
       "accessManagement": {
         "name": "Access Management",
-        "valueBypass": "Menus et applications d'exemple",
+        "valueBypass": "Menus et applications d’exemple",
         "detailBypass": "Les données viennent de src/temp, sans appel au serveur.",
         "valueOk": "Connecté",
-        "detailOk": "Fournit les menus, les applications et l'utilisateur.",
+        "detailOk": "Fournit les menus, les applications et l’utilisateur.",
         "valueMissing": "Aucune adresse configurée",
         "detailMissing": "Définissez IGRP_ACCESS_MANAGEMENT_API dans .env pour charger les menus."
       },
@@ -93,15 +93,15 @@
         "valueAll": "Accès total",
         "valueCount": "{count, plural, one {# permission} other {# permissions}}",
         "detailBypass": "En aperçu, toutes les vérifications passent.",
-        "detailOrg": "Département actif : {org}.",
+        "detailOrg": "Département actif : {org}.",
         "detailNoOrg": "Aucun département actif dans le jeton.",
         "valueError": "Impossible de lire le jeton",
-        "detailError": "Toutes les vérifications de permission refusent l'accès."
+        "detailError": "Toutes les vérifications de permission refusent l’accès."
       },
       "page": {
         "name": "Cette page",
         "value": "Affichée",
-        "detail": "Apparaît lorsqu'aucune route d'accueil n'est définie."
+        "detail": "Apparaît lorsqu’aucune route d’accueil n’est définie."
       }
     }
   },
@@ -121,7 +121,7 @@
       "deleted": "Supprimé"
     },
     "unknownError": "Une erreur inconnue s’est produite.",
-    "serverError": "Une erreur s'est produite. Veuillez réessayer.",
+    "serverError": "Une erreur s’est produite. Veuillez réessayer.",
     "inlineError": {
       "title": "Impossible de charger les données."
     },
@@ -140,7 +140,7 @@
       "clickToCopy": "Cliquez pour copier"
     },
     "textarea": {
-      "charsUsed": "Caractères utilisés : {length} sur {max}"
+      "charsUsed": "Caractères utilisés : {length} sur {max}"
     },
     "fileUpload": {
       "placeholder": "Glissez votre image ici",
@@ -148,7 +148,7 @@
       "imageFormats": "SVG, PNG, JPG, GIF ou WEBP",
       "otherFormats": "Choisir un fichier",
       "maxSize": "(max. {size} Mo)",
-      "previewAlt": "Aperçu de l'image",
+      "previewAlt": "Aperçu de l’image",
       "remove": "Retirer le fichier",
       "tooLarge": "Le fichier dépasse la limite de {size} Mo."
     },
@@ -160,7 +160,7 @@
       "saving": "Enregistrement…"
     },
     "sensitiveValue": {
-      "confirmation": "J'ai enregistré le secret dans un endroit sûr",
+      "confirmation": "J’ai enregistré le secret dans un endroit sûr",
       "copied": "Copié",
       "copiedDescription": "{label} copié.",
       "copyFailed": "Impossible de copier",
@@ -168,15 +168,15 @@
       "hide": "Masquer",
       "show": "Afficher",
       "copy": "Copier",
-      "hint": "Masquée par défaut pour ne pas apparaître lors des partages d'écran. Copier copie toujours la valeur complète."
+      "hint": "Masquée par défaut pour ne pas apparaître lors des partages d’écran. Copier copie toujours la valeur complète."
     },
     "deleteDialog": {
       "cancel": "Annuler",
       "delete": "Supprimer",
       "header": "Confirmation finale",
       "confirmPrefix": "Pour confirmer, saisissez",
-      "placeholder": "Saisissez ''{name}'' pour confirmer",
-      "mismatch": "Le texte ne correspond pas à «{name}».",
+      "placeholder": "Saisissez « {name} » pour confirmer",
+      "mismatch": "Le texte ne correspond pas à « {name} ».",
       "wait": "Veuillez patienter..."
     },
     "confirmDialog": {
@@ -202,7 +202,7 @@
       "remove": "Retirer {label}"
     },
     "dataTable": {
-      "empty": "Aucun résultat !",
+      "empty": "Aucun résultat !",
       "rowsPerPage": "Lignes par page",
       "pageSizePlaceholder": "Sélectionner le nombre de résultats",
       "range": "sur",
@@ -213,7 +213,7 @@
     }
   },
   "errors": {
-    "errorRef": "ID de référence :",
+    "errorRef": "ID de référence :",
     "unexpected": {
       "title": "Une erreur inattendue s’est produite.",
       "description": "Veuillez réessayer. Si le problème persiste, contactez l’équipe d’assistance en indiquant l’ID de référence affiché ci-dessous."
@@ -263,7 +263,7 @@
         "description": "Envoyez une invitation par e-mail à un nouvel utilisateur.",
         "userInfo": "Informations de l’utilisateur",
         "emailLabel": "E-mail",
-        "emailPlaceholder": "Ex. : jean@email.com",
+        "emailPlaceholder": "Ex. : jean@email.com",
         "assignRoles": "Attribuer des rôles",
         "assignRolesHint": "Sélectionnez un département et des rôles pour l’utilisateur (facultatif).",
         "departmentLabel": "Département",
@@ -281,8 +281,8 @@
         "submitting": "Envoi...",
         "toasts": {
           "inviteFailed": "Échec de l’invitation",
-          "inviteFailedWithReason": "Échec de l’invitation : {reason}",
-          "inviteSent": "Invitation envoyée avec succès !"
+          "inviteFailedWithReason": "Échec de l’invitation : {reason}",
+          "inviteSent": "Invitation envoyée avec succès !"
         },
         "rolesNoneInDepartment": "Ce département n’a encore aucun rôle.",
         "rolesPickDepartment": "Choisissez d’abord un département pour voir les rôles disponibles."
@@ -384,7 +384,7 @@
           "processing": "Traitement…",
           "reject": "Refuser",
           "rejectConfirm": {
-            "title": "Refuser l’invitation ?",
+            "title": "Refuser l’invitation ?",
             "description": "Cette action est irréversible. Si vous changez d’avis, vous devrez demander une nouvelle invitation à l’administrateur.",
             "confirm": "Refuser l’invitation"
           }
@@ -437,7 +437,7 @@
     },
     "deleteDialog": {
       "deactivated": "Utilisateur désactivé",
-      "deactivatedDescription": "L’utilisateur « {name} » a été désactivé avec succès.",
+      "deactivatedDescription": "L’utilisateur « {name} » a été désactivé avec succès.",
       "deactivateFailed": "Erreur lors de la désactivation.",
       "label": "Nom d’utilisateur",
       "confirm": "Désactiver",
@@ -525,8 +525,8 @@
       "statusDialog": {
         "activateTitle": "Activer l’utilisateur",
         "deactivateTitle": "Désactiver l’utilisateur",
-        "activateDescription": "Voulez-vous vraiment activer <strong>{name}</strong> ?",
-        "deactivateDescription": "Voulez-vous vraiment désactiver <strong>{name}</strong> ?",
+        "activateDescription": "Voulez-vous vraiment activer <strong>{name}</strong> ?",
+        "deactivateDescription": "Voulez-vous vraiment désactiver <strong>{name}</strong> ?",
         "activate": "Activer",
         "deactivate": "Désactiver",
         "activating": "Activation...",
@@ -534,11 +534,11 @@
       },
       "cancelDialog": {
         "title": "Annuler l’invitation",
-        "description": "Voulez-vous vraiment annuler l’invitation pour <strong>{identifier}</strong> ? Cette action est irréversible.",
+        "description": "Voulez-vous vraiment annuler l’invitation pour <strong>{identifier}</strong> ? Cette action est irréversible.",
         "confirm": "Confirmer",
         "canceling": "Annulation..."
       },
-      "staleWarning": "Cette liste n’est peut-être pas à jour : la dernière actualisation a échoué.",
+      "staleWarning": "Cette liste n’est peut-être pas à jour : la dernière actualisation a échoué.",
       "refresh": "Actualiser",
       "refreshing": "Actualisation..."
     },
@@ -613,7 +613,7 @@
         "save": "Enregistrer les modifications",
         "toasts": {
           "updated": "Utilisateur mis à jour",
-          "updatedDescription": "L’utilisateur a été mis à jour avec succès !"
+          "updatedDescription": "L’utilisateur a été mis à jour avec succès !"
         }
       },
       "loading": "Chargement de l’utilisateur…",
@@ -639,8 +639,8 @@
       "statusDialog": {
         "activateTitle": "Activer l’utilisateur",
         "deactivateTitle": "Désactiver l’utilisateur",
-        "activateDescription": "Voulez-vous vraiment activer l’utilisateur <strong>{name}</strong> ?",
-        "deactivateDescription": "Voulez-vous vraiment désactiver l’utilisateur <strong>{name}</strong> ?",
+        "activateDescription": "Voulez-vous vraiment activer l’utilisateur <strong>{name}</strong> ?",
+        "deactivateDescription": "Voulez-vous vraiment désactiver l’utilisateur <strong>{name}</strong> ?",
         "confirmActivate": "Activer",
         "confirmDeactivate": "Confirmer la désactivation",
         "activating": "Activation...",
@@ -730,14 +730,14 @@
         "removed": "Rôle retiré avec succès.",
         "removeFailed": "Impossible de retirer le rôle.",
         "revoked": "Rôle révoqué.",
-        "revokedDescription": "« {role} » a été retiré de {user} dans le département {department}.",
+        "revokedDescription": "« {role} » a été retiré de {user} dans le département {department}.",
         "undo": "Annuler",
         "restored": "Rôle rétabli.",
         "restoreFailed": "Impossible de rétablir le rôle."
       },
       "revokeDialog": {
         "title": "Révoquer le rôle",
-        "description": "Révoquer « {role} » de {user} dans le département {department} ? L’utilisateur perd les accès accordés par ce rôle.",
+        "description": "Révoquer « {role} » de {user} dans le département {department} ? L’utilisateur perd les accès accordés par ce rôle.",
         "revoking": "Révocation..."
       }
     },
@@ -794,7 +794,7 @@
       "filteredCount": "{shown} sur {total}",
       "search": "Rechercher des applications",
       "favorites": "Favoris",
-      "sortBy": "Trier par :",
+      "sortBy": "Trier par :",
       "sortPlaceholder": "Choisir l’ordre",
       "sort": {
         "default": "Par défaut",
@@ -812,8 +812,8 @@
       "emptyDescription": "L’accès est accordé par rôle et département. Contactez l’administrateur si vous vous attendiez à voir quelque chose ici.",
       "noFavoritesTitle": "Pas encore de favoris",
       "noFavoritesDescription": "Cliquez sur l’étoile ★ d’une application pour l’ajouter ici",
-      "noFavoriteMatch": "Aucun favori ne correspond à « {query} ».",
-      "noMatch": "Aucune application ne correspond à « {query} ».",
+      "noFavoriteMatch": "Aucun favori ne correspond à « {query} ».",
+      "noMatch": "Aucune application ne correspond à « {query} ».",
       "clearFilters": "Effacer les filtres"
     },
     "card": {
@@ -941,7 +941,7 @@
       "name": "Nom",
       "namePlaceholder": "Nom de l’application…",
       "code": "Code",
-      "codePlaceholder": "Ex. : APP_CENTER",
+      "codePlaceholder": "Ex. : APP_CENTER",
       "type": "Type",
       "types": {
         "internal": "Interne",
@@ -960,9 +960,9 @@
       "update": "Mettre à jour l’application",
       "toasts": {
         "createdTitle": "Application créée",
-        "created": "L’application a été créée avec succès !",
+        "created": "L’application a été créée avec succès !",
         "updatedTitle": "Application mise à jour",
-        "updated": "L’application a été mise à jour avec succès !",
+        "updated": "L’application a été mise à jour avec succès !",
         "createError": "Erreur lors de la création",
         "updateError": "Erreur lors de la mise à jour"
       }
@@ -972,7 +972,7 @@
       "codeRequired": "Le code est obligatoire",
       "codeMin": "Le code doit contenir au moins 2 caractères",
       "codeMax": "Le code doit contenir au maximum 255 caractères",
-      "codePattern": "Utilisez uniquement des majuscules, des chiffres, _ et - (ex. : APP_CENTER)",
+      "codePattern": "Utilisez uniquement des majuscules, des chiffres, _ et - (ex. : APP_CENTER)",
       "nameRequired": "Le nom est obligatoire",
       "nameMin": "Le nom doit contenir au moins 2 caractères",
       "nameMax": "Le nom doit contenir au maximum 255 caractères",
@@ -980,9 +980,9 @@
       "ownerMax": "Le responsable doit contenir au maximum 255 caractères",
       "descriptionMax": "La description doit contenir au maximum 255 caractères",
       "pictureMax": "L’image doit contenir au maximum 255 caractères",
-      "urlInvalid": "Indiquez une URL complète, avec https:// (ex. : https://exemple.com)",
+      "urlInvalid": "Indiquez une URL complète, avec https:// (ex. : https://exemple.com)",
       "urlRequired": "L’URL est obligatoire",
-      "slugRequired": "Le slug est obligatoire (ex. : /apps/exemple)",
+      "slugRequired": "Le slug est obligatoire (ex. : /apps/exemple)",
       "slugMax": "Le slug doit contenir au maximum 255 caractères"
     }
   },
@@ -1043,7 +1043,7 @@
       "addPageTitle": "Ajouter une page",
       "addToParent": "Il sera ajouté à {parent}.",
       "discard": {
-        "title": "Abandonner vos modifications ?",
+        "title": "Abandonner vos modifications ?",
         "description": "Revenir aux types de menu efface ce que vous avez saisi.",
         "keep": "Continuer la saisie",
         "confirm": "Abandonner"
@@ -1113,12 +1113,12 @@
       "description": "Il disparaît de la navigation de l’application. Cette action est irréversible.",
       "nameLabel": "Pour confirmer, saisissez <highlight>{name}</highlight>",
       "successTitle": "Menu supprimé",
-      "success": "Le menu « {name} » a été supprimé avec succès.",
+      "success": "Le menu « {name} » a été supprimé avec succès.",
       "errorTitle": "Erreur lors de la suppression.",
       "deleting": "Suppression...",
-      "titleGroup": "Supprimer ce groupe ?",
-      "titleFolder": "Supprimer ce dossier ?",
-      "titlePage": "Supprimer cette page ?",
+      "titleGroup": "Supprimer ce groupe ?",
+      "titleFolder": "Supprimer ce dossier ?",
+      "titlePage": "Supprimer cette page ?",
       "contents": "{count, plural, one {Contient # menu} other {Contient # menus}}",
       "more": "{count, plural, one {et # autre} other {et # autres}}",
       "confirmGroup": "Supprimer le groupe",
@@ -1127,19 +1127,19 @@
     },
     "validation": {
       "nameRequired": "Le nom est obligatoire",
-      "codePattern": "Utilisez uniquement des majuscules, des chiffres et des tirets bas (ex. : CODE_MENU)",
+      "codePattern": "Utilisez uniquement des majuscules, des chiffres et des tirets bas (ex. : CODE_MENU)",
       "pageUrlRequired": "Indiquez l’URL relative ou l’URL externe",
       "urlRequired": "L’URL est obligatoire",
-      "urlInvalid": "Indiquez une URL complète, avec https:// (ex. : https://exemple.com)"
+      "urlInvalid": "Indiquez une URL complète, avec https:// (ex. : https://exemple.com)"
     }
   },
   "branding": {
     "meta": {
       "title": "Personnalisation",
-      "description": "Définissez les couleurs et les logos de l'organisation."
+      "description": "Définissez les couleurs et les logos de l’organisation."
     },
     "title": "Personnalisation",
-    "subtitle": "Les couleurs et les logos s'appliquent à toutes les applications IGRP où la personnalisation est activée.",
+    "subtitle": "Les couleurs et les logos s’appliquent à toutes les applications IGRP où la personnalisation est activée.",
     "tabs": {
       "colors": "Couleurs",
       "logos": "Logos"
@@ -1157,9 +1157,9 @@
       "subtle": "États atténués",
       "sidebar": "Barre latérale",
       "chart": "Graphiques",
-      "tiles": "Tuiles d'applications",
+      "tiles": "Tuiles d’applications",
       "other": "Autres",
-      "appOther": "Autres du Centre d'applications"
+      "appOther": "Autres du Centre d’applications"
     },
     "tokens": {
       "primary": "Primaire",
@@ -1198,7 +1198,7 @@
       "sidebarAccent": "Accent de la barre latérale",
       "sidebarAccentForeground": "Texte sur accent de la barre latérale",
       "sidebarActive": "Élément actif",
-      "sidebarActiveForeground": "Texte de l'élément actif",
+      "sidebarActiveForeground": "Texte de l’élément actif",
       "sidebarBorder": "Bordure de la barre latérale",
       "sidebarRing": "Anneau de focus de la barre latérale",
       "chart1": "Graphique 1",
@@ -1238,28 +1238,28 @@
     },
     "logos": {
       "header": {
-        "title": "Marque de l'en-tête",
-        "description": "Image carrée affichée dans l'en-tête de chaque application."
+        "title": "Marque de l’en-tête",
+        "description": "Image carrée affichée dans l’en-tête de chaque application."
       },
       "wide": {
         "title": "Logo horizontal",
-        "description": "Affiché sur l'écran de connexion et sur les invitations, 80 px de haut au maximum."
+        "description": "Affiché sur l’écran de connexion et sur les invitations, 80 px de haut au maximum."
       },
       "favicon": {
-        "title": "Icône de l'onglet",
-        "description": "PNG ou ICO, jusqu'à 256 Ko."
+        "title": "Icône de l’onglet",
+        "description": "PNG ou ICO, jusqu’à 256 Ko."
       },
       "light": "Version claire",
       "dark": "Version sombre (facultative)",
       "pick": "Choisir une image",
-      "drop": "Glissez l'image ici",
+      "drop": "Glissez l’image ici",
       "current": "Image actuelle",
       "remove": "Retirer"
     },
     "preview": {
       "title": "Aperçu",
-      "appName": "Centre d'applications",
-      "cardTitle": "Carte d'exemple",
+      "appName": "Centre d’applications",
+      "cardTitle": "Carte d’exemple",
       "cardBody": "Texte atténué pour les descriptions.",
       "primary": "Primaire",
       "secondary": "Secondaire",
@@ -1284,16 +1284,16 @@
     },
     "unsaved": "Vous avez des modifications non enregistrées.",
     "saved": "Personnalisation enregistrée.",
-    "logoAlt": "Logo de l'organisation",
+    "logoAlt": "Logo de l’organisation",
     "forbidden": {
       "description": "Vous avez besoin de la permission de personnalisation de la plateforme. Les permissions viennent de votre rôle actif."
     },
     "errors": {
       "load": "Impossible de charger la personnalisation.",
-      "saveTitle": "Impossible d'enregistrer.",
-      "forbidden": "Vous n'avez pas la permission de personnaliser la plateforme.",
-      "upload": "Impossible de téléverser l'image : {slot}.",
-      "invalidColor": "Utilisez une couleur concrète : hex, rgb, hsl, oklch, oklab, lab, lch ou un nom de couleur.",
+      "saveTitle": "Impossible d’enregistrer.",
+      "forbidden": "Vous n’avez pas la permission de personnaliser la plateforme.",
+      "upload": "Impossible de téléverser l’image : {slot}.",
+      "invalidColor": "Utilisez une couleur concrète : hex, rgb, hsl, oklch, oklab, lab, lch ou un nom de couleur.",
       "logoHost": "Seules les images téléversées ici sont acceptées.",
       "favicon": "Utilisez un PNG ou un ICO de 256 Ko au maximum.",
       "image": "Utilisez une image (SVG, PNG, JPG, WEBP ou GIF).",
@@ -1329,7 +1329,7 @@
     },
     "revoke": {
       "title": "Retirer la permission",
-      "description": "Retirer « {name} » du département {department} ? Tous les rôles de ce département perdent l’accès accordé par cette permission.",
+      "description": "Retirer « {name} » du département {department} ? Tous les rôles de ce département perdent l’accès accordé par cette permission.",
       "cancel": "Annuler",
       "confirm": "Retirer",
       "loading": "Retrait en cours..."
@@ -1361,7 +1361,7 @@
       },
       "remove": {
         "title": "Retirer la ressource",
-        "description": "Voulez-vous vraiment retirer la ressource <strong>{name}</strong> de ce département ? Cette action est irréversible.",
+        "description": "Voulez-vous vraiment retirer la ressource <strong>{name}</strong> de ce département ? Cette action est irréversible.",
         "cancel": "Annuler",
         "confirm": "Retirer",
         "loading": "Retrait en cours…"
@@ -1384,7 +1384,7 @@
       "emptyDescription": "Aucun rôle ne vous est encore attribué.",
       "toasts": {
         "activated": "Rôle activé avec succès.",
-        "activateFailed": "Échec de l'activation du rôle.",
+        "activateFailed": "Échec de l’activation du rôle.",
         "unknownError": "Erreur inconnue."
       }
     }
@@ -1392,7 +1392,7 @@
   "accounts": {
     "layout": {
       "title": "Comptes et Services",
-      "description": "Identités qui accèdent aux API iGRP : clients OAuth et comptes de service qui les encapsulent."
+      "description": "Identités qui accèdent aux API iGRP : clients OAuth et comptes de service qui les encapsulent."
     },
     "tabs": {
       "label": "Sections Comptes et Services",
@@ -1408,7 +1408,7 @@
     "validation": {
       "nameRequired": "Le nom est obligatoire (min. 3 caractères)",
       "nameMax": "Le nom doit comporter au maximum 50 caractères",
-      "namePattern": "Le nom ne peut contenir que des lettres, des chiffres, des traits d'union et des underscores",
+      "namePattern": "Le nom ne peut contenir que des lettres, des chiffres, des traits d’union et des underscores",
       "codeRequired": "Le code est obligatoire (min. 2 caractères)",
       "departmentRequired": "Le code du département est obligatoire (min. 1 caractère)"
     },
@@ -1419,11 +1419,11 @@
       "searchLabel": "Rechercher un rôle",
       "searchPlaceholder": "Rechercher un rôle…",
       "statusFilter": "Statut",
-      "loadError": "Une erreur s'est produite lors du chargement des rôles.",
+      "loadError": "Une erreur s’est produite lors du chargement des rôles.",
       "loading": "Chargement des rôles…",
       "emptyTitle": "Aucun rôle créé",
-      "emptyDescription": "Il n'existe pas encore de rôles.",
-      "adjustSearch": "Essayez d'ajuster votre recherche.",
+      "emptyDescription": "Il n’existe pas encore de rôles.",
+      "adjustSearch": "Essayez d’ajuster votre recherche.",
       "columnRole": "Rôle",
       "columnDescription": "Description",
       "columnStatus": "Statut",
@@ -1442,11 +1442,11 @@
     "form": {
       "titleEdit": "Modifier le rôle",
       "titleCreate": "Créer un nouveau rôle",
-      "subRoleOf": "Ce sera un sous-rôle de : <strong>{parent}</strong>",
+      "subRoleOf": "Ce sera un sous-rôle de : <strong>{parent}</strong>",
       "name": "Nom",
       "namePlaceholder": "Nom du rôle",
       "code": "Code",
-      "codePlaceholder": "Ex : ROLE_ADMIN",
+      "codePlaceholder": "Ex : ROLE_ADMIN",
       "description": "Description",
       "descriptionPlaceholder": "Brève description des responsabilités de ce rôle",
       "status": "Statut",
@@ -1467,15 +1467,15 @@
     },
     "delete": {
       "title": "Confirmation",
-      "description": "Cette action est irréversible. Le rôle et toutes ses données seront supprimés définitivement. Pour confirmer, saisissez <code>{name}</code> ci-dessous :",
+      "description": "Cette action est irréversible. Le rôle et toutes ses données seront supprimés définitivement. Pour confirmer, saisissez <code>{name}</code> ci-dessous :",
       "label": "Nom du rôle",
-      "placeholder": "Saisissez « {name} » pour confirmer",
+      "placeholder": "Saisissez « {name} » pour confirmer",
       "cancel": "Annuler",
       "confirm": "Supprimer",
       "pending": "Veuillez patienter…",
       "toast": {
         "successTitle": "Rôle supprimé",
-        "successDescription": "Le rôle « {name} » a été supprimé avec succès.",
+        "successDescription": "Le rôle « {name} » a été supprimé avec succès.",
         "errorTitle": "Échec de la suppression."
       }
     },
@@ -1499,15 +1499,15 @@
         "updatedTitle": "Permissions mises à jour",
         "updatedDescription": "+{added} ajoutée(s), -{removed} retirée(s).",
         "errorTitle": "Échec de la mise à jour des permissions",
-        "unknownError": "Une erreur inconnue s'est produite.",
-        "loadErrorTitle": "Le rôle a des permissions associées, mais elles n'ont pas pu être chargées."
+        "unknownError": "Une erreur inconnue s’est produite.",
+        "loadErrorTitle": "Le rôle a des permissions associées, mais elles n’ont pas pu être chargées."
       }
     }
   },
   "oauthClients": {
     "meta": {
       "listTitle": "Clients OAuth",
-      "listDescription": "Consommateurs d'API enregistrés auprès du serveur d'autorisation iGRP.",
+      "listDescription": "Consommateurs d’API enregistrés auprès du serveur d’autorisation iGRP.",
       "newTitle": "Enregistrer un client OAuth",
       "detailTitle": "{name} · Clients OAuth",
       "detailFallback": "Client OAuth"
@@ -1519,7 +1519,7 @@
     },
     "loading": {
       "list": "Chargement des clients OAuth...",
-      "new": "Préparation de l'enregistrement..."
+      "new": "Préparation de l’enregistrement..."
     },
     "actions": {
       "cancel": "Annuler",
@@ -1536,7 +1536,7 @@
       "label": "Client secret",
       "warningTitle": "Ce secret ne sera plus affiché.",
       "warningBody": "Ni à vous, ni à un autre administrateur. Conservez-le dès maintenant dans votre gestionnaire de secrets.",
-      "confirmLabel": "J'ai conservé le secret dans un endroit sûr"
+      "confirmLabel": "J’ai conservé le secret dans un endroit sûr"
     },
     "kind": {
       "web": "Application web",
@@ -1549,7 +1549,7 @@
       "inactiveFeminine": "Inactive"
     },
     "linkUnknown": "Impossible de vérifier si un compte de service existe.",
-    "deleteBlockedByAccount": "Supprimez d'abord le compte de service « {name} ».",
+    "deleteBlockedByAccount": "Supprimez d’abord le compte de service « {name} ».",
     "duration": {
       "days": "{count, plural, one {{count} jour} other {{count} jours}}",
       "hours": "{count, plural, one {{count} heure} other {{count} heures}}",
@@ -1572,19 +1572,19 @@
       "ttlInteger": "Utilisez un nombre entier de secondes.",
       "clientIdRequired": "Indiquez le client ID.",
       "clientIdMax": "100 caractères maximum.",
-      "clientIdPattern": "Utilisez des minuscules, des chiffres et des traits d'union (ex. : my-invoice).",
+      "clientIdPattern": "Utilisez des minuscules, des chiffres et des traits d’union (ex. : my-invoice).",
       "nameRequired": "Indiquez le nom.",
       "nameMax": "255 caractères maximum.",
       "descriptionMax": "140 caractères maximum.",
       "grantTypesRequired": "Choisissez au moins un grant type.",
       "redirectRequired": "Ajoutez au moins un URI de redirection.",
-      "redirectNotAllowed": "« {uri} » n'est pas autorisé. Utilisez https:// (ou http://localhost)."
+      "redirectNotAllowed": "« {uri} » n’est pas autorisé. Utilisez https:// (ou http://localhost)."
     },
     "list": {
       "accountsErrorTitle": "Impossible de vérifier les comptes de service.",
-      "accountsErrorMessage": "La suppression, l'activation et la désactivation sont indisponibles tant que la vérification n'a pas abouti.",
-      "emptyTitle": "Il n'y a pas encore de clients OAuth",
-      "emptyDescription": "Un client OAuth est une application ou un service enregistré pour demander des jetons au serveur d'autorisation iGRP.",
+      "accountsErrorMessage": "La suppression, l’activation et la désactivation sont indisponibles tant que la vérification n’a pas abouti.",
+      "emptyTitle": "Il n’y a pas encore de clients OAuth",
+      "emptyDescription": "Un client OAuth est une application ou un service enregistré pour demander des jetons au serveur d’autorisation iGRP.",
       "emptyAction": "Enregistrer le premier client",
       "noMatches": "Aucun client ne correspond aux filtres."
     },
@@ -1612,55 +1612,55 @@
     "activation": {
       "titleActivate": "Activer le client",
       "titleDeactivate": "Désactiver le client",
-      "descActivateLinked": "Le client et le compte de service « {name} » peuvent de nouveau s'authentifier.",
+      "descActivateLinked": "Le client et le compte de service « {name} » peuvent de nouveau s’authentifier.",
       "descActivate": "Le client peut de nouveau demander des jetons.",
-      "descDeactivateLinked": "Le client et le compte de service « {name} » ne peuvent plus s'authentifier tant qu'ils ne sont pas réactivés.",
-      "descDeactivate": "Les applications qui utilisent ce client ne peuvent plus s'authentifier. Vous pourrez le réactiver plus tard.",
+      "descDeactivateLinked": "Le client et le compte de service « {name} » ne peuvent plus s’authentifier tant qu’ils ne sont pas réactivés.",
+      "descDeactivate": "Les applications qui utilisent ce client ne peuvent plus s’authentifier. Vous pourrez le réactiver plus tard.",
       "loadingActivate": "Activation…",
       "loadingDeactivate": "Désactivation…",
       "toastActivated": "Client activé",
       "toastDeactivated": "Client désactivé",
-      "errorActivate": "Impossible d'activer",
+      "errorActivate": "Impossible d’activer",
       "errorDeactivate": "Impossible de désactiver",
-      "errorActivateStep": "Impossible d'activer (échec : {step})",
-      "errorDeactivateStep": "Impossible de désactiver (échec : {step})",
+      "errorActivateStep": "Impossible d’activer (échec : {step})",
+      "errorDeactivateStep": "Impossible de désactiver (échec : {step})",
       "retry": "{error} Réessayez.",
       "stepClient": "client OAuth",
       "stepServiceAccount": "compte de service"
     },
     "delete": {
       "errorTitle": "Impossible de supprimer",
-      "linkedError": "Ce client a un compte de service associé. Supprimez d'abord le compte de service.",
+      "linkedError": "Ce client a un compte de service associé. Supprimez d’abord le compte de service.",
       "successTitle": "Client supprimé",
-      "description": "L'enregistrement est supprimé et les identifiants cessent de fonctionner immédiatement. Il est impossible de le récupérer.",
+      "description": "L’enregistrement est supprimé et les identifiants cessent de fonctionner immédiatement. Il est impossible de le récupérer.",
       "label": "Client ID",
       "header": "Supprimer le client OAuth"
     },
     "rotate": {
       "confirmTitle": "Générer un nouveau secret",
-      "description": "Le secret actuel cesse de fonctionner immédiatement. Les jetons déjà émis restent valides jusqu'à leur expiration. Le client ID ne change pas : seul le secret doit être redistribué.",
-      "descriptionLinked": "Le secret actuel cesse de fonctionner immédiatement, y compris pour le compte de service « {name} ». Les jetons déjà émis restent valides jusqu'à leur expiration. Le client ID ne change pas : seul le secret doit être redistribué.",
+      "description": "Le secret actuel cesse de fonctionner immédiatement. Les jetons déjà émis restent valides jusqu’à leur expiration. Le client ID ne change pas : seul le secret doit être redistribué.",
+      "descriptionLinked": "Le secret actuel cesse de fonctionner immédiatement, y compris pour le compte de service « {name} ». Les jetons déjà émis restent valides jusqu’à leur expiration. Le client ID ne change pas : seul le secret doit être redistribué.",
       "loading": "Génération…",
       "errorTitle": "Impossible de générer un nouveau secret",
       "doneTitle": "Nouveau secret généré",
-      "doneWithSecret": "L'ancien secret de <id>{clientId}</id> ne fonctionne plus. Mettez à jour les applications qui utilisent ce client.",
-      "doneWithoutSecret": "L'ancien secret de <id>{clientId}</id> ne fonctionne plus. Le serveur n'a pas renvoyé le nouveau secret.",
-      "missingAlert": "Générez un autre secret. D'ici là, aucune application ne peut s'authentifier avec ce client.",
-      "closeTitle": "Fermer sans confirmer ?",
-      "closeDescription": "Vous ne pourrez plus voir ce secret. Fermer quand même ?",
+      "doneWithSecret": "L’ancien secret de <id>{clientId}</id> ne fonctionne plus. Mettez à jour les applications qui utilisent ce client.",
+      "doneWithoutSecret": "L’ancien secret de <id>{clientId}</id> ne fonctionne plus. Le serveur n’a pas renvoyé le nouveau secret.",
+      "missingAlert": "Générez un autre secret. D’ici là, aucune application ne peut s’authentifier avec ce client.",
+      "closeTitle": "Fermer sans confirmer ?",
+      "closeDescription": "Vous ne pourrez plus voir ce secret. Fermer quand même ?",
       "closeBack": "Retour",
       "closeAnyway": "Fermer quand même"
     },
     "create": {
-      "noteInfo": "Le secret n'est affiché qu'une seule fois, à la fin de l'enregistrement.",
+      "noteInfo": "Le secret n’est affiché qu’une seule fois, à la fin de l’enregistrement.",
       "noteCreated": "Le client OAuth a été enregistré. Conservez le secret avant de quitter cette page.",
       "title": "Enregistrer un client OAuth2",
       "submit": "Enregistrer",
       "submitting": "Enregistrement…",
       "conflict": "Un client avec ce client ID existe déjà.",
-      "errorTitle": "Impossible d'enregistrer le client",
-      "leaveTitle": "Quitter sans enregistrer le client ?",
-      "leaveDescription": "Les données saisies n'ont pas encore été enregistrées. Si vous quittez maintenant, vous les perdrez.",
+      "errorTitle": "Impossible d’enregistrer le client",
+      "leaveTitle": "Quitter sans enregistrer le client ?",
+      "leaveDescription": "Les données saisies n’ont pas encore été enregistrées. Si vous quittez maintenant, vous les perdrez.",
       "leaveCancel": "Continuer la saisie",
       "leaveAction": "Quitter et abandonner",
       "doneTitle": "Client enregistré",
@@ -1668,13 +1668,13 @@
       "doneWithoutSecret": "Le client <id>{clientId}</id> a été créé, mais sans identifiants utilisables.",
       "rotateHint": "Si le secret est exposé, générez-en un nouveau dans les détails du client.",
       "finish": "Terminer — voir les détails",
-      "missingAlert": "Le serveur n'a pas renvoyé le secret. Générez-en un nouveau dans les détails du client."
+      "missingAlert": "Le serveur n’a pas renvoyé le secret. Générez-en un nouveau dans les détails du client."
     },
     "detail": {
       "back": "Clients OAuth",
       "clientId": "Client ID",
-      "duplicateAccounts": "Ce client a plus d'un compte de service associé. Cela ne devrait pas arriver — contactez l’assistance.",
-      "saveErrorTitle": "Impossible d'enregistrer",
+      "duplicateAccounts": "Ce client a plus d’un compte de service associé. Cela ne devrait pas arriver — contactez l’assistance.",
+      "saveErrorTitle": "Impossible d’enregistrer",
       "savedTitle": "Modifications enregistrées",
       "recordTitle": "Enregistrement",
       "recordDescription": "Quand ce client a été enregistré et modifié pour la dernière fois.",
@@ -1682,40 +1682,40 @@
       "updatedAt": "Mis à jour le",
       "dangerZone": "Zone de danger",
       "rotateDescription": "Le secret actuel cesse de fonctionner immédiatement. Utilisez cette action si le secret a été exposé ou perdu.",
-      "deactivateLinked": "Désactive aussi le compte de service « {name} ». L'identité ne peut plus s'authentifier.",
+      "deactivateLinked": "Désactive aussi le compte de service « {name} ». L’identité ne peut plus s’authentifier.",
       "deleteTitle": "Supprimer le client",
-      "deleteDescription": "Supprime l'enregistrement. Les identifiants cessent de fonctionner immédiatement et il est impossible de le récupérer."
+      "deleteDescription": "Supprime l’enregistrement. Les identifiants cessent de fonctionner immédiatement et il est impossible de le récupérer."
     },
     "serviceAccount": {
       "title": "Compte de service",
-      "description": "L'identité machine qui s'authentifie avec ce client, avec ses rôles et ses permissions.",
+      "description": "L’identité machine qui s’authentifie avec ce client, avec ses rôles et ses permissions.",
       "saveFirst": "Enregistrez les modifications pour pouvoir créer un compte de service pour ce client.",
-      "none": "Ce client n'a pas encore de compte de service.",
+      "none": "Ce client n’a pas encore de compte de service.",
       "create": "Créer un compte de service pour ce client"
     },
     "form": {
       "basicTitle": "Informations de base",
-      "basicDescription": "Comment le client est identifié sur le serveur d'autorisation.",
+      "basicDescription": "Comment le client est identifié sur le serveur d’autorisation.",
       "clientId": "Client ID",
       "clientIdRequired": "Client ID *",
-      "clientIdHelpCreate": "Minuscules, chiffres et traits d'union. Ne peut pas être modifié par la suite.",
-      "clientIdHelpEdit": "Défini à l'enregistrement. Ne peut pas être modifié.",
+      "clientIdHelpCreate": "Minuscules, chiffres et traits d’union. Ne peut pas être modifié par la suite.",
+      "clientIdHelpEdit": "Défini à l’enregistrement. Ne peut pas être modifié.",
       "name": "Nom *",
       "secretHidden": "Affiché une seule fois, lors de sa génération",
-      "secretHelp": "Le serveur ne conserve qu'une version chiffrée — personne ne peut le relire. S'il a été exposé, générez-en un nouveau dans la zone de danger.",
+      "secretHelp": "Le serveur ne conserve qu’une version chiffrée — personne ne peut le relire. S’il a été exposé, générez-en un nouveau dans la zone de danger.",
       "description": "Description",
       "application": "Application",
       "applicationPlaceholder": "Sélectionner une application",
       "applicationSearch": "Rechercher une application…",
       "applicationEmpty": "Aucune application trouvée.",
-      "applicationHelp": "L'application à laquelle ce client appartient. Un compte de service en hérite.",
-      "applicationLocked": "Fixe tant que le compte de service « {name} » existe.",
+      "applicationHelp": "L’application à laquelle ce client appartient. Un compte de service en hérite.",
+      "applicationLocked": "Fixe tant que le compte de service « {name} » existe.",
       "grantsTitle": "Grant types",
       "grantsDescription": "Comment ce client obtient des jetons. Les sections ci-dessous changent selon le choix.",
       "grantFixed": "Fixe pour les comptes de service.",
-      "grantLocked": "Requis tant que le compte de service « {name} » existe.",
+      "grantLocked": "Requis tant que le compte de service « {name} » existe.",
       "redirectsTitle": "Redirect URIs",
-      "redirectsDescription": "Où le serveur renvoie l'utilisateur après la connexion. Apparaît parce que <mono>authorization_code</mono> est actif.",
+      "redirectsDescription": "Où le serveur renvoie l’utilisateur après la connexion. Apparaît parce que <mono>authorization_code</mono> est actif.",
       "redirectsLabel": "URI de redirection *",
       "redirectsPlaceholder": "Ajouter un URI…",
       "redirectsHelp": "Appuyez sur Entrée après chaque URI. Uniquement https://, sauf http://localhost.",
@@ -1734,7 +1734,7 @@
   "audit": {
     "meta": {
       "title": "Audit et rapports",
-      "description": "Consulter les rapports d'accès et de configuration de la plateforme."
+      "description": "Consulter les rapports d’accès et de configuration de la plateforme."
     },
     "header": {
       "title": "Audit et rapports",
@@ -1744,7 +1744,7 @@
       "label": "Rapports",
       "access": {
         "title": "Accès",
-        "description": "Qui s'est connecté à la plateforme et ce qu'il a fait dans chaque module."
+        "description": "Qui s’est connecté à la plateforme et ce qu’il a fait dans chaque module."
       },
       "settings": {
         "title": "Configuration",
@@ -1752,13 +1752,13 @@
       }
     },
     "error": {
-      "page": "Impossible de charger l'audit.",
-      "access": "Impossible de charger le rapport d'accès.",
+      "page": "Impossible de charger l’audit.",
+      "access": "Impossible de charger le rapport d’accès.",
       "settings": "Impossible de charger le rapport de configuration.",
       "message": "Réessayez. Si le problème persiste, contactez l’assistance."
     },
     "forbidden": {
-      "description": "Les permissions proviennent uniquement de votre rôle actif. Si la permission d'audit vous a été attribuée dans un autre rôle, activez-le dans votre profil et reconnectez-vous.",
+      "description": "Les permissions proviennent uniquement de votre rôle actif. Si la permission d’audit vous a été attribuée dans un autre rôle, activez-le dans votre profil et reconnectez-vous.",
       "homeLabel": "Aller à mon profil"
     },
     "fields": {
@@ -1803,12 +1803,12 @@
       "activate": "Activation",
       "deactivate": "Désactivation",
       "invite": "Invitation",
-      "cancelInvite": "Annulation d'invitation",
-      "resendInvite": "Renvoi d'invitation",
+      "cancelInvite": "Annulation d’invitation",
+      "resendInvite": "Renvoi d’invitation",
       "associate": "Association",
       "disassociate": "Dissociation",
       "assign": "Attribution",
-      "unassign": "Retrait d'attribution"
+      "unassign": "Retrait d’attribution"
     },
     "filters": {
       "all": "Tous",
@@ -1840,7 +1840,7 @@
     },
     "empty": {
       "filteredTitle": "Aucun événement ne correspond aux filtres",
-      "filteredDescription": "Les filtres exigent la valeur exacte. Effacez-les pour vérifier s'il existe des événements sur la période.",
+      "filteredDescription": "Les filtres exigent la valeur exacte. Effacez-les pour vérifier s’il existe des événements sur la période.",
       "title": "Aucun événement sur cette période",
       "description": "Élargissez la période pour voir les événements antérieurs."
     },
@@ -1865,10 +1865,10 @@
       "hideDetails": "Masquer les détails"
     },
     "detail": {
-      "ip": "Adresse IP :",
-      "relatedEntity": "Entité associée :",
-      "before": "Avant :",
-      "after": "Après :",
+      "ip": "Adresse IP :",
+      "relatedEntity": "Entité associée :",
+      "before": "Avant :",
+      "after": "Après :",
       "previous": "Précédent",
       "next": "Nouveau"
     },
@@ -1889,9 +1889,9 @@
     },
     "error": {
       "title": "Impossible de charger les départements",
-      "message": "Une erreur s'est produite lors de la récupération de la liste. Réessayez ; si le problème persiste, contactez l’assistance.",
+      "message": "Une erreur s’est produite lors de la récupération de la liste. Réessayez ; si le problème persiste, contactez l’assistance.",
       "retry": "Réessayer",
-      "ref": "Réf. : {digest}"
+      "ref": "Réf. : {digest}"
     },
     "validation": {
       "codePattern": "Le code doit contenir des majuscules, des chiffres et des tirets bas",
@@ -1923,7 +1923,7 @@
     "tree": {
       "collapse": "Réduire le département",
       "expand": "Développer le département",
-      "inactive": "Inactif :",
+      "inactive": "Inactif :",
       "openMenu": "Ouvrir le menu",
       "createSub": "Créer un sous-département",
       "delete": "Supprimer"
@@ -1931,7 +1931,7 @@
     "empty": {
       "sidebarEmpty": {
         "title": "Aucun département",
-        "body": "Utilisez le bouton « Nouveau département » pour créer le premier département et organiser les rôles et permissions."
+        "body": "Utilisez le bouton « Nouveau département » pour créer le premier département et organiser les rôles et permissions."
       },
       "sidebarNoResults": {
         "title": "Aucun département trouvé",
@@ -1974,7 +1974,7 @@
         "created": "Le département a été créé avec succès.",
         "updateErrorTitle": "Impossible de mettre à jour le département.",
         "createErrorTitle": "Impossible de créer le département.",
-        "unknownError": "Une erreur inconnue s'est produite."
+        "unknownError": "Une erreur inconnue s’est produite."
       }
     },
     "delete": {
@@ -1983,7 +1983,7 @@
       "label": "Nom du département",
       "toast": {
         "successTitle": "Département supprimé",
-        "successDescription": "Le département « {name} » a été supprimé avec succès.",
+        "successDescription": "Le département « {name} » a été supprimé avec succès.",
         "errorTitle": "Échec de la suppression."
       }
     },
@@ -2002,9 +2002,9 @@
       "searchPlaceholder": "Rechercher un menu…",
       "loading": "Chargement des menus…",
       "emptyTitle": "Aucun menu trouvé",
-      "emptySearch": "Essayez d'ajuster les termes de recherche",
-      "emptySetup": "Configurez d'abord les applications et les menus",
-      "filteredBy": "Filtré par : {app}",
+      "emptySearch": "Essayez d’ajuster les termes de recherche",
+      "emptySetup": "Configurez d’abord les applications et les menus",
+      "filteredBy": "Filtré par : {app}",
       "columnMenu": "Menu",
       "selectAll": "Tout sélectionner",
       "toggleAll": "Cocher/décocher tout",
@@ -2015,14 +2015,14 @@
       "savePermissions": "Enregistrer les permissions",
       "toast": {
         "noChangesTitle": "Aucune modification",
-        "noChangesDescription": "Aucun changement n'a été détecté.",
+        "noChangesDescription": "Aucun changement n’a été détecté.",
         "savedTitle": "Permissions enregistrées",
         "savedDescription": "Les rôles ont été attribués aux menus avec succès.",
-        "errorTitle": "Erreur lors de l'enregistrement"
+        "errorTitle": "Erreur lors de l’enregistrement"
       },
       "unsaved": {
         "title": "Modifications non enregistrées",
-        "description": "Vous avez des modifications des permissions des menus qui n'ont pas été enregistrées. Enregistrer avant de changer d'application ou les abandonner ?",
+        "description": "Vous avez des modifications des permissions des menus qui n’ont pas été enregistrées. Enregistrer avant de changer d’application ou les abandonner ?",
         "discard": "Abandonner et changer",
         "saveAndSwitch": "Enregistrer et changer"
       }
@@ -2033,7 +2033,7 @@
       "searchLabel": "Rechercher une application",
       "searchPlaceholder": "Rechercher par nom, code ou description…",
       "emptyTitle": "Aucune application trouvée",
-      "emptySearch": "Essayez d'ajuster les termes de recherche",
+      "emptySearch": "Essayez d’ajuster les termes de recherche",
       "emptyNone": "Aucune application disponible",
       "added": "Ajoutée",
       "available": "Disponible",
@@ -2041,14 +2041,14 @@
       "removeAria": "Retirer {name} du département",
       "addAria": "Ajouter {name} au département",
       "summary": "<b>{added}</b> sur <b>{total}</b> applications ajoutées",
-      "removeTitle": "Retirer l'application",
-      "removeDescription": "Voulez-vous vraiment retirer l'application <b>{name}</b> de ce département ? Cette action est irréversible.",
+      "removeTitle": "Retirer l’application",
+      "removeDescription": "Voulez-vous vraiment retirer l’application <b>{name}</b> de ce département ? Cette action est irréversible.",
       "toast": {
         "addedTitle": "Application ajoutée",
-        "addedDescription": "L'application a été ajoutée avec succès.",
-        "addErrorTitle": "Erreur lors de l'ajout",
+        "addedDescription": "L’application a été ajoutée avec succès.",
+        "addErrorTitle": "Erreur lors de l’ajout",
         "removedTitle": "Application retirée",
-        "removedDescription": "L'application a été retirée avec succès.",
+        "removedDescription": "L’application a été retirée avec succès.",
         "removeErrorTitle": "Erreur lors du retrait"
       }
     },
@@ -2060,7 +2060,7 @@
       "allApps": "Toutes les applications",
       "loading": "Chargement…",
       "emptyTitle": "Aucun menu trouvé",
-      "emptyFilters": "Essayez d'ajuster les filtres de recherche",
+      "emptyFilters": "Essayez d’ajuster les filtres de recherche",
       "emptyNone": "Aucun menu disponible",
       "collapse": "Réduire le menu",
       "expand": "Développer le menu",
@@ -2071,11 +2071,11 @@
       "addAria": "Ajouter {name} au département",
       "summary": "<b>{added}</b> sur <b>{total}</b> menus ajoutés",
       "removeTitle": "Retirer le menu",
-      "removeDescription": "Voulez-vous vraiment retirer le menu <b>{name}</b> de ce département ? Cette action est irréversible.",
+      "removeDescription": "Voulez-vous vraiment retirer le menu <b>{name}</b> de ce département ? Cette action est irréversible.",
       "toast": {
         "addedTitle": "Menu ajouté",
         "addedDescription": "Le menu a été ajouté avec succès.",
-        "addErrorTitle": "Erreur lors de l'ajout",
+        "addErrorTitle": "Erreur lors de l’ajout",
         "removedTitle": "Menu retiré",
         "removedDescription": "Le menu a été retiré avec succès.",
         "removeErrorTitle": "Erreur lors du retrait"
@@ -2085,14 +2085,14 @@
   "serviceAccounts": {
     "meta": {
       "listTitle": "Comptes de service",
-      "listDescription": "Identités machine qui s'authentifient via client_credentials.",
+      "listDescription": "Identités machine qui s’authentifient via client_credentials.",
       "newTitle": "Nouveau compte de service",
       "detailTitle": "{name} · Comptes de service",
       "detailFallback": "Compte de service"
     },
     "loading": {
       "list": "Chargement des comptes de service...",
-      "new": "Préparation de l'assistant...",
+      "new": "Préparation de l’assistant...",
       "detail": "Chargement du compte de service..."
     },
     "error": {
@@ -2115,7 +2115,7 @@
       "directPermissions": "Permissions directes",
       "addPermission": "Ajouter une permission",
       "directBadge": "directe",
-      "directNote": "Les permissions directes ne sont pas révoquées lorsqu'un rôle est retiré. Privilégiez les rôles.",
+      "directNote": "Les permissions directes ne sont pas révoquées lorsqu’un rôle est retiré. Privilégiez les rôles.",
       "application": "Application",
       "inheritedApplication": "Héritée du client OAuth.",
       "identity": "Identité",
@@ -2135,8 +2135,8 @@
       "descriptionMax": "{max} caractères maximum."
     },
     "list": {
-      "emptyTitle": "Il n'y a pas encore de compte de service",
-      "emptyDescription": "Un compte de service encapsule un client OAuth client_credentials et lui donne des rôles et des permissions, afin qu'un système accède aux API sans utilisateur.",
+      "emptyTitle": "Il n’y a pas encore de compte de service",
+      "emptyDescription": "Un compte de service encapsule un client OAuth client_credentials et lui donne des rôles et des permissions, afin qu’un système accède aux API sans utilisateur.",
       "emptyAction": "Créer le premier compte de service",
       "noMatches": "Aucun compte ne correspond aux filtres."
     },
@@ -2164,12 +2164,12 @@
     },
     "detail": {
       "back": "Comptes de service",
-      "authenticatesAs": "S'authentifie en tant que",
+      "authenticatesAs": "S’authentifie en tant que",
       "dangerZone": "Zone de danger",
       "activateTitle": "Activer le compte",
       "deactivateTitle": "Désactiver le compte",
       "activateDescription": "Réactive aussi le client OAuth {clientId}.",
-      "deactivateDescription": "Désactive aussi le client OAuth {clientId}. L'identité ne peut plus s'authentifier.",
+      "deactivateDescription": "Désactive aussi le client OAuth {clientId}. L’identité ne peut plus s’authentifier.",
       "deleteTitle": "Supprimer le compte",
       "deleteDescription": "Supprime le compte et, par défaut, le client OAuth. Il est impossible de les récupérer."
     },
@@ -2182,15 +2182,15 @@
       "grantFixed": "Fixe tant que ce compte existe."
     },
     "identityCard": {
-      "edit": "Modifier l'identité",
-      "saveErrorTitle": "Impossible d'enregistrer",
+      "edit": "Modifier l’identité",
+      "saveErrorTitle": "Impossible d’enregistrer",
       "savedTitle": "Identité enregistrée",
       "createdAt": "Créé le",
       "updatedAt": "Mis à jour le"
     },
     "effective": {
       "title": "Permissions effectives",
-      "description": "Ce que le compte peut faire : les permissions de ses rôles ajoutées aux permissions directes.",
+      "description": "Ce que le compte peut faire : les permissions de ses rôles ajoutées aux permissions directes.",
       "hideList": "Masquer la liste",
       "showList": "Voir la liste complète",
       "fromRoles": "Via les rôles",
@@ -2205,18 +2205,18 @@
       "loadErrorTitle": "Impossible de charger les rôles.",
       "loadErrorMessage": "Réessayez.",
       "loading": "Chargement des rôles…",
-      "empty": "Ce compte n'a pas encore de rôle.",
+      "empty": "Ce compte n’a pas encore de rôle.",
       "removeLabel": "Retirer le rôle {code}",
-      "saveError": "Impossible d'enregistrer les rôles",
+      "saveError": "Impossible d’enregistrer les rôles",
       "removed": "Rôle retiré",
       "updated": "Rôles mis à jour"
     },
     "permissionsSection": {
-      "note": "Les permissions directes ne sont pas révoquées lorsqu'un rôle est retiré. Privilégiez les rôles.",
+      "note": "Les permissions directes ne sont pas révoquées lorsqu’un rôle est retiré. Privilégiez les rôles.",
       "empty": "Aucune permission directe.",
       "removeLabel": "Retirer la permission {name}",
-      "unpaired": "Retrait impossible : le serveur n'a pas indiqué quelle permission correspond à chaque identifiant.",
-      "saveError": "Impossible d'enregistrer les permissions",
+      "unpaired": "Retrait impossible : le serveur n’a pas indiqué quelle permission correspond à chaque identifiant.",
+      "saveError": "Impossible d’enregistrer les permissions",
       "removed": "Permission retirée",
       "updated": "Permissions mises à jour"
     },
@@ -2244,14 +2244,14 @@
     "activation": {
       "titleActivate": "Activer le compte de service",
       "titleDeactivate": "Désactiver le compte de service",
-      "descActivate": "Le compte « {name} » et le client OAuth {clientId} peuvent de nouveau s'authentifier.",
-      "descDeactivate": "Le compte « {name} » et le client OAuth {clientId} ne peuvent plus s'authentifier tant qu'ils ne sont pas réactivés.",
+      "descActivate": "Le compte « {name} » et le client OAuth {clientId} peuvent de nouveau s’authentifier.",
+      "descDeactivate": "Le compte « {name} » et le client OAuth {clientId} ne peuvent plus s’authentifier tant qu’ils ne sont pas réactivés.",
       "loadingActivate": "Activation…",
       "loadingDeactivate": "Désactivation…",
       "toastActivated": "Compte activé",
       "toastDeactivated": "Compte désactivé",
-      "errorActivate": "Impossible d'activer (échec : {step})",
-      "errorDeactivate": "Impossible de désactiver (échec : {step})",
+      "errorActivate": "Impossible d’activer (échec : {step})",
+      "errorDeactivate": "Impossible de désactiver (échec : {step})",
       "retry": "{error} Réessayez.",
       "stepClient": "client OAuth",
       "stepServiceAccount": "compte de service"
@@ -2263,34 +2263,34 @@
       "clientFailedTitle": "Le compte a été supprimé, pas le client",
       "clientFailedDescription": "Supprimez le client OAuth {clientId} dans la page Clients OAuth. {error}",
       "errorTitle": "Impossible de supprimer",
-      "description": "Le compte cesse d'exister, avec les rôles et permissions qu'il avait. Il est impossible de le récupérer.",
+      "description": "Le compte cesse d’exister, avec les rôles et permissions qu’il avait. Il est impossible de le récupérer.",
       "label": "Nom du compte",
       "header": "Supprimer le compte de service",
       "buttonBoth": "Supprimer le compte et le client",
       "buttonAccount": "Supprimer le compte",
       "alsoClient": "Supprimer aussi le client OAuth <mono>{clientId}</mono>",
-      "alsoClientHint": "Sans le compte, le client peut toujours s'authentifier."
+      "alsoClientHint": "Sans le compte, le client peut toujours s’authentifier."
     },
     "wizard": {
       "stepsLabel": "Étapes",
       "stepAccess": "Rôles et permissions",
       "stepCurrent": ", étape actuelle",
       "stepDone": ", terminée",
-      "noteInfo": "Rien n'est créé avant la confirmation à la dernière étape.",
-      "unavailable": "Ce client ne peut pas recevoir de compte de service : il en a déjà un, ou n'utilise pas client_credentials. Choisissez-en un autre à l'étape 1.",
-      "newSummary": "Nouveau : {clientId}",
-      "submitNoteNew": "Enregistre le client OAuth et crée le compte. Le secret du nouveau client n'est affiché qu'une seule fois, juste après.",
+      "noteInfo": "Rien n’est créé avant la confirmation à la dernière étape.",
+      "unavailable": "Ce client ne peut pas recevoir de compte de service : il en a déjà un, ou n’utilise pas client_credentials. Choisissez-en un autre à l’étape 1.",
+      "newSummary": "Nouveau : {clientId}",
+      "submitNoteNew": "Enregistre le client OAuth et crée le compte. Le secret du nouveau client n’est affiché qu’une seule fois, juste après.",
       "submitNoteExisting": "Crée le compte de service lié au client choisi.",
       "failedTitle": "Impossible de créer le compte",
-      "alreadyHasAccount": "Ce client OAuth a déjà un compte de service. Choisissez un autre client à l'étape 1.",
+      "alreadyHasAccount": "Ce client OAuth a déjà un compte de service. Choisissez un autre client à l’étape 1.",
       "createdTitle": "Compte de service créé",
-      "leaveTitle": "Quitter sans créer le compte ?",
-      "leaveDescription": "Les données saisies n'ont pas encore été enregistrées. Si vous quittez maintenant, vous les perdrez.",
+      "leaveTitle": "Quitter sans créer le compte ?",
+      "leaveDescription": "Les données saisies n’ont pas encore été enregistrées. Si vous quittez maintenant, vous les perdrez.",
       "leaveCancel": "Continuer à remplir",
       "leaveAction": "Quitter et abandonner"
     },
     "clientStep": {
-      "description": "Le compte s'authentifie en tant que ce client. Seuls les clients client_credentials sans compte de service apparaissent.",
+      "description": "Le compte s’authentifie en tant que ce client. Seuls les clients client_credentials sans compte de service apparaissent.",
       "modeExisting": "Utiliser un client OAuth existant",
       "modeNew": "Enregistrer un nouveau client OAuth",
       "placeholder": "Sélectionner un client",
@@ -2301,7 +2301,7 @@
     "identityStep": {
       "description": "Comment ce compte apparaît aux administrateurs.",
       "activeOnCreate": "Active à la création",
-      "followsClient": "Statut : suit le client OAuth ({state})."
+      "followsClient": "Statut : suit le client OAuth ({state})."
     },
     "accessStep": {
       "description": "Ce que ce compte peut faire. Vous pourrez le modifier plus tard.",
@@ -2313,8 +2313,8 @@
     "result": {
       "clientRegisteredTitle": "Client enregistré",
       "registered": "Le client <mono>{clientId}</mono> a été enregistré. Conservez le secret avant de quitter cette page.",
-      "missingSecret": "Le serveur n'a pas renvoyé le secret. Désactivez ce client et enregistrez-en un nouveau.",
-      "accountFailed": "Le compte de service n'a pas été créé : {error} Le client existe déjà ; vous pouvez réessayer de créer le compte avec les mêmes données.",
+      "missingSecret": "Le serveur n’a pas renvoyé le secret. Désactivez ce client et enregistrez-en un nouveau.",
+      "accountFailed": "Le compte de service n’a pas été créé : {error} Le client existe déjà ; vous pouvez réessayer de créer le compte avec les mêmes données.",
       "retry": "Réessayer de créer le compte",
       "finish": "Terminer — voir le compte"
     }

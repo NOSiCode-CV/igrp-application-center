@@ -115,7 +115,8 @@ async function fillAndSubmit(locale: IGRPLocale = "pt") {
     }) as typeof pt
   ).users.invite.form;
   await userEvent.type(
-    screen.getByPlaceholderText(form.emailPlaceholder),
+    // the default normalizer turns the rendered U+202F into a plain space
+    screen.getByPlaceholderText(form.emailPlaceholder.replace(/\s+/g, " ")),
     "ana@example.com",
   );
   const submit = screen.getByRole("button", { name: form.submit });
