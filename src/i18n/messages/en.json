@@ -169,7 +169,8 @@
       "maxSize": "(max. {size} MB)",
       "previewAlt": "Image preview",
       "remove": "Remove file",
-      "tooLarge": "The file is larger than the {size} MB limit."
+      "tooLarge": "The file is larger than the {size} MB limit.",
+      "notImage": "Invalid file. Choose an image."
     },
     "unsavedChanges": {
       "region": "Unsaved changes",
@@ -853,7 +854,8 @@
       "opensNewTab": "{name} (opens in a new tab)",
       "addFavorite": "Add {name} to favorites",
       "removeFavorite": "Remove {name} from favorites"
-    }
+    },
+    "loadError": "Could not load the workspace."
   },
   "settings": {
     "meta": {

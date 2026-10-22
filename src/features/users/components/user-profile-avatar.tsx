@@ -12,7 +12,7 @@ import {
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 
-import { validateImageUpload } from "@/features/files/file-validation";
+import { useValidateImageUpload } from "@/features/files/file-validation";
 import { getInitials } from "@/lib/utilities";
 
 export interface UserProfileAvatarProps {
@@ -34,6 +34,7 @@ export function UserProfileAvatar({
   const [localPreview, setLocalPreview] = useState<string | null>(null);
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.profile.avatar");
+  const validateImageUpload = useValidateImageUpload();
 
   useEffect(() => {
     return () => {

@@ -169,7 +169,8 @@
       "maxSize": "(máx. {size} MB)",
       "previewAlt": "Pré-visualização da imagem",
       "remove": "Remover ficheiro",
-      "tooLarge": "O ficheiro excede o tamanho máximo de {size} MB."
+      "tooLarge": "O ficheiro excede o tamanho máximo de {size} MB.",
+      "notImage": "Ficheiro inválido. Selecione uma imagem."
     },
     "unsavedChanges": {
       "region": "Alterações por guardar",
@@ -853,7 +854,8 @@
       "opensNewTab": "{name} (abre num novo separador)",
       "addFavorite": "Adicionar {name} aos favoritos",
       "removeFavorite": "Remover {name} dos favoritos"
-    }
+    },
+    "loadError": "Não foi possível carregar a área de trabalho."
   },
   "settings": {
     "meta": {

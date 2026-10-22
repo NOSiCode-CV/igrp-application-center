@@ -8,7 +8,7 @@ import type {
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 
-import { validateImageUpload } from "@/features/files/file-validation";
+import { useValidateImageUpload } from "@/features/files/file-validation";
 import { useUploadPublicFiles } from "@/features/files/use-files";
 import { currentUserKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
@@ -43,6 +43,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   const uploadFile = useUploadPublicFiles();
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users");
+  const validateImageUpload = useValidateImageUpload();
   const serverError = useServerErrorMessage();
   const queryClient = useQueryClient();
 

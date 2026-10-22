@@ -169,7 +169,8 @@
       "maxSize": "(max. {size} Mo)",
       "previewAlt": "Aperçu de l’image",
       "remove": "Retirer le fichier",
-      "tooLarge": "Le fichier dépasse la limite de {size} Mo."
+      "tooLarge": "Le fichier dépasse la limite de {size} Mo.",
+      "notImage": "Fichier invalide. Choisissez une image."
     },
     "unsavedChanges": {
       "region": "Modifications non enregistrées",
@@ -853,7 +854,8 @@
       "opensNewTab": "{name} (s’ouvre dans un nouvel onglet)",
       "addFavorite": "Ajouter {name} aux favoris",
       "removeFavorite": "Retirer {name} des favoris"
-    }
+    },
+    "loadError": "Impossible de charger l’espace de travail."
   },
   "settings": {
     "meta": {

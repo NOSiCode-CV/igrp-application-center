@@ -40,29 +40,3 @@ export function monogramStyle(code?: string | null): {
     color: `hsl(${hue} 55% 30%)`,
   };
 }
-
-/** Portuguese relative-time formatter. Returns "" for missing/invalid input. */
-export function relativeTimePt(
-  iso?: string | null,
-  now: Date = new Date(),
-): string {
-  if (!iso) return "";
-  const t = Date.parse(iso);
-  if (Number.isNaN(t)) return "";
-  const diffMs = now.getTime() - t;
-  const sec = Math.round(diffMs / 1000);
-  if (sec < 45) return "agora mesmo";
-  const min = Math.round(sec / 60);
-  if (min < 60) return `há ${min} min`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `há ${hr} h`;
-  const day = Math.round(hr / 24);
-  if (day === 1) return "ontem";
-  if (day < 7) return `há ${day} dias`;
-  const wk = Math.round(day / 7);
-  if (wk < 5) return `há ${wk} sem`;
-  const mo = Math.round(day / 30);
-  if (mo < 12) return `há ${mo} meses`;
-  const yr = Math.round(day / 365);
-  return `há ${yr} ano${yr === 1 ? "" : "s"}`;
-}
