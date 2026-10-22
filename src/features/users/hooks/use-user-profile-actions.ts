@@ -12,6 +12,7 @@ import { validateImageUpload } from "@/features/files/file-validation";
 import { useUploadPublicFiles } from "@/features/files/use-files";
 import { currentUserKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 type UpdateRes = Awaited<
   ReturnType<ReturnType<typeof useUpdateUser>["mutateAsync"]>
@@ -22,6 +23,7 @@ function handle(
   okTitle: string,
   errTitle: string,
   igrpToast: ReturnType<typeof useIGRPToast>["igrpToast"],
+  serverError: (error?: string) => string,
 ) {
   if (res.success) {
     igrpToast({ type: "success", title: okTitle, duration: 4000 });
@@ -30,7 +32,7 @@ function handle(
   igrpToast({
     type: "error",
     title: errTitle,
-    description: res.error,
+    description: serverError(res.error),
     duration: 4000,
   });
   throw new Error(res.error);
@@ -41,6 +43,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   const uploadFile = useUploadPublicFiles();
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users");
+  const serverError = useServerErrorMessage();
   const queryClient = useQueryClient();
 
   const latestUser = () =>
@@ -57,6 +60,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       t("nameEditor.toasts.updated"),
       t("nameEditor.toasts.updateFailed"),
       igrpToast,
+      serverError,
     );
   };
 
@@ -102,7 +106,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       id: current.id,
       user: { ...current, [field]: path },
     });
-    handle(res, labels.ok, labels.saveError, igrpToast);
+    handle(res, labels.ok, labels.saveError, igrpToast, serverError);
     return path;
   };
 
@@ -133,7 +137,13 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       next === "ACTIVE"
         ? t("profile.toasts.activated")
         : t("profile.toasts.deactivated");
-    handle(res, okTitle, t("profile.toasts.statusChangeFailed"), igrpToast);
+    handle(
+      res,
+      okTitle,
+      t("profile.toasts.statusChangeFailed"),
+      igrpToast,
+      serverError,
+    );
   };
 
   return {

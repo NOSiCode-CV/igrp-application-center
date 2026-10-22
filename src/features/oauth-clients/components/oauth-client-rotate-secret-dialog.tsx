@@ -28,6 +28,7 @@ import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { SensitiveValueDisclosure } from "@/components/sensitive-value-disclosure";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { useRotateOAuthClientSecret } from "../use-oauth-clients";
 
@@ -48,6 +49,7 @@ export function OAuthClientRotateSecretDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations("oauthClients");
+  const serverError = useServerErrorMessage();
   const { igrpToast } = useIGRPToast();
   const rotate = useRotateOAuthClientSecret();
   const { reset: resetRotate } = rotate;
@@ -63,7 +65,7 @@ export function OAuthClientRotateSecretDialog({
       igrpToast({
         type: "error",
         title: t("rotate.errorTitle"),
-        description: result.error,
+        description: serverError(result.error),
       });
       return;
     }

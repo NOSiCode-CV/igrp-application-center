@@ -21,6 +21,7 @@ import { useTranslations } from "next-intl";
 import { type Resolver, useForm } from "react-hook-form";
 
 import { SensitiveValueDisclosure } from "@/components/sensitive-value-disclosure";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { ROUTES } from "@/lib/constants";
 
 import {
@@ -34,6 +35,7 @@ import { OAuthClientFormSections } from "./oauth-client-form-sections";
 
 export function OAuthClientCreate() {
   const t = useTranslations("oauthClients");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("oauthClients.validation");
   const { oauthClientFormSchema } = useMemo(
     () => makeOAuthClientSchemas(tv),
@@ -93,7 +95,7 @@ export function OAuthClientCreate() {
     igrpToast({
       type: "error",
       title: t("create.errorTitle"),
-      description: result.error,
+      description: serverError(result.error),
     });
   }
 

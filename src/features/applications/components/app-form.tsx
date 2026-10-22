@@ -35,6 +35,7 @@ import {
   useCreateApplication,
   useUpdateApplication,
 } from "@/features/applications/use-applications";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { useStatusOptions } from "@/i18n/status";
 import { ROUTES } from "@/lib/constants";
 
@@ -54,6 +55,7 @@ export function ApplicationForm({
 }: ApplicationFormProps) {
   const router = useRouter();
   const t = useTranslations("applications.form");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("applications.validation");
   const tc = useTranslations("common");
   const baseStatusOptions = useStatusOptions();
@@ -169,7 +171,9 @@ export function ApplicationForm({
         type: "error",
         title: isEdit ? t("toasts.updateError") : t("toasts.createError"),
         description:
-          error instanceof Error ? error.message : tc("unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : tc("unknownError"),
       });
     }
   };
@@ -227,7 +231,10 @@ export function ApplicationForm({
                       spellCheck={false}
                       maxLength={255}
                       aria-required="true"
-                      className={cn("uppercase placeholder:truncate placeholder:normal-case", isEdit && "bg-muted")}
+                      className={cn(
+                        "uppercase placeholder:truncate placeholder:normal-case",
+                        isEdit && "bg-muted",
+                      )}
                       disabled={isEdit}
                       onChange={(e) => {
                         if (!isEdit) {

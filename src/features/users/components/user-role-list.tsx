@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import {
   useAddUserRole,
@@ -28,6 +29,7 @@ import { UserRolesDialog } from "./user-role-dialog";
 export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users");
+  const serverError = useServerErrorMessage();
   const { data: userRoles, isLoading } = useGetCurrentUserRoles();
   const {
     mutateAsync: removeUserRole,
@@ -59,7 +61,10 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
       igrpToast({
         type: "error",
         title: t("roleList.toasts.restoreFailed"),
-        description: error instanceof Error ? error.message : t("unknownError"),
+        description:
+          error instanceof Error
+            ? serverError(error.message)
+            : t("unknownError"),
       });
     }
   };
@@ -94,7 +99,10 @@ export default function UserRoleList({ user }: { user: IGRPUserDTO }) {
       igrpToast({
         type: "error",
         title: t("roleList.toasts.removeFailed"),
-        description: error instanceof Error ? error.message : t("unknownError"),
+        description:
+          error instanceof Error
+            ? serverError(error.message)
+            : t("unknownError"),
       });
     } finally {
       setRoleToRevoke(null);

@@ -32,6 +32,7 @@ import type { DepartmentDTO } from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { useStatusOptions } from "@/i18n/status";
 import { statusSchema } from "@/schemas/global";
 
@@ -64,6 +65,7 @@ export function DepartmentFormDialog({
   parentDeptId,
 }: DepartmentCreateDialogProps) {
   const t = useTranslations("departments.form");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("departments.validation");
   const tActions = useTranslations("departments.actions");
   const statusOptions = useStatusOptions();
@@ -173,7 +175,9 @@ export function DepartmentFormDialog({
           ? t("toast.updateErrorTitle")
           : t("toast.createErrorTitle"),
         description:
-          error instanceof Error ? error.message : t("toast.unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toast.unknownError"),
       });
     }
   };

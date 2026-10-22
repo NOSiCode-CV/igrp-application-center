@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 
 import { userKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 interface UserNameEditorProps {
   user: IGRPUserDTO;
@@ -23,6 +24,7 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
   const { mutateAsync: updateUser } = useUpdateUser();
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users");
+  const serverError = useServerErrorMessage();
   const queryClient = useQueryClient();
 
   const [editing, setEditing] = useState(false);
@@ -59,7 +61,7 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
       igrpToast({
         type: "error",
         title: t("nameEditor.toasts.updateFailed"),
-        description: (err as Error).message,
+        description: serverError((err as Error).message),
         duration: 6000,
       });
     }

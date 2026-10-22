@@ -12,6 +12,7 @@ import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-
 import { useTranslations } from "next-intl";
 
 import type { AccessChange } from "@/actions/service-accounts";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import {
   pairDirectPermissions,
@@ -32,6 +33,7 @@ export function ServiceAccountPermissionsSection({
   account: ServiceAccountDTO;
 }) {
   const t = useTranslations("serviceAccounts");
+  const serverError = useServerErrorMessage();
   const { igrpToast } = useIGRPToast();
   const access = useSetServiceAccountAccess(account.id);
   const busy = useAccountBusy(account.id);
@@ -53,7 +55,7 @@ export function ServiceAccountPermissionsSection({
       igrpToast({
         type: "error",
         title: t("permissionsSection.saveError"),
-        description: result.error,
+        description: serverError(result.error),
       });
       return false;
     }

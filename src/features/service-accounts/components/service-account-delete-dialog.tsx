@@ -11,6 +11,7 @@ import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-
 import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { useDeleteServiceAccount } from "../use-service-accounts";
 
@@ -26,6 +27,7 @@ export function ServiceAccountDeleteDialog({
   onDeleted?: () => void;
 }) {
   const t = useTranslations("serviceAccounts");
+  const serverError = useServerErrorMessage();
   const id = useId();
   const { igrpToast } = useIGRPToast();
   const mutation = useDeleteServiceAccount(account.id);
@@ -60,7 +62,7 @@ export function ServiceAccountDeleteDialog({
         title: t("delete.clientFailedTitle"),
         description: t("delete.clientFailedDescription", {
           clientId: account.clientId,
-          error: result.error,
+          error: serverError(result.error),
         }),
       });
       onOpenChange(false);
@@ -70,7 +72,7 @@ export function ServiceAccountDeleteDialog({
     igrpToast({
       type: "error",
       title: t("delete.errorTitle"),
-      description: result.error,
+      description: serverError(result.error),
     });
   }
 

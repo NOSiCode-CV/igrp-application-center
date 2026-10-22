@@ -48,6 +48,7 @@ import {
   useDepartments,
   useRoles,
 } from "@/features/departments/use-departments";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { useInviteUser } from "../use-users";
 import type { UsersValidationTranslator } from "../user-schemas";
@@ -83,6 +84,7 @@ export function UserInviteDialog({
   const [openDepts, setOpenDepts] = useState(false);
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.invite.form");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("users.validation");
   const tc = useTranslations("common.actions");
   const formSchema = useMemo(() => makeFormSchema(tv), [tv]);
@@ -148,7 +150,7 @@ export function UserInviteDialog({
             igrpToast({
               type: "error",
               title: t("toasts.inviteFailed"),
-              description: result.error,
+              description: serverError(result.error),
             });
             return;
           }
@@ -167,7 +169,7 @@ export function UserInviteDialog({
         onError: (error) => {
           const message =
             error instanceof Error
-              ? error.message
+              ? serverError(error.message)
               : t("toasts.inviteFailedWithReason", { reason: String(error) });
           igrpToast({
             type: "error",

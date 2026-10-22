@@ -29,6 +29,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { useApplications } from "@/features/applications/use-applications";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import {
   useAddApplicationsToDepartment,
@@ -48,6 +49,7 @@ export function ManageAppsModal({
   onOpenChange,
 }: ManageAppsModalProps) {
   const t = useTranslations("departments.manageApps");
+  const serverError = useServerErrorMessage();
   const tActions = useTranslations("departments.actions");
   const tRoot = useTranslations("departments");
   const { formatLocale } = useIGRPFormat();
@@ -141,7 +143,9 @@ export function ManageAppsModal({
         type: "error",
         title: t("toast.addErrorTitle"),
         description:
-          error instanceof Error ? error.message : tRoot("unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : tRoot("unknownError"),
       });
     } finally {
       setProcessingApp(null);
@@ -172,7 +176,9 @@ export function ManageAppsModal({
         type: "error",
         title: t("toast.removeErrorTitle"),
         description:
-          error instanceof Error ? error.message : tRoot("unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : tRoot("unknownError"),
       });
     } finally {
       setProcessingApp(null);

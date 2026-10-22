@@ -121,6 +121,7 @@
       "deleted": "Eliminado"
     },
     "unknownError": "Ocorreu um erro desconhecido.",
+    "serverError": "Ocorreu um erro. Tente novamente.",
     "inlineError": {
       "title": "Não foi possível carregar os dados."
     },

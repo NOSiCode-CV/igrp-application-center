@@ -4,6 +4,7 @@ import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { useDeleteDepartment } from "../use-departments";
 
@@ -19,6 +20,7 @@ export function DepartmentDeleteDialog({
   deptToDelete,
 }: DepartmentDeleteDialogProps) {
   const t = useTranslations("departments");
+  const serverError = useServerErrorMessage();
   const { igrpToast } = useIGRPToast();
   const { mutateAsync: deleteDepartment, isPending: isDeleting } =
     useDeleteDepartment();
@@ -45,7 +47,7 @@ export function DepartmentDeleteDialog({
       igrpToast({
         type: "error",
         title: t("delete.toast.errorTitle"),
-        description: (error as Error).message,
+        description: serverError((error as Error).message),
         duration: 4000,
       });
     }

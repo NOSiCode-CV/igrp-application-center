@@ -59,6 +59,7 @@ import {
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { getStatusColor } from "@/lib/utilities";
 
 import {
@@ -159,6 +160,7 @@ export function UserRolesDialog({
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users");
+  const serverError = useServerErrorMessage();
   const tStatus = useTranslations("common.status");
   const columns = useMemo(() => makeColumns(t, tStatus), [t, tStatus]);
 
@@ -329,7 +331,10 @@ export function UserRolesDialog({
       igrpToast({
         type: "error",
         title: t("roleDialog.toasts.updateFailed"),
-        description: error instanceof Error ? error.message : t("unknownError"),
+        description:
+          error instanceof Error
+            ? serverError(error.message)
+            : t("unknownError"),
       });
     }
   }
@@ -498,7 +503,9 @@ export function UserRolesDialog({
                     {t("roleDialog.loadRolesError")}
                   </p>
                   <p className="text-center">
-                    {err instanceof Error ? err.message : String(err)}
+                    {err instanceof Error
+                      ? serverError(err.message)
+                      : String(err)}
                   </p>
                 </div>
               ) : (

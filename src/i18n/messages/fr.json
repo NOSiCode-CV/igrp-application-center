@@ -121,6 +121,7 @@
       "deleted": "Supprimé"
     },
     "unknownError": "Une erreur inconnue s’est produite.",
+    "serverError": "Une erreur s'est produite. Veuillez réessayer.",
     "inlineError": {
       "title": "Impossible de charger les données."
     },

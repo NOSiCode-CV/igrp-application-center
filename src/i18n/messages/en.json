@@ -121,6 +121,7 @@
       "deleted": "Deleted"
     },
     "unknownError": "An unknown error occurred.",
+    "serverError": "Something went wrong. Please try again.",
     "inlineError": {
       "title": "The data could not be loaded."
     },

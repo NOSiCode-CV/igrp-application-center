@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
 import { useUpdateUserStatus } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 interface UserStatusToggleProps {
   user: IGRPUserDTO;
@@ -19,6 +20,7 @@ interface UserStatusToggleProps {
 export function UserStatusToggle({ user }: UserStatusToggleProps) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.profile");
+  const serverError = useServerErrorMessage();
 
   const { mutateAsync: updateStatus, isPending } = useUpdateUserStatus();
   const [open, setOpen] = useState(false);
@@ -40,7 +42,7 @@ export function UserStatusToggle({ user }: UserStatusToggleProps) {
       igrpToast({
         type: "error",
         title: t("toasts.statusChangeFailed"),
-        description: (err as Error).message,
+        description: serverError((err as Error).message),
         duration: 4000,
       });
     }

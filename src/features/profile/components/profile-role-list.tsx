@@ -16,9 +16,11 @@ import {
   useGetCurrentUserRoles,
   useSetCurrentUserActiveRole,
 } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 export default function ProfileRoleList() {
   const t = useTranslations("profile.roleList");
+  const serverError = useServerErrorMessage();
   const { igrpToast } = useIGRPToast();
   const { data: userRoles, isLoading } = useGetCurrentUserRoles();
 
@@ -52,7 +54,9 @@ export default function ProfileRoleList() {
         type: "error",
         title: t("toasts.activateFailed"),
         description:
-          error instanceof Error ? error.message : t("toasts.unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toasts.unknownError"),
       });
     } finally {
       setActivatingCode(null);

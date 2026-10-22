@@ -20,6 +20,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { useDeleteMenu } from "@/features/applications/use-applications";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 interface MenuNodeSummary {
   code: string;
@@ -56,6 +57,7 @@ export function MenuDeleteDialog({
   menuToDelete,
 }: MenuDeleteDialogProps) {
   const t = useTranslations("menus.delete");
+  const serverError = useServerErrorMessage();
   const tc = useTranslations("common.actions");
   const tt = useTranslations("menus.types");
   const [confirmation, setConfirmation] = useState("");
@@ -98,7 +100,8 @@ export function MenuDeleteDialog({
       igrpToast({
         type: "error",
         title: t("errorTitle"),
-        description: error instanceof Error ? error.message : String(error),
+        description:
+          error instanceof Error ? serverError(error.message) : String(error),
         duration: 6000,
       });
     }

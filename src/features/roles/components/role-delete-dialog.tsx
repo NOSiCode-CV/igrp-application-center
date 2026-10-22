@@ -18,6 +18,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { useDeleteRole } from "@/features/departments/use-departments";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 interface RoleDeleteDialogProps {
   departmentCode: string;
@@ -33,6 +34,7 @@ export function RoleDeleteDialog({
   roleToDelete,
 }: RoleDeleteDialogProps) {
   const t = useTranslations("roles.delete");
+  const serverError = useServerErrorMessage();
   const [confirmation, setConfirmation] = useState("");
   const { igrpToast } = useIGRPToast();
 
@@ -60,7 +62,7 @@ export function RoleDeleteDialog({
       igrpToast({
         type: "error",
         title: t("toast.errorTitle"),
-        description: (error as Error).message,
+        description: serverError((error as Error).message),
         duration: 4000,
       });
     } finally {

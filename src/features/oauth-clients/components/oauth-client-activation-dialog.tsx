@@ -10,6 +10,7 @@ import type {
 import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { useSetClientActive } from "../use-oauth-clients";
 
@@ -30,6 +31,7 @@ export function OAuthClientActivationDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations("oauthClients");
+  const serverError = useServerErrorMessage();
   const { igrpToast } = useIGRPToast();
   const mutation = useSetClientActive();
   const [activate] = useState(() => !client.active);
@@ -74,7 +76,7 @@ export function OAuthClientActivationDialog({
     igrpToast({
       type: "error",
       title: errorTitle,
-      description: t("activation.retry", { error: result.error }),
+      description: t("activation.retry", { error: serverError(result.error) }),
     });
   }
 

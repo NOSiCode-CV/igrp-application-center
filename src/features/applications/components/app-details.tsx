@@ -32,6 +32,7 @@ import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { MenuList } from "@/features/menus/components/menu-list";
 import { useRegisterCurrentUserApplicationAccess } from "@/features/users/use-users";
 import { getAppTileColor } from "@/features/workspace/lib/app-utils";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { useStatusLabel } from "@/i18n/status";
 import { ROUTES } from "@/lib/constants";
 import { getStatusColor } from "@/lib/utilities";
@@ -51,6 +52,7 @@ function appAddress(app: ApplicationDTO): string | null {
 
 export function ApplicationDetails({ code }: { code: string }) {
   const t = useTranslations("applications");
+  const serverError = useServerErrorMessage();
   const tc = useTranslations("common.actions");
   const format = useIGRPFormat();
   const now = useNow({ updateInterval: 60_000 });
@@ -148,7 +150,8 @@ export function ApplicationDetails({ code }: { code: string }) {
       igrpToast({
         type: "error",
         title: t("details.uploadErrorTitle"),
-        description: err instanceof Error ? err.message : String(err),
+        description:
+          err instanceof Error ? serverError(err.message) : String(err),
         duration: 6000,
       });
     }

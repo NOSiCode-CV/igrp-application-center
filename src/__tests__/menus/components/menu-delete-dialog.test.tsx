@@ -167,6 +167,23 @@ describe("MenuDeleteDialog", () => {
     expect(onOpenChange).not.toHaveBeenCalled();
   });
 
+  it("shows the translated generic text for the server's pt fallback", async () => {
+    deleteMenu.mockResolvedValue({
+      success: false,
+      error: "Erro interno do servidor",
+    });
+    renderDialog(PAGE);
+    fireEvent.click(screen.getByRole("button", { name: "Delete page" }));
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "error",
+          description: "Something went wrong. Please try again.",
+        }),
+      ),
+    );
+  });
+
   it("closes from Cancel", () => {
     const { onOpenChange } = renderDialog(PAGE);
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));

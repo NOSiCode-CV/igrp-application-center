@@ -24,6 +24,7 @@ import {
   toCreateRequest,
 } from "@/features/oauth-clients/oauth-client-schemas";
 import { useOAuthClients } from "@/features/oauth-clients/use-oauth-clients";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { ROUTES } from "@/lib/constants";
 
 import {
@@ -59,6 +60,7 @@ export function ServiceAccountWizard({
   initialOAuthClientId?: string;
 }) {
   const t = useTranslations("serviceAccounts");
+  const serverError = useServerErrorMessage();
   const tClient = useTranslations("oauthClients");
   const router = useRouter();
   const { igrpToast } = useIGRPToast();
@@ -153,7 +155,8 @@ export function ServiceAccountWizard({
     igrpToast({
       type: "error",
       title: t("wizard.failedTitle"),
-      description: error instanceof Error ? error.message : String(error),
+      description:
+        error instanceof Error ? serverError(error.message) : String(error),
     });
   }
 
@@ -179,7 +182,9 @@ export function ServiceAccountWizard({
         title: t("wizard.failedTitle"),
         // 409: the backend enforces one service account per client.
         description:
-          result.status === 409 ? t("wizard.alreadyHasAccount") : result.error,
+          result.status === 409
+            ? t("wizard.alreadyHasAccount")
+            : serverError(result.error),
       });
       return;
     }
@@ -242,7 +247,7 @@ export function ServiceAccountWizard({
     igrpToast({
       type: "error",
       title: tClient("create.errorTitle"),
-      description: result.error,
+      description: serverError(result.error),
     });
   }
 

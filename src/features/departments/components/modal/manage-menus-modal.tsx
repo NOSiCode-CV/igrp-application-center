@@ -35,6 +35,7 @@ import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 
 import { useApplications } from "@/features/applications/use-applications";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { getMenuIcon } from "@/lib/utilities";
 
 import { buildMenuTree } from "../../dept-lib";
@@ -62,6 +63,7 @@ export function ManageMenusModal({
   onOpenChange,
 }: ManageMenusModalProps) {
   const t = useTranslations("departments.manageMenus");
+  const serverError = useServerErrorMessage();
   const tActions = useTranslations("departments.actions");
   const tRoot = useTranslations("departments");
   const { formatLocale } = useIGRPFormat();
@@ -191,7 +193,9 @@ export function ManageMenusModal({
         type: "error",
         title: t("toast.addErrorTitle"),
         description:
-          error instanceof Error ? error.message : tRoot("unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : tRoot("unknownError"),
       });
     } finally {
       setProcessingMenu(null);
@@ -225,7 +229,9 @@ export function ManageMenusModal({
         type: "error",
         title: t("toast.removeErrorTitle"),
         description:
-          error instanceof Error ? error.message : tRoot("unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : tRoot("unknownError"),
       });
     } finally {
       setProcessingMenu(null);

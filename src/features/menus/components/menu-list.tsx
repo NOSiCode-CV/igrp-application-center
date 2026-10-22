@@ -37,6 +37,7 @@ import {
   useUpdateMenu,
 } from "@/features/applications/use-applications";
 import { resolveMenuDrop } from "@/features/menus/menu-hierarchy";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { statusSchema } from "@/schemas/global";
 
 import { MenuDeleteDialog, type MenuDeleteTarget } from "./menu-delete-dialog";
@@ -46,6 +47,7 @@ import { MenuTreeContext } from "./menu-tree-context";
 
 export function MenuList({ app }: { app: ApplicationDTO }) {
   const t = useTranslations("menus");
+  const serverError = useServerErrorMessage();
   const { code } = app;
   const { data: appMenus, isLoading, error: errorGetMenus } = useMenus(code);
   const [menus, setMenus] = useState<IGRPMenuItemArgs[]>([]);
@@ -202,7 +204,9 @@ export function MenuList({ app }: { app: ApplicationDTO }) {
         type: "error",
         title: t("reorder.errorTitle"),
         description:
-          error instanceof Error ? error.message : t("reorder.error"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("reorder.error"),
       });
 
       if (appMenus) {

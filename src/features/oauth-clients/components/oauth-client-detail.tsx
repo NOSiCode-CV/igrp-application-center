@@ -19,6 +19,7 @@ import { type Resolver, useForm } from "react-hook-form";
 
 import { UnsavedChangesBar } from "@/components/unsaved-changes-bar";
 import { useLinkedServiceAccount } from "@/features/service-accounts/use-service-accounts";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { ROUTES } from "@/lib/constants";
 
 import { getDeleteBlockedReason } from "../lib/oauth-client-utils";
@@ -45,6 +46,7 @@ const FORM_ID = "oauth-client-edit";
 
 export function OAuthClientDetail({ id }: { id: string }) {
   const t = useTranslations("oauthClients");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("oauthClients.validation");
   const { formatDateTime } = useIGRPFormat();
   const { oauthClientFormSchema } = useMemo(
@@ -112,7 +114,7 @@ export function OAuthClientDetail({ id }: { id: string }) {
       igrpToast({
         type: "error",
         title: t("detail.saveErrorTitle"),
-        description: result.error,
+        description: serverError(result.error),
       });
       return;
     }

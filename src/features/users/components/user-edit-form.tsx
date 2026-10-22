@@ -24,6 +24,7 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { useUpdateUser } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { useStatusOptions } from "@/i18n/status";
 
 type UserEditFormProps = {
@@ -41,6 +42,7 @@ type FormData = {
 export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.editForm");
+  const serverError = useServerErrorMessage();
   const tc = useTranslations("common.actions");
   const statusOptions = useStatusOptions();
   const updateUser = useUpdateUser();
@@ -82,7 +84,9 @@ export function UserEditForm({ user, onSuccess }: UserEditFormProps) {
         type: "error",
         title: t("toasts.updateFailed"),
         description:
-          error instanceof Error ? error.message : t("toasts.unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toasts.unknownError"),
       });
     }
   };

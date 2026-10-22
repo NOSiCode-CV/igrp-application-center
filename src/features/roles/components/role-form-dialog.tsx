@@ -31,6 +31,7 @@ import {
   useCreateRole,
   useUpdateRole,
 } from "@/features/departments/use-departments";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { useStatusOptions } from "@/i18n/status";
 import { statusSchema } from "@/schemas/global";
 
@@ -67,6 +68,7 @@ export function RoleFormDialog({
   parentRoleName,
 }: RoleFormDialogProps) {
   const t = useTranslations("roles.form");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("roles.validation");
   const statusOptions = useStatusOptions();
   const { createRoleSchema, updateRoleSchema } = useMemo(
@@ -163,7 +165,10 @@ export function RoleFormDialog({
       igrpToast({
         type: "error",
         title: t("toast.errorTitle"),
-        description: t("toast.errorDescription", { error: String(error) }),
+        description: t("toast.errorDescription", {
+          error:
+            error instanceof Error ? serverError(error.message) : String(error),
+        }),
       });
     }
   };

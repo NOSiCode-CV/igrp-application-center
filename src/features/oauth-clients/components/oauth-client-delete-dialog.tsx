@@ -5,6 +5,7 @@ import type { OAuthClientDTO } from "@igrp/platform-access-management-client-ts"
 import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { useDeleteOAuthClient } from "../use-oauth-clients";
 
@@ -20,6 +21,7 @@ export function OAuthClientDeleteDialog({
   onDeleted?: () => void;
 }) {
   const t = useTranslations("oauthClients.delete");
+  const serverError = useServerErrorMessage();
   const ta = useTranslations("oauthClients.actions");
   const { igrpToast } = useIGRPToast();
   const mutation = useDeleteOAuthClient();
@@ -33,7 +35,7 @@ export function OAuthClientDeleteDialog({
       igrpToast({
         type: "error",
         title: t("errorTitle"),
-        description: linked ? t("linkedError") : result.error,
+        description: linked ? t("linkedError") : serverError(result.error),
       });
       if (linked) onOpenChange(false);
       return;

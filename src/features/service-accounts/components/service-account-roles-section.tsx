@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 
 import type { AccessChange } from "@/actions/service-accounts";
 import { InlineError } from "@/components/inline-error";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import {
   groupRolesByDepartment,
@@ -39,6 +40,7 @@ export function ServiceAccountRolesSection({
   onRetry: () => void;
 }) {
   const t = useTranslations("serviceAccounts");
+  const serverError = useServerErrorMessage();
   const { igrpToast } = useIGRPToast();
   const access = useSetServiceAccountAccess(account.id);
   const busy = useAccountBusy(account.id);
@@ -58,7 +60,7 @@ export function ServiceAccountRolesSection({
       igrpToast({
         type: "error",
         title: t("rolesSection.saveError"),
-        description: result.error,
+        description: serverError(result.error),
       });
       return false;
     }

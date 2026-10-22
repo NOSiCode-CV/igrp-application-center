@@ -62,6 +62,7 @@ import {
   sanitizeMenuCode,
   type UpdateMenu,
 } from "@/features/menus/menu-schemas";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { statusSchema } from "@/schemas/global";
 
 import { MenuIconPicker } from "./menu-icon-picker";
@@ -237,6 +238,7 @@ function MenuFormBody({
   onBack,
 }: MenuFormBodyProps) {
   const t = useTranslations("menus.form");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("menus.validation");
   const tc = useTranslations("common.actions");
   const { igrpToast } = useIGRPToast();
@@ -368,7 +370,8 @@ function MenuFormBody({
       igrpToast({
         type: "error",
         title: t("toasts.errorTitle"),
-        description: err instanceof Error ? err.message : t("toasts.error"),
+        description:
+          err instanceof Error ? serverError(err.message) : t("toasts.error"),
         duration: 6000,
       });
     }

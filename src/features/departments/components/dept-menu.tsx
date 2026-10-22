@@ -40,6 +40,7 @@ import {
   useAddRolesToMenu,
   useRemoveRolesFromMenu,
 } from "@/features/applications/use-applications";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { buildMenuTree } from "../dept-lib";
 import {
@@ -59,6 +60,7 @@ export type MenuWithChildren = MenuEntryDTO & { children?: MenuWithChildren[] };
 
 export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
   const t = useTranslations("departments.menus");
+  const serverError = useServerErrorMessage();
   const tActions = useTranslations("departments.actions");
   const tRoot = useTranslations("departments");
   const { formatLocale } = useIGRPFormat();
@@ -184,7 +186,9 @@ export function MenuPermissions({ departmentCode }: MenuPermissionsProps) {
         type: "error",
         title: t("toast.errorTitle"),
         description:
-          error instanceof Error ? error.message : tRoot("unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : tRoot("unknownError"),
       });
       return false;
     }

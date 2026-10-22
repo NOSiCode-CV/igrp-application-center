@@ -27,6 +27,7 @@ import {
   useDepartmentPermissions,
   useRemovePermissionsFromDepartment,
 } from "@/features/departments/use-departments";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { ManageResourcesModal } from "./resource-manage-modal";
 
@@ -36,6 +37,7 @@ interface PermissionListProps {
 
 export function PermissionList({ departmentCode }: PermissionListProps) {
   const t = useTranslations("permissions");
+  const serverError = useServerErrorMessage();
   const { compare } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
   const [openManageResources, setOpenManageResources] = useState(false);
@@ -122,7 +124,9 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         type: "error",
         title: t("toast.errorTitle"),
         description:
-          error instanceof Error ? error.message : t("toast.unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toast.unknownError"),
       });
     } finally {
       setProcessingPermission(null);

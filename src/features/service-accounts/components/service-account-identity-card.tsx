@@ -20,6 +20,7 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { LimitedTextareaField } from "@/components/limited-textarea-field";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import {
   makeServiceAccountIdentitySchema,
@@ -42,6 +43,7 @@ export function ServiceAccountIdentityCard({
   account: ServiceAccountDTO;
 }) {
   const t = useTranslations("serviceAccounts");
+  const serverError = useServerErrorMessage();
   const tv = useTranslations("serviceAccounts.validation");
   const { formatDateTime } = useIGRPFormat();
   const identitySchema = useMemo(
@@ -84,7 +86,7 @@ export function ServiceAccountIdentityCard({
       igrpToast({
         type: "error",
         title: t("identityCard.saveErrorTitle"),
-        description: result.error,
+        description: serverError(result.error),
       });
       return;
     }

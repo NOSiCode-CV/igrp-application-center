@@ -8,6 +8,7 @@ import type {
 import { useTranslations } from "next-intl";
 
 import { IGRPDialogDelete } from "@/components/dialog-delete";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { statusSchema } from "@/schemas/global";
 
 import { useUpdateUser } from "../use-users";
@@ -25,6 +26,7 @@ export function UserDeleteDialog({
 }: UserDeleteDialogProps) {
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.deleteDialog");
+  const serverError = useServerErrorMessage();
   const { mutateAsync: removeUser, isPending: isDeleting } = useUpdateUser();
 
   async function confirmDelete() {
@@ -51,7 +53,7 @@ export function UserDeleteDialog({
       igrpToast({
         type: "error",
         title: t("deactivateFailed"),
-        description: (error as Error).message,
+        description: serverError((error as Error).message),
       });
     }
   }

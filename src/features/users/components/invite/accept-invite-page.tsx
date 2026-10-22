@@ -15,6 +15,7 @@ import {
   useValidateInvitationEmail,
   useValidateInvitationOtp,
 } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { InviteCardShell, type InviteStepIndex } from "./invite-card-shell";
 import { InviteEmailStep } from "./invite-email-step";
@@ -49,6 +50,7 @@ export function AcceptInvitePage() {
   const router = useRouter();
   const token = searchParams.get("token");
   const t = useTranslations("users.invite.accept");
+  const serverError = useServerErrorMessage();
 
   const { data: session, status: sessionStatus } = useSession({
     required: true,
@@ -210,7 +212,7 @@ export function AcceptInvitePage() {
               return;
             }
             toast.error(t("toasts.resendFailed"), {
-              description: result.error,
+              description: serverError(result.error),
             });
             return;
           }
@@ -229,7 +231,7 @@ export function AcceptInvitePage() {
         },
       },
     );
-  }, [step, token, validateEmail, t]);
+  }, [step, token, validateEmail, t, serverError]);
 
   const handleChangeEmail = useCallback(
     () => dispatch({ type: "change-email" }),
@@ -244,7 +246,7 @@ export function AcceptInvitePage() {
         onSuccess: (result) => {
           if (!result.success) {
             toast.error(t("toasts.acceptFailed"), {
-              description: result.error,
+              description: serverError(result.error),
             });
             return;
           }
@@ -259,7 +261,7 @@ export function AcceptInvitePage() {
           }),
       },
     );
-  }, [token, invitation, respond, t]);
+  }, [token, invitation, respond, t, serverError]);
 
   const handleReject = useCallback(() => {
     if (!token || !invitation) return;
@@ -269,7 +271,7 @@ export function AcceptInvitePage() {
         onSuccess: (result) => {
           if (!result.success) {
             toast.error(t("toasts.rejectFailed"), {
-              description: result.error,
+              description: serverError(result.error),
             });
             return;
           }
@@ -281,7 +283,7 @@ export function AcceptInvitePage() {
           }),
       },
     );
-  }, [token, invitation, respond, t]);
+  }, [token, invitation, respond, t, serverError]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: validateEmail mutation ref is stable
   useEffect(() => {
@@ -305,7 +307,9 @@ export function AcceptInvitePage() {
               return;
             }
             toast.error(t("toasts.autoVerifyFailed"), {
-              description: result.error ?? t("toasts.autoVerifyMismatch"),
+              description: result.error
+                ? serverError(result.error)
+                : t("toasts.autoVerifyMismatch"),
             });
             dispatch({ type: "auto-submit-failed" });
             return;

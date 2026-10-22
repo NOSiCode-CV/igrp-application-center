@@ -28,6 +28,8 @@ import {
 import type { ResourceDTO } from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 
+import { useServerErrorMessage } from "@/i18n/server-error";
+
 type ResourceWithAssignment = ResourceDTO & { isAssigned: boolean };
 
 import {
@@ -51,6 +53,7 @@ export function ManageResourcesModal({
   onOpenChange,
 }: ManageResourcesModalProps) {
   const t = useTranslations("permissions.resources");
+  const serverError = useServerErrorMessage();
   const statusLabel = useStatusLabel();
   const { compare } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
@@ -133,7 +136,9 @@ export function ManageResourcesModal({
         type: "error",
         title: t("toast.addErrorTitle"),
         description:
-          error instanceof Error ? error.message : t("toast.unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toast.unknownError"),
       });
     } finally {
       setProcessingResource(null);
@@ -162,7 +167,9 @@ export function ManageResourcesModal({
         type: "error",
         title: t("toast.removeErrorTitle"),
         description:
-          error instanceof Error ? error.message : t("toast.unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toast.unknownError"),
       });
     } finally {
       setProcessingResource(null);

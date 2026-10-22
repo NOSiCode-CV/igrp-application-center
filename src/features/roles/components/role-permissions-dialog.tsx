@@ -46,6 +46,7 @@ import {
   useRemovePermissionsFromRole,
 } from "@/features/departments/use-departments";
 import type { RoleArgs } from "@/features/roles/role-schemas";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 // Local mirror of the SDK's `PermissionDTO` (not re-exported by the package).
 interface PermissionLike {
@@ -158,6 +159,7 @@ export function RoleDetails({
   onOpenChange,
 }: RoleDetailsProps) {
   const t = useTranslations("roles.permissions");
+  const serverError = useServerErrorMessage();
   const { compare } = useIGRPFormat();
   const columns = useMemo(() => makeColumns(t), [t]);
   const id = useId();
@@ -293,7 +295,9 @@ export function RoleDetails({
         type: "error",
         title: t("toast.errorTitle"),
         description:
-          error instanceof Error ? error.message : t("toast.unknownError"),
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toast.unknownError"),
       });
     }
   }

@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 
 import { useFiles, useUploadPublicFiles } from "@/features/files/use-files";
 import { useUpdateUser } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { getInitials } from "@/lib/utilities";
 
 interface UserAvatarUploaderProps {
@@ -30,6 +31,7 @@ export function UserAvatarUploader({ user }: UserAvatarUploaderProps) {
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.avatar");
+  const serverError = useServerErrorMessage();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setUploading] = useState(false);
@@ -60,7 +62,7 @@ export function UserAvatarUploader({ user }: UserAvatarUploaderProps) {
       igrpToast({
         type: "error",
         title: t("updateFailed"),
-        description: (err as Error).message,
+        description: serverError((err as Error).message),
         duration: 4000,
       });
     } finally {

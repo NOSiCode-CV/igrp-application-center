@@ -7,6 +7,7 @@ import type { ServiceAccountDTO } from "@igrp/platform-access-management-client-
 import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { useSetServiceAccountActive } from "../use-service-accounts";
 
@@ -25,6 +26,7 @@ export function ServiceAccountActivationDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const t = useTranslations("serviceAccounts");
+  const serverError = useServerErrorMessage();
   const { igrpToast } = useIGRPToast();
   const mutation = useSetServiceAccountActive(account.id);
   // Frozen at open: a refetch mid-dialog must not flip the action.
@@ -52,7 +54,7 @@ export function ServiceAccountActivationDialog({
         activate ? "activation.errorActivate" : "activation.errorDeactivate",
         { step: t(`activation.${STEP_KEY[result.failedStep]}`) },
       ),
-      description: t("activation.retry", { error: result.error }),
+      description: t("activation.retry", { error: serverError(result.error) }),
     });
   }
 
