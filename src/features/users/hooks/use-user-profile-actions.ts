@@ -95,7 +95,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       igrpToast({
         type: "error",
         title: labels.loadError,
-        description: (err as Error).message,
+        description: serverError((err as Error).message),
         duration: 4000,
       });
       throw err;

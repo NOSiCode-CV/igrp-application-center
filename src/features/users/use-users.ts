@@ -58,6 +58,7 @@ import {
 } from "@/actions/user";
 import { getUserAuditLogs } from "@/actions/user-audit";
 import { getUserSession, killUserSession } from "@/actions/user-sessions";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { currentUserKeys, invitationKeys, userKeys } from "./query-keys";
 import {
@@ -236,6 +237,7 @@ export function useAddCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.favorites");
+  const serverError = useServerErrorMessage();
 
   return useMutation({
     mutationFn: async (variables: {
@@ -271,7 +273,7 @@ export function useAddCurrentUserFavoriteApplication() {
       igrpToast({
         type: "error",
         title: t("updateFailed"),
-        description: (err as Error).message,
+        description: serverError((err as Error).message),
         duration: 4000,
       });
     },
@@ -287,6 +289,7 @@ export function useRemoveCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
   const t = useTranslations("users.favorites");
+  const serverError = useServerErrorMessage();
 
   return useMutation({
     mutationFn: async (applicationCode: string) =>
@@ -313,7 +316,7 @@ export function useRemoveCurrentUserFavoriteApplication() {
       igrpToast({
         type: "error",
         title: t("updateFailed"),
-        description: (err as Error).message,
+        description: serverError((err as Error).message),
         duration: 4000,
       });
     },

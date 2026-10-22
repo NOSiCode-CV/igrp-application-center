@@ -226,7 +226,7 @@ export function AcceptInvitePage() {
             return;
           }
           toast.error(t("toasts.resendFailed"), {
-            description: message,
+            description: serverError(message),
           });
         },
       },
@@ -257,7 +257,7 @@ export function AcceptInvitePage() {
         },
         onError: (err) =>
           toast.error(t("toasts.acceptFailed"), {
-            description: (err as Error).message,
+            description: serverError((err as Error).message),
           }),
       },
     );
@@ -279,7 +279,7 @@ export function AcceptInvitePage() {
         },
         onError: (err) =>
           toast.error(t("toasts.rejectFailed"), {
-            description: (err as Error).message,
+            description: serverError((err as Error).message),
           }),
       },
     );

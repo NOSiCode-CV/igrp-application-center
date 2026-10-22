@@ -175,7 +175,7 @@
       "delete": "Eliminar",
       "header": "Confirmação Final",
       "confirmPrefix": "Para confirmar, escreva",
-      "placeholder": "Digite ''{name}'' para confirmação",
+      "placeholder": "Escreva ''{name}'' para confirmação",
       "mismatch": "O texto não coincide com «{name}».",
       "wait": "Aguarde..."
     },
@@ -751,7 +751,7 @@
   "header": {
     "search": {
       "trigger": "Pesquisar...",
-      "placeholder": "Digite um comando ou pesquisa...",
+      "placeholder": "Introduza um comando ou pesquisa...",
       "empty": "Sem resultados.",
       "dialogTitle": "Paleta de comandos",
       "dialogDescription": "Pesquise e execute um comando."
@@ -1468,7 +1468,7 @@
       "title": "Confirmação",
       "description": "Esta ação é irreversível. O perfil e todos os seus dados serão eliminados permanentemente. Para confirmar, escreva <code>{name}</code> abaixo:",
       "label": "Nome Perfil",
-      "placeholder": "Digite ''{name}'' para confirmação",
+      "placeholder": "Escreva ''{name}'' para confirmação",
       "cancel": "Cancelar",
       "confirm": "Eliminar",
       "pending": "Aguarde…",
