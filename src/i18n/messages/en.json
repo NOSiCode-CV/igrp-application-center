@@ -661,7 +661,7 @@
         "activateDescription": "Are you sure you want to activate the user <strong>{name}</strong>?",
         "deactivateDescription": "Are you sure you want to deactivate the user <strong>{name}</strong>?",
         "confirmActivate": "Activate",
-        "confirmDeactivate": "Confirm deactivation",
+        "confirmDeactivate": "Deactivate",
         "activating": "Activating...",
         "deactivating": "Deactivating..."
       },
@@ -900,7 +900,7 @@
     "list": {
       "title": "Application management",
       "description": "Register new applications and manage existing ones.",
-      "new": "New Application",
+      "new": "New application",
       "loadErrorTitle": "Applications could not be loaded.",
       "loadErrorMessage": "Please try again. If the problem persists, contact support.",
       "emptyTitle": "There are no applications yet",
@@ -924,8 +924,8 @@
       "noDescription": "No description."
     },
     "dialog": {
-      "newTitle": "New Application",
-      "editTitle": "Edit Application",
+      "newTitle": "New application",
+      "editTitle": "Edit application",
       "newDescription": "Fill in the details to register a new application.",
       "editDescription": "Update the application details."
     },
@@ -975,8 +975,8 @@
       "status": "Status",
       "statusPlaceholder": "Select status",
       "saving": "Saving...",
-      "create": "Create Application",
-      "update": "Update Application",
+      "create": "Create application",
+      "update": "Update application",
       "toasts": {
         "createdTitle": "Application created",
         "created": "The application was created successfully!",
@@ -2060,7 +2060,7 @@
       "removeAria": "Remove {name} from the department",
       "addAria": "Add {name} to the department",
       "summary": "<b>{added}</b> of <b>{total}</b> applications added",
-      "removeTitle": "Remove Application",
+      "removeTitle": "Remove application",
       "removeDescription": "Are you sure you want to remove the application <b>{name}</b> from this department? This action cannot be undone.",
       "toast": {
         "addedTitle": "Application added",

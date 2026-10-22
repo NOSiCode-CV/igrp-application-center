@@ -79,7 +79,7 @@ describe("UserStatusToggle", () => {
 
     const dialog = screen.getByRole("dialog");
     await userEvent.click(
-      within(dialog).getByRole("button", { name: /^confirmar desativar$/i }),
+      within(dialog).getByRole("button", { name: "Desativar" }),
     );
 
     await waitFor(() => {

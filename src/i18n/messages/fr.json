@@ -661,7 +661,7 @@
         "activateDescription": "Voulez-vous vraiment activer l’utilisateur <strong>{name}</strong> ?",
         "deactivateDescription": "Voulez-vous vraiment désactiver l’utilisateur <strong>{name}</strong> ?",
         "confirmActivate": "Activer",
-        "confirmDeactivate": "Confirmer la désactivation",
+        "confirmDeactivate": "Désactiver",
         "activating": "Activation...",
         "deactivating": "Désactivation..."
       },
@@ -1465,7 +1465,7 @@
       "name": "Nom",
       "namePlaceholder": "Nom du rôle",
       "code": "Code",
-      "codePlaceholder": "Ex : ROLE_ADMIN",
+      "codePlaceholder": "Ex. : ROLE_ADMIN",
       "description": "Description",
       "descriptionPlaceholder": "Brève description des responsabilités de ce rôle",
       "status": "Statut",
@@ -1526,7 +1526,7 @@
   "oauthClients": {
     "meta": {
       "listTitle": "Clients OAuth",
-      "listDescription": "Consommateurs d’API enregistrés auprès du serveur d’autorisation iGRP.",
+      "listDescription": "Consommateurs d’API enregistrés auprès du serveur d’autorisation IGRP.",
       "newTitle": "Enregistrer un client OAuth",
       "detailTitle": "{name} · Clients OAuth",
       "detailFallback": "Client OAuth"
@@ -1603,7 +1603,7 @@
       "accountsErrorTitle": "Impossible de vérifier les comptes de service.",
       "accountsErrorMessage": "La suppression, l’activation et la désactivation sont indisponibles tant que la vérification n’a pas abouti.",
       "emptyTitle": "Il n’y a pas encore de clients OAuth",
-      "emptyDescription": "Un client OAuth est une application ou un service enregistré pour demander des jetons au serveur d’autorisation iGRP.",
+      "emptyDescription": "Un client OAuth est une application ou un service enregistré pour demander des jetons au serveur d’autorisation IGRP.",
       "emptyAction": "Enregistrer le premier client",
       "noMatches": "Aucun client ne correspond aux filtres."
     },
