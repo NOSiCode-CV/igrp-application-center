@@ -10,6 +10,25 @@
     "signingOut": "Signing out...",
     "pleaseWait": "Please wait..."
   },
+  "login": {
+    "welcome": "Welcome to IGRP",
+    "description": "Enter your credentials to sign in.",
+    "copyright": "Developed by",
+    "carousel": {
+      "workflow": {
+        "title": "Streamlined workflow",
+        "description": "Boost your productivity with our intuitive interface and powerful tools."
+      },
+      "security": {
+        "title": "Secure by design",
+        "description": "Your data is protected with enterprise-grade security and encryption."
+      },
+      "collaboration": {
+        "title": "Collaborative platform",
+        "description": "Work together seamlessly with your team in real time."
+      }
+    }
+  },
   "home": {
     "state": {
       "ok": "Active",

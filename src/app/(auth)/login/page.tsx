@@ -5,8 +5,9 @@ import { IGRPLocaleSwitcher } from "@igrp/framework-next/i18n/client";
 import { getAuthProviderIdFromEnv } from "@igrp/framework-next-auth";
 import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
 import { cn } from "@igrp/igrp-framework-react-design-system/cn";
+import { getTranslations } from "next-intl/server";
 
-import { carouselItems, loginConfig } from "@/config/login";
+import { carouselImages, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
 import { setLocale } from "@/i18n/actions";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
@@ -20,7 +21,7 @@ import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 import { LogoutCompletion } from "./logout-completion";
 import { SilentSignIn } from "./silent-sign-in";
 
-const { sliderPosition, texts } = loginConfig;
+const { sliderPosition } = loginConfig;
 const { logo, name } = siteConfig;
 
 export default async function AuthPage({
@@ -73,6 +74,21 @@ export default async function AuthPage({
       <SilentSignIn providerId={providerId} callbackUrl={safeCallbackUrl} />
     );
   }
+
+  const t = await getTranslations("login");
+  const texts = {
+    ...loginConfig.texts,
+    welcome: t("welcome"),
+    description: t("description"),
+    copyright: t("copyright"),
+  };
+  const carouselItems = (
+    Object.keys(carouselImages) as (keyof typeof carouselImages)[]
+  ).map((key) => ({
+    image: carouselImages[key],
+    title: t(`carousel.${key}.title`),
+    description: t(`carousel.${key}.description`),
+  }));
 
   return (
     <section className="relative flex min-h-screen flex-col md:flex-row">
