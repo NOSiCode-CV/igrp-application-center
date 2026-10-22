@@ -209,11 +209,6 @@
       "previous": "Aller à la page précédente",
       "next": "Aller à la page suivante",
       "last": "Aller à la dernière page"
-    },
-    "imageUpload": {
-      "none": "Aucune image",
-      "upload": "Téléverser une image",
-      "remove": "Retirer"
     }
   },
   "errors": {

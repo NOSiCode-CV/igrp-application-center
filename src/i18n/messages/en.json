@@ -209,11 +209,6 @@
       "previous": "Go to previous page",
       "next": "Go to next page",
       "last": "Go to last page"
-    },
-    "imageUpload": {
-      "none": "No image",
-      "upload": "Upload image",
-      "remove": "Remove"
     }
   },
   "errors": {
