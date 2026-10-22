@@ -148,7 +148,7 @@ export function MenuFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 p-0 sm:max-w-2xl">
+      <DialogContent showCloseButton={false} className="gap-0 p-0 sm:max-w-2xl">
         <DialogHeader className="px-6 pt-6 pb-4">
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>{dialogDescription}</DialogDescription>
@@ -277,7 +277,7 @@ function MenuFormBody({
   const isPageType =
     menuType === menuTypeSchema.enum.MENU_PAGE ||
     menuType === menuTypeSchema.enum.EXTERNAL_PAGE;
-  
+
   useEffect(() => {
     if (menu) {
       reset({
@@ -378,7 +378,7 @@ function MenuFormBody({
     menuType === menuTypeSchema.enum.FOLDER
       ? groupMenus.length > 0
       : isPageType && (groupMenus.length > 0 || folderMenus.length > 0);
-  
+
   function handleBack() {
     if (!onBack) return;
     if (isDirty) {
@@ -399,12 +399,12 @@ function MenuFormBody({
         className="flex min-h-0 flex-col"
       >
         <ScrollArea className="max-h-[65vh] px-6">
-          <div className="flex flex-col gap-6 pt-1 pb-6">     
-           <MenuRowPreview
+          <div className="flex flex-col gap-6 pt-1 pb-6">
+            <MenuRowPreview
               control={form.control}
               allMenus={allMenus}
               lockedParentCode={lockedParentCode}
-            />    
+            />
             <FieldSet>
               <FieldLegend variant="label">{t("sections.details")}</FieldLegend>
               <div className="grid grid-cols-1 items-start gap-4">

@@ -293,7 +293,10 @@ export function ManageResourcesModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        <DialogContent
+          showCloseButton={false}
+          className="sm:min-w-2xl max-h-[85vh] overflow-hidden flex flex-col"
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <IGRPIcon

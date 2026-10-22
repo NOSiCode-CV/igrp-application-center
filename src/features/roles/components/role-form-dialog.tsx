@@ -183,7 +183,7 @@ export function RoleFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent showCloseButton={false} className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
             {isEdit ? t("titleEdit") : t("titleCreate")}

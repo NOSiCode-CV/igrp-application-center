@@ -61,7 +61,7 @@ function IGRPDialogDelete({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle className="sr-only">{textHeader}</DialogTitle>
         </DialogHeader>

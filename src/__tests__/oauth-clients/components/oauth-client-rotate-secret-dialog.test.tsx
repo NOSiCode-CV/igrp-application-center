@@ -117,10 +117,7 @@ describe("OAuthClientRotateSecretDialog", () => {
     expect(
       await screen.findByText(/O servidor não devolveu o novo segredo/),
     ).toBeInTheDocument();
-    // The design system dialog now ships its own "Fechar" icon button too.
-    for (const button of screen.getAllByRole("button", { name: "Fechar" })) {
-      expect(button).toBeEnabled();
-    }
+    expect(screen.getByRole("button", { name: "Fechar" })).toBeEnabled();
   });
 
   it("stays on the confirmation when the rotation fails", async () => {

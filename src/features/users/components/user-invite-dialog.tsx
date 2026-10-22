@@ -180,7 +180,10 @@ export function UserInviteDialog({
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="md:min-w-2xl max-h-[95vh] overflow-y-auto">
+      <DialogContent
+        showCloseButton={false}
+        className="md:min-w-2xl max-h-[95vh] overflow-y-auto"
+      >
         <DialogHeader>
           <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>

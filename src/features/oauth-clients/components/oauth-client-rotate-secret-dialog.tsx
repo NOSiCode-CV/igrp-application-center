@@ -107,7 +107,10 @@ export function OAuthClientRotateSecretDialog({
   return (
     <>
       <IGRPModalDialog open={open} onOpenChange={requestClose}>
-        <IGRPModalDialogContent onInteractOutside={(e) => e.preventDefault()}>
+        <IGRPModalDialogContent
+          showCloseButton={false}
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <IGRPModalDialogHeader>
             <IGRPModalDialogTitle>{t("rotate.doneTitle")}</IGRPModalDialogTitle>
             <IGRPModalDialogDescription>

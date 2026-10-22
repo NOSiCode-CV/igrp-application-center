@@ -194,7 +194,7 @@ export function DepartmentFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>{titleTxt}</DialogTitle>
           <DialogDescription>{descriptionTxt}</DialogDescription>

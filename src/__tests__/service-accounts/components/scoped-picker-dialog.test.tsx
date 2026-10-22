@@ -147,4 +147,27 @@ describe("ScopedPickerDialog", () => {
       screen.getByRole("checkbox", { name: /HR.admin/ }),
     ).not.toBeChecked();
   });
+
+  it("has a footer cancel and no second design-system close button", () => {
+    render(
+      <ScopedPickerDialog
+        open
+        onOpenChange={() => {}}
+        title="Atribuir perfis"
+        description="d"
+        departmentCode="INV"
+        onDepartmentChange={() => {}}
+        items={ITEMS}
+        isLoading={false}
+        isError={false}
+        selectedIds={[]}
+        onConfirm={vi.fn()}
+        isSaving={false}
+        confirmLabel="Guardar perfis"
+      />,
+    );
+    expect(
+      screen.queryByRole("button", { name: "Fechar" }),
+    ).not.toBeInTheDocument();
+  });
 });

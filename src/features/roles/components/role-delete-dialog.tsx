@@ -72,7 +72,7 @@ export function RoleDeleteDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <div>
           <DialogHeader className="flex flex-col gap-4">
             <div className="flex flex-col items-center gap-1">

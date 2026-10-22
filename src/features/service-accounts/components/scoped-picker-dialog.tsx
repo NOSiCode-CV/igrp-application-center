@@ -103,7 +103,10 @@ export function ScopedPickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] md:min-w-2xl">
+      <DialogContent
+        showCloseButton={false}
+        className="max-h-[90vh] md:min-w-2xl"
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
