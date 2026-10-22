@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
 import { DepartmentListSimple } from "@/features/departments/components/dept-list-simple-container";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import UserApplications from "./user-applications";
 import { UserAuditLogTab } from "./user-audit-tab";
@@ -37,7 +38,9 @@ function TabSkeleton() {
 function TabError({ error, resetErrorBoundary }: FallbackProps) {
   const t = useTranslations("users.detail");
   const tc = useTranslations("common.actions");
-  const message = error instanceof Error ? error.message : t("loadError");
+  const serverError = useServerErrorMessage();
+  const message =
+    error instanceof Error ? serverError(error.message) : t("loadError");
   return (
     <div className="flex flex-col items-center gap-3 p-6 text-sm text-destructive">
       <p>{message}</p>

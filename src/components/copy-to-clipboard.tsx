@@ -40,11 +40,12 @@ export function CopyToClipboard({ value }: CopyToClipboardProps) {
         duration: 2000,
       });
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
+      // The browser's clipboard error text is English and not user-facing.
       igrpToast({
         type: "error",
         title: t("copy.failed"),
-        description: error instanceof Error ? error.message : t("unknownError"),
+        description: t("unknownError"),
         duration: 2000,
       });
     }

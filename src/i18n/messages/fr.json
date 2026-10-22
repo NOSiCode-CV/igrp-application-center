@@ -869,7 +869,8 @@
         "title": "Personnalisation",
         "description": "Définissez les couleurs et les logos de l’organisation dans toutes les applications."
       }
-    }
+    },
+    "loadError": "Impossible de charger les paramètres."
   },
   "applications": {
     "meta": {

@@ -869,7 +869,8 @@
         "title": "Customização",
         "description": "Defina as cores e os logótipos da organização em todas as aplicações."
       }
-    }
+    },
+    "loadError": "Não foi possível carregar as configurações."
   },
   "applications": {
     "meta": {

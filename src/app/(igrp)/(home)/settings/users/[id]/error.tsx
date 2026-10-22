@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { InlineError } from "@/components/inline-error";
+import { useErrorMessage } from "@/i18n/server-error";
 
 export default function UserDetailsError({
   error,
@@ -15,6 +16,7 @@ export default function UserDetailsError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const errorMessage = useErrorMessage();
   const t = useTranslations("users.error");
   useEffect(() => {
     console.error("[users/:id] segment error", error);
@@ -27,7 +29,7 @@ export default function UserDetailsError({
         <div className="flex flex-col items-center gap-4">
           <InlineError
             title={t("detailTitle")}
-            message={error.message}
+            message={errorMessage(error)}
             onRetry={reset}
           />
           <Link

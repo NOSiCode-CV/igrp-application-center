@@ -23,6 +23,7 @@ import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 import { useRoles } from "@/features/departments/use-departments";
+import { useServerErrorMessage } from "@/i18n/server-error";
 import { useStatusOptions } from "@/i18n/status";
 
 import type { RoleArgs } from "../role-schemas";
@@ -41,6 +42,7 @@ export type RoleWithChildren = RoleArgs & { children?: RoleWithChildren[] };
 export function RolesListTree({ departmentCode }: RolesListProps) {
   const t = useTranslations("roles.list");
   const tc = useTranslations("common.actions");
+  const serverError = useServerErrorMessage();
   const statusOptions = useStatusOptions();
   const [searchTerm, setSearchTerm] = useState("");
   const [openFormDialog, setOpenFormDialog] = useState(false);
@@ -147,7 +149,7 @@ export function RolesListTree({ departmentCode }: RolesListProps) {
     return (
       <div className="rounded-md border py-6">
         <p className="text-center">{t("loadError")}</p>
-        <p className="text-center">{error.message}</p>
+        <p className="text-center">{serverError(error.message)}</p>
       </div>
     );
   }

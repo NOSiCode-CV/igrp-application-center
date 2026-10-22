@@ -869,7 +869,8 @@
         "title": "Customization",
         "description": "Set the organization's colours and logos across every app."
       }
-    }
+    },
+    "loadError": "Could not load the settings."
   },
   "applications": {
     "meta": {

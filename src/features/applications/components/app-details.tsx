@@ -90,7 +90,7 @@ export function ApplicationDetails({ code }: { code: string }) {
     return (
       <InlineError
         title={t("details.loadErrorTitle")}
-        message={error.message}
+        message={serverError(error.message)}
         onRetry={() => refetch()}
       />
     );
