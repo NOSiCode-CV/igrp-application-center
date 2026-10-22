@@ -11,6 +11,8 @@ import { serverSession } from "@/lib/auth";
 import { getLayoutConfig } from "@/lib/dal";
 import { isAuthBypass } from "@/lib/utilities";
 
+import { resolveTimeZone } from "./time-zone";
+
 /**
  * Platform locales are fixed (pt, en, fr). The region used for formatting is
  * per deployment (`IGRP_FORMAT_LOCALES`, read here and nowhere else), as is the
@@ -25,7 +27,7 @@ import { isAuthBypass } from "@/lib/utilities";
 export const i18n = igrpDefineI18n({
   defaultLocale: "pt",
   formatLocales: igrpParseFormatLocales(process.env.IGRP_FORMAT_LOCALES),
-  timeZone: process.env.IGRP_TIME_ZONE || "Atlantic/Cape_Verde",
+  timeZone: resolveTimeZone(process.env.IGRP_TIME_ZONE),
   getSessionLocale: async () => {
     // Cached per request alongside the root layout's own read. The preview
     // stub session carries no locale, so this is undefined under bypass.
