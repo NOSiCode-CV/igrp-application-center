@@ -24,7 +24,7 @@ export function SilentSignIn({
   providerId: AuthProviderId;
   callbackUrl: string;
 }) {
-  const t = useTranslations("app");
+  const t = useTranslations("auth");
   // Module-instance guard: the attempt must start exactly once even if the
   // effect re-fires (Strict Mode mount→unmount→mount in dev).
   const startedRef = useRef(false);

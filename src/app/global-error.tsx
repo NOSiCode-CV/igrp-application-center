@@ -20,21 +20,26 @@ import {
   IGRP_LOCALE_COOKIE,
   igrpNormalizeLocale,
 } from "@igrp/framework-next/i18n";
+import { igrpLastFormatLocale } from "@igrp/framework-next/i18n/client";
 import { IGRPGlobalError } from "@igrp/framework-next-ui";
 
 import { resolvePublicErrorCopy } from "@/lib/error-copy";
 import { reportError } from "@/lib/report-error";
 
-// No provider is mounted here (the failing root layout is what mounts it), so
-// the document language comes from the IGRP_LOCALE cookie, read the same way
-// `useIGRPChromeI18n` reads it: pt on the server, the cookie on the client.
+// No provider is mounted here (the failing root layout is what mounts it). The
+// document language is the format locale the provider last rendered with (it
+// carries IGRP_FORMAT_LOCALES); before it ever mounted, the IGRP_LOCALE cookie,
+// read the same way `useIGRPChromeI18n` reads it: pt on the server.
 const noopSubscribe = () => () => {};
-function readCookieFormatLocale(): string {
+function readFormatLocale(): string {
+  const recorded = igrpLastFormatLocale();
+  if (recorded) return recorded;
   const entry = document.cookie
     .split("; ")
     .find((c) => c.startsWith(`${IGRP_LOCALE_COOKIE}=`));
   const locale =
     igrpNormalizeLocale(entry?.slice(IGRP_LOCALE_COOKIE.length + 1)) ?? "pt";
+  // Default regions: IGRP_FORMAT_LOCALES (server env) is unreadable here.
   return IGRP_DEFAULT_FORMAT_LOCALES[locale];
 }
 
@@ -47,7 +52,7 @@ export default function GlobalError({
 }) {
   const lang = useSyncExternalStore(
     noopSubscribe,
-    readCookieFormatLocale,
+    readFormatLocale,
     () => IGRP_DEFAULT_FORMAT_LOCALES.pt,
   );
 

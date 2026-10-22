@@ -117,9 +117,9 @@ function CopyButton({ value }: { value: string }) {
 
 /** A real sequence: each step needs the one before it. Text in `home.nextSteps.*`. */
 const NEXT_STEPS = [
-  { key: "feature", path: "src/app/(myapp)/_features/<módulo>/" },
-  { key: "route", path: "src/app/(igrp)/<rota>/page.tsx" },
-  { key: "guard", path: 'await igrpAssertAuthorize("<permissão>")' },
+  { key: "feature", path: "src/app/(myapp)/_features/<module>/" },
+  { key: "route", path: "src/app/(igrp)/<route>/page.tsx" },
+  { key: "guard", path: 'await igrpAssertAuthorize("<permission>")' },
   { key: "menu", path: "src/temp/menus/menus.ts" },
 ] as const;
 

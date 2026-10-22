@@ -50,7 +50,7 @@ function buildLoginUrl(): string {
 type EndSessionPost = { action: string; fields: Record<string, string> };
 
 export default function LogoutPage() {
-  const t = useTranslations("app");
+  const t = useTranslations("auth");
   // When set, the end-session POST form is rendered and auto-submitted. We use
   // POST rather than a `window.location` GET so `id_token_hint` (the full
   // signed ID token) rides in the request body — never the URL, browser

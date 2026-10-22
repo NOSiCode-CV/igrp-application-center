@@ -23,7 +23,7 @@ import { markSilentSsoTried } from "@/lib/silent-sso";
  * normal login visit never mounts this and shows the form immediately.
  */
 export function LogoutCompletion() {
-  const t = useTranslations("app");
+  const t = useTranslations("auth");
   // Module-instance guard: the async teardown must run exactly once even if the
   // effect re-fires (Strict Mode mount→unmount→mount in dev).
   const startedRef = useRef(false);

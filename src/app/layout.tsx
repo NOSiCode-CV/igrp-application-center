@@ -19,11 +19,11 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 // otherwise (and on any failure) the app's own icon.
 export async function generateMetadata(): Promise<Metadata> {
   const config = await createConfig(await getLayoutConfig());
-  const t = await getTranslations("app");
   const branding = await igrpResolveRequestBranding(config);
+  const title = (await getTranslations("app"))("title");
   return {
-    title: t("title"),
-    description: t("description"),
+    title,
+    description: title,
     icons: igrpBrandingMetadata(branding, `${basePath}/logo-no-text.png`),
   };
 }
