@@ -492,7 +492,7 @@
         "copyFailed": "Impossible de copier",
         "copyFailedDescription": "Le navigateur a bloqué l’accès au presse-papiers. Copiez l’URL manuellement."
       },
-      "actionsFor": "Actions pour l’invitation de {identifier}"
+      "actionsFor": "Actions pour l’invitation envoyée à {identifier}"
     },
     "list": {
       "title": "Gestion des utilisateurs",
@@ -601,7 +601,7 @@
         "notFound": "Aucun utilisateur trouvé.",
         "title": "Modifier le profil de l’utilisateur",
         "cardTitle": "Informations détaillées sur cet utilisateur.",
-        "cardDescription": "Gérez vos informations personnelles et les paramètres de votre compte.",
+        "cardDescription": "Gérez les informations personnelles et les paramètres du compte de cet utilisateur.",
         "fullName": "Nom complet",
         "fullNamePlaceholder": "jeandupont",
         "fullNameDescription": "Le nom complet de l’utilisateur.",
@@ -641,7 +641,7 @@
         "deactivateTitle": "Désactiver l’utilisateur",
         "activateDescription": "Voulez-vous vraiment activer l’utilisateur <strong>{name}</strong> ?",
         "deactivateDescription": "Voulez-vous vraiment désactiver l’utilisateur <strong>{name}</strong> ?",
-        "confirmActivate": "Confirmer l’activation",
+        "confirmActivate": "Activer",
         "confirmDeactivate": "Confirmer la désactivation",
         "activating": "Activation...",
         "deactivating": "Désactivation..."
@@ -720,7 +720,7 @@
       "title": "Profils attribués",
       "add": "Ajouter",
       "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
-      "parent": "Associés : <mono>{code}</mono>",
+      "parent": "Sous-rôle de <mono>{code}</mono>",
       "morePermissions": "+{count} de plus",
       "revoke": "Révoquer",
       "empty": "Aucun profil attribué",
@@ -765,7 +765,7 @@
     "banner": {
       "greeting": {
         "morning": "Bonjour",
-        "afternoon": "Bon après-midi",
+        "afternoon": "Bonjour",
         "evening": "Bonsoir"
       },
       "welcome": "Bienvenue",
@@ -811,7 +811,7 @@
       "emptyTitle": "Aucune application ne vous est encore attribuée",
       "emptyDescription": "L’accès est accordé par profil et département. Contactez l’administrateur si vous vous attendiez à voir quelque chose ici.",
       "noFavoritesTitle": "Pas encore de favoris",
-      "noFavoritesDescription": "Cliquez sur l’★ d’une application pour l’ajouter ici",
+      "noFavoritesDescription": "Cliquez sur l’étoile ★ d’une application pour l’ajouter ici",
       "noFavoriteMatch": "Aucun favori ne correspond à « {query} ».",
       "noMatch": "Aucune application ne correspond à « {query} ».",
       "clearFilters": "Effacer les filtres"
@@ -1376,7 +1376,7 @@
       "loading": "Chargement des profils…",
       "title": "Profils attribués",
       "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
-      "parent": "Associés : <mono>{code}</mono>",
+      "parent": "Sous-rôle de <mono>{code}</mono>",
       "morePermissions": "+{count} de plus",
       "activate": "Activer",
       "activating": "Activation…",
@@ -1457,18 +1457,18 @@
       "save": "Enregistrer les modifications",
       "create": "Créer le profil",
       "toast": {
-        "updatedTitle": "Modifier le profil",
+        "updatedTitle": "Rôle mis à jour",
         "updatedDescription": "Le profil a été mis à jour avec succès.",
-        "createdTitle": "Ajouter un profil",
+        "createdTitle": "Rôle créé",
         "createdDescription": "Le profil a été ajouté avec succès.",
-        "errorTitle": "Échec de l'ajout du profil",
+        "errorTitle": "Impossible d’enregistrer le rôle",
         "errorDescription": "Veuillez réessayer. {error}"
       }
     },
     "delete": {
       "title": "Confirmation",
       "description": "Cette action est irréversible. Le profil et toutes ses données seront supprimés définitivement. Pour confirmer, saisissez <code>{name}</code> ci-dessous :",
-      "label": "Nom du profil",
+      "label": "Nom du rôle",
       "placeholder": "Saisissez « {name} » pour confirmer",
       "cancel": "Annuler",
       "confirm": "Supprimer",
@@ -1834,7 +1834,7 @@
     },
     "panel": {
       "title": "Période et filtres",
-      "dateSpan": "{from} au {to}",
+      "dateSpan": "Du {from} au {to}",
       "noFilters": "{period}, sans filtre",
       "filterCount": "{period}, {count, plural, one {# filtre} other {# filtres}}"
     },
@@ -1943,7 +1943,7 @@
       }
     },
     "detail": {
-      "tabRoles": "Profils (Roles)",
+      "tabRoles": "Rôles",
       "tabPermissions": "Permissions",
       "tabMenus": "Menus",
       "noDescription": "Aucune description.",
@@ -2193,9 +2193,9 @@
       "description": "Ce que le compte peut faire : les permissions de ses profils ajoutées aux permissions directes.",
       "hideList": "Masquer la liste",
       "showList": "Voir la liste complète",
-      "fromRoles": "Des profils",
+      "fromRoles": "Via les rôles",
       "direct": "Directes",
-      "total": "Total uniques",
+      "total": "Total (sans doublons)",
       "loadError": "Impossible de charger les permissions des profils, les totaux sont donc incomplets.",
       "retry": "Réessayer",
       "via": "via {roles}"

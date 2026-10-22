@@ -80,7 +80,7 @@ it("calls onConfirm with ACTIVE when inactive user confirms", async () => {
     />,
   );
   await userEvent.click(
-    screen.getByRole("button", { name: /confirmar ativar/i }),
+    screen.getByRole("button", { name: "Ativar" }),
   );
   expect(onConfirm).toHaveBeenCalledWith("ACTIVE");
 });

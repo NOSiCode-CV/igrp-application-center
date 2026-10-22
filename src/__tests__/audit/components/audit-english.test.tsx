@@ -58,7 +58,7 @@ describe("audit in English", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Review the accesses and configuration changes recorded on the platform.",
+        "Review the sign-ins and configuration changes recorded on the platform.",
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole("tablist", { name: "Reports" })).toBeVisible();

@@ -275,7 +275,7 @@
         "rolesEmpty": "Nenhum perfil encontrado.",
         "selectDepartmentFirst": "Selecione um departamento",
         "selectRoles": "Selecionar perfis",
-        "rolesSelected": "{count, plural, one {# perfil} other {# perfis selecionados}}",
+        "rolesSelected": "{count, plural, one {# perfil selecionado} other {# perfis selecionados}}",
         "removeRole": "Remover {name}",
         "submit": "Enviar Convite",
         "submitting": "A enviar...",
@@ -601,7 +601,7 @@
         "notFound": "Nenhum utilizador encontrada.",
         "title": "Editar perfil do utilizador",
         "cardTitle": "Informação detalhada sobre este utilizador.",
-        "cardDescription": "Gerir as informações pessoais e as definições da conta.",
+        "cardDescription": "Gerir as informações pessoais e as definições de conta deste utilizador.",
         "fullName": "Nome completo",
         "fullNamePlaceholder": "johndoe",
         "fullNameDescription": "O nome completo do utilizador.",
@@ -641,7 +641,7 @@
         "deactivateTitle": "Desativar Utilizador",
         "activateDescription": "Tem a certeza de que deseja ativar o utilizador <strong>{name}</strong>?",
         "deactivateDescription": "Tem a certeza de que deseja desativar o utilizador <strong>{name}</strong>?",
-        "confirmActivate": "Confirmar Ativar",
+        "confirmActivate": "Ativar",
         "confirmDeactivate": "Confirmar Desativar",
         "activating": "A ativar...",
         "deactivating": "A desativar..."
@@ -720,7 +720,7 @@
       "title": "Perfis Atribuídos",
       "add": "Adicionar",
       "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
-      "parent": "Associados: <mono>{code}</mono>",
+      "parent": "Subperfil de <mono>{code}</mono>",
       "morePermissions": "+{count} mais",
       "revoke": "Revogar",
       "empty": "Sem perfis atribuídos",
@@ -1376,7 +1376,7 @@
       "loading": "A carregar perfis…",
       "title": "Perfis Atribuídos",
       "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
-      "parent": "Associados: <mono>{code}</mono>",
+      "parent": "Subperfil de <mono>{code}</mono>",
       "morePermissions": "+{count} mais",
       "activate": "Ativar",
       "activating": "A ativar…",
@@ -1457,25 +1457,25 @@
       "save": "Guardar Alterações",
       "create": "Criar Perfil",
       "toast": {
-        "updatedTitle": "Atualizar Perfil",
+        "updatedTitle": "Perfil atualizado",
         "updatedDescription": "Perfil foi atualizado com sucesso.",
-        "createdTitle": "Adicionar Perfil",
+        "createdTitle": "Perfil criado",
         "createdDescription": "Perfil foi adicionado com sucesso.",
-        "errorTitle": "Falha ao adicionar perfil",
+        "errorTitle": "Não foi possível guardar o perfil",
         "errorDescription": "Tente novamente. {error}"
       }
     },
     "delete": {
       "title": "Confirmação",
       "description": "Esta ação é irreversível. O perfil e todos os seus dados serão eliminados permanentemente. Para confirmar, escreva <code>{name}</code> abaixo:",
-      "label": "Nome Perfil",
+      "label": "Nome do perfil",
       "placeholder": "Escreva ''{name}'' para confirmação",
       "cancel": "Cancelar",
       "confirm": "Eliminar",
       "pending": "Aguarde…",
       "toast": {
         "successTitle": "Perfil eliminado",
-        "successDescription": "Role ''{name}'' foi eliminado com sucesso.",
+        "successDescription": "O perfil ''{name}'' foi eliminado com sucesso.",
         "errorTitle": "Erro ao eliminar."
       }
     },
@@ -1943,7 +1943,7 @@
       }
     },
     "detail": {
-      "tabRoles": "Perfis (Roles)",
+      "tabRoles": "Perfis",
       "tabPermissions": "Permissões",
       "tabMenus": "Menus",
       "noDescription": "Sem descrição.",

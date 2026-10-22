@@ -77,7 +77,7 @@ describe("Role dialogs", () => {
       />,
       { locale: "en" },
     );
-    expect(screen.getByText("Role Name")).toBeTruthy();
+    expect(screen.getByText("Role name")).toBeTruthy();
     expect(screen.getByPlaceholderText("Type 'ADMIN' to confirm")).toBeTruthy();
   });
 });

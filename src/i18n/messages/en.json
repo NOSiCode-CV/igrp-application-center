@@ -71,7 +71,7 @@
         "valueBypass": "Lets every request through",
         "valueAuth": "Requires a signed-in session",
         "detailBypass": "Authentication is off in this environment.",
-        "detailAuth": "Requests without a session are sent to the login."
+        "detailAuth": "Requests without a session are sent to sign-in."
       },
       "session": {
         "name": "Session",
@@ -601,7 +601,7 @@
         "notFound": "No user found.",
         "title": "Edit User Profile",
         "cardTitle": "Detailed information about this user.",
-        "cardDescription": "Manage your personal information and account settings.",
+        "cardDescription": "Manage this user’s personal information and account settings.",
         "fullName": "Full Name",
         "fullNamePlaceholder": "johndoe",
         "fullNameDescription": "The user's full name.",
@@ -641,7 +641,7 @@
         "deactivateTitle": "Deactivate User",
         "activateDescription": "Are you sure you want to activate the user <strong>{name}</strong>?",
         "deactivateDescription": "Are you sure you want to deactivate the user <strong>{name}</strong>?",
-        "confirmActivate": "Confirm Activation",
+        "confirmActivate": "Activate",
         "confirmDeactivate": "Confirm Deactivation",
         "activating": "Activating...",
         "deactivating": "Deactivating..."
@@ -720,7 +720,7 @@
       "title": "Assigned Roles",
       "add": "Add",
       "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
-      "parent": "Associated: <mono>{code}</mono>",
+      "parent": "Sub-role of <mono>{code}</mono>",
       "morePermissions": "+{count} more",
       "revoke": "Revoke",
       "empty": "No roles assigned",
@@ -1159,7 +1159,7 @@
       "chart": "Charts",
       "tiles": "App tiles",
       "other": "Other",
-      "appOther": "Other Application Center"
+      "appOther": "Other (Application Center)"
     },
     "tokens": {
       "primary": "Primary",
@@ -1376,7 +1376,7 @@
       "loading": "Loading roles…",
       "title": "Assigned Roles",
       "permissionCount": "{count, plural, =1 {# permission} other {# permissions}}",
-      "parent": "Associated: <mono>{code}</mono>",
+      "parent": "Sub-role of <mono>{code}</mono>",
       "morePermissions": "+{count} more",
       "activate": "Activate",
       "activating": "Activating…",
@@ -1457,18 +1457,18 @@
       "save": "Save Changes",
       "create": "Create Role",
       "toast": {
-        "updatedTitle": "Update Role",
+        "updatedTitle": "Role updated",
         "updatedDescription": "The role was updated successfully.",
-        "createdTitle": "Add Role",
+        "createdTitle": "Role created",
         "createdDescription": "The role was added successfully.",
-        "errorTitle": "Failed to add role",
+        "errorTitle": "Could not save the role",
         "errorDescription": "Please try again. {error}"
       }
     },
     "delete": {
       "title": "Confirmation",
       "description": "This action is irreversible. The role and all its data will be permanently deleted. To confirm, type <code>{name}</code> below:",
-      "label": "Role Name",
+      "label": "Role name",
       "placeholder": "Type ''{name}'' to confirm",
       "cancel": "Cancel",
       "confirm": "Delete",
@@ -1738,7 +1738,7 @@
     },
     "header": {
       "title": "Audit and Reports",
-      "description": "Review the accesses and configuration changes recorded on the platform."
+      "description": "Review the sign-ins and configuration changes recorded on the platform."
     },
     "reports": {
       "label": "Reports",
@@ -1764,7 +1764,7 @@
     "fields": {
       "timestamp": "Date and time",
       "username": "User",
-      "heldRoles": "Held roles",
+      "heldRoles": "Roles held",
       "module": "Module",
       "action": "Action",
       "ip": "IP",
@@ -2195,7 +2195,7 @@
       "showList": "View full list",
       "fromRoles": "From roles",
       "direct": "Direct",
-      "total": "Unique total",
+      "total": "Total (unique)",
       "loadError": "Could not load the permissions of the roles, so the counts are incomplete.",
       "retry": "Try again",
       "via": "via {roles}"
