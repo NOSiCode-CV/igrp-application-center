@@ -62,9 +62,7 @@ it("calls onConfirm with INACTIVE when active user confirms", async () => {
       onConfirm={onConfirm}
     />,
   );
-  await userEvent.click(
-    screen.getByRole("button", { name: "Desativar" }),
-  );
+  await userEvent.click(screen.getByRole("button", { name: "Desativar" }));
   expect(onConfirm).toHaveBeenCalledWith("INACTIVE");
 });
 
@@ -79,8 +77,6 @@ it("calls onConfirm with ACTIVE when inactive user confirms", async () => {
       onConfirm={onConfirm}
     />,
   );
-  await userEvent.click(
-    screen.getByRole("button", { name: "Ativar" }),
-  );
+  await userEvent.click(screen.getByRole("button", { name: "Ativar" }));
   expect(onConfirm).toHaveBeenCalledWith("ACTIVE");
 });

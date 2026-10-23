@@ -93,7 +93,10 @@ export function dateColumn<T>(
 
 export function statusColumn<T>(
   t: UsersTranslator,
-  getBadge: (status: string) => { className?: Parameters<typeof cn>[0]; label: ReactNode },
+  getBadge: (status: string) => {
+    className?: Parameters<typeof cn>[0];
+    label: ReactNode;
+  },
 ): ColumnDef<T> {
   return {
     header: () => (
