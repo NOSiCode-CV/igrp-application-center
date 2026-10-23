@@ -13,6 +13,10 @@
  *
  * Every replica of the app must point at the same Redis.
  *
+ * Auth-bypass guard: runs first. When bypass is on in a production build without
+ * `IGRP_ALLOW_AUTH_BYPASS_IN_PRODUCTION`, it fails the instrumentation hook, so
+ * Next logs the error and answers every request with 500.
+ *
  * Keep the imports INSIDE the `NEXT_RUNTIME` block: Next compiles this file for
  * the Edge runtime too, inlines `NEXT_RUNTIME` there, and drops the block — an
  * early `return` instead leaves the imports reachable, and the Edge build then
@@ -20,6 +24,11 @@
  */
 export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
+    const { igrpAssertAuthBypassAllowed } = await import(
+      "@igrp/framework-next"
+    );
+    igrpAssertAuthBypassAllowed();
+
     const url = process.env.IGRP_SESSION_STORE_URL?.trim();
     if (!url) return;
 

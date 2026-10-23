@@ -67,6 +67,9 @@ describe("SessionLocaleSwitcher", () => {
     expect(
       await screen.findByRole("button", { name: ERROR_LABEL }),
     ).toBeInTheDocument();
+    // The session kept the old locale: the framework rolls the profile back and skips the refresh.
+    expect(setLocale).toHaveBeenLastCalledWith("pt");
+    expect(refresh).not.toHaveBeenCalled();
   });
 
   it("refreshes only after the session update resolves", async () => {
@@ -80,7 +83,7 @@ describe("SessionLocaleSwitcher", () => {
     await chooseEnglish();
     await waitFor(() => expect(update).toHaveBeenCalled());
     expect(refresh).not.toHaveBeenCalled();
-    resolveUpdate(null);
+    resolveUpdate({ user: { locale: "en" } });
     await waitFor(() => expect(refresh).toHaveBeenCalled());
   });
 

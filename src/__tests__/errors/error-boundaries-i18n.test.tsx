@@ -6,6 +6,16 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/report-error", () => ({ reportError: vi.fn() }));
 
+// Module state: earlier renders inside a provider would record pt-CV, so the
+// global boundary's cookie fallback is only reachable with this stubbed.
+const { igrpLastFormatLocale } = vi.hoisted(() => ({
+  igrpLastFormatLocale: vi.fn<() => string | undefined>(),
+}));
+vi.mock("@igrp/framework-next/i18n/client", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  igrpLastFormatLocale,
+}));
+
 // The framework boundaries own the copy (catalog titles, IGRP_* codes, cookie
 // language); the app only contributes the public detail via resolveCopy.
 // They read next/navigation, which the global test setup stubs partially.
@@ -31,6 +41,7 @@ const withDigest = (digest: string) =>
 const withCode = (code: string) => Object.assign(new Error("x"), { code });
 
 afterEach(() => {
+  igrpLastFormatLocale.mockReset();
   // biome-ignore lint/suspicious/noDocumentCookie: test cleanup of the locale cookie
   document.cookie = "IGRP_LOCALE=; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 });
@@ -110,6 +121,13 @@ describe("global error boundary (no providers)", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Try again" })).toBeVisible();
     expect(document.querySelector("html[lang='en-GB']")).not.toBeNull();
+  });
+
+  it("prefers the format locale the provider last rendered with", () => {
+    igrpLastFormatLocale.mockReturnValue("pt-PT");
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    render(<GlobalError error={withDigest("12345")} reset={() => {}} />);
+    expect(document.querySelector("html[lang='pt-PT']")).not.toBeNull();
   });
 
   it("shows the API detail when present", () => {

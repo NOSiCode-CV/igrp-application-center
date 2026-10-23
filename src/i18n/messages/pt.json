@@ -1,5 +1,15 @@
 {
-  "app": { "title": "IGRP | Template Aplicações" },
+  "app": {
+    "title": "IGRP | Centro de Aplicações",
+    "signingIn": "A iniciar sessão..."
+  },
+  "notFound": {
+    "description": "A página que procura não foi encontrada."
+  },
+  "auth": {
+    "signingOut": "A terminar sessão...",
+    "pleaseWait": "Aguarde..."
+  },
   "login": {
     "welcome": "Bem-vindo ao IGRP",
     "description": "Introduza as suas credenciais para aceder.",
@@ -18,13 +28,6 @@
         "description": "Trabalhe com a sua equipa em tempo real, sem complicações."
       }
     }
-  },
-  "notFound": {
-    "description": "A página que procura não existe ou foi movida."
-  },
-  "auth": {
-    "signingOut": "A terminar sessão...",
-    "pleaseWait": "Aguarde..."
   },
   "home": {
     "state": {
@@ -119,6 +122,2222 @@
         "value": "Apresentada",
         "detail": "Aparece quando não há uma rota inicial definida."
       }
+    }
+  },
+  "common": {
+    "actions": {
+      "back": "Voltar",
+      "home": "Início",
+      "backHome": "Voltar ao início",
+      "clear": "Limpar",
+      "clearFilters": "Limpar filtros",
+      "edit": "Editar"
+    },
+    "status": {
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "temporary": "Temporário",
+      "deleted": "Eliminado"
+    },
+    "unknownError": "Ocorreu um erro desconhecido.",
+    "serverError": "Ocorreu um erro. Tente novamente.",
+    "inlineError": {
+      "title": "Não foi possível carregar os dados."
+    },
+    "facetedFilter": {
+      "noResults": "Nenhum resultado encontrado.",
+      "clear": "Limpar Filtro"
+    },
+    "searchInput": {
+      "clear": "Limpar pesquisa"
+    },
+    "copy": {
+      "copied": "Copiado para a área de transferência",
+      "failed": "Não foi possível copiar para a área de transferência",
+      "copiedShort": "Copiado",
+      "copy": "Copiar para a área de transferência",
+      "clickToCopy": "Clique para copiar"
+    },
+    "textarea": {
+      "charsUsed": "Caracteres utilizados: {length} de {max}"
+    },
+    "fileUpload": {
+      "placeholder": "Arraste a sua imagem",
+      "pick": "Selecionar imagem",
+      "imageFormats": "SVG, PNG, JPG, GIF ou WEBP",
+      "otherFormats": "Selecionar ficheiro",
+      "maxSize": "(máx. {size} MB)",
+      "previewAlt": "Pré-visualização da imagem",
+      "remove": "Remover ficheiro",
+      "tooLarge": "O ficheiro excede o tamanho máximo de {size} MB.",
+      "notImage": "Ficheiro inválido. Selecione uma imagem."
+    },
+    "unsavedChanges": {
+      "region": "Alterações por guardar",
+      "message": "Tem alterações por guardar.",
+      "discard": "Descartar",
+      "save": "Guardar alterações",
+      "saving": "A guardar…"
+    },
+    "sensitiveValue": {
+      "confirmation": "Guardei o segredo num local seguro",
+      "copied": "Copiado",
+      "copiedDescription": "{label} copiado.",
+      "copyFailed": "Não foi possível copiar",
+      "copyFailedDescription": "Revele o valor e copie-o manualmente.",
+      "hide": "Ocultar",
+      "show": "Mostrar",
+      "copy": "Copiar",
+      "hint": "Oculto por defeito, para não aparecer em partilhas de ecrã. Copiar copia sempre o valor completo."
+    },
+    "deleteDialog": {
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "header": "Confirmação Final",
+      "confirmPrefix": "Para confirmar, escreva",
+      "placeholder": "Escreva ''{name}'' para confirmação",
+      "mismatch": "O texto não coincide com «{name}».",
+      "wait": "Aguarde..."
+    },
+    "confirmDialog": {
+      "confirm": "Confirmar",
+      "cancel": "Cancelar",
+      "loading": "Processando..."
+    },
+    "chipInput": {
+      "placeholder": "Adicionar…",
+      "added": "{chip} adicionado",
+      "remove": "Remover {chip}"
+    },
+    "multiSelect": {
+      "placeholder": "Selecione as opções",
+      "empty": "Sem opções disponíveis.",
+      "search": "Pesquisar…",
+      "selectedCount": "{count} opções selecionadas",
+      "counter": "{selected} de {total}",
+      "max": " (máx. {max})",
+      "selectAll": "Selecionar tudo",
+      "clear": "Limpar",
+      "done": "Concluir",
+      "remove": "Remover {label}"
+    },
+    "dataTable": {
+      "empty": "Sem resultados!",
+      "rowsPerPage": "Linhas por página",
+      "pageSizePlaceholder": "Selecionar número de resultados",
+      "range": "de",
+      "first": "Ir para a primeira página",
+      "previous": "Ir para a página anterior",
+      "next": "Ir para a página seguinte",
+      "last": "Ir para a última página"
+    }
+  },
+  "errors": {
+    "errorRef": "ID de referência:",
+    "unexpected": {
+      "title": "Ocorreu um erro inesperado.",
+      "description": "Tente novamente. Se o problema persistir, contacte a equipa de suporte e indique o ID de referência apresentado abaixo."
+    },
+    "auth": {
+      "title": "Não foi possível concluir a autenticação.",
+      "description": "Verifique a configuração do provedor de autenticação e as variáveis de ambiente. Se o problema persistir, contacte o suporte."
+    },
+    "status": {
+      "unauthorized": {
+        "title": "Acesso não autorizado",
+        "description": "Inicie sessão com as credenciais adequadas para aceder a este recurso."
+      },
+      "forbidden": {
+        "title": "Acesso negado",
+        "description": "Não tem permissões para ver este recurso."
+      },
+      "notFound": {
+        "title": "Página não encontrada",
+        "description": "A página que procura não existe ou foi removida."
+      },
+      "internal": {
+        "title": "Ocorreu um erro",
+        "description": "Pedimos desculpa pelo incómodo. Tente novamente mais tarde."
+      },
+      "unavailable": {
+        "title": "Serviço em manutenção",
+        "description": "O serviço não está disponível de momento. Voltaremos em breve."
+      },
+      "fallback": {
+        "title": "Ocorreu um erro",
+        "description": "Tente novamente. Se o problema persistir, contacte o suporte."
+      }
+    }
+  },
+  "users": {
+    "error": {
+      "listTitle": "Não foi possível carregar os utilizadores.",
+      "listMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "detailTitle": "Não foi possível carregar este utilizador.",
+      "backToList": "Voltar à lista de utilizadores"
+    },
+    "invite": {
+      "form": {
+        "localeLabel": "Idioma do convidado",
+        "title": "Convidar Utilizador",
+        "description": "Envie um convite por e-mail para um novo utilizador.",
+        "userInfo": "Informação do Utilizador",
+        "emailLabel": "E-mail",
+        "emailPlaceholder": "Ex: joao@email.com",
+        "assignRoles": "Atribuir Perfis",
+        "assignRolesHint": "Selecione departamento e perfis para o utilizador (opcional).",
+        "departmentLabel": "Departamento",
+        "departmentPlaceholder": "Selecionar departamento",
+        "departmentEmpty": "Departamento não encontrado.",
+        "search": "Procurar...",
+        "none": "Nenhum",
+        "rolesLabel": "Perfis",
+        "rolesEmpty": "Nenhum perfil encontrado.",
+        "selectDepartmentFirst": "Selecione um departamento",
+        "selectRoles": "Selecionar perfis",
+        "rolesSelected": "{count, plural, one {# perfil selecionado} other {# perfis selecionados}}",
+        "removeRole": "Remover {name}",
+        "submit": "Enviar Convite",
+        "submitting": "A enviar...",
+        "toasts": {
+          "inviteFailed": "Falha ao convidar",
+          "inviteFailedWithReason": "Falha ao convidar: {reason}",
+          "inviteSent": "Convite enviado com sucesso!"
+        },
+        "rolesNoneInDepartment": "Este departamento ainda não tem perfis.",
+        "rolesPickDepartment": "Escolha primeiro um departamento para ver os perfis disponíveis."
+      },
+      "accept": {
+        "errors": {
+          "emailValidation": "Erro ao validar email",
+          "invalidCode": "Código inválido"
+        },
+        "toasts": {
+          "resendFailed": "Não foi possível reenviar o código",
+          "resendSuccess": "Novo código enviado",
+          "acceptFailed": "Erro ao aceitar convite",
+          "accepted": "Convite aceite",
+          "acceptedDescription": "Tem agora acesso à aplicação.",
+          "rejectFailed": "Erro ao rejeitar convite",
+          "autoVerifyFailed": "Verificação automática de email falhou",
+          "autoVerifyMismatch": "O email da sua conta não corresponde ao convite.",
+          "autoVerifyUnavailable": "Não foi possível verificar o email automaticamente."
+        },
+        "loading": {
+          "validatingInvite": "A validar convite…",
+          "validatingEmail": "A validar email…",
+          "loadingInvite": "A carregar convite…"
+        },
+        "steps": {
+          "stepOf": "Passo {current} de {total}",
+          "email": {
+            "label": "Email",
+            "sub": "Confirmação"
+          },
+          "code": {
+            "label": "Código",
+            "sub": "Verificação"
+          },
+          "confirm": {
+            "label": "Confirmar",
+            "sub": "Convite"
+          }
+        },
+        "emailStep": {
+          "eyebrow": "Confirmação",
+          "title": "Bem-vindo",
+          "description": "Introduza o seu email para aceder ao convite.",
+          "emailLabel": "Email",
+          "emailPlaceholder": "exemplo@email.cv",
+          "submit": "Enviar código",
+          "submitting": "A enviar…"
+        },
+        "otpStep": {
+          "eyebrow": "Verificação",
+          "title": "Código de acesso",
+          "description": "Enviámos um código de 6 dígitos para <strong>{email}</strong>.",
+          "codeLabel": "Código OTP",
+          "submit": "Verificar código",
+          "submitting": "A verificar…",
+          "resend": "Reenviar código",
+          "resending": "A reenviar…",
+          "resendIn": "Reenviar em {seconds}s",
+          "changeEmail": "Alterar email"
+        },
+        "errorStates": {
+          "invalid": {
+            "eyebrow": "Erro",
+            "title": "Convite inválido",
+            "description": "Não foi possível encontrar este convite. O link pode estar incorreto."
+          },
+          "mismatch": {
+            "eyebrow": "Conta diferente",
+            "title": "Convite não corresponde",
+            "description": "Este convite não foi enviado para a conta com que iniciou sessão."
+          },
+          "expired": {
+            "eyebrow": "Expirado",
+            "title": "Convite expirado",
+            "description": "Este convite já expirou. Solicite um novo convite ao administrador."
+          }
+        },
+        "useAnotherAccount": "Usar outra conta",
+        "pendingState": {
+          "eyebrow": "Pendente",
+          "title": "Convite pendente",
+          "description": "Tem um convite pendente. Verifique o seu email para encontrar o link e continuar.",
+          "signOut": "Terminar sessão"
+        },
+        "rejectedStep": {
+          "eyebrow": "Rejeitado",
+          "title": "Convite rejeitado",
+          "description": "Optou por não aceitar o acesso a este módulo."
+        },
+        "responseStep": {
+          "eyebrow": "Convite",
+          "title": "Aceitar Acesso",
+          "description": "Revise os detalhes antes de confirmar.",
+          "email": "Email",
+          "department": "Departamento",
+          "roles": "Perfis",
+          "accept": "Aceitar Convite",
+          "processing": "A processar…",
+          "reject": "Rejeitar",
+          "rejectConfirm": {
+            "title": "Rejeitar convite?",
+            "description": "Esta ação não pode ser desfeita. Terá de solicitar um novo convite ao administrador se mudar de ideias.",
+            "confirm": "Rejeitar convite"
+          }
+        }
+      },
+      "status": {
+        "pending": "Pendente",
+        "canceled": "Cancelado",
+        "rejected": "Rejeitado"
+      }
+    },
+    "detail": {
+      "loading": "A carregar...",
+      "loadError": "Erro ao carregar dados",
+      "tabs": {
+        "roles": "Perfis",
+        "departments": "Departamentos",
+        "applications": "Aplicações",
+        "signature": "Assinatura",
+        "sessions": "Sessões",
+        "audit": "Auditoria",
+        "metadata": "Metadados"
+      }
+    },
+    "applications": {
+      "searchLabel": "Pesquisar aplicação",
+      "searchPlaceholder": "Pesquisar aplicação…",
+      "loading": "A carregar aplicações…",
+      "noResults": "Nenhuma aplicação corresponde à pesquisa.",
+      "empty": "Nenhuma aplicação atribuída."
+    },
+    "audit": {
+      "empty": "Sem registos de auditoria.",
+      "columns": {
+        "timestamp": "Data / hora",
+        "event": "Evento",
+        "category": "Categoria",
+        "ip": "IP"
+      },
+      "pagination": {
+        "pageOf": "Página {page} de {total}",
+        "previous": "← Anterior",
+        "next": "Seguinte →"
+      }
+    },
+    "avatar": {
+      "uploadNoPath": "Upload sem caminho",
+      "updated": "Foto atualizada",
+      "updateFailed": "Erro ao atualizar foto"
+    },
+    "deleteDialog": {
+      "deactivated": "Utilizador Desativado",
+      "deactivatedDescription": "Utilizador ''{name}'' foi desativado com sucesso.",
+      "deactivateFailed": "Erro ao desativar.",
+      "label": "Nome de utilizador",
+      "confirm": "Desativar",
+      "title": "Desativar utilizador",
+      "description": "O utilizador deixa de poder entrar na plataforma. As atribuições de perfil são mantidas e a conta pode ser reativada mais tarde."
+    },
+    "editForm": {
+      "fullName": "Nome Completo",
+      "status": "Estado",
+      "statusPlaceholder": "Selecionar estado",
+      "save": "Gravar",
+      "saving": "Gravando...",
+      "toasts": {
+        "updated": "Perfil atualizado com sucesso",
+        "updateFailed": "Erro ao atualizar perfil",
+        "unknownError": "Erro desconhecido"
+      }
+    },
+    "validation": {
+      "nameMin": "Nome deve ter mínimo 3 caracteres",
+      "emailInvalid": "Email inválido",
+      "emailRequired": "Email obrigatório",
+      "usersMin": "Adicionar pelo menos um utilizador",
+      "otpDigits": "Código deve ter 6 dígitos"
+    },
+    "columns": {
+      "name": "Nome",
+      "email": "Email",
+      "invitationDate": "Data do Convite",
+      "status": "Estado",
+      "actions": "Ações",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "manage": "Gerir",
+      "actionsFor": "Ações para {name}"
+    },
+    "invitations": {
+      "actions": {
+        "copyUrl": "Copiar URL",
+        "resend": "Reenviar Convite",
+        "cancel": "Cancelar Convite"
+      },
+      "toasts": {
+        "urlCopied": "URL copiado",
+        "urlCopiedDescription": "URL do convite copiado para a área de transferência.",
+        "urlUnavailable": "Convite não disponível",
+        "urlUnavailableDescription": "URL do convite não disponível.",
+        "resent": "Convite reenviado",
+        "resentDescription": "O convite foi reenviado com sucesso.",
+        "resendFailed": "Convite não reenviado",
+        "resendFailedDescription": "Não foi possível reenviar o convite.",
+        "copyFailed": "Não foi possível copiar",
+        "copyFailedDescription": "O browser bloqueou o acesso à área de transferência. Copie o URL manualmente."
+      },
+      "actionsFor": "Ações para o convite de {identifier}"
+    },
+    "list": {
+      "title": "Gestão de Utilizadores",
+      "description": "Ver e gerir todos os utilizadores do sistema.",
+      "inviteUser": "Convidar Utilizador",
+      "loadingInvitations": "A carregar convites...",
+      "tabs": {
+        "active": "Utilizadores Ativos",
+        "pending": "Convites Pendentes ({count})",
+        "canceled": "Convites Cancelados ({count})"
+      },
+      "filters": {
+        "searchByNameOrEmail": "Pesquisar por nome ou email...",
+        "status": "Estado",
+        "searchByName": "Pesquisar por nome",
+        "searchByNamePlaceholder": "Pesquisar por nome...",
+        "searchByEmail": "Pesquisar por email",
+        "searchByEmailPlaceholder": "Pesquisar por email...",
+        "searchInvitations": "Pesquisar convites"
+      },
+      "toasts": {
+        "error": "Erro",
+        "statusChanged": "Estado alterado",
+        "statusChangedDescription": "O estado do utilizador foi alterado com sucesso",
+        "statusChangeFailed": "Não foi possível alterar o estado do utilizador",
+        "invitationCanceled": "Convite cancelado",
+        "invitationCanceledDescription": "O convite foi cancelado com sucesso",
+        "invitationCancelFailed": "Não foi possível cancelar o convite"
+      },
+      "statusDialog": {
+        "activateTitle": "Ativar Utilizador",
+        "deactivateTitle": "Desativar Utilizador",
+        "activateDescription": "Tem a certeza de que deseja ativar <strong>{name}</strong>?",
+        "deactivateDescription": "Tem a certeza de que deseja desativar <strong>{name}</strong>?",
+        "activate": "Ativar",
+        "deactivate": "Desativar",
+        "activating": "Ativando...",
+        "deactivating": "Desativando..."
+      },
+      "cancelDialog": {
+        "title": "Cancelar Convite",
+        "description": "Tem a certeza de que deseja cancelar o convite para <strong>{identifier}</strong>? Esta ação não pode ser desfeita.",
+        "confirm": "Confirmar",
+        "canceling": "Cancelando..."
+      },
+      "staleWarning": "Esta lista pode estar desatualizada: a última atualização falhou.",
+      "refresh": "Atualizar",
+      "refreshing": "A atualizar..."
+    },
+    "notAvailable": "N/A",
+    "favorites": {
+      "updateFailed": "Não foi possível atualizar os favoritos."
+    },
+    "sessions": {
+      "noExternalId": "Identificador externo não disponível para este utilizador.",
+      "empty": "Sem sessões ativas.",
+      "title": "Sessão Ativa",
+      "fields": {
+        "sessionId": "ID da sessão",
+        "startedAt": "Iniciada em",
+        "lastSeenAt": "Último acesso",
+        "ip": "IP"
+      },
+      "kill": "Terminar sessão",
+      "killDialog": {
+        "title": "Terminar sessão",
+        "description": "Esta ação irá encerrar a sessão ativa do utilizador imediatamente.",
+        "reason": "Motivo",
+        "reasonPlaceholder": "Indique o motivo...",
+        "confirm": "Confirmar"
+      },
+      "toasts": {
+        "killed": "Sessão terminada",
+        "killFailed": "Erro ao terminar sessão"
+      },
+      "loading": "A carregar sessões do utilizador..."
+    },
+    "signature": {
+      "title": "Assinatura Digital",
+      "description": "Carregue sua assinatura para documentos oficiais",
+      "alt": "Assinatura",
+      "clickToUpload": "Clique para carregar",
+      "hint": "PNG, JPG até 5MB",
+      "toasts": {
+        "loadFailed": "Erro ao carregar assinatura",
+        "updated": "Assinatura atualizada com sucesso",
+        "updateFailed": "Erro ao atualizar assinatura"
+      }
+    },
+    "profile": {
+      "avatar": {
+        "loadFailed": "Erro ao carregar avatar",
+        "updated": "Avatar atualizado com sucesso",
+        "updateFailed": "Erro ao atualizar avatar",
+        "invalid": "Avatar inválido",
+        "change": "Alterar avatar",
+        "fallbackAlt": "Utilizador"
+      },
+      "toasts": {
+        "activated": "Utilizador ativado com sucesso",
+        "deactivated": "Utilizador desativado com sucesso",
+        "statusChangeFailed": "Erro ao alterar estado"
+      },
+      "form": {
+        "loading": "A carregar perfil...",
+        "notFound": "Nenhum utilizador encontrada.",
+        "title": "Editar perfil do utilizador",
+        "cardTitle": "Informação detalhada sobre este utilizador.",
+        "cardDescription": "Gerir as informações pessoais e as definições de conta deste utilizador.",
+        "fullName": "Nome completo",
+        "fullNamePlaceholder": "johndoe",
+        "fullNameDescription": "O nome completo do utilizador.",
+        "picture": "Imagem de perfil",
+        "pictureDescription": "Carregue uma fotografia de perfil para este utilizador.",
+        "signature": "Assinatura",
+        "signatureDescription": "A assinatura digital do utilizador.",
+        "processing": "A processar...",
+        "save": "Guardar Alterações",
+        "toasts": {
+          "updated": "Utilizador atualizado",
+          "updatedDescription": "O utilizador foi atualizado com sucesso!"
+        }
+      },
+      "loading": "A carregar utilizador…",
+      "notFound": "Nenhum utilizador encontrado.",
+      "imageUpload": {
+        "previewAlt": "Pré-visualização da imagem de perfil",
+        "empty": "Sem imagem",
+        "upload": "Carregar imagem",
+        "remove": "Remover"
+      },
+      "signatureUpload": {
+        "previewAlt": "Pré-visualização da assinatura",
+        "empty": "Sem assinatura",
+        "upload": "Carregar assinatura",
+        "remove": "Remover"
+      },
+      "statusButton": {
+        "activate": "Ativar",
+        "deactivate": "Desativar",
+        "activateLabel": "Ativar utilizador",
+        "deactivateLabel": "Desativar utilizador"
+      },
+      "statusDialog": {
+        "activateTitle": "Ativar Utilizador",
+        "deactivateTitle": "Desativar Utilizador",
+        "activateDescription": "Tem a certeza de que deseja ativar o utilizador <strong>{name}</strong>?",
+        "deactivateDescription": "Tem a certeza de que deseja desativar o utilizador <strong>{name}</strong>?",
+        "confirmActivate": "Ativar",
+        "confirmDeactivate": "Desativar",
+        "activating": "A ativar...",
+        "deactivating": "A desativar..."
+      },
+      "tabs": {
+        "departments": "Departamentos",
+        "applications": "Aplicações",
+        "roles": "Perfis",
+        "signature": "Assinatura"
+      }
+    },
+    "metadata": {
+      "title": "Metadados",
+      "addField": "+ Adicionar campo",
+      "keyPlaceholder": "chave",
+      "valuePlaceholder": "valor",
+      "remove": "remover",
+      "save": "Guardar",
+      "toasts": {
+        "updated": "Metadados atualizados",
+        "updateFailed": "Erro ao atualizar metadados"
+      }
+    },
+    "nameEditor": {
+      "save": "Guardar nome",
+      "cancel": "Cancelar edição",
+      "edit": "Editar nome",
+      "saveFailed": "Erro ao guardar",
+      "toasts": {
+        "updated": "Nome atualizado com sucesso",
+        "updateFailed": "Erro ao atualizar nome"
+      }
+    },
+    "unknownError": "Ocorreu um erro desconhecido.",
+    "roleDialog": {
+      "title": "Adicionar ou Remover Perfis",
+      "selectAll": "Selecionar tudo",
+      "selectRow": "Selecionar linha",
+      "columns": {
+        "name": "Nome",
+        "description": "Descrição",
+        "status": "Estado"
+      },
+      "filterPlaceholder": "Filtar por nome...",
+      "filterLabel": "Filtar por nome",
+      "clearFilter": "Limpar filtro",
+      "departments": {
+        "loading": "A carregar departamentos...",
+        "loadError": "Erro ao carregar departamentos",
+        "empty": "Sem departamentos",
+        "placeholder": "Selecionar departamento",
+        "search": "Procurar departamento...",
+        "notFound": "Nenhum departamento encontrado."
+      },
+      "expiresAt": "Expiração (opcional)",
+      "selectDepartmentHint": "Selecione um departamento para listar os perfis.",
+      "loadingRoles": "A carregar perfis...",
+      "loadRolesError": "Ocorreu um erro a carregar perfis do utilizador.",
+      "selectedCount": "{count} selecionado(s)",
+      "clear": "Limpar",
+      "save": "Guardar",
+      "saving": "Guardando...",
+      "toasts": {
+        "selectDepartmentFirst": "Selecione um departamento primeiro.",
+        "noChanges": "Sem alterações",
+        "noChangesDescription": "Nada para adicionar ou remover.",
+        "updated": "Perfis atualizados",
+        "updatedDescription": "+{added} adicionada(s), -{removed} removida(s).",
+        "updateFailed": "Falha ao atualizar perfis"
+      },
+      "departmentScope": "A mostrar apenas os perfis do departamento {department}. Os perfis de outros departamentos não são alterados aqui.",
+      "pickDepartment": "Escolha um departamento para ver os perfis que pode atribuir."
+    },
+    "roleList": {
+      "loading": "A carregar perfis...",
+      "title": "Perfis Atribuídos",
+      "add": "Adicionar",
+      "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
+      "parent": "Subperfil de <mono>{code}</mono>",
+      "morePermissions": "+{count} mais",
+      "revoke": "Revogar",
+      "empty": "Sem perfis atribuídos",
+      "emptyDescription": "Este utilizador não tem perfis.",
+      "assign": "Associar Perfis",
+      "toasts": {
+        "removed": "Perfil removido com sucesso.",
+        "removeFailed": "Não foi possível remover o perfil.",
+        "revoked": "Perfil revogado.",
+        "revokedDescription": "«{role}» foi removido de {user} no departamento {department}.",
+        "undo": "Anular",
+        "restored": "Perfil reposto.",
+        "restoreFailed": "Não foi possível repor o perfil."
+      },
+      "revokeDialog": {
+        "title": "Revogar perfil",
+        "description": "Revogar «{role}» de {user} no departamento {department}? O utilizador perde os acessos que este perfil concede.",
+        "revoking": "A revogar..."
+      }
+    },
+    "rolesList": {
+      "loading": "A carregar...",
+      "loadError": "Erro ao carregar perfis",
+      "empty": "Sem perfis atribuídos",
+      "emptyDescription": "Este utilizador ainda não tem perfis atribuídos."
+    }
+  },
+  "header": {
+    "search": {
+      "trigger": "Pesquisar...",
+      "placeholder": "Introduza um comando ou pesquisa...",
+      "empty": "Sem resultados.",
+      "dialogTitle": "Paleta de comandos",
+      "dialogDescription": "Pesquise e execute um comando."
+    }
+  },
+  "workspace": {
+    "title": "Centro de Aplicações",
+    "tabs": {
+      "home": "Início e aplicações"
+    },
+    "banner": {
+      "greeting": {
+        "morning": "Bom dia",
+        "afternoon": "Boa tarde",
+        "evening": "Boa noite"
+      },
+      "welcome": "Bem-vindo",
+      "department": "Departamento",
+      "activeRole": "Perfil ativo"
+    },
+    "recent": {
+      "title": "Acedidas recentemente",
+      "previous": "Mostrar aplicações anteriores",
+      "next": "Mostrar aplicações seguintes",
+      "errorTitle": "Não foi possível carregar as aplicações recentes.",
+      "errorMessage": "Esta lista está temporariamente indisponível. Tudo o resto continua a funcionar.",
+      "empty": "As aplicações que abrir aparecem aqui, para voltar a elas rapidamente.",
+      "explore": "Explorar aplicações"
+    },
+    "lastOpened": {
+      "justNow": "Aberta agora mesmo",
+      "minutes": "{count, plural, one {Aberta há # minuto} other {Aberta há # minutos}}",
+      "hours": "{count, plural, one {Aberta há # hora} other {Aberta há # horas}}",
+      "yesterday": "Aberta ontem",
+      "weekday": "{day, select, 0 {Aberta no {weekday}} 6 {Aberta no {weekday}} other {Aberta na {weekday}}}",
+      "weeks": "{count, plural, one {Aberta há # semana} other {Aberta há # semanas}}"
+    },
+    "catalog": {
+      "title": "Aplicações",
+      "filteredCount": "{shown} de {total}",
+      "search": "Procurar aplicações",
+      "favorites": "Favoritos",
+      "sortBy": "Ordenar por:",
+      "sortPlaceholder": "Escolher ordem",
+      "sort": {
+        "default": "Predefinido",
+        "recent": "Visitadas recentemente",
+        "nameAsc": "Nome (A–Z)",
+        "nameDesc": "Nome (Z–A)"
+      },
+      "gridView": "Vista em grelha",
+      "listView": "Vista em lista",
+      "announceNone": "Nenhuma aplicação corresponde aos filtros.",
+      "announceSome": "{shown} de {total} aplicações correspondem aos filtros.",
+      "errorTitle": "Não foi possível carregar as aplicações.",
+      "errorMessage": "A lista está temporariamente indisponível. O seu acesso não foi alterado.",
+      "emptyTitle": "Ainda não tem aplicações atribuídas",
+      "emptyDescription": "O acesso é concedido por perfil e departamento. Contacte o administrador se esperava ver alguma coisa aqui.",
+      "noFavoritesTitle": "Ainda sem favoritos",
+      "noFavoritesDescription": "Clique na ★ de uma aplicação para a adicionar aqui",
+      "noFavoriteMatch": "Nenhum favorito corresponde a “{query}”.",
+      "noMatch": "Nenhuma aplicação corresponde a “{query}”.",
+      "clearFilters": "Limpar filtros"
+    },
+    "card": {
+      "addFavorite": "Adicionar aos favoritos",
+      "removeFavorite": "Remover dos favoritos",
+      "new": "Nova",
+      "noUrl": "Sem URL definido",
+      "noDescription": "Sem descrição"
+    },
+    "table": {
+      "columns": {
+        "name": "Aplicação",
+        "code": "Código",
+        "description": "Descrição",
+        "status": "Estado",
+        "favorite": "Favorito"
+      },
+      "opensNewTab": "{name} (abre num novo separador)",
+      "addFavorite": "Adicionar {name} aos favoritos",
+      "removeFavorite": "Remover {name} dos favoritos"
+    },
+    "loadError": "Não foi possível carregar a área de trabalho."
+  },
+  "settings": {
+    "meta": {
+      "title": "Configurações",
+      "description": "Gerir aplicações, utilizadores e acessos da plataforma."
+    },
+    "title": "Configurações Gerais",
+    "subtitle": "Escolha a área que quer administrar.",
+    "comingSoon": "Em breve",
+    "items": {
+      "applications": {
+        "title": "Gestão de Aplicações",
+        "description": "Registe aplicações, edite os seus dados e controle o estado de cada uma."
+      },
+      "users": {
+        "title": "Gestão de Utilizadores",
+        "description": "Convide utilizadores e faça a gestão das contas, perfis e permissões."
+      },
+      "departments": {
+        "title": "Gestão de Departamentos",
+        "description": "Organize a estrutura de departamentos e os perfis, permissões e menus associados."
+      },
+      "oauthClients": {
+        "title": "Gestão de Clientes OAuth",
+        "description": "Registe clientes OAuth e faça a gestão das contas de serviço que acedem às APIs."
+      },
+      "audit": {
+        "title": "Auditoria e Relatórios",
+        "description": "Consulte os acessos e as alterações de configuração registados na plataforma."
+      },
+      "customization": {
+        "title": "Customização",
+        "description": "Defina as cores e os logótipos da organização em todas as aplicações."
+      }
+    },
+    "loadError": "Não foi possível carregar as configurações."
+  },
+  "applications": {
+    "meta": {
+      "listTitle": "Aplicações",
+      "listDescription": "Gerir aplicações e menus.",
+      "detailTitle": "{name} · Aplicações"
+    },
+    "list": {
+      "title": "Gestão de Aplicações",
+      "description": "Registe novas aplicações e faça a gestão das existentes.",
+      "new": "Nova Aplicação",
+      "loadErrorTitle": "Não foi possível carregar as aplicações.",
+      "loadErrorMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "emptyTitle": "Ainda não há aplicações",
+      "emptyDescription": "As aplicações são o que os utilizadores abrem a partir da página inicial. Crie a primeira para a poder associar a departamentos e perfis."
+    },
+    "toolbar": {
+      "searchLabel": "Pesquisar aplicações",
+      "searchPlaceholder": "Pesquisar aplicações…",
+      "status": "Estado"
+    },
+    "grid": {
+      "count": "{total, plural, one {# aplicação} other {# aplicações}}",
+      "countFiltered": "A mostrar {shown} de {total, plural, one {# aplicação} other {# aplicações}}",
+      "noMatchTitle": "Nenhuma aplicação corresponde aos filtros",
+      "noMatchDescription": "Ajuste a pesquisa ou o estado para ver as aplicações registadas."
+    },
+    "card": {
+      "view": "Ver {name}",
+      "edit": "Editar {name}",
+      "open": "Abrir {name}",
+      "noDescription": "Sem descrição."
+    },
+    "dialog": {
+      "newTitle": "Nova Aplicação",
+      "editTitle": "Editar Aplicação",
+      "newDescription": "Preencha os detalhes para registar uma nova aplicação.",
+      "editDescription": "Atualize os detalhes da aplicação."
+    },
+    "details": {
+      "loading": "A carregar aplicação...",
+      "loadErrorTitle": "Não foi possível carregar esta aplicação.",
+      "notFound": "Nenhuma aplicação encontrada.",
+      "changeImage": "Alterar imagem da aplicação",
+      "uploadingImage": "A carregar imagem...",
+      "loadingImage": "A obter imagem...",
+      "uploadSuccessTitle": "Imagem carregada",
+      "uploadSuccess": "A imagem foi carregada com sucesso",
+      "uploadErrorTitle": "Erro no upload.",
+      "backToList": "Todas as aplicações",
+      "openApp": "Abrir aplicação",
+      "noDescription": "Ainda sem descrição. Adicione uma em Editar.",
+      "uploadInvalidType": "Escolha um ficheiro de imagem (PNG, JPG, SVG ou WebP).",
+      "uploadSaveError": "A imagem foi carregada mas não foi possível guardá-la na aplicação.",
+      "facts": {
+        "type": "Tipo",
+        "address": "Endereço",
+        "owner": "Responsável",
+        "updated": "Última alteração"
+      },
+      "types": {
+        "internal": "Interna",
+        "external": "Externa",
+        "system": "Sistema"
+      }
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Nome da aplicação…",
+      "code": "Código",
+      "codePlaceholder": "EX: APP_CENTER",
+      "type": "Tipo",
+      "types": {
+        "internal": "Interno",
+        "external": "Externo"
+      },
+      "slug": "Slug",
+      "slugPlaceholder": "/apps/exemplo",
+      "url": "URL",
+      "urlPlaceholder": "https://exemplo.com",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Breve descrição da aplicação…",
+      "status": "Estado",
+      "statusPlaceholder": "Selecionar estado",
+      "saving": "A guardar...",
+      "create": "Criar Aplicação",
+      "update": "Atualizar Aplicação",
+      "toasts": {
+        "createdTitle": "Aplicação criada",
+        "created": "A aplicação foi criada com sucesso!",
+        "updatedTitle": "Aplicação atualizada",
+        "updated": "A aplicação foi atualizada com sucesso!",
+        "createError": "Erro ao criar",
+        "updateError": "Erro ao atualizar"
+      }
+    },
+    "validation": {
+      "typeRequired": "Selecione o tipo de aplicação",
+      "codeRequired": "Código é obrigatório",
+      "codeMin": "Código deve ter pelo menos 2 caracteres",
+      "codeMax": "Código deve ter no máximo 255 caracteres",
+      "codePattern": "Use apenas maiúsculas, números, _ e - (ex.: APP_CENTER)",
+      "nameRequired": "Nome é obrigatório",
+      "nameMin": "Nome deve ter pelo menos 2 caracteres",
+      "nameMax": "Nome deve ter no máximo 255 caracteres",
+      "statusInvalid": "Selecione um estado válido",
+      "ownerMax": "Responsável deve ter no máximo 255 caracteres",
+      "descriptionMax": "Descrição deve ter no máximo 255 caracteres",
+      "pictureMax": "Imagem deve ter no máximo 255 caracteres",
+      "urlInvalid": "Indique um URL completo, com https:// (ex.: https://exemplo.com)",
+      "urlRequired": "URL é obrigatório",
+      "slugRequired": "Slug é obrigatório (ex.: /apps/exemplo)",
+      "slugMax": "Slug deve ter no máximo 255 caracteres"
+    }
+  },
+  "menus": {
+    "list": {
+      "title": "Menus da Aplicação",
+      "description": "Gerir e reorganizar os menus desta aplicação.",
+      "new": "Novo Menu",
+      "loading": "A carregar menus...",
+      "loadError": "Ocorreu um erro ao carregar os menus.",
+      "emptyTitle": "Nenhum menu encontrado",
+      "emptyDescription": "Comece por criar o primeiro menu para esta aplicação.",
+      "createFirst": "Criar Primeiro Menu",
+      "systemEmptyDescription": "Os menus das aplicações de sistema são geridos pela plataforma."
+    },
+    "reorder": {
+      "notAllowedTitle": "Movimento não permitido",
+      "notAllowed": "Um grupo fica no nível principal, uma pasta fica no nível principal ou dentro de um grupo, e uma página fica no nível principal, dentro de um grupo ou dentro de uma pasta.",
+      "updatedTitle": "Ordem atualizada",
+      "updated": "A ordem dos menus foi reorganizada.",
+      "errorTitle": "Erro ao guardar",
+      "error": "Não foi possível guardar a ordem dos menus."
+    },
+    "item": {
+      "drag": "Arrastar para reordenar",
+      "collapse": "Recolher",
+      "expand": "Expandir",
+      "noUrl": "Sem URL",
+      "childCount": "{count, plural, =0 {Vazio} one {# item} other {# itens}}",
+      "openActions": "Abrir ações do menu",
+      "view": "Ver",
+      "edit": "Editar",
+      "addFolder": "Adicionar Pasta",
+      "addPage": "Adicionar Página",
+      "delete": "Eliminar"
+    },
+    "types": {
+      "group": "Grupo",
+      "folder": "Pasta",
+      "page": "Página",
+      "groupDescription": "Agrupa pastas e menus no nível mais alto",
+      "folderDescription": "Pasta que pode pertencer a um grupo",
+      "pageDescription": "Menu que abre uma página da aplicação"
+    },
+    "dialog": {
+      "viewTitle": "Visualizar Menu",
+      "editTitle": "Editar Menu",
+      "addFolderTitle": "Adicionar Pasta",
+      "addMenuTitle": "Adicionar Menu",
+      "newTitle": "Novo Menu",
+      "viewDescription": "Visualizar informações do menu",
+      "editDescription": "Atualizar os detalhes deste menu",
+      "createDescription": "Preencha os detalhes do novo menu",
+      "selectTypeDescription": "Selecione o tipo de menu que deseja criar",
+      "newGroupTitle": "Novo grupo",
+      "newFolderTitle": "Nova pasta",
+      "newPageTitle": "Nova página",
+      "addPageTitle": "Adicionar página",
+      "addToParent": "Será adicionado em {parent}.",
+      "discard": {
+        "title": "Descartar as alterações?",
+        "description": "Voltar aos tipos de menu apaga o que já preencheu.",
+        "keep": "Continuar a editar",
+        "confirm": "Descartar"
+      }
+    },
+    "form": {
+      "name": "Nome",
+      "namePlaceholder": "Nome do Menu",
+      "code": "Código",
+      "codePlaceholder": "CODIGO_MENU",
+      "icon": "Ícone",
+      "selectIcon": "Selecionar ícone",
+      "selectIconPlaceholder": "Selecionar ícone...",
+      "searchIcon": "Procurar ícone...",
+      "noIconFound": "Nenhum ícone encontrado.",
+      "status": "Estado",
+      "pageType": "Tipo de Página",
+      "internalPage": "Página Interna",
+      "externalPage": "Página Externa",
+      "relativeUrl": "URL Relativo",
+      "relativeUrlPlaceholder": "page-slug",
+      "externalUrl": "URL Externa",
+      "externalUrlPlaceholder": "https://exemplo.com",
+      "openInNewTab": "Abrir em nova aba",
+      "groupOptional": "Grupo (Opcional)",
+      "folderOptional": "Pasta (Opcional)",
+      "selectGroup": "Selecionar grupo...",
+      "selectFolder": "Selecionar pasta...",
+      "noGroupFound": "Nenhum grupo encontrado.",
+      "noFolderFound": "Nenhuma pasta encontrada.",
+      "noneRoot": "Nenhum (Raiz)",
+      "saving": "A guardar...",
+      "update": "Atualizar",
+      "toasts": {
+        "updatedTitle": "Menu Atualizado",
+        "updated": "O menu foi atualizado com sucesso.",
+        "createdTitle": "Menu Criado",
+        "created": "O menu foi criado com sucesso.",
+        "errorTitle": "Erro",
+        "error": "Algo correu mal. Por favor, tente novamente."
+      },
+      "sections": {
+        "details": "Detalhes",
+        "destination": "Destino",
+        "location": "Localização",
+        "appearance": "Aparência"
+      },
+      "codeHint": "Gerado a partir do nome. Apenas maiúsculas, números e sublinhados.",
+      "codeLocked": "O código não pode ser alterado depois de o menu ser criado.",
+      "statusActive": "Visível na navegação",
+      "statusInactive": "Oculto da navegação",
+      "relativeUrlHint": "Caminho da página dentro desta aplicação, p. ex. relatorios/mensal.",
+      "externalUrlHint": "As páginas externas abrem sempre num novo separador.",
+      "openInNewTabHint": "Mantém esta aplicação aberta no separador atual.",
+      "createGroup": "Criar grupo",
+      "createFolder": "Criar pasta",
+      "createPage": "Criar página",
+      "close": "Fechar",
+      "parentType": "Colocar dentro de",
+      "preview": {
+        "label": "Pré-visualização no menu",
+        "untitled": "Sem nome",
+        "topLevel": "Nível principal"
+      }
+    },
+    "delete": {
+      "description": "Deixa de aparecer na navegação da aplicação. Não é possível anular.",
+      "nameLabel": "Para confirmar, escreva <highlight>{name}</highlight>",
+      "successTitle": "Menu Eliminado",
+      "success": "O menu \"{name}\" foi eliminado com sucesso.",
+      "errorTitle": "Erro ao eliminar.",
+      "deleting": "A eliminar...",
+      "titleGroup": "Eliminar este grupo?",
+      "titleFolder": "Eliminar esta pasta?",
+      "titlePage": "Eliminar esta página?",
+      "contents": "{count, plural, one {Contém # menu} other {Contém # menus}}",
+      "more": "{count, plural, other {e mais #}}",
+      "confirmGroup": "Eliminar grupo",
+      "confirmFolder": "Eliminar pasta",
+      "confirmPage": "Eliminar página"
+    },
+    "validation": {
+      "nameRequired": "Nome é obrigatório",
+      "codePattern": "Use apenas maiúsculas, números e sublinhados (ex.: CODIGO_MENU)",
+      "pageUrlRequired": "Indique o URL relativo ou o URL externo",
+      "urlRequired": "URL é obrigatório",
+      "urlInvalid": "Indique um URL completo, com https:// (ex.: https://exemplo.com)"
+    }
+  },
+  "branding": {
+    "meta": {
+      "title": "Personalização",
+      "description": "Defina as cores e os logótipos da organização."
+    },
+    "title": "Personalização",
+    "subtitle": "As cores e os logótipos aplicam-se a todas as aplicações IGRP com a personalização ativa.",
+    "tabs": {
+      "colors": "Cores",
+      "logos": "Logótipos"
+    },
+    "modes": {
+      "label": "Editar o modo escuro",
+      "light": "Claro",
+      "dark": "Escuro"
+    },
+    "groups": {
+      "brand": "Marca",
+      "surface": "Superfícies",
+      "text": "Texto",
+      "status": "Estados",
+      "subtle": "Estados suaves",
+      "sidebar": "Barra lateral",
+      "chart": "Gráficos",
+      "tiles": "Mosaicos de aplicações",
+      "other": "Outros",
+      "appOther": "Outros do Centro de Aplicações"
+    },
+    "tokens": {
+      "primary": "Primária",
+      "primaryForeground": "Texto sobre primária",
+      "secondary": "Secundária",
+      "secondaryForeground": "Texto sobre secundária",
+      "accent": "Destaque",
+      "accentForeground": "Texto sobre destaque",
+      "ring": "Anel de foco",
+      "background": "Fundo",
+      "card": "Cartão",
+      "cardForeground": "Texto do cartão",
+      "popover": "Painel flutuante",
+      "popoverForeground": "Texto do painel flutuante",
+      "muted": "Atenuado",
+      "border": "Contorno",
+      "input": "Contorno dos campos",
+      "foreground": "Texto",
+      "mutedForeground": "Texto atenuado",
+      "destructive": "Destrutivo",
+      "destructiveForeground": "Texto sobre destrutivo",
+      "success": "Sucesso",
+      "successForeground": "Texto sobre sucesso",
+      "warning": "Aviso",
+      "warningForeground": "Texto sobre aviso",
+      "info": "Informação",
+      "infoForeground": "Texto sobre informação",
+      "indigo": "Índigo",
+      "indigoForeground": "Texto sobre índigo",
+      "highlight": "Realce",
+      "highlightForeground": "Texto sobre realce",
+      "sidebar": "Fundo da barra lateral",
+      "sidebarForeground": "Texto da barra lateral",
+      "sidebarPrimary": "Primária da barra lateral",
+      "sidebarPrimaryForeground": "Texto sobre primária da barra lateral",
+      "sidebarAccent": "Destaque da barra lateral",
+      "sidebarAccentForeground": "Texto sobre destaque da barra lateral",
+      "sidebarActive": "Item ativo",
+      "sidebarActiveForeground": "Texto do item ativo",
+      "sidebarBorder": "Contorno da barra lateral",
+      "sidebarRing": "Anel de foco da barra lateral",
+      "chart1": "Gráfico 1",
+      "chart2": "Gráfico 2",
+      "chart3": "Gráfico 3",
+      "chart4": "Gráfico 4",
+      "chart5": "Gráfico 5",
+      "chart6": "Gráfico 6",
+      "chart7": "Gráfico 7",
+      "chart8": "Gráfico 8",
+      "ringInvalid": "Anel de campo inválido",
+      "processCompleted": "Processo concluído",
+      "processActive": "Processo ativo",
+      "primarySubtle": "Primária suave",
+      "primarySubtleForeground": "Texto sobre primária suave",
+      "successSubtle": "Sucesso suave",
+      "successSubtleForeground": "Texto sobre sucesso suave",
+      "warningSubtle": "Aviso suave",
+      "warningSubtleForeground": "Texto sobre aviso suave",
+      "infoSubtle": "Informação suave",
+      "infoSubtleForeground": "Texto sobre informação suave",
+      "destructiveSubtle": "Destrutivo suave",
+      "destructiveSubtleForeground": "Texto sobre destrutivo suave",
+      "appTile1": "Mosaico 1",
+      "appTile1Foreground": "Texto do mosaico 1",
+      "appTile2": "Mosaico 2",
+      "appTile2Foreground": "Texto do mosaico 2",
+      "appTile3": "Mosaico 3",
+      "appTile3Foreground": "Texto do mosaico 3",
+      "appTile4": "Mosaico 4",
+      "appTile4Foreground": "Texto do mosaico 4",
+      "appTile5": "Mosaico 5",
+      "appTile5Foreground": "Texto do mosaico 5",
+      "favorite": "Favorito",
+      "scrollbarThumb": "Barra de deslocamento",
+      "scrollbarThumbHover": "Barra de deslocamento ao passar o cursor"
+    },
+    "logos": {
+      "header": {
+        "title": "Marca do cabeçalho",
+        "description": "Imagem quadrada mostrada no cabeçalho de todas as aplicações."
+      },
+      "wide": {
+        "title": "Logótipo horizontal",
+        "description": "Mostrado no ecrã de entrada e nos convites, com altura máxima de 80 px."
+      },
+      "favicon": {
+        "title": "Ícone do separador",
+        "description": "PNG ou ICO, até 256 KB."
+      },
+      "light": "Versão clara",
+      "dark": "Versão escura (opcional)",
+      "pick": "Selecionar imagem",
+      "drop": "Arraste a imagem para aqui",
+      "current": "Imagem atual",
+      "remove": "Remover"
+    },
+    "preview": {
+      "title": "Pré-visualização",
+      "appName": "Centro de Aplicações",
+      "cardTitle": "Cartão de exemplo",
+      "cardBody": "Texto atenuado para descrições.",
+      "primary": "Primário",
+      "secondary": "Secundário",
+      "destructive": "Eliminar",
+      "fieldLabel": "Campo com foco",
+      "fieldValue": "Valor",
+      "success": "Ativo",
+      "warning": "Pendente",
+      "info": "Novo",
+      "danger": "Erro",
+      "menuActive": "Página atual",
+      "menuItem": "Outra página",
+      "login": "Entrar"
+    },
+    "actions": {
+      "save": "Guardar",
+      "saving": "A guardar…",
+      "discard": "Descartar",
+      "reset": "Repor predefinições",
+      "clear": "Repor a predefinição de {token}",
+      "pickColor": "Escolher a cor de {token}"
+    },
+    "unsaved": "Tem alterações por guardar.",
+    "saved": "Personalização guardada.",
+    "logoAlt": "Logótipo da organização",
+    "forbidden": {
+      "description": "Precisa da permissão de personalização da plataforma. As permissões vêm do seu perfil ativo."
+    },
+    "errors": {
+      "load": "Não foi possível carregar a personalização.",
+      "saveTitle": "Não foi possível guardar.",
+      "forbidden": "Não tem permissão para personalizar a plataforma.",
+      "upload": "Não foi possível carregar a imagem: {slot}.",
+      "invalidColor": "Use uma cor concreta: hex, rgb, hsl, oklch, oklab, lab, lch ou um nome de cor.",
+      "logoHost": "Só são aceites imagens carregadas aqui.",
+      "favicon": "Use um PNG ou ICO até 256 KB.",
+      "image": "Use uma imagem (SVG, PNG, JPG, WEBP ou GIF).",
+      "darkWithoutLight": "Adicione a versão clara antes da escura.",
+      "invalid": "A personalização tem valores inválidos. Reveja os campos e tente novamente.",
+      "generic": "Tente novamente. Se o problema persistir, contacte o suporte."
+    }
+  },
+  "permissions": {
+    "list": {
+      "title": "Permissões",
+      "subtitle": "Gerir e reorganizar as permissões.",
+      "manageResources": "Gerir Recursos",
+      "searchLabel": "Pesquisar permissões",
+      "searchPlaceholder": "Pesquisar permissões…",
+      "loading": "A carregar permissões…",
+      "emptyTitle": "Nenhuma permissão disponível",
+      "emptyDescription": "Não existem permissões para este departamento.",
+      "columnPermission": "Permissão",
+      "columnDescription": "Descrição",
+      "columnActive": "Ativo",
+      "noDescription": "N/A",
+      "removeLabel": "Remover permissão {name}",
+      "addLabel": "Adicionar permissão {name}"
+    },
+    "toast": {
+      "addedTitle": "Permissão adicionada",
+      "addedDescription": "A permissão foi adicionada com sucesso.",
+      "removedTitle": "Permissão removida",
+      "removedDescription": "A permissão foi removida com sucesso.",
+      "errorTitle": "Não foi possível alterar a permissão",
+      "unknownError": "Erro desconhecido"
+    },
+    "revoke": {
+      "title": "Remover permissão",
+      "description": "Remover «{name}» do departamento {department}? Todos os perfis deste departamento perdem o acesso que esta permissão concede.",
+      "cancel": "Cancelar",
+      "confirm": "Remover",
+      "loading": "A remover..."
+    },
+    "resources": {
+      "title": "Gerir Recursos",
+      "description": "Adicione ou remova recursos do departamento com um clique.",
+      "searchLabel": "Pesquisar recursos por nome, tipo ou descrição",
+      "searchPlaceholder": "Pesquisar por nome, tipo ou descrição…",
+      "emptyTitle": "Nenhum recurso encontrado",
+      "emptyFiltered": "Tente ajustar os filtros de pesquisa",
+      "emptyNone": "Não há recursos disponíveis",
+      "added": "Adicionado",
+      "available": "Disponível",
+      "active": "Ativo",
+      "processing": "A processar…",
+      "summary": "{assigned} de {total} recursos adicionados",
+      "close": "Fechar",
+      "removeLabel": "Remover recurso {name}",
+      "addLabel": "Adicionar recurso {name}",
+      "toast": {
+        "addedTitle": "Recurso adicionado",
+        "addedDescription": "O recurso foi adicionado com sucesso.",
+        "addErrorTitle": "Erro ao adicionar",
+        "removedTitle": "Recurso removido",
+        "removedDescription": "O recurso foi removido com sucesso.",
+        "removeErrorTitle": "Erro ao remover",
+        "unknownError": "Erro desconhecido"
+      },
+      "remove": {
+        "title": "Remover Recurso",
+        "description": "Tem a certeza de que deseja remover o recurso <strong>{name}</strong> deste departamento? Esta ação não pode ser desfeita.",
+        "cancel": "Cancelar",
+        "confirm": "Remover",
+        "loading": "A remover…"
+      }
+    }
+  },
+  "profile": {
+    "meta": {
+      "title": "Perfil"
+    },
+    "roleList": {
+      "loading": "A carregar perfis…",
+      "title": "Perfis Atribuídos",
+      "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
+      "parent": "Subperfil de <mono>{code}</mono>",
+      "morePermissions": "+{count} mais",
+      "activate": "Ativar",
+      "activating": "A ativar…",
+      "empty": "Sem perfis atribuídos",
+      "emptyDescription": "Ainda não tem perfis atribuídos.",
+      "toasts": {
+        "activated": "Perfil ativado com sucesso.",
+        "activateFailed": "Erro ao ativar perfil.",
+        "unknownError": "Erro desconhecido."
+      }
+    }
+  },
+  "accounts": {
+    "layout": {
+      "title": "Contas e Serviços",
+      "description": "Identidades que acedem às APIs do iGRP: clientes OAuth e as contas de serviço que os envolvem."
+    },
+    "tabs": {
+      "label": "Secções de Contas e Serviços",
+      "oauthClients": "Clientes OAuth",
+      "serviceAccounts": "Contas de Serviço"
+    },
+    "cells": {
+      "copyClientId": "Copiar client ID {clientId}",
+      "noApplication": "Sem aplicação"
+    }
+  },
+  "roles": {
+    "validation": {
+      "nameRequired": "Nome é obrigatório (min 3 caracteres)",
+      "nameMax": "Nome deve ter no máximo 50 caracteres",
+      "namePattern": "Nome deve conter apenas letras, números, hífens e underscores",
+      "codeRequired": "Código é obrigatório, mínimo 2 caracteres",
+      "departmentRequired": "Código de departamento é obrigatório (min 1 carateres)"
+    },
+    "list": {
+      "title": "Perfis",
+      "subtitle": "Gerir e reorganizar os perfis.",
+      "newRole": "Novo Perfil",
+      "searchLabel": "Pesquisar perfil",
+      "searchPlaceholder": "Pesquisar perfil…",
+      "statusFilter": "Estado",
+      "loadError": "Ocorreu um erro ao carregar perfis.",
+      "loading": "A carregar perfis…",
+      "emptyTitle": "Nenhum perfil criado",
+      "emptyDescription": "Ainda não existem perfis criados.",
+      "adjustSearch": "Tente ajustar a sua pesquisa.",
+      "columnRole": "Perfil",
+      "columnDescription": "Descrição",
+      "columnStatus": "Estado",
+      "noDescription": "N/A"
+    },
+    "row": {
+      "collapse": "Recolher perfil",
+      "expand": "Expandir perfil",
+      "openMenu": "Abrir Menu",
+      "actions": "Ações",
+      "edit": "Editar",
+      "createSubRole": "Criar sub perfil",
+      "permissions": "Permissões",
+      "delete": "Eliminar"
+    },
+    "form": {
+      "titleEdit": "Editar Perfil",
+      "titleCreate": "Criar Novo Perfil",
+      "subRoleOf": "Este será um sub-perfil de: <strong>{parent}</strong>",
+      "name": "Nome",
+      "namePlaceholder": "Nome do perfil",
+      "code": "Código",
+      "codePlaceholder": "Ex: PERFIL_ADMIN",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Breve descrição das responsabilidades deste perfil",
+      "status": "Estado",
+      "statusPlaceholder": "Selecione o estado",
+      "cancel": "Cancelar",
+      "saving": "A guardar…",
+      "creating": "A criar…",
+      "save": "Guardar Alterações",
+      "create": "Criar Perfil",
+      "toast": {
+        "updatedTitle": "Perfil atualizado",
+        "updatedDescription": "Perfil foi atualizado com sucesso.",
+        "createdTitle": "Perfil criado",
+        "createdDescription": "Perfil foi adicionado com sucesso.",
+        "errorTitle": "Não foi possível guardar o perfil",
+        "errorDescription": "Tente novamente. {error}"
+      }
+    },
+    "delete": {
+      "title": "Confirmação",
+      "description": "Esta ação é irreversível. O perfil e todos os seus dados serão eliminados permanentemente. Para confirmar, escreva <code>{name}</code> abaixo:",
+      "label": "Nome do perfil",
+      "placeholder": "Escreva ''{name}'' para confirmação",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar",
+      "pending": "Aguarde…",
+      "toast": {
+        "successTitle": "Perfil eliminado",
+        "successDescription": "O perfil ''{name}'' foi eliminado com sucesso.",
+        "errorTitle": "Erro ao eliminar."
+      }
+    },
+    "permissions": {
+      "title": "Adicionar ou Remover Permissões de perfil",
+      "selectAll": "Selecionar todas as permissões",
+      "selectOne": "Selecionar permissão {name}",
+      "columnName": "Nome",
+      "columnDescription": "Descrição",
+      "noDescription": "N/A",
+      "filterPlaceholder": "Filtrar por nome…",
+      "filterLabel": "Filtrar por nome",
+      "clearFilter": "Limpar filtro",
+      "selected": "{count} selecionado(s)",
+      "loading": "A carregar permissões…",
+      "rowsPerPage": "Registos por página",
+      "save": "Guardar",
+      "toast": {
+        "noChangesTitle": "Sem alterações",
+        "noChangesDescription": "Nada para adicionar ou remover.",
+        "updatedTitle": "Permissões atualizadas",
+        "updatedDescription": "+{added} adicionada(s), -{removed} removida(s).",
+        "errorTitle": "Falha ao atualizar permissões",
+        "unknownError": "Ocorreu um erro desconhecido.",
+        "loadErrorTitle": "Perfil tem permissões associadas, mas não foram carregadas."
+      }
+    }
+  },
+  "oauthClients": {
+    "meta": {
+      "listTitle": "Clientes OAuth",
+      "listDescription": "Consumidores de API registados no servidor de autorização iGRP.",
+      "newTitle": "Registar cliente OAuth",
+      "detailTitle": "{name} · Clientes OAuth",
+      "detailFallback": "Cliente OAuth"
+    },
+    "error": {
+      "listTitle": "Não foi possível carregar os clientes OAuth.",
+      "listMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "detailTitle": "Não foi possível carregar o cliente OAuth."
+    },
+    "loading": {
+      "list": "A carregar clientes OAuth...",
+      "new": "A preparar o registo..."
+    },
+    "actions": {
+      "cancel": "Cancelar",
+      "viewDetails": "Ver detalhes",
+      "copyClientId": "Copiar client ID",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "delete": "Eliminar",
+      "rotateSecret": "Gerar novo segredo",
+      "finish": "Concluir",
+      "close": "Fechar"
+    },
+    "secret": {
+      "label": "Client secret",
+      "warningTitle": "Este segredo não volta a ser mostrado.",
+      "warningBody": "Nem a si, nem a outro administrador. Guarde-o já no seu gestor de segredos.",
+      "confirmLabel": "Guardei o segredo num local seguro"
+    },
+    "kind": {
+      "web": "Aplicação web",
+      "machine": "Máquina"
+    },
+    "badge": {
+      "active": "Ativo",
+      "activeFeminine": "Ativa",
+      "inactive": "Inativo",
+      "inactiveFeminine": "Inativa"
+    },
+    "linkUnknown": "Não foi possível verificar se existe uma conta de serviço.",
+    "deleteBlockedByAccount": "Remova primeiro a conta de serviço «{name}».",
+    "duration": {
+      "days": "{count, plural, one {{count} dia} other {{count} dias}}",
+      "hours": "{count, plural, one {{count} hora} other {{count} horas}}",
+      "minutes": "{count, plural, one {{count} minuto} other {{count} minutos}}",
+      "seconds": "{count, plural, one {{count} segundo} other {{count} segundos}}"
+    },
+    "grants": {
+      "authorizationCode": "Utilizadores iniciam sessão no browser.",
+      "refreshToken": "Renova a sessão sem novo login.",
+      "clientCredentials": "Máquina a máquina, sem utilizador. Necessário para uma conta de serviço.",
+      "deviceCode": "Dispositivos sem browser (TV, linha de comandos)."
+    },
+    "copy": {
+      "successTitle": "Copiado",
+      "successDescription": "Client ID {clientId} copiado.",
+      "errorTitle": "Não foi possível copiar",
+      "errorDescription": "Selecione o client ID e copie-o manualmente."
+    },
+    "validation": {
+      "ttlInteger": "Use um número inteiro de segundos.",
+      "clientIdRequired": "Indique o client ID.",
+      "clientIdMax": "Até 100 caracteres.",
+      "clientIdPattern": "Use minúsculas, números e hífenes (ex.: my-invoice).",
+      "nameRequired": "Indique o nome.",
+      "nameMax": "Até 255 caracteres.",
+      "descriptionMax": "Até 140 caracteres.",
+      "grantTypesRequired": "Escolha pelo menos um grant type.",
+      "redirectRequired": "Adicione pelo menos um URI de redirecionamento.",
+      "redirectNotAllowed": "«{uri}» não é permitido. Use https:// (ou http://localhost)."
+    },
+    "list": {
+      "accountsErrorTitle": "Não foi possível verificar as contas de serviço.",
+      "accountsErrorMessage": "Eliminar, ativar e desativar estão indisponíveis até a verificação ser feita.",
+      "emptyTitle": "Ainda não há clientes OAuth",
+      "emptyDescription": "Um cliente OAuth é uma aplicação ou serviço registado para pedir tokens ao servidor de autorização iGRP.",
+      "emptyAction": "Registar o primeiro cliente",
+      "noMatches": "Nenhum cliente corresponde aos filtros."
+    },
+    "toolbar": {
+      "searchLabel": "Pesquisar clientes",
+      "searchPlaceholder": "Pesquisar por nome ou client ID…",
+      "application": "Aplicação",
+      "applicationSearch": "Pesquisar aplicações…",
+      "applicationEmpty": "Nenhuma aplicação encontrada.",
+      "kind": "Tipo",
+      "status": "Estado",
+      "register": "Registar cliente"
+    },
+    "columns": {
+      "client": "Cliente",
+      "kind": "Tipo",
+      "serviceAccount": "Conta de serviço",
+      "application": "Aplicação",
+      "status": "Estado",
+      "actions": "Ações",
+      "rowActions": "Ações para {name}",
+      "toVerify": "Por verificar",
+      "noAccount": "Sem conta"
+    },
+    "activation": {
+      "titleActivate": "Ativar cliente",
+      "titleDeactivate": "Desativar cliente",
+      "descActivateLinked": "O cliente e a conta de serviço «{name}» voltam a poder autenticar.",
+      "descActivate": "O cliente volta a poder pedir tokens.",
+      "descDeactivateLinked": "O cliente e a conta de serviço «{name}» deixam de conseguir autenticar até serem reativados.",
+      "descDeactivate": "As aplicações que usam este cliente deixam de conseguir autenticar. Pode reativá-lo depois.",
+      "loadingActivate": "A ativar…",
+      "loadingDeactivate": "A desativar…",
+      "toastActivated": "Cliente ativado",
+      "toastDeactivated": "Cliente desativado",
+      "errorActivate": "Não foi possível ativar",
+      "errorDeactivate": "Não foi possível desativar",
+      "errorActivateStep": "Não foi possível ativar (falhou: {step})",
+      "errorDeactivateStep": "Não foi possível desativar (falhou: {step})",
+      "retry": "{error} Tente novamente.",
+      "stepClient": "cliente OAuth",
+      "stepServiceAccount": "conta de serviço"
+    },
+    "delete": {
+      "errorTitle": "Não foi possível eliminar",
+      "linkedError": "Este cliente tem uma conta de serviço associada. Elimine primeiro a conta de serviço.",
+      "successTitle": "Cliente eliminado",
+      "description": "O registo é removido e as credenciais deixam de funcionar de imediato. Não é possível recuperá-lo.",
+      "label": "Client ID",
+      "header": "Eliminar cliente OAuth"
+    },
+    "rotate": {
+      "confirmTitle": "Gerar novo segredo",
+      "description": "O segredo atual deixa de funcionar de imediato. Os tokens já emitidos continuam válidos até expirarem. O client ID não muda: só o segredo tem de ser distribuído de novo.",
+      "descriptionLinked": "O segredo atual deixa de funcionar de imediato, também para a conta de serviço «{name}». Os tokens já emitidos continuam válidos até expirarem. O client ID não muda: só o segredo tem de ser distribuído de novo.",
+      "loading": "A gerar…",
+      "errorTitle": "Não foi possível gerar um novo segredo",
+      "doneTitle": "Novo segredo gerado",
+      "doneWithSecret": "O segredo anterior de <id>{clientId}</id> já não funciona. Atualize as aplicações que usam este cliente.",
+      "doneWithoutSecret": "O segredo anterior de <id>{clientId}</id> já não funciona. O servidor não devolveu o novo segredo.",
+      "missingAlert": "Gere outro segredo. Até lá, nenhuma aplicação consegue autenticar com este cliente.",
+      "closeTitle": "Fechar sem confirmar?",
+      "closeDescription": "Não poderá voltar a ver este segredo. Fechar mesmo assim?",
+      "closeBack": "Voltar",
+      "closeAnyway": "Fechar mesmo assim"
+    },
+    "create": {
+      "noteInfo": "O segredo é mostrado uma única vez, no fim do registo.",
+      "noteCreated": "O cliente OAuth já foi registado. Guarde o segredo antes de sair desta página.",
+      "title": "Registar cliente OAuth2",
+      "submit": "Registar",
+      "submitting": "A registar…",
+      "conflict": "Já existe um cliente com este client ID.",
+      "errorTitle": "Não foi possível registar o cliente",
+      "leaveTitle": "Sair sem registar o cliente?",
+      "leaveDescription": "Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los.",
+      "leaveCancel": "Continuar a preencher",
+      "leaveAction": "Sair e descartar",
+      "doneTitle": "Cliente registado",
+      "doneWithSecret": "O cliente <id>{clientId}</id> já pode pedir tokens. Guarde as credenciais antes de sair.",
+      "doneWithoutSecret": "O cliente <id>{clientId}</id> foi criado, mas sem credenciais utilizáveis.",
+      "rotateHint": "Se o segredo for exposto, gere um novo nos detalhes do cliente.",
+      "finish": "Concluir — ver detalhes",
+      "missingAlert": "O servidor não devolveu o segredo. Gere um novo nos detalhes do cliente."
+    },
+    "detail": {
+      "back": "Clientes OAuth",
+      "clientId": "Client ID",
+      "duplicateAccounts": "Este cliente tem mais do que uma conta de serviço associada. Isto não devia acontecer — contacte o suporte.",
+      "saveErrorTitle": "Não foi possível guardar",
+      "savedTitle": "Alterações guardadas",
+      "recordTitle": "Registo",
+      "recordDescription": "Quando este cliente foi registado e alterado pela última vez.",
+      "createdAt": "Criado em",
+      "updatedAt": "Atualizado em",
+      "dangerZone": "Zona de perigo",
+      "rotateDescription": "O segredo atual deixa de funcionar de imediato. Use-o se o segredo foi exposto ou perdido.",
+      "deactivateLinked": "Desativa também a conta de serviço «{name}». A identidade deixa de conseguir autenticar.",
+      "deleteTitle": "Eliminar cliente",
+      "deleteDescription": "Remove o registo. As credenciais deixam de funcionar de imediato e não é possível recuperá-lo."
+    },
+    "serviceAccount": {
+      "title": "Conta de serviço",
+      "description": "A identidade de máquina que autentica com este cliente, com os seus perfis e permissões.",
+      "saveFirst": "Guarde as alterações para poder criar uma conta de serviço para este cliente.",
+      "none": "Este cliente ainda não tem conta de serviço.",
+      "create": "Criar conta de serviço para este cliente"
+    },
+    "form": {
+      "basicTitle": "Informação básica",
+      "basicDescription": "Como o cliente é identificado no servidor de autorização.",
+      "clientId": "Client ID",
+      "clientIdRequired": "Client ID *",
+      "clientIdHelpCreate": "Minúsculas, números e hífenes. Não pode ser alterado depois.",
+      "clientIdHelpEdit": "Definido no registo. Não pode ser alterado.",
+      "name": "Nome *",
+      "secretHidden": "Mostrado apenas uma vez, quando é gerado",
+      "secretHelp": "O servidor guarda só uma versão cifrada — ninguém o pode voltar a ler. Se foi exposto, gere um novo na zona de perigo.",
+      "description": "Descrição",
+      "application": "Aplicação",
+      "applicationPlaceholder": "Selecionar aplicação",
+      "applicationSearch": "Pesquisar aplicação…",
+      "applicationEmpty": "Nenhuma aplicação encontrada.",
+      "applicationHelp": "A aplicação a que este cliente pertence. Uma conta de serviço herda-a.",
+      "applicationLocked": "Fixa enquanto a conta de serviço «{name}» existir.",
+      "grantsTitle": "Grant types",
+      "grantsDescription": "Como este cliente obtém tokens. As secções abaixo mudam conforme a escolha.",
+      "grantFixed": "Fixo para contas de serviço.",
+      "grantLocked": "Necessário enquanto a conta de serviço «{name}» existir.",
+      "redirectsTitle": "Redirect URIs",
+      "redirectsDescription": "Para onde o servidor devolve o utilizador depois do login. Aparece porque <mono>authorization_code</mono> está ativo.",
+      "redirectsLabel": "URIs de redirecionamento *",
+      "redirectsPlaceholder": "Adicionar URI…",
+      "redirectsHelp": "Prima Enter depois de cada URI. Só https://, exceto http://localhost.",
+      "scopesTitle": "Scopes",
+      "scopesDescription": "Informação que o cliente pode pedir.",
+      "scopesPlaceholder": "Adicionar scope…",
+      "ttlTitle": "Duração dos tokens",
+      "ttlDescription": "Deixe em branco para usar os valores do servidor.",
+      "ttlAccessToken": "Access token",
+      "ttlRefreshToken": "Refresh token",
+      "ttlAuthorizationCode": "Authorization code",
+      "seconds": "segundos",
+      "ttlEquals": "= {value}"
+    }
+  },
+  "audit": {
+    "meta": {
+      "title": "Auditoria e Relatórios",
+      "description": "Consultar os relatórios de acessos e de configurações da plataforma."
+    },
+    "header": {
+      "title": "Auditoria e Relatórios",
+      "description": "Consulte os acessos e as alterações de configuração registados na plataforma."
+    },
+    "reports": {
+      "label": "Relatórios",
+      "access": {
+        "title": "Acessos",
+        "description": "Quem entrou na plataforma e o que fez em cada módulo."
+      },
+      "settings": {
+        "title": "Configurações",
+        "description": "Alterações a aplicações, utilizadores, perfis, permissões e menus."
+      }
+    },
+    "error": {
+      "page": "Não foi possível carregar a auditoria.",
+      "access": "Não foi possível carregar o relatório de acessos.",
+      "settings": "Não foi possível carregar o relatório de configurações.",
+      "message": "Tente novamente. Se o problema persistir, contacte o suporte."
+    },
+    "forbidden": {
+      "description": "As permissões vêm apenas do seu perfil ativo. Se a permissão de auditoria lhe foi atribuída noutro perfil, ative-o no seu perfil e inicie sessão novamente.",
+      "homeLabel": "Ir para o meu perfil"
+    },
+    "fields": {
+      "timestamp": "Data e hora",
+      "username": "Utilizador",
+      "heldRoles": "Perfis detidos",
+      "module": "Módulo",
+      "action": "Ação",
+      "ip": "IP",
+      "status": "Estado",
+      "performedBy": "Realizado por",
+      "area": "Área",
+      "operation": "Operação",
+      "type": "Tipo",
+      "entity": "Entidade",
+      "details": "Detalhes"
+    },
+    "status": {
+      "success": "Sucesso",
+      "accessDenied": "Acesso negado",
+      "unusualIp": "IP invulgar",
+      "pending": "Pendente",
+      "error": "Erro"
+    },
+    "area": {
+      "applications": "Aplicações",
+      "users": "Utilizadores",
+      "access": "Acessos"
+    },
+    "entityType": {
+      "application": "Aplicação",
+      "user": "Utilizador",
+      "department": "Departamento",
+      "role": "Perfil",
+      "permission": "Permissão",
+      "menu": "Menu"
+    },
+    "operation": {
+      "create": "Criação",
+      "delete": "Eliminação",
+      "edit": "Edição",
+      "activate": "Ativação",
+      "deactivate": "Desativação",
+      "invite": "Convite",
+      "cancelInvite": "Cancelamento de convite",
+      "resendInvite": "Reenvio de convite",
+      "associate": "Associação",
+      "disassociate": "Desassociação",
+      "assign": "Atribuição",
+      "unassign": "Remoção de atribuição"
+    },
+    "filters": {
+      "all": "Todos",
+      "noResults": "Sem resultados",
+      "search": "Pesquisar…",
+      "exactMatch": "Correspondência exata",
+      "rolePlaceholder": "Código do perfil",
+      "roleHint": "Contém o código indicado",
+      "entityPlaceholder": "Nome exato",
+      "clear": "Limpar filtros"
+    },
+    "period": {
+      "label": "Período",
+      "last24h": "Últimas 24 horas",
+      "last7d": "Últimos 7 dias",
+      "last30d": "Últimos 30 dias",
+      "custom": "Personalizado",
+      "pickDates": "Escolher datas",
+      "clear": "Limpar",
+      "apply": "OK",
+      "noResults": "Sem resultados",
+      "capeVerdeTime": "Hora de Cabo Verde"
+    },
+    "panel": {
+      "title": "Período e filtros",
+      "dateSpan": "{from} a {to}",
+      "noFilters": "{period}, sem filtros",
+      "filterCount": "{period}, {count, plural, =1 {# filtro} other {# filtros}}"
+    },
+    "empty": {
+      "filteredTitle": "Nenhum evento corresponde aos filtros",
+      "filteredDescription": "Os filtros exigem o valor exato. Limpe-os para confirmar se existem eventos no período.",
+      "title": "Sem eventos neste período",
+      "description": "Alargue o período para ver eventos anteriores."
+    },
+    "loading": {
+      "events": "A carregar eventos…"
+    },
+    "pager": {
+      "label": "Paginação do relatório",
+      "summarySingle": "{first} de {total} {count, plural, =1 {evento} other {eventos}}",
+      "summaryRange": "{first}–{last} de {total} {count, plural, =1 {evento} other {eventos}}",
+      "rowsPerPage": "Linhas por página",
+      "noResults": "Sem resultados",
+      "first": "Primeira página",
+      "previous": "Página anterior",
+      "next": "Página seguinte",
+      "last": "Última página",
+      "pageNumber": "Página {page}",
+      "pageOf": "Página {page} de {pages}"
+    },
+    "row": {
+      "showDetails": "Ver detalhes",
+      "hideDetails": "Ocultar detalhes"
+    },
+    "detail": {
+      "ip": "Endereço IP:",
+      "relatedEntity": "Entidade relacionada:",
+      "before": "Antes:",
+      "after": "Depois:",
+      "previous": "Anterior",
+      "next": "Novo"
+    },
+    "sort": {
+      "by": "Ordenar por {title}",
+      "asc": "ordem crescente",
+      "desc": "ordem decrescente"
+    }
+  },
+  "departments": {
+    "meta": {
+      "title": "Departamentos",
+      "description": "Gerir departamentos, perfis, permissões e menus."
+    },
+    "page": {
+      "title": "Gestão de Departamentos",
+      "description": "Organize os departamentos e os perfis, permissões e menus associados."
+    },
+    "error": {
+      "title": "Não foi possível carregar departamentos",
+      "message": "Ocorreu um erro ao obter a lista. Tenta novamente; se persistir, contacta o suporte.",
+      "retry": "Tentar novamente",
+      "ref": "Ref: {digest}"
+    },
+    "validation": {
+      "codePattern": "O código deve conter maiusculas, números e sublinhados",
+      "codeMin": "Código é obrigatório (min 2 carateres)",
+      "nameMin": "Nome é obrigatório (min 2 carateres)",
+      "namePattern": "O nome não pode conter caracteres especiais"
+    },
+    "unknownError": "Erro desconhecido",
+    "actions": {
+      "newDepartment": "Novo Departamento",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "remove": "Remover",
+      "removing": "A remover…",
+      "saving": "A guardar…",
+      "processing": "A processar…"
+    },
+    "sidebar": {
+      "title": "Gestão de Departamentos",
+      "summaryWithInactive": "{active} ativos · {inactive} inativos",
+      "summary": "{count, plural, =1 {# departamento} other {# departamentos}}",
+      "searchLabel": "Pesquisar departamento",
+      "searchPlaceholder": "Pesquisar departamento…",
+      "filtering": "A filtrar…",
+      "openList": "Abrir lista de departamentos",
+      "listTitle": "Departamentos"
+    },
+    "tree": {
+      "collapse": "Recolher departamento",
+      "expand": "Expandir departamento",
+      "inactive": "Inativo:",
+      "openMenu": "Abrir menu",
+      "createSub": "Criar Sub-departamento",
+      "delete": "Eliminar"
+    },
+    "empty": {
+      "sidebarEmpty": {
+        "title": "Nenhum departamento",
+        "body": "Use o botão 'Novo Departamento' para criar o primeiro departamento para organizar perfis e permissões."
+      },
+      "sidebarNoResults": {
+        "title": "Nenhum departamento encontrado",
+        "body": "Tente outro termo na pesquisa ou limpe o campo."
+      },
+      "main": {
+        "title": "Comece por um departamento",
+        "body": "Os departamentos organizam perfis, permissões e menus. Crie o primeiro para configurar o sistema."
+      }
+    },
+    "detail": {
+      "tabRoles": "Perfis",
+      "tabPermissions": "Permissões",
+      "tabMenus": "Menus",
+      "noDescription": "Sem descrição.",
+      "manageApps": "Gerir Aplicações"
+    },
+    "form": {
+      "titleEdit": "Editar Departamento",
+      "titleCreateSub": "Criar Sub Departamento",
+      "titleCreate": "Criar Novo Departamento",
+      "descriptionEdit": "Atualizar Departamento",
+      "descriptionCreateSub": "Criar um novo sub departamento",
+      "descriptionCreate": "Criar um novo departamento",
+      "name": "Nome",
+      "namePlaceholder": "Nome do Departamento",
+      "code": "Código",
+      "codePlaceholder": "Código do Departamento",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Breve descrição do departamento",
+      "parent": "Departamento Pai",
+      "parentPlaceholder": "Departamento pai",
+      "status": "Estado",
+      "statusPlaceholder": "Selecionar estado",
+      "saveAndNew": "Guardar e Novo",
+      "save": "Guardar",
+      "toast": {
+        "successTitle": "Departamento",
+        "updated": "O departamento foi atualizado com sucesso.",
+        "created": "O departamento foi criado com sucesso.",
+        "updateErrorTitle": "Não foi possível atualizar departamento.",
+        "createErrorTitle": "Não foi possível criar departamento.",
+        "unknownError": "Ocorreu um erro desconhecido."
+      }
+    },
+    "delete": {
+      "title": "Eliminar departamento",
+      "description": "Esta ação é irreversível. O departamento é eliminado, juntamente com os perfis, permissões e menus que lhe estão associados.",
+      "label": "Nome do departamento",
+      "toast": {
+        "successTitle": "Departamento Eliminado",
+        "successDescription": "Departamento ''{name}'' foi eliminado com sucesso.",
+        "errorTitle": "Erro ao eliminar."
+      }
+    },
+    "simple": {
+      "loading": "A carregar departamentos…",
+      "searchLabel": "Pesquisar departamento",
+      "searchPlaceholder": "Pesquisar departamento…",
+      "none": "Nenhum departamento"
+    },
+    "menus": {
+      "title": "Menus",
+      "subtitle": "Faça a gestão de aplicações, menus e perfis do departamento.",
+      "manage": "Gerir Menus",
+      "allApps": "Todas as aplicações",
+      "searchLabel": "Pesquisar menu",
+      "searchPlaceholder": "Pesquisar menu…",
+      "loading": "A carregar menus…",
+      "emptyTitle": "Nenhum menu encontrado",
+      "emptySearch": "Tente ajustar os termos de pesquisa",
+      "emptySetup": "Configure aplicações e menus primeiro",
+      "filteredBy": "Filtrado por: {app}",
+      "columnMenu": "Menu",
+      "selectAll": "Selecionar todos",
+      "toggleAll": "Marcar/desmarcar todos",
+      "collapse": "Recolher menu",
+      "expand": "Expandir menu",
+      "assign": "{role} — {menu}",
+      "summary": "{menus, plural, =1 {# menu} other {# menus}} • {roles, plural, =1 {# perfil} other {# perfis}}",
+      "savePermissions": "Guardar Permissões",
+      "toast": {
+        "noChangesTitle": "Sem alterações",
+        "noChangesDescription": "Nenhuma mudança foi detectada.",
+        "savedTitle": "Permissões salvas",
+        "savedDescription": "Os perfis foram atribuídos aos menus com sucesso.",
+        "errorTitle": "Erro ao salvar"
+      },
+      "unsaved": {
+        "title": "Alterações por guardar",
+        "description": "Tem alterações nas permissões dos menus que ainda não foram guardadas. Guardar antes de mudar de aplicação ou descartar?",
+        "discard": "Descartar e mudar",
+        "saveAndSwitch": "Guardar e mudar"
+      }
+    },
+    "manageApps": {
+      "title": "Gerir Aplicações",
+      "description": "Adicione ou remova aplicações do departamento com um clique.",
+      "searchLabel": "Pesquisar aplicação",
+      "searchPlaceholder": "Pesquisar por nome, código ou descrição…",
+      "emptyTitle": "Nenhuma aplicação encontrada",
+      "emptySearch": "Tente ajustar os termos de pesquisa",
+      "emptyNone": "Não há aplicações disponíveis",
+      "added": "Adicionado",
+      "available": "Disponível",
+      "active": "Ativo",
+      "removeAria": "Remover {name} do departamento",
+      "addAria": "Adicionar {name} ao departamento",
+      "summary": "<b>{added}</b> de <b>{total}</b> aplicações adicionadas",
+      "removeTitle": "Remover Aplicação",
+      "removeDescription": "Tem a certeza de que deseja remover a aplicação <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
+      "toast": {
+        "addedTitle": "Aplicação adicionada",
+        "addedDescription": "A aplicação foi adicionada com sucesso.",
+        "addErrorTitle": "Erro ao adicionar",
+        "removedTitle": "Aplicação removida",
+        "removedDescription": "A aplicação foi removida com sucesso.",
+        "removeErrorTitle": "Erro ao remover"
+      }
+    },
+    "manageMenus": {
+      "title": "Gerir Menus",
+      "description": "Adicione ou remova menus do departamento com um clique.",
+      "searchLabel": "Pesquisar menu",
+      "searchPlaceholder": "Pesquisar por nome, código ou URL…",
+      "allApps": "Todas aplicações",
+      "loading": "A carregar…",
+      "emptyTitle": "Nenhum menu encontrado",
+      "emptyFilters": "Tente ajustar os filtros de pesquisa",
+      "emptyNone": "Não há menus disponíveis",
+      "collapse": "Recolher menu",
+      "expand": "Expandir menu",
+      "added": "Adicionado",
+      "available": "Disponível",
+      "active": "Ativo",
+      "removeAria": "Remover {name} do departamento",
+      "addAria": "Adicionar {name} ao departamento",
+      "summary": "<b>{added}</b> de <b>{total}</b> menus adicionados",
+      "removeTitle": "Remover Menu",
+      "removeDescription": "Tem a certeza de que deseja remover o menu <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
+      "toast": {
+        "addedTitle": "Menu adicionado",
+        "addedDescription": "O menu foi adicionado com sucesso.",
+        "addErrorTitle": "Erro ao adicionar",
+        "removedTitle": "Menu removido",
+        "removedDescription": "O menu foi removido com sucesso.",
+        "removeErrorTitle": "Erro ao remover"
+      }
+    }
+  },
+  "serviceAccounts": {
+    "meta": {
+      "listTitle": "Contas de Serviço",
+      "listDescription": "Identidades de máquina que autenticam via client_credentials.",
+      "newTitle": "Nova conta de serviço",
+      "detailTitle": "{name} · Contas de Serviço",
+      "detailFallback": "Conta de serviço"
+    },
+    "loading": {
+      "list": "A carregar contas de serviço...",
+      "new": "A preparar o assistente...",
+      "detail": "A carregar a conta de serviço..."
+    },
+    "error": {
+      "listTitle": "Não foi possível carregar as contas de serviço.",
+      "listMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "detailTitle": "Não foi possível carregar a conta de serviço."
+    },
+    "shared": {
+      "cancel": "Cancelar",
+      "continue": "Continuar",
+      "save": "Guardar",
+      "saving": "A guardar…",
+      "creating": "A criar…",
+      "remove": "Remover",
+      "confirmRemove": "Confirmar remoção",
+      "activate": "Ativar",
+      "deactivate": "Desativar",
+      "delete": "Eliminar",
+      "roles": "Perfis",
+      "directPermissions": "Permissões diretas",
+      "addPermission": "Adicionar permissão",
+      "directBadge": "direta",
+      "directNote": "Permissões diretas não são revogadas ao remover um perfil. Prefira perfis.",
+      "application": "Aplicação",
+      "inheritedApplication": "Herdada do cliente OAuth.",
+      "identity": "Identidade",
+      "oauthClient": "Cliente OAuth",
+      "name": "Nome *",
+      "description": "Descrição",
+      "status": "Estado",
+      "clientId": "Client ID",
+      "copyClientId": "Copiar client ID",
+      "noApplication": "Sem aplicação"
+    },
+    "accessSummary": "{roles, plural, =1 {# perfil} other {# perfis}} · {direct, plural, =1 {# direta} other {# diretas}}",
+    "permissionCount": "{count, plural, =1 {# permissão} other {# permissões}}",
+    "validation": {
+      "nameRequired": "Indique o nome.",
+      "nameMax": "Até {max} caracteres.",
+      "descriptionMax": "Até {max} caracteres."
+    },
+    "list": {
+      "emptyTitle": "Ainda não há contas de serviço",
+      "emptyDescription": "Uma conta de serviço envolve um cliente OAuth client_credentials e dá-lhe perfis e permissões, para que um sistema aceda às APIs sem utilizador.",
+      "emptyAction": "Criar a primeira conta de serviço",
+      "noMatches": "Nenhuma conta corresponde aos filtros."
+    },
+    "toolbar": {
+      "searchLabel": "Pesquisar contas",
+      "searchPlaceholder": "Pesquisar por nome ou client ID…",
+      "application": "Aplicação",
+      "applicationSearch": "Pesquisar aplicações…",
+      "applicationEmpty": "Nenhuma aplicação encontrada.",
+      "statusActive": "Ativa",
+      "statusInactive": "Inativa",
+      "clear": "Limpar",
+      "create": "Nova conta de serviço"
+    },
+    "columns": {
+      "account": "Conta",
+      "client": "Cliente OAuth",
+      "application": "Aplicação",
+      "access": "Acesso",
+      "status": "Estado",
+      "actions": "Ações",
+      "rowActions": "Ações para {name}",
+      "viewDetails": "Ver detalhes",
+      "rolesPopover": "Perfis"
+    },
+    "detail": {
+      "back": "Contas de serviço",
+      "authenticatesAs": "Autentica como",
+      "dangerZone": "Zona de perigo",
+      "activateTitle": "Ativar conta",
+      "deactivateTitle": "Desativar conta",
+      "activateDescription": "Reativa também o cliente OAuth {clientId}.",
+      "deactivateDescription": "Desativa também o cliente OAuth {clientId}. A identidade deixa de conseguir autenticar.",
+      "deleteTitle": "Eliminar conta",
+      "deleteDescription": "Remove a conta e, por defeito, o cliente OAuth. Não é possível recuperá-los."
+    },
+    "clientCard": {
+      "open": "Abrir",
+      "errorTitle": "Não foi possível carregar o cliente OAuth.",
+      "errorMessage": "Tente novamente. Se o problema persistir, contacte o suporte.",
+      "name": "Nome",
+      "grantType": "Grant type",
+      "grantFixed": "Fixo enquanto esta conta existir."
+    },
+    "identityCard": {
+      "edit": "Editar identidade",
+      "saveErrorTitle": "Não foi possível guardar",
+      "savedTitle": "Identidade guardada",
+      "createdAt": "Criada em",
+      "updatedAt": "Atualizada em"
+    },
+    "effective": {
+      "title": "Permissões efetivas",
+      "description": "O que a conta pode fazer: as permissões dos seus perfis somadas às permissões diretas.",
+      "hideList": "Ocultar lista",
+      "showList": "Ver lista completa",
+      "fromRoles": "De perfis",
+      "direct": "Diretas",
+      "total": "Total únicas",
+      "loadError": "Não foi possível carregar as permissões dos perfis, por isso as contagens estão incompletas.",
+      "retry": "Tentar novamente",
+      "via": "via {roles}"
+    },
+    "rolesSection": {
+      "assign": "Atribuir perfil",
+      "loadErrorTitle": "Não foi possível carregar os perfis.",
+      "loadErrorMessage": "Tente novamente.",
+      "loading": "A carregar perfis…",
+      "empty": "Esta conta ainda não tem perfis.",
+      "removeLabel": "Remover perfil {code}",
+      "saveError": "Não foi possível guardar os perfis",
+      "removed": "Perfil removido",
+      "updated": "Perfis atualizados"
+    },
+    "permissionsSection": {
+      "note": "Permissões diretas não são revogadas quando se remove um perfil. Prefira perfis.",
+      "empty": "Sem permissões diretas.",
+      "removeLabel": "Remover permissão {name}",
+      "unpaired": "Não é possível remover: o servidor não indicou que permissão corresponde a cada identificador.",
+      "saveError": "Não foi possível guardar as permissões",
+      "removed": "Permissão removida",
+      "updated": "Permissões atualizadas"
+    },
+    "rolePicker": {
+      "title": "Atribuir perfis",
+      "description": "Os perfis de outros departamentos não são alterados aqui.",
+      "confirm": "Guardar perfis"
+    },
+    "permissionPicker": {
+      "title": "Adicionar permissões diretas",
+      "confirm": "Guardar permissões"
+    },
+    "scopedPicker": {
+      "department": "Departamento",
+      "departmentPlaceholder": "Selecionar departamento",
+      "departmentSearch": "Pesquisar departamento…",
+      "departmentEmpty": "Nenhum departamento encontrado.",
+      "filter": "Filtrar",
+      "filterPlaceholder": "Nome ou código",
+      "pickDepartment": "Escolha um departamento para ver o que pode atribuir.",
+      "loading": "A carregar…",
+      "loadError": "Não foi possível carregar a lista. Feche e tente novamente.",
+      "empty": "Nada encontrado."
+    },
+    "activation": {
+      "titleActivate": "Ativar conta de serviço",
+      "titleDeactivate": "Desativar conta de serviço",
+      "descActivate": "A conta «{name}» e o cliente OAuth {clientId} voltam a poder autenticar.",
+      "descDeactivate": "A conta «{name}» e o cliente OAuth {clientId} deixam de conseguir autenticar até serem reativados.",
+      "loadingActivate": "A ativar…",
+      "loadingDeactivate": "A desativar…",
+      "toastActivated": "Conta ativada",
+      "toastDeactivated": "Conta desativada",
+      "errorActivate": "Não foi possível ativar (falhou: {step})",
+      "errorDeactivate": "Não foi possível desativar (falhou: {step})",
+      "retry": "{error} Tente novamente.",
+      "stepClient": "cliente OAuth",
+      "stepServiceAccount": "conta de serviço"
+    },
+    "delete": {
+      "successBoth": "Conta e cliente eliminados",
+      "successAccount": "Conta eliminada",
+      "successBothDescription": "{name} · {clientId}",
+      "clientFailedTitle": "A conta foi eliminada, o cliente não",
+      "clientFailedDescription": "Elimine o cliente OAuth {clientId} na página Clientes OAuth. {error}",
+      "errorTitle": "Não foi possível eliminar",
+      "description": "A conta deixa de existir, com os perfis e permissões que tinha. Não é possível recuperá-la.",
+      "label": "Nome da conta",
+      "header": "Eliminar conta de serviço",
+      "buttonBoth": "Eliminar conta e cliente",
+      "buttonAccount": "Eliminar conta",
+      "alsoClient": "Eliminar também o cliente OAuth <mono>{clientId}</mono>",
+      "alsoClientHint": "Sem a conta, o cliente continua a conseguir autenticar."
+    },
+    "wizard": {
+      "stepsLabel": "Passos",
+      "stepAccess": "Perfis e permissões",
+      "stepCurrent": ", passo atual",
+      "stepDone": ", concluído",
+      "noteInfo": "Nada é criado até confirmar no último passo.",
+      "unavailable": "Este cliente não pode receber uma conta de serviço: já tem uma, ou não usa client_credentials. Escolha outro no passo 1.",
+      "newSummary": "Novo: {clientId}",
+      "submitNoteNew": "Regista o cliente OAuth e cria a conta. O segredo do novo cliente é mostrado uma única vez, a seguir.",
+      "submitNoteExisting": "Cria a conta de serviço ligada ao cliente escolhido.",
+      "failedTitle": "Não foi possível criar a conta",
+      "alreadyHasAccount": "Este cliente OAuth já tem uma conta de serviço. Escolha outro cliente no passo 1.",
+      "createdTitle": "Conta de serviço criada",
+      "leaveTitle": "Sair sem criar a conta?",
+      "leaveDescription": "Os dados que preencheu ainda não foram guardados. Se sair agora, vai perdê-los.",
+      "leaveCancel": "Continuar a preencher",
+      "leaveAction": "Sair e descartar"
+    },
+    "clientStep": {
+      "description": "A conta autentica como este cliente. Só aparecem clientes client_credentials sem conta de serviço.",
+      "modeExisting": "Usar um cliente OAuth existente",
+      "modeNew": "Registar um novo cliente OAuth",
+      "placeholder": "Selecionar cliente",
+      "search": "Pesquisar cliente…",
+      "empty": "Nenhum cliente encontrado.",
+      "none": "Não há clientes disponíveis. Registe um novo cliente."
+    },
+    "identityStep": {
+      "description": "Como esta conta aparece aos administradores.",
+      "activeOnCreate": "Ativa na criação",
+      "followsClient": "Estado: segue o cliente OAuth ({state})."
+    },
+    "accessStep": {
+      "description": "O que esta conta pode fazer. Pode alterar depois.",
+      "addRole": "Adicionar perfil",
+      "removeRole": "Remover perfil {code}",
+      "removePermission": "Remover permissão {name}",
+      "submit": "Criar conta"
+    },
+    "result": {
+      "clientRegisteredTitle": "Cliente registado",
+      "registered": "O cliente <mono>{clientId}</mono> foi registado. Guarde o segredo antes de sair desta página.",
+      "missingSecret": "O servidor não devolveu o segredo. Desative este cliente e registe um novo.",
+      "accountFailed": "A conta de serviço não foi criada: {error} O cliente já existe; pode tentar criar a conta novamente com os mesmos dados.",
+      "retry": "Tentar criar a conta novamente",
+      "finish": "Concluir — ver conta"
     }
   }
 }

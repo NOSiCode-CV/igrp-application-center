@@ -141,7 +141,7 @@ export function HomeOverview({
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-10 sm:px-6 lg:py-16">
       <header className="flex max-w-3xl flex-col gap-6">
-        <h1 className="text-5xl leading-[0.95] font-semibold tracking-tight text-balance text-foreground sm:text-7xl">
+        <h1 className="text-3xl leading-[0.95] font-semibold tracking-tight text-balance text-foreground">
           {appName}
         </h1>
         <p className="max-w-[60ch] text-lg text-pretty text-muted-foreground">
