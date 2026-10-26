@@ -5,7 +5,6 @@ import {
   Badge,
   Button,
   IGRPIcon,
-  Skeleton,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type {
@@ -22,7 +21,6 @@ import {
   useAddUserRole,
   useGetCurrentUserRoles,
   useRemoveUserRole,
-  useUserRoles,
 } from "../use-users";
 import { UserRolesDialog } from "./user-role-dialog";
 
