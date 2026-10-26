@@ -208,8 +208,9 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
   // `new URL(path, request.url)`: behind a TLS-terminating proxy `request.url`
   // carries the INTERNAL origin, so a Location built from it points the browser
   // somewhere it cannot reach. One resolver for every redirect below.
-  const loginRedirect = (): NextResponse => {
+  const loginRedirect = (reason?: "session_ended"): NextResponse => {
     const loginUrl = auth.getLoginRedirectUrl(request);
+    if (reason) loginUrl.searchParams.set("reason", reason);
     // Only set callbackUrl when it's a useful destination — never `/`, never
     // /login/* (would loop), never /logout/*.
     const safeCallback = sanitizeCallbackUrl(currentPath, BASE_PATH);
@@ -260,6 +261,11 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
 
   if (!token || auth.isTokenExpiredOrFailed(token)) {
     return loginRedirect();
+  }
+
+  // Another co-hosted app logged out after this session was issued.
+  if (auth.isEndedByHostLogout(token, request)) {
+    return loginRedirect("session_ended");
   }
 
   // Session-first: the profile locale on the token rewrites a stale cookie.

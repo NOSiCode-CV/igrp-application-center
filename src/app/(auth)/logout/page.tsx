@@ -6,7 +6,7 @@ import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
 import { useTranslations } from "next-intl";
 
-import { getLogoutUrl } from "@/actions/igrp/auth";
+import { getLogoutUrl, markHostLogout } from "@/actions/igrp/auth";
 import { markLogoutPending } from "@/lib/logout-pending";
 import { reportError } from "@/lib/report-error";
 
@@ -176,6 +176,12 @@ export default function LogoutPage() {
         console.error("[logout][client] signOut threw", error);
         reportError(error, { segment: "(auth)/logout" });
       }
+
+      // Explicit logout: tell co-hosted apps. Still under the watchdog; a
+      // failure must not block the navigation below.
+      await markHostLogout().catch((error) =>
+        reportError(error, { segment: "(auth)/logout" }),
+      );
 
       clearTimeout(fallbackTimeout);
       console.warn(

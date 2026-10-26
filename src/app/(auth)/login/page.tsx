@@ -19,6 +19,7 @@ import {
 import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 
 import { LogoutCompletion } from "./logout-completion";
+import { SessionEndedCompletion } from "./session-ended-completion";
 import { SilentSignIn } from "./silent-sign-in";
 
 const { sliderPosition } = loginConfig;
@@ -47,7 +48,12 @@ export default async function AuthPage({
     return <LogoutCompletion />;
   }
 
-  const { callbackUrl, error } = await searchParams;
+  const { callbackUrl, error, reason } = await searchParams;
+  // AM answered 401: clear this app's session client-side, then reload /login
+  // without `reason` so silent SSO can run.
+  if (reason === "session_ended") {
+    return <SessionEndedCompletion />;
+  }
   const silentSso = cookieStore.get(SILENT_SSO_COOKIE);
   // Drop callbackUrl values that would bounce the user back to /login (or
   // /logout) after the OIDC round-trip — those produce the nested

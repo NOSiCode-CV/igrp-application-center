@@ -5,6 +5,7 @@ vi.mock("@/lib/auth-instance", () => ({
     isPreviewMode: vi.fn(() => false),
     getTokenFromRequest: vi.fn(),
     isTokenExpiredOrFailed: vi.fn(() => false),
+    isEndedByHostLogout: vi.fn(() => false),
     resolveAppUrl: vi.fn(
       (path: string, request: Request) => new URL(path, request.url),
     ),
@@ -31,6 +32,7 @@ const auth = authMock as unknown as {
   isPreviewMode: ReturnType<typeof vi.fn>;
   getTokenFromRequest: ReturnType<typeof vi.fn>;
   isTokenExpiredOrFailed: ReturnType<typeof vi.fn>;
+  isEndedByHostLogout: ReturnType<typeof vi.fn>;
   config: Record<string, unknown>;
 };
 
@@ -42,6 +44,7 @@ beforeEach(() => {
   vi.mocked(auth.isAuthDisabled).mockReturnValue(false);
   vi.mocked(auth.isPreviewMode).mockReturnValue(false);
   vi.mocked(auth.isTokenExpiredOrFailed).mockReturnValue(false);
+  vi.mocked(auth.isEndedByHostLogout).mockReturnValue(false);
 });
 
 describe("middleware auth gate", () => {
@@ -66,6 +69,18 @@ describe("middleware auth gate", () => {
     const res = await middleware(req("/settings/users"));
     // NextResponse.next() → no redirect
     expect(res.headers.get("location")).toBeNull();
+  });
+
+  it("sends a session another co-hosted app logged out to /login?reason=session_ended", async () => {
+    vi.mocked(auth.getTokenFromRequest).mockResolvedValue({ sub: "u1" });
+    vi.mocked(auth.isEndedByHostLogout).mockReturnValue(true);
+    const res = await middleware(req("/settings/users"));
+    const location = new URL(
+      res.headers.get("location") ?? "",
+      "http://localhost",
+    );
+    expect(location.pathname).toBe("/login");
+    expect(location.searchParams.get("reason")).toBe("session_ended");
   });
 });
 
