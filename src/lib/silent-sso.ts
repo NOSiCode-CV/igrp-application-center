@@ -18,7 +18,10 @@
 // Module scope must stay edge-safe: no `document` access outside the
 // client-only functions below.
 
-import { basePathCookieSuffix } from "@igrp/framework-next-auth/cookies";
+import {
+  basePathCookiePath,
+  basePathCookieSuffix,
+} from "@igrp/framework-next-auth/cookies";
 import { isOidcManagedProviderId } from "@igrp/framework-next-auth/providers";
 
 import { sanitizeCallbackUrl } from "@/lib/utilities";
@@ -36,12 +39,10 @@ export const SILENT_SSO_COOKIE = `igrp.silent-sso${basePathCookieSuffix(
 // /login tries silently again.
 const SILENT_SSO_MAX_AGE_SECONDS = 60;
 
-function cookiePath(): string {
-  return process.env.NEXT_PUBLIC_BASE_PATH || "/";
-}
-
+// The browser drops a `Secure` cookie set from an http: page, so NODE_ENV is
+// the wrong signal: a production build served over plain HTTP would lose it.
 function secureAttr(): string {
-  return process.env.NODE_ENV === "production" ? "; secure" : "";
+  return window.location.protocol === "https:" ? "; secure" : "";
 }
 
 /**
@@ -88,5 +89,5 @@ export function silentSsoCallbackUrl(
  */
 export function markSilentSsoTried(callbackUrl = "/"): void {
   // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API can't set SameSite/path the way this marker needs, and this only runs client-side.
-  document.cookie = `${SILENT_SSO_COOKIE}=${encodeURIComponent(callbackUrl)}; path=${cookiePath()}; max-age=${SILENT_SSO_MAX_AGE_SECONDS}; samesite=lax${secureAttr()}`;
+  document.cookie = `${SILENT_SSO_COOKIE}=${encodeURIComponent(callbackUrl)}; path=${basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH)}; max-age=${SILENT_SSO_MAX_AGE_SECONDS}; samesite=lax${secureAttr()}`;
 }

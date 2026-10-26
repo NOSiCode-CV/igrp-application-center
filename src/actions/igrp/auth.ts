@@ -1,8 +1,36 @@
 "use server";
 
+import { cookies, headers } from "next/headers";
+
+import { igrpIsSecureRequest } from "@igrp/framework-next/i18n";
+import {
+  HOST_LOGOUT_COOKIE,
+  HOST_LOGOUT_COOKIE_MAX_AGE_S,
+} from "@igrp/framework-next-auth/cookies";
 import { buildEndSessionUrl } from "@igrp/framework-next-auth/oidc";
 
 import { auth } from "@/lib/auth";
+import { isAuthBypass } from "@/lib/utilities";
+
+/**
+ * Writes the host-wide logout signal (`igrp.logout-at`, unix seconds, Path=/).
+ * Runs as a server action so the timestamp comes from a server clock; every
+ * co-hosted app's middleware ends sessions that predate it.
+ */
+export async function markHostLogout(): Promise<void> {
+  if (isAuthBypass()) return;
+  (await cookies()).set(
+    HOST_LOGOUT_COOKIE,
+    String(Math.floor(Date.now() / 1000)),
+    {
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: igrpIsSecureRequest(await headers()),
+      maxAge: HOST_LOGOUT_COOKIE_MAX_AGE_S,
+    },
+  );
+}
 
 /**
  * Returns the IdP end-session URL for RP-initiated logout, or null when:

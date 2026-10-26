@@ -6,6 +6,7 @@ import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
 import { useTranslations } from "next-intl";
 
+import { markHostLogout } from "@/actions/igrp/auth";
 import { clearLogoutPending } from "@/lib/logout-pending";
 import { reportError } from "@/lib/report-error";
 import { markSilentSsoTried } from "@/lib/silent-sso";
@@ -39,6 +40,10 @@ export function LogoutCompletion() {
         console.error("[logout][client] deferred signOut threw", error);
         reportError(error, { segment: "(auth)/login:logout-completion" });
       } finally {
+        // Explicit logout: tell co-hosted apps. A failure must not block the reload.
+        await markHostLogout().catch((error) =>
+          reportError(error, { segment: "(auth)/login:logout-completion" }),
+        );
         // Clear the marker BEFORE reloading (document.cookie is synchronous, so
         // the cookie is gone before the next request fires). On reload the
         // server no longer gates on the marker and renders the login form; the

@@ -3220,6 +3220,12 @@
       "fileHashes": {
         "package.json": "5242cc50120b4f4f"
       }
+    },
+    {
+      "id": "75-multi-app-auth-sessions",
+      "appliedAt": "2026-10-26T13:20:47.460Z",
+      "cliVersion": "0.2.0-beta.15",
+      "manifestHash": "01175883f1b25044"
     }
   ]
 }
