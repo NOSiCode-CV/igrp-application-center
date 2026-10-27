@@ -45,11 +45,13 @@ const WEEKDAY_INDEX: Record<string, number> = {
 };
 
 /** The English short weekday ("Sun"…"Sat"), only to index `WEEKDAY_INDEX`: never shown. */
-function weekdayShort(date: Date, timeZone: string | undefined): string {
+function weekdayShort(date: Date, zone: string | undefined): string {
+  // Not `{ timeZone }` shorthand: the production minifier inlines this into
+  // getLastOpened and left the shorthand as a free `timeZone` (ReferenceError).
   // igrp-i18n-ignore: parsed here, never shown: a fixed locale gives fixed names
   return new Intl.DateTimeFormat("en-US", {
     weekday: "short",
-    timeZone,
+    timeZone: zone,
   }).format(date);
 }
 
