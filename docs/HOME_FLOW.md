@@ -6,12 +6,12 @@ How `src/app/(igrp)/(home)` works: the authenticated landing experience (app lau
 - [2. Navigation flow](#2-navigation-flow)
 - [3. Route map](#3-route-map)
 - [4. Layout chain & guards](#4-layout-chain--guards)
-- [5. The dashboard page (`/`)](#5-the-dashboard-page-)
+- [5. The dashboard page (](#5-the-dashboard-page-)`/`[)](#5-the-dashboard-page-)
 - [6. EnterpriseWorkspace — Home & Apps tab](#6-enterpriseworkspace--home--apps-tab)
 - [7. EnterpriseWorkspace — Tasks tab](#7-enterpriseworkspace--tasks-tab)
 - [8. Data sources — what's real vs. mock](#8-data-sources--whats-real-vs-mock)
-- [9. Settings section (`/settings/*`)](#9-settings-section-settings)
-- [10. Profile (`/profile`)](#10-profile-profile)
+- [9. Settings section (](#9-settings-section-settings)`/settings/*`[)](#9-settings-section-settings)
+- [10. Profile (](#10-profile-profile)`/profile`[)](#10-profile-profile)
 - [11. Known gaps / things to watch](#11-known-gaps--things-to-watch)
 
 ---
@@ -118,11 +118,11 @@ Failure semantics: `prefetchCurrentUserDashboard` uses `fetchQuery` (throws on f
 
 `HomeAppsTab` stacks three sections top-to-bottom:
 
-1. **`WelcomeBanner`** — avatar circle (first letter of the user's name) with an online-status dot, a time-of-day greeting (`getGreeting()` — "Good morning/afternoon/evening", computed client-side in a `useEffect` to avoid an SSR/client clock mismatch), the user's first name, their active role badge, and a one-line pending/due-today task summary. Reads `useCurrentUser()` and `useCurrentUserActiveRole()`.
-2. **`RecentlyAccessed`** — a horizontally-scrolling row of up to 8 apps from `useGetCurrentUserRecentApplications()`, rendered as compact `AppTileCard`s. Renders nothing (`return null`) when there's no recent-access history. Its "View all catalog →" link does an in-page smooth-scroll to the catalog section (`APP_CATALOG_SECTION_ID`), not a navigation.
-3. **`AppCatalog`** — the full application directory: search-by-name, a "Favorites" toggle filter, a sort dropdown (Recommended / Recently Visited / Name A–Z / Name Z–A), and a grid/list view toggle. Backed by `useCurrentUserApplications()` + `useCurrentUserFavoriteApplications()`; favoriting is optimistic via `useAddCurrentUserFavoriteApplication()` / `useRemoveCurrentUserFavoriteApplication()`.
+1. `WelcomeBanner` — avatar circle (first letter of the user's name) with an online-status dot, a time-of-day greeting (`getGreeting()` — "Good morning/afternoon/evening", computed client-side in a `useEffect` to avoid an SSR/client clock mismatch), the user's first name, their active role badge, and a one-line pending/due-today task summary. Reads `useCurrentUser()` and `useCurrentUserActiveRole()`.
+2. `RecentlyAccessed` — a horizontally-scrolling row of up to 8 apps from `useGetCurrentUserRecentApplications()`, rendered as compact `AppTileCard`s. Renders nothing (`return null`) when there's no recent-access history. Its "View all catalog →" link does an in-page smooth-scroll to the catalog section (`APP_CATALOG_SECTION_ID`), not a navigation.
+3. `AppCatalog` — the full application directory: search-by-name, a "Favorites" toggle filter, a sort dropdown (Recommended / Recently Visited / Name A–Z / Name Z–A), and a grid/list view toggle. Backed by `useCurrentUserApplications()` + `useCurrentUserFavoriteApplications()`; favoriting is optimistic via `useAddCurrentUserFavoriteApplication()` / `useRemoveCurrentUserFavoriteApplication()`.
 
-**`AppTileCard`** (shared by both sections) resolves per-app display via `src/features/workspace/lib/app-utils.ts`:
+`AppTileCard` (shared by both sections) resolves per-app display via `src/features/workspace/lib/app-utils.ts`:
 
 - `getAppTileColor(code)` — deterministic hash of the app code into one of 8 color pairs, so each app always gets the same tile color across sessions/renders.
 - `getAppHref(app)` — `APP_IGRP_CENTER` special-cases to the local `/applications` route; everything else uses `app.url ?? app.slug`.
@@ -135,10 +135,10 @@ Apps with no resolvable href render as a static (non-clickable) card — favorit
 
 `TasksTab` is a two-column layout (`TaskList` + `WorkSummarySidebar`, sidebar fixed at `320px`):
 
-- **`TaskList`** — 4 tabs (Assigned to me / Candidate tasks / Created by me / Completed) each showing a live count badge, plus a free-text filter across title/ticket code/category. Renders `TaskRow` per visible task. Header shows the user's active role as "Role Scope" (`useCurrentUserActiveRole()`), purely informational at this point.
-- **`WorkSummarySidebar`** — 4 stat cards (Overdue / Due today / Due this week / Total pending), each color-coded (red/amber/blue/gray) via a left accent border, plus a completion-rate progress bar (`completedCount / total`).
+- `TaskList` — 4 tabs (Assigned to me / Candidate tasks / Created by me / Completed) each showing a live count badge, plus a free-text filter across title/ticket code/category. Renders `TaskRow` per visible task. Header shows the user's active role as "Role Scope" (`useCurrentUserActiveRole()`), purely informational at this point.
+- `WorkSummarySidebar` — 4 stat cards (Overdue / Due today / Due this week / Total pending), each color-coded (red/amber/blue/gray) via a left accent border, plus a completion-rate progress bar (`completedCount / total`).
 
-Both read `computeTaskStats()` from [`lib/task-utils.ts`](../src/features/workspace/lib/task-utils.ts), which also exposes `getDueDateLabel()` (color-coded "Overdue by N days" / "Due today" / "Due in N days", used by `TaskRow`). Note the stats function **trusts the task's static `priority: "OVERDUE"` field** rather than deriving overdue-ness from `dueDate` — acceptable for hand-authored mock data, but a real task-service integration should compute it from the date instead (flagged in the code as-is).
+Both read `computeTaskStats()` from [`lib/task-utils.ts`](../src/features/workspace/lib/task-utils.ts), which also exposes `getDueDateLabel()` (color-coded "Overdue by N days" / "Due today" / "Due in N days", used by `TaskRow`). Note the stats function **trusts the task's static** `priority: "OVERDUE"` **field** rather than deriving overdue-ness from `dueDate` — acceptable for hand-authored mock data, but a real task-service integration should compute it from the date instead (flagged in the code as-is).
 
 ## 8. Data sources — what's real vs. mock
 
@@ -156,12 +156,12 @@ The task-management side of the dashboard is a UI-complete prototype: the tab co
 
 `/settings` itself ([`settings/page.tsx`](../src/app/(igrp)/(home)/settings/page.tsx)) is a static card grid (`SettingsCard`) pointing at three live areas and one placeholder:
 
-| Card | Route | Status |
-| --- | --- | --- |
-| Gestão de Aplicações | `/settings/applications` | live |
-| Gestão de Utilizadores | `/settings/users` | live |
-| Gestão de Acessos | `/settings/departments` | live |
-| Customização | `/settings/theme` | **`status: "inativo"`** — no route exists yet |
+| Card                   | Route                    | Status                                    |
+| ---------------------- | ------------------------ | ----------------------------------------- |
+| Gestão de Aplicações   | `/settings/applications` | live                                      |
+| Gestão de Utilizadores | `/settings/users`        | live                                      |
+| Gestão de Acessos      | `/settings/departments`  | live                                      |
+| Customização           | `/settings/theme`        | `status: "inativo"` — no route exists yet |
 
 Each live area follows the same server-prefetch + client-feature-component pattern as the dashboard:
 
@@ -178,6 +178,6 @@ Every one of these routes has sibling `loading.tsx`/`error.tsx` files (see the [
 ## 11. Known gaps / things to watch
 
 - **Tasks are mock-only** (see [§8](#8-data-sources--whats-real-vs-mock)) — don't assume `EnterpriseWorkspace`'s Tasks tab reflects a real backend when debugging "why doesn't my task show up" issues.
-- **`/settings/theme` doesn't exist** — the settings card links to it but there's no route; clicking it 404s. Either build the route or remove/disable the card link if this surfaces as a bug report.
+- `/settings/theme` **doesn't exist** — the settings card links to it but there's no route; clicking it 404s. Either build the route or remove/disable the card link if this surfaces as a bug report.
 - **Role-switching isn't wired** — `roleScope`/the active-role badge display whatever the token carried at login; switching the active department/role mid-session isn't implemented anywhere in this flow (consistent with the limitation noted in [PERMISSIONS.md](PERMISSIONS.md#limitations)).
 - **No page-level permission gates in this section currently** — none of `(home)`'s pages call `igrpAssertAuthorize`; access here is scoped only by "does this user have a valid, non-temporary session." If a settings area needs a genuine permission gate (e.g. restrict `/settings/departments` to admins), it has to be added explicitly — see [PERMISSIONS.md](PERMISSIONS.md#gating-a-page-server--authoritative).
