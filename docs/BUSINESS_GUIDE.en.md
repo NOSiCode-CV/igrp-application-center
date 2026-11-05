@@ -1,6 +1,6 @@
 # Application Center — Business Guide
 
-*Versão em português: [BUSINESS_GUIDE.pt.md](BUSINESS_GUIDE.pt.md)*
+_Versão em português: [BUSINESS_GUIDE.pt.md](BUSINESS_GUIDE.pt.md)_
 
 This guide explains **what the Application Center is for and how it works from a user's point of view** — not how it's built. For technical/developer documentation, see [README.md](../README.md) and [AGENTS.md](../AGENTS.md).
 
@@ -27,14 +27,14 @@ flowchart LR
 
 ## 2. The Dashboard (Home)
 
-The dashboard is the first thing you see after logging in. It is built around three ideas: *what's relevant to me*, *what I use often*, and *what I've marked as important*.
+The dashboard is the first thing you see after logging in. It is built around three ideas: _what's relevant to me_, _what I use often_, and _what I've marked as important_.
 
 - **Personal greeting** — a time-of-day greeting and, when you belong to more than one department/role, a reminder of which one is currently active.
 - **Recent applications** — the applications you've opened recently appear automatically, so you don't have to search for them again.
 - **Favorites** — you can mark any application with a star to pin it to a dedicated "Favorites" panel, always visible on the side of the dashboard.
 - **All applications** — every application you have access to, filterable by type (**Internal**, apps that live inside the IGRP ecosystem, or **External**, apps that open on their own site) and by department, using quick filter chips.
 - **Search** — a command-style search box (or the ⌘K / Ctrl+K shortcut) to jump straight to an application by name.
-- **Active role and department** — if you hold roles in more than one department, only one is "active" at a time. The applications and menus you see are always based on your *active* role/department, not on everything you're entitled to overall. You switch your active context to change what you see.
+- **Active role and department** — if you hold roles in more than one department, only one is "active" at a time. The applications and menus you see are always based on your _active_ role/department, not on everything you're entitled to overall. You switch your active context to change what you see.
 
 You only ever see applications that are both **active** (not disabled by an administrator) and **linked to a department where you hold an active role**.
 
@@ -75,21 +75,21 @@ erDiagram
     USER ||--o{ ROLE : "holds, per department"
 ```
 
-*(Read as: a department defines its own roles and decides which applications it grants; each application has menus, and a role only sees a menu once it has been granted that specific menu.)*
+_(Read as: a department defines its own roles and decides which applications it grants; each application has menus, and a role only sees a menu once it has been granted that specific menu.)_
 
 ### 4.1 Applications
 
 An application is any system registered in the portal, internal or external. For each application, administrators define:
 
-| Field | Rule |
-|---|---|
-| Code | Uppercase letters, digits, and underscores only (e.g. `EXPENSES_APP`); at least 2 characters; permanent once set |
-| Name | 2–255 characters |
-| Type | **Internal** or **External** — chosen at creation and never changed afterwards |
-| Slug *(Internal only)* | The relative path used to route to the app inside IGRP — required for Internal apps |
-| URL *(External only)* | The full web address the app opens — required for External apps |
-| Status | **Active** (visible to eligible users) or **Inactive** (hidden from everyone). Deleting an application is a separate, one-way action that removes it from every list entirely — not the same as marking it Inactive. |
-| Description, picture, owner | Optional supporting information |
+| Field                       | Rule                                                                                                                                                                                                                 |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Code                        | Uppercase letters, digits, and underscores only (e.g. `EXPENSES_APP`); at least 2 characters; permanent once set                                                                                                     |
+| Name                        | 2–255 characters                                                                                                                                                                                                     |
+| Type                        | **Internal** or **External** — chosen at creation and never changed afterwards                                                                                                                                       |
+| Slug _(Internal only)_      | The relative path used to route to the app inside IGRP — required for Internal apps                                                                                                                                  |
+| URL _(External only)_       | The full web address the app opens — required for External apps                                                                                                                                                      |
+| Status                      | **Active** (visible to eligible users) or **Inactive** (hidden from everyone). Deleting an application is a separate, one-way action that removes it from every list entirely — not the same as marking it Inactive. |
+| Description, picture, owner | Optional supporting information                                                                                                                                                                                      |
 
 Beyond the basic record, administrators:
 
@@ -99,12 +99,12 @@ Beyond the basic record, administrators:
 
 **Menu structure in detail.** A menu isn't just a flat list — each entry has a type that determines how it behaves:
 
-| Menu type | What it is | Can it sit under a Group/Folder? |
-|---|---|---|
-| **Group** | A top-level heading that organizes menus underneath it | No — always top-level |
-| **Folder** | A collapsible sub-section | Yes, optional |
-| **Page** | An actual screen inside the application | Yes, optional |
-| **External Link** | A link that leaves the application, always opening in a new tab | Yes, optional |
+| Menu type         | What it is                                                      | Can it sit under a Group/Folder? |
+| ----------------- | --------------------------------------------------------------- | -------------------------------- |
+| **Group**         | A top-level heading that organizes menus underneath it          | No — always top-level            |
+| **Folder**        | A collapsible sub-section                                       | Yes, optional                    |
+| **Page**          | An actual screen inside the application                         | Yes, optional                    |
+| **External Link** | A link that leaves the application, always opening in a new tab | Yes, optional                    |
 
 ```mermaid
 flowchart TD
@@ -121,13 +121,13 @@ Each menu also has a name and an optional icon. Role access — who can see it �
 
 A department represents an organizational unit — a team, area, or division. Departments can be **nested** (a department can be a sub-department of another), mirroring how the organization is actually structured.
 
-| Field | Rule |
-|---|---|
-| Code | Uppercase letters, digits, and underscores only; unique |
-| Name | At least 2 characters; letters, digits, accented characters, spaces, and basic punctuation (`( ) & . , / -`) |
-| Description | Optional |
-| Status | **Active** or **Inactive** |
-| Parent department | Optional — makes this a sub-department |
+| Field             | Rule                                                                                                         |
+| ----------------- | ------------------------------------------------------------------------------------------------------------ |
+| Code              | Uppercase letters, digits, and underscores only; unique                                                      |
+| Name              | At least 2 characters; letters, digits, accented characters, spaces, and basic punctuation (`( ) & . , / -`) |
+| Description       | Optional                                                                                                     |
+| Status            | **Active** or **Inactive**                                                                                   |
+| Parent department | Optional — makes this a sub-department                                                                       |
 
 The department list is shown as an expandable tree: sub-departments are indented under their parent, inactive departments appear dimmed, and each department has an Edit / Create Sub-department / Delete menu.
 
@@ -144,15 +144,15 @@ From a department's page, administrators also:
 - **Choose which applications** are available to that department.
 - **Define the roles** that exist within that department (e.g. "Manager", "Analyst"):
 
-  | Field | Rule |
-  |---|---|
-  | Code | At least 2 characters; unique within the department |
-  | Name | 3–50 characters |
-  | Description | Optional |
+  | Field       | Rule                                                                                                                                             |
+  | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+  | Code        | At least 2 characters; unique within the department                                                                                              |
+  | Name        | 3–50 characters                                                                                                                                  |
+  | Description | Optional                                                                                                                                         |
   | Parent role | Optional — groups roles together in the list for readability; it does **not** automatically pass down menu access or permissions from the parent |
-  | Status | **Active** or **Inactive** |
+  | Status      | **Active** or **Inactive**                                                                                                                       |
 
-- **Grant permissions to roles.** A permission is a short, specific capability (identified by a lowercase code such as `approve-expenses`), scoped to one department, and assigned to a role — not to the department as a whole. It's a finer-grained layer than menu access: a menu decides whether a role can *open* a screen at all, while a permission can gate a specific *action* inside that screen (e.g. an "Approve" button that only appears for roles holding `approve-expenses`).
+- **Grant permissions to roles.** A permission is a short, specific capability (identified by a lowercase code such as `approve-expenses`), scoped to one department, and assigned to a role — not to the department as a whole. It's a finer-grained layer than menu access: a menu decides whether a role can _open_ a screen at all, while a permission can gate a specific _action_ inside that screen (e.g. an "Approve" button that only appears for roles holding `approve-expenses`).
 
 Departments, like applications and users, can be marked **Active** or **Inactive**; inactive departments no longer grant access to anyone, even if the underlying role assignments still exist.
 
@@ -162,12 +162,12 @@ This is where administrators manage the people who use the system, split into tw
 
 **Existing users:**
 
-| Field | Rule |
-|---|---|
-| Name | 3–120 characters |
-| Email | A valid, unique email address — used for both login and invitations |
-| Status | **Active** or **Inactive** |
-| Picture, signature | Optional |
+| Field              | Rule                                                                |
+| ------------------ | ------------------------------------------------------------------- |
+| Name               | 3–120 characters                                                    |
+| Email              | A valid, unique email address — used for both login and invitations |
+| Status             | **Active** or **Inactive**                                          |
+| Picture, signature | Optional                                                            |
 
 - Search and browse the full list of registered users.
 - Toggle a user's status between **Active** (can log in) and **Inactive** (login blocked, without deleting their history).
@@ -239,12 +239,12 @@ To see all the pieces working together, here's a realistic setup from start to f
 
 6. **Grant menu access per role:**
 
-   | Menu | Manager | Analyst |
-   |---|:---:|:---:|
-   | Overview | ✅ | ✅ |
-   | Approvals | ✅ | ❌ |
-   | Reports | ✅ | ✅ |
-   | Expense Policy | ✅ | ✅ |
+   | Menu           | Manager | Analyst |
+   | -------------- | :-----: | :-----: |
+   | Overview       |   ✅    |   ✅    |
+   | Approvals      |   ✅    |   ❌    |
+   | Reports        |   ✅    |   ✅    |
+   | Expense Policy |   ✅    |   ✅    |
 
 7. **Grant a fine-grained permission** — `approve-expenses` (scoped to Finance) is granted only to Manager. It controls the "Approve" button inside the Approvals page, independently of who can merely open that page.
 8. **Invite a new employee** — `maria@example.com` is invited, pre-selecting department Finance and role Analyst. Maria accepts, following the flow in [4.3 Users](#43-users).
@@ -288,21 +288,21 @@ This is why the same two administrative actions cover almost every access questi
 - **"Why can't this person see application X?"** → Check whether they hold an active role in a department that application is linked to, and whether that role has been granted the relevant menu(s).
 - **"How do I give this team access to a new app?"** → Link the application to their department, then make sure their roles are granted the app's menus.
 
-Deactivating any link in that chain (the user, their role, the department, the application, or the menu assignment) removes access without needing to touch anything else. Menu access and permissions are two separate layers, though (see [4.2 Departments](#42-departments)) — a role can lose the ability to *open* a screen without necessarily losing the finer *permissions* it holds, and vice versa.
+Deactivating any link in that chain (the user, their role, the department, the application, or the menu assignment) removes access without needing to touch anything else. Menu access and permissions are two separate layers, though (see [4.2 Departments](#42-departments)) — a role can lose the ability to _open_ a screen without necessarily losing the finer _permissions_ it holds, and vice versa.
 
 ## 7. Glossary
 
-| Term | Meaning |
-|---|---|
-| **Application** | A system registered in the portal — internal (inside IGRP) or external (its own site) |
-| **Department** | An organizational unit; can have sub-departments |
-| **Role** | A named level of access, defined within exactly one department (e.g. "Manager") |
-| **Menu** | A navigation entry inside an application. Types: **Group** (top-level heading), **Folder** (collapsible sub-section), **Page** (an actual screen), **External Link** (opens outside the app in a new tab). Access is granted per role, per department. |
-| **Permission** | A fine-grained, department-scoped capability (e.g. `approve-expenses`) assigned to a role, gating a specific action beyond simple menu visibility |
-| **Active role/department** | The one department+role context currently driving what a user sees, when they hold more than one |
-| **Expiry date** | An optional end date on a role assignment, after which that access is automatically revoked |
-| **Status: Active** | Visible and usable by whoever is otherwise entitled |
-| **Status: Inactive** | Hidden/disabled, kept for record, grants no access |
-| **Status: Pending** | An invitation sent but not yet accepted, rejected, or canceled |
-| **Favorites** | Applications a user has manually pinned for quick access on their dashboard |
-| **Recent** | Applications a user has opened lately, tracked automatically |
+| Term                       | Meaning                                                                                                                                                                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Application**            | A system registered in the portal — internal (inside IGRP) or external (its own site)                                                                                                                                                                  |
+| **Department**             | An organizational unit; can have sub-departments                                                                                                                                                                                                       |
+| **Role**                   | A named level of access, defined within exactly one department (e.g. "Manager")                                                                                                                                                                        |
+| **Menu**                   | A navigation entry inside an application. Types: **Group** (top-level heading), **Folder** (collapsible sub-section), **Page** (an actual screen), **External Link** (opens outside the app in a new tab). Access is granted per role, per department. |
+| **Permission**             | A fine-grained, department-scoped capability (e.g. `approve-expenses`) assigned to a role, gating a specific action beyond simple menu visibility                                                                                                      |
+| **Active role/department** | The one department+role context currently driving what a user sees, when they hold more than one                                                                                                                                                       |
+| **Expiry date**            | An optional end date on a role assignment, after which that access is automatically revoked                                                                                                                                                            |
+| **Status: Active**         | Visible and usable by whoever is otherwise entitled                                                                                                                                                                                                    |
+| **Status: Inactive**       | Hidden/disabled, kept for record, grants no access                                                                                                                                                                                                     |
+| **Status: Pending**        | An invitation sent but not yet accepted, rejected, or canceled                                                                                                                                                                                         |
+| **Favorites**              | Applications a user has manually pinned for quick access on their dashboard                                                                                                                                                                            |
+| **Recent**                 | Applications a user has opened lately, tracked automatically                                                                                                                                                                                           |

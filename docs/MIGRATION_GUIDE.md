@@ -141,15 +141,15 @@ After each successful migration `apply` writes `.igrp-migrations-lock.json` to y
 
 ## Migration history
 
-| # | ID | What changed | Target framework |
-|---|---|---|---|
-| 01 | `01-preview-mode-not-found` | Preview mode bypass, custom 404 | — |
-| 02 | `02-access-sync-config-refactor` | Access Management sync, config helpers | beta.84 |
-| 03 | `03-tailwind-v4-tokens` | Tailwind v4 `@source` / token-only imports | — |
-| 04 | `04-multi-auth-provider` | Multi-provider auth (`AUTH_PROVIDER`), central `auth.ts` | beta.113 |
-| 05 | `05-edge-safe-auth-bypass` | Edge-safe auth refactor, `isAuthBypass()` unification | beta.114 |
-| 06 | `06-error-handling-overhaul` | Typed error hierarchy, full App Router error boundaries | beta.115 |
-| 07 | `07-data-access-layer` | Data Access Layer (`verifySession`, `getAuthenticatedUser`), complete `isAuthBypass` in `getSession` | beta.120 |
+| #   | ID                               | What changed                                                                                         | Target framework |
+| --- | -------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------- |
+| 01  | `01-preview-mode-not-found`      | Preview mode bypass, custom 404                                                                      | —                |
+| 02  | `02-access-sync-config-refactor` | Access Management sync, config helpers                                                               | beta.84          |
+| 03  | `03-tailwind-v4-tokens`          | Tailwind v4 `@source` / token-only imports                                                           | —                |
+| 04  | `04-multi-auth-provider`         | Multi-provider auth (`AUTH_PROVIDER`), central `auth.ts`                                             | beta.113         |
+| 05  | `05-edge-safe-auth-bypass`       | Edge-safe auth refactor, `isAuthBypass()` unification                                                | beta.114         |
+| 06  | `06-error-handling-overhaul`     | Typed error hierarchy, full App Router error boundaries                                              | beta.115         |
+| 07  | `07-data-access-layer`           | Data Access Layer (`verifySession`, `getAuthenticatedUser`), complete `isAuthBypass` in `getSession` | beta.120         |
 
 Full prose guides with before/after code: [`.igrpmigrations/`](.igrpmigrations/)
 

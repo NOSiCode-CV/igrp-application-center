@@ -1,12 +1,12 @@
 # IGRPForm / Horizon inputs — integration feedback from `@igrp/applications-center`
 
-| | |
-| --- | --- |
-| Package | `@igrp/igrp-framework-react-design-system` **0.2.0-beta.10** (first reported against 0.2.0-beta.3) |
-| Consumer | `@igrp/applications-center` (Next.js 15, React 19) |
-| Peer versions | `react-hook-form` 7.90.0 · `@hookform/resolvers` 5.9.1 · `zod` 4.6.7 |
-| Date | 2026-10-13 (re-checked 2026-11-03) |
-| Reporter | Fidel da Luz |
+|               |                                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------- |
+| Package       | `@igrp/igrp-framework-react-design-system` **0.2.0-beta.10** (first reported against 0.2.0-beta.3) |
+| Consumer      | `@igrp/applications-center` (Next.js 15, React 19)                                                 |
+| Peer versions | `react-hook-form` 7.90.0 · `@hookform/resolvers` 5.9.1 · `zod` 4.6.7                               |
+| Date          | 2026-10-13 (re-checked 2026-11-03)                                                                 |
+| Reporter      | Fidel da Luz                                                                                       |
 
 ## Context
 
@@ -40,14 +40,14 @@ All package file references are full paths into the installed build of
 
 ## Summary
 
-| # | Component | Issue | Impact | beta.10 |
-| --- | --- | --- | --- | --- |
-| 1 | `IGRPForm` | `formRef.current` is `null` during the first render (assigned in an effect) | `watch`, `setValue`, `formState` unusable in the parent's render | Open |
-| 2 | `IGRPForm` | No `reValidateMode` prop | Cannot do `mode: "onBlur"` + `reValidateMode: "onChange"` | Open |
-| 3 | `IGRPForm` | Thrown `onSubmit` always renders the inline error banner and calls `console.error` | Consumers that report errors via toast cannot opt out | Open |
-| 4 | `IGRPInputText` | `...props` is spread **after** `onChange: field.onChange` | A caller `onChange` silently disconnects the field from the form | **Fixed** |
-| 5 | `IGRPInputText` | `type` is typed as `"text" \| "email" \| "number"` | `type="url"`, `"tel"`, `"password"`, `"search"` do not typecheck | Open |
-| 6 | `IGRPFormField` | `control` is required, typed as `Control<FieldValues>` | Redundant inside `IGRPForm`; forces a cast from typed forms | Open |
+| #   | Component       | Issue                                                                              | Impact                                                           | beta.10   |
+| --- | --------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------- |
+| 1   | `IGRPForm`      | `formRef.current` is `null` during the first render (assigned in an effect)        | `watch`, `setValue`, `formState` unusable in the parent's render | Open      |
+| 2   | `IGRPForm`      | No `reValidateMode` prop                                                           | Cannot do `mode: "onBlur"` + `reValidateMode: "onChange"`        | Open      |
+| 3   | `IGRPForm`      | Thrown `onSubmit` always renders the inline error banner and calls `console.error` | Consumers that report errors via toast cannot opt out            | Open      |
+| 4   | `IGRPInputText` | `...props` is spread **after** `onChange: field.onChange`                          | A caller `onChange` silently disconnects the field from the form | **Fixed** |
+| 5   | `IGRPInputText` | `type` is typed as `"text" \| "email" \| "number"`                                 | `type="url"`, `"tel"`, `"password"`, `"search"` do not typecheck | Open      |
+| 6   | `IGRPFormField` | `control` is required, typed as `Control<FieldValues>`                             | Redundant inside `IGRPForm`; forces a cast from typed forms      | Open      |
 
 Items 1 and 4 were the ones blocking adoption on real forms. Item 4 is fixed
 in beta.10; item 1 is still the blocker. The rest are quality-of-life.
@@ -59,7 +59,14 @@ assigns the handle inside `useEffect`:
 
 ```js
 useEffect(() => {
-  const handle = { ...form, submit, reset, setGlobalError, clearGlobalError, isSubmitting };
+  const handle = {
+    ...form,
+    submit,
+    reset,
+    setGlobalError,
+    clearGlobalError,
+    isSubmitting,
+  };
   if (formRef) formRef.current = handle;
   internalFormRef.current = handle;
 }, [form, submitForm, setGlobalError, clearGlobalError, isSubmitting, formRef]);
@@ -160,7 +167,7 @@ change. Nothing warns about this.
 <IGRPInputText
   name="code"
   onChange={(e) => e.target.value.toUpperCase()} // form value never updates
-/>
+/>;
 ```
 
 This is the single most surprising behaviour we hit. The same spread order

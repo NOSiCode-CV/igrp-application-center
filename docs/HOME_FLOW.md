@@ -20,18 +20,18 @@ How `src/app/(igrp)/(home)` works: the authenticated landing experience (app lau
 
 Every screen reachable under `(home)`, its route, and its real build status (not just "does the file exist" — whether it renders real data or a placeholder):
 
-| # | Page | Route | Status |
-| --- | --- | --- | --- |
-| 1 | Dashboard — Home & Apps tab | `/` | ✅ Live — real app/user data |
-| 2 | Dashboard — My Tasks Workspace tab | `/` (tab, no URL change) | ⚠️ UI-complete, **mock data only** |
-| 3 | Profile | `/profile` | ✅ Live |
-| 4 | Settings hub | `/settings` | ✅ Live (static card grid) |
-| 5 | Applications — list | `/settings/applications` | ✅ Live |
-| 6 | Applications — detail | `/settings/applications/[code]` | ✅ Live |
-| 7 | Departments — tree | `/settings/departments` | ✅ Live |
-| 8 | Users — list + invitations | `/settings/users` | ✅ Live |
-| 9 | Users — detail | `/settings/users/[id]` | ✅ Live |
-| 10 | Customização (theming) | `/settings/theme` | ❌ **Does not exist** — linked from the settings hub card but no route is implemented; navigating there 404s |
+| #   | Page                               | Route                           | Status                                                                                                       |
+| --- | ---------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| 1   | Dashboard — Home & Apps tab        | `/`                             | ✅ Live — real app/user data                                                                                 |
+| 2   | Dashboard — My Tasks Workspace tab | `/` (tab, no URL change)        | ⚠️ UI-complete, **mock data only**                                                                           |
+| 3   | Profile                            | `/profile`                      | ✅ Live                                                                                                      |
+| 4   | Settings hub                       | `/settings`                     | ✅ Live (static card grid)                                                                                   |
+| 5   | Applications — list                | `/settings/applications`        | ✅ Live                                                                                                      |
+| 6   | Applications — detail              | `/settings/applications/[code]` | ✅ Live                                                                                                      |
+| 7   | Departments — tree                 | `/settings/departments`         | ✅ Live                                                                                                      |
+| 8   | Users — list + invitations         | `/settings/users`               | ✅ Live                                                                                                      |
+| 9   | Users — detail                     | `/settings/users/[id]`          | ✅ Live                                                                                                      |
+| 10  | Customização (theming)             | `/settings/theme`               | ❌ **Does not exist** — linked from the settings hub card but no route is implemented; navigating there 404s |
 
 There is no dedicated URL for the Tasks tab — it's client-side state (`activeTab`) inside `EnterpriseWorkspace`, not a route, so it can't be deep-linked or bookmarked as-is.
 
@@ -144,10 +144,10 @@ Both read `computeTaskStats()` from [`lib/task-utils.ts`](../src/features/worksp
 
 This is the most important thing to know before changing anything here:
 
-| Data | Source | Real or mock? |
-| --- | --- | --- |
-| Current user, active role, roles, departments | `src/actions/user.ts` → Access Management SDK | **Real** |
-| Applications, favorites, recent applications | `src/actions/user.ts` (`getCurrentUserApplications`, `*FavoriteApplications`, `*RecentApplications`) | **Real** |
+| Data                                                                | Source                                                                                                   | Real or mock?                                                                          |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Current user, active role, roles, departments                       | `src/actions/user.ts` → Access Management SDK                                                            | **Real**                                                                               |
+| Applications, favorites, recent applications                        | `src/actions/user.ts` (`getCurrentUserApplications`, `*FavoriteApplications`, `*RecentApplications`)     | **Real**                                                                               |
 | Tasks (assigned/candidate/created/completed, due dates, priorities) | `src/features/workspace/data/mock-tasks.ts` → `defaultTasks`, consumed directly by `EnterpriseWorkspace` | **Mock, hardcoded** — no `use-tasks.ts` hook, no server action, no SDK call exists yet |
 
 The task-management side of the dashboard is a UI-complete prototype: the tab counts, filters, sidebar stats, and due-date logic all work against static seed data. Wiring it to a real backend means introducing a `tasks` feature module (server action + `use-tasks.ts` React Query hook) and swapping `defaultTasks` in `EnterpriseWorkspace` for that hook's data — the component tree underneath (`TaskList`, `TaskRow`, `WorkSummarySidebar`) already expects `Task[]` and needs no shape changes.

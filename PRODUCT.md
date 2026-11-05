@@ -8,7 +8,7 @@ product
 
 **Primary: government staff launching applications.** They sign in to find and
 open the applications their role and department grant them, and then they leave.
-Most are occasional users — they are passing *through* this product on the way to
+Most are occasional users — they are passing _through_ this product on the way to
 the one they actually came to work in. They are not power users of this screen and
 should never need to learn it.
 
@@ -18,7 +18,7 @@ more often than staff do, but they are the minority audience and their needs do
 not get to shape the launcher.
 
 Context of use: a work machine, during the working day, usually with a specific
-application already in mind. The job to be done is *"open the thing I need"* —
+application already in mind. The job to be done is _"open the thing I need"_ —
 browsing is the fallback, not the goal.
 
 ## Product Purpose
@@ -31,7 +31,7 @@ Success looks like:
 
 - A member of staff finds and opens the right application in seconds, without
   asking a colleague or the service desk.
-- A user who *cannot* see an application understands why, and knows who to ask.
+- A user who _cannot_ see an application understands why, and knows who to ask.
 - An administrator can grant or revoke access without raising a ticket.
 
 Failure looks like: the service desk receiving "I can't find X" or "is the system

@@ -1,6 +1,6 @@
 # Application Center — Guia de Negócio
 
-*English version: [BUSINESS_GUIDE.en.md](BUSINESS_GUIDE.en.md)*
+_English version: [BUSINESS_GUIDE.en.md](BUSINESS_GUIDE.en.md)_
 
 Este guia explica **para que serve o Application Center e como funciona do ponto de vista de quem o utiliza** — não como foi construído tecnicamente. Para documentação técnica, consulte [README.md](../README.md) e [AGENTS.md](../AGENTS.md).
 
@@ -27,14 +27,14 @@ flowchart LR
 
 ## 2. O Painel Principal (Home)
 
-O painel principal é a primeira coisa que vê depois de iniciar sessão. Está construído à volta de três ideias: *o que é relevante para mim*, *o que uso com frequência* e *o que marquei como importante*.
+O painel principal é a primeira coisa que vê depois de iniciar sessão. Está construído à volta de três ideias: _o que é relevante para mim_, _o que uso com frequência_ e _o que marquei como importante_.
 
 - **Saudação pessoal** — uma saudação de acordo com a hora do dia e, quando pertence a mais do que um departamento/função, uma indicação de qual está atualmente ativo.
 - **Aplicações recentes** — as aplicações que abriu recentemente aparecem automaticamente, sem precisar de as procurar de novo.
 - **Favoritos** — pode marcar qualquer aplicação com uma estrela para a fixar num painel dedicado de "Favoritos", sempre visível ao lado do painel principal.
 - **Todas as aplicações** — todas as aplicações a que tem acesso, filtráveis por tipo (**Interna**, aplicações que vivem dentro do ecossistema IGRP, ou **Externa**, aplicações que abrem no seu próprio site) e por departamento, através de filtros rápidos.
 - **Pesquisa** — uma caixa de pesquisa em estilo de paleta de comandos (ou o atalho ⌘K / Ctrl+K) para ir diretamente a uma aplicação pelo nome.
-- **Função e departamento ativos** — se tiver funções em mais do que um departamento, apenas um está "ativo" de cada vez. As aplicações e menus que vê baseiam-se sempre na sua função/departamento *ativo*, e não em tudo a que tem direito no total. Para mudar o que vê, muda o seu contexto ativo.
+- **Função e departamento ativos** — se tiver funções em mais do que um departamento, apenas um está "ativo" de cada vez. As aplicações e menus que vê baseiam-se sempre na sua função/departamento _ativo_, e não em tudo a que tem direito no total. Para mudar o que vê, muda o seu contexto ativo.
 
 Só vê aplicações que estejam simultaneamente **ativas** (não desativadas por um administrador) e **associadas a um departamento onde detém uma função ativa**.
 
@@ -75,21 +75,21 @@ erDiagram
     UTILIZADOR ||--o{ FUNCAO : "detém, por departamento"
 ```
 
-*(Leia-se: um departamento define as suas próprias funções e decide que aplicações concede; cada aplicação tem menus, e uma função só vê um menu depois de lhe ser concedido esse menu específico.)*
+_(Leia-se: um departamento define as suas próprias funções e decide que aplicações concede; cada aplicação tem menus, e uma função só vê um menu depois de lhe ser concedido esse menu específico.)_
 
 ### 4.1 Aplicações
 
 Uma aplicação é qualquer sistema registado no portal, interno ou externo. Para cada aplicação, os administradores definem:
 
-| Campo | Regra |
-|---|---|
-| Código | Apenas letras maiúsculas, números e underscores (ex.: `EXPENSES_APP`); mínimo 2 caracteres; permanente depois de definido |
-| Nome | 2 a 255 caracteres |
-| Tipo | **Interna** ou **Externa** — escolhido na criação e nunca alterado depois |
-| Slug *(apenas Interna)* | O caminho relativo usado para navegar até à aplicação dentro do IGRP — obrigatório para aplicações Internas |
-| URL *(apenas Externa)* | O endereço web completo que a aplicação abre — obrigatório para aplicações Externas |
-| Estado | **Ativa** (visível para quem tem direito) ou **Inativa** (escondida para todos). Eliminar uma aplicação é uma ação separada e irreversível que a remove por completo de todas as listas — não é o mesmo que marcá-la como Inativa. |
-| Descrição, imagem, proprietário | Informação adicional opcional |
+| Campo                           | Regra                                                                                                                                                                                                                              |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Código                          | Apenas letras maiúsculas, números e underscores (ex.: `EXPENSES_APP`); mínimo 2 caracteres; permanente depois de definido                                                                                                          |
+| Nome                            | 2 a 255 caracteres                                                                                                                                                                                                                 |
+| Tipo                            | **Interna** ou **Externa** — escolhido na criação e nunca alterado depois                                                                                                                                                          |
+| Slug _(apenas Interna)_         | O caminho relativo usado para navegar até à aplicação dentro do IGRP — obrigatório para aplicações Internas                                                                                                                        |
+| URL _(apenas Externa)_          | O endereço web completo que a aplicação abre — obrigatório para aplicações Externas                                                                                                                                                |
+| Estado                          | **Ativa** (visível para quem tem direito) ou **Inativa** (escondida para todos). Eliminar uma aplicação é uma ação separada e irreversível que a remove por completo de todas as listas — não é o mesmo que marcá-la como Inativa. |
+| Descrição, imagem, proprietário | Informação adicional opcional                                                                                                                                                                                                      |
 
 Além do registo básico, os administradores:
 
@@ -99,12 +99,12 @@ Além do registo básico, os administradores:
 
 **A estrutura de menus em detalhe.** Um menu não é apenas uma lista simples — cada entrada tem um tipo que determina o seu comportamento:
 
-| Tipo de menu | O que é | Pode estar dentro de um Grupo/Pasta? |
-|---|---|---|
-| **Grupo (Group)** | Um cabeçalho de topo que organiza os menus por baixo dele | Não — está sempre no topo |
-| **Pasta (Folder)** | Uma subsecção que pode ser recolhida | Sim, opcional |
-| **Página (Page)** | Um ecrã real dentro da aplicação | Sim, opcional |
-| **Ligação Externa (External Link)** | Uma ligação que sai da aplicação, sempre num novo separador | Sim, opcional |
+| Tipo de menu                        | O que é                                                     | Pode estar dentro de um Grupo/Pasta? |
+| ----------------------------------- | ----------------------------------------------------------- | ------------------------------------ |
+| **Grupo (Group)**                   | Um cabeçalho de topo que organiza os menus por baixo dele   | Não — está sempre no topo            |
+| **Pasta (Folder)**                  | Uma subsecção que pode ser recolhida                        | Sim, opcional                        |
+| **Página (Page)**                   | Um ecrã real dentro da aplicação                            | Sim, opcional                        |
+| **Ligação Externa (External Link)** | Uma ligação que sai da aplicação, sempre num novo separador | Sim, opcional                        |
 
 ```mermaid
 flowchart TD
@@ -121,13 +121,13 @@ Cada menu tem também um nome e um ícone opcional. O acesso por função — qu
 
 Um departamento representa uma unidade organizacional — uma equipa, área ou divisão. Os departamentos podem ser **aninhados** (um departamento pode ser sub-departamento de outro), refletindo a forma como a organização está realmente estruturada.
 
-| Campo | Regra |
-|---|---|
-| Código | Apenas letras maiúsculas, números e underscores; único |
-| Nome | Mínimo 2 caracteres; letras, números, caracteres acentuados, espaços e pontuação básica (`( ) & . , / -`) |
-| Descrição | Opcional |
-| Estado | **Ativo** ou **Inativo** |
-| Departamento-pai | Opcional — torna este num sub-departamento |
+| Campo            | Regra                                                                                                     |
+| ---------------- | --------------------------------------------------------------------------------------------------------- |
+| Código           | Apenas letras maiúsculas, números e underscores; único                                                    |
+| Nome             | Mínimo 2 caracteres; letras, números, caracteres acentuados, espaços e pontuação básica (`( ) & . , / -`) |
+| Descrição        | Opcional                                                                                                  |
+| Estado           | **Ativo** ou **Inativo**                                                                                  |
+| Departamento-pai | Opcional — torna este num sub-departamento                                                                |
 
 A lista de departamentos é apresentada como uma árvore expansível: os sub-departamentos aparecem indentados sob o seu pai, os departamentos inativos aparecem esbatidos, e cada departamento tem um menu de Editar / Criar Sub-departamento / Eliminar.
 
@@ -144,15 +144,15 @@ A partir da página de um departamento, os administradores também:
 - **Escolhem que aplicações** estão disponíveis para esse departamento.
 - **Definem as funções** que existem dentro desse departamento (ex.: "Gestor", "Analista"):
 
-  | Campo | Regra |
-  |---|---|
-  | Código | Mínimo 2 caracteres; único dentro do departamento |
-  | Nome | 3 a 50 caracteres |
-  | Descrição | Opcional |
+  | Campo      | Regra                                                                                                                                        |
+  | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Código     | Mínimo 2 caracteres; único dentro do departamento                                                                                            |
+  | Nome       | 3 a 50 caracteres                                                                                                                            |
+  | Descrição  | Opcional                                                                                                                                     |
   | Função-pai | Opcional — agrupa funções na lista para facilitar a leitura; **não** transmite automaticamente o acesso a menus nem permissões da função-pai |
-  | Estado | **Ativo** ou **Inativo** |
+  | Estado     | **Ativo** ou **Inativo**                                                                                                                     |
 
-- **Atribuem permissões a funções.** Uma permissão é uma capacidade curta e específica (identificada por um código em minúsculas, como `approve-expenses`), associada a um departamento, e atribuída a uma função — não ao departamento como um todo. É uma camada mais detalhada do que o acesso a menus: um menu decide se uma função pode *abrir* um ecrã; uma permissão pode condicionar uma *ação* específica dentro desse ecrã (por exemplo, um botão "Aprovar" que só aparece para funções com `approve-expenses`).
+- **Atribuem permissões a funções.** Uma permissão é uma capacidade curta e específica (identificada por um código em minúsculas, como `approve-expenses`), associada a um departamento, e atribuída a uma função — não ao departamento como um todo. É uma camada mais detalhada do que o acesso a menus: um menu decide se uma função pode _abrir_ um ecrã; uma permissão pode condicionar uma _ação_ específica dentro desse ecrã (por exemplo, um botão "Aprovar" que só aparece para funções com `approve-expenses`).
 
 Os departamentos, tal como as aplicações e os utilizadores, podem ser marcados como **Ativos** ou **Inativos**; departamentos inativos deixam de conceder acesso a quem quer que seja, mesmo que as atribuições de função subjacentes continuem a existir.
 
@@ -162,12 +162,12 @@ Os departamentos, tal como as aplicações e os utilizadores, podem ser marcados
 
 **Utilizadores existentes:**
 
-| Campo | Regra |
-|---|---|
-| Nome | 3 a 120 caracteres |
-| Email | Um endereço de email válido e único — usado tanto para login como para convites |
-| Estado | **Ativo** ou **Inativo** |
-| Imagem, assinatura | Opcional |
+| Campo              | Regra                                                                           |
+| ------------------ | ------------------------------------------------------------------------------- |
+| Nome               | 3 a 120 caracteres                                                              |
+| Email              | Um endereço de email válido e único — usado tanto para login como para convites |
+| Estado             | **Ativo** ou **Inativo**                                                        |
+| Imagem, assinatura | Opcional                                                                        |
 
 - Pesquisar e consultar a lista completa de utilizadores registados.
 - Alternar o estado de um utilizador entre **Ativo** (pode iniciar sessão) e **Inativo** (login bloqueado, sem apagar o seu histórico).
@@ -239,12 +239,12 @@ Para ver todas as peças a funcionar em conjunto, aqui está uma configuração 
 
 6. **Conceder acesso a menus por função:**
 
-   | Menu | Gestor | Analista |
-   |---|:---:|:---:|
-   | Visão Geral | ✅ | ✅ |
-   | Aprovações | ✅ | ❌ |
-   | Relatórios | ✅ | ✅ |
-   | Política de Despesas | ✅ | ✅ |
+   | Menu                 | Gestor | Analista |
+   | -------------------- | :----: | :------: |
+   | Visão Geral          |   ✅   |    ✅    |
+   | Aprovações           |   ✅   |    ❌    |
+   | Relatórios           |   ✅   |    ✅    |
+   | Política de Despesas |   ✅   |    ✅    |
 
 7. **Conceder uma permissão detalhada** — `approve-expenses` (associada ao Financeiro) é concedida apenas à função Gestor. Controla o botão "Aprovar" dentro da página de Aprovações, independentemente de quem pode simplesmente abrir essa página.
 8. **Convidar uma nova colaboradora** — `maria@example.com` é convidada, pré-selecionando o departamento Financeiro e a função Analista. Maria aceita, seguindo o fluxo em [4.3 Utilizadores](#43-utilizadores).
@@ -288,21 +288,21 @@ flowchart LR
 - **"Porque é que esta pessoa não vê a aplicação X?"** → Verificar se detém uma função ativa num departamento a que essa aplicação está associada, e se essa função tem acesso concedido aos menus relevantes.
 - **"Como dou acesso desta equipa a uma nova aplicação?"** → Associar a aplicação ao departamento da equipa e garantir que as suas funções têm acesso concedido aos menus dessa aplicação.
 
-Desativar qualquer elo dessa cadeia (o utilizador, a sua função, o departamento, a aplicação, ou a atribuição do menu) remove o acesso sem ser necessário tocar em mais nada. O acesso a menus e as permissões são duas camadas separadas, no entanto (ver [4.2 Departamentos](#42-departamentos)) — uma função pode perder a capacidade de *abrir* um ecrã sem necessariamente perder as *permissões* mais detalhadas que detém, e vice-versa.
+Desativar qualquer elo dessa cadeia (o utilizador, a sua função, o departamento, a aplicação, ou a atribuição do menu) remove o acesso sem ser necessário tocar em mais nada. O acesso a menus e as permissões são duas camadas separadas, no entanto (ver [4.2 Departamentos](#42-departamentos)) — uma função pode perder a capacidade de _abrir_ um ecrã sem necessariamente perder as _permissões_ mais detalhadas que detém, e vice-versa.
 
 ## 7. Glossário
 
-| Termo | Significado |
-|---|---|
-| **Aplicação** | Um sistema registado no portal — interna (dentro do IGRP) ou externa (site próprio) |
-| **Departamento** | Uma unidade organizacional; pode ter sub-departamentos |
-| **Função (Role)** | Um nível de acesso nomeado, definido dentro de exatamente um departamento (ex.: "Gestor") |
-| **Menu** | Uma entrada de navegação dentro de uma aplicação. Tipos: **Grupo** (cabeçalho de topo), **Pasta** (subsecção recolhível), **Página** (um ecrã real), **Ligação Externa** (abre fora da aplicação, num novo separador). O acesso é concedido por função, por departamento. |
-| **Permissão** | Uma capacidade detalhada, associada a um departamento (ex.: `approve-expenses`), atribuída a uma função, que condiciona uma ação específica para além da simples visibilidade de menus |
-| **Função/departamento ativo** | O contexto de departamento+função atualmente a determinar o que um utilizador vê, quando detém mais do que um |
-| **Data de expiração** | Uma data de fim opcional numa atribuição de função, após a qual esse acesso é automaticamente revogado |
-| **Estado: Ativo** | Visível e utilizável por quem tem direito |
-| **Estado: Inativo** | Escondido/desativado, mantido para registo, não concede acesso |
-| **Estado: Pendente** | Um convite enviado mas ainda não aceite, rejeitado ou cancelado |
-| **Favoritos** | Aplicações que um utilizador fixou manualmente para acesso rápido no seu painel |
-| **Recentes** | Aplicações que um utilizador abriu recentemente, registadas automaticamente |
+| Termo                         | Significado                                                                                                                                                                                                                                                               |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Aplicação**                 | Um sistema registado no portal — interna (dentro do IGRP) ou externa (site próprio)                                                                                                                                                                                       |
+| **Departamento**              | Uma unidade organizacional; pode ter sub-departamentos                                                                                                                                                                                                                    |
+| **Função (Role)**             | Um nível de acesso nomeado, definido dentro de exatamente um departamento (ex.: "Gestor")                                                                                                                                                                                 |
+| **Menu**                      | Uma entrada de navegação dentro de uma aplicação. Tipos: **Grupo** (cabeçalho de topo), **Pasta** (subsecção recolhível), **Página** (um ecrã real), **Ligação Externa** (abre fora da aplicação, num novo separador). O acesso é concedido por função, por departamento. |
+| **Permissão**                 | Uma capacidade detalhada, associada a um departamento (ex.: `approve-expenses`), atribuída a uma função, que condiciona uma ação específica para além da simples visibilidade de menus                                                                                    |
+| **Função/departamento ativo** | O contexto de departamento+função atualmente a determinar o que um utilizador vê, quando detém mais do que um                                                                                                                                                             |
+| **Data de expiração**         | Uma data de fim opcional numa atribuição de função, após a qual esse acesso é automaticamente revogado                                                                                                                                                                    |
+| **Estado: Ativo**             | Visível e utilizável por quem tem direito                                                                                                                                                                                                                                 |
+| **Estado: Inativo**           | Escondido/desativado, mantido para registo, não concede acesso                                                                                                                                                                                                            |
+| **Estado: Pendente**          | Um convite enviado mas ainda não aceite, rejeitado ou cancelado                                                                                                                                                                                                           |
+| **Favoritos**                 | Aplicações que um utilizador fixou manualmente para acesso rápido no seu painel                                                                                                                                                                                           |
+| **Recentes**                  | Aplicações que um utilizador abriu recentemente, registadas automaticamente                                                                                                                                                                                               |

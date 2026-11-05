@@ -26,20 +26,20 @@ Single entry point for working in the **IGRP Applications Center** codebase. It 
 
 ## 2. Tech stack
 
-| Layer | Technology |
-| --- | --- |
-| Framework | Next.js 15 (App Router, Turbopack), React 19 |
-| Language | TypeScript 5, strict, `typedRoutes: true` |
-| Auth | NextAuth v4 via `@igrp/framework-next-auth` (`withIGRPAuth`) |
-| Authorization | IGRP access-token claims (`@igrp/framework-next` / `@igrp/framework-next-ui`) |
-| UI | `@igrp/igrp-framework-react-design-system` (shadcn-based) + Tailwind CSS v4 |
-| Forms | `react-hook-form` + `@hookform/resolvers` + Zod v4 |
-| Server state | `@tanstack/react-query` v5 over server actions |
-| Tables | `@tanstack/react-table` v8 (via `IGRPDataTable`) |
-| Drag & drop | `@dnd-kit/*` |
-| Lint/format | Biome 2.5 |
-| Tests | Vitest 4 + `@testing-library/react` |
-| Package manager | pnpm, Node ≥ 22 |
+| Layer           | Technology                                                                    |
+| --------------- | ----------------------------------------------------------------------------- |
+| Framework       | Next.js 15 (App Router, Turbopack), React 19                                  |
+| Language        | TypeScript 5, strict, `typedRoutes: true`                                     |
+| Auth            | NextAuth v4 via `@igrp/framework-next-auth` (`withIGRPAuth`)                  |
+| Authorization   | IGRP access-token claims (`@igrp/framework-next` / `@igrp/framework-next-ui`) |
+| UI              | `@igrp/igrp-framework-react-design-system` (shadcn-based) + Tailwind CSS v4   |
+| Forms           | `react-hook-form` + `@hookform/resolvers` + Zod v4                            |
+| Server state    | `@tanstack/react-query` v5 over server actions                                |
+| Tables          | `@tanstack/react-table` v8 (via `IGRPDataTable`)                              |
+| Drag & drop     | `@dnd-kit/*`                                                                  |
+| Lint/format     | Biome 2.5                                                                     |
+| Tests           | Vitest 4 + `@testing-library/react`                                           |
+| Package manager | pnpm, Node ≥ 22                                                               |
 
 ## 3. Getting started
 
@@ -111,11 +111,11 @@ These are two separate concerns — don't conflate them:
 - **Authentication** (is there a valid session?) — `src/lib/auth.ts` exports one `auth = withIGRPAuth(...)` instance used by the NextAuth route handler, the middleware, and `serverSession()`/`getSession()`. Provider is chosen via `AUTH_PROVIDER` (`igrp-auth` | `keycloak` | `autentika` | `none`). Full flow, the `callbackUrl` sanitization rule, and preview-mode bypass: [docs/AUTHENTICATION.md](AUTHENTICATION.md).
 - **Authorization** (what can this user see/do?) — reads claims baked into the IGRP access token (department `org`, `selectedRole`, `permissions`, `is_super_admin`) with **zero extra network calls**. The Access Management API is still the real enforcement on every data call — token-claims gates only shape what renders. Three gates, by scope:
 
-  | Scope | API | Strength |
-  | --- | --- | --- |
-  | Page | `await igrpAssertAuthorize("perm")` (server) | Enforced — 403 via `forbidden()` |
-  | Component | `<IGRPAuthorization permission="perm">` / `usePermissions()` (client) | Cosmetic — hide/show/disable |
-  | Server action | `igrpAuthorize("perm")` inside the action | Enforced (backed by the AM API) |
+  | Scope         | API                                                                   | Strength                         |
+  | ------------- | --------------------------------------------------------------------- | -------------------------------- |
+  | Page          | `await igrpAssertAuthorize("perm")` (server)                          | Enforced — 403 via `forbidden()` |
+  | Component     | `<IGRPAuthorization permission="perm">` / `usePermissions()` (client) | Cosmetic — hide/show/disable     |
+  | Server action | `igrpAuthorize("perm")` inside the action                             | Enforced (backed by the AM API)  |
 
   **There is no default-deny** — a forgotten `igrpAssertAuthorize` leaves a page open to anyone with a valid session. Full model, claim shape, and the per-page checklist: [docs/PERMISSIONS.md](PERMISSIONS.md).
 
@@ -126,12 +126,12 @@ These are two separate concerns — don't conflate them:
 
 `src/features/<domain>/` is the unit of organization: `applications`, `departments`, `files`, `menus`, `permissions`, `profile`, `roles`, `settings`, `users`, `workspace`. A typical module contains:
 
-| File | Purpose |
-| --- | --- |
-| `*-schemas.ts` | Zod schemas — the source of truth for both form validation and API shapes |
-| `use-<domain>.ts` | React Query hooks wrapping server actions |
-| `components/` | Feature-specific UI |
-| `*-utils.ts` / `*-mapper.ts` / `*-constants.ts` | Optional helpers |
+| File                                            | Purpose                                                                   |
+| ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `*-schemas.ts`                                  | Zod schemas — the source of truth for both form validation and API shapes |
+| `use-<domain>.ts`                               | React Query hooks wrapping server actions                                 |
+| `components/`                                   | Feature-specific UI                                                       |
+| `*-utils.ts` / `*-mapper.ts` / `*-constants.ts` | Optional helpers                                                          |
 
 Not every module has all of these — `menus`, `permissions`, `profile`, and `settings` are component-only or reuse another domain's hooks (`profile` reuses `use-users.ts`). That's by design, not an inconsistency to fix.
 
@@ -154,11 +154,11 @@ UI component
 
 **This is load-bearing — read before writing any UI.** `@igrp/igrp-framework-react-design-system` is a **shadcn-based** design system, not a bespoke kit. It ships three layers:
 
-| Layer | What it is | Example |
-| --- | --- | --- |
-| `primitives/` | Vanilla shadcn components (Radix + CVA + tailwind-merge/clsx + cmdk + sonner + vaul + lucide-react) | `Button`, `Card`, `Input` |
-| `horizon/` | IGRP-branded wrappers — **prefer these** | `IGRPButton`, `IGRPInputText`, `IGRPForm`, `IGRPFormField`, `IGRPDataTable`, `IGRPCard`, `IGRPModalDialog`, `IGRPSelect`, `IGRPBadge` |
-| `custom/` | Domain composites | `IGRPStatusBanner`, `IGRPStatsCardTopBorderColored`, `IGRPUserAvatar` |
+| Layer         | What it is                                                                                          | Example                                                                                                                               |
+| ------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `primitives/` | Vanilla shadcn components (Radix + CVA + tailwind-merge/clsx + cmdk + sonner + vaul + lucide-react) | `Button`, `Card`, `Input`                                                                                                             |
+| `horizon/`    | IGRP-branded wrappers — **prefer these**                                                            | `IGRPButton`, `IGRPInputText`, `IGRPForm`, `IGRPFormField`, `IGRPDataTable`, `IGRPCard`, `IGRPModalDialog`, `IGRPSelect`, `IGRPBadge` |
+| `custom/`     | Domain composites                                                                                   | `IGRPStatusBanner`, `IGRPStatsCardTopBorderColored`, `IGRPUserAvatar`                                                                 |
 
 Everything imports from the published package `@igrp/igrp-framework-react-design-system` — **there is no local design-system folder to edit**. Because it's shadcn underneath, shadcn conventions apply directly to all UI in this repo, and `pnpm check:ui` enforces the strict subset in CI (blocking merges):
 
@@ -237,18 +237,18 @@ Errors are typed, not ad hoc:
 
 ## 15. Where to look next
 
-| Doc | Read it when |
-| --- | --- |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | You need the exact layer-by-layer request flow |
-| [AUTHENTICATION.md](AUTHENTICATION.md) | Touching login, logout, session, or preview-mode bypass |
-| [PERMISSIONS.md](PERMISSIONS.md) | Adding a gated page, button, or server action |
-| [ACCESS_MANAGEMENT.md](ACCESS_MANAGEMENT.md) | Changing menus, app metadata, or resource sync |
-| [ENVIRONMENT.md](ENVIRONMENT.md) | Adding/changing an env var, or debugging a login loop |
-| [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Writing UI — component catalogue and copy-paste patterns |
-| [TOKENS.md](TOKENS.md) | Theming — full CSS variable reference |
-| [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) | Upgrading the IGRP framework version |
-| [DOCKER-RUN.md](DOCKER-RUN.md) | Building/running the production container |
-| [../AGENTS.md](../AGENTS.md) | The authoritative "how it works" reference (this guide's source) |
-| [../README.md](../README.md) | Quick-start, scripts, env var tables (the "what exists" shallow view) |
+| Doc                                          | Read it when                                                          |
+| -------------------------------------------- | --------------------------------------------------------------------- |
+| [ARCHITECTURE.md](ARCHITECTURE.md)           | You need the exact layer-by-layer request flow                        |
+| [AUTHENTICATION.md](AUTHENTICATION.md)       | Touching login, logout, session, or preview-mode bypass               |
+| [PERMISSIONS.md](PERMISSIONS.md)             | Adding a gated page, button, or server action                         |
+| [ACCESS_MANAGEMENT.md](ACCESS_MANAGEMENT.md) | Changing menus, app metadata, or resource sync                        |
+| [ENVIRONMENT.md](ENVIRONMENT.md)             | Adding/changing an env var, or debugging a login loop                 |
+| [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md)         | Writing UI — component catalogue and copy-paste patterns              |
+| [TOKENS.md](TOKENS.md)                       | Theming — full CSS variable reference                                 |
+| [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)     | Upgrading the IGRP framework version                                  |
+| [DOCKER-RUN.md](DOCKER-RUN.md)               | Building/running the production container                             |
+| [../AGENTS.md](../AGENTS.md)                 | The authoritative "how it works" reference (this guide's source)      |
+| [../README.md](../README.md)                 | Quick-start, scripts, env var tables (the "what exists" shallow view) |
 
-Maintenance rule (from `AGENTS.md`): README describes *what exists*, `AGENTS.md` describes *how it works*, this guide is the onboarding map between the two. When you add a feature module, route group, or env var, update `AGENTS.md`/`README.md` per their existing maintenance rules — then skim this guide for anything it says that just went stale.
+Maintenance rule (from `AGENTS.md`): README describes _what exists_, `AGENTS.md` describes _how it works_, this guide is the onboarding map between the two. When you add a feature module, route group, or env var, update `AGENTS.md`/`README.md` per their existing maintenance rules — then skim this guide for anything it says that just went stale.

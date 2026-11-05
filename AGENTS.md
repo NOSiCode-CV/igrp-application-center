@@ -8,12 +8,12 @@ Read this file first, then follow the pointers below into `docs/` for the area y
 
 Run before claiming work is done. `pnpm` only (Node >= 22); the full script list is in `package.json`.
 
-| Command | Why it matters |
-| --- | --- |
-| `pnpm check:ui` | **Blocks merges.** Enforces the design-system rules below on `src/**/*.tsx`. |
-| `pnpm typecheck` | `typedRoutes` + `typedEnv` are on, so route strings and env reads are type-checked. |
-| `pnpm test` | Vitest, single run. |
-| `pnpm lint` | `biome check --write` — **mutates files**. Run it before staging, then re-check your diff. |
+| Command          | Why it matters                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| `pnpm check:ui`  | **Blocks merges.** Enforces the design-system rules below on `src/**/*.tsx`.               |
+| `pnpm typecheck` | `typedRoutes` + `typedEnv` are on, so route strings and env reads are type-checked.        |
+| `pnpm test`      | Vitest, single run.                                                                        |
+| `pnpm lint`      | `biome check --write` — **mutates files**. Run it before staging, then re-check your diff. |
 
 CI ([.gitlab-ci.yml](.gitlab-ci.yml)) runs `check-ui` as blocking and a `validate` job (`lint`, `typecheck`, `test`) as advisory (`allow_failure: true`) while pre-existing debt is cleared. Advisory is not permission to add debt — leave `validate` no worse than you found it.
 
@@ -65,17 +65,17 @@ Preserve the auth-bypass path when touching anything above: `isAuthBypass()` is 
 
 Consult the in-repo skills under [.claude/skills/](.claude/skills) (mirrored in `.agents/skills/`, pinned in [skills-lock.json](skills-lock.json)) before substantial work:
 
-| Skill | Use when |
-| --- | --- |
-| `shadcn` | Any UI work — its Critical Rules are this repo's UI rules. |
-| `frontend-design` | Shaping a new surface or its visual direction. |
-| `impeccable` | Auditing or polishing an existing surface. |
-| `web-design-guidelines` | Checking accessibility, responsiveness, and interaction defaults. |
-| `tanstack-query` | Writing `use-<domain>.ts` hooks, query keys, prefetch, or invalidation. |
-| `tanstack-table` | Building `IGRPDataTable` columns or custom table logic. |
-| `vercel-react-best-practices` | Tuning React 19 / Next.js rendering and performance. |
-| `vercel-composition-patterns` | Refactoring a component API or composition. |
-| `grill-me` | Stress-testing a plan before committing to it. |
+| Skill                         | Use when                                                                |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| `shadcn`                      | Any UI work — its Critical Rules are this repo's UI rules.              |
+| `frontend-design`             | Shaping a new surface or its visual direction.                          |
+| `impeccable`                  | Auditing or polishing an existing surface.                              |
+| `web-design-guidelines`       | Checking accessibility, responsiveness, and interaction defaults.       |
+| `tanstack-query`              | Writing `use-<domain>.ts` hooks, query keys, prefetch, or invalidation. |
+| `tanstack-table`              | Building `IGRPDataTable` columns or custom table logic.                 |
+| `vercel-react-best-practices` | Tuning React 19 / Next.js rendering and performance.                    |
+| `vercel-composition-patterns` | Refactoring a component API or composition.                             |
+| `grill-me`                    | Stress-testing a plan before committing to it.                          |
 
 ## Data and errors
 

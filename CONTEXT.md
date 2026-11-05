@@ -98,7 +98,7 @@ _Avoid_: Current profile, main role
 The Active Role the user was acting as when the event happened — always a Role, never a Permission, even when a code looks like a permission name.
 
 **Roles Held** (on an Audit Event; UI: "Perfis detidos"):
-Every Role the user held at the time of the event, whether active or not. Evidence of what the user *could* have acted as, kept separate from the Role they *did* act as.
+Every Role the user held at the time of the event, whether active or not. Evidence of what the user _could_ have acted as, kept separate from the Role they _did_ act as.
 _Avoid_: Roles (plural, unqualified)
 
 ### Brand

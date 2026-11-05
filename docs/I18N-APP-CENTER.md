@@ -4,14 +4,14 @@
 
 ## Model
 
-| Concept | Value |
-|---|---|
-| Platform locales | `pt`, `en`, `fr`. All three enabled. |
-| Default locale | `pt`. Its catalog (`messages/pt.json`) types every key. |
-| Format locales | `pt-CV`, `en-GB`, `fr-FR` by default; per deployment via `IGRP_FORMAT_LOCALES` (always region-qualified, e.g. `pt-PT`). Drive dates, numbers and `<html lang>`. |
-| Time zone | `IGRP_TIME_ZONE`, default `Atlantic/Cape_Verde`. Applies on server and browser. |
-| Resolution | **Session-first**: `session.user.locale` → `IGRP_LOCALE` cookie → `Accept-Language` → `pt`. |
-| Catalogs | **Complete** in all three locales. The template allows partial en/fr files; this app does not. |
+| Concept          | Value                                                                                                                                                           |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Platform locales | `pt`, `en`, `fr`. All three enabled.                                                                                                                            |
+| Default locale   | `pt`. Its catalog (`messages/pt.json`) types every key.                                                                                                         |
+| Format locales   | `pt-CV`, `en-GB`, `fr-FR` by default; per deployment via `IGRP_FORMAT_LOCALES` (always region-qualified, e.g. `pt-PT`). Drive dates, numbers and `<html lang>`. |
+| Time zone        | `IGRP_TIME_ZONE`, default `Atlantic/Cape_Verde`. Applies on server and browser.                                                                                 |
+| Resolution       | **Session-first**: `session.user.locale` → `IGRP_LOCALE` cookie → `Accept-Language` → `pt`.                                                                     |
+| Catalogs         | **Complete** in all three locales. The template allows partial en/fr files; this app does not.                                                                  |
 
 `IGRP_FORMAT_LOCALES` and `IGRP_TIME_ZONE` are read only in `src/i18n/index.ts` (see `.env.example`).
 
@@ -25,18 +25,18 @@ The template is cookie-first. The framework switches to session-first on its own
 
 ## Where each piece lives
 
-| File | Role |
-|---|---|
-| `src/i18n/index.ts` | `igrpDefineI18n(...)`: format locales, time zone, `getSessionLocale`, `persistLocale`. Server-only; middleware must not import it. |
-| `src/i18n/request.ts` | next-intl request config, registered in `next.config.ts`. |
-| `src/i18n/actions.ts` | `setLocale` server action, passed to the switchers. |
-| `src/i18n/global.d.ts` | Types `useTranslations` keys from `pt.json` plus the framework namespaces. |
-| `src/i18n/session-locale-switcher.tsx` | Switcher for pages with a session; updates the session before the page refreshes. |
-| `src/i18n/status.ts` | `useStatusLabel`, `useStatusOptions`: translated labels for API status codes (`common.status.*`). |
-| `src/i18n/server-error.ts` | Translated toast and in-page errors from server action results. |
-| `src/i18n/time-zone.ts` | Validates `IGRP_TIME_ZONE`; an invalid value logs a warning and falls back to the default. |
-| `src/i18n/messages/{pt,en,fr}.json` | Catalogs. One top-level camelCase namespace per feature, nested camelCase keys, ICU. |
-| `src/middleware.ts` | `igrpSyncLocaleCookie(..., token.locale, { resolution: "session-first" })`. |
+| File                                   | Role                                                                                                                               |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `src/i18n/index.ts`                    | `igrpDefineI18n(...)`: format locales, time zone, `getSessionLocale`, `persistLocale`. Server-only; middleware must not import it. |
+| `src/i18n/request.ts`                  | next-intl request config, registered in `next.config.ts`.                                                                          |
+| `src/i18n/actions.ts`                  | `setLocale` server action, passed to the switchers.                                                                                |
+| `src/i18n/global.d.ts`                 | Types `useTranslations` keys from `pt.json` plus the framework namespaces.                                                         |
+| `src/i18n/session-locale-switcher.tsx` | Switcher for pages with a session; updates the session before the page refreshes.                                                  |
+| `src/i18n/status.ts`                   | `useStatusLabel`, `useStatusOptions`: translated labels for API status codes (`common.status.*`).                                  |
+| `src/i18n/server-error.ts`             | Translated toast and in-page errors from server action results.                                                                    |
+| `src/i18n/time-zone.ts`                | Validates `IGRP_TIME_ZONE`; an invalid value logs a warning and falls back to the default.                                         |
+| `src/i18n/messages/{pt,en,fr}.json`    | Catalogs. One top-level camelCase namespace per feature, nested camelCase keys, ICU.                                               |
+| `src/middleware.ts`                    | `igrpSyncLocaleCookie(..., token.locale, { resolution: "session-first" })`.                                                        |
 
 ## Changing the language
 
