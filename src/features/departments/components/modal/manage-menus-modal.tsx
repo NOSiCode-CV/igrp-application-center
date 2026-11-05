@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { igrpCompare } from "@igrp/framework-next/i18n";
 import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
@@ -264,21 +264,19 @@ export function ManageMenusModal({
     return buildMenuTree(filteredMenus);
   }, [filteredMenus]);
 
-  const MenuTreeItem = ({
-    menu,
+  // A render function, not a nested component: a component defined here would
+  // get a new identity each render and remount its whole subtree.
+  const renderMenuTreeItem = (
+    menu: MenuWithChildren,
     level = 0,
-    ancestorCodes,
-  }: {
-    menu: MenuWithChildren;
-    level?: number;
-    ancestorCodes?: ReadonlySet<string>;
-  }) => {
+    ancestorCodes?: ReadonlySet<string>,
+  ) => {
     const hasChildren = menu.children && menu.children.length > 0;
     const isExpanded = expandedMenus.has(menu.code);
     const isAssigned = menu.isAssigned || false;
 
     return (
-      <>
+      <Fragment key={menu.code}>
         <div
           className={cn(
             "group relative rounded-lg border transition-all duration-200",
@@ -399,18 +397,17 @@ export function ManageMenusModal({
             {menu.children?.map((child) =>
               // Skip any child already in the render path — guards against a
               // malformed cycle causing infinite recursion.
-              ancestorCodes?.has(child.code) ? null : (
-                <MenuTreeItem
-                  key={child.code}
-                  menu={child}
-                  level={level + 1}
-                  ancestorCodes={new Set(ancestorCodes ?? []).add(menu.code)}
-                />
-              ),
+              ancestorCodes?.has(child.code)
+                ? null
+                : renderMenuTreeItem(
+                    child,
+                    level + 1,
+                    new Set(ancestorCodes ?? []).add(menu.code),
+                  ),
             )}
           </div>
         )}
-      </>
+      </Fragment>
     );
   };
 
@@ -506,9 +503,7 @@ export function ManageMenusModal({
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                {menuTree.map((menu) => (
-                  <MenuTreeItem key={menu.code} menu={menu} />
-                ))}
+                {menuTree.map((menu) => renderMenuTreeItem(menu))}
               </div>
             )}
           </div>

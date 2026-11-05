@@ -18,6 +18,7 @@ vi.mock("@/actions/user-sessions", () => ({
 }));
 
 function wrapperWith(client: QueryClient) {
+  // biome-ignore lint/correctness/noComponentHookFactories: built once per test, so its identity is stable across renders
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <QueryClientProvider client={client}>{children}</QueryClientProvider>

@@ -188,11 +188,14 @@ export function ManageResourcesModal({
     );
   }, [allResources, searchTerm]);
 
-  const ResourceItem = ({ resource }: { resource: ResourceWithAssignment }) => {
+  // A render function, not a nested component: a component defined here would
+  // get a new identity each render and remount every row.
+  const renderResourceItem = (resource: ResourceWithAssignment) => {
     const isAssigned = resource.isAssigned;
 
     return (
       <div
+        key={resource.id || resource.name}
         className={cn(
           "group relative rounded-lg border transition-all duration-200",
           isAssigned
@@ -359,12 +362,7 @@ export function ManageResourcesModal({
               </div>
             ) : (
               <div className="flex flex-col gap-2">
-                {filteredResources.map((resource) => (
-                  <ResourceItem
-                    key={resource.id || resource.name}
-                    resource={resource}
-                  />
-                ))}
+                {filteredResources.map(renderResourceItem)}
               </div>
             )}
           </div>
