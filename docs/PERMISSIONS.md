@@ -104,6 +104,7 @@ Worked example: [`exemplo-permissao/page.tsx`](../src/app/(igrp)/(demo)/exemplo-
 ## Gating a component (client)
 
 **Wrap (default):**
+
 ```tsx
 "use client";
 import { IGRPAuthorization } from "@igrp/framework-next-ui";
@@ -119,6 +120,7 @@ import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
 Denied → renders `fallback` (default: nothing — unmounts). `permission` accepts an array with `mode="all"` (default) or `mode="any"`.
 
 **Hook** — when you need _disable_ instead of _hide_, or several checks:
+
 ```tsx
 "use client";
 import { usePermissions } from "@igrp/framework-next-ui";
@@ -132,6 +134,7 @@ The design system stays auth-agnostic — never add a `permission` prop to a DS 
 ## Gating a server action
 
 The button is cosmetic — protect the actual operation in its server action:
+
 ```ts
 "use server";
 import { igrpAuthorize } from "@igrp/framework-next";

@@ -1,6 +1,39 @@
+# Dependencies and build output (these caused the ~900MB context)
 node_modules
 .next
+out
 build
-*.log
-.env/*
-!env/.env.development
+coverage
+.turbo
+
+# Git and editor
+.git
+.gitattributes
+.vscode
+.idea
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local secrets — do NOT send the root .env into the image
+.env
+.env.*
+!.env.example
+# Holds server secrets and is not used by the build
+env/.env-build
+
+# Agent / local tooling (not needed to build)
+.claude
+.agents
+.cursor
+.worktrees
+.superpowers
+docs
+
+# Generated TS
+*.tsbuildinfo
+next-env.d.ts
