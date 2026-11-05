@@ -3318,6 +3318,26 @@
       "fileHashes": {
         "package.json": "9bf766fa22faf8e1"
       }
+    },
+    {
+      "id": "80-resync-framework-next-beta19",
+      "appliedAt": "2026-11-05T15:38:21.087Z",
+      "cliVersion": "0.2.0-beta.21",
+      "manifestHash": "e3a9ab4e1678a819",
+      "undo": [
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.2.0-beta.18",
+            "@igrp/framework-next-ui": "0.2.0-beta.16",
+            "@igrp/igrp-framework-react-design-system": "0.2.0-beta.12"
+          }
+        }
+      ],
+      "fileHashes": {
+        "package.json": "1cf3ffbff24824b8"
+      }
     }
   ]
 }
