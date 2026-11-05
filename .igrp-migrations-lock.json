@@ -3268,6 +3268,56 @@
       "fileHashes": {
         "package.json": "edc62e636bc8f208"
       }
+    },
+    {
+      "id": "78-resync-framework-next-beta17",
+      "appliedAt": "2026-11-05T11:25:45.622Z",
+      "cliVersion": "0.2.0-beta.19",
+      "manifestHash": "507385be9fa2f42d",
+      "undo": [
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.2.0-beta.16",
+            "@igrp/framework-next-ui": "0.2.0-beta.14",
+            "@igrp/igrp-framework-react-design-system": "0.2.0-beta.10",
+            "next": "15.5.28",
+            "react": "19.2.8",
+            "react-dom": "19.2.8",
+            "react-hook-form": "7.90.0",
+            "@tanstack/react-query": "5.104.4",
+            "@biomejs/biome": "^2.5.15",
+            "@tailwindcss/postcss": "^4.3.3",
+            "tailwindcss": "^4.3.3",
+            "@types/react": "^19.2.18",
+            "@types/react-dom": "^19.2.7"
+          }
+        }
+      ],
+      "fileHashes": {
+        "package.json": "1f5c60aac704c165"
+      }
+    },
+    {
+      "id": "79-resync-framework-next-beta18",
+      "appliedAt": "2026-11-05T11:25:45.638Z",
+      "cliVersion": "0.2.0-beta.19",
+      "manifestHash": "7de5a191d4ebdecb",
+      "undo": [
+        {
+          "type": "deps.bump",
+          "manifest": "package.json",
+          "ranges": {
+            "@igrp/framework-next": "0.2.0-beta.17",
+            "@igrp/framework-next-ui": "0.2.0-beta.15",
+            "@igrp/igrp-framework-react-design-system": "0.2.0-beta.11"
+          }
+        }
+      ],
+      "fileHashes": {
+        "package.json": "9bf766fa22faf8e1"
+      }
     }
   ]
 }

@@ -20,7 +20,12 @@ function declarations(css, selector) {
     for (const decl of match[1].split(";")) {
       const i = decl.indexOf(":");
       const name = decl.slice(0, i).trim();
-      if (name.startsWith("--") && name !== "--radius") {
+      // --step-* only alias --primary/--success, which the Brand already sets.
+      if (
+        name.startsWith("--") &&
+        name !== "--radius" &&
+        !name.startsWith("--step-")
+      ) {
         out[name] = decl.slice(i + 1).trim();
       }
     }
