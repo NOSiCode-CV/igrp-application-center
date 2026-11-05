@@ -2,10 +2,10 @@
 
 | | |
 | --- | --- |
-| Package | `@igrp/igrp-framework-react-design-system` **0.2.0-beta.3** |
+| Package | `@igrp/igrp-framework-react-design-system` **0.2.0-beta.10** (first reported against 0.2.0-beta.3) |
 | Consumer | `@igrp/applications-center` (Next.js 15, React 19) |
-| Peer versions | `react-hook-form` 7.89.0 · `@hookform/resolvers` 5.9.1 · `zod` 4.6.5 |
-| Date | 2026-10-13 |
+| Peer versions | `react-hook-form` 7.90.0 · `@hookform/resolvers` 5.9.1 · `zod` 4.6.7 |
+| Date | 2026-10-13 (re-checked 2026-11-03) |
 | Reporter | Fidel da Luz |
 
 ## Context
@@ -28,7 +28,7 @@ API gaps that force consumers to either keep the primitive `Form` or work around
 the component.
 
 All package file references are full paths into the installed build of
-0.2.0-beta.3, as seen from the consumer:
+0.2.0-beta.10, as seen from the consumer:
 
 - `node_modules/@igrp/igrp-framework-react-design-system/dist/components/horizon/form/index.js` (+ `.d.ts`)
 - `node_modules/@igrp/igrp-framework-react-design-system/dist/components/horizon/form/form-field.d.ts`
@@ -40,17 +40,17 @@ All package file references are full paths into the installed build of
 
 ## Summary
 
-| # | Component | Issue | Impact |
-| --- | --- | --- | --- |
-| 1 | `IGRPForm` | `formRef.current` is `null` during the first render (assigned in an effect) | `watch`, `setValue`, `formState` unusable in the parent's render |
-| 2 | `IGRPForm` | No `reValidateMode` prop | Cannot do `mode: "onBlur"` + `reValidateMode: "onChange"` |
-| 3 | `IGRPForm` | Thrown `onSubmit` always renders the inline error banner and calls `console.error` | Consumers that report errors via toast cannot opt out |
-| 4 | `IGRPInputText` | `...props` is spread **after** `onChange: field.onChange` | A caller `onChange` silently disconnects the field from the form |
-| 5 | `IGRPInputText` | `type` is typed as `"text" \| "email" \| "number"` | `type="url"`, `"tel"`, `"password"`, `"search"` do not typecheck |
-| 6 | `IGRPFormField` | `control` is required, typed as `Control<FieldValues>` | Redundant inside `IGRPForm`; forces a cast from typed forms |
+| # | Component | Issue | Impact | beta.10 |
+| --- | --- | --- | --- | --- |
+| 1 | `IGRPForm` | `formRef.current` is `null` during the first render (assigned in an effect) | `watch`, `setValue`, `formState` unusable in the parent's render | Open |
+| 2 | `IGRPForm` | No `reValidateMode` prop | Cannot do `mode: "onBlur"` + `reValidateMode: "onChange"` | Open |
+| 3 | `IGRPForm` | Thrown `onSubmit` always renders the inline error banner and calls `console.error` | Consumers that report errors via toast cannot opt out | Open |
+| 4 | `IGRPInputText` | `...props` is spread **after** `onChange: field.onChange` | A caller `onChange` silently disconnects the field from the form | **Fixed** |
+| 5 | `IGRPInputText` | `type` is typed as `"text" \| "email" \| "number"` | `type="url"`, `"tel"`, `"password"`, `"search"` do not typecheck | Open |
+| 6 | `IGRPFormField` | `control` is required, typed as `Control<FieldValues>` | Redundant inside `IGRPForm`; forces a cast from typed forms | Open |
 
-Items 1 and 4 are the ones that block adoption on real forms. The rest are
-quality-of-life.
+Items 1 and 4 were the ones blocking adoption on real forms. Item 4 is fixed
+in beta.10; item 1 is still the blocker. The rest are quality-of-life.
 
 ## 1. `formRef` is populated in an effect, so it is `null` on first render
 
@@ -132,6 +132,10 @@ throw, which also disables `onError`.
 non-`undefined` return from `onError` as "handled" and skip the banner.
 
 ## 4. `IGRPInputText`: caller `onChange` replaces the form binding
+
+> **Fixed in beta.10.** `text.js` now binds
+> `onChange: igrpChainHandlers(field.onChange, onChange)` and the same for
+> `onBlur`. Kept below for the record.
 
 `node_modules/@igrp/igrp-framework-react-design-system/dist/components/horizon/input/text.js`
 renders the control as:
@@ -220,7 +224,7 @@ back to `useFormContext().control` would match how the inputs behave.
 
 ## Reproduction
 
-A minimal form showing items 1, 4 and 5 together:
+A minimal form showing items 1 and 5 (item 4 no longer reproduces on beta.10):
 
 ```tsx
 const schema = z.object({
@@ -242,7 +246,7 @@ export function Repro() {
     >
       <IGRPInputText
         name="code"
-        onChange={(e) => e.target.value.toUpperCase()} // (4) form value never updates
+        onChange={(e) => e.target.value.toUpperCase()} // (4) fixed in beta.10
       />
       <IGRPSelect
         name="type"
