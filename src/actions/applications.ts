@@ -87,13 +87,30 @@ export async function updateApplication(
 }
 
 // MENUS
+// The SDK interpolates codes into URL paths as-is: make each one a single encoded segment.
+function pathSegment(value: string): string {
+  // Non-string: a hand-crafted server-action call could pass an array or object.
+  // "." / "..": still dot segments after encoding, so fetch would resolve them.
+  // "/" "\": a proxy that decodes %2F/%5C would turn the encoded value back into a traversal.
+  // "[" "]" "|": Node's URL parser sent these raw and Tomcat rejected them (400); refusing keeps that outcome.
+  if (
+    typeof value !== "string" ||
+    value === "." ||
+    value === ".." ||
+    /[/\\[\]|]/.test(value)
+  ) {
+    throw new Error("Código inválido");
+  }
+  return encodeURIComponent(value);
+}
+
 export async function getMenus(
   code: string,
 ): Promise<ActionResult<IGRPMenuItemArgs[]>> {
   const client = await getClientAccess();
 
   try {
-    const result = await client.applications.getMenus(code);
+    const result = await client.applications.getMenus(pathSegment(code));
     const menus = mapperListMenusCRUD(result);
     return { success: true, data: menus };
   } catch (error) {
@@ -112,7 +129,10 @@ export async function createMenu(
   const client = await getClientAccess();
 
   try {
-    const result = await client.applications.createMenu(appCode, menu);
+    const result = await client.applications.createMenu(
+      pathSegment(appCode),
+      menu,
+    );
     const app = mapperMenuCRUD(result);
     return { success: true, data: app };
   } catch (error) {
@@ -130,8 +150,8 @@ export async function updateMenu(
 
   try {
     const result = await client.applications.updateMenu(
-      appCode,
-      menuCode,
+      pathSegment(appCode),
+      pathSegment(menuCode),
       updated,
     );
     const app = mapperMenuCRUD(result);
@@ -149,7 +169,10 @@ export async function deleteMenu(
   const client = await getClientAccess();
 
   try {
-    const result = await client.applications.deleteMenu(appCode, menuCode);
+    const result = await client.applications.deleteMenu(
+      pathSegment(appCode),
+      pathSegment(menuCode),
+    );
     return { success: true, data: result.data };
   } catch (error) {
     console.error("[menu-delete] Não foi possível eliminar menu:", error);
@@ -166,8 +189,8 @@ export async function removeRolesFromMenu(
   const client = await getClientAccess();
   try {
     const { data } = await client.applications.removeRolesFromMenu(
-      appCode,
-      menuCode,
+      pathSegment(appCode),
+      pathSegment(menuCode),
       departmentCode,
       roleNames,
     );
@@ -190,8 +213,8 @@ export async function addRolesToMenu(
   const client = await getClientAccess();
   try {
     const { data } = await client.applications.addRolesToMenu(
-      appCode,
-      menuCode,
+      pathSegment(appCode),
+      pathSegment(menuCode),
       departmentCode,
       roleNames,
     );

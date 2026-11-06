@@ -17,7 +17,7 @@ export async function getRoleByCode(
     return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error(
-      `[role-by-code] Não foi possível obter dado do perfil ${name}:`,
+      `[role-by-code] Não foi possível obter dado do perfil ${JSON.stringify(String(name))}:`,
       error,
     );
     return { success: false, ...toActionError(error) };
@@ -32,7 +32,7 @@ export async function getRoleById(id: number): Promise<ActionResult<RoleDTO>> {
     return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error(
-      `[role-by-id] Não foi possível obter dado do perfil ${id}:`,
+      `[role-by-id] Não foi possível obter dado do perfil ${JSON.stringify(String(id))}:`,
       error,
     );
     return { success: false, ...toActionError(error) };

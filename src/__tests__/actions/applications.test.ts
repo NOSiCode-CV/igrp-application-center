@@ -4,12 +4,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // The real SDK method returns { data: T }, so mocks must resolve to { data: ... }.
 const mockGetApplications = vi.fn();
 const mockUpdateApplication = vi.fn();
+const mockDeleteMenu = vi.fn();
 
 vi.mock("@/actions/access-client", () => ({
   getClientAccess: vi.fn(async () => ({
     applications: {
       getApplications: mockGetApplications,
       updateApplication: mockUpdateApplication,
+      deleteMenu: mockDeleteMenu,
     },
   })),
 }));
@@ -20,7 +22,11 @@ vi.mock("@/lib/auth", () => ({
   serverSession: vi.fn(async () => ({ accessToken: "test-token" })),
 }));
 
-import { getApplications, updateApplication } from "@/actions/applications";
+import {
+  deleteMenu,
+  getApplications,
+  updateApplication,
+} from "@/actions/applications";
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -108,5 +114,51 @@ describe("updateApplication action", () => {
       expect(result.status).toBe(409);
       expect(result.error).toBe("Conflito de dados");
     }
+  });
+});
+
+describe("deleteMenu action", () => {
+  it("passes plain codes through unchanged", async () => {
+    mockDeleteMenu.mockResolvedValue({ data: "ok" });
+
+    const result = await deleteMenu("APP1", "MENU_1");
+
+    expect(result).toEqual({ success: true, data: "ok" });
+    expect(mockDeleteMenu).toHaveBeenCalledWith("APP1", "MENU_1");
+  });
+
+  it("percent-encodes codes so they stay a single path segment", async () => {
+    mockDeleteMenu.mockResolvedValue({ data: "ok" });
+
+    const result = await deleteMenu("APP 1", "A?B");
+
+    expect(result.success).toBe(true);
+    expect(mockDeleteMenu).toHaveBeenCalledWith("APP%201", "A%3FB");
+  });
+
+  it.each([
+    ["../../../departments/HR"],
+    [".."],
+    ["."],
+    ["..\\..\\departments\\HR"],
+    ["A[0]"],
+    ["A|B"],
+    [["..", "departments"]],
+  ])("refuses menu code %j without calling the SDK", async (menuCode) => {
+    const result = await deleteMenu("APP1", menuCode as unknown as string);
+
+    expect(result).toEqual({
+      success: false,
+      error: "Código inválido",
+      status: undefined,
+    });
+    expect(mockDeleteMenu).not.toHaveBeenCalled();
+  });
+
+  it("refuses a traversal in the app code too", async () => {
+    const result = await deleteMenu("..", "MENU_1");
+
+    expect(result.success).toBe(false);
+    expect(mockDeleteMenu).not.toHaveBeenCalled();
   });
 });
