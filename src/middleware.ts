@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { IGRP_LOCALES, igrpSyncLocaleCookie } from "@igrp/framework-next/i18n";
 import { staleAuthCookies } from "@igrp/framework-next-auth/cookies";
 
 // Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
@@ -90,13 +89,6 @@ function withSecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
-// Mirrors src/i18n/index.ts (session-first). Edge runtime: constants come from
-// "@igrp/framework-next/i18n", never "@/i18n" (server-only).
-const LOCALE_SYNC = {
-  locales: IGRP_LOCALES,
-  resolution: "session-first",
-} as const;
-
 const AUTH_UI_PREFIXES = ["/login", "/logout", "/api/auth"];
 
 // `/api/health` is the container HEALTHCHECK target (docker/*/Dockerfile). Behind
@@ -111,12 +103,7 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-// isPublicPath/isAuthUiPath are exported for `src/__tests__/middleware/
-// path-predicates.test.ts` — the routing table they encode is worth covering
-// directly. Keep the exports when editing this file; they have been dropped
-// three times by unrelated rewrites (4846f4d, ebc0e15, e735154), breaking
-// typecheck each time.
-export function isPublicPath(pathname: string): boolean {
+function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -131,11 +118,14 @@ export function isPublicPath(pathname: string): boolean {
   // too — they are protected because `(igrp)/layout.tsx` calls `verifySession()`
   // on the server for every route beneath it. Do not move a protected route out
   // from under that layout on the assumption middleware covers it.
-  if (/\.[^/]+$/.test(pathname)) return true;
+  // Last segment only: on the full path, dots before a later "/" make this O(n²).
+  if (/\.[^/]+$/.test(pathname.slice(pathname.lastIndexOf("/") + 1))) {
+    return true;
+  }
   return false;
 }
 
-export function isAuthUiPath(pathname: string): boolean {
+function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
@@ -169,21 +159,14 @@ export async function middleware(request: NextRequest) {
  * keeps sending them to every path on the host — including the IdP — until
  * they expire. `staleAuthCookies` derives those names from this app's basePath
  * only, so another co-hosted app's cookies are never touched. A no-op once the
- * old cookies are gone.
- *
- * `sweepStockNames`: this is the host's root-path app, so its pre-terminator
- * stock-named session cookie sits at `Path=/` and reaches every co-hosted app
- * on every request. No other root app shares the host, so that name is ours to
- * expire. Ignored when `NEXT_PUBLIC_BASE_PATH` is set.
+ * old cookies are gone, and always for a root-path app.
  */
 function expireStaleAuthCookies(
   request: NextRequest,
   response: NextResponse,
 ): NextResponse {
   const names = request.cookies.getAll().map((cookie) => cookie.name);
-  for (const { name, options } of staleAuthCookies(BASE_PATH, names, {
-    sweepStockNames: true,
-  })) {
+  for (const { name, options } of staleAuthCookies(BASE_PATH, names)) {
     response.cookies.set(name, "", options);
   }
   return response;
@@ -268,13 +251,12 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
     return loginRedirect("session_ended");
   }
 
-  // Session-first: the profile locale on the token rewrites a stale cookie.
-  return igrpSyncLocaleCookie(
-    request,
-    nextWithPath(),
-    token.locale,
-    LOCALE_SYNC,
-  );
+  // i18n: this app is cookie-first (no `persistLocale`), so the middleware
+  // leaves the IGRP_LOCALE cookie alone. A session-first app (one with a
+  // profile write-back) ends this branch with
+  //   return igrpSyncLocaleCookie(request, nextWithPath(), token.locale, i18n)
+  // importing from "@igrp/framework-next/i18n" (Edge-safe), never from "@/i18n".
+  return nextWithPath();
 }
 
 /**

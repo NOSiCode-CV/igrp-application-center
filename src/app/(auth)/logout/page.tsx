@@ -155,9 +155,18 @@ export default function LogoutPage() {
         // back to /login is our confirmation, and LogoutCompletion runs
         // signOut() there. Set the marker so that landing — and the middleware
         // backstop, if the browser never returns — knows a teardown is owed.
+        markLogoutPending();
+        // The marker expires after 5 minutes. The server-set host logout cookie
+        // lasts 30 days, and middleware ends any session issued before it, so
+        // an abandoned round-trip cannot leave this session usable. Awaited under
+        // the watchdog: a hang falls back to /login, where the marker completes
+        // the teardown.
+        await markHostLogout().catch((error) =>
+          reportError(error, { segment: "(auth)/logout" }),
+        );
+        if (settled) return;
         settled = true;
         clearTimeout(fallbackTimeout);
-        markLogoutPending();
         const url = new URL(endSessionUrl);
         setEndSessionPost({
           action: `${url.origin}${url.pathname}`,
