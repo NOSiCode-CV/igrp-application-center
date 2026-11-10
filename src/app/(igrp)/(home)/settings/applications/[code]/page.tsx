@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { igrpAssertAuthorize } from "@igrp/framework-next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getTranslations } from "next-intl/server";
 
@@ -8,6 +9,7 @@ import {
   getApplicationByCodeCached,
   prefetchApplicationByCode,
 } from "@/features/applications/prefetch";
+import { APPLICATIONS_VIEW_PERMISSION } from "@/lib/constants";
 import { getQueryClient } from "@/providers/query-client.server";
 
 export async function generateMetadata({
@@ -31,6 +33,9 @@ export default async function ApplicationDetailsPage({
 }: {
   params: Promise<{ code: string }>;
 }) {
+  // Refuse before any data is fetched; the AM API enforces the same permission.
+  await igrpAssertAuthorize(APPLICATIONS_VIEW_PERMISSION);
+
   const { code } = await params;
   const queryClient = getQueryClient();
   await prefetchApplicationByCode(queryClient, code);

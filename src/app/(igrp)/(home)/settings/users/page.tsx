@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 
+import { igrpAssertAuthorize } from "@igrp/framework-next";
+
 import { getCurrentUser, getUserInvitations, getUsers } from "@/actions/user";
 import { UserList } from "@/features/users/components/user-list";
+import { USERS_LIST_PERMISSION } from "@/lib/constants";
 import { HttpStatusError } from "@/lib/errors";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +15,9 @@ export const metadata: Metadata = {
 };
 
 export default async function UserPage() {
+  // Refuse before any data is fetched; the AM API enforces the same permission.
+  await igrpAssertAuthorize(USERS_LIST_PERMISSION);
+
   const [usersResult, invitationsResult, currentUserResult] = await Promise.all(
     [getUsers(), getUserInvitations(), getCurrentUser()],
   );

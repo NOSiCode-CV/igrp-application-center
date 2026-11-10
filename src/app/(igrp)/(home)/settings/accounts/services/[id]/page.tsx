@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { igrpAssertAuthorize } from "@igrp/framework-next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { getTranslations } from "next-intl/server";
 
@@ -9,6 +10,7 @@ import {
   getServiceAccountCached,
   prefetchServiceAccount,
 } from "@/features/service-accounts/prefetch";
+import { CLIENT_VIEW_PERMISSION } from "@/lib/constants";
 import { getQueryClient } from "@/providers/query-client.server";
 
 export async function generateMetadata({
@@ -28,6 +30,9 @@ export default async function ServiceAccountDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Refuse before any data is fetched; the AM API enforces the same permission.
+  await igrpAssertAuthorize(CLIENT_VIEW_PERMISSION);
+
   const { id } = await params;
   const queryClient = getQueryClient();
   await prefetchServiceAccount(queryClient, id);

@@ -5,7 +5,7 @@ import type {
 import type { Messages } from "next-intl";
 import { z } from "zod";
 
-import { statusSchema } from "@/schemas/global";
+import { HTTP_URL_PATTERN, statusSchema } from "@/schemas/global";
 
 /**
  * Translator for `menus.validation.*` — satisfied by
@@ -83,7 +83,8 @@ export function makeMenuSchemas(t: MenusValidationTranslator) {
       .string({ error: t("urlRequired") })
       .trim()
       .min(1, t("urlRequired"))
-      .url(t("urlInvalid")),
+      .url(t("urlInvalid"))
+      .regex(HTTP_URL_PATTERN, t("urlInvalid")),
     parent: parentSchema,
   });
 

@@ -89,6 +89,17 @@ describe("mensagens de validação", () => {
     ).toBeNull();
   });
 
+  it("url só aceita http(s) — nunca javascript: ou data:", () => {
+    const ext = { ...base, type: "EXTERNAL" as const, slug: "" };
+    const invalid =
+      "Indique um URL completo, com https:// (ex.: https://exemplo.com)";
+    for (const url of ["javascript:alert(1)", "data:text/html,x"]) {
+      expect(firstError({ ...ext, url }, "url")).toBe(invalid);
+      expect(UpdateApplicationSchema.safeParse({ url }).success).toBe(false);
+    }
+    expect(firstError({ ...ext, url: "http://exemplo.com" }, "url")).toBeNull();
+  });
+
   it("descrição acima do limite da API", () => {
     expect(
       firstError({ ...base, description: "x".repeat(256) }, "description"),

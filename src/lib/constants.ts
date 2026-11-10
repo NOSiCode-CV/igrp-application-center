@@ -19,11 +19,15 @@ export const config = {
   minioUrl: process.env.NEXT_PUBLIC_IGRP_MINIO_URL || "",
 } as const;
 
-/* Gates the whole audit surface (/settings/audit, its actions and routes).
-   Contains dots, so the framework matches it verbatim against the token's
-   permissions — it is never qualified with the active department. */
 export const AUDIT_VIEW_PERMISSION = "igrp.audit.view";
 
-/* Gates the Brand editor (/settings/customization and its actions). Access
-   Management enforces it again on POST /api/global-configuration. */
 export const CUSTOMIZE_PERMISSION = "igrp.applications.customize";
+
+export const APPLICATIONS_LIST_PERMISSION = "igrp.applications.list";
+export const APPLICATIONS_VIEW_PERMISSION = "igrp.applications.view";
+export const USERS_LIST_PERMISSION = "igrp.users.list";
+export const USERS_VIEW_PERMISSION = "igrp.users.view";
+export const DEPARTMENTS_LIST_PERMISSION = "igrp.departments.list";
+export const CLIENT_LIST_PERMISSION = "igrp.client.list";
+export const CLIENT_VIEW_PERMISSION = "igrp.client.view";
+export const CLIENT_CREATE_PERMISSION = "igrp.client.create";

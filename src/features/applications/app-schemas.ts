@@ -8,7 +8,11 @@ import type { Messages } from "next-intl";
 import { z } from "zod";
 
 import { fileWithPreviewSchema } from "@/features/files/files-schemas";
-import { emptyToNull, statusWithTemporarySchema } from "@/schemas/global";
+import {
+  emptyToNull,
+  HTTP_URL_PATTERN,
+  statusWithTemporarySchema,
+} from "@/schemas/global";
 
 import { APPLICATIONS_TYPES } from "./app-utils";
 
@@ -31,7 +35,8 @@ export const appTypeCrud = z.enum(APPLICATIONS_TYPES);
  */
 export function makeApplicationSchemas(t: ApplicationsValidationTranslator) {
   const appType = z.enum(APPLICATIONS_TYPES, { error: t("typeRequired") });
-  const urlSchema = () => z.string().url(t("urlInvalid"));
+  const urlSchema = () =>
+    z.string().url(t("urlInvalid")).regex(HTTP_URL_PATTERN, t("urlInvalid"));
 
   // emptyToNull with the API's 255-char ceiling kept in place: the branch
   // schemas below override description/picture, so the bound has to travel
@@ -101,7 +106,8 @@ export function makeApplicationSchemas(t: ApplicationsValidationTranslator) {
         .string({ error: t("urlRequired") })
         .trim()
         .min(1, t("urlRequired"))
-        .url(t("urlInvalid")),
+        .url(t("urlInvalid"))
+        .regex(HTTP_URL_PATTERN, t("urlInvalid")),
     })
     .extend({
       description: boundedEmptyToNull(t("descriptionMax")).optional(),

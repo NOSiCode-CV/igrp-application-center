@@ -20,18 +20,26 @@ import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
  * floating-UI positioning, with no CSP nonce escape hatch — this is not
  * fixable from application code.
  *
- * script-src intentionally does NOT allow 'unsafe-inline'. This WILL surface
- * a real violation from next-themes' inline theme-boot script (no nonce
- * wired today) — that's expected, not a bug in this policy. Silencing it
- * properly means threading a nonce from here through IGRPThemeProvider into
- * next-themes' `nonce` prop, a framework-next-ui change, not a header one.
+ * script-src intentionally does NOT allow 'unsafe-inline': inline scripts need
+ * the per-request nonce. Next reads it from the CSP *request* header and stamps
+ * its own scripts. next-themes' inline theme-boot script still violates until
+ * the root layout passes `nonce` to `IGRPRootLayout` (a prop that ships in the
+ * framework from next beta.22 / next-ui beta.20).
  */
-function buildCspReportOnly(): string {
-  const imageDomains = (process.env.NEXT_PUBLIC_ALLOWED_DOMAINS ?? "")
-    .split(",")
-    .map((domain) => domain.trim())
+function buildCspReportOnly(nonce: string): string {
+  // Bare domains get both schemes; a value that already carries one (the MinIO
+  // URL, or an ALLOWED_DOMAINS entry written as a URL) is used as given.
+  const imageDomains = [
+    process.env.NEXT_PUBLIC_IGRP_MINIO_URL ?? "",
+    ...(process.env.NEXT_PUBLIC_ALLOWED_DOMAINS ?? "").split(","),
+  ]
+    .map((domain) => domain.trim().replace(/\/+$/, ""))
     .filter(Boolean)
-    .flatMap((domain) => [`https://${domain}`, `http://${domain}`]);
+    .flatMap((domain) =>
+      /^https?:\/\//i.test(domain)
+        ? [domain]
+        : [`https://${domain}`, `http://${domain}`],
+    );
 
   // form-action defaults to 'self' and would otherwise silently block the
   // logout page's cross-origin POST to the IdP's end_session_endpoint.
@@ -46,9 +54,11 @@ function buildCspReportOnly(): string {
 
   return [
     "default-src 'self'",
-    "script-src 'self'",
+    // 'self' is the fallback for browsers without 'strict-dynamic' support.
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data:${imageDomains.length ? ` ${imageDomains.join(" ")}` : ""}`,
+    // blob: is the local preview of a file picked for upload.
+    `img-src 'self' data: blob:${imageDomains.length ? ` ${imageDomains.join(" ")}` : ""}`,
     "font-src 'self'",
     "connect-src 'self'",
     `form-action 'self'${authIssuerOrigin ? ` ${authIssuerOrigin}` : ""}`,
@@ -77,14 +87,27 @@ const SECURITY_HEADERS: Record<string, string> = {
   // proxy or directly). Safe to send unconditionally in the production gate
   // below — browsers ignore it on plain HTTP.
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
-  "Content-Security-Policy-Report-Only": buildCspReportOnly(),
 };
 
-function withSecurityHeaders(response: NextResponse): NextResponse {
+/**
+ * Report-only unless IGRP_CSP_ENFORCE=true. Enforcing blocks every script,
+ * image and request the policy does not list, so turn it on per environment
+ * only after that environment's browser console shows no violations.
+ */
+const cspHeader = () =>
+  process.env.IGRP_CSP_ENFORCE === "true"
+    ? "Content-Security-Policy"
+    : "Content-Security-Policy-Report-Only";
+
+function applySecurityHeaders(
+  response: NextResponse,
+  csp: string,
+): NextResponse {
   if (process.env.NODE_ENV === "production") {
     for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
       response.headers.set(key, value);
     }
+    response.headers.set(cspHeader(), csp);
   }
   return response;
 }
@@ -176,10 +199,22 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
   const currentPath = pathname + search;
 
+  // One nonce per request, unguessable, so an injected script cannot carry it.
+  const nonce = btoa(crypto.randomUUID());
+  const csp = buildCspReportOnly(nonce);
+  const withSecurityHeaders = (response: NextResponse) =>
+    applySecurityHeaders(response, csp);
+
   // Passes the request through, forwarding the current path to server components.
   const nextWithPath = (): NextResponse => {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-current-path", currentPath);
+    if (process.env.NODE_ENV === "production") {
+      // Next takes the nonce for its own scripts from the CSP request header;
+      // `x-nonce` is for the root layout to hand to IGRPRootLayout.
+      requestHeaders.set(cspHeader(), csp);
+      requestHeaders.set("x-nonce", nonce);
+    }
     return withSecurityHeaders(
       NextResponse.next({ request: { headers: requestHeaders } }),
     );

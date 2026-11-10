@@ -2,7 +2,9 @@ import { useCallback } from "react";
 
 import { useTranslations } from "next-intl";
 
-export const MAX_IMAGE_UPLOAD_BYTES = 5 * 1024 * 1024;
+import { imageUploadProblem, MAX_IMAGE_UPLOAD_BYTES } from "./upload-rules";
+
+export { MAX_IMAGE_UPLOAD_BYTES };
 
 /**
  * Client-side guard for image uploads. Returns a localized error message when
@@ -15,11 +17,11 @@ export function useValidateImageUpload(
   const t = useTranslations("common.fileUpload");
   return useCallback(
     (file) => {
-      if (!file.type.startsWith("image/")) return t("notImage");
-      if (file.size > maxBytes) {
+      const problem = imageUploadProblem(file, maxBytes);
+      if (problem === "tooLarge") {
         return t("tooLarge", { size: Math.round(maxBytes / (1024 * 1024)) });
       }
-      return null;
+      return problem && t(problem);
     },
     [t, maxBytes],
   );

@@ -139,4 +139,51 @@ describe("security headers (production)", () => {
     expect(res.headers.get("Content-Security-Policy")).toBeNull();
     vi.unstubAllEnvs();
   });
+
+  it("puts a fresh nonce in the CSP and forwards it to the render", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    auth.getTokenFromRequest.mockResolvedValue({ sub: "u1" });
+    const [a, b] = await Promise.all([
+      middleware(req("/settings/users")),
+      middleware(req("/settings/users")),
+    ]);
+    // NextResponse.next() exposes forwarded request headers under this prefix.
+    const nonce = a.headers.get("x-middleware-request-x-nonce");
+    expect(nonce).toBeTruthy();
+    const csp = a.headers.get("Content-Security-Policy-Report-Only");
+    expect(csp).toContain(`'nonce-${nonce}'`);
+    expect(
+      a.headers.get("x-middleware-request-content-security-policy-report-only"),
+    ).toBe(csp);
+    expect(b.headers.get("x-middleware-request-x-nonce")).not.toBe(nonce);
+    vi.unstubAllEnvs();
+  });
+
+  it("enforces the CSP only when IGRP_CSP_ENFORCE=true", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("IGRP_CSP_ENFORCE", "true");
+    auth.getTokenFromRequest.mockResolvedValue({ sub: "u1" });
+    const res = await middleware(req("/settings/users"));
+    expect(res.headers.get("Content-Security-Policy")).toContain("script-src");
+    expect(res.headers.get("Content-Security-Policy-Report-Only")).toBeNull();
+    vi.unstubAllEnvs();
+  });
+
+  it("builds valid image sources from bare domains and full URLs", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_IGRP_MINIO_URL", "https://minio.example/");
+    vi.stubEnv(
+      "NEXT_PUBLIC_ALLOWED_DOMAINS",
+      "cdn.example, http://img.example",
+    );
+    auth.getTokenFromRequest.mockResolvedValue({ sub: "u1" });
+    const res = await middleware(req("/settings/users"));
+    const img = res.headers
+      .get("Content-Security-Policy-Report-Only")
+      ?.match(/img-src[^;]*/)?.[0];
+    expect(img).toBe(
+      "img-src 'self' data: blob: https://minio.example https://cdn.example http://cdn.example http://img.example",
+    );
+    vi.unstubAllEnvs();
+  });
 });

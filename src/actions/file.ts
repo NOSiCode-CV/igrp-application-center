@@ -4,7 +4,12 @@ import type {
   FileUrlDTO,
   UploadFileOptions,
 } from "@igrp/platform-access-management-client-ts";
+import { getTranslations } from "next-intl/server";
 
+import {
+  imageUploadProblem,
+  MAX_IMAGE_UPLOAD_BYTES,
+} from "@/features/files/upload-rules";
 import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
@@ -36,6 +41,20 @@ export async function uploadPublicFile(
 
   if (!file) {
     return { success: false, error: "Nenhum arquivo encontrado" };
+  }
+
+  // The browser checks this too, but an action can be called directly.
+  const problem = imageUploadProblem(file);
+  if (problem) {
+    const t = await getTranslations("common.fileUpload");
+    return {
+      success: false,
+      status: 422,
+      error:
+        problem === "tooLarge"
+          ? t("tooLarge", { size: MAX_IMAGE_UPLOAD_BYTES / (1024 * 1024) })
+          : t(problem),
+    };
   }
 
   try {

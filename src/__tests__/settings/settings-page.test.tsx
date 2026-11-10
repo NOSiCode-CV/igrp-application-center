@@ -47,3 +47,26 @@ describe("settings hub — Customização card", () => {
     expect(screen.queryByTestId(CUSTOMIZATION)).toBeNull();
   });
 });
+
+describe("settings hub — management cards", () => {
+  const cards = {
+    "/settings/applications": "igrp.applications.list",
+    "/settings/users": "igrp.users.list",
+    "/settings/departments": "igrp.departments.list",
+    "/settings/accounts": "igrp.client.list",
+  };
+
+  it("hides every card whose page the user cannot open", async () => {
+    await renderPage();
+    for (const href of Object.keys(cards)) {
+      expect(screen.queryByTestId(href)).toBeNull();
+    }
+  });
+
+  it("shows only the cards the user holds the permission for", async () => {
+    mocks.granted.add(cards["/settings/users"]);
+    await renderPage();
+    expect(screen.getByTestId("/settings/users")).toBeInTheDocument();
+    expect(screen.queryByTestId("/settings/applications")).toBeNull();
+  });
+});

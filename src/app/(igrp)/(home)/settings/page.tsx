@@ -7,7 +7,14 @@ import {
   SettingsCard,
   type SettingsItem,
 } from "@/features/settings/components/settings-card";
-import { AUDIT_VIEW_PERMISSION, CUSTOMIZE_PERMISSION } from "@/lib/constants";
+import {
+  APPLICATIONS_LIST_PERMISSION,
+  AUDIT_VIEW_PERMISSION,
+  CLIENT_LIST_PERMISSION,
+  CUSTOMIZE_PERMISSION,
+  DEPARTMENTS_LIST_PERMISSION,
+  USERS_LIST_PERMISSION,
+} from "@/lib/constants";
 import { isBrandingEnabled } from "@/lib/utilities";
 
 /** `settings.items.*` key of each card. */
@@ -26,6 +33,8 @@ type SettingsItemKey =
 const settingsConfig: {
   general: (Omit<SettingsItem, "title" | "description"> & {
     key: SettingsItemKey;
+    /** The card is hidden without it — same permission its page asserts. */
+    permission?: string;
   })[];
 } = {
   general: [
@@ -34,6 +43,7 @@ const settingsConfig: {
       key: "applications",
       icon: "AppWindow",
       href: "/settings/applications",
+      permission: APPLICATIONS_LIST_PERMISSION,
       accent: "primary",
     },
     {
@@ -41,6 +51,7 @@ const settingsConfig: {
       key: "users",
       icon: "Users",
       href: "/settings/users",
+      permission: USERS_LIST_PERMISSION,
       accent: "info",
     },
     {
@@ -48,6 +59,7 @@ const settingsConfig: {
       key: "departments",
       icon: "ShieldCheck",
       href: "/settings/departments",
+      permission: DEPARTMENTS_LIST_PERMISSION,
       accent: "success",
     },
     {
@@ -55,6 +67,7 @@ const settingsConfig: {
       key: "oauthClients",
       icon: "KeyRound",
       href: "/settings/accounts",
+      permission: CLIENT_LIST_PERMISSION,
       accent: "primary",
     },
     {
@@ -84,18 +97,24 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SettingsPage() {
   const brandingEnabled = isBrandingEnabled();
-  const [canViewAudit, canCustomize, t] = await Promise.all([
+  const [canViewAudit, canCustomize, t, allowed] = await Promise.all([
     igrpAuthorize(AUDIT_VIEW_PERMISSION),
     brandingEnabled && igrpAuthorize(CUSTOMIZE_PERMISSION),
     getTranslations("settings"),
+    Promise.all(
+      settingsConfig.general.map(
+        (item) => !item.permission || igrpAuthorize(item.permission),
+      ),
+    ),
   ]);
   const items: SettingsItem[] = settingsConfig.general
+    .filter((_, index) => allowed[index])
     .filter((item) => item.id !== "auditoria-relatorios" || canViewAudit)
     .filter(
       (item) =>
         item.key !== "customization" || !brandingEnabled || canCustomize,
     )
-    .map(({ key, ...item }) => ({
+    .map(({ key, permission: _permission, ...item }) => ({
       ...item,
       ...(key === "customization" && !brandingEnabled
         ? { status: "inativo" as const }

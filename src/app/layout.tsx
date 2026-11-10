@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 
 import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
 
 import {
   IGRPRootLayout,
@@ -40,5 +41,12 @@ export default async function RootLayout({
   const layoutConfig = await getLayoutConfig();
   const config = await createConfig(layoutConfig);
 
-  return <IGRPRootLayout config={config}>{children}</IGRPRootLayout>;
+  // Set by the middleware (production only); the theme boot script needs it.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
+  return (
+    <IGRPRootLayout config={config} nonce={nonce}>
+      {children}
+    </IGRPRootLayout>
+  );
 }
