@@ -129,14 +129,14 @@ describe("security headers (production)", () => {
     vi.unstubAllEnvs();
   });
 
-  it("ships a Report-Only CSP in production", async () => {
+  it("enforces the CSP in production by default", async () => {
     vi.stubEnv("NODE_ENV", "production");
     auth.getTokenFromRequest.mockResolvedValue({ sub: "u1" });
     const res = await middleware(req("/settings/users"));
-    expect(res.headers.get("Content-Security-Policy-Report-Only")).toContain(
+    expect(res.headers.get("Content-Security-Policy")).toContain(
       "default-src 'self'",
     );
-    expect(res.headers.get("Content-Security-Policy")).toBeNull();
+    expect(res.headers.get("Content-Security-Policy-Report-Only")).toBeNull();
     vi.unstubAllEnvs();
   });
 
@@ -150,22 +150,24 @@ describe("security headers (production)", () => {
     // NextResponse.next() exposes forwarded request headers under this prefix.
     const nonce = a.headers.get("x-middleware-request-x-nonce");
     expect(nonce).toBeTruthy();
-    const csp = a.headers.get("Content-Security-Policy-Report-Only");
+    const csp = a.headers.get("Content-Security-Policy");
     expect(csp).toContain(`'nonce-${nonce}'`);
-    expect(
-      a.headers.get("x-middleware-request-content-security-policy-report-only"),
-    ).toBe(csp);
+    expect(a.headers.get("x-middleware-request-content-security-policy")).toBe(
+      csp,
+    );
     expect(b.headers.get("x-middleware-request-x-nonce")).not.toBe(nonce);
     vi.unstubAllEnvs();
   });
 
-  it("enforces the CSP only when IGRP_CSP_ENFORCE=true", async () => {
+  it("falls back to report-only when IGRP_CSP_ENFORCE=false", async () => {
     vi.stubEnv("NODE_ENV", "production");
-    vi.stubEnv("IGRP_CSP_ENFORCE", "true");
+    vi.stubEnv("IGRP_CSP_ENFORCE", "false");
     auth.getTokenFromRequest.mockResolvedValue({ sub: "u1" });
     const res = await middleware(req("/settings/users"));
-    expect(res.headers.get("Content-Security-Policy")).toContain("script-src");
-    expect(res.headers.get("Content-Security-Policy-Report-Only")).toBeNull();
+    expect(res.headers.get("Content-Security-Policy-Report-Only")).toContain(
+      "script-src",
+    );
+    expect(res.headers.get("Content-Security-Policy")).toBeNull();
     vi.unstubAllEnvs();
   });
 
@@ -179,7 +181,7 @@ describe("security headers (production)", () => {
     auth.getTokenFromRequest.mockResolvedValue({ sub: "u1" });
     const res = await middleware(req("/settings/users"));
     const img = res.headers
-      .get("Content-Security-Policy-Report-Only")
+      .get("Content-Security-Policy")
       ?.match(/img-src[^;]*/)?.[0];
     expect(img).toBe(
       "img-src 'self' data: blob: https://minio.example https://cdn.example http://cdn.example http://img.example",

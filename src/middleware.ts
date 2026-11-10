@@ -9,10 +9,7 @@ import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 
 /**
- * Content-Security-Policy-Report-Only baseline. Report-only never blocks a
- * request — browsers only log violations to the console/report endpoint — so
- * this ships with zero behavioral risk while surfacing what an eventual
- * enforcing policy would need to allow.
+ * Content-Security-Policy, enforced in production (see `cspHeader`).
  *
  * style-src allows 'unsafe-inline' deliberately and permanently: Radix (used
  * throughout the design system for Popover/DropdownMenu/Tooltip/Select/
@@ -22,11 +19,10 @@ import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
  *
  * script-src intentionally does NOT allow 'unsafe-inline': inline scripts need
  * the per-request nonce. Next reads it from the CSP *request* header and stamps
- * its own scripts. next-themes' inline theme-boot script still violates until
- * the root layout passes `nonce` to `IGRPRootLayout` (a prop that ships in the
- * framework from next beta.22 / next-ui beta.20).
+ * its own scripts; the root layout passes it to `IGRPRootLayout` for
+ * next-themes' inline theme-boot script.
  */
-function buildCspReportOnly(nonce: string): string {
+function buildCsp(nonce: string): string {
   // Bare domains get both schemes; a value that already carries one (the MinIO
   // URL, or an ALLOWED_DOMAINS entry written as a URL) is used as given.
   const imageDomains = [
@@ -90,14 +86,13 @@ const SECURITY_HEADERS: Record<string, string> = {
 };
 
 /**
- * Report-only unless IGRP_CSP_ENFORCE=true. Enforcing blocks every script,
- * image and request the policy does not list, so turn it on per environment
- * only after that environment's browser console shows no violations.
+ * Enforced unless IGRP_CSP_ENFORCE=false — the per-environment escape hatch
+ * back to report-only if a deploy hits a violation the policy does not list.
  */
 const cspHeader = () =>
-  process.env.IGRP_CSP_ENFORCE === "true"
-    ? "Content-Security-Policy"
-    : "Content-Security-Policy-Report-Only";
+  process.env.IGRP_CSP_ENFORCE === "false"
+    ? "Content-Security-Policy-Report-Only"
+    : "Content-Security-Policy";
 
 function applySecurityHeaders(
   response: NextResponse,
@@ -201,7 +196,7 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
 
   // One nonce per request, unguessable, so an injected script cannot carry it.
   const nonce = btoa(crypto.randomUUID());
-  const csp = buildCspReportOnly(nonce);
+  const csp = buildCsp(nonce);
   const withSecurityHeaders = (response: NextResponse) =>
     applySecurityHeaders(response, csp);
 
