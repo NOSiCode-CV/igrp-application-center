@@ -40,8 +40,7 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const layoutConfig = await getLayoutConfig();
   const config = await createConfig(layoutConfig);
-
-  // Set by the middleware (production only); the theme boot script needs it.
+  // Set per request by the middleware; it also goes in the CSP's script-src.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   return (

@@ -288,7 +288,7 @@ export async function updateRole(
     return { success: true, data: result.data as RoleDTO };
   } catch (error) {
     console.error(
-      `[update-roles] Erro ao atualizar perfil ${roleCode}:`,
+      `[update-roles] Erro ao atualizar perfil ${JSON.stringify(String(roleCode))}:`,
       error,
     );
     return { success: false, ...toActionError(error) };
@@ -312,7 +312,10 @@ export async function deleteRole(
     if (status === 204 || status === 0) {
       return { success: true, data: { code: roleCode } };
     }
-    console.error(`[delete-role] Erro ao eliminar perfil ${roleCode}:`, error);
+    console.error(
+      `[delete-role] Erro ao eliminar perfil ${JSON.stringify(String(roleCode))}:`,
+      error,
+    );
     return { success: false, ...toActionError(error) };
   }
 }

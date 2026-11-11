@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 
+import type { JWT, Session } from "@igrp/framework-next-auth";
 import { withIGRPAuth } from "@igrp/framework-next-auth/config";
+
+import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 
 /*
  * EDGE-SAFE MODULE — `src/middleware.ts` imports this, and middleware runs on
@@ -108,6 +111,30 @@ function redirectWithBasePath({
 }
 
 /**
+ * Reads a session that middleware would end as no session: a deferred logout
+ * is still owed (`logout_pending`), or a co-hosted app logged out after this
+ * sign-in (`igrp.logout-at`). Middleware does not see every request (public
+ * `/api/auth/session`, dotted paths its matcher skips), but every server read
+ * — getServerSession() and the session route — runs this callback.
+ *
+ * `{}` is next-auth's own empty-session body: getServerSession() returns null
+ * and the client sees "unauthenticated". The cookie is left in place so the
+ * deferred signOut() on /login can still revoke the tokens.
+ */
+async function endTerminatedSession(
+  { token }: { token: JWT },
+  session: Session,
+): Promise<Session> {
+  // Lazy, like the framework's getAccessToken(): middleware imports this module.
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const ended =
+    cookieStore.has(LOGOUT_PENDING_COOKIE) ||
+    auth.isEndedByHostLogout(token, { cookies: cookieStore });
+  return ended ? ({} as Session) : session;
+}
+
+/**
  * Central IGRP auth instance.
  *
  * - Provider is resolved automatically from AUTH_PROVIDER env var (igrp-auth / none).
@@ -131,5 +158,6 @@ export const auth = withIGRPAuth({
   pages: { signIn: "/login" },
   callbacks: {
     redirect: redirectWithBasePath,
+    session: endTerminatedSession,
   },
 });

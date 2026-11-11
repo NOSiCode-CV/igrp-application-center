@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
+import { IGRPButton } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
 
 import { reportError } from "@/lib/report-error";
@@ -14,13 +15,22 @@ import { reportError } from "@/lib/report-error";
  * app out locally and reloads /login without `reason`. Unlike LogoutCompletion
  * it leaves silent SSO enabled, so a user whose IdP session is alive gets
  * straight back in (the silent-sso cookie guards against a loop).
+ *
+ * `needsConfirm` is set by the server page for arrivals that started on another
+ * site (CSRF, finding F3): the sign-out then waits for a click.
  */
-export function SessionEndedCompletion() {
+export function SessionEndedCompletion({
+  needsConfirm,
+}: {
+  needsConfirm: boolean;
+}) {
   const t = useTranslations("auth");
   const startedRef = useRef(false);
+  const [confirmed, setConfirmed] = useState(false);
+  const awaitingConfirm = needsConfirm && !confirmed;
 
   useEffect(() => {
-    if (startedRef.current) return;
+    if (awaitingConfirm || startedRef.current) return;
     startedRef.current = true;
 
     (async () => {
@@ -35,7 +45,21 @@ export function SessionEndedCompletion() {
         window.location.replace(url.toString());
       }
     })();
-  }, []);
+  }, [awaitingConfirm]);
+
+  if (awaitingConfirm) {
+    return (
+      <div className="flex min-h-svh items-center justify-center p-4">
+        <IGRPButton
+          showIcon
+          iconName="LogOut"
+          onClick={() => setConfirmed(true)}
+        >
+          {t("signOut")}
+        </IGRPButton>
+      </div>
+    );
+  }
 
   return (
     <IGRPTemplateLoading

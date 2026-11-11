@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { IGRPLocaleSwitcher } from "@igrp/framework-next/i18n/client";
@@ -10,6 +10,7 @@ import { getTranslations } from "next-intl/server";
 import { carouselImages, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
 import { setLocale } from "@/i18n/actions";
+import { auth } from "@/lib/auth";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
 import {
   SILENT_SSO_COOKIE,
@@ -24,6 +25,30 @@ import { SilentSignIn } from "./silent-sign-in";
 
 const { sliderPosition } = loginConfig;
 const { logo, name } = siteConfig;
+
+/**
+ * `reason=session_ended` signs the app out on load, so an arrival that started
+ * on another site (Sec-Fetch-Site cross-site/same-site) must confirm with a
+ * click (CSRF, finding F3), as /logout does. The session watcher and in-app
+ * redirects send same-origin; typed URLs ("none") and browsers that omit the
+ * header keep the automatic sign-out. A cross-site arrival still signs out on
+ * its own when there is no session, or when its session is already ended by a
+ * host logout: middleware's redirect at the end of a cross-site navigation.
+ */
+async function sessionEndNeedsConfirm(): Promise<boolean> {
+  const site = (await headers()).get("sec-fetch-site");
+  if (site !== "cross-site" && site !== "same-site") return false;
+  try {
+    const token = await auth.getAccessToken();
+    // isEndedByHostLogout reads only `request.cookies.get(name)`.
+    return (
+      token !== null &&
+      !auth.isEndedByHostLogout(token, { cookies: await cookies() })
+    );
+  } catch {
+    return true;
+  }
+}
 
 export default async function AuthPage({
   searchParams,
@@ -52,7 +77,9 @@ export default async function AuthPage({
   // AM answered 401: clear this app's session client-side, then reload /login
   // without `reason` so silent SSO can run.
   if (reason === "session_ended") {
-    return <SessionEndedCompletion />;
+    return (
+      <SessionEndedCompletion needsConfirm={await sessionEndNeedsConfirm()} />
+    );
   }
   const silentSso = cookieStore.get(SILENT_SSO_COOKIE);
   // Drop callbackUrl values that would bounce the user back to /login (or

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { IGRP_LOCALES, igrpSyncLocaleCookie } from "@igrp/framework-next/i18n";
 import { staleAuthCookies } from "@igrp/framework-next-auth/cookies";
 
 // Edge runtime: import the instance from its Edge-safe module, NOT "@/lib/auth"
@@ -121,7 +122,16 @@ const STATIC_PREFIXES = ["/_next/", "/static/", "/favicon.ico"];
 // Needed for raw URL construction in middleware where next/navigation isn't available.
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-function isPublicPath(pathname: string): boolean {
+// Mirrors src/i18n/index.ts (session-first). Edge runtime: constants come from
+// "@igrp/framework-next/i18n", never "@/i18n" (server-only).
+const LOCALE_SYNC = {
+  locales: IGRP_LOCALES,
+  resolution: "session-first",
+} as const;
+
+// Exported for src/__tests__/middleware/path-predicates.test.ts — keep when
+// a template migration rewrites this file.
+export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
@@ -143,7 +153,7 @@ function isPublicPath(pathname: string): boolean {
   return false;
 }
 
-function isAuthUiPath(pathname: string): boolean {
+export function isAuthUiPath(pathname: string): boolean {
   return AUTH_UI_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
@@ -281,12 +291,14 @@ async function handleRequest(request: NextRequest): Promise<NextResponse> {
     return loginRedirect("session_ended");
   }
 
-  // i18n: this app is cookie-first (no `persistLocale`), so the middleware
-  // leaves the IGRP_LOCALE cookie alone. A session-first app (one with a
-  // profile write-back) ends this branch with
-  //   return igrpSyncLocaleCookie(request, nextWithPath(), token.locale, i18n)
-  // importing from "@igrp/framework-next/i18n" (Edge-safe), never from "@/i18n".
-  return nextWithPath();
+  // Session-first (persistLocale in src/i18n): the profile locale on the token
+  // rewrites a stale IGRP_LOCALE cookie.
+  return igrpSyncLocaleCookie(
+    request,
+    nextWithPath(),
+    token.locale,
+    LOCALE_SYNC,
+  );
 }
 
 /**
