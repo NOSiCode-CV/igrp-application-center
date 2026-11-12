@@ -50,7 +50,7 @@ The template is cookie-first. The framework switches to session-first on its own
 1. Add a camelCase namespace (`oauthClients`, `serviceAccounts`) to `pt.json`, `en.json` and `fr.json`.
 2. Translate every user-facing string: JSX text, `aria-label`, `title`, `placeholder`, toasts, confirm dialogs, empty states, column headers, Zod messages.
 3. Keep the pt wording exactly as the literal it replaces. Don't swap in a shared key whose text differs (`common.unknownError` is not "Erro desconhecido"); add a feature key.
-4. Client: `useTranslations("ns")`. Server: `await getTranslations("ns")` from `next-intl/server`.
+4. Client: `useTranslations("ns")`. Server: `await getTranslations("ns")` from `next-intl/server`. Server actions put their own refusals under `errors.actions` (for example `noFile`, `departmentRequired`) instead of Portuguese literals.
 5. Zod schemas take a translator (`(key) => string`) instead of literals (see `src/features/applications/app-schemas.ts`). API enum codes map to keys in a per-feature `lib/i18n.ts` (see `src/features/users/lib/i18n.ts`). Status codes stay API values; use `useStatusLabel` / `useStatusOptions`.
 6. Dates, numbers, sorting: `useIGRPFormat()` (client) or `igrpFormatDate(value, await igrpResolveFormatLocale(i18n), undefined, i18n.timeZone)` (server). Never `useFormatter` and never a hardcoded region.
 7. Add the feature's folders to the `lint:i18n` script in `package.json`.
@@ -72,6 +72,8 @@ Style: en uses Sentence case and American spelling. fr uses "rôle" for roles, "
 import { renderWithIntl } from "@/__tests__/helpers/intl";
 renderWithIntl(<Page />, { locale: "en" });
 ```
+
+`next-intl/server` is mocked globally with a pt translator, so server actions that call `getTranslations` need no setup in tests.
 
 Add one English-render test per feature's main page, plus one for any dialog or form with its own strings. Build mock data at module scope: unstable mocked query data makes Vitest run out of memory.
 
