@@ -45,16 +45,14 @@ import {
   usePermissionsByRole,
   useRemovePermissionsFromRole,
 } from "@/features/departments/use-departments";
+import {
+  diffPermissions,
+  type PermissionLike,
+} from "@/features/roles/permission-diff";
 import type { RoleArgs } from "@/features/roles/role-schemas";
 import { useServerErrorMessage } from "@/i18n/server-error";
 
 // Local mirror of the SDK's `PermissionDTO` (not re-exported by the package).
-interface PermissionLike {
-  id?: number;
-  name: string;
-  description?: string | null;
-}
-
 const multiColumnFilterFn: FilterFn<PermissionLike> = (
   row,
   _columnId,
@@ -117,33 +115,6 @@ const makeColumns = (t: PermissionsTranslator): ColumnDef<PermissionLike>[] => [
     enableSorting: false,
   },
 ];
-
-const norm = (s: string) => s.trim().toLowerCase();
-
-function diffPermissions(
-  selected: PermissionLike[],
-  existing: PermissionLike[],
-) {
-  const selectedNorm = new Set(selected.map((p) => norm(p.name)));
-  const existingNorm = new Set(existing.map((p) => norm(p.name)));
-
-  const toAddNorm = Array.from(selectedNorm).filter(
-    (n) => !existingNorm.has(n),
-  );
-  const toRemoveNorm = Array.from(existingNorm).filter(
-    (n) => !selectedNorm.has(n),
-  );
-
-  const selectedByNorm = new Map(selected.map((p) => [norm(p.name), p.name]));
-  const existingByNorm = new Map(existing.map((p) => [norm(p.name), p.name]));
-
-  return {
-    toAdd: toAddNorm.map((n) => selectedByNorm.get(n)).filter(Boolean),
-    toRemove: toRemoveNorm
-      .map((n) => existingByNorm.get(n) ?? "")
-      .filter(Boolean),
-  };
-}
 
 interface RoleDetailsProps {
   departmentCode: string;
@@ -261,7 +232,7 @@ export function RoleDetails({
         const res = await addPermissions({
           departmentCode,
           roleCode: role.code,
-          permissionCodes: toAdd as string[],
+          permissionCodes: toAdd,
         });
 
         if (!res.success) {
