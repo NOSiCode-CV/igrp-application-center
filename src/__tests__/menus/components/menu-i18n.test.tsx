@@ -1,6 +1,6 @@
 // The menus section of /settings/applications/[code] renders from the
-// `menus` catalog in every platform language (docs/I18N.md, "Migrating the
-// next feature").
+// `menus` catalog in every platform language (docs/I18N-APP-CENTER.md,
+// "Translating a feature").
 
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
 import { afterEach, describe, expect, it, vi } from "vitest";

@@ -30,7 +30,7 @@ export const appTypeCrud = z.enum(APPLICATIONS_TYPES);
 
 /**
  * Validation messages come from the catalog, so the schemas are built per
- * translator (docs/I18N.md, "Zod schemas are factories"). Call sites build
+ * translator (docs/I18N-APP-CENTER.md, "Translating a feature"). Call sites build
  * them inside a `useMemo` keyed on the translator.
  */
 export function makeApplicationSchemas(t: ApplicationsValidationTranslator) {
