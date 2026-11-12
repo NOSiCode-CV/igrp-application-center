@@ -1,6 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
+import {
+  createContext,
+  type ReactNode,
+  use,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
@@ -14,10 +21,36 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
 
-import { useLocalStorageState } from "@/hooks/use-local-storage-state";
-
 import type { AuditTranslator } from "../lib/i18n";
+import {
+  migrateLegacyPanelOpen,
+  writePanelOpenCookie,
+} from "../lib/panel-cookie";
 import type { DateRangeSelection } from "../lib/report-query";
+
+type PanelOpenState = { open: boolean; setOpen: (open: boolean) => void };
+
+/** One fold state for every report tab (each tab mounts its own panel). */
+export const PanelOpenContext = createContext<PanelOpenState | null>(null);
+
+/** Owns the fold state, seeded from the cookie the server read; the only writer of that cookie. */
+export function usePanelOpenState(initial: boolean): PanelOpenState {
+  const [open, setOpenState] = useState(initial);
+  useEffect(() => {
+    const legacy = migrateLegacyPanelOpen();
+    if (legacy !== undefined) setOpenState(legacy);
+  }, []);
+  return useMemo(
+    () => ({
+      open,
+      setOpen: (next: boolean) => {
+        setOpenState(next);
+        writePanelOpenCookie(next);
+      },
+    }),
+    [open],
+  );
+}
 
 /* Everything that defines the Report on screen, in one place. The separator
    splits what survives a tab switch (the period) from what doesn't (the
@@ -40,10 +73,14 @@ export function ReportQueryPanel({
 }) {
   const t = useTranslations("audit");
   const { formatDate } = useIGRPFormat();
-  const [open, setOpen] = useLocalStorageState(PANEL_OPEN_KEY, true);
+  const shared = use(PanelOpenContext);
+  const [localOpen, setLocalOpen] = useState(true);
+  // Outside AuditScreen (tests, reuse) the panel keeps its own unsaved state.
+  const open = shared?.open ?? localOpen;
+  const onOpenChange = shared?.setOpen ?? setLocalOpen;
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} asChild>
+    <Collapsible open={open} onOpenChange={onOpenChange} asChild>
       <section
         aria-label={t("panel.title")}
         className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 md:p-5"
@@ -96,8 +133,6 @@ export function ReportQueryPanel({
     </Collapsible>
   );
 }
-
-const PANEL_OPEN_KEY = "audit.query-panel.open";
 
 const PRESET_KEY = {
   "24h": "last24h",

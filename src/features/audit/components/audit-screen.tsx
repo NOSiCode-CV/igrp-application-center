@@ -21,6 +21,7 @@ import {
 import { useReportQuery } from "../use-audit";
 import { AccessReportTab } from "./access-report-tab";
 import { ReportDateRange } from "./report-date-range";
+import { PanelOpenContext, usePanelOpenState } from "./report-query-panel";
 import { SettingsReportTab } from "./settings-report-tab";
 
 /* Choosing the report is the page's first decision, so each option says in
@@ -35,9 +36,10 @@ const REPORTS: { value: AuditTab; icon: string }[] = [
   { value: "settings", icon: "SlidersHorizontal" },
 ];
 
-export function AuditScreen() {
+export function AuditScreen({ panelOpen = true }: { panelOpen?: boolean }) {
   const t = useTranslations("audit");
   const [query, setQuery] = useReportQuery();
+  const panel = usePanelOpenState(panelOpen);
   const period = (
     <ReportDateRange
       range={query.range}
@@ -46,72 +48,74 @@ export function AuditScreen() {
   );
 
   return (
-    <div className="flex flex-col gap-8">
-      <IGRPPageHeader
-        {...PAGE_HEADER_PROPS}
-        title={t("header.title")}
-        description={t("header.description")}
-        showBackButton
-        urlBackButton="/settings"
-      />
+    <PanelOpenContext value={panel}>
+      <div className="flex flex-col gap-8">
+        <IGRPPageHeader
+          {...PAGE_HEADER_PROPS}
+          title={t("header.title")}
+          description={t("header.description")}
+          showBackButton
+          urlBackButton="/settings"
+        />
 
-      <Tabs
-        className="flex flex-col gap-6"
-        value={query.tab}
-        onValueChange={(tab) => {
-          if (isAuditTab(tab)) setQuery(withTab(query, tab));
-        }}
-      >
-        <TabsList
-          aria-label={t("reports.label")}
-          className="grid w-full grid-cols-1 gap-3 bg-transparent p-0 group-data-horizontal/tabs:h-auto md:grid-cols-2"
+        <Tabs
+          className="flex flex-col gap-6"
+          value={query.tab}
+          onValueChange={(tab) => {
+            if (isAuditTab(tab)) setQuery(withTab(query, tab));
+          }}
         >
-          {REPORTS.map((report) => (
-            <TabsTrigger
-              key={report.value}
-              value={report.value}
-              className="group/tile h-auto items-start justify-start gap-3 whitespace-normal rounded-xl border-border bg-card p-4 text-left text-muted-foreground not-data-active:hover:bg-muted data-active:bg-card! data-active:text-foreground data-active:shadow-none data-active:ring-2 data-active:ring-primary"
-            >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors motion-reduce:transition-none group-data-active/tile:bg-primary group-data-active/tile:text-primary-foreground">
-                <IGRPIcon
-                  iconName={report.icon}
-                  className="size-4.5"
-                  aria-hidden="true"
-                />
-              </span>
-              <span className="flex flex-col gap-1">
-                <span className="text-base font-semibold text-foreground">
-                  {t(`reports.${report.value}.title`)}
+          <TabsList
+            aria-label={t("reports.label")}
+            className="grid w-full grid-cols-1 gap-3 bg-transparent p-0 group-data-horizontal/tabs:h-auto md:grid-cols-2"
+          >
+            {REPORTS.map((report) => (
+              <TabsTrigger
+                key={report.value}
+                value={report.value}
+                className="group/tile h-auto items-start justify-start gap-3 whitespace-normal rounded-xl border-border bg-card p-4 text-left text-muted-foreground not-data-active:hover:bg-muted data-active:bg-card! data-active:text-foreground data-active:shadow-none data-active:ring-2 data-active:ring-primary"
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors motion-reduce:transition-none group-data-active/tile:bg-primary group-data-active/tile:text-primary-foreground">
+                  <IGRPIcon
+                    iconName={report.icon}
+                    className="size-4.5"
+                    aria-hidden="true"
+                  />
                 </span>
-                <span className="text-sm font-normal">
-                  {t(`reports.${report.value}.description`)}
+                <span className="flex flex-col gap-1">
+                  <span className="text-base font-semibold text-foreground">
+                    {t(`reports.${report.value}.title`)}
+                  </span>
+                  <span className="text-sm font-normal">
+                    {t(`reports.${report.value}.description`)}
+                  </span>
                 </span>
-              </span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        {/* One period for every report: it survives tab switches; the
+          {/* One period for every report: it survives tab switches; the
             filters under it don't. */}
-        {REPORTS.map((report) => (
-          <TabsContent key={report.value} value={report.value}>
-            {query.tab === report.value &&
-              (report.value === "access" ? (
-                <AccessReportTab
-                  query={query}
-                  onQueryChange={setQuery}
-                  period={period}
-                />
-              ) : (
-                <SettingsReportTab
-                  query={query}
-                  onQueryChange={setQuery}
-                  period={period}
-                />
-              ))}
-          </TabsContent>
-        ))}
-      </Tabs>
-    </div>
+          {REPORTS.map((report) => (
+            <TabsContent key={report.value} value={report.value}>
+              {query.tab === report.value &&
+                (report.value === "access" ? (
+                  <AccessReportTab
+                    query={query}
+                    onQueryChange={setQuery}
+                    period={period}
+                  />
+                ) : (
+                  <SettingsReportTab
+                    query={query}
+                    onQueryChange={setQuery}
+                    period={period}
+                  />
+                ))}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    </PanelOpenContext>
   );
 }

@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Suspense } from "react";
 
 import { igrpAssertAuthorize } from "@igrp/framework-next";
 import { getTranslations } from "next-intl/server";
 
 import { AuditScreen } from "@/features/audit/components/audit-screen";
+import {
+  PANEL_OPEN_COOKIE,
+  panelOpenFromCookie,
+} from "@/features/audit/lib/panel-cookie";
 import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
 
 import Loading from "./loading";
@@ -21,11 +26,14 @@ export async function generateMetadata(): Promise<Metadata> {
    The server actions check again; the AM API is the real enforcement. */
 export default async function AuditPage() {
   await igrpAssertAuthorize(AUDIT_VIEW_PERMISSION);
+  const panelOpen = panelOpenFromCookie(
+    (await cookies()).get(PANEL_OPEN_COOKIE)?.value,
+  );
 
   // useSearchParams() inside needs a Suspense boundary.
   return (
     <Suspense fallback={<Loading />}>
-      <AuditScreen />
+      <AuditScreen panelOpen={panelOpen} />
     </Suspense>
   );
 }
