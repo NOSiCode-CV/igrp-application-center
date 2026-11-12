@@ -38,21 +38,26 @@ function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
  * with NEXTAUTH_SECRET; Redis never sees a token in plaintext.
  */
 export function createRedisSessionStore(url: string): IGRPSessionStore {
-  type Client = ReturnType<typeof createClient>;
+  const newClient = () =>
+    createClient({
+      url,
+      // redis v6 defaults to RESP3 (needs Redis >= 6, enables maintNotifications).
+      // The store only uses string GET/SET/DEL/EVAL, so RESP2 keeps v5 behaviour.
+      RESP: 2,
+      // Fail commands while disconnected instead of queueing them: a queued
+      // GET would hold the request until Redis came back.
+      disableOfflineQueue: true,
+      socket: {
+        connectTimeout: STORE_TIMEOUT_MS,
+        reconnectStrategy: (retries) => Math.min(retries * 200, 5000),
+      },
+    });
+  type Client = ReturnType<typeof newClient>;
   let connecting: Promise<Client> | undefined;
 
   function client(): Promise<Client> {
     connecting ??= (async () => {
-      const redis = createClient({
-        url,
-        // Fail commands while disconnected instead of queueing them: a queued
-        // GET would hold the request until Redis came back.
-        disableOfflineQueue: true,
-        socket: {
-          connectTimeout: STORE_TIMEOUT_MS,
-          reconnectStrategy: (retries) => Math.min(retries * 200, 5000),
-        },
-      });
+      const redis = newClient();
       // Without a listener, a connection error is an unhandled 'error' event
       // and crashes the process.
       redis.on("error", (error) =>
