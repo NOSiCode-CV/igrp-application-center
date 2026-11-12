@@ -4,6 +4,7 @@ export const DEFAULT_TIME_ZONE = "Atlantic/Cape_Verde";
 export function resolveTimeZone(raw: string | undefined): string {
   if (!raw) return DEFAULT_TIME_ZONE;
   try {
+    // igrp-i18n-ignore: only validates the zone, never formats anything shown
     new Intl.DateTimeFormat("en", { timeZone: raw });
     return raw;
   } catch {

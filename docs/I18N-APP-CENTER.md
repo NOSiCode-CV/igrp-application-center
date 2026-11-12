@@ -53,14 +53,13 @@ The template is cookie-first. The framework switches to session-first on its own
 4. Client: `useTranslations("ns")`. Server: `await getTranslations("ns")` from `next-intl/server`. Server actions put their own refusals under `errors.actions` (for example `noFile`, `departmentRequired`) instead of Portuguese literals.
 5. Zod schemas take a translator (`(key) => string`) instead of literals (see `src/features/applications/app-schemas.ts`). API enum codes map to keys in a per-feature `lib/i18n.ts` (see `src/features/users/lib/i18n.ts`). Status codes stay API values; use `useStatusLabel` / `useStatusOptions`.
 6. Dates, numbers, sorting: `useIGRPFormat()` (client) or `igrpFormatDate(value, await igrpResolveFormatLocale(i18n), undefined, i18n.timeZone)` (server). Never `useFormatter` and never a hardcoded region.
-7. Add the feature's folders to the `lint:i18n` script in `package.json`.
-8. Delete dead files instead of translating them (grep `src` for importers first).
+7. Delete dead files instead of translating them (grep `src` for importers first).
 
 Style: en uses Sentence case and American spelling. fr uses "rôle" for roles, "profil" for the user profile, the typographic apostrophe `’` and a narrow no-break space (U+202F) before `: ; ! ?`.
 
 ## Checks
 
-- `pnpm lint:i18n` (also part of `build`): `check-catalogs` (orphan keys, invalid ICU, argument parity with `pt`, coverage) and `check-literals` over the folders listed in `package.json`, which include `src/components`. Mark a literal that is not language (a parsed token, a fixed formatter locale) with `// igrp-i18n-ignore: <why>`.
+- `pnpm lint:i18n` (also part of `build`): `check-catalogs` (orphan keys, invalid ICU, argument parity with `pt`, coverage) and `check-literals` over all of `src` (test files are skipped), so a new feature is checked without touching the script. This differs from the template, which lists migrated folders. Mark a literal that is not language (a parsed token, a fixed formatter locale) with `// igrp-i18n-ignore: <why>`.
 - `pnpm typecheck`: fails on any key the code uses that `pt.json` lacks. `lint:i18n` only compares the locales with each other, so it passes when all three lose the same keys. **Run `typecheck` after any IGRP migration that touches the catalogs**: a template migration once replaced all three with the template's 72 keys.
 - `src/__tests__/i18n/catalogs.test.ts` fails when an en value equals its pt value, to catch English text left in pt. Genuine cognates and protocol terms go in its `ALLOWED` list.
 
