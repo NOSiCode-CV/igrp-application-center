@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  type ReactNode,
-  use,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, type ReactNode, use, useState } from "react";
 
 import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
@@ -22,33 +15,32 @@ import {
 import { useTranslations } from "next-intl";
 
 import type { AuditTranslator } from "../lib/i18n";
-import {
-  migrateLegacyPanelOpen,
-  writePanelOpenCookie,
-} from "../lib/panel-cookie";
+import { writePanelOpenCookie } from "../lib/panel-cookie";
 import type { DateRangeSelection } from "../lib/report-query";
 
-type PanelOpenState = { open: boolean; setOpen: (open: boolean) => void };
+// Outside the provider (tab tests) the panel shows open and does not fold.
+const PanelOpenContext = createContext({
+  open: true,
+  setOpen: (_open: boolean) => {},
+});
 
-/** One fold state for every report tab (each tab mounts its own panel). */
-export const PanelOpenContext = createContext<PanelOpenState | null>(null);
-
-/** Owns the fold state, seeded from the cookie the server read; the only writer of that cookie. */
-export function usePanelOpenState(initial: boolean): PanelOpenState {
+/** One fold state for every report tab (each tab mounts its own panel),
+   seeded from the cookie the server read. A toggle re-renders only the
+   panel, not the screen around it. */
+export function PanelOpenProvider({
+  initial,
+  children,
+}: {
+  initial: boolean;
+  children: ReactNode;
+}) {
   const [open, setOpenState] = useState(initial);
-  useEffect(() => {
-    const legacy = migrateLegacyPanelOpen();
-    if (legacy !== undefined) setOpenState(legacy);
-  }, []);
-  return useMemo(
-    () => ({
-      open,
-      setOpen: (next: boolean) => {
-        setOpenState(next);
-        writePanelOpenCookie(next);
-      },
-    }),
-    [open],
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    writePanelOpenCookie(next);
+  };
+  return (
+    <PanelOpenContext value={{ open, setOpen }}>{children}</PanelOpenContext>
   );
 }
 
@@ -73,14 +65,10 @@ export function ReportQueryPanel({
 }) {
   const t = useTranslations("audit");
   const { formatDate } = useIGRPFormat();
-  const shared = use(PanelOpenContext);
-  const [localOpen, setLocalOpen] = useState(true);
-  // Outside AuditScreen (tests, reuse) the panel keeps its own unsaved state.
-  const open = shared?.open ?? localOpen;
-  const onOpenChange = shared?.setOpen ?? setLocalOpen;
+  const { open, setOpen } = use(PanelOpenContext);
 
   return (
-    <Collapsible open={open} onOpenChange={onOpenChange} asChild>
+    <Collapsible open={open} onOpenChange={setOpen} asChild>
       <section
         aria-label={t("panel.title")}
         className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 md:p-5"

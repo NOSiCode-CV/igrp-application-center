@@ -1,31 +1,15 @@
-import type { ReactNode } from "react";
-
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createTranslator } from "next-intl";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  PanelOpenContext,
+  PanelOpenProvider,
   queryLabel,
   ReportQueryPanel,
-  usePanelOpenState,
 } from "@/features/audit/components/report-query-panel";
-import { panelOpenFromCookie } from "@/features/audit/lib/panel-cookie";
 import enMessages from "@/i18n/messages/en.json";
 import pt from "@/i18n/messages/pt.json";
-
-/** Stands in for AuditScreen: owns the fold state, seeded like the server does. */
-function Screen({
-  initial,
-  children,
-}: {
-  initial: boolean;
-  children: ReactNode;
-}) {
-  const panel = usePanelOpenState(initial);
-  return <PanelOpenContext value={panel}>{children}</PanelOpenContext>;
-}
 
 function panel(filterCount: number, onClear = vi.fn()) {
   return (
@@ -40,45 +24,36 @@ function panel(filterCount: number, onClear = vi.fn()) {
 }
 
 function renderPanel(filterCount: number, onClear = vi.fn(), open = true) {
-  return render(<Screen initial={open}>{panel(filterCount, onClear)}</Screen>);
+  return render(
+    <PanelOpenProvider initial={open}>
+      {panel(filterCount, onClear)}
+    </PanelOpenProvider>,
+  );
 }
 
 describe("ReportQueryPanel", () => {
   afterEach(() => {
     // biome-ignore lint/suspicious/noDocumentCookie: clearing the cookie the panel writes.
     document.cookie = "audit-query-panel-open=; max-age=0; path=/";
-    window.localStorage.clear();
   });
 
   it("keeps the fold when another report tab mounts its own panel", async () => {
     const { rerender } = render(
-      <Screen initial={true}>
+      <PanelOpenProvider initial={true}>
         <div key="access">{panel(0)}</div>
-      </Screen>,
+      </PanelOpenProvider>,
     );
     await userEvent.click(
       screen.getByRole("button", { name: "Período e filtros" }),
     );
     rerender(
-      <Screen initial={true}>
+      <PanelOpenProvider initial={true}>
         <div key="settings">{panel(0)}</div>
-      </Screen>,
+      </PanelOpenProvider>,
     );
     expect(
       screen.getByRole("button", { name: "Período e filtros" }),
     ).toHaveAttribute("aria-expanded", "false");
-  });
-
-  it("moves a fold saved by the localStorage version into the cookie", async () => {
-    window.localStorage.setItem("audit.query-panel.open", "false");
-    renderPanel(0);
-    await waitFor(() =>
-      expect(
-        screen.getByRole("button", { name: "Período e filtros" }),
-      ).toHaveAttribute("aria-expanded", "false"),
-    );
-    expect(document.cookie).toContain("audit-query-panel-open=0");
-    expect(window.localStorage.getItem("audit.query-panel.open")).toBeNull();
   });
 
   it("keeps Limpar filtros in place, disabled until a filter is set", async () => {
@@ -109,17 +84,11 @@ describe("ReportQueryPanel", () => {
     expect(document.cookie).toContain("audit-query-panel-open=0");
     unmount();
 
-    // The server reads that cookie and starts the next render folded.
-    renderPanel(2, vi.fn(), panelOpenFromCookie("0"));
+    // The server reads that cookie and seeds the next render folded.
+    renderPanel(2, vi.fn(), false);
     expect(
       screen.getByRole("button", { name: "Período e filtros" }),
     ).toHaveAttribute("aria-expanded", "false");
-  });
-
-  it("reads the cookie: only an explicit 0 folds it", () => {
-    expect(panelOpenFromCookie(undefined)).toBe(true);
-    expect(panelOpenFromCookie("1")).toBe(true);
-    expect(panelOpenFromCookie("0")).toBe(false);
   });
 });
 

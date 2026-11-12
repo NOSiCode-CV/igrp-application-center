@@ -6,6 +6,7 @@ import { igrpAssertAuthorize } from "@igrp/framework-next";
 import { getTranslations } from "next-intl/server";
 
 import { AuditScreen } from "@/features/audit/components/audit-screen";
+import { PanelOpenProvider } from "@/features/audit/components/report-query-panel";
 import {
   PANEL_OPEN_COOKIE,
   panelOpenFromCookie,
@@ -33,7 +34,9 @@ export default async function AuditPage() {
   // useSearchParams() inside needs a Suspense boundary.
   return (
     <Suspense fallback={<Loading />}>
-      <AuditScreen panelOpen={panelOpen} />
+      <PanelOpenProvider initial={panelOpen}>
+        <AuditScreen />
+      </PanelOpenProvider>
     </Suspense>
   );
 }
