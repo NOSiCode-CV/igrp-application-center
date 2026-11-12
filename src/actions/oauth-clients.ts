@@ -21,8 +21,11 @@ function withoutSecret(dto: OAuthClientDTO): OAuthClientDTO {
 }
 
 class UnknownApplicationError extends Error {
-  constructor(readonly code: string) {
-    super(`A aplicação «${code}» não existe.`);
+  // Escaped so a CR/LF in the caller's code cannot forge server log lines.
+  constructor(code: string) {
+    super(
+      `A aplicação «${JSON.stringify(String(code)).slice(1, -1)}» não existe.`,
+    );
   }
 }
 

@@ -1,3 +1,5 @@
+import { inspect } from "node:util";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const oauthClients = {
@@ -93,6 +95,25 @@ describe("oauth-client actions", () => {
       error: "A aplicação «NOPE» não existe.",
     });
     expect(oauthClients.createOAuthClient).not.toHaveBeenCalled();
+  });
+
+  it("logs an unknown applicationCode without its raw newlines", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const forged = `x\n[service-account-delete] Falhou no passo client: ${"A".repeat(140)}`;
+    const r = await createOAuthClient({
+      clientId: "my-invoice",
+      clientName: "Invoice",
+      scopes: [],
+      grantTypes: ["client_credentials"],
+      applicationCode: forged,
+    });
+    expect(r).toMatchObject({ success: false, status: 422 });
+    expect(r.success ? "" : r.error).not.toContain("\n");
+    const printed = log.mock.calls
+      .map((args) => args.map((a) => inspect(a)).join(" "))
+      .join("\n");
+    expect(printed).not.toContain("\n[service-account-delete]");
+    log.mockRestore();
   });
 
   it("sends no applicationId when no application is chosen", async () => {
