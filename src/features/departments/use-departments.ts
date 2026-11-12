@@ -21,7 +21,6 @@ import {
   getAvailableApplications,
   getAvailableMenus,
   getAvailablePermissions,
-  getAvailablePermissionsForRole,
   getAvailableResources,
   getDepartmentApplications,
   getDepartmentMenus,
@@ -41,10 +40,7 @@ import { unwrap } from "@/actions/types";
 import { applicationsKeys } from "@/features/applications/query-keys";
 
 import { departmentKeys, roleKeys } from "./query-keys";
-import {
-  departmentByCodeOptions,
-  departmentListOptions,
-} from "./query-options";
+import { departmentListOptions } from "./query-options";
 
 export const useDepartments = () => {
   // unwrap throws HttpStatusError (not a plain Error) so a client-side fetch

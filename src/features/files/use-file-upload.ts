@@ -11,6 +11,15 @@ import {
 
 import type { FileWithPreview } from "./files-schemas";
 
+function revoke(list: FileWithPreview[]) {
+  for (const f of list) if (f.preview) URL.revokeObjectURL(f.preview);
+}
+
+function stop(e: DragEvent<HTMLElement>) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
 /**
  * Single-file pick / drop with an object-URL preview (the one shape
  * `FileUploadField` uses). `errors` only signals "too large"; the field shows
@@ -27,10 +36,6 @@ export function useFileUpload({
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isDragging, setDragging] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
-
-  const revoke = (list: FileWithPreview[]) => {
-    for (const f of list) if (f.preview) URL.revokeObjectURL(f.preview);
-  };
 
   const clearFiles = useCallback(() => {
     setFiles((prev) => {
@@ -66,11 +71,6 @@ export function useFileUpload({
     });
     setErrors([]);
   }, []);
-
-  const stop = (e: DragEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
 
   const handleDragEnter = useCallback((e: DragEvent<HTMLElement>) => {
     stop(e);

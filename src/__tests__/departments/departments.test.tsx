@@ -101,7 +101,9 @@ describe("Department dialogs", () => {
       "Department code",
     ) as HTMLInputElement;
 
-    fireEvent.change(name, { target: { value: "Direção de Recursos Humanos" } });
+    fireEvent.change(name, {
+      target: { value: "Direção de Recursos Humanos" },
+    });
     await waitFor(() => expect(code.value).toBe("DRH"));
 
     fireEvent.change(code, { target: { value: "RH" } });
