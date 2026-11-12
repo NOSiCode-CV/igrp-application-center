@@ -1,4 +1,6 @@
-export const MAX_IMAGE_UPLOAD_BYTES = 5 * 1024 * 1024;
+// shortcut: the Access Management API proxy rejects bodies over ~1 MB (413);
+// raise this (and serverActions.bodySizeLimit) once that limit is raised.
+export const MAX_IMAGE_UPLOAD_BYTES = 1 * 1024 * 1024;
 
 export function imageUploadProblem(
   file: File | Blob,
