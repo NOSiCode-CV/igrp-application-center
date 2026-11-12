@@ -20,3 +20,7 @@ overrides:
   "vite@>=8.2.0 <8.2.4": ^8.2.4
   "postcss@<8.5.18": ^8.5.18
   "source-map-js@<1.2.2": ^1.2.2
+auditConfig:
+  ignoreGhsas:
+    # deepmerge prototype poisoning (low), only via the shadcn CLI (dev tool, never bundled). No patched deepmerge exists; drop once shadcn or deepmerge ships a fix.
+    - GHSA-gcqx-w48m-w2h4
