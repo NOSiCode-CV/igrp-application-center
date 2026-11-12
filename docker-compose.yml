@@ -10,9 +10,9 @@ services:
     environment:
       - KEYCLOAK_ISSUER=https://demoigrp.nosi.cv/auth/realms/igrp
       - KEYCLOAK_CLIENT_ID=access-management
-      - KEYCLOAK_CLIENT_SECRET=vbBjOQcIhG897ZIRtKa7NHDy9sJNZY07
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
       - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=uUb44RSVTl+XzkpQt7W/lfRzGChdpb5rguUPh+Tb52w=
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - IGRP_ACCESS_MANAGEMENT_API=https://api-demoigrp.nosi.cv/igrp-access-management
       - IGRP_APP_CODE=APP_IGRP_CENTER
       - IGRP_PREVIEW_MODE=false
