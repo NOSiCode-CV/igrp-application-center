@@ -17,6 +17,7 @@ import { useTranslations } from "next-intl";
 
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
 import { formatSlug, isSystemApp } from "@/features/applications/app-utils";
+import { publicFileUrl } from "@/features/files/public-file-url";
 import { getAppTileColor } from "@/features/workspace/lib/app-utils";
 import { useStatusLabel } from "@/i18n/status";
 import { config, ROUTES } from "@/lib/constants";
@@ -40,11 +41,14 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
   const color = getAppTileColor(code ?? "");
   const initial = (name ?? code ?? "").charAt(0).toUpperCase();
   const appImage = app.picture;
-  const imageSrc = appImage
-    ? appImage.startsWith("http")
+  // No MinIO base configured: show the initial rather than a broken address.
+  const imageSrc = !appImage
+    ? null
+    : /^https?:\/\//i.test(appImage)
       ? appImage
-      : new URL(appImage, config.minioUrl).toString()
-    : null;
+      : config.minioUrl
+        ? publicFileUrl(appImage, config.minioUrl)
+        : null;
 
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 min-w-0">

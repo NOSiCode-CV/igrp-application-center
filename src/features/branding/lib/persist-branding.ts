@@ -1,5 +1,6 @@
 import { uploadPublicFile } from "@/actions/file";
 import { saveBranding } from "@/actions/global-configuration";
+import { publicFileUrl } from "@/features/files/public-file-url";
 
 import {
   type BrandingFormValues,
@@ -10,11 +11,6 @@ import {
 import { minioBaseUrl } from "./branding-rules";
 import { BrandingSaveError } from "./branding-save-error";
 
-/** String join, not `new URL(path, base)`, which would drop a bucket path without a trailing slash. */
-export function brandingAssetUrl(path: string, base = minioBaseUrl()): string {
-  return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
-}
-
 async function upload(
   slot: LogoSlotKey,
   value: File | string,
@@ -22,7 +18,7 @@ async function upload(
   if (!(value instanceof File)) return value;
   const result = await uploadPublicFile(value, { folder: "branding" });
   if (!result.success) throw new BrandingSaveError("upload", slot);
-  return brandingAssetUrl(result.data);
+  return publicFileUrl(result.data, minioBaseUrl());
 }
 
 /** Uploads every picked file in parallel; the first failure aborts. */

@@ -10,10 +10,8 @@ vi.mock("@/actions/global-configuration", () => ({ saveBranding: mocks.save }));
 
 import { toFormValues } from "@/features/branding/lib/branding-mapper";
 import { BrandingSaveError } from "@/features/branding/lib/branding-save-error";
-import {
-  brandingAssetUrl,
-  persistBranding,
-} from "@/features/branding/lib/persist-branding";
+import { persistBranding } from "@/features/branding/lib/persist-branding";
+import { publicFileUrl } from "@/features/files/public-file-url";
 
 const MINIO = "https://minio.example/igrp";
 const png = (name: string) => new File(["x"], name, { type: "image/png" });
@@ -33,13 +31,13 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 
-describe("brandingAssetUrl", () => {
+describe("publicFileUrl", () => {
   it.each([
     ["https://minio.example/igrp", "public/a.png"],
     ["https://minio.example/igrp/", "public/a.png"],
     ["https://minio.example/igrp", "/public/a.png"],
   ])("joins %j and %j keeping the bucket", (base, path) => {
-    expect(brandingAssetUrl(path, base)).toBe(
+    expect(publicFileUrl(path, base)).toBe(
       "https://minio.example/igrp/public/a.png",
     );
   });
