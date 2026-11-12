@@ -228,4 +228,3 @@ Use it as a reference for **all available variables** and their default values.
   --process-active: oklch(0.75 0.1256 254.49);
 }
 ```
-

@@ -195,37 +195,37 @@ After each successful migration `apply` writes `.igrp-migrations-lock.json` to y
 
 ## Migration history
 
-| # | ID | What changed | Target framework |
-|---|---|---|---|
-| 01 | `01-preview-mode-not-found` | Preview mode bypass, custom 404 | — |
-| 02 | `02-access-sync-config-refactor` | Access Management sync, config helpers | beta.84 |
-| 03 | `03-tailwind-v4-tokens` | Tailwind v4 `@source` / token-only imports | — |
-| 04 | `04-multi-auth-provider` | Multi-provider auth (`AUTH_PROVIDER`), central `auth.ts` | beta.113 |
-| 05 | `05-edge-safe-auth-bypass` | Edge-safe auth refactor, `isAuthBypass()` unification | beta.114 |
-| 06 | `06-error-handling-overhaul` | Typed error hierarchy, full App Router error boundaries | beta.115 |
-| 07 | `07-data-access-layer` | Data Access Layer (`verifySession`, `getAuthenticatedUser`), complete `isAuthBypass` in `getSession` | beta.120 |
-| 08 | `08-m2m-oauth2-client-credentials` | M2M OAuth2 `client_credentials` | beta.137 |
-| 09 | `09-sync-on-code-menus` | Re-introduce `IGRP_SYNC_ON_CODE_MENUS` | beta.139 |
-| 10 | `10-session-refetch-and-menu-role-sync` | Configurable session refetch + menu-role sync control | beta.142 |
-| 11 | `11-callbackurl-hardening-and-error-copy` | `callbackUrl` hardening + `AppError` error copy | beta.142 |
-| 12 | `12-template-resync` | Template resync | beta.144 |
-| 13 | `13-resync-beta145` | Resync to framework beta.145 | beta.145 |
-| 14 | `14-deferred-logout-and-cleanup` | Deferred logout & cleanup | beta.148 |
-| 15 | `15-resync-beta149` | Resync to beta.149 | beta.149 |
-| 16 | `16-resync-beta150` | Resync to beta.150 | beta.150 |
-| 17 | `17-sidebar-menu-search-config` | Sidebar menu search config | beta.151 |
-| 18 | `18-email-scope-enable` | Email scope enabled | beta.153 |
-| 19 | `19-adaptive-session-refresh` | Adaptive session refresh | beta.153 |
-| 20 | `20-sidebar-trigger-in-header` | Sidebar toggle moved into the header | beta.158 |
-| 21 | `21-template-resync-catchup` | Template resync catch-up | — |
-| 22 | `22-session-args-auth-bypass` | Session refetch honours `AUTH_PROVIDER=none` | — |
-| 23 | `23-per-request-layout-and-routes-cache` | Per-request layout config + routes cache | — |
-| 24 | `24-resync-beta159` | Resync to beta.159 | beta.159 |
-| 25 | `25-resync-beta160` | Resync to beta.160 | beta.160 |
-| 26 | `26-catchup-untracked-and-drifted` | Catch-up for untracked + drifted files | beta.160 |
-| 27 | `27-csp-hsts-headers` | CSP + HSTS security headers | — |
-| 28 | `28-resync-beta165-query-provider-split` | Resync to beta.165 + query-provider split | beta.165 |
-| 29 | `29-permissions-catalog-sync` | Permissions catalog sync to Access Management | — |
+| #   | ID                                        | What changed                                                                                         | Target framework |
+| --- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------- |
+| 01  | `01-preview-mode-not-found`               | Preview mode bypass, custom 404                                                                      | —                |
+| 02  | `02-access-sync-config-refactor`          | Access Management sync, config helpers                                                               | beta.84          |
+| 03  | `03-tailwind-v4-tokens`                   | Tailwind v4 `@source` / token-only imports                                                           | —                |
+| 04  | `04-multi-auth-provider`                  | Multi-provider auth (`AUTH_PROVIDER`), central `auth.ts`                                             | beta.113         |
+| 05  | `05-edge-safe-auth-bypass`                | Edge-safe auth refactor, `isAuthBypass()` unification                                                | beta.114         |
+| 06  | `06-error-handling-overhaul`              | Typed error hierarchy, full App Router error boundaries                                              | beta.115         |
+| 07  | `07-data-access-layer`                    | Data Access Layer (`verifySession`, `getAuthenticatedUser`), complete `isAuthBypass` in `getSession` | beta.120         |
+| 08  | `08-m2m-oauth2-client-credentials`        | M2M OAuth2 `client_credentials`                                                                      | beta.137         |
+| 09  | `09-sync-on-code-menus`                   | Re-introduce `IGRP_SYNC_ON_CODE_MENUS`                                                               | beta.139         |
+| 10  | `10-session-refetch-and-menu-role-sync`   | Configurable session refetch + menu-role sync control                                                | beta.142         |
+| 11  | `11-callbackurl-hardening-and-error-copy` | `callbackUrl` hardening + `AppError` error copy                                                      | beta.142         |
+| 12  | `12-template-resync`                      | Template resync                                                                                      | beta.144         |
+| 13  | `13-resync-beta145`                       | Resync to framework beta.145                                                                         | beta.145         |
+| 14  | `14-deferred-logout-and-cleanup`          | Deferred logout & cleanup                                                                            | beta.148         |
+| 15  | `15-resync-beta149`                       | Resync to beta.149                                                                                   | beta.149         |
+| 16  | `16-resync-beta150`                       | Resync to beta.150                                                                                   | beta.150         |
+| 17  | `17-sidebar-menu-search-config`           | Sidebar menu search config                                                                           | beta.151         |
+| 18  | `18-email-scope-enable`                   | Email scope enabled                                                                                  | beta.153         |
+| 19  | `19-adaptive-session-refresh`             | Adaptive session refresh                                                                             | beta.153         |
+| 20  | `20-sidebar-trigger-in-header`            | Sidebar toggle moved into the header                                                                 | beta.158         |
+| 21  | `21-template-resync-catchup`              | Template resync catch-up                                                                             | —                |
+| 22  | `22-session-args-auth-bypass`             | Session refetch honours `AUTH_PROVIDER=none`                                                         | —                |
+| 23  | `23-per-request-layout-and-routes-cache`  | Per-request layout config + routes cache                                                             | —                |
+| 24  | `24-resync-beta159`                       | Resync to beta.159                                                                                   | beta.159         |
+| 25  | `25-resync-beta160`                       | Resync to beta.160                                                                                   | beta.160         |
+| 26  | `26-catchup-untracked-and-drifted`        | Catch-up for untracked + drifted files                                                               | beta.160         |
+| 27  | `27-csp-hsts-headers`                     | CSP + HSTS security headers                                                                          | —                |
+| 28  | `28-resync-beta165-query-provider-split`  | Resync to beta.165 + query-provider split                                                            | beta.165         |
+| 29  | `29-permissions-catalog-sync`             | Permissions catalog sync to Access Management                                                        | —                |
 
 This table is a snapshot. For the authoritative list shipped by the CLI you are actually running:
 

@@ -792,9 +792,6 @@
   },
   "workspace": {
     "title": "Centre d’applications",
-    "tabs": {
-      "home": "Accueil et applications"
-    },
     "banner": {
       "greeting": {
         "morning": "Bonjour",

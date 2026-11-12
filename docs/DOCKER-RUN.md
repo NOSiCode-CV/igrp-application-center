@@ -4,12 +4,12 @@ The files under `docker/development/` produce a **production** Next.js standalon
 
 All commands below run from the **template root** (this directory: `templates/demo-v1` in the monorepo, or the root of an app created from the template).
 
-| File | Role |
-| --- | --- |
-| [`docker/development/Dockerfile`](../docker/development/Dockerfile) | Multi-stage build: Node 26 (slim) + pnpm → `next build` → `node server.js` |
-| [`docker/development/docker-compose.yml`](../docker/development/docker-compose.yml) | Builds that Dockerfile and publishes **host `3001` → container `3000`** |
-| [`docker/development/.env.development`](../docker/development/.env.development) | Copied to `.env.production` **at image build time** (inlines `NEXT_PUBLIC_*`) |
-| [`.dockerignore`](../.dockerignore) | Keeps `node_modules`, `.next`, and local `.env*` out of the build context |
+| File                                                                                | Role                                                                          |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [`docker/development/Dockerfile`](../docker/development/Dockerfile)                 | Multi-stage build: Node 26 (slim) + pnpm → `next build` → `node server.js`    |
+| [`docker/development/docker-compose.yml`](../docker/development/docker-compose.yml) | Builds that Dockerfile and publishes **host `3001` → container `3000`**       |
+| [`docker/development/.env.development`](../docker/development/.env.development)     | Copied to `.env.production` **at image build time** (inlines `NEXT_PUBLIC_*`) |
+| [`.dockerignore`](../.dockerignore)                                                 | Keeps `node_modules`, `.next`, and local `.env*` out of the build context     |
 
 > There is **no** `Dockerfile` at the template root. `docker build -t … .` without `-f` will fail.
 
@@ -65,10 +65,10 @@ Use host port **3001** to match Compose. Map `-p 3000:3000` only if nothing else
 
 Full variable reference: [ENVIRONMENT.md](ENVIRONMENT.md). Two timings matter in Docker:
 
-| When | What | How |
-| --- | --- | --- |
-| **Build** | `NEXT_PUBLIC_*` (base path, image domains, public app code, …) | Edit `docker/development/.env.development` **before** `docker build` / `compose up --build`. Next inlines these into the client bundle. Changing them later with `-e` has **no** effect until you rebuild. `.env.development` also bakes server defaults (`IGRP_PREVIEW_MODE`, `AUTH_PROVIDER`, `IGRP_ALLOW_AUTH_BYPASS_IN_PRODUCTION`), which a runtime `-e` overrides. |
-| **Run** | Secrets and server config (`NEXTAUTH_*`, `IGRP_AUTH_*`, `AUTH_PROVIDER`, AM/M2M, …; `IGRP_PREVIEW_MODE` and `IGRP_ALLOW_AUTH_BYPASS_IN_PRODUCTION` override the baked defaults) | `docker run -e` / `--env-file`, or Compose `environment` / `env_file`. Do not bake secrets into the image. |
+| When      | What                                                                                                                                                                            | How                                                                                                                                                                                                                                                                                                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Build** | `NEXT_PUBLIC_*` (base path, image domains, public app code, …)                                                                                                                  | Edit `docker/development/.env.development` **before** `docker build` / `compose up --build`. Next inlines these into the client bundle. Changing them later with `-e` has **no** effect until you rebuild. `.env.development` also bakes server defaults (`IGRP_PREVIEW_MODE`, `AUTH_PROVIDER`, `IGRP_ALLOW_AUTH_BYPASS_IN_PRODUCTION`), which a runtime `-e` overrides. |
+| **Run**   | Secrets and server config (`NEXTAUTH_*`, `IGRP_AUTH_*`, `AUTH_PROVIDER`, AM/M2M, …; `IGRP_PREVIEW_MODE` and `IGRP_ALLOW_AUTH_BYPASS_IN_PRODUCTION` override the baked defaults) | `docker run -e` / `--env-file`, or Compose `environment` / `env_file`. Do not bake secrets into the image.                                                                                                                                                                                                                                                               |
 
 `.dockerignore` excludes root `.env*` files so local secrets never enter the image. `!docker/development/.env.development` is allow-listed because the Dockerfile copies that file to `.env.production` during the build.
 
@@ -94,9 +94,9 @@ IGRP_PREVIEW_MODE=false
 
 Register these URIs on the auth server (byte-for-byte). Wrong host or port produces a login loop (`callbackUrl` nested on itself):
 
-| Config | OAuth callback | Post-logout redirect |
-| --- | --- | --- |
-| Root, Compose port 3001 | `http://localhost:3001/api/auth/callback/igrp-auth` | `http://localhost:3001/login` |
+| Config                                 | OAuth callback                                                    | Post-logout redirect                        |
+| -------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------- |
+| Root, Compose port 3001                | `http://localhost:3001/api/auth/callback/igrp-auth`               | `http://localhost:3001/login`               |
 | `NEXT_PUBLIC_BASE_PATH=/apps/template` | `http://localhost:3001/apps/template/api/auth/callback/igrp-auth` | `http://localhost:3001/apps/template/login` |
 
 `NEXTAUTH_URL_INTERNAL` is the in-container origin (port **3000**, no `/api/auth`). Use it for server-to-server redirects inside Docker/K8s; keep `NEXTAUTH_URL` as the browser-facing URL.
@@ -143,22 +143,22 @@ docker run -e HEALTHCHECK_PATH=/my-base/api/health ...
 
 ## Troubleshooting
 
-| Symptom | Likely cause |
-| --- | --- |
-| `docker build` cannot find a Dockerfile | You ran `docker build .` from the app root. Use `-f docker/development/Dockerfile` or Compose. |
-| `NEXTAUTH_SECRET must be set in production` **during `pnpm build` / `next build`** | A prerender-time failure, not a runtime one. Fixed by `export const dynamic = "force-dynamic"` in `src/app/layout.tsx` — the root layout reads the session, so nothing under it may be statically prerendered. The build must never require runtime secrets; if this reappears, something re-enabled prerendering of a session-reading route. |
-| `Missing required authentication environment variables for "igrp-auth"` during the build | Same cause and same fix as the row above (`assertAuthProviderEnv` is the guard immediately after the `NEXTAUTH_SECRET` one in `src/lib/auth.ts`). |
-| `EPERM: operation not permitted, symlink` at **Collecting build traces** (Windows only) | `output: "standalone"` recreates pnpm's symlinked `node_modules`, and Windows forbids symlinks unless **Developer Mode** is on. Enable *Settings → System → For developers → Developer Mode*, or run the build in Docker/WSL. Does not affect the Docker build (Linux). |
-| `ERR_PNPM_NO_LOCKFILE` / frozen lockfile error | No `pnpm-lock.yaml` in the build context. Run `pnpm install` in the app first. |
-| `ERR_PNPM_OUTDATED_LOCKFILE` | `pnpm-lock.yaml` is out of sync with `package.json`. The build uses `--frozen-lockfile` on purpose so this fails loudly instead of silently resolving different versions. Run `pnpm install` locally and commit the lockfile. |
-| Container stuck `health: starting` / `unhealthy` | The healthcheck probes `/api/health`. With `NEXT_PUBLIC_BASE_PATH` set, pass a matching `HEALTHCHECK_PATH`. |
-| 404 from registry.npmjs.org for `@igrp/…` | Docker’s `.npmrc` has no Sonatype auth. Add credentials locally (uncommitted) before building. |
-| `workspace:*` cannot be resolved | You are building the monorepo template folder. Use a generated app, or develop with `pnpm dev:demo`. |
-| Login loop, nested `callbackUrl` | `NEXTAUTH_URL` missing `/api/auth`, or it uses container port `3000` while the browser uses `3001`. See [ENVIRONMENT.md](ENVIRONMENT.md). |
-| `NEXTAUTH_SECRET must be set in production` | Image is `NODE_ENV=production`. Set `NEXTAUTH_SECRET` at runtime, or use `IGRP_PREVIEW_MODE=true` so layouts never call `serverSession()`. |
-| `[igrp-auth-bypass]` error in the log, every request returns 500 | `IGRP_PREVIEW_MODE=true` or `AUTH_PROVIDER=none` in a production build without `IGRP_ALLOW_AUTH_BYPASS_IN_PRODUCTION=true`. Set that variable only for demo deploys without login; otherwise turn bypass off. |
-| `IgrpConfigError` on first request | Required AM/auth env is missing and preview mode is off. See [ENVIRONMENT.md](ENVIRONMENT.md). |
-| Changing `NEXT_PUBLIC_BASE_PATH` does nothing | Public env is baked at **build**. Rebuild after editing `docker/development/.env.development`. |
-| Port already allocated | Compose binds **3001**. Change the left-hand side of `'3001:3000'` and update `NEXTAUTH_URL` + IdP URIs to match. |
+| Symptom                                                                                  | Likely cause                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docker build` cannot find a Dockerfile                                                  | You ran `docker build .` from the app root. Use `-f docker/development/Dockerfile` or Compose.                                                                                                                                                                                                                                                |
+| `NEXTAUTH_SECRET must be set in production` **during `pnpm build` / `next build`**       | A prerender-time failure, not a runtime one. Fixed by `export const dynamic = "force-dynamic"` in `src/app/layout.tsx` — the root layout reads the session, so nothing under it may be statically prerendered. The build must never require runtime secrets; if this reappears, something re-enabled prerendering of a session-reading route. |
+| `Missing required authentication environment variables for "igrp-auth"` during the build | Same cause and same fix as the row above (`assertAuthProviderEnv` is the guard immediately after the `NEXTAUTH_SECRET` one in `src/lib/auth.ts`).                                                                                                                                                                                             |
+| `EPERM: operation not permitted, symlink` at **Collecting build traces** (Windows only)  | `output: "standalone"` recreates pnpm's symlinked `node_modules`, and Windows forbids symlinks unless **Developer Mode** is on. Enable _Settings → System → For developers → Developer Mode_, or run the build in Docker/WSL. Does not affect the Docker build (Linux).                                                                       |
+| `ERR_PNPM_NO_LOCKFILE` / frozen lockfile error                                           | No `pnpm-lock.yaml` in the build context. Run `pnpm install` in the app first.                                                                                                                                                                                                                                                                |
+| `ERR_PNPM_OUTDATED_LOCKFILE`                                                             | `pnpm-lock.yaml` is out of sync with `package.json`. The build uses `--frozen-lockfile` on purpose so this fails loudly instead of silently resolving different versions. Run `pnpm install` locally and commit the lockfile.                                                                                                                 |
+| Container stuck `health: starting` / `unhealthy`                                         | The healthcheck probes `/api/health`. With `NEXT_PUBLIC_BASE_PATH` set, pass a matching `HEALTHCHECK_PATH`.                                                                                                                                                                                                                                   |
+| 404 from registry.npmjs.org for `@igrp/…`                                                | Docker’s `.npmrc` has no Sonatype auth. Add credentials locally (uncommitted) before building.                                                                                                                                                                                                                                                |
+| `workspace:*` cannot be resolved                                                         | You are building the monorepo template folder. Use a generated app, or develop with `pnpm dev:demo`.                                                                                                                                                                                                                                          |
+| Login loop, nested `callbackUrl`                                                         | `NEXTAUTH_URL` missing `/api/auth`, or it uses container port `3000` while the browser uses `3001`. See [ENVIRONMENT.md](ENVIRONMENT.md).                                                                                                                                                                                                     |
+| `NEXTAUTH_SECRET must be set in production`                                              | Image is `NODE_ENV=production`. Set `NEXTAUTH_SECRET` at runtime, or use `IGRP_PREVIEW_MODE=true` so layouts never call `serverSession()`.                                                                                                                                                                                                    |
+| `[igrp-auth-bypass]` error in the log, every request returns 500                         | `IGRP_PREVIEW_MODE=true` or `AUTH_PROVIDER=none` in a production build without `IGRP_ALLOW_AUTH_BYPASS_IN_PRODUCTION=true`. Set that variable only for demo deploys without login; otherwise turn bypass off.                                                                                                                                 |
+| `IgrpConfigError` on first request                                                       | Required AM/auth env is missing and preview mode is off. See [ENVIRONMENT.md](ENVIRONMENT.md).                                                                                                                                                                                                                                                |
+| Changing `NEXT_PUBLIC_BASE_PATH` does nothing                                            | Public env is baked at **build**. Rebuild after editing `docker/development/.env.development`.                                                                                                                                                                                                                                                |
+| Port already allocated                                                                   | Compose binds **3001**. Change the left-hand side of `'3001:3000'` and update `NEXTAUTH_URL` + IdP URIs to match.                                                                                                                                                                                                                             |
 
 Logs: `docker compose -f docker/development/docker-compose.yml logs -f`.

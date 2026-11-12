@@ -12,7 +12,7 @@ import {
   useGetCurrentUserRoles,
 } from "@/features/users/use-users";
 
-import { type GreetingKey, getGreeting } from "../../lib/task-utils";
+import { type GreetingKey, getGreeting } from "../../lib/greeting";
 
 function firstName(full?: string): string {
   return full?.trim().split(/\s+/)[0] ?? "";

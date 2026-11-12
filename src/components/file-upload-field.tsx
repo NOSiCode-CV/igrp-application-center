@@ -15,10 +15,8 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { useTranslations } from "next-intl";
 
-import {
-  type FileWithPreview,
-  useFileUpload,
-} from "../features/files/use-file-upload";
+import type { FileWithPreview } from "@/features/files/files-schemas";
+import { useFileUpload } from "@/features/files/use-file-upload";
 
 export interface FileUploadFieldProps {
   value?: FileWithPreview | null;
@@ -95,13 +93,7 @@ export function FileUploadField(props: FileUploadFieldProps) {
 
   // 2) When the external form value is cleared (e.g. reset), clear the hook UI
   useEffect(() => {
-    if (!value) {
-      try {
-        clearFiles?.(); // if your hook supports it
-      } catch {
-        // safe no-op if not available
-      }
-    }
+    if (!value) clearFiles();
   }, [value, clearFiles]);
 
   const handleRemove = () => {
@@ -207,7 +199,6 @@ export function FileUploadField(props: FileUploadFieldProps) {
                 iconName="AlertCircleIcon"
                 className="size-3 shrink-0"
               />
-              {/* Single-file mode: the hook's only reachable error is its (English) size message. */}
               <span>{t("tooLarge", { size: maxSizeMB })}</span>
             </div>
           )}

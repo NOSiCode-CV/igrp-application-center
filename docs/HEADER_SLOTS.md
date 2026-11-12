@@ -30,20 +30,20 @@ The header is rendered by the framework, not by your app:
 
 A **slot** hands the framework a node to render in a position it owns. The
 framework still fetches and owns **all** header data — user, logo, breadcrumbs,
-sidebar trigger. A slot replaces *what renders in a position*, never *where the
-data comes from*. You give up nothing by using one.
+sidebar trigger. A slot replaces _what renders in a position_, never _where the
+data comes from_. You give up nothing by using one.
 
 ## The slots
 
 Pass them as `headerSlots` on `IGRPLayoutFull`:
 
-| Slot | Position | Renders when |
-| --- | --- | --- |
-| `start` | Left region, after the logo/title, before the breadcrumbs | you pass a node |
-| `search` | Right cluster, first — replaces the built-in command palette | `showSearch: true` |
-| `settings` | Right cluster — replaces the built-in settings link | `showSettings: true` |
-| `notifications` | Right cluster — replaces the built-in notifications dropdown | `showNotifications: true` |
-| `actions` | Right cluster, after notifications, before the theme switcher | you pass a node |
+| Slot            | Position                                                      | Renders when              |
+| --------------- | ------------------------------------------------------------- | ------------------------- |
+| `start`         | Left region, after the logo/title, before the breadcrumbs     | you pass a node           |
+| `search`        | Right cluster, first — replaces the built-in command palette  | `showSearch: true`        |
+| `settings`      | Right cluster — replaces the built-in settings link           | `showSettings: true`      |
+| `notifications` | Right cluster — replaces the built-in notifications dropdown  | `showNotifications: true` |
+| `actions`       | Right cluster, after notifications, before the theme switcher | you pass a node           |
 
 Two gating styles, and the difference matters:
 
@@ -65,7 +65,11 @@ import { IGRPLayoutFull } from "@igrp/framework-next";
 import { EnvBadge } from "@/components/header/env-badge";
 import { MyNotifications } from "@/components/header/my-notifications";
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const config = await createConfig(layoutConfig);
 
   return (
@@ -91,11 +95,11 @@ This template ships one real slot: the **command palette**, wired through
 `search`. Read these three files as the reference implementation — they cover
 every constraint in this document.
 
-| File | Role |
-| --- | --- |
-| [`src/lib/header-search.ts`](../src/lib/header-search.ts) | **Server.** Resolves the application menus into serializable command data. Branches on `isAuthBypass()` exactly like the framework's sidebar provider: mock menus under bypass, `fetchMenusAction(appCode)` otherwise. Returns `[]` on a failed fetch. |
-| [`src/components/header/app-search.tsx`](../src/components/header/app-search.tsx) | **Client (`'use client'`).** Maps that data to `IGRPCommandItem[]`, building each `onSelect` handler, and renders `IGRPTemplateCommandSearch`. |
-| [`src/app/(igrp)/layout.tsx`](../src/app/(igrp)/layout.tsx) | Awaits the commands and passes the element as the `search` slot. |
+| File                                                                              | Role                                                                                                                                                                                                                                                   |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`src/lib/header-search.ts`](../src/lib/header-search.ts)                         | **Server.** Resolves the application menus into serializable command data. Branches on `isAuthBypass()` exactly like the framework's sidebar provider: mock menus under bypass, `fetchMenusAction(appCode)` otherwise. Returns `[]` on a failed fetch. |
+| [`src/components/header/app-search.tsx`](../src/components/header/app-search.tsx) | **Client (`'use client'`).** Maps that data to `IGRPCommandItem[]`, building each `onSelect` handler, and renders `IGRPTemplateCommandSearch`.                                                                                                         |
+| [`src/app/(igrp)/layout.tsx`](../src/app/(igrp)/layout.tsx)                       | Awaits the commands and passes the element as the `search` slot.                                                                                                                                                                                       |
 
 The whole wiring in the layout is three lines:
 
@@ -128,9 +132,7 @@ The built-in dropdown renders whatever `getHeaderData()` returns in
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  IGRPTemplateNotifications,
-} from "@igrp/framework-next-ui";
+import { IGRPTemplateNotifications } from "@igrp/framework-next-ui";
 
 export function MyNotifications() {
   const { data } = useQuery({
@@ -156,7 +158,7 @@ render something entirely your own. `IGRPQueryProvider` is already mounted above
 "Notifications" entry in its dropdown, gated by the same `showNotifications`
 flag. When you pass a `notifications` slot, the framework **suppresses** that
 entry — otherwise the header would offer two entry points to notifications and
-your component would only own one of them. Your slot is also *not* hidden on
+your component would only own one of them. Your slot is also _not_ hidden on
 small screens; the framework's own bell is (`hidden md:block`) precisely because
 nav-user covered mobile.
 
@@ -192,7 +194,7 @@ gets its own separator when a logo, title or sidebar trigger precedes it:
 headerSlots={{ start: <IGRPBadge variant="outline">STAGING</IGRPBadge> }}
 ```
 
-It is placed *before* the breadcrumbs deliberately: breadcrumbs collapse under
+It is placed _before_ the breadcrumbs deliberately: breadcrumbs collapse under
 pressure, and a slot after them would be the first thing crushed on a narrow
 viewport.
 
@@ -235,7 +237,7 @@ headerSlots={{ search: AppSearch }}      // ❌ a function cannot be serialized
 ```
 
 **The same rule applies to props you pass into a slot.** This is the trap that
-`IGRPCommandItem.onSelect` walks into: it is a callback, so a *server* module
+`IGRPCommandItem.onSelect` walks into: it is a callback, so a _server_ module
 cannot build the items. Pass plain data from the server and construct the
 handlers inside the client component — that is exactly why
 `header-search.ts` and `app-search.tsx` are two files.
@@ -263,12 +265,12 @@ needs `'use client'` — see [Design System](DESIGN_SYSTEM.md).
 
 ## What is not injectable
 
-| Not a slot | Why |
-| --- | --- |
-| Theme switcher | Framework behaviour tied to `next-themes` |
-| Nav-user menu | Tied to session and sign-out; overriding it is how auth UX breaks |
-| Logo, title, breadcrumbs, sidebar trigger | Configured through `getHeaderData()` flags and `breadcrumbs` / `breadcrumbRouteLabels` props |
-| The header as a whole | There is no full-replacement prop. It would hand you back the data fetching — `getHeaderData()`, `fetchCurrentUser()`, and the access-client re-seed that `HeaderDataProvider` performs because Suspense resumes on a tick that does not inherit the `AsyncLocalStorage` store. Use slots instead. |
+| Not a slot                                | Why                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme switcher                            | Framework behaviour tied to `next-themes`                                                                                                                                                                                                                                                          |
+| Nav-user menu                             | Tied to session and sign-out; overriding it is how auth UX breaks                                                                                                                                                                                                                                  |
+| Logo, title, breadcrumbs, sidebar trigger | Configured through `getHeaderData()` flags and `breadcrumbs` / `breadcrumbRouteLabels` props                                                                                                                                                                                                       |
+| The header as a whole                     | There is no full-replacement prop. It would hand you back the data fetching — `getHeaderData()`, `fetchCurrentUser()`, and the access-client re-seed that `HeaderDataProvider` performs because Suspense resumes on a tick that does not inherit the `AsyncLocalStorage` store. Use slots instead. |
 
 To hide a built-in rather than replace it, flip its flag in
 `getHeaderData()` (`showSearch`, `showSettings`, `showNotifications`,
@@ -278,7 +280,7 @@ To hide a built-in rather than replace it, flip its flag in
 
 Slots are indifferent to auth — they render the same under
 `IGRP_PREVIEW_MODE=true` or `AUTH_PROVIDER=none` as they do against a live
-backend. Any *data* a slot resolves is your responsibility to branch, and
+backend. Any _data_ a slot resolves is your responsibility to branch, and
 `isAuthBypass()` from `@/lib/utilities` is the only correct way to check.
 `getHeaderSearchCommands()` is the reference: mock menus under bypass, the
 Access-Management menus otherwise. See [Authentication](AUTHENTICATION.md).

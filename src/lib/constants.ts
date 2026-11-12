@@ -1,6 +1,5 @@
 export const ROUTES = {
   APPLICATIONS: "/settings/applications",
-  USER_PROFILE: "/profile",
   OAUTH_CLIENTS: "/settings/accounts/clients",
   OAUTH_CLIENT_NEW: "/settings/accounts/clients/new",
   SERVICE_ACCOUNTS: "/settings/accounts/services",

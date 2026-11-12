@@ -154,16 +154,6 @@ export const useUserRoles = (id: string) => {
   });
 };
 
-export const useUserRolesMulti = (id: string[]) => {
-  return useQueries({
-    queries: id.map((u) => ({
-      queryKey: userKeys.roles(u),
-      queryFn: async () => unwrap(await getUserRoles(u)),
-      enabled: !!u,
-    })),
-  });
-};
-
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 

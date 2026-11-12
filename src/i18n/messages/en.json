@@ -792,9 +792,6 @@
   },
   "workspace": {
     "title": "Application Center",
-    "tabs": {
-      "home": "Home and applications"
-    },
     "banner": {
       "greeting": {
         "morning": "Good morning",

@@ -196,13 +196,11 @@ Do **not** import prebuilt `@igrp/*/styles.css` files — only the `/tokens` ent
 
 ## 11. The Workspace (dashboard) feature
 
-`src/features/workspace/` implements the authenticated landing page (`(igrp)/(home)`) — an app launcher + task workspace, not a generic CRUD module, so it's structured a bit differently from the others:
+`src/features/workspace/` implements the authenticated landing page (`(igrp)/(home)`) — an app launcher, not a generic CRUD module, so it's structured a bit differently from the others:
 
-- `components/enterprise-workspace.tsx` — top-level composition, tab switching between the app launcher and the task workspace.
+- `components/enterprise-workspace.tsx` — top-level composition around the app launcher.
 - `components/home-apps/` — `welcome-banner.tsx`, `app-catalog.tsx`, `app-tile-card.tsx`, `recently-accessed.tsx`: the "launch an app" experience, including a compact card layout for the Recently Accessed row.
-- `components/tasks/` — `tasks-tab.tsx`, `task-list.tsx`, `task-row.tsx`, `work-summary-sidebar.tsx`: the task-tracking side of the dashboard.
-- `lib/app-utils.ts`, `lib/task-utils.ts` (+ colocated `.test.ts`) — pure helpers, unit-tested directly.
-- `data/mock-tasks.ts` — seed data for building/demoing the tasks UI without a backend.
+- `lib/app-utils.ts`, `lib/greeting.ts` (+ colocated `.test.ts`) — pure helpers, unit-tested directly.
 
 This is the area with the most active visual-design churn (tab active-color parity with the main tab bar in dark mode, banner polish, clickable app cards) — check recent commits touching `src/features/workspace/` before assuming current visual behavior matches an older screenshot or spec.
 

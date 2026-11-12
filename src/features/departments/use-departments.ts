@@ -101,10 +101,6 @@ export const useDeleteDepartment = () => {
   });
 };
 
-export const useDepartmentByCode = (code?: string) => {
-  return useQuery(departmentByCodeOptions(code));
-};
-
 export const useDepartmentAvailableApps = (departmentCode?: string) => {
   return useQuery<ApplicationDTO[], Error>({
     queryKey: departmentKeys.availableApps(departmentCode),
@@ -605,18 +601,6 @@ export const usePermissionsByRole = (
     queryKey: roleKeys.permissions(departmentCode, roleCode),
     queryFn: async () =>
       unwrap(await getPermissionsByRole(departmentCode, roleCode)),
-    enabled: !!departmentCode && !!roleCode,
-  });
-};
-
-export const useAvailablePermissionsForRole = (
-  departmentCode: string,
-  roleCode: string,
-) => {
-  return useQuery({
-    queryKey: roleKeys.availablePermissions(departmentCode, roleCode),
-    queryFn: async () =>
-      unwrap(await getAvailablePermissionsForRole(departmentCode, roleCode)),
     enabled: !!departmentCode && !!roleCode,
   });
 };

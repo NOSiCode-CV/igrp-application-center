@@ -1,6 +1,6 @@
 # Home / Applications Center Flow
 
-How `src/app/(igrp)/(home)` works: the authenticated landing experience (app launcher + task workspace) and the `/settings` management screens nested under it. This is the deep dive behind [DEVELOPER_GUIDE.md §11](DEVELOPER_GUIDE.md#11-the-workspace-dashboard-feature) — read that first for the wider request lifecycle.
+How `src/app/(igrp)/(home)` works: the authenticated landing experience (app launcher) and the `/settings` management screens nested under it. This is the deep dive behind [DEVELOPER_GUIDE.md §11](DEVELOPER_GUIDE.md#11-the-workspace-dashboard-feature) — read that first for the wider request lifecycle.
 
 - [1. Page inventory — what exists](#1-page-inventory--what-exists)
 - [2. Navigation flow](#2-navigation-flow)
@@ -8,7 +8,6 @@ How `src/app/(igrp)/(home)` works: the authenticated landing experience (app lau
 - [4. Layout chain & guards](#4-layout-chain--guards)
 - [5. The dashboard page (](#5-the-dashboard-page-)`/`[)](#5-the-dashboard-page-)
 - [6. EnterpriseWorkspace — Home & Apps tab](#6-enterpriseworkspace--home--apps-tab)
-- [7. EnterpriseWorkspace — Tasks tab](#7-enterpriseworkspace--tasks-tab)
 - [8. Data sources — what's real vs. mock](#8-data-sources--whats-real-vs-mock)
 - [9. Settings section (](#9-settings-section-settings)`/settings/*`[)](#9-settings-section-settings)
 - [10. Profile (](#10-profile-profile)`/profile`[)](#10-profile-profile)
@@ -20,20 +19,17 @@ How `src/app/(igrp)/(home)` works: the authenticated landing experience (app lau
 
 Every screen reachable under `(home)`, its route, and its real build status (not just "does the file exist" — whether it renders real data or a placeholder):
 
-| #   | Page                               | Route                           | Status                                                                                                       |
-| --- | ---------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| 1   | Dashboard — Home & Apps tab        | `/`                             | ✅ Live — real app/user data                                                                                 |
-| 2   | Dashboard — My Tasks Workspace tab | `/` (tab, no URL change)        | ⚠️ UI-complete, **mock data only**                                                                           |
-| 3   | Profile                            | `/profile`                      | ✅ Live                                                                                                      |
-| 4   | Settings hub                       | `/settings`                     | ✅ Live (static card grid)                                                                                   |
-| 5   | Applications — list                | `/settings/applications`        | ✅ Live                                                                                                      |
-| 6   | Applications — detail              | `/settings/applications/[code]` | ✅ Live                                                                                                      |
-| 7   | Departments — tree                 | `/settings/departments`         | ✅ Live                                                                                                      |
-| 8   | Users — list + invitations         | `/settings/users`               | ✅ Live                                                                                                      |
-| 9   | Users — detail                     | `/settings/users/[id]`          | ✅ Live                                                                                                      |
-| 10  | Customização (theming)             | `/settings/theme`               | ❌ **Does not exist** — linked from the settings hub card but no route is implemented; navigating there 404s |
-
-There is no dedicated URL for the Tasks tab — it's client-side state (`activeTab`) inside `EnterpriseWorkspace`, not a route, so it can't be deep-linked or bookmarked as-is.
+| #   | Page                        | Route                           | Status                                                                                                       |
+| --- | --------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| 1   | Dashboard — Home & Apps tab | `/`                             | ✅ Live — real app/user data                                                                                 |
+| 3   | Profile                     | `/profile`                      | ✅ Live                                                                                                      |
+| 4   | Settings hub                | `/settings`                     | ✅ Live (static card grid)                                                                                   |
+| 5   | Applications — list         | `/settings/applications`        | ✅ Live                                                                                                      |
+| 6   | Applications — detail       | `/settings/applications/[code]` | ✅ Live                                                                                                      |
+| 7   | Departments — tree          | `/settings/departments`         | ✅ Live                                                                                                      |
+| 8   | Users — list + invitations  | `/settings/users`               | ✅ Live                                                                                                      |
+| 9   | Users — detail              | `/settings/users/[id]`          | ✅ Live                                                                                                      |
+| 10  | Customização (theming)      | `/settings/theme`               | ❌ **Does not exist** — linked from the settings hub card but no route is implemented; navigating there 404s |
 
 ## 2. Navigation flow
 
@@ -41,8 +37,7 @@ There is no dedicated URL for the Tasks tab — it's client-side state (`activeT
 flowchart TD
     Login["/login"] -->|session valid| Home["/ — Dashboard"]
 
-    Home -->|"tab: Home and Apps"| HomeApps["Home and Apps tab"]
-    Home -->|"tab: My Tasks"| Tasks["My Tasks Workspace tab"]
+    Home --> HomeApps["Home and Apps"]
 
     HomeApps -->|"click app tile"| ExternalApp["External / linked app — opens in new tab or in-app route"]
     HomeApps -->|"View all catalog"| HomeApps
@@ -114,11 +109,11 @@ Failure semantics: `prefetchCurrentUserDashboard` uses `fetchQuery` (throws on f
 
 ## 6. EnterpriseWorkspace — Home & Apps tab
 
-[`EnterpriseWorkspace`](../src/features/workspace/components/enterprise-workspace.tsx) is a client component owning one piece of state: `activeTab: "home" | "tasks"`. It renders a sticky tab bar (indigo active-underline, badge showing pending task count) and swaps between `HomeAppsTab` and `TasksTab`.
+[`EnterpriseWorkspace`](../src/features/workspace/components/enterprise-workspace.tsx) renders `HomeAppsTab` inside the page shell. (A mock-data "My tasks" tab was removed on 2026-11-12; it is in git history.)
 
 `HomeAppsTab` stacks three sections top-to-bottom:
 
-1. `WelcomeBanner` — avatar circle (first letter of the user's name) with an online-status dot, a time-of-day greeting (`getGreeting()` — "Good morning/afternoon/evening", computed client-side in a `useEffect` to avoid an SSR/client clock mismatch), the user's first name, their active role badge, and a one-line pending/due-today task summary. Reads `useCurrentUser()` and `useCurrentUserActiveRole()`.
+1. `WelcomeBanner` — avatar circle (first letter of the user's name) with an online-status dot, a time-of-day greeting (`getGreeting()` — "Good morning/afternoon/evening", computed client-side in a `useEffect` to avoid an SSR/client clock mismatch), the user's first name, their active role badge. Reads `useCurrentUser()` and `useCurrentUserActiveRole()`.
 2. `RecentlyAccessed` — a horizontally-scrolling row of up to 8 apps from `useGetCurrentUserRecentApplications()`, rendered as compact `AppTileCard`s. Renders nothing (`return null`) when there's no recent-access history. Its "View all catalog →" link does an in-page smooth-scroll to the catalog section (`APP_CATALOG_SECTION_ID`), not a navigation.
 3. `AppCatalog` — the full application directory: search-by-name, a "Favorites" toggle filter, a sort dropdown (Recommended / Recently Visited / Name A–Z / Name Z–A), and a grid/list view toggle. Backed by `useCurrentUserApplications()` + `useCurrentUserFavoriteApplications()`; favoriting is optimistic via `useAddCurrentUserFavoriteApplication()` / `useRemoveCurrentUserFavoriteApplication()`.
 
@@ -131,26 +126,14 @@ Failure semantics: `prefetchCurrentUserDashboard` uses `fetchQuery` (throws on f
 
 Apps with no resolvable href render as a static (non-clickable) card — favoriting still works, launching doesn't.
 
-## 7. EnterpriseWorkspace — Tasks tab
-
-`TasksTab` is a two-column layout (`TaskList` + `WorkSummarySidebar`, sidebar fixed at `320px`):
-
-- `TaskList` — 4 tabs (Assigned to me / Candidate tasks / Created by me / Completed) each showing a live count badge, plus a free-text filter across title/ticket code/category. Renders `TaskRow` per visible task. Header shows the user's active role as "Role Scope" (`useCurrentUserActiveRole()`), purely informational at this point.
-- `WorkSummarySidebar` — 4 stat cards (Overdue / Due today / Due this week / Total pending), each color-coded (red/amber/blue/gray) via a left accent border, plus a completion-rate progress bar (`completedCount / total`).
-
-Both read `computeTaskStats()` from [`lib/task-utils.ts`](../src/features/workspace/lib/task-utils.ts), which also exposes `getDueDateLabel()` (color-coded "Overdue by N days" / "Due today" / "Due in N days", used by `TaskRow`). Note the stats function **trusts the task's static** `priority: "OVERDUE"` **field** rather than deriving overdue-ness from `dueDate` — acceptable for hand-authored mock data, but a real task-service integration should compute it from the date instead (flagged in the code as-is).
-
 ## 8. Data sources — what's real vs. mock
 
 This is the most important thing to know before changing anything here:
 
-| Data                                                                | Source                                                                                                   | Real or mock?                                                                          |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Current user, active role, roles, departments                       | `src/actions/user.ts` → Access Management SDK                                                            | **Real**                                                                               |
-| Applications, favorites, recent applications                        | `src/actions/user.ts` (`getCurrentUserApplications`, `*FavoriteApplications`, `*RecentApplications`)     | **Real**                                                                               |
-| Tasks (assigned/candidate/created/completed, due dates, priorities) | `src/features/workspace/data/mock-tasks.ts` → `defaultTasks`, consumed directly by `EnterpriseWorkspace` | **Mock, hardcoded** — no `use-tasks.ts` hook, no server action, no SDK call exists yet |
-
-The task-management side of the dashboard is a UI-complete prototype: the tab counts, filters, sidebar stats, and due-date logic all work against static seed data. Wiring it to a real backend means introducing a `tasks` feature module (server action + `use-tasks.ts` React Query hook) and swapping `defaultTasks` in `EnterpriseWorkspace` for that hook's data — the component tree underneath (`TaskList`, `TaskRow`, `WorkSummarySidebar`) already expects `Task[]` and needs no shape changes.
+| Data                                          | Source                                                                                               | Real or mock? |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------- |
+| Current user, active role, roles, departments | `src/actions/user.ts` → Access Management SDK                                                        | **Real**      |
+| Applications, favorites, recent applications  | `src/actions/user.ts` (`getCurrentUserApplications`, `*FavoriteApplications`, `*RecentApplications`) | **Real**      |
 
 ## 9. Settings section (`/settings/*`)
 
@@ -177,7 +160,6 @@ Every one of these routes has sibling `loading.tsx`/`error.tsx` files (see the [
 
 ## 11. Known gaps / things to watch
 
-- **Tasks are mock-only** (see [§8](#8-data-sources--whats-real-vs-mock)) — don't assume `EnterpriseWorkspace`'s Tasks tab reflects a real backend when debugging "why doesn't my task show up" issues.
 - `/settings/theme` **doesn't exist** — the settings card links to it but there's no route; clicking it 404s. Either build the route or remove/disable the card link if this surfaces as a bug report.
 - **Role-switching isn't wired** — `roleScope`/the active-role badge display whatever the token carried at login; switching the active department/role mid-session isn't implemented anywhere in this flow (consistent with the limitation noted in [PERMISSIONS.md](PERMISSIONS.md#limitations)).
 - **No page-level permission gates in this section currently** — none of `(home)`'s pages call `igrpAssertAuthorize`; access here is scoped only by "does this user have a valid, non-temporary session." If a settings area needs a genuine permission gate (e.g. restrict `/settings/departments` to admins), it has to be added explicitly — see [PERMISSIONS.md](PERMISSIONS.md#gating-a-page-server--authoritative).

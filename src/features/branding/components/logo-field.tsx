@@ -16,7 +16,7 @@ import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 
 import { FileUploadField } from "@/components/file-upload-field";
-import type { FileWithPreview } from "@/features/files/use-file-upload";
+import type { FileWithPreview } from "@/features/files/files-schemas";
 
 import type { BrandingFormValues, LogoSlotKey } from "../lib/branding-mapper";
 import { FAVICON_ACCEPT } from "../lib/branding-rules";
