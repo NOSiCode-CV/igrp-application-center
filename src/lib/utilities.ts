@@ -1,8 +1,4 @@
-export function getStatusColor(status: string) {
-  return status === "ACTIVE" ? "status-active" : "status-inactive";
-}
-
-export function statusClass(status: string): import("clsx").ClassValue {
+export function statusClass(status: string): string {
   if (!status) return "status-inactive";
 
   switch (status.trim()) {
@@ -29,17 +25,6 @@ export function statusInviteClass(status: string): import("clsx").ClassValue {
   }
 }
 
-export const geInviteTitle = (title: string) => {
-  switch (title) {
-    case "PENDING":
-      return "Pendente";
-    case "CANCELED":
-      return "Cancelado";
-    default:
-      return "Rejeitado";
-  }
-};
-
 export function getInitials(username: string) {
   const parts = username?.split(/[\s._-]+/).filter(Boolean);
   if (parts?.length === 0) return "";
@@ -53,25 +38,6 @@ export function formatIconString(input: string): string {
     .replace(/([0-9]+)/g, " $1")
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-export function formatConstanttoLabel(value: string): string {
-  return value
-    .toLowerCase()
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-export const nullIfEmpty = (v: string | null | undefined): string | null =>
-  typeof v === "string" && v.trim().length === 0 ? null : (v ?? null);
-
-export function lowerCaseWithSpace(v: string | null | undefined) {
-  if (v == null || v === undefined) return null;
-
-  return typeof v === "string"
-    ? v.toLowerCase().replace(/_/g, " ")
-    : (v ?? null);
 }
 
 export const getMenuIcon = (type: string) => {
@@ -269,13 +235,6 @@ export const DATE_TIME_WITH_SECONDS: Intl.DateTimeFormatOptions = {
   minute: "2-digit",
   second: "2-digit",
 };
-
-interface ApiErrorLike {
-  details?: unknown;
-  status?: number;
-  message?: string;
-  title?: string;
-}
 
 /**
  * True when `message` is one of the generic per-status fallbacks produced

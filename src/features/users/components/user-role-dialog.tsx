@@ -60,7 +60,7 @@ import {
   useUserRoles,
 } from "@/features/users/use-users";
 import { useServerErrorMessage } from "@/i18n/server-error";
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 import {
   type StatusTranslator,
@@ -134,9 +134,7 @@ const makeColumns = (
     header: t("roleDialog.columns.status"),
     accessorKey: "status",
     cell: ({ row }) => (
-      <Badge
-        className={cn(getStatusColor(row.getValue("status")), "capitalize")}
-      >
+      <Badge className={cn(statusClass(row.getValue("status")), "capitalize")}>
         {userStatusLabel(tStatus, row.getValue("status"))}
       </Badge>
     ),

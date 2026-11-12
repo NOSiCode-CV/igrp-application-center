@@ -2,42 +2,27 @@
 
 import type { SessionResponseDTO } from "@igrp/platform-access-management-client-ts";
 
-import { toActionError } from "@/lib/utilities";
-
-import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import type { ActionResult } from "./types";
 
 export async function getUserSession(
   userExternalId: string,
 ): Promise<ActionResult<SessionResponseDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.adminSessions.getUserSession(userExternalId);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[user-session] Erro ao carregar sessão do utilizador:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[user-session] Erro ao carregar sessão do utilizador:",
+    (client) => client.adminSessions.getUserSession(userExternalId),
+  );
 }
 
 export async function killUserSession(
   sessionId: string,
   reason: string,
 ): Promise<ActionResult<void>> {
-  const client = await getClientAccess();
-
-  try {
+  return callApi("[user-session] Erro ao terminar sessão:", async (client) => {
     await client.adminSessions.killSession(sessionId, {
       reason,
       killedBy: "admin",
     });
-    return { success: true, data: undefined };
-  } catch (error) {
-    console.error("[user-session] Erro ao terminar sessão:", error);
-    return { success: false, ...toActionError(error) };
-  }
+    return { data: undefined };
+  });
 }

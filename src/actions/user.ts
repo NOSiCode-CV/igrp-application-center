@@ -15,49 +15,31 @@ import type {
 import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import type { AccessClient, ActionResult, SdkData } from "./types";
 
 export async function getUsers(
   params?: UserFilters,
 ): Promise<ActionResult<IGRPUserDTO[]>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUsers(params);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[users] Erro ao carregar lista de utilizadores:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[users] Erro ao carregar lista de utilizadores:", (client) =>
+    client.users.getUsers(params),
+  );
 }
 
 export async function getCurrentUser(): Promise<ActionResult<IGRPUserDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getCurrentUser();
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[user-current] Erro ao carregar os dados do utilizador atual:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[user-current] Erro ao carregar os dados do utilizador atual:",
+    (client) => client.users.getCurrentUser(),
+  );
 }
 
 export async function inviteUser(
   user: InviteUserDTO,
 ): Promise<ActionResult<SdkData<AccessClient["users"]["inviteUser"]>>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.inviteUser(user);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-invite] Erro ao enviar convite ao utilizador:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[user-invite] Erro ao enviar convite ao utilizador:",
+    (client) => client.users.inviteUser(user),
+  );
 }
 
 export async function addRolesToUser(
@@ -65,19 +47,9 @@ export async function addRolesToUser(
   departmentCode: string,
   request: AddRolesToUserRequestDTO,
 ): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.addRolesToUser(
-      id,
-      departmentCode,
-      request,
-    );
-    return { success: true, data: result.data };
-  } catch (error: unknown) {
-    console.error("[user-add-roles] Erro ao adicionar perfis:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-add-roles] Erro ao adicionar perfis:", (client) =>
+    client.users.addRolesToUser(id, departmentCode, request),
+  );
 }
 
 export async function removeRolesFromUser(
@@ -85,44 +57,23 @@ export async function removeRolesFromUser(
   departmentCode: string,
   roleCodes: string[],
 ): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.removeRolesFromUser(
-      id,
-      departmentCode,
-      roleCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-remove-roles] Erro ao remover perfis:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-remove-roles] Erro ao remover perfis:", (client) =>
+    client.users.removeRolesFromUser(id, departmentCode, roleCodes),
+  );
 }
 
 export async function getCurrentUserRoles(): Promise<ActionResult<RoleDTO[]>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.users.getCurrentUserRoles();
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao obter roles:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao obter roles:", (client) =>
+    client.users.getCurrentUserRoles(),
+  );
 }
 
 export async function getUserRoles(
   id: string,
 ): Promise<ActionResult<RoleDTO[]>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUserRoles(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-role] Erro ao obter perfis de utilizador:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-role] Erro ao obter perfis de utilizador:", (client) =>
+    client.users.getUserRoles(id),
+  );
 }
 
 // Maximum length the server enforces on `nic` (@Size(max=13)).
@@ -184,159 +135,90 @@ export async function updateUser(
 export async function getCurrentUserDepartments(): Promise<
   ActionResult<DepartmentDTO[]>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getCurrentUserDepartments();
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-departments] Erro ao carregar departamentos:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[user-departments] Erro ao carregar departamentos:",
+    (client) => client.users.getCurrentUserDepartments(),
+  );
 }
 
 export async function getCurrentUserApplications(): Promise<
   ActionResult<ApplicationDTO[]>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getCurrentUserApplications();
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-applications] Erro ao obter aplicações:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-applications] Erro ao obter aplicações:", (client) =>
+    client.users.getCurrentUserApplications(),
+  );
 }
 
 export async function getUserApplications(
   id: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUserApplications(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-applications] Erro ao obter aplicações:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-applications] Erro ao obter aplicações:", (client) =>
+    client.users.getUserApplications(id),
+  );
 }
 
 export async function getUserDepartments(
   id: string,
 ): Promise<ActionResult<DepartmentDTO[]>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUserDepartments(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-departments] Erro ao obter departamentos:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-departments] Erro ao obter departamentos:", (client) =>
+    client.users.getUserDepartments(id),
+  );
 }
 
 export async function getUser(id: string): Promise<ActionResult<IGRPUserDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUser(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao obter utilizador:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao obter utilizador:", (client) =>
+    client.users.getUser(id),
+  );
 }
 
 export async function getCurrentUserFavoriteApplications(
   applicationName?: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
-  const client = await getClientAccess();
-
-  try {
-    const result =
-      await client.users.getCurrentUserFavoriteApplications(applicationName);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao obter favorites applications:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao obter favorites applications:", (client) =>
+    client.users.getCurrentUserFavoriteApplications(applicationName),
+  );
 }
 
 export async function addCurrentUserFavoriteApplication(
   applicationCode: string,
 ): Promise<ActionResult<ApplicationDTO>> {
-  const client = await getClientAccess();
-  try {
-    const result =
-      await client.users.addCurrentUserFavoriteApplication(applicationCode);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao adicionar favorite application:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[user-get] Erro ao adicionar favorite application:",
+    (client) => client.users.addCurrentUserFavoriteApplication(applicationCode),
+  );
 }
 
 export async function removeCurrentUserFavoriteApplication(
   applicationCode: string,
 ): Promise<ActionResult<ApplicationDTO>> {
-  const client = await getClientAccess();
-  try {
-    const result =
-      await client.users.removeCurrentUserFavoriteApplication(applicationCode);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao remover favorite application:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao remover favorite application:", (client) =>
+    client.users.removeCurrentUserFavoriteApplication(applicationCode),
+  );
 }
 
 export async function getCurrentUserRecentApplications(
   applicationName?: string,
   max?: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getCurrentUserRecentApplications(
-      applicationName,
-      max,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao obter recent applications:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao obter recent applications:", (client) =>
+    client.users.getCurrentUserRecentApplications(applicationName, max),
+  );
 }
 
 export async function registerCurrentUserApplicationAccess(
   applicationCode: string,
 ): Promise<ActionResult<ApplicationDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result =
-      await client.users.registerCurrentUserApplicationAccess(applicationCode);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao registo de acesso:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao registo de acesso:", (client) =>
+    client.users.registerCurrentUserApplicationAccess(applicationCode),
+  );
 }
 
 export async function getUserInvitations(
   email?: string,
 ): Promise<ActionResult<SdkData<AccessClient["users"]["getUserInvitations"]>>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUserInvitations(email);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao obter convites:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao obter convites:", (client) =>
+    client.users.getUserInvitations(email),
+  );
 }
 
 export async function resendUserInvitation(
@@ -344,15 +226,9 @@ export async function resendUserInvitation(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["resendUserInvitation"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.resendUserInvitation(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao reenviar convite:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao reenviar convite:", (client) =>
+    client.users.resendUserInvitation(id),
+  );
 }
 
 export async function respondUserInvitation(
@@ -361,15 +237,9 @@ export async function respondUserInvitation(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["respondUserInvitation"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.respondUserInvitation(response, token);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao responder convite:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao responder convite:", (client) =>
+    client.users.respondUserInvitation(response, token),
+  );
 }
 
 export async function cancelUserInvitation(
@@ -377,30 +247,18 @@ export async function cancelUserInvitation(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["cancelUserInvitation"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.cancelUserInvitation(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao cancelar convite:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao cancelar convite:", (client) =>
+    client.users.cancelUserInvitation(id),
+  );
 }
 
 export async function updateUserStatus(
   id: string,
   value: string,
 ): Promise<ActionResult<IGRPUserDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.updateUserStatus(id, value);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao atualizar status:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao atualizar status:", (client) =>
+    client.users.updateUserStatus(id, value),
+  );
 }
 
 export async function getUserInvitationByToken(
@@ -408,29 +266,17 @@ export async function getUserInvitationByToken(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["getUserInvitationByToken"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUserInvitationByToken(token);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao obter dados convite:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao obter dados convite:", (client) =>
+    client.users.getUserInvitationByToken(token),
+  );
 }
 
 export async function getCurrentUserActiveRole(): Promise<
   ActionResult<SdkData<AccessClient["users"]["getCurrentUserActiveRole"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getCurrentUserActiveRole();
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao obter active role:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao obter active role:", (client) =>
+    client.users.getCurrentUserActiveRole(),
+  );
 }
 
 export async function setCurrentUserActiveRole(
@@ -438,15 +284,9 @@ export async function setCurrentUserActiveRole(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["setCurrentUserActiveRole"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.setCurrentUserActiveRole(role);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-get] Erro ao definir active role:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-get] Erro ao definir active role:", (client) =>
+    client.users.setCurrentUserActiveRole(role),
+  );
 }
 
 export async function validateInvitationEmail(
@@ -454,15 +294,9 @@ export async function validateInvitationEmail(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["validateInvitationEmail"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.validateInvitationEmail(request);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[invitation] Erro ao validar email de convite:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[invitation] Erro ao validar email de convite:", (client) =>
+    client.users.validateInvitationEmail(request),
+  );
 }
 
 export async function validateInvitationOtp(
@@ -470,42 +304,25 @@ export async function validateInvitationOtp(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["validateInvitationOtp"]>>
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.validateInvitationOtp(request);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[invitation] Erro ao validar código OTP de convite:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[invitation] Erro ao validar código OTP de convite:",
+    (client) => client.users.validateInvitationOtp(request),
+  );
 }
 
 export async function getUserMetadata(
   id: string,
 ): Promise<ActionResult<UserMetadataDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.getUserMetadata(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-metadata] Erro ao carregar metadados:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-metadata] Erro ao carregar metadados:", (client) =>
+    client.users.getUserMetadata(id),
+  );
 }
 
 export async function updateUserMetadata(
   id: string,
   metadata: Record<string, unknown>,
 ): Promise<ActionResult<UserMetadataDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.updateUserMetadata(id, { metadata });
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-metadata] Erro ao atualizar metadados:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-metadata] Erro ao atualizar metadados:", (client) =>
+    client.users.updateUserMetadata(id, { metadata }),
+  );
 }

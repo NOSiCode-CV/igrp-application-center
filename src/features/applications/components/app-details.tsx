@@ -35,7 +35,7 @@ import { getAppTileColor } from "@/features/workspace/lib/app-utils";
 import { useServerErrorMessage } from "@/i18n/server-error";
 import { useStatusLabel } from "@/i18n/status";
 import { ROUTES } from "@/lib/constants";
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 import { ApplicationFormDialog } from "./application-form-dialog";
 
@@ -294,7 +294,7 @@ export function ApplicationDetails({ code }: { code: string }) {
               <h1 className="text-2xl font-semibold tracking-tight text-balance">
                 {app.name}
               </h1>
-              <Badge className={getStatusColor(app.status || "ACTIVE")}>
+              <Badge className={statusClass(app.status || "ACTIVE")}>
                 {statusLabel(app.status || "ACTIVE")}
               </Badge>
             </div>

@@ -11,7 +11,7 @@ import {
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 import {
   type StatusTranslator,
@@ -108,7 +108,7 @@ export function getTableColumns(
       cell: ({ row }) => row.getValue("email") || t("notAvailable"),
     },
     statusColumn<IGRPUserDTO>(t, (status) => ({
-      className: getStatusColor(status),
+      className: statusClass(status),
       label: userStatusLabel(tStatus, status),
     })),
     actionsColumn<IGRPUserDTO>(t, (row) => (

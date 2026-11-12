@@ -268,6 +268,18 @@
         "title": "Une erreur s’est produite",
         "description": "Veuillez réessayer. Si le problème persiste, contactez l’assistance."
       }
+    },
+    "actions": {
+      "noFile": "Aucun fichier trouvé.",
+      "departmentRequired": "Le département est obligatoire",
+      "appAndDepartmentRequired": "L’application et le département sont obligatoires",
+      "auditForbidden": "Vous n’avez pas l’autorisation de consulter l’audit.",
+      "brandingDisabled": "La personnalisation n’est pas activée.",
+      "brandingForbidden": "Vous n’avez pas l’autorisation de personnaliser la plateforme.",
+      "brandingInvalid": "Configuration de marque invalide.",
+      "permissionRemovalUnconfirmed": "Impossible de confirmer quelle autorisation retirer. Rien n’a été modifié. Retirez-la avec le sélecteur d’autorisations.",
+      "permissionRollbackFailed": "Impossible de confirmer quelle autorisation a été retirée, ni de rétablir les précédentes. Vérifiez les autorisations de ce compte de service.",
+      "clientCredentialsRequired": "Un compte de service exige le type d’autorisation client_credentials."
     }
   },
   "users": {

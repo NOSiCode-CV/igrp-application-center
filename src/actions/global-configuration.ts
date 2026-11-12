@@ -11,6 +11,7 @@ import {
 import type { IGRPBranding } from "@igrp/framework-next-types";
 import { igrpParseBranding } from "@igrp/framework-next-ui";
 import { GlobalConfigurationType } from "@igrp/platform-access-management-client-ts";
+import { getTranslations } from "next-intl/server";
 
 import { BRANDING_TOKEN_NAMES } from "@/features/branding/catalog";
 import {
@@ -25,22 +26,18 @@ import type { ActionResult } from "./types";
 
 /* The page guard is navigation; these checks are the enforcement in front of
    the SDK call. Access Management enforces the permission again on POST. */
-const DISABLED = {
-  success: false,
-  error: "A personalização não está ativa.",
-  status: 404,
+/* brandingInvalid is 422, not 400, so the editor can tell its own rule
+   failures from API errors. */
+const REFUSALS = {
+  brandingDisabled: 404,
+  brandingForbidden: 403,
+  brandingInvalid: 422,
 } as const;
-const FORBIDDEN = {
-  success: false,
-  error: "Não tem permissão para personalizar a plataforma.",
-  status: 403,
-} as const;
-/* 422, not 400, so the editor can tell its own rule failures from API errors. */
-const INVALID = {
-  success: false,
-  error: "Configuração de marca inválida.",
-  status: 422,
-} as const;
+
+async function refuse(key: keyof typeof REFUSALS) {
+  const t = await getTranslations("errors.actions");
+  return { success: false as const, error: t(key), status: REFUSALS[key] };
+}
 
 /** Freshness cookie lifetime; matches the loader's 300 s window. */
 const BRAND_COOKIE_MAX_AGE_S = 300;
@@ -51,7 +48,8 @@ const statusOf = (error: unknown) =>
 export async function getBranding(): Promise<
   ActionResult<IGRPBranding | null>
 > {
-  if (!(await igrpAuthorize(CUSTOMIZE_PERMISSION))) return FORBIDDEN;
+  if (!(await igrpAuthorize(CUSTOMIZE_PERMISSION)))
+    return refuse("brandingForbidden");
   const client = await getClientAccess();
 
   try {
@@ -70,14 +68,15 @@ export async function getBranding(): Promise<
 }
 
 export async function saveBranding(raw: string): Promise<ActionResult<void>> {
-  if (!isBrandingEnabled()) return DISABLED;
-  if (!(await igrpAuthorize(CUSTOMIZE_PERMISSION))) return FORBIDDEN;
+  if (!isBrandingEnabled()) return refuse("brandingDisabled");
+  if (!(await igrpAuthorize(CUSTOMIZE_PERMISSION)))
+    return refuse("brandingForbidden");
   const branding = checkSavableBranding(
     raw,
     minioBaseUrl(),
     BRANDING_TOKEN_NAMES,
   );
-  if (!branding) return INVALID;
+  if (!branding) return refuse("brandingInvalid");
 
   const client = await getClientAccess();
   try {

@@ -199,6 +199,23 @@ describe("setServiceAccountAccess", () => {
       },
     );
 
+    it("says the change may be partial when the rollback fails too", async () => {
+      serviceAccounts.updateServiceAccount
+        .mockResolvedValueOnce({
+          data: { ...held, permissionIds: [10], permissionNames: [] },
+        })
+        .mockRejectedValueOnce(
+          Object.assign(new Error("boom"), { status: 500 }),
+        );
+      const r = await remove();
+      expect(serviceAccounts.updateServiceAccount).toHaveBeenCalledTimes(2);
+      expect(r).toEqual({
+        success: false,
+        error:
+          "Não foi possível confirmar qual permissão foi removida, nem repor as anteriores. Verifique as permissões desta conta de serviço.",
+      });
+    });
+
     it("does not verify picker-based changes", async () => {
       serviceAccounts.updateServiceAccount.mockResolvedValueOnce({
         data: { ...held, permissionIds: [10], permissionNames: ["x"] },

@@ -2,39 +2,21 @@
 
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 
-import { toActionError } from "@/lib/utilities";
-
-import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import type { ActionResult } from "./types";
 
 export async function getRoleByCode(
   name: string,
 ): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.roles.getRoleByCode(name);
-    return { success: true, data: result.data as RoleDTO };
-  } catch (error) {
-    console.error(
-      `[role-by-code] Não foi possível obter dado do perfil ${JSON.stringify(String(name))}:`,
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    `[role-by-code] Não foi possível obter dado do perfil ${JSON.stringify(String(name))}:`,
+    (client) => client.roles.getRoleByCode(name),
+  );
 }
 
 export async function getRoleById(id: number): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.roles.getRoleById(id);
-    return { success: true, data: result.data as RoleDTO };
-  } catch (error) {
-    console.error(
-      `[role-by-id] Não foi possível obter dado do perfil ${JSON.stringify(String(id))}:`,
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    `[role-by-id] Não foi possível obter dado do perfil ${JSON.stringify(String(id))}:`,
+    (client) => client.roles.getRoleById(id),
+  );
 }

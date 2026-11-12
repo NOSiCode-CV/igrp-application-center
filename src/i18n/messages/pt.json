@@ -268,6 +268,18 @@
         "title": "Ocorreu um erro",
         "description": "Tente novamente. Se o problema persistir, contacte o suporte."
       }
+    },
+    "actions": {
+      "noFile": "Nenhum ficheiro encontrado.",
+      "departmentRequired": "Informação do departamento é obrigatória",
+      "appAndDepartmentRequired": "Informação de aplicação e departamento são obrigatórios",
+      "auditForbidden": "Não tem permissão para consultar a auditoria.",
+      "brandingDisabled": "A personalização não está ativa.",
+      "brandingForbidden": "Não tem permissão para personalizar a plataforma.",
+      "brandingInvalid": "Configuração de marca inválida.",
+      "permissionRemovalUnconfirmed": "Não foi possível confirmar qual permissão remover. Nada foi alterado. Remova-a pelo seletor de permissões.",
+      "permissionRollbackFailed": "Não foi possível confirmar qual permissão foi removida, nem repor as anteriores. Verifique as permissões desta conta de serviço.",
+      "clientCredentialsRequired": "Uma conta de serviço exige o grant type client_credentials."
     }
   },
   "users": {

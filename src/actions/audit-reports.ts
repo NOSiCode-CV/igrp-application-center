@@ -8,24 +8,23 @@ import type {
   SettingsReportFilters,
   SettingsReportRowDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { getTranslations } from "next-intl/server";
 
 import {
   DEFAULT_PAGE_SIZE,
   PAGE_SIZES,
 } from "@/features/audit/lib/report-query";
 import { AUDIT_VIEW_PERMISSION } from "@/lib/constants";
-import { toActionError } from "@/lib/utilities";
 
-import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import type { ActionResult } from "./types";
 
 /* The page guard is navigation; these checks are the enforcement in front of
    the SDK call (docs/PERMISSIONS.md). The AM API enforces again. */
-const FORBIDDEN = {
-  success: false,
-  error: "Não tem permissão para consultar a auditoria.",
-  status: 403,
-} as const;
+async function forbidden() {
+  const t = await getTranslations("errors.actions");
+  return { success: false as const, error: t("auditForbidden"), status: 403 };
+}
 
 /* The UI never sends a `size` outside PAGE_SIZES, but a direct action call
    (or a future caller) can request any size; clamp it to the allowed list
@@ -44,39 +43,19 @@ function clampSize<T extends { size?: number }>(filters: T): T {
 export async function getAccessReport(
   filters: AccessReportFilters,
 ): Promise<ActionResult<PageResponse<AccessReportRowDTO>>> {
-  if (!(await igrpAuthorize(AUDIT_VIEW_PERMISSION))) return FORBIDDEN;
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.auditReports.getAccessReport(
-      clampSize(filters),
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[audit-reports] Erro ao carregar o relatório de acessos:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  if (!(await igrpAuthorize(AUDIT_VIEW_PERMISSION))) return forbidden();
+  return callApi(
+    "[audit-reports] Erro ao carregar o relatório de acessos:",
+    (client) => client.auditReports.getAccessReport(clampSize(filters)),
+  );
 }
 
 export async function getSettingsReport(
   filters: SettingsReportFilters,
 ): Promise<ActionResult<PageResponse<SettingsReportRowDTO>>> {
-  if (!(await igrpAuthorize(AUDIT_VIEW_PERMISSION))) return FORBIDDEN;
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.auditReports.getSettingsReport(
-      clampSize(filters),
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[audit-reports] Erro ao carregar o relatório de configurações:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  if (!(await igrpAuthorize(AUDIT_VIEW_PERMISSION))) return forbidden();
+  return callApi(
+    "[audit-reports] Erro ao carregar o relatório de configurações:",
+    (client) => client.auditReports.getSettingsReport(clampSize(filters)),
+  );
 }

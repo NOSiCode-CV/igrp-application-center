@@ -1,30 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  getStatusColor,
-  statusClass,
-  statusInviteClass,
-} from "@/lib/utilities";
+import { statusClass, statusInviteClass } from "@/lib/utilities";
 
 const RAW_COLOR =
   /\b(?:bg|text|border)-(?:gray|emerald|yellow|red|rose|amber|green)-\d{2,3}\b/;
-
-describe("getStatusColor", () => {
-  it("returns the semantic active token for ACTIVE", () => {
-    expect(getStatusColor("ACTIVE")).toBe("status-active");
-  });
-
-  it("returns the semantic inactive token for INACTIVE (no raw palette colors)", () => {
-    const result = getStatusColor("INACTIVE");
-    expect(result).toBe("status-inactive");
-    expect(result).not.toMatch(/amber|bg-\w+-\d{3}/);
-  });
-
-  it("treats any non-ACTIVE status as inactive", () => {
-    expect(getStatusColor("DELETED")).toBe("status-inactive");
-    expect(getStatusColor("")).toBe("status-inactive");
-  });
-});
 
 describe("statusClass", () => {
   it("maps each known status to its semantic token class", () => {

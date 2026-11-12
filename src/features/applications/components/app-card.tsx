@@ -20,7 +20,7 @@ import { formatSlug, isSystemApp } from "@/features/applications/app-utils";
 import { getAppTileColor } from "@/features/workspace/lib/app-utils";
 import { useStatusLabel } from "@/i18n/status";
 import { config, ROUTES } from "@/lib/constants";
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 interface ApplicationCardProps {
   app: ApplicationDTO;
@@ -88,7 +88,7 @@ export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
 
       <Separator className="mt-auto" />
       <div className="flex items-center justify-between gap-2">
-        <Badge className={cn(getStatusColor(status), "shrink-0")}>
+        <Badge className={cn(statusClass(status), "shrink-0")}>
           {statusLabel(status)}
         </Badge>
 

@@ -5,6 +5,7 @@ import type {
   ServiceAccountDTO,
   ServiceAccountRequestDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { getTranslations } from "next-intl/server";
 
 import {
   type OAuthClientInput,
@@ -20,6 +21,7 @@ import {
 import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import { createOAuthClient } from "./oauth-clients";
 import type { AccessClient, ActionResult } from "./types";
 
@@ -37,17 +39,10 @@ export type SetActiveResult =
 export async function listServiceAccounts(): Promise<
   ActionResult<ServiceAccountDTO[]>
 > {
-  const client = await getClientAccess();
-  try {
-    const result = await client.serviceAccounts.listServiceAccounts();
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[service-accounts] Erro ao carregar contas de serviço:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[service-accounts] Erro ao carregar contas de serviço:",
+    (client) => client.serviceAccounts.listServiceAccounts(),
+  );
 }
 
 /**
@@ -188,63 +183,47 @@ function removalConfirmed(
   return true;
 }
 
-const REMOVAL_UNCONFIRMED =
-  "Não foi possível confirmar qual permissão remover. Nada foi alterado. Remova-a pelo seletor de permissões.";
+async function actionError(
+  key: "permissionRemovalUnconfirmed" | "permissionRollbackFailed",
+) {
+  const t = await getTranslations("errors.actions");
+  return { success: false as const, error: t(key) };
+}
 
 export async function getServiceAccount(
   id: string,
 ): Promise<ActionResult<ServiceAccountDTO>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.serviceAccounts.getServiceAccount(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[service-account] Erro ao carregar conta de serviço:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[service-account] Erro ao carregar conta de serviço:",
+    (client) => client.serviceAccounts.getServiceAccount(id),
+  );
 }
 
 export async function createServiceAccount(
   input: ServiceAccountInput,
 ): Promise<ActionResult<ServiceAccountDTO>> {
-  const client = await getClientAccess();
-  try {
-    const applicationId = await applicationOf(client, input.oauthClientId);
-    const result = await client.serviceAccounts.createServiceAccount({
-      ...input,
-      applicationId,
-    });
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[service-account-create] Erro ao criar conta de serviço:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[service-account-create] Erro ao criar conta de serviço:",
+    async (client) =>
+      client.serviceAccounts.createServiceAccount({
+        ...input,
+        applicationId: await applicationOf(client, input.oauthClientId),
+      }),
+  );
 }
 
 export async function updateServiceAccountIdentity(
   id: string,
   identity: ServiceAccountIdentity,
 ): Promise<ActionResult<ServiceAccountDTO>> {
-  const client = await getClientAccess();
-  try {
-    const { data } = await putFromFresh(client, id, {
-      name: identity.name,
-      description: identity.description,
-    });
-    return { success: true, data };
-  } catch (error) {
-    console.error(
-      "[service-account-identity] Erro ao guardar identidade:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[service-account-identity] Erro ao guardar identidade:",
+    (client) =>
+      putFromFresh(client, id, {
+        name: identity.name,
+        description: identity.description,
+      }),
+  );
 }
 
 export async function setServiceAccountAccess(
@@ -278,11 +257,20 @@ export async function setServiceAccountAccess(
       )
     ) {
       // Positional pairing guessed wrong: put the previous set back.
-      await client.serviceAccounts.updateServiceAccount(id, {
-        ...request,
-        permissionIds: permissionIdsOf(fresh),
-      });
-      return { success: false, error: REMOVAL_UNCONFIRMED };
+      try {
+        await client.serviceAccounts.updateServiceAccount(id, {
+          ...request,
+          permissionIds: permissionIdsOf(fresh),
+        });
+      } catch (rollbackError) {
+        // The wrong permission may now be gone: say so, not just the API error.
+        console.error(
+          "[service-account-access] Falhou a reposição das permissões:",
+          rollbackError,
+        );
+        return actionError("permissionRollbackFailed");
+      }
+      return actionError("permissionRemovalUnconfirmed");
     }
     return { success: true, data };
   } catch (error) {
@@ -316,11 +304,12 @@ export async function createServiceAccountWithNewClient(
   account: Omit<ServiceAccountInput, "oauthClientId">,
 ): Promise<CreateWithClientResult> {
   if (!clientInput.grantTypes.includes("client_credentials")) {
+    const t = await getTranslations("errors.actions");
     return {
       success: false,
       failedStep: "client",
       status: 422,
-      error: "Uma conta de serviço exige o grant type client_credentials.",
+      error: t("clientCredentialsRequired"),
     };
   }
   // Before creating the client: a session that expires after the POST would

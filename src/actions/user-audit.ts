@@ -6,22 +6,14 @@ import type {
   PageResponse,
 } from "@igrp/platform-access-management-client-ts";
 
-import { toActionError } from "@/lib/utilities";
-
-import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import type { ActionResult } from "./types";
 
 export async function getUserAuditLogs(
   userId: string,
   filters?: AuditLogFilters,
 ): Promise<ActionResult<PageResponse<AuditLogDTO>>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.authAudit.listAuditLogs({ ...filters, userId });
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[user-audit] Erro ao carregar logs de auditoria:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[user-audit] Erro ao carregar logs de auditoria:", (client) =>
+    client.authAudit.listAuditLogs({ ...filters, userId }),
+  );
 }

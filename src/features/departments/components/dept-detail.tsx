@@ -17,7 +17,7 @@ import { CopyToClipboard } from "@/components/copy-to-clipboard";
 import { PermissionList } from "@/features/permissions/components/permission-list";
 import { RolesListTree } from "@/features/roles/components/role-tree-list";
 import { useStatusLabel } from "@/i18n/status";
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 import { MenuPermissions } from "./dept-menu";
 
@@ -75,7 +75,7 @@ export function DepartmentDetail({ department, onEdit, onManageApps }: Props) {
             <h1 className="text-xl font-bold text-balance">
               {department.name}
             </h1>
-            <Badge className={getStatusColor(department.status ?? "ACTIVE")}>
+            <Badge className={statusClass(department.status ?? "ACTIVE")}>
               {department.status ? statusLabel(department.status) : "—"}
             </Badge>
           </div>

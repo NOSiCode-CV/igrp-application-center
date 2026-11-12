@@ -39,7 +39,7 @@ import {
   useRemoveResourcesFromDepartment,
 } from "@/features/departments/use-departments";
 import { useStatusLabel } from "@/i18n/status";
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 interface ManageResourcesModalProps {
   departmentCode: string;
@@ -234,7 +234,7 @@ export function ManageResourcesModal({
               {resource.status && (
                 <Badge
                   className={cn(
-                    getStatusColor(resource.status),
+                    statusClass(resource.status),
                     "text-[10px] px-1.5 py-0.5 shrink-0",
                   )}
                 >

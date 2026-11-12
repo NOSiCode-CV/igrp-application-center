@@ -24,6 +24,7 @@ vi.mock("@/lib/auth", () => ({
 
 import {
   deleteMenu,
+  getApplicationByCode,
   getApplications,
   updateApplication,
 } from "@/actions/applications";
@@ -160,5 +161,26 @@ describe("deleteMenu action", () => {
 
     expect(result.success).toBe(false);
     expect(mockDeleteMenu).not.toHaveBeenCalled();
+  });
+});
+
+describe("getApplicationByCode action", () => {
+  it("returns the application whose code matches exactly", async () => {
+    mockGetApplications.mockResolvedValue({
+      data: [{ code: "APP10" }, { code: "APP1", name: "App One" }],
+    });
+    await expect(getApplicationByCode("APP1")).resolves.toEqual({
+      success: true,
+      data: { code: "APP1", name: "App One" },
+    });
+  });
+
+  it("is a 404 when no application has that code", async () => {
+    mockGetApplications.mockResolvedValue({ data: [{ code: "APP10" }] });
+    await expect(getApplicationByCode("APP1")).resolves.toEqual({
+      success: false,
+      status: 404,
+      error: "Nenhuma aplicação encontrada.",
+    });
   });
 });

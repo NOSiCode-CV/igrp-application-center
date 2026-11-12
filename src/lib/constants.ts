@@ -1,19 +1,11 @@
 export const ROUTES = {
   APPLICATIONS: "/settings/applications",
-  NEW_APPS: "/settings/applications/new",
-  USERS: "/settings/users",
   USER_PROFILE: "/profile",
-  DEPARTMENTS: "/settings/departments",
-  DEPARTMENTS_ROLE: "roles",
-  ACCOUNTS: "/settings/accounts",
   OAUTH_CLIENTS: "/settings/accounts/clients",
   OAUTH_CLIENT_NEW: "/settings/accounts/clients/new",
   SERVICE_ACCOUNTS: "/settings/accounts/services",
   SERVICE_ACCOUNT_NEW: "/settings/accounts/services/new",
-  EDIT: "/edit",
 } as const;
-
-export const OPEN_TYPE_VIEW = "view";
 
 export const config = {
   minioUrl: process.env.NEXT_PUBLIC_IGRP_MINIO_URL || "",

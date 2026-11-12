@@ -11,79 +11,60 @@ import type {
   UpdateDepartmentRequest,
   UpdateRoleRequest,
 } from "@igrp/platform-access-management-client-ts";
+import { getTranslations } from "next-intl/server";
 
 import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import type { AccessClient, ActionResult, SdkData } from "./types";
 
-export async function getDepartments(): Promise<ActionResult<DepartmentDTO[]>> {
-  const client = await getClientAccess();
+async function required(
+  key: "departmentRequired" | "appAndDepartmentRequired",
+) {
+  const t = await getTranslations("errors.actions");
+  return { success: false as const, error: t(key) };
+}
 
-  try {
-    const result = await client.departments.getDepartments();
-    return { success: true, data: result.data as DepartmentDTO[] };
-  } catch (error) {
-    console.error("[departments] Erro ao carregar departamentos:", error);
-    return { success: false, ...toActionError(error) };
-  }
+export async function getDepartments(): Promise<ActionResult<DepartmentDTO[]>> {
+  return callApi("[departments] Erro ao carregar departamentos:", (client) =>
+    client.departments.getDepartments(),
+  );
 }
 
 export async function createDepartment(
   departmentData: CreateDepartmentRequest,
 ): Promise<ActionResult<DepartmentDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.createDepartment(departmentData);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[create-department] Erro ao criar departamento:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[create-department] Erro ao criar departamento:", (client) =>
+    client.departments.createDepartment(departmentData),
+  );
 }
 
 export async function updateDepartment(
   code: string,
   data: UpdateDepartmentRequest,
 ): Promise<ActionResult<DepartmentDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.updateDepartment(code, data);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[update-department] Erro ao atualizar departamento:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[update-department] Erro ao atualizar departamento:",
+    (client) => client.departments.updateDepartment(code, data),
+  );
 }
 
 export async function deleteDepartment(
   code: string,
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.deleteDepartment(code);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[delete-department] Erro ao eliminar departamento:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[delete-department] Erro ao eliminar departamento:",
+    (client) => client.departments.deleteDepartment(code),
+  );
 }
 
 export async function getDepartmentByCode(
   code: string,
 ): Promise<ActionResult<DepartmentDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.getDepartmentByCode(code);
-    return { success: true, data: result.data as DepartmentDTO };
-  } catch (error) {
-    console.error("[department-by-code] Erro ao obter departamento:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-by-code] Erro ao obter departamento:", (client) =>
+    client.departments.getDepartmentByCode(code),
+  );
 }
 
 // APPLICATIONS
@@ -91,68 +72,37 @@ export async function getAvailableApplications(
   departmentCode?: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
   if (!departmentCode) {
-    return {
-      success: false,
-      error: "Informação do departamento é obrigatório",
-    };
+    return required("departmentRequired");
   }
-  const client = await getClientAccess();
-  try {
-    const result =
-      await client.departments.getAvailableApplications(departmentCode);
-    return { success: true, data: result.data as ApplicationDTO[] };
-  } catch (error) {
-    console.error("[department-available-apps] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-available-apps] Erro:", (client) =>
+    client.departments.getAvailableApplications(departmentCode),
+  );
 }
 
 export async function getDepartmentApplications(
   departmentCode: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
-  const client = await getClientAccess();
-  try {
-    const result =
-      await client.departments.getDepartmentApplications(departmentCode);
-    return { success: true, data: result.data as ApplicationDTO[] };
-  } catch (error) {
-    console.error("[department-applications] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-applications] Erro:", (client) =>
+    client.departments.getDepartmentApplications(departmentCode),
+  );
 }
 
 export async function addApplicationsToDepartment(
   code: string,
   appCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.departments.addApplicationsToDepartment(
-      code,
-      appCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[department-add-applications] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-add-applications] Erro:", (client) =>
+    client.departments.addApplicationsToDepartment(code, appCodes),
+  );
 }
 
 export async function removeApplicationsFromDepartment(
   code: string,
   appCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.departments.removeApplicationsFromDepartment(
-      code,
-      appCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[department-remove-applications] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-remove-applications] Erro:", (client) =>
+    client.departments.removeApplicationsFromDepartment(code, appCodes),
+  );
 }
 
 // MENU
@@ -161,23 +111,11 @@ export async function getAvailableMenus(
   departmentCode?: string,
 ): Promise<ActionResult<MenuEntryDTO[]>> {
   if (!appCode || !departmentCode) {
-    return {
-      success: false,
-      error: "Informação de aplicação e departamento são obrigatórios",
-    };
+    return required("appAndDepartmentRequired");
   }
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.getAvailableMenus(
-      appCode,
-      departmentCode,
-    );
-    return { success: true, data: result.data as MenuEntryDTO[] };
-  } catch (error) {
-    console.error("[department-available-menus] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-available-menus] Erro:", (client) =>
+    client.departments.getAvailableMenus(appCode, departmentCode),
+  );
 }
 
 export async function getDepartmentMenus(
@@ -185,22 +123,11 @@ export async function getDepartmentMenus(
   departmentCode?: string,
 ): Promise<ActionResult<MenuEntryDTO[]>> {
   if (!appCode || !departmentCode) {
-    return {
-      success: false,
-      error: "Informação de aplicação e departamento são obrigatórios",
-    };
+    return required("appAndDepartmentRequired");
   }
-  const client = await getClientAccess();
-  try {
-    const result = await client.departments.getDepartmentMenus(
-      appCode,
-      departmentCode,
-    );
-    return { success: true, data: result.data as MenuEntryDTO[] };
-  } catch (error) {
-    console.error("[department-menus] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-menus] Erro:", (client) =>
+    client.departments.getDepartmentMenus(appCode, departmentCode),
+  );
 }
 
 export async function addMenusToDepartment(
@@ -208,18 +135,9 @@ export async function addMenusToDepartment(
   departmentCode: string,
   menuCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.departments.addMenusToDepartment(
-      appCode,
-      departmentCode,
-      menuCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[department-add-menus] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[department-add-menus] Erro:", (client) =>
+    client.departments.addMenusToDepartment(appCode, departmentCode, menuCodes),
+  );
 }
 
 export async function removeMenusFromDepartment(
@@ -227,18 +145,13 @@ export async function removeMenusFromDepartment(
   departmentCode: string,
   menuCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.departments.removeMenusFromDepartment(
+  return callApi("[department-remove-menus] Erro:", (client) =>
+    client.departments.removeMenusFromDepartment(
       appCode,
       departmentCode,
       menuCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error("[department-remove-menus] Erro:", error);
-    return { success: false, ...toActionError(error) };
-  }
+    ),
+  );
 }
 
 // ROLES
@@ -246,30 +159,18 @@ export async function getRoles(
   departmentCode: string,
   roleCode?: string,
 ): Promise<ActionResult<RoleDTO[]>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.getRoles(departmentCode, roleCode);
-    return { success: true, data: result.data as RoleDTO[] };
-  } catch (error) {
-    console.error("[roles] Erro ao obter perfis:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[roles] Erro ao obter perfis:", (client) =>
+    client.departments.getRoles(departmentCode, roleCode),
+  );
 }
 
 export async function createRole(
   departmentCode: string,
   role: CreateRoleRequest,
 ): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.createRole(departmentCode, role);
-    return { success: true, data: result.data as RoleDTO };
-  } catch (error) {
-    console.error("[create-roles] Erro ao criar perfil:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi("[create-roles] Erro ao criar perfil:", (client) =>
+    client.departments.createRole(departmentCode, role),
+  );
 }
 
 export async function updateRole(
@@ -277,22 +178,10 @@ export async function updateRole(
   roleCode: string,
   role: UpdateRoleRequest,
 ): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.updateRole(
-      departmentCode,
-      roleCode,
-      role,
-    );
-    return { success: true, data: result.data as RoleDTO };
-  } catch (error) {
-    console.error(
-      `[update-roles] Erro ao atualizar perfil ${JSON.stringify(String(roleCode))}:`,
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    `[update-roles] Erro ao atualizar perfil ${JSON.stringify(String(roleCode))}:`,
+    (client) => client.departments.updateRole(departmentCode, roleCode, role),
+  );
 }
 
 export async function deleteRole(
@@ -325,79 +214,44 @@ export async function addResourcesToDepartment(
   departmentCode: string,
   resourceCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.addResourcesToDepartment(
-      departmentCode,
-      resourceCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[add-resources-department] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(`[add-resources-department] Erro:`, (client) =>
+    client.departments.addResourcesToDepartment(departmentCode, resourceCodes),
+  );
 }
 
 export async function removeResourcesFromDepartment(
   departmentCode: string,
   resourceCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.removeResourcesFromDepartment(
+  return callApi(`[remove-resources-department] Erro:`, (client) =>
+    client.departments.removeResourcesFromDepartment(
       departmentCode,
       resourceCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[remove-resources-department] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+    ),
+  );
 }
 
 export async function getAvailableResources(
   departmentCode?: string,
 ): Promise<ActionResult<ResourceDTO[]>> {
   if (!departmentCode) {
-    return {
-      success: false,
-      error: "Informação do departamento é obrigatória",
-    };
+    return required("departmentRequired");
   }
-  const client = await getClientAccess();
-
-  try {
-    const result =
-      await client.departments.getAvailableResources(departmentCode);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[available-resources-department] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(`[available-resources-department] Erro:`, (client) =>
+    client.departments.getAvailableResources(departmentCode),
+  );
 }
 
 export async function getDepartmentResources(
   departmentCode?: string,
 ): Promise<ActionResult<ResourceDTO[]>> {
   if (!departmentCode) {
-    return {
-      success: false,
-      error: "Informação do departamento é obrigatória",
-    };
+    return required("departmentRequired");
   }
 
-  const client = await getClientAccess();
-
-  try {
-    const result =
-      await client.departments.getDepartmentResources(departmentCode);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[department-resources] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(`[department-resources] Erro:`, (client) =>
+    client.departments.getDepartmentResources(departmentCode),
+  );
 }
 
 // PERMISSIONS
@@ -407,21 +261,11 @@ export async function getDepartmentPermissions(
   ActionResult<SdkData<AccessClient["departments"]["getDepartmentPermissions"]>>
 > {
   if (!departmentCode) {
-    return {
-      success: false,
-      error: "Informação do departamento é obrigatória",
-    };
+    return required("departmentRequired");
   }
-  const client = await getClientAccess();
-
-  try {
-    const result =
-      await client.departments.getDepartmentPermissions(departmentCode);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[department-permissions] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(`[department-permissions] Erro:`, (client) =>
+    client.departments.getDepartmentPermissions(departmentCode),
+  );
 }
 
 export async function getAvailablePermissions(
@@ -430,58 +274,36 @@ export async function getAvailablePermissions(
   ActionResult<SdkData<AccessClient["departments"]["getAvailablePermissions"]>>
 > {
   if (!departmentCode) {
-    return {
-      success: false,
-      error: "Informação do departamento é obrigatória",
-    };
+    return required("departmentRequired");
   }
 
-  const client = await getClientAccess();
-
-  try {
-    const result =
-      await client.departments.getAvailablePermissions(departmentCode);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[available-department-permissions] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(`[available-department-permissions] Erro:`, (client) =>
+    client.departments.getAvailablePermissions(departmentCode),
+  );
 }
 
 export async function addPermissionsToDepartment(
   departmentCode: string,
   permissionCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.addPermissionsToDepartment(
+  return callApi(`[add-department-permissions] Erro:`, (client) =>
+    client.departments.addPermissionsToDepartment(
       departmentCode,
       permissionCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[add-department-permissions] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+    ),
+  );
 }
 
 export async function removePermissionsFromDepartment(
   departmentCode: string,
   permissionCodes: string[],
 ): Promise<ActionResult<string>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.removePermissionsFromDepartment(
+  return callApi(`[remove-department-permissions] Erro:`, (client) =>
+    client.departments.removePermissionsFromDepartment(
       departmentCode,
       permissionCodes,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[remove-department-permissions] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+    ),
+  );
 }
 
 // PERMISSIONS BY ROLE
@@ -490,19 +312,13 @@ export async function addPermissionsToRole(
   roleCode: string,
   permissionCodes: string[],
 ): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.addPermissionsToRole(
+  return callApi(`[add-permissions-role] Erro:`, (client) =>
+    client.departments.addPermissionsToRole(
       departmentCode,
       roleCode,
       permissionCodes,
-    );
-    return { success: true, data: result.data as RoleDTO };
-  } catch (error) {
-    console.error(`[add-permissions-role] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+    ),
+  );
 }
 
 export async function removePermissionsFromRole(
@@ -510,19 +326,13 @@ export async function removePermissionsFromRole(
   roleCode: string,
   permissionCodes: string[],
 ): Promise<ActionResult<RoleDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.removePermissionsFromRole(
+  return callApi(`[remove-permissions-role] Erro:`, (client) =>
+    client.departments.removePermissionsFromRole(
       departmentCode,
       roleCode,
       permissionCodes,
-    );
-    return { success: true, data: result.data as RoleDTO };
-  } catch (error) {
-    console.error(`[remove-permissions-role] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+    ),
+  );
 }
 
 // NOTE: SDK declares this as `ApiResponse<any>`; downstream consumers narrow.
@@ -530,18 +340,9 @@ export async function getPermissionsByRole(
   departmentCode: string,
   roleCode: string,
 ): Promise<ActionResult<unknown>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.getPermissionsByRole(
-      departmentCode,
-      roleCode,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[permissions-by-role] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(`[permissions-by-role] Erro:`, (client) =>
+    client.departments.getPermissionsByRole(departmentCode, roleCode),
+  );
 }
 
 export async function getAvailablePermissionsForRole(
@@ -552,16 +353,7 @@ export async function getAvailablePermissionsForRole(
     SdkData<AccessClient["departments"]["getAvailablePermissionsForRole"]>
   >
 > {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.departments.getAvailablePermissionsForRole(
-      departmentCode,
-      roleCode,
-    );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(`[available-permissions-role] Erro:`, error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(`[available-permissions-role] Erro:`, (client) =>
+    client.departments.getAvailablePermissionsForRole(departmentCode, roleCode),
+  );
 }

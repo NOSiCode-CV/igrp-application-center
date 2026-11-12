@@ -4,7 +4,7 @@ import { Badge, cn, IGRPIcon } from "@igrp/igrp-framework-react-design-system";
 import type { RoleDTO } from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 import { userStatusLabel } from "../lib/i18n";
 import { useUserRoles } from "../use-users";
@@ -68,7 +68,7 @@ function UserRoleItem({ role }: UserRoleItemProps) {
           <h4 className="font-semibold text-sm">{role.name}</h4>
           <Badge
             variant="outline"
-            className={cn("text-xs", getStatusColor(role.status))}
+            className={cn("text-xs", statusClass(role.status))}
           >
             {userStatusLabel(t, role.status)}
           </Badge>

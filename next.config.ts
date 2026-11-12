@@ -150,6 +150,9 @@ const nextConfig = (phase: string): NextConfig => ({
     },
   },
   experimental: {
+    // Next rejects server-action bodies over 1 MB by default; image uploads
+    // allow MAX_IMAGE_UPLOAD_BYTES (5 MB) plus multipart overhead.
+    serverActions: { bodySizeLimit: "6mb" },
     authInterrupts: true,
     typedEnv: true,
     browserDebugInfoInTerminal: {

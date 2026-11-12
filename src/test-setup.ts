@@ -74,3 +74,24 @@ if (typeof globalThis.ResizeObserver === "undefined") {
     disconnect() {}
   };
 }
+
+// Server actions translate their own refusals with getTranslations; outside a
+// request there is no next-intl config, so resolve against pt.json (the module
+// default). Tests that need another locale mock next-intl/server themselves.
+vi.mock("next-intl/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next-intl/server")>();
+  const { createTranslator } = await import("next-intl");
+  const { default: pt } = await import("@/i18n/messages/pt.json");
+  return {
+    ...actual,
+    getLocale: async () => "pt",
+    getTranslations: async (
+      options?: string | { namespace?: string; locale?: string },
+    ) =>
+      createTranslator({
+        locale: "pt",
+        messages: pt,
+        namespace: typeof options === "string" ? options : options?.namespace,
+      } as Parameters<typeof createTranslator>[0]),
+  };
+});

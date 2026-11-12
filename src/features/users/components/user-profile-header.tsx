@@ -9,7 +9,7 @@ import {
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
 import { useTranslations } from "next-intl";
 
-import { getStatusColor } from "@/lib/utilities";
+import { statusClass } from "@/lib/utilities";
 
 import { UserProfileAvatar } from "./user-profile-avatar";
 import { UserProfileEditableName } from "./user-profile-editable-name";
@@ -55,7 +55,7 @@ export function UserProfileHeader(props: UserProfileHeaderProps) {
                 fallback={t("notAvailable")}
                 onSave={onSaveName}
               />
-              <Badge className={cn(getStatusColor(user.status ?? ""))}>
+              <Badge className={cn(statusClass(user.status ?? ""))}>
                 {user.status === "ACTIVE"
                   ? tStatus("active")
                   : tStatus("inactive")}

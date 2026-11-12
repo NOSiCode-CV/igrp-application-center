@@ -12,6 +12,7 @@ import {
 import { toActionError } from "@/lib/utilities";
 
 import { getClientAccess } from "./access-client";
+import { callApi } from "./call-api";
 import type { AccessClient, ActionResult } from "./types";
 
 function withoutSecret(dto: OAuthClientDTO): OAuthClientDTO {
@@ -52,27 +53,25 @@ function failure(error: unknown) {
 export async function listOAuthClients(): Promise<
   ActionResult<OAuthClientDTO[]>
 > {
-  const client = await getClientAccess();
-  try {
-    const result = await client.oauthClients.listOAuthClients();
-    return { success: true, data: result.data.map(withoutSecret) };
-  } catch (error) {
-    console.error("[oauth-clients] Erro ao carregar clientes OAuth:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[oauth-clients] Erro ao carregar clientes OAuth:",
+    async (client) => ({
+      data: (await client.oauthClients.listOAuthClients()).data.map(
+        withoutSecret,
+      ),
+    }),
+  );
 }
 
 export async function getOAuthClient(
   id: string,
 ): Promise<ActionResult<OAuthClientDTO>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.oauthClients.getOAuthClient(id);
-    return { success: true, data: withoutSecret(result.data) };
-  } catch (error) {
-    console.error("[oauth-client] Erro ao carregar cliente OAuth:", error);
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[oauth-client] Erro ao carregar cliente OAuth:",
+    async (client) => ({
+      data: withoutSecret((await client.oauthClients.getOAuthClient(id)).data),
+    }),
+  );
 }
 
 /** Carries the raw clientSecret (as does rotateOAuthClientSecret). Never cache it. */
@@ -119,33 +118,22 @@ export async function updateOAuthClient(
 export async function rotateOAuthClientSecret(
   id: string,
 ): Promise<ActionResult<OAuthClientDTO>> {
-  const client = await getClientAccess();
-  try {
-    const result = await client.oauthClients.rotateOAuthClientSecret(id);
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[oauth-client-rotate] Erro ao gerar novo segredo do cliente OAuth:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[oauth-client-rotate] Erro ao gerar novo segredo do cliente OAuth:",
+    (client) => client.oauthClients.rotateOAuthClientSecret(id),
+  );
 }
 
 export async function deleteOAuthClient(
   id: string,
 ): Promise<ActionResult<null>> {
-  const client = await getClientAccess();
-  try {
-    await client.oauthClients.deleteOAuthClient(id);
-    return { success: true, data: null };
-  } catch (error) {
-    console.error(
-      "[oauth-client-delete] Erro ao eliminar cliente OAuth:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[oauth-client-delete] Erro ao eliminar cliente OAuth:",
+    async (client) => {
+      await client.oauthClients.deleteOAuthClient(id);
+      return { data: null };
+    },
+  );
 }
 
 /** Full-replacement PUT built from the freshly loaded client. */
@@ -153,19 +141,15 @@ export async function setOAuthClientActive(
   id: string,
   active: boolean,
 ): Promise<ActionResult<OAuthClientDTO>> {
-  const client = await getClientAccess();
-  try {
-    const current = await client.oauthClients.getOAuthClient(id);
-    const result = await client.oauthClients.updateOAuthClient(
-      id,
-      withActive(current.data, active),
-    );
-    return { success: true, data: withoutSecret(result.data) };
-  } catch (error) {
-    console.error(
-      "[oauth-client-active] Erro ao alterar estado do cliente OAuth:",
-      error,
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  return callApi(
+    "[oauth-client-active] Erro ao alterar estado do cliente OAuth:",
+    async (client) => {
+      const current = await client.oauthClients.getOAuthClient(id);
+      const result = await client.oauthClients.updateOAuthClient(
+        id,
+        withActive(current.data, active),
+      );
+      return { data: withoutSecret(result.data) };
+    },
+  );
 }
