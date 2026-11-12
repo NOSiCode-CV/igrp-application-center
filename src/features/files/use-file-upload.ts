@@ -82,7 +82,7 @@ export function useFileUpload({
     if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragging(false);
   }, []);
 
-  const handleDragOver = useCallback(stop, []);
+  const handleDragOver = stop;
 
   const handleDrop = useCallback(
     (e: DragEvent<HTMLElement>) => {

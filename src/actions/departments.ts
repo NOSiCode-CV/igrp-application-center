@@ -59,14 +59,6 @@ export async function deleteDepartment(
   );
 }
 
-export async function getDepartmentByCode(
-  code: string,
-): Promise<ActionResult<DepartmentDTO>> {
-  return callApi("[department-by-code] Erro ao obter departamento:", (client) =>
-    client.departments.getDepartmentByCode(code),
-  );
-}
-
 // APPLICATIONS
 export async function getAvailableApplications(
   departmentCode?: string,
@@ -342,18 +334,5 @@ export async function getPermissionsByRole(
 ): Promise<ActionResult<unknown>> {
   return callApi(`[permissions-by-role] Erro:`, (client) =>
     client.departments.getPermissionsByRole(departmentCode, roleCode),
-  );
-}
-
-export async function getAvailablePermissionsForRole(
-  departmentCode: string,
-  roleCode: string,
-): Promise<
-  ActionResult<
-    SdkData<AccessClient["departments"]["getAvailablePermissionsForRole"]>
-  >
-> {
-  return callApi(`[available-permissions-role] Erro:`, (client) =>
-    client.departments.getAvailablePermissionsForRole(departmentCode, roleCode),
   );
 }

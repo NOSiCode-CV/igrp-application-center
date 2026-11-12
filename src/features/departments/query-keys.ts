@@ -13,7 +13,6 @@
 export const departmentKeys = {
   all: ["departments"] as const,
   list: () => ["departments"] as const,
-  detail: (code?: string) => ["department-by-code", code] as const,
   availableApps: (code?: string) =>
     ["department-available-menus-for-roles", code] as const,
   availableMenus: (appCode?: string, departmentCode?: string) =>
