@@ -1,17 +1,15 @@
 import type { IGRPMenuItemArgs } from "@igrp/framework-next-types";
 import {
-  IGRPIconList,
-  type IGRPIconName,
+  IGRPIconObject,
   type IGRPOptionsProps,
 } from "@igrp/igrp-framework-react-design-system";
 
 import { formatIconString } from "@/lib/utilities";
 
-export const LUCIDE_ICON_OPTIONS: IGRPOptionsProps[] = (
-  Object.keys(IGRPIconList) as IGRPIconName[]
-)
-  .sort((a, b) => a.localeCompare(b))
-  .map((name) => ({ value: name, label: formatIconString(name) }));
+// Names only (sorted data): IGRPIconList would pull every icon's code into the bundle.
+export const LUCIDE_ICON_OPTIONS: IGRPOptionsProps[] = IGRPIconObject.map(
+  (name) => ({ value: name, label: formatIconString(name) }),
+);
 
 export function getNextMenuPosition(
   menus: IGRPMenuItemArgs[],

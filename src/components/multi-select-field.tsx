@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useId, useMemo, useState } from "react";
+import { use, useId, useMemo, useState } from "react";
 
 import {
   Badge,
@@ -104,7 +104,7 @@ export function MultiSelectField({
 
   // `useIGRPFormContext` atira fora de um `IGRPForm`; o modo controlado tem de
   // funcionar em formulários react-hook-form normais, daí ler o contexto direto.
-  const form = useContext(IGRPFormContext)?.form;
+  const form = use(IGRPFormContext)?.form;
   const controlled = valueProp !== undefined;
   const rawValue = controlled
     ? valueProp

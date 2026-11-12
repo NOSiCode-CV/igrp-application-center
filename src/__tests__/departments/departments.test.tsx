@@ -1,4 +1,4 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 // Built once: unstable mocked query data makes vitest run out of memory.
@@ -89,6 +89,24 @@ describe("Department dialogs", () => {
     expect(screen.getByText("Create new department")).toBeTruthy();
     expect(screen.getByPlaceholderText("Department name")).toBeTruthy();
     expect(screen.getByText("Save and new")).toBeTruthy();
+  });
+
+  it("suggests a code from the name until the code is edited", async () => {
+    renderWithIntl(
+      <DepartmentFormDialog open onOpenChange={() => {}} department={null} />,
+      { locale: "en" },
+    );
+    const name = screen.getByPlaceholderText("Department name");
+    const code = screen.getByPlaceholderText(
+      "Department code",
+    ) as HTMLInputElement;
+
+    fireEvent.change(name, { target: { value: "Direção de Recursos Humanos" } });
+    await waitFor(() => expect(code.value).toBe("DRH"));
+
+    fireEvent.change(code, { target: { value: "RH" } });
+    fireEvent.change(name, { target: { value: "Outra Coisa" } });
+    await waitFor(() => expect(code.value).toBe("RH"));
   });
 
   it("renders the manage applications modal in English", () => {

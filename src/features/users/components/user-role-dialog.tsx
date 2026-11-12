@@ -168,21 +168,15 @@ export function UserRolesDialog({
     error: deptsError,
   } = useDepartments();
   const [deptPopoverOpen, setDeptPopoverOpen] = useState(false);
-  const [departmentCode, setDepartmentCode] = useState<string | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    if (open && depts?.length && !departmentCode) {
-      setDepartmentCode(depts[0].code);
-    }
-  }, [open, depts, departmentCode]);
+  const [pickedDept, setPickedDept] = useState<string | undefined>(undefined);
+  // Derived, not synced by an effect: the first department until one is picked.
+  const departmentCode = open ? (pickedDept ?? depts?.[0]?.code) : undefined;
 
   const deptName = (code?: string) =>
     depts?.find((d) => d.code === code)?.name ?? code ?? "";
 
   const handleSelectDept = (code: string) => {
-    setDepartmentCode(code);
+    setPickedDept(code);
     setDeptPopoverOpen(false);
   };
 
@@ -220,15 +214,19 @@ export function UserRolesDialog({
     return new Set<string>(list.map((r) => getRowKey(r as RoleDTO)));
   }, [userRolesInDept, getRowKey]);
 
-  useEffect(() => {
+  // Reset on close while rendering (React's "adjust state on prop change"),
+  // so the closed dialog never commits stale state first.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (!open) {
-      setDepartmentCode(undefined);
+      setPickedDept(undefined);
       setRowSelection({});
       setColumnFilters([]);
       setPagination({ pageIndex: 0, pageSize: 15 });
       setExpiresAt("");
     }
-  }, [open]);
+  }
 
   useEffect(() => {
     const next: RowSelectionState = {};

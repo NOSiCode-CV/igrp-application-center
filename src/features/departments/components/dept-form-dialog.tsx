@@ -102,8 +102,6 @@ export function DepartmentFormDialog({
     }
   }, [open, department, parentDeptId, form]);
 
-  const watchedName = form.watch("name");
-
   useEffect(() => {
     if (!open) {
       form.reset(defaultValues);
@@ -111,26 +109,20 @@ export function DepartmentFormDialog({
     }
   }, [open, form]);
 
-  useEffect(() => {
-    const codeDirty = !!form.formState.dirtyFields?.code;
-    if (codeDirty) return;
-
-    const raw = (watchedName ?? "").trim();
+  // Suggest a code from the name's initials while typing, until the user edits the code.
+  const suggestCode = (name: string) => {
+    if (department || form.getFieldState("code").isDirty) return;
+    const raw = name.trim();
     if (!raw) return;
-
-    if (!department) {
-      const ignoreWords = ["do", "da", "de", "dos", "das", "e", "o", "a"];
-      const words = raw.split(/\s+/);
-
-      const initials = words
-        .filter((word) => !ignoreWords.includes(word.toLowerCase()))
-        .map((word) => word.charAt(0).toUpperCase())
-        .join("");
-
-      const code = initials.slice(0, 30);
-      form.setValue("code", code, { shouldValidate: true, shouldDirty: false });
-    }
-  }, [watchedName, form, department]);
+    const ignoreWords = ["do", "da", "de", "dos", "das", "e", "o", "a"];
+    const code = raw
+      .split(/\s+/)
+      .filter((word) => !ignoreWords.includes(word.toLowerCase()))
+      .map((word) => word.charAt(0).toUpperCase())
+      .join("")
+      .slice(0, 30);
+    form.setValue("code", code, { shouldValidate: true, shouldDirty: false });
+  };
 
   const isLoading = isCreating || isUpdating;
 
@@ -221,7 +213,10 @@ export function DepartmentFormDialog({
                     <Input
                       placeholder={t("namePlaceholder")}
                       value={field.value ?? ""}
-                      onChange={field.onChange}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        suggestCode(e.target.value);
+                      }}
                       onBlur={field.onBlur}
                       name={field.name}
                       ref={field.ref}

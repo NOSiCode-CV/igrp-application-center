@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 
 export function useLocalStorageState<T>(
   key: string,
@@ -8,8 +8,10 @@ export function useLocalStorageState<T>(
 ): [T, (next: T | ((prev: T) => T)) => void] {
   const [value, setValue] = useState<T>(initial);
 
-  // Read once on mount (client only) — never during SSR render.
-  useEffect(() => {
+  // Read once on mount (client only), before the browser paints, so the stored
+  // value replaces `initial` without a visible flash after hydration.
+  // shortcut: the SSR HTML still shows `initial` until hydration; move to a cookie read on the server if that shows.
+  useLayoutEffect(() => {
     try {
       const raw = window.localStorage.getItem(key);
       if (raw !== null) setValue(JSON.parse(raw) as T);
