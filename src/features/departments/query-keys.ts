@@ -1,3 +1,7 @@
+import type { QueryClient, QueryKey } from "@tanstack/react-query";
+
+import { applicationsKeys } from "@/features/applications/query-keys";
+
 /**
  * Query-key factory for the departments feature. Mirrors
  * `features/applications/query-keys.ts`. Key shapes match the strings
@@ -34,3 +38,54 @@ export const roleKeys = {
   availablePermissions: (departmentCode: string, roleCode: string) =>
     ["available-permissions-for-role", departmentCode, roleCode] as const,
 };
+
+/**
+ * What each department relation change makes stale, in one place: the add
+ * and the remove hook of a pair invalidate the same list. Pure data, so the
+ * rules are testable without a QueryClient.
+ */
+export const departmentRelationKeys = {
+  applications: (departmentCode: string, appCodes: string[]) => [
+    departmentKeys.all,
+    applicationsKeys.list({ departmentCode }),
+    departmentKeys.availableApps(departmentCode),
+    // Menu queries are keyed (appCode, departmentCode): one pair per app.
+    ...appCodes.flatMap((appCode) => [
+      departmentKeys.availableMenus(appCode, departmentCode),
+      departmentKeys.menus(appCode, departmentCode),
+    ]),
+  ],
+  menus: (appCode: string, departmentCode: string) => [
+    departmentKeys.all,
+    departmentKeys.menus(appCode, departmentCode),
+    departmentKeys.availableMenus(appCode, departmentCode),
+  ],
+  // Resources carry permissions, so both lists go stale.
+  resources: (departmentCode: string) => [
+    departmentKeys.all,
+    departmentKeys.resources(departmentCode),
+    departmentKeys.availableResources(departmentCode),
+    departmentKeys.permissions(departmentCode),
+    departmentKeys.availablePermissions(departmentCode),
+  ],
+  permissions: (departmentCode: string) => [
+    departmentKeys.all,
+    departmentKeys.permissions(departmentCode),
+    departmentKeys.availablePermissions(departmentCode),
+  ],
+  rolePermissions: (departmentCode: string, roleCode: string) => [
+    roleKeys.all,
+    roleKeys.permissions(departmentCode, roleCode),
+    roleKeys.availablePermissions(departmentCode, roleCode),
+    departmentKeys.resources(departmentCode),
+  ],
+};
+
+export async function invalidateKeys(
+  queryClient: QueryClient,
+  keys: readonly QueryKey[],
+): Promise<void> {
+  await Promise.all(
+    keys.map((queryKey) => queryClient.invalidateQueries({ queryKey })),
+  );
+}
