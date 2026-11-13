@@ -23,8 +23,6 @@ pnpm-debug.log*
 .env
 .env.*
 !.env.example
-# Holds server secrets and is not used by the build
-env/.env-build
 
 # Agent / local tooling (not needed to build)
 .claude
