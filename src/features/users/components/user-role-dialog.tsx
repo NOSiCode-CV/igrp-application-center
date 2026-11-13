@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import {
   Badge,
@@ -43,12 +36,15 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   type PaginationState,
-  type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 
 import { SelectableDataTable } from "@/components/data-table/selectable-data-table";
+import {
+  saveMembership,
+  useMembershipEditor,
+} from "@/components/data-table/use-membership-editor";
 import {
   useDepartments,
   useRoles,
@@ -143,6 +139,17 @@ const makeColumns = (
   },
 ];
 
+const getRowKey = (r: RoleDTO) => String(r.id ?? r.name);
+const roleCodes = (list: RoleDTO[]) =>
+  list.map((r) => r.code ?? "").filter(Boolean);
+const diffRoles = (selected: RoleDTO[], existing: RoleDTO[]) => {
+  const { toAdd, toRemove } = computeRoleDiff(
+    roleCodes(existing),
+    roleCodes(selected),
+  );
+  return { toAdd: toAdd.roles, toRemove };
+};
+
 type UserRolesDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -195,10 +202,7 @@ export function UserRolesDialog({
     pageSize: 15,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [expiresAt, setExpiresAt] = useState<string>("");
-
-  const getRowKey = useCallback((r: RoleDTO) => String(r.id ?? r.name), []);
 
   const roleNameSet = useMemo(
     () => new Set((roles ?? []).map((r) => norm(r.name ?? ""))),
@@ -209,10 +213,13 @@ export function UserRolesDialog({
     [userRoles, roleNameSet],
   );
 
-  const preselectedKeys = useMemo(() => {
-    const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
-    return new Set<string>(list.map((r) => getRowKey(r as RoleDTO)));
-  }, [userRolesInDept, getRowKey]);
+  const { rowSelection, setRowSelection, toAdd, toRemove, hasChanges } =
+    useMembershipEditor({
+      rows: data,
+      existing: userRolesInDept as RoleDTO[],
+      getKey: getRowKey,
+      diff: diffRoles,
+    });
 
   // Reset on close while rendering (React's "adjust state on prop change"),
   // so the closed dialog never commits stale state first.
@@ -221,22 +228,17 @@ export function UserRolesDialog({
     setPrevOpen(open);
     if (!open) {
       setPickedDept(undefined);
-      setRowSelection({});
       setColumnFilters([]);
       setPagination({ pageIndex: 0, pageSize: 15 });
       setExpiresAt("");
     }
   }
 
+  // A new role list (another department) starts on its first page.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset is keyed on the list itself.
   useEffect(() => {
-    const next: RowSelectionState = {};
-    for (const row of roles ?? []) {
-      const key = getRowKey(row);
-      if (preselectedKeys.has(key)) next[key] = true;
-    }
-    setRowSelection(next);
     setPagination((p) => ({ ...p, pageIndex: 0 }));
-  }, [roles, preselectedKeys, getRowKey]);
+  }, [roles]);
 
   const table = useReactTable({
     data,
@@ -251,23 +253,6 @@ export function UserRolesDialog({
     onColumnFiltersChange: setColumnFilters,
     state: { pagination, columnFilters, rowSelection },
   });
-
-  const selectedRows = table.getSelectedRowModel().rows;
-  const selectedData = selectedRows.map((r) => r.original);
-
-  const existing = userRolesInDept ?? [];
-
-  const diff = useMemo(
-    () =>
-      computeRoleDiff(
-        (existing as RoleDTO[]).map((r) => r.code ?? "").filter(Boolean),
-        selectedData.map((r) => r.code ?? "").filter(Boolean),
-        expiresAt || undefined,
-      ),
-    [selectedData, existing, expiresAt],
-  );
-
-  const hasChanges = diff.toAdd.roles.length > 0 || diff.toRemove.length > 0;
 
   const { mutateAsync: addUserRole, isPending: isAdding } = useAddUserRole();
   const { mutateAsync: removeUserRole, isPending: isRemoving } =
@@ -291,33 +276,23 @@ export function UserRolesDialog({
     }
 
     try {
-      if (diff.toAdd.roles.length) {
-        const res = await addUserRole({
-          id,
-          departmentCode,
-          request: diff.toAdd,
-        });
-        if (!res.success) {
-          throw new Error(res.error);
-        }
-      }
-      if (diff.toRemove.length) {
-        const res = await removeUserRole({
-          id,
-          departmentCode,
-          roleCodes: diff.toRemove,
-        });
-        if (!res.success) {
-          throw new Error(res.error);
-        }
-      }
+      await saveMembership(
+        { toAdd, toRemove },
+        (codes) =>
+          addUserRole({
+            id,
+            departmentCode,
+            request: { roles: codes, ...(expiresAt ? { expiresAt } : {}) },
+          }),
+        (roleCodes) => removeUserRole({ id, departmentCode, roleCodes }),
+      );
 
       igrpToast({
         type: "success",
         title: t("roleDialog.toasts.updated"),
         description: t("roleDialog.toasts.updatedDescription", {
-          added: diff.toAdd.roles.length,
-          removed: diff.toRemove.length,
+          added: toAdd.length,
+          removed: toRemove.length,
         }),
       });
 
@@ -539,7 +514,7 @@ export function UserRolesDialog({
                     onClick={onSubmit}
                     disabled={
                       !departmentCode ||
-                      !(diff.toAdd.roles.length || diff.toRemove.length) ||
+                      !hasChanges ||
                       loading ||
                       isAdding ||
                       isRemoving

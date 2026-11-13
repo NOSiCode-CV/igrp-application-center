@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
@@ -32,12 +25,15 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   type PaginationState,
-  type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
 
 import { SelectableDataTable } from "@/components/data-table/selectable-data-table";
+import {
+  saveMembership,
+  useMembershipEditor,
+} from "@/components/data-table/use-membership-editor";
 import { AppCenterLoading } from "@/components/loading";
 import {
   useAddPermissionsToRole,
@@ -116,6 +112,9 @@ const makeColumns = (t: PermissionsTranslator): ColumnDef<PermissionLike>[] => [
   },
 ];
 
+const getRowKey = (r: PermissionLike) => String(r.id ?? r.name);
+const NO_PERMISSIONS: PermissionLike[] = [];
+
 interface RoleDetailsProps {
   departmentCode: string;
   role: RoleArgs;
@@ -142,7 +141,6 @@ export function RoleDetails({
     pageSize: 10,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const { data: departmentPermissions, isLoading: isLoadingDepartment } =
     useDepartmentPermissions(departmentCode);
@@ -164,26 +162,18 @@ export function RoleDetails({
     );
   }, [departmentPermissions, compare]);
 
-  const getRowKey = useCallback(
-    (r: PermissionLike) => String(r.id ?? r.name),
-    [],
-  );
+  // SDK declares `getPermissionsByRole` as `ApiResponse<any>`; cast at boundary.
+  const existing = (
+    Array.isArray(permissionByRole) ? permissionByRole : NO_PERMISSIONS
+  ) as PermissionLike[];
 
-  const preselectedKeys = useMemo(() => {
-    const list = Array.isArray(permissionByRole) ? permissionByRole : [];
-    return new Set<string>(list.map((p) => getRowKey(p)));
-  }, [permissionByRole, getRowKey]);
-
-  useEffect(() => {
-    if (!allPermissions?.length) return;
-
-    const next: RowSelectionState = {};
-    for (const row of allPermissions) {
-      const key = getRowKey(row);
-      if (preselectedKeys.has(key)) next[key] = true;
-    }
-    setRowSelection(next);
-  }, [allPermissions, preselectedKeys, getRowKey]);
+  const { rowSelection, setRowSelection, toAdd, toRemove, hasChanges } =
+    useMembershipEditor({
+      rows: allPermissions,
+      existing,
+      getKey: getRowKey,
+      diff: diffPermissions,
+    });
 
   const table = useReactTable({
     data: allPermissions,
@@ -201,19 +191,7 @@ export function RoleDetails({
     state: { pagination, columnFilters, rowSelection },
   });
 
-  const selectedRows = table.getSelectedRowModel().rows;
-  const selectedData = selectedRows.map((r) => r.original);
-  // SDK declares `getPermissionsByRole` as `ApiResponse<any>`; cast at boundary.
-  const existing = (
-    Array.isArray(permissionByRole) ? permissionByRole : []
-  ) as PermissionLike[];
-
-  const { toAdd, toRemove } = useMemo(
-    () => diffPermissions(selectedData, existing),
-    [selectedData, existing],
-  );
-
-  const hasChanges = toAdd.length > 0 || toRemove.length > 0;
+  const selectedCount = table.getSelectedRowModel().rows.length;
 
   const isLoading = isLoadingDepartment || isLoadingPermissionsByRole;
 
@@ -228,28 +206,21 @@ export function RoleDetails({
     }
 
     try {
-      if (toAdd.length) {
-        const res = await addPermissions({
-          departmentCode,
-          roleCode: role.code,
-          permissionCodes: toAdd,
-        });
-
-        if (!res.success) {
-          throw new Error(res.error);
-        }
-      }
-      if (toRemove.length) {
-        const res = await removePermissions({
-          departmentCode,
-          roleCode: role.code,
-          permissionCodes: toRemove,
-        });
-
-        if (!res.success) {
-          throw new Error(res.error);
-        }
-      }
+      await saveMembership(
+        { toAdd, toRemove },
+        (permissionCodes) =>
+          addPermissions({
+            departmentCode,
+            roleCode: role.code,
+            permissionCodes,
+          }),
+        (permissionCodes) =>
+          removePermissions({
+            departmentCode,
+            roleCode: role.code,
+            permissionCodes,
+          }),
+      );
 
       igrpToast({
         type: "success",
@@ -333,7 +304,7 @@ export function RoleDetails({
               </div>
 
               <div className="flex items-center justify-between gap-3 px-3">
-                <Badge>{t("selected", { count: selectedRows.length })}</Badge>
+                <Badge>{t("selected", { count: selectedCount })}</Badge>
               </div>
               {isLoading ? (
                 <AppCenterLoading description={t("loading")} />
