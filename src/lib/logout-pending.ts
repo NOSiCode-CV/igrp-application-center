@@ -15,6 +15,8 @@ import {
   basePathCookieSuffix,
 } from "@igrp/framework-next-auth/cookies";
 
+import { secureCookieAttr } from "./cookie-secure";
+
 /**
  * Cookie name shared by the logout page, /login completion, and middleware.
  *
@@ -31,12 +33,6 @@ export const LOGOUT_PENDING_COOKIE = `logout_pending${basePathCookieSuffix(
 // user abandons the flow at the IdP.
 const LOGOUT_PENDING_MAX_AGE_SECONDS = 300;
 
-// The browser drops a `Secure` cookie set from an http: page, so NODE_ENV is
-// the wrong signal: a production build served over plain HTTP would lose it.
-function secureAttr(): string {
-  return window.location.protocol === "https:" ? "; secure" : "";
-}
-
 /**
  * Set the logout-pending marker. Client-only — call immediately before the
  * top-level IdP end-session POST.
@@ -46,11 +42,11 @@ function secureAttr(): string {
  */
 export function markLogoutPending(): void {
   // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API can't set SameSite/path the way this marker needs, and this only runs client-side.
-  document.cookie = `${LOGOUT_PENDING_COOKIE}=1; path=${basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH)}; max-age=${LOGOUT_PENDING_MAX_AGE_SECONDS}; samesite=lax${secureAttr()}`;
+  document.cookie = `${LOGOUT_PENDING_COOKIE}=1; path=${basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH)}; max-age=${LOGOUT_PENDING_MAX_AGE_SECONDS}; samesite=lax${secureCookieAttr()}`;
 }
 
 /** Clear the marker. Client-only — call after signOut() completes on /login. */
 export function clearLogoutPending(): void {
   // biome-ignore lint/suspicious/noDocumentCookie: see markLogoutPending — intentional client-only cookie write.
-  document.cookie = `${LOGOUT_PENDING_COOKIE}=; path=${basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH)}; max-age=0; samesite=lax${secureAttr()}`;
+  document.cookie = `${LOGOUT_PENDING_COOKIE}=; path=${basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH)}; max-age=0; samesite=lax${secureCookieAttr()}`;
 }

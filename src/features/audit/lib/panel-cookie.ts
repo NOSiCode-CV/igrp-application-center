@@ -1,5 +1,7 @@
 import { basePathCookiePath } from "@igrp/framework-next-auth/cookies";
 
+import { secureCookieAttr } from "@/lib/cookie-secure";
+
 /** Remembers whether the Report's query panel is folded. A cookie, not
    localStorage, so the server renders the panel in its saved state and it
    does not jump open → closed while the page hydrates. */
@@ -12,7 +14,6 @@ export function panelOpenFromCookie(value: string | undefined): boolean {
 
 export function writePanelOpenCookie(open: boolean): void {
   const path = basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH);
-  const secure = window.location.protocol === "https:" ? "; secure" : "";
   // biome-ignore lint/suspicious/noDocumentCookie: one non-sensitive UI flag; the Cookie Store API is not in every supported browser.
-  document.cookie = `${PANEL_OPEN_COOKIE}=${open ? "1" : "0"}; path=${path}; max-age=31536000; samesite=lax${secure}`;
+  document.cookie = `${PANEL_OPEN_COOKIE}=${open ? "1" : "0"}; path=${path}; max-age=31536000; samesite=lax${secureCookieAttr()}`;
 }

@@ -63,7 +63,7 @@ export async function removeRolesFromUser(
 }
 
 export async function getCurrentUserRoles(): Promise<ActionResult<RoleDTO[]>> {
-  return callApi("[user-get] Erro ao obter roles:", (client) =>
+  return callApi("[get-current-user-roles] Erro ao obter roles:", (client) =>
     client.users.getCurrentUserRoles(),
   );
 }
@@ -166,7 +166,7 @@ export async function getUserDepartments(
 }
 
 export async function getUser(id: string): Promise<ActionResult<IGRPUserDTO>> {
-  return callApi("[user-get] Erro ao obter utilizador:", (client) =>
+  return callApi("[get-user] Erro ao obter utilizador:", (client) =>
     client.users.getUser(id),
   );
 }
@@ -174,8 +174,10 @@ export async function getUser(id: string): Promise<ActionResult<IGRPUserDTO>> {
 export async function getCurrentUserFavoriteApplications(
   applicationName?: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
-  return callApi("[user-get] Erro ao obter favorites applications:", (client) =>
-    client.users.getCurrentUserFavoriteApplications(applicationName),
+  return callApi(
+    "[get-current-user-favorite-applications] Erro ao obter favorites applications:",
+    (client) =>
+      client.users.getCurrentUserFavoriteApplications(applicationName),
   );
 }
 
@@ -183,7 +185,7 @@ export async function addCurrentUserFavoriteApplication(
   applicationCode: string,
 ): Promise<ActionResult<ApplicationDTO>> {
   return callApi(
-    "[user-get] Erro ao adicionar favorite application:",
+    "[add-current-user-favorite-application] Erro ao adicionar favorite application:",
     (client) => client.users.addCurrentUserFavoriteApplication(applicationCode),
   );
 }
@@ -191,8 +193,10 @@ export async function addCurrentUserFavoriteApplication(
 export async function removeCurrentUserFavoriteApplication(
   applicationCode: string,
 ): Promise<ActionResult<ApplicationDTO>> {
-  return callApi("[user-get] Erro ao remover favorite application:", (client) =>
-    client.users.removeCurrentUserFavoriteApplication(applicationCode),
+  return callApi(
+    "[remove-current-user-favorite-application] Erro ao remover favorite application:",
+    (client) =>
+      client.users.removeCurrentUserFavoriteApplication(applicationCode),
   );
 }
 
@@ -200,23 +204,27 @@ export async function getCurrentUserRecentApplications(
   applicationName?: string,
   max?: string,
 ): Promise<ActionResult<ApplicationDTO[]>> {
-  return callApi("[user-get] Erro ao obter recent applications:", (client) =>
-    client.users.getCurrentUserRecentApplications(applicationName, max),
+  return callApi(
+    "[get-current-user-recent-applications] Erro ao obter recent applications:",
+    (client) =>
+      client.users.getCurrentUserRecentApplications(applicationName, max),
   );
 }
 
 export async function registerCurrentUserApplicationAccess(
   applicationCode: string,
 ): Promise<ActionResult<ApplicationDTO>> {
-  return callApi("[user-get] Erro ao registo de acesso:", (client) =>
-    client.users.registerCurrentUserApplicationAccess(applicationCode),
+  return callApi(
+    "[register-current-user-application-access] Erro ao registo de acesso:",
+    (client) =>
+      client.users.registerCurrentUserApplicationAccess(applicationCode),
   );
 }
 
 export async function getUserInvitations(
   email?: string,
 ): Promise<ActionResult<SdkData<AccessClient["users"]["getUserInvitations"]>>> {
-  return callApi("[user-get] Erro ao obter convites:", (client) =>
+  return callApi("[get-user-invitations] Erro ao obter convites:", (client) =>
     client.users.getUserInvitations(email),
   );
 }
@@ -226,8 +234,9 @@ export async function resendUserInvitation(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["resendUserInvitation"]>>
 > {
-  return callApi("[user-get] Erro ao reenviar convite:", (client) =>
-    client.users.resendUserInvitation(id),
+  return callApi(
+    "[resend-user-invitation] Erro ao reenviar convite:",
+    (client) => client.users.resendUserInvitation(id),
   );
 }
 
@@ -237,8 +246,9 @@ export async function respondUserInvitation(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["respondUserInvitation"]>>
 > {
-  return callApi("[user-get] Erro ao responder convite:", (client) =>
-    client.users.respondUserInvitation(response, token),
+  return callApi(
+    "[respond-user-invitation] Erro ao responder convite:",
+    (client) => client.users.respondUserInvitation(response, token),
   );
 }
 
@@ -247,8 +257,9 @@ export async function cancelUserInvitation(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["cancelUserInvitation"]>>
 > {
-  return callApi("[user-get] Erro ao cancelar convite:", (client) =>
-    client.users.cancelUserInvitation(id),
+  return callApi(
+    "[cancel-user-invitation] Erro ao cancelar convite:",
+    (client) => client.users.cancelUserInvitation(id),
   );
 }
 
@@ -256,7 +267,7 @@ export async function updateUserStatus(
   id: string,
   value: string,
 ): Promise<ActionResult<IGRPUserDTO>> {
-  return callApi("[user-get] Erro ao atualizar status:", (client) =>
+  return callApi("[update-user-status] Erro ao atualizar status:", (client) =>
     client.users.updateUserStatus(id, value),
   );
 }
@@ -266,16 +277,18 @@ export async function getUserInvitationByToken(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["getUserInvitationByToken"]>>
 > {
-  return callApi("[user-get] Erro ao obter dados convite:", (client) =>
-    client.users.getUserInvitationByToken(token),
+  return callApi(
+    "[get-user-invitation-by-token] Erro ao obter dados convite:",
+    (client) => client.users.getUserInvitationByToken(token),
   );
 }
 
 export async function getCurrentUserActiveRole(): Promise<
   ActionResult<SdkData<AccessClient["users"]["getCurrentUserActiveRole"]>>
 > {
-  return callApi("[user-get] Erro ao obter active role:", (client) =>
-    client.users.getCurrentUserActiveRole(),
+  return callApi(
+    "[get-current-user-active-role] Erro ao obter active role:",
+    (client) => client.users.getCurrentUserActiveRole(),
   );
 }
 
@@ -284,8 +297,9 @@ export async function setCurrentUserActiveRole(
 ): Promise<
   ActionResult<SdkData<AccessClient["users"]["setCurrentUserActiveRole"]>>
 > {
-  return callApi("[user-get] Erro ao definir active role:", (client) =>
-    client.users.setCurrentUserActiveRole(role),
+  return callApi(
+    "[set-current-user-active-role] Erro ao definir active role:",
+    (client) => client.users.setCurrentUserActiveRole(role),
   );
 }
 

@@ -26,6 +26,8 @@ import { isOidcManagedProviderId } from "@igrp/framework-next-auth/providers";
 
 import { sanitizeCallbackUrl } from "@/lib/utilities";
 
+import { secureCookieAttr } from "./cookie-secure";
+
 /**
  * Scoped by basePath like the auth cookies themselves: a root-path app's cookie
  * lives at `path=/` and reaches every app on the host, so an unscoped name
@@ -38,12 +40,6 @@ export const SILENT_SSO_COOKIE = `igrp.silent-sso${basePathCookieSuffix(
 // Long enough to cover the IdP round-trip, short enough that a later visit to
 // /login tries silently again.
 const SILENT_SSO_MAX_AGE_SECONDS = 60;
-
-// The browser drops a `Secure` cookie set from an http: page, so NODE_ENV is
-// the wrong signal: a production build served over plain HTTP would lose it.
-function secureAttr(): string {
-  return window.location.protocol === "https:" ? "; secure" : "";
-}
 
 /**
  * Whether /login should try a silent sign-in before showing the form.
@@ -89,5 +85,5 @@ export function silentSsoCallbackUrl(
  */
 export function markSilentSsoTried(callbackUrl = "/"): void {
   // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API can't set SameSite/path the way this marker needs, and this only runs client-side.
-  document.cookie = `${SILENT_SSO_COOKIE}=${encodeURIComponent(callbackUrl)}; path=${basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH)}; max-age=${SILENT_SSO_MAX_AGE_SECONDS}; samesite=lax${secureAttr()}`;
+  document.cookie = `${SILENT_SSO_COOKIE}=${encodeURIComponent(callbackUrl)}; path=${basePathCookiePath(process.env.NEXT_PUBLIC_BASE_PATH)}; max-age=${SILENT_SSO_MAX_AGE_SECONDS}; samesite=lax${secureCookieAttr()}`;
 }
