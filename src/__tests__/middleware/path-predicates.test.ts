@@ -24,11 +24,13 @@ describe("isPublicPath", () => {
     "/api/auth/callback",
     "/_next/x",
     "/favicon.ico",
-    "/logo.png",
   ])("treats %s as public/static", (p) => expect(isPublicPath(p)).toBe(true));
 
-  it.each(["/", "/settings/users", "/profile"])("treats %s as protected", (p) =>
-    expect(isPublicPath(p)).toBe(false),
+  // Static files are skipped by the matcher, by extension; a dotted page
+  // path (a user id like john.doe) still gets the auth check.
+  it.each(["/", "/settings/users", "/profile", "/settings/users/john.doe"])(
+    "treats %s as protected",
+    (p) => expect(isPublicPath(p)).toBe(false),
   );
 });
 

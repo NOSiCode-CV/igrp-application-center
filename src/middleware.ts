@@ -135,21 +135,6 @@ export function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
   if (STATIC_PREFIXES.some((p) => pathname.startsWith(p))) return true;
-  // Belt-and-braces only: the DEFAULT matcher exported as `auth.config` already
-  // excludes `.*\..*`, so under the stock config this branch never runs — a
-  // request for a dotted path does not wake the middleware at all. It stays
-  // because the matcher is overridable (`withIGRPAuth({ matcher })`), and a
-  // consumer who widens it would otherwise lose the static-asset skip.
-  //
-  // It is NOT the auth boundary for dotted PAGE routes (e.g. a dynamic segment
-  // that captures "john.doe"). Those skip middleware under the stock matcher
-  // too — they are protected because `(igrp)/layout.tsx` calls `verifySession()`
-  // on the server for every route beneath it. Do not move a protected route out
-  // from under that layout on the assumption middleware covers it.
-  // Last segment only: on the full path, dots before a later "/" make this O(n²).
-  if (/\.[^/]+$/.test(pathname.slice(pathname.lastIndexOf("/") + 1))) {
-    return true;
-  }
   return false;
 }
 
