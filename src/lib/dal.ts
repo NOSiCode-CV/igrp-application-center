@@ -44,17 +44,3 @@ export const verifySession = cache(async (): Promise<Session> => {
  * underlying auth + cookies work runs once per request instead of per layout.
  */
 export const getLayoutConfig = cache(configLayout);
-
-/**
- * Returns only the user fields UI components need — never the access token,
- * refresh token, or internal error flags. Safe to pass to a client component.
- * Server code that needs the bearer token reads it from `verifySession()`.
- */
-export async function getAuthenticatedUser() {
-  const session = await verifySession();
-  return {
-    id: (session.user as { id?: string } | undefined)?.id ?? "",
-    name: session.user?.name ?? "",
-    email: session.user?.email ?? "",
-  };
-}

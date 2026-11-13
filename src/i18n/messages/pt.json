@@ -1,7 +1,6 @@
 {
   "app": {
-    "title": "IGRP | Centro de Aplicações",
-    "signingIn": "A iniciar sessão..."
+    "title": "IGRP | Centro de Aplicações"
   },
   "notFound": {
     "description": "A página que procura não foi encontrada."
@@ -651,18 +650,6 @@
       },
       "loading": "A carregar utilizador…",
       "notFound": "Nenhum utilizador encontrado.",
-      "imageUpload": {
-        "previewAlt": "Pré-visualização da imagem de perfil",
-        "empty": "Sem imagem",
-        "upload": "Carregar imagem",
-        "remove": "Remover"
-      },
-      "signatureUpload": {
-        "previewAlt": "Pré-visualização da assinatura",
-        "empty": "Sem assinatura",
-        "upload": "Carregar assinatura",
-        "remove": "Remover"
-      },
       "statusButton": {
         "activate": "Ativar",
         "deactivate": "Desativar",

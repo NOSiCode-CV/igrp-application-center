@@ -1,7 +1,6 @@
 {
   "app": {
-    "title": "IGRP | Application Center",
-    "signingIn": "Signing in..."
+    "title": "IGRP | Application Center"
   },
   "notFound": {
     "description": "The page you are looking for was not found."
@@ -651,18 +650,6 @@
       },
       "loading": "Loading user…",
       "notFound": "No user found.",
-      "imageUpload": {
-        "previewAlt": "Profile preview",
-        "empty": "No image",
-        "upload": "Upload image",
-        "remove": "Remove"
-      },
-      "signatureUpload": {
-        "previewAlt": "Signature preview",
-        "empty": "No signature",
-        "upload": "Upload signature",
-        "remove": "Remove"
-      },
       "statusButton": {
         "activate": "Activate",
         "deactivate": "Deactivate",

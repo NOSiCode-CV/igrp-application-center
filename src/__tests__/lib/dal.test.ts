@@ -27,7 +27,7 @@ vi.mock("next/headers", () => ({
 // configLayout is imported transitively via getLayoutConfig; stub it out.
 vi.mock("@/actions/igrp/layout", () => ({ configLayout: vi.fn() }));
 
-import { getAuthenticatedUser, verifySession } from "@/lib/dal";
+import { verifySession } from "@/lib/dal";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -45,23 +45,5 @@ describe("verifySession", () => {
     isAuthBypass.mockReturnValue(false);
     getSession.mockResolvedValue(null);
     await expect(verifySession()).rejects.toThrow("REDIRECT:/login");
-  });
-});
-
-describe("getAuthenticatedUser", () => {
-  it("narrows the session to id/name/email only (no tokens)", async () => {
-    isAuthBypass.mockReturnValue(false);
-    getSession.mockResolvedValue({
-      user: { id: "u1", name: "Ana", email: "a@x.cv", role: "admin" },
-      accessToken: "tok",
-      refreshToken: "SECRET",
-      expires: "9999-01-01",
-    });
-    const u = await getAuthenticatedUser();
-    expect(u).toEqual({
-      id: "u1",
-      name: "Ana",
-      email: "a@x.cv",
-    });
   });
 });

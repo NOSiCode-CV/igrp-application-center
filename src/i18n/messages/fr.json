@@ -1,7 +1,6 @@
 {
   "app": {
-    "title": "IGRP | Centre d’applications",
-    "signingIn": "Connexion en cours..."
+    "title": "IGRP | Centre d’applications"
   },
   "notFound": {
     "description": "La page que vous recherchez est introuvable."
@@ -651,18 +650,6 @@
       },
       "loading": "Chargement de l’utilisateur…",
       "notFound": "Aucun utilisateur trouvé.",
-      "imageUpload": {
-        "previewAlt": "Aperçu du profil",
-        "empty": "Aucune image",
-        "upload": "Téléverser une image",
-        "remove": "Retirer"
-      },
-      "signatureUpload": {
-        "previewAlt": "Aperçu de la signature",
-        "empty": "Aucune signature",
-        "upload": "Téléverser une signature",
-        "remove": "Retirer"
-      },
       "statusButton": {
         "activate": "Activer",
         "deactivate": "Désactiver",
