@@ -16,16 +16,16 @@
     "copyright": "Desenvolvido por",
     "carousel": {
       "workflow": {
-        "title": "Fluxo de trabalho simplificado",
-        "description": "Aumente a sua produtividade com uma interface intuitiva e ferramentas poderosas."
+        "title": "Aplicações num só lugar",
+        "description": "Abra a partir da página inicial as aplicações a que o seu perfil dá acesso."
       },
       "security": {
-        "title": "Seguro desde a conceção",
-        "description": "Os seus dados são protegidos com segurança e encriptação de nível empresarial."
+        "title": "Acesso por perfil",
+        "description": "O que pode abrir e alterar depende do seu perfil ativo e do departamento."
       },
       "collaboration": {
-        "title": "Plataforma colaborativa",
-        "description": "Trabalhe com a sua equipa em tempo real, sem complicações."
+        "title": "Departamentos e perfis",
+        "description": "Os administradores agrupam os utilizadores por departamento e dão a cada perfil os seus menus e permissões."
       }
     }
   },
@@ -219,7 +219,7 @@
         "toasts": {
           "inviteFailed": "Falha ao convidar",
           "inviteFailedWithReason": "Falha ao convidar: {reason}",
-          "inviteSent": "Convite enviado com sucesso!"
+          "inviteSent": "Convite enviado"
         },
         "rolesNoneInDepartment": "Este departamento ainda não tem perfis.",
         "rolesPickDepartment": "Escolha primeiro um departamento para ver os perfis disponíveis."
@@ -374,7 +374,7 @@
     },
     "deleteDialog": {
       "deactivated": "Utilizador Desativado",
-      "deactivatedDescription": "Utilizador ''{name}'' foi desativado com sucesso.",
+      "deactivatedDescription": "O utilizador ''{name}'' foi desativado.",
       "deactivateFailed": "Erro ao desativar.",
       "label": "Nome de utilizador",
       "confirm": "Desativar",
@@ -388,7 +388,7 @@
       "save": "Gravar",
       "saving": "Gravando...",
       "toasts": {
-        "updated": "Perfil atualizado com sucesso",
+        "updated": "Perfil atualizado",
         "updateFailed": "Erro ao atualizar perfil",
         "unknownError": "Erro desconhecido"
       }
@@ -423,7 +423,6 @@
         "urlUnavailable": "Convite não disponível",
         "urlUnavailableDescription": "URL do convite não disponível.",
         "resent": "Convite reenviado",
-        "resentDescription": "O convite foi reenviado com sucesso.",
         "resendFailed": "Convite não reenviado",
         "resendFailedDescription": "Não foi possível reenviar o convite.",
         "copyFailed": "Não foi possível copiar",
@@ -453,10 +452,8 @@
       "toasts": {
         "error": "Erro",
         "statusChanged": "Estado alterado",
-        "statusChangedDescription": "O estado do utilizador foi alterado com sucesso",
         "statusChangeFailed": "Não foi possível alterar o estado do utilizador",
         "invitationCanceled": "Convite cancelado",
-        "invitationCanceledDescription": "O convite foi cancelado com sucesso",
         "invitationCancelFailed": "Não foi possível cancelar o convite"
       },
       "statusDialog": {
@@ -515,22 +512,22 @@
       "hint": "PNG, JPG até 5MB",
       "toasts": {
         "loadFailed": "Erro ao carregar assinatura",
-        "updated": "Assinatura atualizada com sucesso",
+        "updated": "Assinatura atualizada",
         "updateFailed": "Erro ao atualizar assinatura"
       }
     },
     "profile": {
       "avatar": {
         "loadFailed": "Erro ao carregar avatar",
-        "updated": "Avatar atualizado com sucesso",
+        "updated": "Avatar atualizado",
         "updateFailed": "Erro ao atualizar avatar",
         "invalid": "Avatar inválido",
         "change": "Alterar avatar",
         "fallbackAlt": "Utilizador"
       },
       "toasts": {
-        "activated": "Utilizador ativado com sucesso",
-        "deactivated": "Utilizador desativado com sucesso",
+        "activated": "Utilizador ativado",
+        "deactivated": "Utilizador desativado",
         "statusChangeFailed": "Erro ao alterar estado"
       },
       "form": {
@@ -550,7 +547,7 @@
         "save": "Guardar Alterações",
         "toasts": {
           "updated": "Utilizador atualizado",
-          "updatedDescription": "O utilizador foi atualizado com sucesso!"
+          "updatedDescription": "O utilizador foi atualizado."
         }
       },
       "loading": "A carregar utilizador…",
@@ -596,7 +593,7 @@
       "edit": "Editar nome",
       "saveFailed": "Erro ao guardar",
       "toasts": {
-        "updated": "Nome atualizado com sucesso",
+        "updated": "Nome atualizado",
         "updateFailed": "Erro ao atualizar nome"
       }
     },
@@ -652,7 +649,7 @@
       "emptyDescription": "Este utilizador não tem perfis.",
       "assign": "Associar Perfis",
       "toasts": {
-        "removed": "Perfil removido com sucesso.",
+        "removed": "Perfil removido.",
         "removeFailed": "Não foi possível remover o perfil.",
         "revoked": "Perfil revogado.",
         "revokedDescription": "«{role}» foi removido de {user} no departamento {department}.",
@@ -841,7 +838,6 @@
       "uploadingImage": "A carregar imagem...",
       "loadingImage": "A obter imagem...",
       "uploadSuccessTitle": "Imagem carregada",
-      "uploadSuccess": "A imagem foi carregada com sucesso",
       "uploadErrorTitle": "Erro no upload.",
       "backToList": "Todas as aplicações",
       "openApp": "Abrir aplicação",
@@ -883,9 +879,7 @@
       "update": "Atualizar Aplicação",
       "toasts": {
         "createdTitle": "Aplicação criada",
-        "created": "A aplicação foi criada com sucesso!",
         "updatedTitle": "Aplicação atualizada",
-        "updated": "A aplicação foi atualizada com sucesso!",
         "createError": "Erro ao criar",
         "updateError": "Erro ao atualizar"
       }
@@ -1002,11 +996,9 @@
       "update": "Atualizar",
       "toasts": {
         "updatedTitle": "Menu Atualizado",
-        "updated": "O menu foi atualizado com sucesso.",
         "createdTitle": "Menu Criado",
-        "created": "O menu foi criado com sucesso.",
-        "errorTitle": "Erro",
-        "error": "Algo correu mal. Por favor, tente novamente."
+        "errorTitle": "Não foi possível guardar o menu",
+        "error": "Tente novamente."
       },
       "sections": {
         "details": "Detalhes",
@@ -1036,7 +1028,7 @@
       "description": "Deixa de aparecer na navegação da aplicação. Não é possível anular.",
       "nameLabel": "Para confirmar, escreva <highlight>{name}</highlight>",
       "successTitle": "Menu Eliminado",
-      "success": "O menu \"{name}\" foi eliminado com sucesso.",
+      "success": "O menu \"{name}\" foi eliminado.",
       "errorTitle": "Erro ao eliminar.",
       "deleting": "A eliminar...",
       "titleGroup": "Eliminar este grupo?",
@@ -1244,9 +1236,7 @@
     },
     "toast": {
       "addedTitle": "Permissão adicionada",
-      "addedDescription": "A permissão foi adicionada com sucesso.",
       "removedTitle": "Permissão removida",
-      "removedDescription": "A permissão foi removida com sucesso.",
       "errorTitle": "Não foi possível alterar a permissão",
       "unknownError": "Erro desconhecido"
     },
@@ -1275,10 +1265,8 @@
       "addLabel": "Adicionar recurso {name}",
       "toast": {
         "addedTitle": "Recurso adicionado",
-        "addedDescription": "O recurso foi adicionado com sucesso.",
         "addErrorTitle": "Erro ao adicionar",
         "removedTitle": "Recurso removido",
-        "removedDescription": "O recurso foi removido com sucesso.",
         "removeErrorTitle": "Erro ao remover",
         "unknownError": "Erro desconhecido"
       },
@@ -1306,7 +1294,7 @@
       "empty": "Sem perfis atribuídos",
       "emptyDescription": "Ainda não tem perfis atribuídos.",
       "toasts": {
-        "activated": "Perfil ativado com sucesso.",
+        "activated": "Perfil ativado.",
         "activateFailed": "Erro ao ativar perfil.",
         "unknownError": "Erro desconhecido."
       }
@@ -1381,9 +1369,7 @@
       "create": "Criar Perfil",
       "toast": {
         "updatedTitle": "Perfil atualizado",
-        "updatedDescription": "Perfil foi atualizado com sucesso.",
         "createdTitle": "Perfil criado",
-        "createdDescription": "Perfil foi adicionado com sucesso.",
         "errorTitle": "Não foi possível guardar o perfil",
         "errorDescription": "Tente novamente. {error}"
       }
@@ -1398,7 +1384,7 @@
       "pending": "Aguarde…",
       "toast": {
         "successTitle": "Perfil eliminado",
-        "successDescription": "O perfil ''{name}'' foi eliminado com sucesso.",
+        "successDescription": "O perfil ''{name}'' foi eliminado.",
         "errorTitle": "Erro ao eliminar."
       }
     },
@@ -1596,7 +1582,7 @@
     "detail": {
       "back": "Clientes OAuth",
       "clientId": "Client ID",
-      "duplicateAccounts": "Este cliente tem mais do que uma conta de serviço associada. Isto não devia acontecer — contacte o suporte.",
+      "duplicateAccounts": "Este cliente tem mais do que uma conta de serviço associada. Isto não devia acontecer. Contacte o suporte.",
       "saveErrorTitle": "Não foi possível guardar",
       "savedTitle": "Alterações guardadas",
       "recordTitle": "Registo",
@@ -1625,7 +1611,7 @@
       "clientIdHelpEdit": "Definido no registo. Não pode ser alterado.",
       "name": "Nome *",
       "secretHidden": "Mostrado apenas uma vez, quando é gerado",
-      "secretHelp": "O servidor guarda só uma versão cifrada — ninguém o pode voltar a ler. Se foi exposto, gere um novo na zona de perigo.",
+      "secretHelp": "O servidor guarda só uma versão cifrada, por isso ninguém o pode voltar a ler. Se foi exposto, gere um novo na zona de perigo.",
       "description": "Descrição",
       "application": "Aplicação",
       "applicationPlaceholder": "Selecionar aplicação",
@@ -1893,8 +1879,8 @@
       "save": "Guardar",
       "toast": {
         "successTitle": "Departamento",
-        "updated": "O departamento foi atualizado com sucesso.",
-        "created": "O departamento foi criado com sucesso.",
+        "updated": "O departamento foi atualizado.",
+        "created": "O departamento foi criado.",
         "updateErrorTitle": "Não foi possível atualizar departamento.",
         "createErrorTitle": "Não foi possível criar departamento.",
         "unknownError": "Ocorreu um erro desconhecido."
@@ -1906,7 +1892,7 @@
       "label": "Nome do departamento",
       "toast": {
         "successTitle": "Departamento Eliminado",
-        "successDescription": "Departamento ''{name}'' foi eliminado com sucesso.",
+        "successDescription": "O departamento ''{name}'' foi eliminado.",
         "errorTitle": "Erro ao eliminar."
       }
     },
@@ -1940,7 +1926,7 @@
         "noChangesTitle": "Sem alterações",
         "noChangesDescription": "Nenhuma mudança foi detectada.",
         "savedTitle": "Permissões salvas",
-        "savedDescription": "Os perfis foram atribuídos aos menus com sucesso.",
+        "savedDescription": "Os perfis foram atribuídos aos menus.",
         "errorTitle": "Erro ao salvar"
       },
       "unsaved": {
@@ -1968,10 +1954,8 @@
       "removeDescription": "Tem a certeza de que deseja remover a aplicação <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
       "toast": {
         "addedTitle": "Aplicação adicionada",
-        "addedDescription": "A aplicação foi adicionada com sucesso.",
         "addErrorTitle": "Erro ao adicionar",
         "removedTitle": "Aplicação removida",
-        "removedDescription": "A aplicação foi removida com sucesso.",
         "removeErrorTitle": "Erro ao remover"
       }
     },
@@ -1997,10 +1981,8 @@
       "removeDescription": "Tem a certeza de que deseja remover o menu <b>{name}</b> deste departamento? Esta ação não pode ser desfeita.",
       "toast": {
         "addedTitle": "Menu adicionado",
-        "addedDescription": "O menu foi adicionado com sucesso.",
         "addErrorTitle": "Erro ao adicionar",
         "removedTitle": "Menu removido",
-        "removedDescription": "O menu foi removido com sucesso.",
         "removeErrorTitle": "Erro ao remover"
       }
     }

@@ -75,7 +75,6 @@ function PendingRowActionsCell({
           igrpToast({
             type: "success",
             title: t("toasts.resent"),
-            description: t("toasts.resentDescription"),
             duration: 6000,
           });
         },

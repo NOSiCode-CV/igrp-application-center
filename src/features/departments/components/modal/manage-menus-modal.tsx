@@ -186,7 +186,6 @@ export function ManageMenusModal({
       igrpToast({
         type: "success",
         title: t("toast.addedTitle"),
-        description: t("toast.addedDescription"),
       });
     } catch (error) {
       igrpToast({
@@ -220,7 +219,6 @@ export function ManageMenusModal({
       igrpToast({
         type: "success",
         title: t("toast.removedTitle"),
-        description: t("toast.removedDescription"),
       });
 
       setMenuToRemove(null);

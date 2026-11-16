@@ -16,16 +16,16 @@
     "copyright": "Developed by",
     "carousel": {
       "workflow": {
-        "title": "Streamlined workflow",
-        "description": "Boost your productivity with our intuitive interface and powerful tools."
+        "title": "Applications in one place",
+        "description": "Open the applications your role gives you access to from the home page."
       },
       "security": {
-        "title": "Secure by design",
-        "description": "Your data is protected with enterprise-grade security and encryption."
+        "title": "Access by role",
+        "description": "What you can open and change depends on your active role and department."
       },
       "collaboration": {
-        "title": "Collaborative platform",
-        "description": "Work together seamlessly with your team in real time."
+        "title": "Departments and roles",
+        "description": "Administrators group users by department and give each role its own menus and permissions."
       }
     }
   },
@@ -219,7 +219,7 @@
         "toasts": {
           "inviteFailed": "Invitation failed",
           "inviteFailedWithReason": "Invitation failed: {reason}",
-          "inviteSent": "Invitation sent successfully!"
+          "inviteSent": "Invitation sent"
         },
         "rolesNoneInDepartment": "This department has no roles yet.",
         "rolesPickDepartment": "Choose a department first to see the available roles."
@@ -374,7 +374,7 @@
     },
     "deleteDialog": {
       "deactivated": "User deactivated",
-      "deactivatedDescription": "User ''{name}'' was deactivated successfully.",
+      "deactivatedDescription": "User ''{name}'' was deactivated.",
       "deactivateFailed": "Error deactivating.",
       "label": "Username",
       "confirm": "Deactivate",
@@ -388,7 +388,7 @@
       "save": "Save",
       "saving": "Saving...",
       "toasts": {
-        "updated": "Profile updated successfully",
+        "updated": "Profile updated",
         "updateFailed": "Error updating profile",
         "unknownError": "Unknown error"
       }
@@ -423,7 +423,6 @@
         "urlUnavailable": "Invitation unavailable",
         "urlUnavailableDescription": "Invitation URL is not available.",
         "resent": "Invitation resent",
-        "resentDescription": "The invitation was resent successfully.",
         "resendFailed": "Invitation not resent",
         "resendFailedDescription": "The invitation could not be resent.",
         "copyFailed": "Could not copy",
@@ -453,10 +452,8 @@
       "toasts": {
         "error": "Error",
         "statusChanged": "Status changed",
-        "statusChangedDescription": "The user status was changed successfully",
         "statusChangeFailed": "The user status could not be changed",
         "invitationCanceled": "Invitation canceled",
-        "invitationCanceledDescription": "The invitation was canceled successfully",
         "invitationCancelFailed": "The invitation could not be canceled"
       },
       "statusDialog": {
@@ -515,22 +512,22 @@
       "hint": "PNG, JPG up to 5MB",
       "toasts": {
         "loadFailed": "Error loading signature",
-        "updated": "Signature updated successfully",
+        "updated": "Signature updated",
         "updateFailed": "Error updating signature"
       }
     },
     "profile": {
       "avatar": {
         "loadFailed": "Error loading avatar",
-        "updated": "Avatar updated successfully",
+        "updated": "Avatar updated",
         "updateFailed": "Error updating avatar",
         "invalid": "Invalid avatar",
         "change": "Change avatar",
         "fallbackAlt": "User"
       },
       "toasts": {
-        "activated": "User activated successfully",
-        "deactivated": "User deactivated successfully",
+        "activated": "User activated",
+        "deactivated": "User deactivated",
         "statusChangeFailed": "Error changing status"
       },
       "form": {
@@ -550,7 +547,7 @@
         "save": "Save changes",
         "toasts": {
           "updated": "User updated",
-          "updatedDescription": "The user was updated successfully!"
+          "updatedDescription": "The user was updated."
         }
       },
       "loading": "Loading user…",
@@ -596,7 +593,7 @@
       "edit": "Edit name",
       "saveFailed": "Error saving",
       "toasts": {
-        "updated": "Name updated successfully",
+        "updated": "Name updated",
         "updateFailed": "Error updating name"
       }
     },
@@ -652,7 +649,7 @@
       "emptyDescription": "This user has no roles.",
       "assign": "Assign roles",
       "toasts": {
-        "removed": "Role removed successfully.",
+        "removed": "Role removed.",
         "removeFailed": "The role could not be removed.",
         "revoked": "Role revoked.",
         "revokedDescription": "“{role}” was removed from {user} in the {department} department.",
@@ -841,7 +838,6 @@
       "uploadingImage": "Uploading image...",
       "loadingImage": "Fetching image...",
       "uploadSuccessTitle": "Image uploaded",
-      "uploadSuccess": "The image was uploaded successfully",
       "uploadErrorTitle": "Upload error.",
       "backToList": "All applications",
       "openApp": "Open application",
@@ -883,9 +879,7 @@
       "update": "Update application",
       "toasts": {
         "createdTitle": "Application created",
-        "created": "The application was created successfully!",
         "updatedTitle": "Application updated",
-        "updated": "The application was updated successfully!",
         "createError": "Error creating",
         "updateError": "Error updating"
       }
@@ -1002,11 +996,9 @@
       "update": "Update",
       "toasts": {
         "updatedTitle": "Menu updated",
-        "updated": "The menu was updated successfully.",
         "createdTitle": "Menu created",
-        "created": "The menu was created successfully.",
-        "errorTitle": "Error",
-        "error": "Something went wrong. Please try again."
+        "errorTitle": "Could not save the menu",
+        "error": "Try again."
       },
       "sections": {
         "details": "Details",
@@ -1036,7 +1028,7 @@
       "description": "It's removed from the application's navigation. This can't be undone.",
       "nameLabel": "To confirm, type <highlight>{name}</highlight>",
       "successTitle": "Menu deleted",
-      "success": "The menu \"{name}\" was deleted successfully.",
+      "success": "The menu \"{name}\" was deleted.",
       "errorTitle": "Error deleting.",
       "deleting": "Deleting...",
       "titleGroup": "Delete this group?",
@@ -1244,9 +1236,7 @@
     },
     "toast": {
       "addedTitle": "Permission added",
-      "addedDescription": "The permission was added successfully.",
       "removedTitle": "Permission removed",
-      "removedDescription": "The permission was removed successfully.",
       "errorTitle": "Could not change the permission",
       "unknownError": "Unknown error"
     },
@@ -1275,10 +1265,8 @@
       "addLabel": "Add resource {name}",
       "toast": {
         "addedTitle": "Resource added",
-        "addedDescription": "The resource was added successfully.",
         "addErrorTitle": "Error adding",
         "removedTitle": "Resource removed",
-        "removedDescription": "The resource was removed successfully.",
         "removeErrorTitle": "Error removing",
         "unknownError": "Unknown error"
       },
@@ -1306,7 +1294,7 @@
       "empty": "No roles assigned",
       "emptyDescription": "You don't have any roles assigned yet.",
       "toasts": {
-        "activated": "Role activated successfully.",
+        "activated": "Role activated.",
         "activateFailed": "Failed to activate role.",
         "unknownError": "Unknown error."
       }
@@ -1381,9 +1369,7 @@
       "create": "Create role",
       "toast": {
         "updatedTitle": "Role updated",
-        "updatedDescription": "The role was updated successfully.",
         "createdTitle": "Role created",
-        "createdDescription": "The role was added successfully.",
         "errorTitle": "Could not save the role",
         "errorDescription": "Please try again. {error}"
       }
@@ -1398,7 +1384,7 @@
       "pending": "Please wait…",
       "toast": {
         "successTitle": "Role deleted",
-        "successDescription": "Role ''{name}'' was deleted successfully.",
+        "successDescription": "Role ''{name}'' was deleted.",
         "errorTitle": "Failed to delete."
       }
     },
@@ -1596,7 +1582,7 @@
     "detail": {
       "back": "OAuth clients",
       "clientId": "Client ID",
-      "duplicateAccounts": "This client has more than one linked service account. This should not happen — contact support.",
+      "duplicateAccounts": "This client has more than one linked service account. This should not happen. Contact support.",
       "saveErrorTitle": "Could not save",
       "savedTitle": "Changes saved",
       "recordTitle": "Record",
@@ -1625,7 +1611,7 @@
       "clientIdHelpEdit": "Set at registration. It cannot be changed.",
       "name": "Name *",
       "secretHidden": "Shown only once, when it is generated",
-      "secretHelp": "The server stores only an encrypted version — nobody can read it again. If it was exposed, generate a new one in the danger zone.",
+      "secretHelp": "The server stores only an encrypted version, so nobody can read it again. If it was exposed, generate a new one in the danger zone.",
       "description": "Description",
       "application": "Application",
       "applicationPlaceholder": "Select application",
@@ -1893,8 +1879,8 @@
       "save": "Save",
       "toast": {
         "successTitle": "Department",
-        "updated": "The department was updated successfully.",
-        "created": "The department was created successfully.",
+        "updated": "The department was updated.",
+        "created": "The department was created.",
         "updateErrorTitle": "Could not update the department.",
         "createErrorTitle": "Could not create the department.",
         "unknownError": "An unknown error occurred."
@@ -1906,7 +1892,7 @@
       "label": "Department name",
       "toast": {
         "successTitle": "Department deleted",
-        "successDescription": "Department ''{name}'' was deleted successfully.",
+        "successDescription": "Department ''{name}'' was deleted.",
         "errorTitle": "Failed to delete."
       }
     },
@@ -1940,7 +1926,7 @@
         "noChangesTitle": "No changes",
         "noChangesDescription": "No changes were detected.",
         "savedTitle": "Permissions saved",
-        "savedDescription": "The roles were assigned to the menus successfully.",
+        "savedDescription": "The roles were assigned to the menus.",
         "errorTitle": "Error saving"
       },
       "unsaved": {
@@ -1968,10 +1954,8 @@
       "removeDescription": "Are you sure you want to remove the application <b>{name}</b> from this department? This action cannot be undone.",
       "toast": {
         "addedTitle": "Application added",
-        "addedDescription": "The application was added successfully.",
         "addErrorTitle": "Error adding",
         "removedTitle": "Application removed",
-        "removedDescription": "The application was removed successfully.",
         "removeErrorTitle": "Error removing"
       }
     },
@@ -1997,10 +1981,8 @@
       "removeDescription": "Are you sure you want to remove the menu <b>{name}</b> from this department? This action cannot be undone.",
       "toast": {
         "addedTitle": "Menu added",
-        "addedDescription": "The menu was added successfully.",
         "addErrorTitle": "Error adding",
         "removedTitle": "Menu removed",
-        "removedDescription": "The menu was removed successfully.",
         "removeErrorTitle": "Error removing"
       }
     }

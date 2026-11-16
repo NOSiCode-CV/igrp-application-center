@@ -164,7 +164,6 @@ export function UserList({
           igrpToast({
             type: "success",
             title: t("list.toasts.statusChanged"),
-            description: t("list.toasts.statusChangedDescription"),
             duration: 6000,
           });
           closeDialog();
@@ -188,7 +187,6 @@ export function UserList({
         igrpToast({
           type: "success",
           title: t("list.toasts.invitationCanceled"),
-          description: t("list.toasts.invitationCanceledDescription"),
           duration: 6000,
         });
         closeDialog();

@@ -106,7 +106,6 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         igrpToast({
           type: "success",
           title: t("toast.addedTitle"),
-          description: t("toast.addedDescription"),
         });
       } else {
         await removePermissions.mutateAsync({
@@ -116,7 +115,6 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         igrpToast({
           type: "success",
           title: t("toast.removedTitle"),
-          description: t("toast.removedDescription"),
         });
       }
     } catch (error) {

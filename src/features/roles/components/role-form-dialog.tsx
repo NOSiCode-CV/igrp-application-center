@@ -138,7 +138,6 @@ export function RoleFormDialog({
         igrpToast({
           type: "success",
           title: t("toast.updatedTitle"),
-          description: t("toast.updatedDescription"),
         });
       } else {
         const payload = normalizeRole(values);
@@ -151,7 +150,6 @@ export function RoleFormDialog({
         igrpToast({
           type: "success",
           title: t("toast.createdTitle"),
-          description: t("toast.createdDescription"),
         });
       }
 

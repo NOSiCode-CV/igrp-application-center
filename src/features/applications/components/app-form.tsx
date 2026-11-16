@@ -146,7 +146,6 @@ export function ApplicationForm({
         igrpToast({
           type: "success",
           title: t("toasts.updatedTitle"),
-          description: t("toasts.updated"),
         });
       } else {
         const payload = normalizeCreateApplication(
@@ -157,7 +156,6 @@ export function ApplicationForm({
         igrpToast({
           type: "success",
           title: t("toasts.createdTitle"),
-          description: t("toasts.created"),
         });
 
         onSuccess();

@@ -129,7 +129,6 @@ export function ManageResourcesModal({
       igrpToast({
         type: "success",
         title: t("toast.addedTitle"),
-        description: t("toast.addedDescription"),
       });
     } catch (error) {
       igrpToast({
@@ -158,7 +157,6 @@ export function ManageResourcesModal({
       igrpToast({
         type: "success",
         title: t("toast.removedTitle"),
-        description: t("toast.removedDescription"),
       });
 
       setResourceToRemove(null);

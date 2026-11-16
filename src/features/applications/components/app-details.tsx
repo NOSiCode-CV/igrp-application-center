@@ -142,7 +142,6 @@ export function ApplicationDetails({ code }: { code: string }) {
       igrpToast({
         type: "success",
         title: t("details.uploadSuccessTitle"),
-        description: t("details.uploadSuccess"),
         duration: 6000,
       });
     } catch (err) {

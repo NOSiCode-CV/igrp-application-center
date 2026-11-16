@@ -16,16 +16,16 @@
     "copyright": "Développé par",
     "carousel": {
       "workflow": {
-        "title": "Flux de travail simplifié",
-        "description": "Gagnez en productivité grâce à une interface intuitive et des outils puissants."
+        "title": "Vos applications au même endroit",
+        "description": "Ouvrez depuis la page d’accueil les applications auxquelles votre rôle donne accès."
       },
       "security": {
-        "title": "Sécurisé dès la conception",
-        "description": "Vos données sont protégées par une sécurité et un chiffrement de niveau entreprise."
+        "title": "Accès par rôle",
+        "description": "Ce que vous pouvez ouvrir et modifier dépend de votre rôle actif et de votre département."
       },
       "collaboration": {
-        "title": "Plateforme collaborative",
-        "description": "Travaillez avec votre équipe en temps réel, en toute simplicité."
+        "title": "Départements et rôles",
+        "description": "Les administrateurs regroupent les utilisateurs par département et attribuent à chaque rôle ses propres menus et permissions."
       }
     }
   },
@@ -219,7 +219,7 @@
         "toasts": {
           "inviteFailed": "Échec de l’invitation",
           "inviteFailedWithReason": "Échec de l’invitation : {reason}",
-          "inviteSent": "Invitation envoyée avec succès !"
+          "inviteSent": "Invitation envoyée"
         },
         "rolesNoneInDepartment": "Ce département n’a encore aucun rôle.",
         "rolesPickDepartment": "Choisissez d’abord un département pour voir les rôles disponibles."
@@ -374,7 +374,7 @@
     },
     "deleteDialog": {
       "deactivated": "Utilisateur désactivé",
-      "deactivatedDescription": "L’utilisateur « {name} » a été désactivé avec succès.",
+      "deactivatedDescription": "L’utilisateur « {name} » a été désactivé.",
       "deactivateFailed": "Erreur lors de la désactivation.",
       "label": "Nom d’utilisateur",
       "confirm": "Désactiver",
@@ -388,7 +388,7 @@
       "save": "Enregistrer",
       "saving": "Enregistrement...",
       "toasts": {
-        "updated": "Profil mis à jour avec succès",
+        "updated": "Profil mis à jour",
         "updateFailed": "Erreur lors de la mise à jour du profil",
         "unknownError": "Erreur inconnue"
       }
@@ -423,7 +423,6 @@
         "urlUnavailable": "Invitation indisponible",
         "urlUnavailableDescription": "URL de l’invitation indisponible.",
         "resent": "Invitation renvoyée",
-        "resentDescription": "L’invitation a été renvoyée avec succès.",
         "resendFailed": "Invitation non renvoyée",
         "resendFailedDescription": "Impossible de renvoyer l’invitation.",
         "copyFailed": "Impossible de copier",
@@ -453,10 +452,8 @@
       "toasts": {
         "error": "Erreur",
         "statusChanged": "Statut modifié",
-        "statusChangedDescription": "Le statut de l’utilisateur a été modifié avec succès",
         "statusChangeFailed": "Impossible de modifier le statut de l’utilisateur",
         "invitationCanceled": "Invitation annulée",
-        "invitationCanceledDescription": "L’invitation a été annulée avec succès",
         "invitationCancelFailed": "Impossible d’annuler l’invitation"
       },
       "statusDialog": {
@@ -515,22 +512,22 @@
       "hint": "PNG, JPG jusqu’à 5 Mo",
       "toasts": {
         "loadFailed": "Erreur lors du chargement de la signature",
-        "updated": "Signature mise à jour avec succès",
+        "updated": "Signature mise à jour",
         "updateFailed": "Erreur lors de la mise à jour de la signature"
       }
     },
     "profile": {
       "avatar": {
         "loadFailed": "Erreur lors du chargement de l’avatar",
-        "updated": "Avatar mis à jour avec succès",
+        "updated": "Avatar mis à jour",
         "updateFailed": "Erreur lors de la mise à jour de l’avatar",
         "invalid": "Avatar invalide",
         "change": "Modifier l’avatar",
         "fallbackAlt": "Utilisateur"
       },
       "toasts": {
-        "activated": "Utilisateur activé avec succès",
-        "deactivated": "Utilisateur désactivé avec succès",
+        "activated": "Utilisateur activé",
+        "deactivated": "Utilisateur désactivé",
         "statusChangeFailed": "Erreur lors de la modification du statut"
       },
       "form": {
@@ -550,7 +547,7 @@
         "save": "Enregistrer les modifications",
         "toasts": {
           "updated": "Utilisateur mis à jour",
-          "updatedDescription": "L’utilisateur a été mis à jour avec succès !"
+          "updatedDescription": "L’utilisateur a été mis à jour."
         }
       },
       "loading": "Chargement de l’utilisateur…",
@@ -596,7 +593,7 @@
       "edit": "Modifier le nom",
       "saveFailed": "Erreur lors de l’enregistrement",
       "toasts": {
-        "updated": "Nom mis à jour avec succès",
+        "updated": "Nom mis à jour",
         "updateFailed": "Erreur lors de la mise à jour du nom"
       }
     },
@@ -652,7 +649,7 @@
       "emptyDescription": "Cet utilisateur n’a aucun rôle.",
       "assign": "Associer des rôles",
       "toasts": {
-        "removed": "Rôle retiré avec succès.",
+        "removed": "Rôle retiré.",
         "removeFailed": "Impossible de retirer le rôle.",
         "revoked": "Rôle révoqué.",
         "revokedDescription": "« {role} » a été retiré de {user} dans le département {department}.",
@@ -841,7 +838,6 @@
       "uploadingImage": "Téléversement de l’image...",
       "loadingImage": "Récupération de l’image...",
       "uploadSuccessTitle": "Image téléversée",
-      "uploadSuccess": "L’image a été téléversée avec succès",
       "uploadErrorTitle": "Erreur de téléversement.",
       "backToList": "Toutes les applications",
       "openApp": "Ouvrir l’application",
@@ -883,9 +879,7 @@
       "update": "Mettre à jour l’application",
       "toasts": {
         "createdTitle": "Application créée",
-        "created": "L’application a été créée avec succès !",
         "updatedTitle": "Application mise à jour",
-        "updated": "L’application a été mise à jour avec succès !",
         "createError": "Erreur lors de la création",
         "updateError": "Erreur lors de la mise à jour"
       }
@@ -1002,11 +996,9 @@
       "update": "Mettre à jour",
       "toasts": {
         "updatedTitle": "Menu mis à jour",
-        "updated": "Le menu a été mis à jour avec succès.",
         "createdTitle": "Menu créé",
-        "created": "Le menu a été créé avec succès.",
-        "errorTitle": "Erreur",
-        "error": "Une erreur est survenue. Veuillez réessayer."
+        "errorTitle": "Impossible d’enregistrer le menu",
+        "error": "Réessayez."
       },
       "sections": {
         "details": "Détails",
@@ -1036,7 +1028,7 @@
       "description": "Il disparaît de la navigation de l’application. Cette action est irréversible.",
       "nameLabel": "Pour confirmer, saisissez <highlight>{name}</highlight>",
       "successTitle": "Menu supprimé",
-      "success": "Le menu « {name} » a été supprimé avec succès.",
+      "success": "Le menu « {name} » a été supprimé.",
       "errorTitle": "Erreur lors de la suppression.",
       "deleting": "Suppression...",
       "titleGroup": "Supprimer ce groupe ?",
@@ -1244,9 +1236,7 @@
     },
     "toast": {
       "addedTitle": "Permission ajoutée",
-      "addedDescription": "La permission a été ajoutée avec succès.",
       "removedTitle": "Permission retirée",
-      "removedDescription": "La permission a été retirée avec succès.",
       "errorTitle": "Impossible de modifier la permission",
       "unknownError": "Erreur inconnue"
     },
@@ -1275,10 +1265,8 @@
       "addLabel": "Ajouter la ressource {name}",
       "toast": {
         "addedTitle": "Ressource ajoutée",
-        "addedDescription": "La ressource a été ajoutée avec succès.",
         "addErrorTitle": "Erreur lors de l’ajout",
         "removedTitle": "Ressource retirée",
-        "removedDescription": "La ressource a été retirée avec succès.",
         "removeErrorTitle": "Erreur lors du retrait",
         "unknownError": "Erreur inconnue"
       },
@@ -1306,7 +1294,7 @@
       "empty": "Aucun rôle attribué",
       "emptyDescription": "Aucun rôle ne vous est encore attribué.",
       "toasts": {
-        "activated": "Rôle activé avec succès.",
+        "activated": "Rôle activé.",
         "activateFailed": "Échec de l’activation du rôle.",
         "unknownError": "Erreur inconnue."
       }
@@ -1381,9 +1369,7 @@
       "create": "Créer le rôle",
       "toast": {
         "updatedTitle": "Rôle mis à jour",
-        "updatedDescription": "Le rôle a été mis à jour avec succès.",
         "createdTitle": "Rôle créé",
-        "createdDescription": "Le rôle a été ajouté avec succès.",
         "errorTitle": "Impossible d’enregistrer le rôle",
         "errorDescription": "Veuillez réessayer. {error}"
       }
@@ -1398,7 +1384,7 @@
       "pending": "Veuillez patienter…",
       "toast": {
         "successTitle": "Rôle supprimé",
-        "successDescription": "Le rôle « {name} » a été supprimé avec succès.",
+        "successDescription": "Le rôle « {name} » a été supprimé.",
         "errorTitle": "Échec de la suppression."
       }
     },
@@ -1596,7 +1582,7 @@
     "detail": {
       "back": "Clients OAuth",
       "clientId": "Client ID",
-      "duplicateAccounts": "Ce client a plus d’un compte de service associé. Cela ne devrait pas arriver — contactez l’assistance.",
+      "duplicateAccounts": "Ce client a plus d’un compte de service associé. Cela ne devrait pas arriver. Contactez l’assistance.",
       "saveErrorTitle": "Impossible d’enregistrer",
       "savedTitle": "Modifications enregistrées",
       "recordTitle": "Enregistrement",
@@ -1625,7 +1611,7 @@
       "clientIdHelpEdit": "Défini à l’enregistrement. Ne peut pas être modifié.",
       "name": "Nom *",
       "secretHidden": "Affiché une seule fois, lors de sa génération",
-      "secretHelp": "Le serveur ne conserve qu’une version chiffrée — personne ne peut le relire. S’il a été exposé, générez-en un nouveau dans la zone de danger.",
+      "secretHelp": "Le serveur ne conserve qu’une version chiffrée, donc personne ne peut le relire. S’il a été exposé, générez-en un nouveau dans la zone de danger.",
       "description": "Description",
       "application": "Application",
       "applicationPlaceholder": "Sélectionner une application",
@@ -1893,8 +1879,8 @@
       "save": "Enregistrer",
       "toast": {
         "successTitle": "Département",
-        "updated": "Le département a été mis à jour avec succès.",
-        "created": "Le département a été créé avec succès.",
+        "updated": "Le département a été mis à jour.",
+        "created": "Le département a été créé.",
         "updateErrorTitle": "Impossible de mettre à jour le département.",
         "createErrorTitle": "Impossible de créer le département.",
         "unknownError": "Une erreur inconnue s’est produite."
@@ -1906,7 +1892,7 @@
       "label": "Nom du département",
       "toast": {
         "successTitle": "Département supprimé",
-        "successDescription": "Le département « {name} » a été supprimé avec succès.",
+        "successDescription": "Le département « {name} » a été supprimé.",
         "errorTitle": "Échec de la suppression."
       }
     },
@@ -1940,7 +1926,7 @@
         "noChangesTitle": "Aucune modification",
         "noChangesDescription": "Aucun changement n’a été détecté.",
         "savedTitle": "Permissions enregistrées",
-        "savedDescription": "Les rôles ont été attribués aux menus avec succès.",
+        "savedDescription": "Les rôles ont été attribués aux menus.",
         "errorTitle": "Erreur lors de l’enregistrement"
       },
       "unsaved": {
@@ -1968,10 +1954,8 @@
       "removeDescription": "Voulez-vous vraiment retirer l’application <b>{name}</b> de ce département ? Cette action est irréversible.",
       "toast": {
         "addedTitle": "Application ajoutée",
-        "addedDescription": "L’application a été ajoutée avec succès.",
         "addErrorTitle": "Erreur lors de l’ajout",
         "removedTitle": "Application retirée",
-        "removedDescription": "L’application a été retirée avec succès.",
         "removeErrorTitle": "Erreur lors du retrait"
       }
     },
@@ -1997,10 +1981,8 @@
       "removeDescription": "Voulez-vous vraiment retirer le menu <b>{name}</b> de ce département ? Cette action est irréversible.",
       "toast": {
         "addedTitle": "Menu ajouté",
-        "addedDescription": "Le menu a été ajouté avec succès.",
         "addErrorTitle": "Erreur lors de l’ajout",
         "removedTitle": "Menu retiré",
-        "removedDescription": "Le menu a été retiré avec succès.",
         "removeErrorTitle": "Erreur lors du retrait"
       }
     }

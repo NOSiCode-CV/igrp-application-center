@@ -105,9 +105,9 @@ describe("login page in English", () => {
     expect(
       screen.getAllByRole("listitem").map((item) => item.textContent),
     ).toEqual([
-      "Streamlined workflow | Boost your productivity with our intuitive interface and powerful tools.",
-      "Secure by design | Your data is protected with enterprise-grade security and encryption.",
-      "Collaborative platform | Work together seamlessly with your team in real time.",
+      "Applications in one place | Open the applications your role gives you access to from the home page.",
+      "Access by role | What you can open and change depends on your active role and department.",
+      "Departments and roles | Administrators group users by department and give each role its own menus and permissions.",
     ]);
   });
 });

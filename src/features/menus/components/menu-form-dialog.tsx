@@ -334,7 +334,6 @@ function MenuFormBody({
         igrpToast({
           type: "success",
           title: t("toasts.updatedTitle"),
-          description: t("toasts.updated"),
           duration: 6000,
         });
       } else {
@@ -359,7 +358,6 @@ function MenuFormBody({
         igrpToast({
           type: "success",
           title: t("toasts.createdTitle"),
-          description: t("toasts.created"),
           duration: 6000,
         });
       }
