@@ -49,6 +49,7 @@ import {
   respondUserInvitation,
   setCurrentUserActiveRole,
   //setCurrentUserActiveRole,
+  type UserPatch,
   updateUser,
   updateUserMetadata,
   updateUserStatus,
@@ -157,13 +158,14 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, user }: { id: string; user: IGRPUserDTO }) =>
-      updateUser(id, user),
-    onSuccess: async (result) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: UserPatch }) =>
+      updateUser(id, patch),
+    onSuccess: async (result, { id }) => {
       if (result.success) {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: currentUserKeys.detail() }),
           queryClient.invalidateQueries({ queryKey: userKeys.all }),
+          queryClient.invalidateQueries({ queryKey: userKeys.detail(id) }),
         ]);
       }
     },

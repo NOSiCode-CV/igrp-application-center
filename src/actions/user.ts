@@ -12,9 +12,6 @@ import type {
   UserMetadataDTO,
 } from "@igrp/platform-access-management-client-ts";
 
-import { toActionError } from "@/lib/utilities";
-
-import { getClientAccess } from "./access-client";
 import { callApi } from "./call-api";
 import type { AccessClient, ActionResult, SdkData } from "./types";
 
@@ -103,33 +100,26 @@ function sanitizeUserForUpdate(user: IGRPUserDTO): IGRPUserDTO {
   return sanitized;
 }
 
+/** The fields the UI edits; everything else is kept from a fresh read. */
+export type UserPatch = Partial<
+  Pick<IGRPUserDTO, "name" | "picture" | "signature" | "status">
+>;
+
+// PUT replaces the whole record, so the patch goes onto a fresh GET: a stale
+// browser cache must not write back fields someone else changed meanwhile.
+// Your own record is read through `/me`, which needs no admin permission.
 export async function updateUser(
   id: string,
-  user: IGRPUserDTO,
+  patch: UserPatch,
 ): Promise<ActionResult<IGRPUserDTO>> {
-  const client = await getClientAccess();
-
-  try {
-    const result = await client.users.updateUser(
+  return callApi("[user-update] Erro ao editar utilizador:", async (client) => {
+    const me = (await client.users.getCurrentUser()).data;
+    const fresh = me.id === id ? me : (await client.users.getUser(id)).data;
+    return client.users.updateUser(
       id,
-      sanitizeUserForUpdate(user),
+      sanitizeUserForUpdate({ ...fresh, ...patch }),
     );
-    return { success: true, data: result.data };
-  } catch (error) {
-    console.error(
-      "[user-update] Erro ao editar utilizador:",
-      JSON.stringify(
-        {
-          status: (error as { status?: number }).status,
-          details: (error as { details?: unknown }).details,
-          problemDetail: (error as { problemDetail?: unknown }).problemDetail,
-        },
-        null,
-        2,
-      ),
-    );
-    return { success: false, ...toActionError(error) };
-  }
+  });
 }
 
 export async function getCurrentUserDepartments(): Promise<

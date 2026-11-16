@@ -5,12 +5,10 @@ import type {
   IGRPUserDTO,
   Status,
 } from "@igrp/platform-access-management-client-ts";
-import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 
 import { useValidateImageUpload } from "@/features/files/file-validation";
 import { useUploadPublicFiles } from "@/features/files/use-files";
-import { currentUserKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
 import { useServerErrorMessage } from "@/i18n/server-error";
 
@@ -45,17 +43,9 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   const t = useTranslations("users");
   const validateImageUpload = useValidateImageUpload();
   const serverError = useServerErrorMessage();
-  const queryClient = useQueryClient();
-
-  const latestUser = () =>
-    queryClient.getQueryData<IGRPUserDTO>(currentUserKeys.detail()) ?? user;
 
   const saveName = async (next: string) => {
-    const current = latestUser();
-    const res = await updateUser({
-      id: current.id,
-      user: { ...current, name: next },
-    });
+    const res = await updateUser({ id: user.id, patch: { name: next } });
     handle(
       res,
       t("nameEditor.toasts.updated"),
@@ -102,11 +92,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       throw err;
     }
 
-    const current = latestUser();
-    const res = await updateUser({
-      id: current.id,
-      user: { ...current, [field]: path },
-    });
+    const res = await updateUser({ id: user.id, patch: { [field]: path } });
     handle(res, labels.ok, labels.saveError, igrpToast, serverError);
     return path;
   };
@@ -129,11 +115,7 @@ export function useUserProfileActions(user: IGRPUserDTO) {
     });
 
   const setStatus = async (next: Status) => {
-    const current = latestUser();
-    const res = await updateUser({
-      id: current.id,
-      user: { ...current, status: next },
-    });
+    const res = await updateUser({ id: user.id, patch: { status: next } });
     const okTitle =
       next === "ACTIVE"
         ? t("profile.toasts.activated")

@@ -53,7 +53,7 @@ export function UserAvatarUploader({ user }: UserAvatarUploaderProps) {
       if (!uploadedPath) throw new Error(t("uploadNoPath"));
       const res = await updateUser({
         id: user.id,
-        user: { ...user, picture: uploadedPath },
+        patch: { picture: uploadedPath },
       });
       if (!res.success) throw new Error(res.error);
       await queryClient.invalidateQueries({ queryKey: ["user", user.id] });

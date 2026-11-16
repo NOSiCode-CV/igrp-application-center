@@ -44,7 +44,7 @@ export function UserNameEditor({ user }: UserNameEditorProps) {
     try {
       const res = await updateUser({
         id: user.id,
-        user: { ...user, name: trimmed },
+        patch: { name: trimmed },
       });
       if (!res.success) throw new Error(res.error);
       await queryClient.invalidateQueries({

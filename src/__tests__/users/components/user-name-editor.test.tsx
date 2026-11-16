@@ -59,7 +59,7 @@ describe("UserNameEditor", () => {
       expect(mutateAsync).toHaveBeenCalledWith(
         expect.objectContaining({
           id: "u1",
-          user: expect.objectContaining({ name: "New name" }),
+          patch: { name: "New name" },
         }),
       );
     });
