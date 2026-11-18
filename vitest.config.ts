@@ -12,9 +12,11 @@ export default defineConfig({
     pool: "threads",
     server: {
       deps: {
-        // @igrp/framework-next ships ESM with extensionless relative imports
-        // (e.g. app-error.js → './logger'); inlining lets Vite resolve them.
-        inline: [/@igrp\/framework-next/],
+        // The @igrp packages ship ESM with extensionless relative imports
+        // (e.g. app-error.js → './logger', index.js → './components/custom/
+        // stats-card-mini'). Node's ESM resolver rejects those, so externalized
+        // they fail to load; inlining lets Vite resolve them instead.
+        inline: [/@igrp\//],
       },
     },
     maxWorkers: 1,

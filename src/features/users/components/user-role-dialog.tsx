@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import {
   Badge,
@@ -22,6 +15,7 @@ import {
   cn,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   IGRPButton,
@@ -42,11 +36,15 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   type PaginationState,
-  type RowSelectionState,
   useReactTable,
 } from "@tanstack/react-table";
+import { useTranslations } from "next-intl";
 
 import { SelectableDataTable } from "@/components/data-table/selectable-data-table";
+import {
+  saveMembership,
+  useMembershipEditor,
+} from "@/components/data-table/use-membership-editor";
 import {
   useDepartments,
   useRoles,
@@ -57,7 +55,14 @@ import {
   useRemoveUserRole,
   useUserRoles,
 } from "@/features/users/use-users";
-import { getStatusColor, showStatus } from "@/lib/utilities";
+import { useServerErrorMessage } from "@/i18n/server-error";
+import { statusClass } from "@/lib/utilities";
+
+import {
+  type StatusTranslator,
+  type UsersTranslator,
+  userStatusLabel,
+} from "../lib/i18n";
 
 const norm = (s: string) => s.trim().toLowerCase();
 
@@ -75,7 +80,10 @@ const multiColumnFilterFn: FilterFn<RoleDTO> = (
   return name.includes(term) || desc.includes(term);
 };
 
-const columns: ColumnDef<RoleDTO>[] = [
+const makeColumns = (
+  t: UsersTranslator,
+  tStatus: StatusTranslator,
+): ColumnDef<RoleDTO>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -85,7 +93,7 @@ const columns: ColumnDef<RoleDTO>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("roleDialog.selectAll")}
         className="ring ring-current/50"
       />
     ),
@@ -93,7 +101,7 @@ const columns: ColumnDef<RoleDTO>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("roleDialog.selectRow")}
         className="ring ring-current/50"
       />
     ),
@@ -101,7 +109,7 @@ const columns: ColumnDef<RoleDTO>[] = [
     enableSorting: false,
   },
   {
-    header: "Nome",
+    header: t("roleDialog.columns.name"),
     accessorKey: "name",
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("name")}</div>
@@ -111,25 +119,36 @@ const columns: ColumnDef<RoleDTO>[] = [
     enableColumnFilter: true,
   },
   {
-    header: "Descrição",
+    header: t("roleDialog.columns.description"),
     accessorKey: "description",
-    cell: ({ row }) => <div>{row.getValue("description") || "N/A"}</div>,
+    cell: ({ row }) => (
+      <div>{row.getValue("description") || t("notAvailable")}</div>
+    ),
     enableSorting: false,
   },
   {
-    header: "Estado",
+    header: t("roleDialog.columns.status"),
     accessorKey: "status",
     cell: ({ row }) => (
-      <Badge
-        className={cn(getStatusColor(row.getValue("status")), "capitalize")}
-      >
-        {showStatus(row.getValue("status"))}
+      <Badge className={cn(statusClass(row.getValue("status")), "capitalize")}>
+        {userStatusLabel(tStatus, row.getValue("status"))}
       </Badge>
     ),
     size: 40,
     enableSorting: false,
   },
 ];
+
+const getRowKey = (r: RoleDTO) => String(r.id ?? r.name);
+const roleCodes = (list: RoleDTO[]) =>
+  list.map((r) => r.code ?? "").filter(Boolean);
+const diffRoles = (selected: RoleDTO[], existing: RoleDTO[]) => {
+  const { toAdd, toRemove } = computeRoleDiff(
+    roleCodes(existing),
+    roleCodes(selected),
+  );
+  return { toAdd: toAdd.roles, toRemove };
+};
 
 type UserRolesDialogProps = {
   open: boolean;
@@ -145,6 +164,10 @@ export function UserRolesDialog({
   const idValue = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users");
+  const serverError = useServerErrorMessage();
+  const tStatus = useTranslations("common.status");
+  const columns = useMemo(() => makeColumns(t, tStatus), [t, tStatus]);
 
   const {
     data: depts,
@@ -152,21 +175,15 @@ export function UserRolesDialog({
     error: deptsError,
   } = useDepartments();
   const [deptPopoverOpen, setDeptPopoverOpen] = useState(false);
-  const [departmentCode, setDepartmentCode] = useState<string | undefined>(
-    undefined,
-  );
-
-  useEffect(() => {
-    if (open && depts?.length && !departmentCode) {
-      setDepartmentCode(depts[0].code);
-    }
-  }, [open, depts, departmentCode]);
+  const [pickedDept, setPickedDept] = useState<string | undefined>(undefined);
+  // Derived, not synced by an effect: the first department until one is picked.
+  const departmentCode = open ? (pickedDept ?? depts?.[0]?.code) : undefined;
 
   const deptName = (code?: string) =>
     depts?.find((d) => d.code === code)?.name ?? code ?? "";
 
   const handleSelectDept = (code: string) => {
-    setDepartmentCode(code);
+    setPickedDept(code);
     setDeptPopoverOpen(false);
   };
 
@@ -179,17 +196,13 @@ export function UserRolesDialog({
     refetch: refetchUserRoles,
   } = useUserRoles(id);
 
-  // Derived directly from the query — no state mirror / sync effect.
   const data = useMemo(() => (open ? (roles ?? []) : []), [open, roles]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 15,
   });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [expiresAt, setExpiresAt] = useState<string>("");
-
-  const getRowKey = useCallback((r: RoleDTO) => String(r.id ?? r.name), []);
 
   const roleNameSet = useMemo(
     () => new Set((roles ?? []).map((r) => norm(r.name ?? ""))),
@@ -200,32 +213,32 @@ export function UserRolesDialog({
     [userRoles, roleNameSet],
   );
 
-  const preselectedKeys = useMemo(() => {
-    const list = Array.isArray(userRolesInDept) ? userRolesInDept : [];
-    return new Set<string>(list.map((r) => getRowKey(r as RoleDTO)));
-  }, [userRolesInDept, getRowKey]);
+  const { rowSelection, setRowSelection, toAdd, toRemove, hasChanges } =
+    useMembershipEditor({
+      rows: data,
+      existing: userRolesInDept as RoleDTO[],
+      getKey: getRowKey,
+      diff: diffRoles,
+    });
 
-  useEffect(() => {
+  // Reset on close while rendering (React's "adjust state on prop change"),
+  // so the closed dialog never commits stale state first.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
     if (!open) {
-      setDepartmentCode(undefined);
-      setRowSelection({});
+      setPickedDept(undefined);
       setColumnFilters([]);
-      setPagination({ pageIndex: 0, pageSize: 5 });
+      setPagination({ pageIndex: 0, pageSize: 15 });
       setExpiresAt("");
     }
-  }, [open]);
+  }
 
-  // When the role list (or the user's preselected roles) changes, reset the
-  // selection to the preselected set and jump back to the first page.
+  // A new role list (another department) starts on its first page.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset is keyed on the list itself.
   useEffect(() => {
-    const next: RowSelectionState = {};
-    for (const row of roles ?? []) {
-      const key = getRowKey(row);
-      if (preselectedKeys.has(key)) next[key] = true;
-    }
-    setRowSelection(next);
     setPagination((p) => ({ ...p, pageIndex: 0 }));
-  }, [roles, preselectedKeys, getRowKey]);
+  }, [roles]);
 
   const table = useReactTable({
     data,
@@ -241,23 +254,6 @@ export function UserRolesDialog({
     state: { pagination, columnFilters, rowSelection },
   });
 
-  const selectedRows = table.getSelectedRowModel().rows;
-  const selectedData = selectedRows.map((r) => r.original);
-
-  const existing = userRolesInDept ?? [];
-
-  const diff = useMemo(
-    () =>
-      computeRoleDiff(
-        (existing as RoleDTO[]).map((r) => r.code ?? "").filter(Boolean),
-        selectedData.map((r) => r.code ?? "").filter(Boolean),
-        expiresAt || undefined,
-      ),
-    [selectedData, existing, expiresAt],
-  );
-
-  const hasChanges = diff.toAdd.roles.length > 0 || diff.toRemove.length > 0;
-
   const { mutateAsync: addUserRole, isPending: isAdding } = useAddUserRole();
   const { mutateAsync: removeUserRole, isPending: isRemoving } =
     useRemoveUserRole();
@@ -266,45 +262,38 @@ export function UserRolesDialog({
     if (!departmentCode) {
       igrpToast({
         type: "warning",
-        title: "Selecione um departamento primeiro.",
+        title: t("roleDialog.toasts.selectDepartmentFirst"),
       });
       return;
     }
     if (!hasChanges) {
       igrpToast({
         type: "info",
-        title: "Sem alterações",
-        description: "Nada para adicionar ou remover.",
+        title: t("roleDialog.toasts.noChanges"),
+        description: t("roleDialog.toasts.noChangesDescription"),
       });
       return;
     }
 
     try {
-      if (diff.toAdd.roles.length) {
-        const res = await addUserRole({
-          id,
-          departmentCode,
-          request: diff.toAdd,
-        });
-        if (!res.success) {
-          throw new Error(res.error);
-        }
-      }
-      if (diff.toRemove.length) {
-        const res = await removeUserRole({
-          id,
-          departmentCode,
-          roleCodes: diff.toRemove,
-        });
-        if (!res.success) {
-          throw new Error(res.error);
-        }
-      }
+      await saveMembership(
+        { toAdd, toRemove },
+        (codes) =>
+          addUserRole({
+            id,
+            departmentCode,
+            request: { roles: codes, ...(expiresAt ? { expiresAt } : {}) },
+          }),
+        (roleCodes) => removeUserRole({ id, departmentCode, roleCodes }),
+      );
 
       igrpToast({
         type: "success",
-        title: "Perfis atualizados",
-        description: `+${diff.toAdd.roles.length} adicionada(s), -${diff.toRemove.length} removida(s).`,
+        title: t("roleDialog.toasts.updated"),
+        description: t("roleDialog.toasts.updatedDescription", {
+          added: toAdd.length,
+          removed: toRemove.length,
+        }),
       });
 
       await refetchUserRoles();
@@ -312,11 +301,11 @@ export function UserRolesDialog({
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Falha ao atualizar perfis",
+        title: t("roleDialog.toasts.updateFailed"),
         description:
           error instanceof Error
-            ? error.message
-            : "Ocorreu um erro desconhecido.",
+            ? serverError(error.message)
+            : t("unknownError"),
       });
     }
   }
@@ -325,12 +314,19 @@ export function UserRolesDialog({
   const err = error || errorUserRoles;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="md:min-w-2xl max-h-[95vh]">
         <DialogHeader>
           <DialogTitle className="text-base">
-            Adicionar ou Remover Perfis
+            {t("roleDialog.title")}
           </DialogTitle>
+          <DialogDescription>
+            {departmentCode
+              ? t("roleDialog.departmentScope", {
+                  department: deptName(departmentCode),
+                })
+              : t("roleDialog.pickDepartment")}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 min-w-0 overflow-x-hidden">
@@ -353,9 +349,9 @@ export function UserRolesDialog({
                     onChange={(e) =>
                       table.getColumn("name")?.setFilterValue(e.target.value)
                     }
-                    placeholder="Filtar por nome..."
+                    placeholder={t("roleDialog.filterPlaceholder")}
                     type="text"
-                    aria-label="Filtar por nome"
+                    aria-label={t("roleDialog.filterLabel")}
                     disabled={!departmentCode}
                   />
                   <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50">
@@ -365,7 +361,7 @@ export function UserRolesDialog({
                     <button
                       type="button"
                       className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-2 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px]"
-                      aria-label="Clear filter"
+                      aria-label={t("roleDialog.clearFilter")}
                       onClick={() => {
                         table.getColumn("name")?.setFilterValue("");
                         inputRef.current?.focus();
@@ -396,14 +392,14 @@ export function UserRolesDialog({
                         }
                       >
                         {deptsLoading
-                          ? "A carregar departamentos..."
+                          ? t("roleDialog.departments.loading")
                           : departmentCode
                             ? deptName(departmentCode)
                             : deptsError
-                              ? "Erro ao carregar departamentos"
+                              ? t("roleDialog.departments.loadError")
                               : (depts?.length ?? 0) === 0
-                                ? "Sem departamentos"
-                                : "Selecionar departamento"}
+                                ? t("roleDialog.departments.empty")
+                                : t("roleDialog.departments.placeholder")}
                         <IGRPIcon
                           iconName="ChevronsUpDown"
                           className="ml-2 h-4 w-4 opacity-50"
@@ -413,10 +409,12 @@ export function UserRolesDialog({
 
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                       <Command>
-                        <CommandInput placeholder="Procurar departamento..." />
+                        <CommandInput
+                          placeholder={t("roleDialog.departments.search")}
+                        />
                         <CommandList>
                           <CommandEmpty>
-                            Nenhum departamento encontrado.
+                            {t("roleDialog.departments.notFound")}
                           </CommandEmpty>
                           <CommandGroup>
                             {depts?.map((dept) => (
@@ -450,7 +448,7 @@ export function UserRolesDialog({
                   htmlFor="expires-at"
                   className="text-sm whitespace-nowrap"
                 >
-                  Expiração (opcional)
+                  {t("roleDialog.expiresAt")}
                 </Label>
                 <Input
                   id="expires-at"
@@ -464,19 +462,21 @@ export function UserRolesDialog({
 
               {!departmentCode ? (
                 <div className="rounded-md border py-10 text-center text-muted-foreground ">
-                  Selecione um departamento para listar os perfis.
+                  {t("roleDialog.selectDepartmentHint")}
                 </div>
               ) : loading ? (
                 <div className="rounded-md border py-6 text-center ">
-                  A carregar perfis...
+                  {t("roleDialog.loadingRoles")}
                 </div>
               ) : err ? (
                 <div className="rounded-md border py-6 ">
                   <p className="text-center">
-                    Ocorreu um erro a carregar perfis do utilizador.
+                    {t("roleDialog.loadRolesError")}
                   </p>
                   <p className="text-center">
-                    {err instanceof Error ? err.message : String(err)}
+                    {err instanceof Error
+                      ? serverError(err.message)
+                      : String(err)}
                   </p>
                 </div>
               ) : (
@@ -488,7 +488,9 @@ export function UserRolesDialog({
 
               <div className="flex items-center justify-between gap-3">
                 <Badge>
-                  {table.getSelectedRowModel().rows.length} selecionado(s)
+                  {t("roleDialog.selectedCount", {
+                    count: table.getSelectedRowModel().rows.length,
+                  })}
                 </Badge>
 
                 <div className="flex gap-2">
@@ -505,14 +507,14 @@ export function UserRolesDialog({
                     showIcon
                     iconName="X"
                   >
-                    Limpar
+                    {t("roleDialog.clear")}
                   </IGRPButton>
                   <IGRPButton
                     variant="default"
                     onClick={onSubmit}
                     disabled={
                       !departmentCode ||
-                      !(diff.toAdd.roles.length || diff.toRemove.length) ||
+                      !hasChanges ||
                       loading ||
                       isAdding ||
                       isRemoving
@@ -522,8 +524,8 @@ export function UserRolesDialog({
                     showIcon
                   >
                     {loading || isAdding || isRemoving
-                      ? "Guardando..."
-                      : "Guardar"}
+                      ? t("roleDialog.saving")
+                      : t("roleDialog.save")}
                   </IGRPButton>
                 </div>
               </div>

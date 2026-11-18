@@ -2,6 +2,7 @@ import { useIGRPToast } from "@igrp/igrp-framework-react-design-system";
 import type {
   AddRolesToUserRequestDTO,
   ApplicationDTO,
+  AuditLogDTO,
   AuditLogFilters,
   DepartmentDTO,
   IGRPUserDTO,
@@ -9,7 +10,6 @@ import type {
   InviteUserDTO,
   PageResponse,
   RoleDTO,
-  SecurityAuditLogDTO,
   SessionResponseDTO,
   UserFilters,
   UserInvitationResponseDTO,
@@ -18,10 +18,10 @@ import type {
 import {
   keepPreviousData,
   useMutation,
-  useQueries,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 import { unwrap } from "@/actions/types";
 import {
@@ -49,6 +49,7 @@ import {
   respondUserInvitation,
   setCurrentUserActiveRole,
   //setCurrentUserActiveRole,
+  type UserPatch,
   updateUser,
   updateUserMetadata,
   updateUserStatus,
@@ -57,6 +58,7 @@ import {
 } from "@/actions/user";
 import { getUserAuditLogs } from "@/actions/user-audit";
 import { getUserSession, killUserSession } from "@/actions/user-sessions";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { currentUserKeys, invitationKeys, userKeys } from "./query-keys";
 import {
@@ -152,27 +154,18 @@ export const useUserRoles = (id: string) => {
   });
 };
 
-export const useUserRolesMulti = (id: string[]) => {
-  return useQueries({
-    queries: id.map((u) => ({
-      queryKey: userKeys.roles(u),
-      queryFn: async () => unwrap(await getUserRoles(u)),
-      enabled: !!u,
-    })),
-  });
-};
-
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, user }: { id: string; user: IGRPUserDTO }) =>
-      updateUser(id, user),
-    onSuccess: async (result) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: UserPatch }) =>
+      updateUser(id, patch),
+    onSuccess: async (result, { id }) => {
       if (result.success) {
         await Promise.all([
           queryClient.invalidateQueries({ queryKey: currentUserKeys.detail() }),
           queryClient.invalidateQueries({ queryKey: userKeys.all }),
+          queryClient.invalidateQueries({ queryKey: userKeys.detail(id) }),
         ]);
       }
     },
@@ -234,6 +227,8 @@ export function useCurrentUserFavoriteApplications(applicationName?: string) {
 export function useAddCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.favorites");
+  const serverError = useServerErrorMessage();
 
   return useMutation({
     mutationFn: async (variables: {
@@ -268,8 +263,8 @@ export function useAddCurrentUserFavoriteApplication() {
       }
       igrpToast({
         type: "error",
-        title: "Não foi possível atualizar os favoritos.",
-        description: (err as Error).message,
+        title: t("updateFailed"),
+        description: serverError((err as Error).message),
         duration: 4000,
       });
     },
@@ -284,6 +279,8 @@ export function useAddCurrentUserFavoriteApplication() {
 export function useRemoveCurrentUserFavoriteApplication() {
   const queryClient = useQueryClient();
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.favorites");
+  const serverError = useServerErrorMessage();
 
   return useMutation({
     mutationFn: async (applicationCode: string) =>
@@ -309,8 +306,8 @@ export function useRemoveCurrentUserFavoriteApplication() {
       }
       igrpToast({
         type: "error",
-        title: "Não foi possível atualizar os favoritos.",
-        description: (err as Error).message,
+        title: t("updateFailed"),
+        description: serverError((err as Error).message),
         duration: 4000,
       });
     },
@@ -545,7 +542,7 @@ export const useKillUserSession = () => {
 };
 
 export const useUserAuditLogs = (userId: string, filters?: AuditLogFilters) => {
-  return useQuery<PageResponse<SecurityAuditLogDTO>, Error>({
+  return useQuery<PageResponse<AuditLogDTO>, Error>({
     queryKey: userKeys.auditLogs(userId, filters),
     queryFn: async () => unwrap(await getUserAuditLogs(userId, filters)),
     enabled: !!userId,

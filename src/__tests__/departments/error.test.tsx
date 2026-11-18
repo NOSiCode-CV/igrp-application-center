@@ -6,7 +6,10 @@ vi.mock("@/lib/report-error", () => ({
   reportError: vi.fn(),
 }));
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   Button: ({
     children,
     onClick,

@@ -5,7 +5,7 @@ import {
   isAuthDisabled,
   isPreviewMode,
   sanitizeCallbackUrl,
-} from "@/lib/utils";
+} from "@/lib/utilities";
 
 const ENV = process.env;
 beforeEach(() => {

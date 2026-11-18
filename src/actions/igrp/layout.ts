@@ -1,19 +1,11 @@
-"use server";
+// Server-only helpers, deliberately NOT a "use server" module. Nothing here is
+// called from the client, and under "use server" every export is a Server
+// Action candidate: the moment a client component imported this file,
+// `configLayout` would become a public POST endpoint returning the session.
+import "server-only";
 
-import { cookies } from "next/headers";
-
-import type { JWT } from "next-auth/jwt";
-
-import { auth } from "@/lib/auth";
-import { isAuthBypass } from "@/lib/utils";
-
-export async function getTheme() {
-  const cookieStore = await cookies();
-  const activeThemeValue = cookieStore.get("igrp_active_theme")?.value;
-  const isScaled = activeThemeValue?.endsWith("-scaled");
-
-  return { activeThemeValue, isScaled };
-}
+import { PREVIEW_SESSION_STUB, serverSession } from "@/lib/auth";
+import { isAuthBypass } from "@/lib/utilities";
 
 export async function configLayout() {
   // NOTE: This function is called from both the root layout (app/layout.tsx) and the
@@ -25,15 +17,11 @@ export async function configLayout() {
   // When auth is bypassed (preview mode OR AUTH_PROVIDER=none), provide a mock
   // session so the layout doesn't kick the user to /login. The framework reads
   // session existence rather than the preview flag when deciding redirects.
-  const session = isAuthBypass()
-    ? ({
-        user: { name: "Preview User", email: "preview@example.com" },
-        accessToken: "preview-token",
-        expires: "9999-12-31T23:59:59.999Z",
-      } as JWT | null)
-    : await auth.getAccessToken();
+  // Use the sanitized NextAuth Session — NOT auth.getAccessToken(), which
+  // returns the full JWT (including the refresh token) and would leak it into
+  // the client SessionProvider. serverSession() is redirect-free, so it stays
+  // safe to call from the root layout (auth enforcement lives in verifySession()).
+  const session = isAuthBypass() ? PREVIEW_SESSION_STUB : await serverSession();
 
-  const { activeThemeValue, isScaled } = await getTheme();
-
-  return { session, activeThemeValue, isScaled };
+  return { session };
 }

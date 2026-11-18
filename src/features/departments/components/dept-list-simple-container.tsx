@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { IGRPIcon, Input } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { AppCenterLoading } from "@/components/loading";
 import {
@@ -15,6 +16,7 @@ import { buildTree, filterTree } from "../dept-tree-utils";
 import DepartmentTreeItemSimple from "./dept-list-simple-tree";
 
 export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
+  const t = useTranslations("departments.simple");
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedDepts, setExpandedDepts] = useState<Set<string>>(new Set());
 
@@ -32,7 +34,7 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
   });
 
   if (isLoadingMyDeps || (isLoading && !error && !errorMyDeps)) {
-    return <AppCenterLoading description="A carregar departamentos…" />;
+    return <AppCenterLoading description={t("loading")} />;
   }
 
   const departments = user ? userDepts : currentUserDepts;
@@ -51,9 +53,9 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
           />
           <Input
             type="search"
-            aria-label="Pesquisar departamento"
+            aria-label={t("searchLabel")}
             autoComplete="off"
-            placeholder="Pesquisar departamento…"
+            placeholder={t("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-background pl-8"
@@ -64,7 +66,7 @@ export function DepartmentListSimple({ user }: { user?: IGRPUserDTO }) {
       {filteredTree.length === 0 && (
         <div className="w-full">
           <div className="text-primary">
-            <p className="text-sm">Nenhum departamento</p>
+            <p className="text-sm">{t("none")}</p>
           </div>
         </div>
       )}

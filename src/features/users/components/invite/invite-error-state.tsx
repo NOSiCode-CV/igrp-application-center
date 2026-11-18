@@ -1,14 +1,11 @@
 "use client";
 
-import { Button } from "@igrp/igrp-framework-react-design-system";
 import {
-  AlertTriangle,
-  ArrowLeft,
-  Clock,
-  LogOut,
-  type LucideIcon,
-  MailX,
-} from "lucide-react";
+  Button,
+  IGRPIcon,
+  type IGRPIconProps,
+} from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -22,28 +19,18 @@ interface InviteErrorStateProps {
 
 const COPY: Record<
   InviteErrorKind,
-  { icon: LucideIcon; eyebrow: string; title: string; description: string }
+  {
+    icon: IGRPIconProps["iconName"];
+  }
 > = {
   invalid: {
-    icon: AlertTriangle,
-    eyebrow: "Erro",
-    title: "Convite inválido",
-    description:
-      "Não foi possível encontrar este convite. O link pode estar incorreto.",
+    icon: "TriangleAlert",
   },
   mismatch: {
-    icon: MailX,
-    eyebrow: "Conta diferente",
-    title: "Convite não corresponde",
-    description:
-      "Este convite não foi enviado para a conta com que iniciou sessão.",
+    icon: "MailX",
   },
   expired: {
-    icon: Clock,
-    eyebrow: "Expirado",
-    title: "Convite expirado",
-    description:
-      "Este convite já expirou. Solicite um novo convite ao administrador.",
+    icon: "Clock",
   },
 };
 
@@ -55,26 +42,29 @@ export function InviteErrorState({
 }: InviteErrorStateProps) {
   const copy = COPY[kind];
 
+  const t = useTranslations("users.invite.accept");
+  const tc = useTranslations("common.actions");
+
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
         icon={copy.icon}
-        eyebrow={copy.eyebrow}
-        title={copy.title}
-        description={description ?? copy.description}
+        eyebrow={t(`errorStates.${kind}.eyebrow`)}
+        title={t(`errorStates.${kind}.title`)}
+        description={description ?? t(`errorStates.${kind}.description`)}
         tone="destructive"
       />
       <div className="flex flex-col gap-3">
         {kind !== "mismatch" ? (
           <Button variant="outline" size="lg" onClick={onBackHome}>
-            <ArrowLeft data-icon="inline-start" />
-            Voltar ao início
+            <IGRPIcon iconName="ArrowLeft" data-icon="inline-start" />
+            {tc("backHome")}
           </Button>
         ) : null}
         {onSignOut ? (
           <Button size="lg" onClick={onSignOut} variant="destructive">
-            <LogOut data-icon="inline-start" />
-            Usar outra conta
+            <IGRPIcon iconName="LogOut" data-icon="inline-start" />
+            {t("useAnotherAccount")}
           </Button>
         ) : null}
       </div>

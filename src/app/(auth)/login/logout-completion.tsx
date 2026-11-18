@@ -4,9 +4,12 @@ import { useEffect, useRef } from "react";
 
 import { signOut } from "@igrp/framework-next-auth/client";
 import { IGRPTemplateLoading } from "@igrp/framework-next-ui";
+import { useTranslations } from "next-intl";
 
+import { markHostLogout } from "@/actions/igrp/auth";
 import { clearLogoutPending } from "@/lib/logout-pending";
 import { reportError } from "@/lib/report-error";
+import { markSilentSsoTried } from "@/lib/silent-sso";
 
 /**
  * Deferred logout teardown (Option A).
@@ -21,6 +24,7 @@ import { reportError } from "@/lib/report-error";
  * normal login visit never mounts this and shows the form immediately.
  */
 export function LogoutCompletion() {
+  const t = useTranslations("auth");
   // Module-instance guard: the async teardown must run exactly once even if the
   // effect re-fires (Strict Mode mount→unmount→mount in dev).
   const startedRef = useRef(false);
@@ -36,12 +40,21 @@ export function LogoutCompletion() {
         console.error("[logout][client] deferred signOut threw", error);
         reportError(error, { segment: "(auth)/login:logout-completion" });
       } finally {
+        // Explicit logout: tell co-hosted apps. A failure must not block the reload.
+        await markHostLogout().catch((error) =>
+          reportError(error, { segment: "(auth)/login:logout-completion" }),
+        );
         // Clear the marker BEFORE reloading (document.cookie is synchronous, so
         // the cookie is gone before the next request fires). On reload the
         // server no longer gates on the marker and renders the login form; the
         // full reload also forces every server component to re-read the now-
         // cleared session.
         clearLogoutPending();
+        // Suppress the silent SSO attempt on the /login we are about to load:
+        // a user who just signed out must see the form, not be signed straight
+        // back in — which is what would happen if the IdP logout failed to end
+        // the IdP session.
+        markSilentSsoTried();
         const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
         window.location.replace(`${window.location.origin}${basePath}/login`);
       }
@@ -50,7 +63,7 @@ export function LogoutCompletion() {
 
   return (
     <IGRPTemplateLoading
-      text="A terminar sessão..."
+      text={t("signingOut")}
       appCode={process.env.NEXT_PUBLIC_IGRP_APP_CODE}
     />
   );

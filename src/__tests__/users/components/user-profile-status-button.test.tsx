@@ -1,10 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 
 import { UserProfileStatusButton } from "@/features/users/components/user-profile-status-button";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+import { renderWithIntl } from "../../helpers/intl";
+
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   cn: (...args: unknown[]) => args.filter(Boolean).join(" "),
   IGRPButton: ({
     children,
@@ -36,7 +41,7 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
 
 it("renders a destructive deactivate action when active and calls onToggleStatus", async () => {
   const onToggleStatus = vi.fn();
-  render(
+  renderWithIntl(
     <UserProfileStatusButton
       isActive={true}
       isPending={false}
@@ -53,7 +58,7 @@ it("renders a destructive deactivate action when active and calls onToggleStatus
 
 it("renders a green activate action when inactive", async () => {
   const onToggleStatus = vi.fn();
-  render(
+  renderWithIntl(
     <UserProfileStatusButton
       isActive={false}
       isPending={false}
@@ -70,7 +75,7 @@ it("renders a green activate action when inactive", async () => {
 
 it("disables the button while isPending", () => {
   const onToggleStatus = vi.fn();
-  render(
+  renderWithIntl(
     <UserProfileStatusButton
       isActive={true}
       isPending={true}

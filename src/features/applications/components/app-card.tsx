@@ -5,24 +5,23 @@ import Image from "next/image";
 
 import {
   Badge,
+  cn,
   IGRPButton,
-  IGRPIcon,
   Separator,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@igrp/igrp-framework-react-design-system";
 import type { ApplicationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ButtonLinkTooltip } from "@/components/button-link-tooltip";
-import {
-  APP_DESCRIPTION_FALLBACK,
-  formatSlug,
-  isSystemApp,
-} from "@/features/applications/app-utils";
+import { formatSlug, isSystemApp } from "@/features/applications/app-utils";
+import { publicFileUrl } from "@/features/files/public-file-url";
+import { getAppTileColor } from "@/features/workspace/lib/app-utils";
+import { useStatusLabel } from "@/i18n/status";
 import { config, ROUTES } from "@/lib/constants";
-import { getStatusColor, showStatus } from "@/lib/utilities";
-import { cn } from "@/lib/utils";
+import { statusClass } from "@/lib/utilities";
 
 interface ApplicationCardProps {
   app: ApplicationDTO;
@@ -30,89 +29,111 @@ interface ApplicationCardProps {
 }
 
 const ACTION_BUTTON_HOVER =
-  "hover:bg-primary/90 hover:text-primary-foreground/90";
+  "hover:bg-primary-subtle hover:text-primary-subtle-foreground";
 
 export function ApplicationCard({ app, onEdit }: ApplicationCardProps) {
+  const t = useTranslations("applications.card");
+  const tc = useTranslations("common.actions");
+  const statusLabel = useStatusLabel();
   const { name, code, status, description, slug, url } = app;
   const href = slug ? formatSlug(slug) : url;
   const isSystem = isSystemApp(app);
+  const color = getAppTileColor(code ?? "");
+  const initial = (name ?? code ?? "").charAt(0).toUpperCase();
   const appImage = app.picture;
-  const imageSrc = appImage
-    ? appImage.startsWith("http")
+  // No MinIO base configured: show the initial rather than a broken address.
+  const imageSrc = !appImage
+    ? null
+    : /^https?:\/\//i.test(appImage)
       ? appImage
-      : new URL(appImage, config.minioUrl).toString()
-    : null;
+      : config.minioUrl
+        ? publicFileUrl(appImage, config.minioUrl)
+        : null;
 
   return (
-    <div className="relative overflow-hidden rounded-lg border bg-card p-6 pb-2 transition-all duration-300 hover:shadow-lg">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="relative size-12 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-            {imageSrc ? (
-              <Image
-                src={imageSrc}
-                alt={name}
-                fill
-                className="object-cover"
-                sizes="48px"
-              />
-            ) : (
-              <IGRPIcon iconName="AppWindow" className="size-6 text-primary" />
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-base line-clamp-1">{name}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">{code}</p>
-          </div>
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 min-w-0">
+      <div className="flex gap-3 min-w-0">
+        <div
+          className={cn(
+            "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg font-bold text-sm",
+            color.bg,
+            color.text,
+          )}
+        >
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="40px"
+            />
+          ) : (
+            initial
+          )}
         </div>
 
-        <Badge className={cn(getStatusColor(status), "shrink-0")}>
-          {showStatus(status)}
-        </Badge>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <h2 className="truncate text-sm font-semibold text-foreground">
+            {name}
+          </h2>
+          <span className="truncate text-xs text-muted-foreground">{code}</span>
+        </div>
       </div>
 
-      <p className="text-sm text-muted-foreground line-clamp-2 min-h-10">
-        {description || APP_DESCRIPTION_FALLBACK}
+      <p
+        className={cn(
+          "text-xs text-muted-foreground line-clamp-2 leading-relaxed text-pretty",
+          !description && "italic",
+        )}
+      >
+        {description || t("noDescription")}
       </p>
 
-      <Separator />
-      <div className="flex items-center justify-end gap-1 pt-3">
-        <ButtonLinkTooltip
-          href={`${ROUTES.APPLICATIONS}/${code}` as Route}
-          icon="Eye"
-          label="Ver"
-          size="icon"
-          variant="ghost"
-          btnClassName={ACTION_BUTTON_HOVER}
-        />
+      <Separator className="mt-auto" />
+      <div className="flex items-center justify-between gap-2">
+        <Badge className={cn(statusClass(status), "shrink-0")}>
+          {statusLabel(status)}
+        </Badge>
 
-        {!isSystem && onEdit && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <IGRPButton
-                size="icon"
-                variant="ghost"
-                showIcon
-                iconName="SquarePen"
-                onClick={() => onEdit(app)}
-                className={ACTION_BUTTON_HOVER}
-                aria-label={`Editar ${name}`}
-              />
-            </TooltipTrigger>
-            <TooltipContent>Editar</TooltipContent>
-          </Tooltip>
-        )}
-
-        {href && (
+        <div className="flex items-center gap-1">
           <ButtonLinkTooltip
-            href={href as Route}
-            icon="ExternalLink"
-            label="Abrir"
+            href={`${ROUTES.APPLICATIONS}/${code}` as Route}
+            icon="Eye"
+            label={t("view", { name })}
             size="icon"
             variant="ghost"
             btnClassName={ACTION_BUTTON_HOVER}
           />
-        )}
+
+          {!isSystem && onEdit && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <IGRPButton
+                  size="icon"
+                  variant="ghost"
+                  showIcon
+                  iconName="SquarePen"
+                  onClick={() => onEdit(app)}
+                  className={ACTION_BUTTON_HOVER}
+                  aria-label={t("edit", { name })}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{tc("edit")}</TooltipContent>
+            </Tooltip>
+          )}
+
+          {href && (
+            <ButtonLinkTooltip
+              href={href as Route}
+              icon="ExternalLink"
+              label={t("open", { name })}
+              size="icon"
+              variant="ghost"
+              btnClassName={ACTION_BUTTON_HOVER}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

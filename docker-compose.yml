@@ -3,26 +3,19 @@ services:
     image: registry.nosi.cv/igrp/igrp-application-center:latest
     hostname: igrp-application-center
     labels:
-      type: 'frontend'
-      name: 'igrp-application-center'
+      type: "frontend"
+      name: "igrp-application-center"
     env_file:
       - .env
     environment:
-      - KEYCLOAK_ISSUER=https://demoigrp.nosi.cv/auth/realms/igrp
-      - KEYCLOAK_CLIENT_ID=access-management
-      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - IGRP_AUTH_ISSUER=https://demoigrp.nosi.cv/auth/realms/igrp
+      - IGRP_AUTH_CLIENT_ID=access-management
+      # Secrets (IGRP_AUTH_CLIENT_SECRET, NEXTAUTH_SECRET) come from .env via env_file.
       - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - IGRP_ACCESS_MANAGEMENT_API=https://api-demoigrp.nosi.cv/igrp-access-management
       - IGRP_APP_CODE=APP_IGRP_CENTER
       - IGRP_PREVIEW_MODE=false
       - NODE_ENV=production
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
     restart: unless-stopped
     ports:
-      - '3001:3000'
+      - "3001:3000"

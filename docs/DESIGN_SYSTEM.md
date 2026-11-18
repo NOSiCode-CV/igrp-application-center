@@ -25,7 +25,7 @@ import {
   IGRPDataTable,
   IGRPSelect,
   IGRPBadge,
-} from '@igrp/igrp-framework-react-design-system';
+} from "@igrp/igrp-framework-react-design-system";
 ```
 
 ### Primitives (`*Primitive`)
@@ -33,11 +33,7 @@ import {
 Low-level building blocks. Use when composing custom components.
 
 ```tsx
-import {
-  Button,
-  Card,
-  Input,
-} from '@igrp/igrp-framework-react-design-system';
+import { Button, Card, Input } from "@igrp/igrp-framework-react-design-system";
 ```
 
 ### Custom
@@ -46,11 +42,11 @@ Domain components: `IGRPStatusBanner`, `IGRPStatsCardTopBorderColored`, `IGRPUse
 
 ## Key Types
 
-| Type | Purpose |
-| ------ | --------- |
+| Type                 | Purpose                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------- |
 | `IGRPBaseAttributes` | `label`, `helperText`, `showIcon`, `iconName`, `iconPlacement`, `iconSize`, `name` |
-| `IGRPInputProps` | Input props + `inputClassName`, `error`, `gridSize` |
-| `IGRPSize` | `'sm' \| 'md' \| 'lg' \| 'xl'` |
+| `IGRPInputProps`     | Input props + `inputClassName`, `error`, `gridSize`                                |
+| `IGRPSize`           | `'sm' \| 'md' \| 'lg' \| 'xl'`                                                     |
 
 ## Common Patterns
 
@@ -62,7 +58,7 @@ Domain components: `IGRPStatusBanner`, `IGRPStatsCardTopBorderColored`, `IGRPUse
     <IGRPInputText name="email" type="email" />
   </IGRPFormField>
   <IGRPButton type="submit">Submit</IGRPButton>
-</IGRPForm>
+</IGRPForm>;
 ```
 
 ### Input with icon
@@ -74,7 +70,7 @@ Domain components: `IGRPStatusBanner`, `IGRPStatsCardTopBorderColored`, `IGRPUse
   showIcon
   iconName="Search"
   iconPlacement="start"
-/>
+/>;
 ```
 
 ### Button
@@ -93,29 +89,33 @@ Domain components: `IGRPStatusBanner`, `IGRPStatsCardTopBorderColored`, `IGRPUse
   </IGRPCardHeader>
   <IGRPCardContent>Content</IGRPCardContent>
   <IGRPCardFooter>Footer</IGRPCardFooter>
-</IGRPCard>
+</IGRPCard>;
 ```
 
 ### Data table
 
 ```tsx
-<IGRPDataTable columns={columns} data={data} />
+<IGRPDataTable columns={columns} data={data} />;
 ```
 
 ### Icons
 
 ```tsx
-<IGRPIcon iconName="Check" size={16} />
+<IGRPIcon iconName="Check" size={16} />;
 ```
 
 ## Styling
 
 - Tokens: `@igrp/igrp-framework-react-design-system/tokens` (in `src/styles/globals.css`)
-- Theme overrides: `src/styles/themes.css`
+- App overrides: `src/styles/globals.css`; organization Brand: Application Center (`IGRP_BRANDING_ENABLED`)
 - Do **not** import prebuilt `@igrp/*/styles.css` files.
 
 ## Utilities
 
 ```tsx
-import { cn, useIsMobile, useIGRPMetaColor } from '@igrp/igrp-framework-react-design-system';
+import {
+  cn,
+  useIsMobile,
+  useIGRPMetaColor,
+} from "@igrp/igrp-framework-react-design-system";
 ```

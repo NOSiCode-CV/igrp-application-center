@@ -12,8 +12,10 @@ import {
   TableCell,
   TableRow,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
-import { showStatus, statusClass } from "@/lib/utilities";
+import { useStatusLabel } from "@/i18n/status";
+import { statusClass } from "@/lib/utilities";
 
 import { useRoleTree } from "./role-tree-context";
 import type { RoleWithChildren } from "./role-tree-list";
@@ -35,6 +37,9 @@ export function RoleTreeRow({
     handlePermissions,
     handleDelete,
   } = useRoleTree();
+  const t = useTranslations("roles.row");
+  const tl = useTranslations("roles.list");
+  const statusLabel = useStatusLabel();
   const hasChildren = role.children && role.children.length > 0;
   const isExpanded = expandedRoles.has(role.code);
 
@@ -52,7 +57,7 @@ export function RoleTreeRow({
                 className="size-5 flex items-center justify-center hover:bg-accent rounded transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 type="button"
                 aria-expanded={isExpanded}
-                aria-label={isExpanded ? "Recolher perfil" : "Expandir perfil"}
+                aria-label={isExpanded ? t("collapse") : t("expand")}
               >
                 <IGRPIcon
                   iconName="ChevronRight"
@@ -79,11 +84,11 @@ export function RoleTreeRow({
           </div>
         </TableCell>
 
-        <TableCell>{role.description || "N/A"}</TableCell>
+        <TableCell>{role.description || tl("noDescription")}</TableCell>
 
         <TableCell className="whitespace-nowrap">
           <Badge className={cn(statusClass(role.status), "capitalize")}>
-            {showStatus(role.status)}
+            {statusLabel(role.status)}
           </Badge>
         </TableCell>
 
@@ -91,7 +96,7 @@ export function RoleTreeRow({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="size-8 p-0">
-                <span className="sr-only">Abrir Menu</span>
+                <span className="sr-only">{t("openMenu")}</span>
                 <IGRPIcon
                   iconName="Ellipsis"
                   aria-hidden
@@ -101,7 +106,7 @@ export function RoleTreeRow({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
               <DropdownMenuItem onSelect={() => handleEdit(role)}>
                 <IGRPIcon
                   iconName="Pencil"
@@ -109,7 +114,7 @@ export function RoleTreeRow({
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
-                Editar
+                {t("edit")}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => handleNewSubRole(role)}>
                 <IGRPIcon
@@ -118,7 +123,7 @@ export function RoleTreeRow({
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
-                Criar sub perfil
+                {t("createSubRole")}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => handlePermissions(role)}>
                 <IGRPIcon
@@ -127,7 +132,7 @@ export function RoleTreeRow({
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
-                Permissões
+                {t("permissions")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -140,7 +145,7 @@ export function RoleTreeRow({
                   className="mr-2 size-4"
                   strokeWidth={2}
                 />
-                Eliminar
+                {t("delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

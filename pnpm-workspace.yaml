@@ -1,3 +1,26 @@
 allowBuilds:
+  "@parcel/watcher": false
+  "@swc/core": false
   msw: true
   sharp: true
+minimumReleaseAgeExclude:
+  - "@igrp/framework-next-ui@0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4 || 0.2.0-beta.5 || 0.2.0-beta.6 || 0.2.0-beta.7 || 0.2.0-beta.8 || 0.2.0-beta.12 || 0.2.0-beta.13 || 0.2.0-beta.14 || 0.2.0-beta.16 || 0.2.0-beta.17 || 0.2.0-beta.18 || 0.2.0-beta.20"
+  - "@igrp/framework-next@0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4 || 0.2.0-beta.5 || 0.2.0-beta.6 || 0.2.0-beta.7 || 0.2.0-beta.8 || 0.2.0-beta.12 || 0.2.0-beta.14 || 0.2.0-beta.15 || 0.2.0-beta.16 || 0.2.0-beta.18 || 0.2.0-beta.19 || 0.2.0-beta.20 || 0.2.0-beta.22"
+  - "@igrp/igrp-framework-react-design-system@0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4 || 0.2.0-beta.5 || 0.2.0-beta.8 || 0.2.0-beta.9 || 0.2.0-beta.10 || 0.2.0-beta.12 || 0.2.0-beta.13 || 0.2.0-beta.14 || 0.2.0-beta.15"
+  - "@igrp/framework-next-auth@0.2.0-beta.1 || 0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4 || 0.2.0-beta.5 || 0.2.0-beta.6 || 0.2.0-beta.7 || 0.2.0-beta.9"
+  - "@igrp/framework-next-types@0.2.0-beta.1 || 0.2.0-beta.2 || 0.2.0-beta.3 || 0.2.0-beta.4 || 0.2.0-beta.5 || 0.2.0-beta.6 || 0.2.0-beta.7 || 0.2.0-beta.9"
+  - "@igrp/platform-access-management-client-ts@0.2.0-beta.18 || 0.2.0-beta.19 || 0.2.0-beta.21"
+  - "@igrp/framework-next-i18n@0.2.0-beta.3"
+overrides:
+  "brace-expansion@>=4.0.0 <5.0.12": ^5.0.12
+  "fast-uri@<3.1.9": ^3.1.9
+  "ip-address@<10.7.4": ^10.7.4
+  "minimatch@>=7.0.0 <11.0.1": ^11.0.1
+  "systeminformation@<5.33.16": ^5.33.16
+  "vite@>=8.2.0 <8.2.4": ^8.2.4
+  "postcss@<8.5.18": ^8.5.18
+  "source-map-js@<1.2.2": ^1.2.2
+auditConfig:
+  ignoreGhsas:
+    # deepmerge prototype poisoning (low), only via the shadcn CLI (dev tool, never bundled). No patched deepmerge exists; drop once shadcn or deepmerge ships a fix.
+    - GHSA-gcqx-w48m-w2h4

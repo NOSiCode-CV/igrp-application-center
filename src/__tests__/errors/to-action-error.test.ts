@@ -14,6 +14,15 @@ describe("toActionError", () => {
     });
   });
 
+  it("prefers the ProblemDetail `detail` over the title", () => {
+    const result = toActionError({
+      status: 404,
+      title: "Not found",
+      problemDetail: { title: "Not found", detail: "User 42 not found" },
+    });
+    expect(result).toEqual({ error: "User 42 not found", status: 404 });
+  });
+
   it("falls back to the default message but keeps the status", () => {
     const result = toActionError({ status: 401 });
     expect(result).toEqual({ error: "Não autorizado", status: 401 });

@@ -1,16 +1,18 @@
 "use client";
 
 import {
+  FieldLegend,
+  FieldSet,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
   Input,
-  RadioGroup,
-  RadioGroupItem,
   Switch,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 
 import {
@@ -19,17 +21,23 @@ import {
   menuTypeSchema,
 } from "@/features/menus/menu-schemas";
 
+import { MenuChoiceGroup } from "./menu-choice-group";
+
 interface MenuPageConfigFieldsProps {
   form: UseFormReturn<CreateMenu>;
   menuType: string;
   disabled?: boolean;
 }
 
+type PageType = "MENU_PAGE" | "EXTERNAL_PAGE";
+
+/** Where a page leads: a route inside the application, or an external URL. */
 export function MenuPageConfigFields({
   form,
   menuType,
   disabled,
 }: MenuPageConfigFieldsProps) {
+  const t = useTranslations("menus.form");
   const isMenuPage = menuType === menuTypeSchema.enum.MENU_PAGE;
   const isExternalPage = menuType === menuTypeSchema.enum.EXTERNAL_PAGE;
 
@@ -38,21 +46,31 @@ export function MenuPageConfigFields({
   }
 
   return (
-    <fieldset className="border border-accent p-4 rounded-md">
-      <legend className="text-base font-semibold px-2">
-        Configurações de Página
-      </legend>
+    <FieldSet>
+      <FieldLegend variant="label">{t("sections.destination")}</FieldLegend>
       <div className="flex flex-col gap-4">
         <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tipo de Página</FormLabel>
+              <FormLabel className="sr-only">{t("pageType")}</FormLabel>
               <FormControl>
-                <RadioGroup
-                  value={field.value}
-                  onValueChange={(value) => {
+                <MenuChoiceGroup<PageType>
+                  name="page-type"
+                  aria-label={t("pageType")}
+                  value={field.value as PageType}
+                  options={[
+                    {
+                      value: menuTypeSchema.enum.MENU_PAGE,
+                      label: t("internalPage"),
+                    },
+                    {
+                      value: menuTypeSchema.enum.EXTERNAL_PAGE,
+                      label: t("externalPage"),
+                    },
+                  ]}
+                  onChange={(value) => {
                     field.onChange(value);
                     if (value === menuTypeSchema.enum.EXTERNAL_PAGE) {
                       form.setValue("pageSlug", undefined as never);
@@ -63,27 +81,7 @@ export function MenuPageConfigFields({
                     }
                   }}
                   disabled={disabled}
-                  className="flex flex-row"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem
-                      value={menuTypeSchema.enum.MENU_PAGE}
-                      id="internal"
-                    />
-                    <label htmlFor="internal" className="cursor-pointer">
-                      Página Interna
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem
-                      value={menuTypeSchema.enum.EXTERNAL_PAGE}
-                      id="external"
-                    />
-                    <label htmlFor="external" className="cursor-pointer">
-                      Página Externa
-                    </label>
-                  </div>
-                </RadioGroup>
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -97,16 +95,19 @@ export function MenuPageConfigFields({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className='after:content-["*"] after:text-destructive'>
-                  URL Relativo
+                  {t("relativeUrl")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="page-slug"
+                    placeholder={t("relativeUrlPlaceholder")}
+                    autoComplete="off"
+                    spellCheck={false}
                     {...field}
                     value={field.value ?? ""}
                     disabled={disabled}
                   />
                 </FormControl>
+                <FormDescription>{t("relativeUrlHint")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -120,36 +121,42 @@ export function MenuPageConfigFields({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className='after:content-["*"] after:text-destructive'>
-                  URL Externa
+                  {t("externalUrl")}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="https://example.com"
+                    type="url"
+                    inputMode="url"
+                    autoComplete="off"
+                    placeholder={t("externalUrlPlaceholder")}
                     {...field}
                     value={field.value ?? ""}
                     disabled={disabled}
                   />
                 </FormControl>
+                {/* normalizeMenu always saves external pages with _blank. */}
+                <FormDescription>{t("externalUrlHint")}</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
         )}
 
-        <FormField
-          control={form.control}
-          name="target"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>Abrir em nova aba</FormLabel>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    {field.value === menuTargetSchema.enum._blank
-                      ? "Sim"
-                      : "Não"}
-                  </span>
+        {isMenuPage && (
+          <FormField
+            control={form.control}
+            name="target"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                  <FormLabel htmlFor="menu-target-switch">
+                    {t("openInNewTab")}
+                  </FormLabel>
+                  <FormDescription>{t("openInNewTabHint")}</FormDescription>
+                </div>
+                <FormControl>
                   <Switch
+                    id="menu-target-switch"
                     checked={field.value === menuTargetSchema.enum._blank}
                     onCheckedChange={(checked) =>
                       field.onChange(
@@ -160,13 +167,12 @@ export function MenuPageConfigFields({
                     }
                     disabled={disabled}
                   />
-                </div>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        )}
       </div>
-    </fieldset>
+    </FieldSet>
   );
 }

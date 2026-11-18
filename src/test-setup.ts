@@ -1,4 +1,7 @@
-import "@testing-library/jest-dom";
+// The /vitest entry registers the matchers AND augments Vitest's Assertion
+// interface. The bare entry only augments Jest's, leaving toBeInTheDocument &
+// friends untyped under `tsc`.
+import "@testing-library/jest-dom/vitest";
 import { vi } from "vitest";
 
 // Next.js server-only guard — not meaningful in tests
@@ -10,3 +13,85 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
   usePathname: () => "/settings/users",
 }));
+
+// The app always renders inside the root layout's NextIntlClientProvider, and
+// shared components (InlineError, SearchInput, CopyToClipboard, …) translate
+// their own text. Mirror that: every render/renderHook gets the module default
+// (pt) messages, around any wrapper the test passes. `renderWithIntl` (helpers/
+// intl.tsx) still picks another locale — the innermost provider wins.
+vi.mock("@testing-library/react", async (importOriginal) => {
+  const rtl = await importOriginal<typeof import("@testing-library/react")>();
+  const { createElement } = await import("react");
+  const { IGRPIntlTestProvider } = await import(
+    "@igrp/framework-next/i18n/testing"
+  );
+  const { default: pt } = await import("@/i18n/messages/pt.json");
+  const { default: en } = await import("@/i18n/messages/en.json");
+  const { default: fr } = await import("@/i18n/messages/fr.json");
+  const messages = { pt, en, fr };
+
+  type Wrapper = React.JSXElementConstructor<{ children: React.ReactNode }>;
+  const withIntl =
+    (Inner?: Wrapper): Wrapper =>
+    ({ children }) =>
+      createElement(IGRPIntlTestProvider, {
+        locale: "pt",
+        timeZone: "Atlantic/Cape_Verde",
+        messages,
+        children: Inner ? createElement(Inner, null, children) : children,
+      });
+
+  const render = (
+    ui: Parameters<typeof rtl.render>[0],
+    options?: Parameters<typeof rtl.render>[1],
+  ) =>
+    rtl.render(ui, {
+      ...options,
+      wrapper: withIntl(options?.wrapper as Wrapper | undefined),
+    });
+
+  const renderHook = (
+    hook: Parameters<typeof rtl.renderHook>[0],
+    options?: Parameters<typeof rtl.renderHook>[1],
+  ) =>
+    rtl.renderHook(hook, {
+      ...options,
+      wrapper: withIntl(options?.wrapper as Wrapper | undefined),
+    });
+
+  return {
+    ...rtl,
+    render: render as typeof rtl.render,
+    renderHook: renderHook as typeof rtl.renderHook,
+  };
+});
+
+// jsdom has no ResizeObserver; Radix's Select (via react-use-size) needs one.
+if (typeof globalThis.ResizeObserver === "undefined") {
+  globalThis.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+// Server actions translate their own refusals with getTranslations; outside a
+// request there is no next-intl config, so resolve against pt.json (the module
+// default). Tests that need another locale mock next-intl/server themselves.
+vi.mock("next-intl/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next-intl/server")>();
+  const { createTranslator } = await import("next-intl");
+  const { default: pt } = await import("@/i18n/messages/pt.json");
+  return {
+    ...actual,
+    getLocale: async () => "pt",
+    getTranslations: async (
+      options?: string | { namespace?: string; locale?: string },
+    ) =>
+      createTranslator({
+        locale: "pt",
+        messages: pt,
+        namespace: typeof options === "string" ? options : options?.namespace,
+      } as Parameters<typeof createTranslator>[0]),
+  };
+});

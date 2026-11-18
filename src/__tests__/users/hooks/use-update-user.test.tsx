@@ -60,7 +60,7 @@ describe("useUpdateUser", () => {
     await act(async () => {
       await result.current.mutateAsync({
         id: "u1",
-        user: { id: "u1" } as never,
+        patch: { name: "x" },
       });
     });
 

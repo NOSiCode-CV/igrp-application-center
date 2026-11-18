@@ -1,11 +1,14 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ back: vi.fn(), push: vi.fn() }),
 }));
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   IGRPButton: ({
     children,
   }: { children?: React.ReactNode } & Record<string, unknown>) => (
@@ -16,10 +19,12 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
 import { StatusAwareError } from "@/components/errors/status-aware-error";
 import { HttpStatusError } from "@/lib/errors";
 
+import { renderWithIntl } from "../helpers/intl";
+
 describe("StatusAwareError", () => {
   it("renders StatusErrorPage when the digest carries an HTTP status", () => {
     const error = new HttpStatusError(403, "Sem permissão");
-    render(
+    renderWithIntl(
       <StatusAwareError error={error} fallback={<div>fallback ui</div>} />,
     );
     expect(screen.getByText("403")).toBeInTheDocument();
@@ -29,7 +34,7 @@ describe("StatusAwareError", () => {
 
   it("renders the fallback for errors without an HTTP digest", () => {
     const error = Object.assign(new Error("boom"), { digest: "abc123" });
-    render(
+    renderWithIntl(
       <StatusAwareError error={error} fallback={<div>fallback ui</div>} />,
     );
     expect(screen.getByText("fallback ui")).toBeInTheDocument();

@@ -1,4 +1,4 @@
-import { isPreviewMode } from "../utils";
+import { isAuthBypass } from "../utilities";
 import { getBasePath } from "./get-base-path";
 
 // Adaptive refresh is owned by IGRPSessionWatcher, which schedules a
@@ -16,7 +16,7 @@ const FALLBACK_REFETCH_INTERVAL_SECONDS = 600;
  * is a last-resort backstop; `refetchOnWindowFocus` covers tab-return recovery.
  */
 export function getSessionArgs() {
-  if (isPreviewMode()) {
+  if (isAuthBypass()) {
     return {
       refetchInterval: 0,
       refetchOnWindowFocus: false,

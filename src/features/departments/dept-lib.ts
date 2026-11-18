@@ -1,17 +1,8 @@
 import type { MenuEntryDTO } from "@igrp/platform-access-management-client-ts";
 
 import type { MenuWithChildren } from "./components/dept-menu";
-import type { DepartmentArgs } from "./dept-schemas";
 
 export type DepartmentOption = { value: string; label: string };
-
-export const DEPT_OPTIONS = (
-  departments: DepartmentArgs[],
-): DepartmentOption[] =>
-  departments.map((d) => ({
-    value: String(d.code),
-    label: String(d.name),
-  }));
 
 export const buildMenuTree = (menus: MenuEntryDTO[]): MenuWithChildren[] => {
   const map = new Map<string, MenuWithChildren>();

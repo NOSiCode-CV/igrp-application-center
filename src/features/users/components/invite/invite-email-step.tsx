@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Button,
@@ -7,16 +9,17 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  IGRPIcon,
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@igrp/igrp-framework-react-design-system";
-import { ArrowRight, Loader2, Mail } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import {
   type InviteEmailFormArgs,
-  InviteEmailFormSchema,
+  makeInviteEmailFormSchema,
 } from "../../user-schemas";
 import { InviteStepHeader } from "./invite-step-header";
 
@@ -33,8 +36,11 @@ export function InviteEmailStep({
   isSubmitting,
   onSubmit,
 }: InviteEmailStepProps) {
+  const t = useTranslations("users.invite.accept.emailStep");
+  const tv = useTranslations("users.validation");
+  const schema = useMemo(() => makeInviteEmailFormSchema(tv), [tv]);
   const form = useForm<InviteEmailFormArgs>({
-    resolver: zodResolver(InviteEmailFormSchema),
+    resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: { email: defaultEmail ?? "" },
   });
@@ -48,28 +54,28 @@ export function InviteEmailStep({
   return (
     <div className="flex flex-col gap-8">
       <InviteStepHeader
-        icon={Mail}
-        eyebrow="Confirmação"
-        title="Bem-vindo"
-        description="Introduza o seu email para aceder ao convite."
+        icon="Mail"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
       />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
         <FieldGroup>
           <Field data-invalid={fieldInvalid || undefined}>
             <FieldLabel htmlFor="email" className="sr-only">
-              Email
+              {t("emailLabel")}
             </FieldLabel>
             <InputGroup>
               <InputGroupAddon>
-                <Mail aria-hidden="true" />
+                <IGRPIcon iconName="Mail" aria-hidden="true" />
               </InputGroupAddon>
               <InputGroupInput
                 id="email"
                 type="email"
                 autoComplete="email"
                 spellCheck={false}
-                placeholder="exemplo@email.cv"
+                placeholder={t("emailPlaceholder")}
                 disabled={isSubmitting}
                 aria-invalid={fieldInvalid}
                 {...form.register("email")}
@@ -92,10 +98,16 @@ export function InviteEmailStep({
           disabled={isSubmitting || !form.formState.isValid}
         >
           {isSubmitting ? (
-            <Loader2 data-icon="inline-start" className="animate-spin" />
+            <IGRPIcon
+              iconName="LoaderCircle"
+              data-icon="inline-start"
+              className="animate-spin"
+            />
           ) : null}
-          {isSubmitting ? "A enviar…" : "Enviar código"}
-          {!isSubmitting ? <ArrowRight data-icon="inline-end" /> : null}
+          {isSubmitting ? t("submitting") : t("submit")}
+          {!isSubmitting ? (
+            <IGRPIcon iconName="ArrowRight" data-icon="inline-end" />
+          ) : null}
         </Button>
       </form>
     </div>

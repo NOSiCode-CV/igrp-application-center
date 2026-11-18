@@ -3,15 +3,15 @@
 This template uses the **IGRP design-system tokens** (CSS variables) as the single source of truth.
 
 - Base tokens come from: `@igrp/igrp-framework-react-design-system/tokens`
-- Template overrides (per theme) live in: `src/styles/themes.css`
+- Organization colours and logos: set in the Application Center (Branding) and applied at render time when `IGRP_BRANDING_ENABLED=true`
 
-If you want to customize the UI (colors, radius, etc.), you typically **override the variables below** in `themes.css` (or in a custom CSS file imported after tokens).
+For app-specific overrides, **override the variables below** in `src/styles/globals.css` (or in a custom CSS file imported after tokens).
 
 ## Relationship to shadcn/ui
 
 The token names and structure are aligned with the common **shadcn/ui** theming model (CSS variables like `--background`, `--primary`, `--ring`, etc.), extended with extra groups (charts/sidebar/process).
 
-If you want a visual editor to generate a theme (then copy the variables into `src/styles/themes.css`), use:
+If you want a visual editor to generate a theme (then copy the variables into `src/styles/globals.css`), use:
 
 - `https://tweakcn.com/editor/theme`
 
@@ -91,21 +91,21 @@ In most cases, you only need to override the **core** variables (like `--primary
 
 ---
 
-## Example: overriding tokens in `themes.css`
+## Example: overriding tokens in `globals.css`
 
 ```css
-.theme-blue {
+:root {
   --primary: var(--color-blue-600);
   --primary-foreground: var(--color-blue-50);
 }
 
-.theme-blue {
-  @variant dark {
-    --primary: var(--color-blue-400);
-    --primary-foreground: var(--color-blue-50);
-  }
+.dark {
+  --primary: var(--color-blue-400);
+  --primary-foreground: var(--color-blue-50);
 }
 ```
+
+An organization Brand, when enabled, still wins over these overrides.
 
 ---
 
@@ -228,4 +228,3 @@ Use it as a reference for **all available variables** and their default values.
   --process-active: oklch(0.75 0.1256 254.49);
 }
 ```
-

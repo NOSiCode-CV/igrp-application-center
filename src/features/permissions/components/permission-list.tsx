@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   Button,
   cn,
@@ -16,7 +17,9 @@ import {
   TableRow,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
+import { ConfirmDialog } from "@/components/confirmation-modal";
 import { AppCenterLoading } from "@/components/loading";
 import {
   useAddPermissionsToDepartment,
@@ -24,6 +27,7 @@ import {
   useDepartmentPermissions,
   useRemovePermissionsFromDepartment,
 } from "@/features/departments/use-departments";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 import { ManageResourcesModal } from "./resource-manage-modal";
 
@@ -32,9 +36,15 @@ interface PermissionListProps {
 }
 
 export function PermissionList({ departmentCode }: PermissionListProps) {
+  const t = useTranslations("permissions");
+  const serverError = useServerErrorMessage();
+  const { compare } = useIGRPFormat();
   const { igrpToast } = useIGRPToast();
   const [openManageResources, setOpenManageResources] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [permissionToRevoke, setPermissionToRevoke] = useState<string | null>(
+    null,
+  );
   const [processingPermission, setProcessingPermission] = useState<
     string | null
   >(null);
@@ -67,9 +77,9 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
     });
 
     return Array.from(permissionsMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name, "pt"),
+      compare(a.name, b.name),
     );
-  }, [availablePermissions, departmentPermissions]);
+  }, [availablePermissions, departmentPermissions, compare]);
 
   const filteredPermissions = useMemo(() => {
     if (!searchTerm) return allPermissions;
@@ -95,8 +105,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         });
         igrpToast({
           type: "success",
-          title: "Permissão adicionada",
-          description: "A permissão foi adicionada com sucesso.",
+          title: t("toast.addedTitle"),
         });
       } else {
         await removePermissions.mutateAsync({
@@ -105,16 +114,17 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         });
         igrpToast({
           type: "success",
-          title: "Permissão removida",
-          description: "A permissão foi removida com sucesso.",
+          title: t("toast.removedTitle"),
         });
       }
     } catch (error) {
       igrpToast({
         type: "error",
-        title: "Erro",
+        title: t("toast.errorTitle"),
         description:
-          error instanceof Error ? error.message : "Erro desconhecido",
+          error instanceof Error
+            ? serverError(error.message)
+            : t("toast.unknownError"),
       });
     } finally {
       setProcessingPermission(null);
@@ -122,7 +132,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
   };
 
   if (isLoading) {
-    return <AppCenterLoading description="A carregar permissões…" />;
+    return <AppCenterLoading description={t("list.loading")} />;
   }
 
   const permissionEmpty = allPermissions.length === 0;
@@ -133,9 +143,11 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         <div>
           <div className="flex items-center justify-between">
             <div className="min-w-0">
-              <div className="leading-none font-semibold">Permissões</div>
+              <div className="leading-none font-semibold">
+                {t("list.title")}
+              </div>
               <div className="text-muted-foreground text-sm">
-                Gerir e reorganizar as permissões.
+                {t("list.subtitle")}
               </div>
             </div>
             <div className="flex justify-end shrink-0">
@@ -149,7 +161,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                   className="size-4"
                   strokeWidth={2}
                 />
-                Gerir Recursos
+                {t("list.manageResources")}
               </Button>
             </div>
           </div>
@@ -165,9 +177,9 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
               />
               <Input
                 type="search"
-                aria-label="Pesquisar permissões"
+                aria-label={t("list.searchLabel")}
                 autoComplete="off"
-                placeholder="Pesquisar permissões…"
+                placeholder={t("list.searchPlaceholder")}
                 className="pl-8"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -183,12 +195,8 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                 className="size-16 mb-4 opacity-30"
                 strokeWidth={1.5}
               />
-              <p className="text-lg font-medium mb-2">
-                Nenhuma permissão disponível
-              </p>
-              <p className="text-sm mb-4">
-                Não existem permissões para este departamento.
-              </p>
+              <p className="text-lg font-medium mb-2">{t("list.emptyTitle")}</p>
+              <p className="text-sm mb-4">{t("list.emptyDescription")}</p>
             </div>
           ) : (
             <div className="w-full min-w-0">
@@ -197,13 +205,13 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="whitespace-nowrap">
-                        Permissão
+                        {t("list.columnPermission")}
                       </TableHead>
                       <TableHead className="whitespace-nowrap">
-                        Descrição
+                        {t("list.columnDescription")}
                       </TableHead>
                       <TableHead className="whitespace-nowrap text-right">
-                        Ativo
+                        {t("list.columnActive")}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
@@ -218,7 +226,7 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                             {permission.name}
                           </TableCell>
                           <TableCell className="whitespace-nowrap">
-                            {permission.description || "N/A"}
+                            {permission.description || t("list.noDescription")}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -233,16 +241,24 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
                               <Switch
                                 checked={permission.isAssigned}
                                 disabled={processingPermission !== null}
-                                onCheckedChange={(checked) =>
-                                  handleTogglePermission(
-                                    permission.name,
-                                    checked,
-                                  )
-                                }
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    handleTogglePermission(
+                                      permission.name,
+                                      true,
+                                    );
+                                  } else {
+                                    setPermissionToRevoke(permission.name);
+                                  }
+                                }}
                                 aria-label={
                                   permission.isAssigned
-                                    ? `Remover permissão ${permission.name}`
-                                    : `Adicionar permissão ${permission.name}`
+                                    ? t("list.removeLabel", {
+                                        name: permission.name,
+                                      })
+                                    : t("list.addLabel", {
+                                        name: permission.name,
+                                      })
                                 }
                                 className={cn(
                                   "data-[state=checked]:bg-success",
@@ -266,6 +282,35 @@ export function PermissionList({ departmentCode }: PermissionListProps) {
         departmentCode={departmentCode}
         open={openManageResources}
         onOpenChange={setOpenManageResources}
+      />
+
+      <ConfirmDialog
+        open={permissionToRevoke !== null}
+        onOpenChange={(open) => {
+          if (!open) setPermissionToRevoke(null);
+        }}
+        title={t("revoke.title")}
+        description={
+          permissionToRevoke
+            ? t("revoke.description", {
+                name: permissionToRevoke,
+                department: departmentCode,
+              })
+            : ""
+        }
+        onConfirm={() => {
+          if (permissionToRevoke) {
+            const name = permissionToRevoke;
+            setPermissionToRevoke(null);
+            void handleTogglePermission(name, false);
+          }
+        }}
+        isLoading={processingPermission === permissionToRevoke}
+        cancelText={t("revoke.cancel")}
+        confirmText={t("revoke.confirm")}
+        loadingText={t("revoke.loading")}
+        iconName="ShieldOff"
+        variant="destructive"
       />
     </>
   );

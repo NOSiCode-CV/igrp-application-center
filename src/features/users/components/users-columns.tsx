@@ -3,180 +3,122 @@
 import Link from "next/link";
 
 import {
-  Badge,
   type ColumnDef,
-  DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  IGRPDataTableFacetedFilterFn,
-  IGRPDataTableHeaderDefault,
-  IGRPDataTableHeaderSortToggle,
   IGRPIcon,
-  IGRPUserAvatar,
   type Row,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
+
+import { statusClass } from "@/lib/utilities";
 
 import {
-  geInviteTitle,
-  getInitials,
-  getStatusColor,
-  showStatus,
-  statusInviteClass,
-} from "@/lib/utilities";
-import { cn } from "@/lib/utils";
-
-// ─── Module-level helpers ────────────────────────────────────────────────────
-
-const isInviteStatus = (s: string) =>
-  ["PENDING", "CANCELED", "REJECTED", "ACCEPTED"].includes(s);
+  type StatusTranslator,
+  type UsersTranslator,
+  userStatusLabel,
+} from "../lib/i18n";
+import {
+  actionsColumn,
+  IdentityCell,
+  RowActionsMenu,
+  sortableHeader,
+  statusColumn,
+} from "./columns-shared";
 
 function ActiveRowActionsCell({
   row,
   onStatusClick,
+  isSelf,
 }: {
   row: Row<IGRPUserDTO>;
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void;
+  isSelf: boolean;
 }) {
+  const t = useTranslations("users.columns");
   const state = String(row.getValue("status"));
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="p-1 rounded-sm">
-        <IGRPIcon iconName="Ellipsis" />
-      </DropdownMenuTrigger>
+    <RowActionsMenu
+      ariaLabel={t("actionsFor", {
+        name: row.original.name || row.original.email,
+      })}
+    >
+      <DropdownMenuItem variant="default" asChild>
+        <Link
+          className="flex gap-2"
+          href={`/settings/users/${row.original.id}`}
+        >
+          <IGRPIcon iconName="UserCog" />
+          {t("manage")}
+        </Link>
+      </DropdownMenuItem>
 
-      <DropdownMenuContent align="end" className="min-w-44">
-        {state === "ACTIVE" ? (
-          <DropdownMenuItem
-            className="text-destructive focus:text-destructive"
-            onSelect={() => onStatusClick(row.original, "INACTIVE")}
-            variant="destructive"
-          >
-            <IGRPIcon iconName="CircleOff" />
-            Desativar
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem
-            className="text-success focus:text-success focus:bg-success/10"
-            onSelect={() => onStatusClick(row.original, "ACTIVE")}
-            variant="default"
-          >
-            <IGRPIcon iconName="CircleCheck" className="text-success" />
-            Ativar
-          </DropdownMenuItem>
-        )}
-
-        <DropdownMenuItem variant="default" asChild>
-          <Link
-            className="flex gap-2"
-            href={`/settings/users/${row.original.id}`}
-          >
-            <IGRPIcon iconName="UserCog" />
-            Gerir
-          </Link>
+      {isSelf ? null : state === "ACTIVE" ? (
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive"
+          onSelect={() => onStatusClick(row.original, "INACTIVE")}
+          variant="destructive"
+        >
+          <IGRPIcon iconName="CircleOff" />
+          {t("deactivate")}
         </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      ) : (
+        <DropdownMenuItem
+          className="text-success-subtle-foreground focus:text-success-subtle-foreground focus:bg-success-subtle"
+          onSelect={() => onStatusClick(row.original, "ACTIVE")}
+          variant="default"
+        >
+          <IGRPIcon iconName="CircleCheck" className="text-success" />
+          {t("activate")}
+        </DropdownMenuItem>
+      )}
+    </RowActionsMenu>
   );
 }
 
-// ─── Column factory ──────────────────────────────────────────────────────────
-
 export function getTableColumns(
+  t: UsersTranslator,
+  tStatus: StatusTranslator,
   onStatusClick: (user: IGRPUserDTO, newStatus: "ACTIVE" | "INACTIVE") => void,
-  options?: { showInvitationDate?: boolean },
+  options?: { currentUserId?: string },
 ): ColumnDef<IGRPUserDTO>[] {
-  const showInvitationDate = options?.showInvitationDate !== false;
+  const currentUserId = options?.currentUserId;
   return [
     {
-      header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
-      ),
+      header: sortableHeader<IGRPUserDTO>(t("columns.name")),
       accessorKey: "name",
       filterFn: (row, _columnId, value: string) => {
         const search = value.toLowerCase();
-        const name = String(row.getValue("name") ?? "").toLowerCase();
-        const email = String(row.getValue("email") ?? "").toLowerCase();
+        const name = String(row.original.name ?? "").toLowerCase();
+        const email = String(row.original.email ?? "").toLowerCase();
         return name.includes(search) || email.includes(search);
       },
       cell: ({ row }) => {
-        const email = String(row.getValue("email") ?? "");
-        const nameValue = row.getValue("name");
+        const email = String(row.original.email ?? "");
+        const nameValue = row.original.name;
         const name =
           nameValue && String(nameValue) !== "null" ? String(nameValue) : email;
-        return (
-          <div className="flex items-center gap-3">
-            <IGRPUserAvatar
-              alt={name || email}
-              fallbackContent={getInitials(name || email)}
-              className="size-10"
-              fallbackClass="text-base bg-primary text-primary-foreground"
-            />
-            <div>
-              <div className="text-sm leading-none">{name || email}</div>
-              <span className="text-muted-foreground text-xs">{email}</span>
-            </div>
-          </div>
-        );
+        return <IdentityCell label={name || email} secondary={email} />;
       },
     },
     {
-      header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Email" />
-      ),
+      header: sortableHeader<IGRPUserDTO>(t("columns.email")),
       accessorKey: "email",
-      cell: ({ row }) => <div>{row.getValue("email") || "N/A"}</div>,
+      cell: ({ row }) => row.getValue("email") || t("notAvailable"),
     },
-    ...(showInvitationDate
-      ? [
-          {
-            header: "Data do Convite",
-            accessorKey: "invitationDate",
-            cell: ({ row }: { row: Row<IGRPUserDTO> }) => {
-              const date = row.getValue("invitationDate");
-              return (
-                <div>
-                  {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-                </div>
-              );
-            },
-          } as ColumnDef<IGRPUserDTO>,
-        ]
-      : []),
-    {
-      header: () => (
-        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
-      ),
-      accessorKey: "status",
-      cell: ({ row }) => {
-        const status = String(row.getValue("status") ?? "");
-        const isInvite = isInviteStatus(status);
-        return (
-          <div className="text-center">
-            <Badge
-              className={cn(
-                isInvite ? statusInviteClass(status) : getStatusColor(status),
-                "capitalize",
-              )}
-            >
-              {isInvite ? geInviteTitle(status) : showStatus(status)}
-            </Badge>
-          </div>
-        );
-      },
-      filterFn: IGRPDataTableFacetedFilterFn,
-      size: 70,
-    },
-    {
-      id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
-      cell: ({ row }) => (
-        <ActiveRowActionsCell row={row} onStatusClick={onStatusClick} />
-      ),
-      size: 60,
-      enableHiding: false,
-    },
+    statusColumn<IGRPUserDTO>(t, (status) => ({
+      className: statusClass(status),
+      label: userStatusLabel(tStatus, status),
+    })),
+    actionsColumn<IGRPUserDTO>(t, (row) => (
+      <ActiveRowActionsCell
+        row={row}
+        onStatusClick={onStatusClick}
+        isSelf={
+          currentUserId !== undefined && row.original.id === currentUserId
+        }
+      />
+    )),
   ];
 }

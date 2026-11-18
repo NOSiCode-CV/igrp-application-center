@@ -1,5 +1,5 @@
-import { AppCenterLoading } from "@/components/loading";
+import { AppListSkeleton } from "@/features/applications/components/app-list-skeleton";
 
 export default function ApplicationsLoading() {
-  return <AppCenterLoading description="Carregando aplicações…" />;
+  return <AppListSkeleton />;
 }

@@ -1,11 +1,9 @@
-const bp = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
+// Welcome, description, copyright and the carousel copy live in the `login`
+// namespace of `src/i18n/messages` so they follow the current language.
 export const loginConfig = {
   texts: {
-    welcome: "Benvindo ao IGRP",
-    description: "Introduza as suas credenciais para aceder.",
-    loginButton: "Login Now",
-    copyright: "Desenvolvido por",
+    // No `loginButton`: the framework's chrome catalog supplies it in the
+    // current language. Setting it here would pin one language on every locale.
     igrpLabel: "igrp",
     igrpUrl: "https://igrp.cv",
     nosiLabel: "NOSi",
@@ -16,24 +14,9 @@ export const loginConfig = {
 
 export type LoginConfig = typeof loginConfig;
 
-export const carouselItems = [
-  {
-    image: `${bp}/placeholder-carousel.png`,
-    title: "Streamlined Workflow",
-    description:
-      "Boost your productivity with our intuitive interface and powerful tools.",
-  },
-  {
-    image: `${bp}/placeholder-carousel.png`,
-    title: "Secure by Design",
-    description:
-      "Your data is protected with enterprise-grade security and encryption.",
-  },
-  {
-    image: `${bp}/placeholder-carousel.png`,
-    title: "Collaborative Platform",
-    description: "Work together seamlessly with your team in real-time.",
-  },
-];
-
-export type CarouselLoginType = (typeof carouselItems)[number];
+/** One image per slide; the text comes from `login.carousel.<key>`. */
+export const carouselImages = {
+  workflow: "/placeholder-carousel.png",
+  security: "/placeholder-carousel.png",
+  collaboration: "/placeholder-carousel.png",
+} as const;

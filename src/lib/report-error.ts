@@ -33,7 +33,6 @@ export function reportError(
   try {
     if (process.env.NODE_ENV !== "production") {
       // Development: surface everything verbatim for the console.
-      // eslint-disable-next-line no-console
       console.error(
         "[reportError]",
         context?.segment ?? "unknown",
@@ -54,7 +53,6 @@ export function reportError(
       context,
     };
 
-    // eslint-disable-next-line no-console
     console.error("[reportError:prod]", payload);
   } catch {
     // Never let the reporter itself throw.
