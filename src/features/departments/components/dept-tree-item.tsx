@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
   IGRPIcon,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { useDeptTree } from "./dept-tree-context";
@@ -22,6 +23,7 @@ interface Props {
 }
 
 const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
+  const t = useTranslations("departments");
   const {
     selectedCode,
     expanded,
@@ -54,15 +56,15 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
       >
         <button
           type="button"
-          className="size-4 flex items-center justify-center shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
+          className="size-7 -my-1 flex items-center justify-center shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
           onClick={() => hasChildren && toggle(dept.code)}
           disabled={!hasChildren || searchActive}
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-label={
             hasChildren
               ? isExpanded
-                ? "Recolher departamento"
-                : "Expandir departamento"
+                ? t("tree.collapse")
+                : t("tree.expand")
               : undefined
           }
         >
@@ -84,26 +86,29 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
         <button
           type="button"
           onClick={() => select(dept.code)}
-          aria-current={isSelected ? "true" : undefined}
+          aria-current={isSelected ? "page" : undefined}
           className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           {!isActive && (
-            <span
-              aria-hidden
-              className="size-1.5 rounded-full bg-muted-foreground shrink-0"
-            />
+            <>
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full bg-muted-foreground shrink-0"
+              />
+              <span className="sr-only">{t("tree.inactive")}</span>
+            </>
           )}
           <span className="flex-1 text-left truncate">{dept.name}</span>
         </button>
 
-        <div className="opacity-40 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity motion-reduce:transition-none">
+        <div className="opacity-70 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity motion-reduce:transition-none">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="h-6 w-6 p-0"
+                className="size-8 p-0"
                 onClick={(e: MouseEvent) => e.stopPropagation()}
-                aria-label="Abrir menu"
+                aria-label={t("tree.openMenu")}
               >
                 <IGRPIcon
                   iconName="EllipsisVertical"
@@ -122,7 +127,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
-                Editar
+                {t("actions.edit")}
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => onCreateSub(dept)}>
                 <IGRPIcon
@@ -131,7 +136,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
-                Criar Sub-departamento
+                {t("tree.createSub")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -144,7 +149,7 @@ const DepartmentTreeItem = ({ dept, level = 0, ancestorCodes }: Props) => {
                   className="size-4 mr-2"
                   strokeWidth={2}
                 />
-                Eliminar
+                {t("tree.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -10,8 +10,9 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { IGRPUserDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
-import { validateImageUpload } from "@/features/files/file-validation";
+import { useValidateImageUpload } from "@/features/files/file-validation";
 import { getInitials } from "@/lib/utilities";
 
 export interface UserProfileAvatarProps {
@@ -32,6 +33,8 @@ export function UserProfileAvatar({
   const inputRef = useRef<HTMLInputElement>(null);
   const [localPreview, setLocalPreview] = useState<string | null>(null);
   const { igrpToast } = useIGRPToast();
+  const t = useTranslations("users.profile.avatar");
+  const validateImageUpload = useValidateImageUpload();
 
   useEffect(() => {
     return () => {
@@ -47,7 +50,7 @@ export function UserProfileAvatar({
     if (validationError) {
       igrpToast({
         type: "error",
-        title: "Avatar inválido",
+        title: t("invalid"),
         description: validationError,
         duration: 4000,
       });
@@ -71,12 +74,12 @@ export function UserProfileAvatar({
   const currentUrl = localPreview ?? resolvedUrl;
   const spinning = isResolvingUrl || isUploading;
   const disabled = isUploading || isResolvingUrl;
-  const altText = user.name || user.username || user.email || "Utilizador";
+  const altText = user.name || user.username || user.email || t("fallbackAlt");
 
   return (
     <button
       type="button"
-      aria-label="Alterar avatar"
+      aria-label={t("change")}
       disabled={disabled}
       className="relative group cursor-pointer p-0 border-0 bg-transparent disabled:opacity-60 disabled:cursor-not-allowed"
       onClick={() => inputRef.current?.click()}
@@ -109,7 +112,7 @@ export function UserProfileAvatar({
         ref={inputRef}
         type="file"
         accept="image/*"
-        aria-label="Alterar avatar"
+        aria-label={t("change")}
         onChange={handleChange}
         className="hidden"
         disabled={disabled}

@@ -5,7 +5,13 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": false,
+    // Next.js owns compilation here (Turbopack/SWC); `tsc` is only ever used to
+    // type-check. `noEmit: false` + `composite: true` meant a bare `tsc -p .`
+    // scattered compiled .js next to every source file — the exact hazard the
+    // repo-root tsconfig documents for the projects that emit via something
+    // other than tsc. Neither flag bought anything: nothing references this
+    // project, and `tsc -b` is never run against it.
+    "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -13,6 +19,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "types": ["vitest/globals"],
+    "incremental": true,
     "plugins": [
       {
         "name": "next"
@@ -21,8 +28,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@igrp/template-config": ["./src/igrp.template.config.ts"]
-    },
-    "incremental": true
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -30,7 +36,7 @@
     "**/*.tsx",
     "next.config.ts",
     ".next/types/**/*.ts",
-    "types/*.ts"
+    "node_modules/@igrp/framework-next-auth/dist/types.d.ts"
   ],
   "exclude": ["node_modules"]
 }

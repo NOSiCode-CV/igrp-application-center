@@ -1,0 +1,24 @@
+# Line endings
+#
+# Biome (`pnpm lint`, `pnpm format`) enforces LF. Without this file, Windows
+# clones with core.autocrlf=true get CRLF in the working tree, so `biome check`
+# reports a format error on EVERY file — including ones nobody has touched —
+# and `pnpm lint --write` rewrites ~265 files on each run.
+#
+# `text=auto` normalises to LF in the repository; `eol=lf` also checks out LF
+# into the working tree, which is what Biome actually reads.
+* text=auto eol=lf
+
+# Binary files: never touch these.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.pdf   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary

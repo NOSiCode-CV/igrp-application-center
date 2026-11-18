@@ -5,7 +5,12 @@ import { describe, expect, it, vi } from "vitest";
 
 import { UserMetadataPanel } from "@/features/users/components/user-metadata-panel";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+import { IntlWrapper } from "../../helpers/intl";
+
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   IGRPButton: ({
     children,
     onClick,
@@ -17,7 +22,12 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     disabled?: boolean;
     "aria-label"?: string;
   }) => (
-    <button onClick={onClick} disabled={disabled} aria-label={ariaLabel}>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
       {children}
     </button>
   ),
@@ -36,15 +46,17 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
   }: {
     children?: React.ReactNode;
     className?: string;
-  }) => <label className={className}>{children}</label>,
+  }) => <span className={className}>{children}</span>,
   useIGRPToast: () => ({ igrpToast: vi.fn() }),
 }));
 
+const mockMetadata = {
+  data: { userId: "1", metadata: { dept: "TI" } },
+  isLoading: false,
+};
+
 vi.mock("@/features/users/use-users", () => ({
-  useUserMetadata: vi.fn(() => ({
-    data: { userId: 1, metadata: { dept: "TI" } },
-    isLoading: false,
-  })),
+  useUserMetadata: vi.fn(() => mockMetadata),
   useUpdateUserMetadata: vi.fn(() => ({
     mutateAsync: vi.fn().mockResolvedValue({ success: true }),
     isPending: false,
@@ -54,27 +66,29 @@ vi.mock("@/features/users/use-users", () => ({
 function wrapper({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient();
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <IntlWrapper>{children}</IntlWrapper>
+    </QueryClientProvider>
   );
 }
 
 describe("UserMetadataPanel", () => {
   it("renders existing metadata key-value pairs", () => {
-    render(<UserMetadataPanel userId={1} />, { wrapper });
+    render(<UserMetadataPanel userId="1" />, { wrapper });
     expect(screen.getByDisplayValue("dept")).toBeInTheDocument();
     expect(screen.getByDisplayValue("TI")).toBeInTheDocument();
   });
 
   it("adds a new empty row when '+ Add field' is clicked", async () => {
-    render(<UserMetadataPanel userId={1} />, { wrapper });
-    const addButton = screen.getByRole("button", { name: /add field/i });
+    render(<UserMetadataPanel userId="1" />, { wrapper });
+    const addButton = screen.getByRole("button", { name: /adicionar campo/i });
     await userEvent.click(addButton);
     const keyInputs = screen.getAllByPlaceholderText("chave");
     expect(keyInputs).toHaveLength(2);
   });
 
   it("removes a row when the delete button is clicked", async () => {
-    render(<UserMetadataPanel userId={1} />, { wrapper });
+    render(<UserMetadataPanel userId="1" />, { wrapper });
     const deleteButtons = screen.getAllByRole("button", { name: /remover/i });
     await userEvent.click(deleteButtons[0]);
     expect(screen.queryByDisplayValue("dept")).not.toBeInTheDocument();
@@ -88,14 +102,14 @@ describe("UserMetadataPanel", () => {
     vi.mocked(useUpdateUserMetadata).mockReturnValue({
       mutateAsync,
       isPending: false,
-    } as any);
+    } as unknown as ReturnType<typeof useUpdateUserMetadata>);
 
-    render(<UserMetadataPanel userId={1} />, { wrapper });
-    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    render(<UserMetadataPanel userId="1" />, { wrapper });
+    await userEvent.click(screen.getByRole("button", { name: /guardar/i }));
 
     await waitFor(() => {
       expect(mutateAsync).toHaveBeenCalledWith({
-        id: 1,
+        id: "1",
         metadata: { dept: "TI" },
       });
     });

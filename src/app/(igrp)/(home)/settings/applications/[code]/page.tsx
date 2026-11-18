@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 
+import { igrpAssertAuthorize } from "@igrp/framework-next";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getTranslations } from "next-intl/server";
 
 import { ApplicationDetails } from "@/features/applications/components/app-details";
 import {
   getApplicationByCodeCached,
   prefetchApplicationByCode,
 } from "@/features/applications/prefetch";
+import { APPLICATIONS_VIEW_PERMISSION } from "@/lib/constants";
 import { getQueryClient } from "@/providers/query-client.server";
 
 export async function generateMetadata({
@@ -15,10 +18,13 @@ export async function generateMetadata({
   params: Promise<{ code: string }>;
 }): Promise<Metadata> {
   const { code } = await params;
-  const result = await getApplicationByCodeCached(code);
-  const title = result.success ? result.data.name : code;
+  const [result, t] = await Promise.all([
+    getApplicationByCodeCached(code),
+    getTranslations("applications.meta"),
+  ]);
+  const name = result.success ? result.data.name : code;
   return {
-    title: `${title} · Aplicações`,
+    title: t("detailTitle", { name }),
   };
 }
 
@@ -27,6 +33,9 @@ export default async function ApplicationDetailsPage({
 }: {
   params: Promise<{ code: string }>;
 }) {
+  // Refuse before any data is fetched; the AM API enforces the same permission.
+  await igrpAssertAuthorize(APPLICATIONS_VIEW_PERMISSION);
+
   const { code } = await params;
   const queryClient = getQueryClient();
   await prefetchApplicationByCode(queryClient, code);

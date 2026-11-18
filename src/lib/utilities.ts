@@ -1,10 +1,4 @@
-import { STATUS_OPTIONS } from "./constants";
-
-export function getStatusColor(status: string) {
-  return status === "ACTIVE" ? "status-active" : "status-inactive";
-}
-
-export function statusClass(status: string): import("clsx").ClassValue {
+export function statusClass(status: string): string {
   if (!status) return "status-inactive";
 
   switch (status.trim()) {
@@ -31,17 +25,6 @@ export function statusInviteClass(status: string): import("clsx").ClassValue {
   }
 }
 
-export const geInviteTitle = (title: string) => {
-  switch (title) {
-    case "PENDING":
-      return "Pendente";
-    case "CANCELED":
-      return "Cancelado";
-    default:
-      return "Rejeitado";
-  }
-};
-
 export function getInitials(username: string) {
   const parts = username?.split(/[\s._-]+/).filter(Boolean);
   if (parts?.length === 0) return "";
@@ -55,41 +38,6 @@ export function formatIconString(input: string): string {
     .replace(/([0-9]+)/g, " $1")
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase());
-}
-
-export function formatConstanttoLabel(value: string): string {
-  return value
-    .toLowerCase()
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-export const nullIfEmpty = (v: string | null | undefined): string | null =>
-  typeof v === "string" && v.trim().length === 0 ? null : (v ?? null);
-
-export function lowerCaseWithSpace(v: string | null | undefined) {
-  if (v == null || v === undefined) return null;
-
-  return typeof v === "string"
-    ? v.toLowerCase().replace(/_/g, " ")
-    : (v ?? null);
-}
-
-export function formatDate(dateString: string) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("pt-PT", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date);
-}
-
-export function showStatus(status: string) {
-  if (status == null || status === undefined) return null;
-  return STATUS_OPTIONS.find((s) => s.value === status)?.label;
 }
 
 export const getMenuIcon = (type: string) => {
@@ -110,6 +58,8 @@ interface ApiErrorLike {
   status?: number;
   message?: string;
   title?: string;
+  /** RFC-7807 body parsed by the SDK (`ApiClientError.problemDetail`). */
+  problemDetail?: { detail?: unknown };
 }
 
 export function extractApiError(error: unknown): string {
@@ -136,6 +86,13 @@ export function extractApiError(error: unknown): string {
     } catch {
       return detailsStr;
     }
+  }
+
+  // The API translates `detail` into the request's Accept-Language (FR-21):
+  // show it as-is when present.
+  const detail = e.problemDetail?.detail;
+  if (typeof detail === "string" && detail) {
+    return detail;
   }
 
   if (typeof e.title === "string" && e.title) {
@@ -183,6 +140,101 @@ const DEFAULT_API_ERROR_MESSAGES = new Set([
   ),
   "Erro desconhecido",
 ]);
+
+/**
+ * Checks if preview mode is enabled from environment variable.
+ * Handles whitespace, case sensitivity, and quotes.
+ */
+export function isPreviewMode(): boolean {
+  const rawValue = process.env.IGRP_PREVIEW_MODE;
+  const previewModeValue = rawValue
+    ?.trim()
+    ?.replace(/^["']|["']$/g, "")
+    ?.toLowerCase();
+  return previewModeValue === "true";
+}
+
+/**
+ * Checks if authentication is disabled at the provider level (AUTH_PROVIDER=none).
+ * Handles whitespace, case sensitivity, and quotes.
+ */
+export function isAuthDisabled(): boolean {
+  const rawValue = process.env.AUTH_PROVIDER;
+  const providerValue = rawValue
+    ?.trim()
+    ?.replace(/^["']|["']$/g, "")
+    ?.toLowerCase();
+  return providerValue === "none";
+}
+
+/**
+ * Returns true when the UI should bypass the auth flow entirely — either
+ * because preview mode is on, or because AUTH_PROVIDER=none.
+ *
+ * Call sites use this single predicate wherever they previously checked
+ * `isPreviewMode()` alone, so `AUTH_PROVIDER=none` gets the same UX path as
+ * preview mode: no redirect to /login, /login itself routes back to /,
+ * mock session in the layout, /api/auth/* blocked at the middleware.
+ */
+export function isAuthBypass(): boolean {
+  return isPreviewMode() || isAuthDisabled();
+}
+
+/**
+ * Whether this app shows the Brand editor (spec §7.4). Off when the flag is
+ * not exactly "true" and whenever auth is bypassed, since no save path can run
+ * without a real session.
+ */
+export function isBrandingEnabled(): boolean {
+  return process.env.IGRP_BRANDING_ENABLED === "true" && !isAuthBypass();
+}
+
+/**
+ * Validates and normalizes a `callbackUrl` query value.
+ *
+ * Rules:
+ * - Must be a non-empty string starting with `/` (no protocol-relative URLs, no
+ *   absolute URLs to other origins — would otherwise enable open-redirect).
+ * - The basePath prefix is stripped for path comparison so `/login` and
+ *   `/<basePath>/login` are treated the same.
+ * - Anything pointing back to `/login` or `/logout` (the auth chrome itself)
+ *   is rejected — those targets cause the post-auth redirect to land back on
+ *   the login screen and accumulate a nested `callbackUrl` chain.
+ *
+ * @returns the original value when safe, otherwise `undefined` so callers can
+ * fall back to `/`.
+ */
+export function sanitizeCallbackUrl(
+  raw: unknown,
+  basePath: string = process.env.NEXT_PUBLIC_BASE_PATH ?? "",
+): string | undefined {
+  if (typeof raw !== "string" || raw.length === 0) return undefined;
+  // Only same-origin relative URLs. Reject `//evil.com`, `http://…`, etc.
+  if (!raw.startsWith("/") || raw.startsWith("//")) return undefined;
+
+  // Normalize by stripping the configured basePath so `/login` and
+  // `/<basePath>/login` collapse to the same check.
+  let normalized = raw;
+  if (basePath && (raw === basePath || raw.startsWith(`${basePath}/`))) {
+    normalized = raw.slice(basePath.length) || "/";
+  }
+
+  const pathOnly = normalized.split("?")[0]?.split("#")[0] ?? "";
+  if (pathOnly === "/login" || pathOnly.startsWith("/login/")) return undefined;
+  if (pathOnly === "/logout" || pathOnly.startsWith("/logout/"))
+    return undefined;
+
+  return raw;
+}
+
+export const DATE_TIME_WITH_SECONDS: Intl.DateTimeFormatOptions = {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+};
 
 /**
  * True when `message` is one of the generic per-status fallbacks produced

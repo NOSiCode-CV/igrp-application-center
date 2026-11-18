@@ -6,6 +6,7 @@ import {
   IGRPIcon,
   Input,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { DepartmentEmptyState } from "./dept-empty-state";
@@ -28,16 +29,20 @@ export function DepartmentSidebarContent({
   isFiltering,
   counts,
 }: Props) {
+  const t = useTranslations("departments");
   return (
     <div className="flex flex-col h-full min-w-0">
       <div className="flex flex-col min-w-0">
         <h2 className="text-xl font-bold tracking-tight truncate">
-          Gestão de Departamentos
+          {t("sidebar.title")}
         </h2>
         <p className="text-muted-foreground text-sm mb-4">
           {counts.inactive > 0
-            ? `${counts.active} ativos · ${counts.inactive} inativos`
-            : `${counts.active} departamento${counts.active === 1 ? "" : "s"}`}
+            ? t("sidebar.summaryWithInactive", {
+                active: counts.active,
+                inactive: counts.inactive,
+              })
+            : t("sidebar.summary", { count: counts.active })}
         </p>
         <Button onClick={onCreate} className="w-full sm:w-auto">
           <IGRPIcon
@@ -46,7 +51,7 @@ export function DepartmentSidebarContent({
             className="size-4"
             strokeWidth={2}
           />
-          Novo Departamento
+          {t("actions.newDepartment")}
         </Button>
       </div>
 
@@ -59,9 +64,9 @@ export function DepartmentSidebarContent({
           />
           <Input
             type="search"
-            aria-label="Pesquisar departamento"
+            aria-label={t("sidebar.searchLabel")}
             autoComplete="off"
-            placeholder="Pesquisar departamento…"
+            placeholder={t("sidebar.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full bg-background pl-8 pr-8"
@@ -74,7 +79,7 @@ export function DepartmentSidebarContent({
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 size-4 text-muted-foreground animate-spin motion-reduce:animate-none"
               />
               <span role="status" aria-live="polite" className="sr-only">
-                A filtrar…
+                {t("sidebar.filtering")}
               </span>
             </>
           )}

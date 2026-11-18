@@ -20,7 +20,7 @@ describe("departments validation guards", () => {
   it("returns the department-required message when departmentCode is missing", async () => {
     await expect(getAvailableApplications(undefined)).resolves.toEqual({
       success: false,
-      error: "Informação do departamento é obrigatório",
+      error: "Informação do departamento é obrigatória",
     });
     for (const action of [
       getAvailableResources,

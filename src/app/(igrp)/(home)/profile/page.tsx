@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { getTranslations } from "next-intl/server";
 
 import { getFileUrl } from "@/actions/file";
 import { getCurrentUser } from "@/actions/user";
@@ -10,9 +11,10 @@ import { currentUserKeys } from "@/features/users/query-keys";
 import { HttpStatusError } from "@/lib/errors";
 import { getQueryClient } from "@/providers/query-client.server";
 
-export const metadata: Metadata = {
-  title: "Perfil",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("profile.meta");
+  return { title: t("title") };
+}
 
 export default async function UserProfilePage() {
   const queryClient = getQueryClient();
@@ -45,7 +47,7 @@ export default async function UserProfilePage() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl">
+    <div className="container mx-auto flex max-w-7xl flex-col gap-4">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <UserProfile />
       </HydrationBoundary>

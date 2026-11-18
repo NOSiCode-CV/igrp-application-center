@@ -1,7 +1,7 @@
 image: docker:28.2.2
 services:
   - name: docker:28.2.2-dind
-    command: [ "--tls=false", "--mtu=1240" ]
+    command: ["--tls=false", "--mtu=1240"]
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
@@ -37,12 +37,35 @@ check-ui:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   before_script:
     - corepack enable
-    - corepack prepare pnpm@latest --activate
+    # The pnpm pinned in package.json "packageManager", not whatever is latest today.
+    - corepack install
   script:
     - pnpm install --frozen-lockfile
     - pnpm check:ui
 
-# Advisory: surfaces lint/typecheck/test status without blocking.
+# Enforced gate: committed env/compose files must not carry a literal *SECRET*/*PASSWORD* value
+# (empty or ${VAR} references pass). Blocks merges and release builds; prints file:line, never the value.
+check-secrets:
+  stage: validate
+  image: node:22-alpine
+  tags:
+    - nosi-runner
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_COMMIT_BRANCH == "development"'
+    - if: '$CI_COMMIT_BRANCH == "deploy/pre-release"'
+    - if: '$CI_COMMIT_BRANCH == "deploy/0.1.0-beta"'
+    - if: '$CI_COMMIT_BRANCH == "deploy/0.2.0-beta"'
+  script:
+    - |
+      hits=$(find . -type f \( -name '.env*' -o -name 'docker-compose*' \) -exec grep -HnE "^[[:space:]-]*[A-Z0-9_]*(SECRET|PASSWORD)[A-Z0-9_]*[[:space:]]*[=:][[:space:]]*[\"']?[^[:space:]\"'\$#]" {} \; | cut -d: -f1,2)
+      if [ -n "$hits" ]; then
+        echo "Literal secret in a committed env/compose file (value not printed):"
+        echo "$hits"
+        echo "Leave the value empty and supply it at deploy time."
+        exit 1
+      fi
+
 validate:
   stage: validate
   image: node:22-alpine
@@ -50,10 +73,12 @@ validate:
     - nosi-runner
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: '$CI_COMMIT_BRANCH == "development"'
   allow_failure: true
   before_script:
     - corepack enable
-    - corepack prepare pnpm@latest --activate
+    # The pnpm pinned in package.json "packageManager", not whatever is latest today.
+    - corepack install
   script:
     - pnpm install --frozen-lockfile
     - pnpm lint

@@ -44,15 +44,19 @@ const MISMATCH_PATTERNS = [
   /does not match/i,
   /email.*inválido/i,
   /email.*invalido/i,
+  // fr — the API translates `detail` into the request's Accept-Language.
+  /ne correspond pas/i,
+  /n['’]appartient pas/i,
+  /e-?mail.*invalide/i,
 ];
 
 export type InviteErrorClass = "expired" | "mismatch" | "other";
 
 // NOTE: classification is driven by matching the *text* of the error message
-// returned by the ACCESS MANAGEMENT API server actions (validateInvitationEmail
+// returned by the ACCESS MANAGEMENT API server actions (translated to pt/en/fr) (validateInvitationEmail
 // / validateInvitationOtp / getUserInvitationByToken), because those actions
 // surface only a free-form `error` string — no structured error code. This is
-// intentionally coupled to the backend's wording (PT + EN variants below); if
+// intentionally coupled to the backend's wording (PT + EN + FR variants below); if
 // the API ever rewords these messages, the patterns must be updated in lockstep
 // or the user will be shown the wrong terminal screen. Prefer migrating to a
 // structured error code on the API side if/when one becomes available.

@@ -5,12 +5,12 @@ import type {
   IGRPUserDTO,
   Status,
 } from "@igrp/platform-access-management-client-ts";
-import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
-import { validateImageUpload } from "@/features/files/file-validation";
+import { useValidateImageUpload } from "@/features/files/file-validation";
 import { useUploadPublicFiles } from "@/features/files/use-files";
-import { currentUserKeys } from "@/features/users/query-keys";
 import { useUpdateUser } from "@/features/users/use-users";
+import { useServerErrorMessage } from "@/i18n/server-error";
 
 type UpdateRes = Awaited<
   ReturnType<ReturnType<typeof useUpdateUser>["mutateAsync"]>
@@ -21,6 +21,7 @@ function handle(
   okTitle: string,
   errTitle: string,
   igrpToast: ReturnType<typeof useIGRPToast>["igrpToast"],
+  serverError: (error?: string) => string,
 ) {
   if (res.success) {
     igrpToast({ type: "success", title: okTitle, duration: 4000 });
@@ -29,7 +30,7 @@ function handle(
   igrpToast({
     type: "error",
     title: errTitle,
-    description: res.error,
+    description: serverError(res.error),
     duration: 4000,
   });
   throw new Error(res.error);
@@ -39,30 +40,21 @@ export function useUserProfileActions(user: IGRPUserDTO) {
   const { mutateAsync: updateUser, isPending: isUpdating } = useUpdateUser();
   const uploadFile = useUploadPublicFiles();
   const { igrpToast } = useIGRPToast();
-  const queryClient = useQueryClient();
-
-  // Merge onto the freshest cached user so concurrent edits in other tabs
-  // (e.g. the signature upload) are not clobbered by a stale snapshot.
-  const latestUser = () =>
-    queryClient.getQueryData<IGRPUserDTO>(currentUserKeys.detail()) ?? user;
+  const t = useTranslations("users");
+  const validateImageUpload = useValidateImageUpload();
+  const serverError = useServerErrorMessage();
 
   const saveName = async (next: string) => {
-    const current = latestUser();
-    const res = await updateUser({
-      id: current.id,
-      user: { ...current, name: next },
-    });
+    const res = await updateUser({ id: user.id, patch: { name: next } });
     handle(
       res,
-      "Nome atualizado com sucesso",
-      "Erro ao atualizar nome",
+      t("nameEditor.toasts.updated"),
+      t("nameEditor.toasts.updateFailed"),
       igrpToast,
+      serverError,
     );
   };
 
-  // Shared upload→attach→toast flow for image fields (avatar, signature).
-  // Validates client-side, uploads, then merges the path onto the freshest
-  // cached user. Returns the stored path so callers can preview it.
   const uploadImageField = async (
     file: File,
     field: "picture" | "signature",
@@ -94,46 +86,47 @@ export function useUserProfileActions(user: IGRPUserDTO) {
       igrpToast({
         type: "error",
         title: labels.loadError,
-        description: (err as Error).message,
+        description: serverError((err as Error).message),
         duration: 4000,
       });
       throw err;
     }
 
-    const current = latestUser();
-    const res = await updateUser({
-      id: current.id,
-      user: { ...current, [field]: path },
-    });
-    handle(res, labels.ok, labels.saveError, igrpToast);
+    const res = await updateUser({ id: user.id, patch: { [field]: path } });
+    handle(res, labels.ok, labels.saveError, igrpToast, serverError);
     return path;
   };
 
   const uploadAvatar = async (file: File): Promise<void> => {
     await uploadImageField(file, "picture", {
       folder: `users/${user.id}/avatar`,
-      loadError: "Erro ao carregar avatar",
-      ok: "Avatar atualizado com sucesso",
-      saveError: "Erro ao atualizar avatar",
+      loadError: t("profile.avatar.loadFailed"),
+      ok: t("profile.avatar.updated"),
+      saveError: t("profile.avatar.updateFailed"),
     });
   };
 
   const uploadSignature = (file: File) =>
     uploadImageField(file, "signature", {
       folder: `users/${user.id}/signature`,
-      loadError: "Erro ao carregar assinatura",
-      ok: "Assinatura atualizada com sucesso",
-      saveError: "Erro ao atualizar assinatura",
+      loadError: t("signature.toasts.loadFailed"),
+      ok: t("signature.toasts.updated"),
+      saveError: t("signature.toasts.updateFailed"),
     });
 
   const setStatus = async (next: Status) => {
-    const current = latestUser();
-    const res = await updateUser({
-      id: current.id,
-      user: { ...current, status: next },
-    });
-    const okTitle = `Utilizador ${next === "ACTIVE" ? "ativado" : "desativado"} com sucesso`;
-    handle(res, okTitle, "Erro ao alterar estado", igrpToast);
+    const res = await updateUser({ id: user.id, patch: { status: next } });
+    const okTitle =
+      next === "ACTIVE"
+        ? t("profile.toasts.activated")
+        : t("profile.toasts.deactivated");
+    handle(
+      res,
+      okTitle,
+      t("profile.toasts.statusChangeFailed"),
+      igrpToast,
+      serverError,
+    );
   };
 
   return {

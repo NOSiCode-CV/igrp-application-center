@@ -1,25 +1,28 @@
 "use client";
 
 import {
-  Badge,
   type ColumnDef,
-  DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-  IGRPDataTableFacetedFilterFn,
-  IGRPDataTableHeaderDefault,
-  IGRPDataTableHeaderSortToggle,
+  DropdownMenuSeparator,
   IGRPIcon,
-  IGRPUserAvatar,
   type Row,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type { InvitationDTO } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { useResendUserInvitation } from "@/features/users/use-users";
-import { geInviteTitle, getInitials, statusInviteClass } from "@/lib/utilities";
-import { cn } from "@/lib/utils";
+import { statusInviteClass } from "@/lib/utilities";
+
+import { inviteStatusLabel, type UsersTranslator } from "../lib/i18n";
+import {
+  actionsColumn,
+  dateColumn,
+  IdentityCell,
+  RowActionsMenu,
+  sortableHeader,
+  statusColumn,
+} from "./columns-shared";
 
 const isTerminalInviteStatus = (s: string) =>
   s === "CANCELED" || s === "REJECTED";
@@ -31,24 +34,35 @@ function PendingRowActionsCell({
   row: Row<InvitationDTO>;
   onCancelClick: (invitation: InvitationDTO) => void;
 }) {
+  const t = useTranslations("users.invitations");
   const { igrpToast } = useIGRPToast();
   const resendMutation = useResendUserInvitation();
 
-  const handleCopyUrl = () => {
+  const handleCopyUrl = async () => {
     const invitationUrl = row.original.invitationUrl;
     if (invitationUrl) {
-      navigator.clipboard.writeText(invitationUrl);
+      try {
+        await navigator.clipboard.writeText(invitationUrl);
+      } catch {
+        igrpToast({
+          type: "error",
+          title: t("toasts.copyFailed"),
+          description: t("toasts.copyFailedDescription"),
+          duration: 6000,
+        });
+        return;
+      }
       igrpToast({
         type: "success",
-        title: "URL copiado",
-        description: "URL do convite copiado para a área de transferência.",
+        title: t("toasts.urlCopied"),
+        description: t("toasts.urlCopiedDescription"),
         duration: 6000,
       });
     } else {
       igrpToast({
         type: "error",
-        title: "Convite não disponível",
-        description: "URL do convite não disponível.",
+        title: t("toasts.urlUnavailable"),
+        description: t("toasts.urlUnavailableDescription"),
         duration: 6000,
       });
     }
@@ -60,16 +74,15 @@ function PendingRowActionsCell({
         onSuccess: () => {
           igrpToast({
             type: "success",
-            title: "Convite reenviado",
-            description: "O convite foi reenviado com sucesso.",
+            title: t("toasts.resent"),
             duration: 6000,
           });
         },
         onError: () => {
           igrpToast({
             type: "error",
-            title: "Convite não reenviado",
-            description: "Não foi possível reenviar o convite.",
+            title: t("toasts.resendFailed"),
+            description: t("toasts.resendFailedDescription"),
             duration: 6000,
           });
         },
@@ -80,101 +93,57 @@ function PendingRowActionsCell({
   return (
     <>
       {!isTerminalInviteStatus(String(row.original.status)) && (
-        <DropdownMenu>
-          <DropdownMenuTrigger className="p-1 rounded-sm">
-            <IGRPIcon iconName="Ellipsis" />
-          </DropdownMenuTrigger>
+        <RowActionsMenu
+          ariaLabel={t("actionsFor", {
+            identifier: row.original.identifierValue,
+          })}
+        >
+          <DropdownMenuItem onSelect={handleCopyUrl}>
+            <IGRPIcon iconName="Copy" />
+            {t("actions.copyUrl")}
+          </DropdownMenuItem>
 
-          <DropdownMenuContent align="end" className="min-w-44">
-            <DropdownMenuItem onSelect={handleCopyUrl}>
-              <IGRPIcon iconName="Copy" />
-              Copiar URL
-            </DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleResend}>
+            <IGRPIcon iconName="Mail" />
+            {t("actions.resend")}
+          </DropdownMenuItem>
 
-            <DropdownMenuItem onSelect={handleResend}>
-              <IGRPIcon iconName="Mail" />
-              Reenviar Convite
-            </DropdownMenuItem>
+          <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              className="text-destructive focus:text-destructive"
-              variant="destructive"
-              onSelect={() => onCancelClick(row.original)}
-            >
-              <IGRPIcon iconName="Trash2" />
-              Cancelar Convite
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenuItem
+            className="text-destructive focus:text-destructive"
+            variant="destructive"
+            onSelect={() => onCancelClick(row.original)}
+          >
+            <IGRPIcon iconName="Trash2" />
+            {t("actions.cancel")}
+          </DropdownMenuItem>
+        </RowActionsMenu>
       )}
     </>
   );
 }
 
 export function getInvitationColumns(
+  t: UsersTranslator,
+  formatDate: (value: string) => string,
   onCancelClick: (invitation: InvitationDTO) => void,
 ): ColumnDef<InvitationDTO>[] {
   return [
     {
-      header: ({ column }) => (
-        <IGRPDataTableHeaderSortToggle column={column} title="Nome" />
-      ),
+      header: sortableHeader<InvitationDTO>(t("columns.name")),
       accessorKey: "identifierValue",
-      cell: ({ row }) => {
-        const identifier = String(row.getValue("identifierValue") ?? "");
-        return (
-          <div className="flex items-center gap-3">
-            <IGRPUserAvatar
-              alt={identifier}
-              fallbackContent={getInitials(identifier)}
-              className="size-10"
-              fallbackClass="text-base bg-primary text-primary-foreground"
-            />
-            <div>
-              <div className="text-sm leading-none">{identifier}</div>
-            </div>
-          </div>
-        );
-      },
-    },
-    {
-      header: "Data do Convite",
-      accessorKey: "invitationDate",
-      cell: ({ row }) => {
-        const date = row.getValue("invitationDate");
-        return (
-          <div>
-            {date ? new Date(String(date)).toLocaleDateString() : "N/A"}
-          </div>
-        );
-      },
-    },
-    {
-      header: () => (
-        <IGRPDataTableHeaderDefault title="Estado" className="text-center" />
-      ),
-      accessorKey: "status",
-      cell: ({ row }) => {
-        const status = String(row.getValue("status") ?? "");
-        return (
-          <div className="text-center">
-            <Badge className={cn(statusInviteClass(status), "capitalize")}>
-              {geInviteTitle(status)}
-            </Badge>
-          </div>
-        );
-      },
-      filterFn: IGRPDataTableFacetedFilterFn,
-      size: 70,
-    },
-    {
-      id: "actions",
-      header: () => <span className="sr-only">Ações</span>,
       cell: ({ row }) => (
-        <PendingRowActionsCell row={row} onCancelClick={onCancelClick} />
+        <IdentityCell label={String(row.getValue("identifierValue") ?? "")} />
       ),
-      size: 60,
-      enableHiding: false,
     },
+    dateColumn<InvitationDTO>(t, formatDate, "invitationDate"),
+    statusColumn<InvitationDTO>(t, (status) => ({
+      className: statusInviteClass(status),
+      label: inviteStatusLabel(t, status),
+    })),
+    actionsColumn<InvitationDTO>(t, (row) => (
+      <PendingRowActionsCell row={row} onCancelClick={onCancelClick} />
+    )),
   ];
 }

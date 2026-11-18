@@ -1,18 +1,54 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { IGRPLocaleSwitcher } from "@igrp/framework-next/i18n/client";
 import { getAuthProviderIdFromEnv } from "@igrp/framework-next-auth";
 import { IGRPAuthCarousel, IGRPAuthForm } from "@igrp/framework-next-ui";
+import { cn } from "@igrp/igrp-framework-react-design-system/cn";
+import { getTranslations } from "next-intl/server";
 
-import { carouselItems, loginConfig } from "@/config/login";
+import { carouselImages, loginConfig } from "@/config/login";
 import { siteConfig } from "@/config/site";
+import { setLocale } from "@/i18n/actions";
+import { auth } from "@/lib/auth";
 import { LOGOUT_PENDING_COOKIE } from "@/lib/logout-pending";
-import { cn, isAuthBypass, sanitizeCallbackUrl } from "@/lib/utils";
+import {
+  SILENT_SSO_COOKIE,
+  shouldAttemptSilentSso,
+  silentSsoCallbackUrl,
+} from "@/lib/silent-sso";
+import { isAuthBypass, sanitizeCallbackUrl } from "@/lib/utilities";
 
 import { LogoutCompletion } from "./logout-completion";
+import { SessionEndedCompletion } from "./session-ended-completion";
+import { SilentSignIn } from "./silent-sign-in";
 
-const { sliderPosition, texts } = loginConfig;
+const { sliderPosition } = loginConfig;
 const { logo, name } = siteConfig;
+
+/**
+ * `reason=session_ended` signs the app out on load, so an arrival that started
+ * on another site (Sec-Fetch-Site cross-site/same-site) must confirm with a
+ * click (CSRF, finding F3), as /logout does. The session watcher and in-app
+ * redirects send same-origin; typed URLs ("none") and browsers that omit the
+ * header keep the automatic sign-out. A cross-site arrival still signs out on
+ * its own when there is no session, or when its session is already ended by a
+ * host logout: middleware's redirect at the end of a cross-site navigation.
+ */
+async function sessionEndNeedsConfirm(): Promise<boolean> {
+  const site = (await headers()).get("sec-fetch-site");
+  if (site !== "cross-site" && site !== "same-site") return false;
+  try {
+    const token = await auth.getAccessToken();
+    // isEndedByHostLogout reads only `request.cookies.get(name)`.
+    return (
+      token !== null &&
+      !auth.isEndedByHostLogout(token, { cookies: await cookies() })
+    );
+  } catch {
+    return true;
+  }
+}
 
 export default async function AuthPage({
   searchParams,
@@ -37,20 +73,65 @@ export default async function AuthPage({
     return <LogoutCompletion />;
   }
 
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl, error, reason } = await searchParams;
+  // AM answered 401: clear this app's session client-side, then reload /login
+  // without `reason` so silent SSO can run.
+  if (reason === "session_ended") {
+    return (
+      <SessionEndedCompletion needsConfirm={await sessionEndNeedsConfirm()} />
+    );
+  }
+  const silentSso = cookieStore.get(SILENT_SSO_COOKIE);
   // Drop callbackUrl values that would bounce the user back to /login (or
   // /logout) after the OIDC round-trip — those produce the nested
-  // `?callbackUrl=…?callbackUrl=…` chain. Fall back to `/` so a successful
-  // login lands on the app home.
-  const safeCallbackUrl = sanitizeCallbackUrl(callbackUrl) ?? "/";
+  // `?callbackUrl=…?callbackUrl=…` chain. After a failed silent attempt the
+  // query value is NextAuth's absolute URL, which this rejects, so the value
+  // the attempt set out with is recovered from its cookie. Fall back to `/`
+  // so a successful login lands on the app home.
+  const safeCallbackUrl =
+    sanitizeCallbackUrl(callbackUrl) ??
+    silentSsoCallbackUrl(silentSso?.value) ??
+    "/";
   const providerId = getAuthProviderIdFromEnv(process.env);
 
+  // Silent SSO: still signed in at the IdP (e.g. coming from another app) →
+  // straight into the app with no click. See lib/silent-sso.ts.
+  if (
+    shouldAttemptSilentSso({
+      alreadyTried: silentSso !== undefined,
+      error,
+      providerId,
+    })
+  ) {
+    return (
+      <SilentSignIn providerId={providerId} callbackUrl={safeCallbackUrl} />
+    );
+  }
+
+  const t = await getTranslations("login");
+  const texts = {
+    ...loginConfig.texts,
+    welcome: t("welcome"),
+    description: t("description"),
+    copyright: t("copyright"),
+  };
+  const carouselItems = (
+    Object.keys(carouselImages) as (keyof typeof carouselImages)[]
+  ).map((key) => ({
+    image: carouselImages[key],
+    title: t(`carousel.${key}.title`),
+    description: t(`carousel.${key}.description`),
+  }));
+
   return (
-    <section className="flex min-h-screen flex-col md:flex-row">
+    <section className="relative flex min-h-screen flex-col md:flex-row">
+      <div className="absolute top-8 right-16 z-10">
+        <IGRPLocaleSwitcher action={setLocale} />
+      </div>
       <div
         className={cn(
           "relative hidden w-full md:block md:w-1/2",
-          "lg:order-first hidden lg:block",
+          "lg:order-first",
           sliderPosition === "right" && "lg:order-last",
         )}
       >

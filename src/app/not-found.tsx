@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 
-const IGRPTemplateNotFound = dynamic(
-  () =>
-    import("@igrp/framework-next-ui").then((mod) => mod.IGRPTemplateNotFound),
-  { ssr: true },
-);
+import { IGRPTemplateNotFound } from "@igrp/framework-next-ui";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "404 - Página não encontrada",
-  description: "A página que você está procurando não foi encontrada.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations();
+  return {
+    title: t("errors.status.404"),
+    description: t("notFound.description"),
+  };
+}
 
 export default function NotFound() {
   const appCode = process.env.IGRP_APP_CODE || "";

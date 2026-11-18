@@ -4,18 +4,21 @@ import type { Route } from "next";
 import Link from "next/link";
 
 import {
+  Badge,
   cn,
   IGRPIcon,
   type IGRPIconName,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+const ACCENTS = {
+  primary: "bg-primary-subtle text-primary-subtle-foreground",
+  info: "bg-info-subtle text-info-subtle-foreground",
+  success: "bg-success-subtle text-success-subtle-foreground",
+  warning: "bg-warning-subtle text-warning-subtle-foreground",
+} as const;
+
+export type SettingsAccent = keyof typeof ACCENTS;
 
 export interface SettingsItem {
   id: string;
@@ -23,6 +26,7 @@ export interface SettingsItem {
   description: string;
   icon: IGRPIconName;
   href: Route | string;
+  accent?: SettingsAccent;
   status?: "inativo";
 }
 
@@ -31,57 +35,56 @@ interface SettingsCardProps {
 }
 
 export function SettingsCard({ item }: SettingsCardProps) {
+  const t = useTranslations("settings");
   const isDisabled = item.status === "inativo";
+  const accent = isDisabled
+    ? "bg-muted text-muted-foreground"
+    : ACCENTS[item.accent ?? "primary"];
 
   const cardContent = (
-    <div className="flex items-start gap-4">
-      <div className="p-2.5 rounded-md bg-primary/10 shrink-0">
-        <IGRPIcon iconName={item.icon} className="size-5 text-primary" />
+    <>
+      <div className={cn("flex items-center gap-3", isDisabled && "pr-20")}>
+        <div
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-lg",
+            accent,
+          )}
+        >
+          <IGRPIcon iconName={item.icon} className="size-5" />
+        </div>
+        <h2
+          className={cn(
+            "font-semibold text-sm min-w-0",
+            isDisabled
+              ? "text-muted-foreground"
+              : "text-foreground group-hover:text-primary",
+          )}
+        >
+          {item.title}
+        </h2>
       </div>
-      <div className="flex flex-col gap-1 min-w-0">
-        <h3 className="font-medium text-primary">{item.title}</h3>
-        <p className="text-xs text-muted-foreground leading-snug">
-          {item.description}
-        </p>
-      </div>
-    </div>
+      <p className="text-xs text-muted-foreground leading-relaxed text-pretty">
+        {item.description}
+      </p>
+    </>
   );
 
   const sharedClassName = cn(
-    "relative text-left p-5 rounded-lg border-0 bg-accent/20 transition-colors",
+    "group relative flex flex-col gap-3 rounded-xl border border-border p-5 h-full",
+    "transition-colors motion-reduce:transition-none",
     isDisabled
-      ? "opacity-50 cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      : "cursor-pointer hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      ? "bg-muted/40 border-dashed"
+      : "bg-card hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   );
 
   if (isDisabled) {
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div
-              role="link"
-              tabIndex={0}
-              aria-disabled="true"
-              className={sharedClassName}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") e.preventDefault();
-              }}
-            >
-              {cardContent}
-              <Badge
-                variant="secondary"
-                className="absolute top-2 right-2 text-xs"
-              >
-                Em breve
-              </Badge>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Disponível em breve</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className={sharedClassName}>
+        {cardContent}
+        <Badge variant="secondary" className="absolute top-3 right-3 text-xs">
+          {t("comingSoon")}
+        </Badge>
+      </div>
     );
   }
 

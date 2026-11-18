@@ -1,10 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
 
 import { UserProfileStatusDialog } from "@/features/users/components/user-profile-status-dialog";
 
-vi.mock("@igrp/igrp-framework-react-design-system", () => ({
+import { renderWithIntl } from "../../helpers/intl";
+
+vi.mock("@igrp/igrp-framework-react-design-system", async () => ({
+  ...(await vi.importActual<object>(
+    "@igrp/igrp-framework-react-design-system",
+  )),
   AlertDialog: ({
     open,
     children,
@@ -43,11 +48,12 @@ vi.mock("@igrp/igrp-framework-react-design-system", () => ({
     </button>
   ),
   IGRPIcon: () => <span />,
+  cn: (...classes: unknown[]) => classes.filter(Boolean).join(" "),
 }));
 
 it("calls onConfirm with INACTIVE when active user confirms", async () => {
   const onConfirm = vi.fn().mockResolvedValue(undefined);
-  render(
+  renderWithIntl(
     <UserProfileStatusDialog
       open
       isActive
@@ -56,15 +62,13 @@ it("calls onConfirm with INACTIVE when active user confirms", async () => {
       onConfirm={onConfirm}
     />,
   );
-  await userEvent.click(
-    screen.getByRole("button", { name: /confirmar desativar/i }),
-  );
+  await userEvent.click(screen.getByRole("button", { name: "Desativar" }));
   expect(onConfirm).toHaveBeenCalledWith("INACTIVE");
 });
 
 it("calls onConfirm with ACTIVE when inactive user confirms", async () => {
   const onConfirm = vi.fn().mockResolvedValue(undefined);
-  render(
+  renderWithIntl(
     <UserProfileStatusDialog
       open
       isActive={false}
@@ -73,8 +77,6 @@ it("calls onConfirm with ACTIVE when inactive user confirms", async () => {
       onConfirm={onConfirm}
     />,
   );
-  await userEvent.click(
-    screen.getByRole("button", { name: /confirmar ativar/i }),
-  );
+  await userEvent.click(screen.getByRole("button", { name: "Ativar" }));
   expect(onConfirm).toHaveBeenCalledWith("ACTIVE");
 });

@@ -10,6 +10,7 @@ import {
   SheetContent,
   SheetTitle,
 } from "@igrp/igrp-framework-react-design-system";
+import { useTranslations } from "next-intl";
 
 import type { DepartmentWithChildren } from "../dept-tree-utils";
 import { DepartmentSidebarContent } from "./dept-sidebar-content";
@@ -35,6 +36,7 @@ export function DepartmentSidebar({
   isFiltering,
   counts,
 }: Props) {
+  const t = useTranslations("departments.sidebar");
   const contentProps = {
     filtered,
     searchTerm,
@@ -52,10 +54,10 @@ export function DepartmentSidebar({
           onClick={() => onOpenChange(true)}
           variant="outline"
           className="w-full"
-          aria-label="Abrir lista de departamentos"
+          aria-label={t("openList")}
         >
           <IGRPIcon iconName="Menu" className="size-4" strokeWidth={2} />
-          Departamentos
+          {t("listTitle")}
         </Button>
       </div>
 
@@ -63,7 +65,7 @@ export function DepartmentSidebar({
       <div className="sm:hidden">
         <Drawer open={isOpen} onOpenChange={onOpenChange}>
           <DrawerContent className="max-h-[90vh] p-4">
-            <DrawerTitle className="sr-only">Departamentos</DrawerTitle>
+            <DrawerTitle className="sr-only">{t("listTitle")}</DrawerTitle>
             <DepartmentSidebarContent {...contentProps} />
           </DrawerContent>
         </Drawer>
@@ -73,7 +75,7 @@ export function DepartmentSidebar({
       <div className="hidden sm:block lg:hidden">
         <Sheet open={isOpen} onOpenChange={onOpenChange}>
           <SheetContent side="left" className="w-80 p-4">
-            <SheetTitle className="sr-only">Departamentos</SheetTitle>
+            <SheetTitle className="sr-only">{t("listTitle")}</SheetTitle>
             <DepartmentSidebarContent {...contentProps} />
           </SheetContent>
         </Sheet>

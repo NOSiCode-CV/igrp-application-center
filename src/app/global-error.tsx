@@ -10,14 +10,38 @@
 //
 // This file renders `IGRPGlobalError` (the full-page error component) and
 // hands logging off to `reportError`, which in prod is the single hook to
-// wire a real observability backend into.
+// wire a real observability backend into. The copy comes from the framework's
+// chrome catalog through its cookie fallback: no provider is mounted here.
 
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
+import {
+  IGRP_DEFAULT_FORMAT_LOCALES,
+  IGRP_LOCALE_COOKIE,
+  igrpNormalizeLocale,
+} from "@igrp/framework-next/i18n";
+import { igrpLastFormatLocale } from "@igrp/framework-next/i18n/client";
 import { IGRPGlobalError } from "@igrp/framework-next-ui";
 
-import { resolveErrorCopy } from "@/config/error-messages";
+import { resolvePublicErrorCopy } from "@/lib/error-copy";
 import { reportError } from "@/lib/report-error";
+
+// No provider is mounted here (the failing root layout is what mounts it). The
+// document language is the format locale the provider last rendered with (it
+// carries IGRP_FORMAT_LOCALES); before it ever mounted, the IGRP_LOCALE cookie,
+// read the same way `useIGRPChromeI18n` reads it: pt on the server.
+const noopSubscribe = () => () => {};
+function readFormatLocale(): string {
+  const recorded = igrpLastFormatLocale();
+  if (recorded) return recorded;
+  const entry = document.cookie
+    .split("; ")
+    .find((c) => c.startsWith(`${IGRP_LOCALE_COOKIE}=`));
+  const locale =
+    igrpNormalizeLocale(entry?.slice(IGRP_LOCALE_COOKIE.length + 1)) ?? "pt";
+  // Default regions: IGRP_FORMAT_LOCALES (server env) is unreadable here.
+  return IGRP_DEFAULT_FORMAT_LOCALES[locale];
+}
 
 export default function GlobalError({
   error,
@@ -26,17 +50,23 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const lang = useSyncExternalStore(
+    noopSubscribe,
+    readFormatLocale,
+    () => IGRP_DEFAULT_FORMAT_LOCALES.pt,
+  );
+
   useEffect(() => {
     reportError(error, { segment: "global" });
   }, [error]);
 
   return (
-    <html lang="pt-PT">
+    <html lang={lang}>
       <body>
         <IGRPGlobalError
           error={error}
           reset={reset}
-          resolveCopy={resolveErrorCopy}
+          resolveCopy={resolvePublicErrorCopy}
         />
       </body>
     </html>

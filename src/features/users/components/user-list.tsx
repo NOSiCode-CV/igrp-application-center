@@ -2,12 +2,12 @@
 
 import { useCallback, useMemo, useState } from "react";
 
+import { useIGRPFormat } from "@igrp/framework-next/i18n/client";
 import {
   IGRPButton,
   IGRPDataTable,
   type IGRPDataTableClientFilterListProps,
-  IGRPDataTableFilterFaceted,
-  IGRPDataTableFilterInput,
+  IGRPPageHeader,
   Tabs,
   TabsContent,
   TabsList,
@@ -18,10 +18,12 @@ import type {
   IGRPUserDTO,
   InvitationDTO,
 } from "@igrp/platform-access-management-client-ts";
+import { useTranslations } from "next-intl";
 
 import { ConfirmDialog } from "@/components/confirmation-modal";
+import { ColumnFacetedFilter } from "@/components/data-table/faceted-filter";
+import { ColumnSearchInput } from "@/components/data-table/search-input";
 import { AppCenterLoading } from "@/components/loading";
-import { PageHeader } from "@/components/page-header";
 import { getInvitationColumns } from "@/features/users/components/invitations-columns";
 import { UserInviteDialog } from "@/features/users/components/user-invite-dialog";
 import { getTableColumns } from "@/features/users/components/users-columns";
@@ -31,11 +33,16 @@ import {
   useUpdateUserStatus,
   useUsers,
 } from "@/features/users/use-users";
-import { STATUS_OPTIONS } from "@/lib/constants";
+import { useStatusOptions } from "@/i18n/status";
+import {
+  PAGE_HEADER_ACTIONS_CLASS,
+  PAGE_HEADER_PROPS,
+} from "@/lib/page-header";
 
 interface UserListProps {
   initialUsers: IGRPUserDTO[];
   initialInvitations: InvitationDTO[];
+  currentUserId?: string;
 }
 
 type DialogState =
@@ -43,7 +50,15 @@ type DialogState =
   | { kind: "status"; user: IGRPUserDTO; newStatus: "ACTIVE" | "INACTIVE" }
   | { kind: "cancel"; invitation: InvitationDTO };
 
-export function UserList({ initialUsers, initialInvitations }: UserListProps) {
+export function UserList({
+  initialUsers,
+  initialInvitations,
+  currentUserId,
+}: UserListProps) {
+  const t = useTranslations("users");
+  const tStatus = useTranslations("common.status");
+  const { formatDate } = useIGRPFormat();
+  const statusOptions = useStatusOptions();
   const { igrpToast } = useIGRPToast();
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [dialog, setDialog] = useState<DialogState>({ kind: "none" });
@@ -52,7 +67,12 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
   const updateStatusMutation = useUpdateUserStatus();
   const cancelUserInvitationMutation = useCancelUserInvitation();
 
-  const { data: users = initialUsers, error } = useUsers(undefined, {
+  const {
+    data: users = initialUsers,
+    error,
+    refetch,
+    isFetching,
+  } = useUsers(undefined, {
     initialData: initialUsers,
   });
   const { data: invites, isLoading: isLoadingInvites } = useGetUserInvitations(
@@ -83,12 +103,12 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
   }, []);
 
   const activeColumns = useMemo(
-    () => getTableColumns(handleStatusClick, { showInvitationDate: false }),
-    [handleStatusClick],
+    () => getTableColumns(t, tStatus, handleStatusClick, { currentUserId }),
+    [t, tStatus, handleStatusClick, currentUserId],
   );
   const inviteColumns = useMemo(
-    () => getInvitationColumns(handleCancelClick),
-    [handleCancelClick],
+    () => getInvitationColumns(t, formatDate, handleCancelClick),
+    [t, formatDate, handleCancelClick],
   );
 
   const activeFilters: IGRPDataTableClientFilterListProps<IGRPUserDTO>[] =
@@ -97,24 +117,25 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         {
           columnId: "name",
           component: ({ column }) => (
-            <IGRPDataTableFilterInput
+            <ColumnSearchInput
               column={column}
-              placeholder="Pesquisar por nome ou email..."
+              placeholder={t("list.filters.searchByNameOrEmail")}
+              label={t("list.filters.searchByNameOrEmail")}
             />
           ),
         },
         {
           columnId: "status",
           component: ({ column }) => (
-            <IGRPDataTableFilterFaceted
+            <ColumnFacetedFilter
               column={column}
-              options={STATUS_OPTIONS}
-              placeholder="Estado"
+              options={statusOptions}
+              label={t("list.filters.status")}
             />
           ),
         },
       ],
-      [],
+      [t, statusOptions],
     );
 
   const inviteFilters: IGRPDataTableClientFilterListProps<InvitationDTO>[] =
@@ -123,14 +144,16 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         {
           columnId: "identifierValue",
           component: ({ column }) => (
-            <IGRPDataTableFilterInput column={column} />
+            <ColumnSearchInput
+              column={column}
+              label={t("list.filters.searchInvitations")}
+              placeholder={t("list.filters.searchByEmailPlaceholder")}
+            />
           ),
         },
       ],
-      [],
+      [t],
     );
-
-  if (error) throw error;
 
   const handleConfirmStatusChange = () => {
     if (dialog.kind !== "status") return;
@@ -140,8 +163,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         onSuccess: () => {
           igrpToast({
             type: "success",
-            title: "Estado alterado",
-            description: "O estado do utilizador foi alterado com sucesso",
+            title: t("list.toasts.statusChanged"),
             duration: 6000,
           });
           closeDialog();
@@ -149,8 +171,8 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         onError: () => {
           igrpToast({
             type: "error",
-            title: "Erro",
-            description: "Não foi possível alterar o estado do utilizador",
+            title: t("list.toasts.error"),
+            description: t("list.toasts.statusChangeFailed"),
             duration: 6000,
           });
         },
@@ -164,8 +186,7 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
       onSuccess: () => {
         igrpToast({
           type: "success",
-          title: "Convite cancelado",
-          description: "O convite foi cancelado com sucesso",
+          title: t("list.toasts.invitationCanceled"),
           duration: 6000,
         });
         closeDialog();
@@ -173,8 +194,8 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
       onError: () => {
         igrpToast({
           type: "error",
-          title: "Erro",
-          description: "Não foi possível cancelar o convite",
+          title: t("list.toasts.error"),
+          description: t("list.toasts.invitationCancelFailed"),
           duration: 6000,
         });
       },
@@ -182,29 +203,52 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
   };
 
   return (
-    <div className="flex flex-col gap-5 animate-fade-in">
-      <PageHeader
-        title="Gestão de Utilizadores"
-        description="Ver e gerir todos os utilizadores do sistema."
-        showActions
+    <div className="flex flex-col gap-6">
+      <IGRPPageHeader
+        {...PAGE_HEADER_PROPS}
+        title={t("list.title")}
+        description={t("list.description")}
+        showBackButton
+        urlBackButton="/settings"
       >
-        <IGRPButton
-          showIcon
-          iconName="UserRoundPlus"
-          onClick={() => setInviteDialogOpen(true)}
-        >
-          Convidar Utilizador
-        </IGRPButton>
-      </PageHeader>
+        <div className={PAGE_HEADER_ACTIONS_CLASS}>
+          <IGRPButton
+            showIcon
+            iconName="UserRoundPlus"
+            onClick={() => setInviteDialogOpen(true)}
+          >
+            {t("list.inviteUser")}
+          </IGRPButton>
+        </div>
+      </IGRPPageHeader>
 
-      <Tabs defaultValue="active">
+      {error && (
+        <div
+          role="status"
+          className="flex flex-col gap-3 rounded-lg bg-warning-subtle px-4 py-3 text-sm text-warning-subtle-foreground sm:flex-row sm:items-center sm:justify-between"
+        >
+          <span>{t("list.staleWarning")}</span>
+          <IGRPButton
+            variant="outline"
+            size="sm"
+            showIcon
+            iconName="RotateCw"
+            disabled={isFetching}
+            onClick={() => refetch()}
+          >
+            {isFetching ? t("list.refreshing") : t("list.refresh")}
+          </IGRPButton>
+        </div>
+      )}
+
+      <Tabs defaultValue="active" className="flex flex-col gap-6">
         <TabsList>
-          <TabsTrigger value="active">Utilizadores Ativos</TabsTrigger>
+          <TabsTrigger value="active">{t("list.tabs.active")}</TabsTrigger>
           <TabsTrigger value="pending">
-            Convites Pendentes ({pendingData.length})
+            {t("list.tabs.pending", { count: pendingData.length })}
           </TabsTrigger>
           <TabsTrigger value="canceled">
-            Convites Cancelados ({canceledData.length})
+            {t("list.tabs.canceled", { count: canceledData.length })}
           </TabsTrigger>
         </TabsList>
 
@@ -212,39 +256,39 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
           <IGRPDataTable<IGRPUserDTO, IGRPUserDTO>
             showFilter
             showPagination
-            tableClassName="table-fixed"
             columns={activeColumns}
             data={users}
             clientFilters={activeFilters}
+            tableHeaderClassName="bg-muted"
           />
         </TabsContent>
 
         <TabsContent value="pending">
           {isLoadingInvites ? (
-            <AppCenterLoading description="Carregando convites..." />
+            <AppCenterLoading description={t("list.loadingInvitations")} />
           ) : (
             <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
-              tableClassName="table-fixed"
               columns={inviteColumns}
               data={pendingData}
               clientFilters={inviteFilters}
+              tableHeaderClassName="bg-muted"
             />
           )}
         </TabsContent>
 
         <TabsContent value="canceled">
           {isLoadingInvites ? (
-            <AppCenterLoading description="Carregando convites..." />
+            <AppCenterLoading description={t("list.loadingInvitations")} />
           ) : (
             <IGRPDataTable<InvitationDTO, InvitationDTO>
               showFilter
               showPagination
-              tableClassName="table-fixed"
               columns={inviteColumns}
               data={canceledData}
               clientFilters={inviteFilters}
+              tableHeaderClassName="bg-muted"
             />
           )}
         </TabsContent>
@@ -260,28 +304,32 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
         onOpenChange={(open) => !open && closeDialog()}
         title={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
-            ? "Desativar Utilizador"
-            : "Ativar Utilizador"
+            ? t("list.statusDialog.deactivateTitle")
+            : t("list.statusDialog.activateTitle")
         }
         description={
-          dialog.kind === "status" ? (
-            <>
-              Tem certeza que deseja{" "}
-              {dialog.newStatus === "INACTIVE" ? "desativar" : "ativar"}{" "}
-              <strong>{dialog.user.name || dialog.user.email}</strong>?
-            </>
-          ) : null
+          dialog.kind === "status"
+            ? t.rich(
+                dialog.newStatus === "INACTIVE"
+                  ? "list.statusDialog.deactivateDescription"
+                  : "list.statusDialog.activateDescription",
+                {
+                  name: dialog.user.name || dialog.user.email,
+                  strong: (chunks) => <strong>{chunks}</strong>,
+                },
+              )
+            : null
         }
         onConfirm={handleConfirmStatusChange}
         confirmText={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
-            ? "Desativar"
-            : "Ativar"
+            ? t("list.statusDialog.deactivate")
+            : t("list.statusDialog.activate")
         }
         loadingText={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
-            ? "Desativando..."
-            : "Ativando..."
+            ? t("list.statusDialog.deactivating")
+            : t("list.statusDialog.activating")
         }
         iconName={
           dialog.kind === "status" && dialog.newStatus === "INACTIVE"
@@ -299,19 +347,18 @@ export function UserList({ initialUsers, initialInvitations }: UserListProps) {
       <ConfirmDialog
         open={dialog.kind === "cancel"}
         onOpenChange={(open) => !open && closeDialog()}
-        title="Cancelar Convite"
+        title={t("list.cancelDialog.title")}
         description={
-          dialog.kind === "cancel" ? (
-            <>
-              Tem certeza que deseja cancelar o convite para{" "}
-              <strong>{dialog.invitation.identifierValue}</strong>? Esta ação
-              não pode ser desfeita.
-            </>
-          ) : null
+          dialog.kind === "cancel"
+            ? t.rich("list.cancelDialog.description", {
+                identifier: dialog.invitation.identifierValue,
+                strong: (chunks) => <strong>{chunks}</strong>,
+              })
+            : null
         }
         onConfirm={handleConfirmCancel}
-        confirmText="Confirmar"
-        loadingText="Cancelando..."
+        confirmText={t("list.cancelDialog.confirm")}
+        loadingText={t("list.cancelDialog.canceling")}
         iconName="Trash"
         variant="destructive"
         isLoading={cancelUserInvitationMutation.isPending}
