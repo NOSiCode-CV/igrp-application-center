@@ -92,5 +92,4 @@ Consult the in-repo skills under [.claude/skills/](.claude/skills) (mirrored in 
 - `next/image` hosts come from `NEXT_PUBLIC_IGRP_MINIO_URL` plus comma-separated `NEXT_PUBLIC_ALLOWED_DOMAINS`; an image from anywhere else fails at runtime, not at build.
 - Biome (2-space indent) is the only formatter; `.editorconfig` and `biome.json` carry the settings.
 - `src/temp/` holds scratch fixtures, not shipped code. Leave it out of imports.
-- Commit messages carry no `Co-Authored-By:` trailer naming an AI model or an Anthropic email. Strip any such line before committing.
 - [CLAUDE.md](CLAUDE.md) is a one-line pointer to this file — keep the guidance here.

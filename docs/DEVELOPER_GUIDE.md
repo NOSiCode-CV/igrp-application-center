@@ -227,7 +227,6 @@ Errors are typed, not ad hoc:
 - **Formatter/linter**: Biome 2.5, 2-space indent. `pnpm lint` autofixes + organizes imports; it's the gate to run before committing.
 - **Imports**: `optimizePackageImports` is set for the IGRP framework packages and React Query — use named imports, no deep default imports into those packages, to keep them tree-shakable.
 - **`output: "standalone"`** in `next.config.ts` — the Dockerfile depends on this; don't change it without updating the Dockerfile ([docs/DOCKER-RUN.md](DOCKER-RUN.md)).
-- **Commit messages** must not include a `Co-Authored-By:` trailer naming an AI model or an Anthropic email.
 - **CI pipeline** (`.gitlab-ci.yml`, `validate` stage, runs before build):
   - `check-ui` (`pnpm check:ui`) — **blocking**.
   - `validate` (`pnpm lint && pnpm typecheck && pnpm test`) — currently **advisory** (`allow_failure: true`) until pre-existing debt clears; will be made blocking after.
